@@ -10,7 +10,7 @@ const DELETE_PROJECT = "project/deletegrid";
 // get Projects
 export const getProject = async () => {
   try {
-    const response = await post(apiUrl+GET_PROJECT);
+    const response = await post(GET_PROJECT);
     return response;
   } catch (error) {
     console.log(error); // Handle any errors

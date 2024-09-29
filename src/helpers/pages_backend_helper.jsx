@@ -10,7 +10,7 @@ const DELETE_PAGES = "pages/deletegrid";
 // get Projects
 export const getPages = async () => {
   try {
-    const response = await post(apiUrl+GET_PAGES);
+    const response = await post(GET_PAGES);
     return response;
   } catch (error) {
     console.log(error); // Handle any errors

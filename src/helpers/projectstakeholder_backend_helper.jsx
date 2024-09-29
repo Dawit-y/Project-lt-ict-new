@@ -15,9 +15,9 @@ export const getProjectStakeholder = async (projectstakeholderid) => {
     let response;
     if (projectstakeholderid != null) {
   
-      response = await post(`${apiUrl}${GET_PROJECT_STAKEHOLDER}?project_id=${projectstakeholderid}`);
+      response = await post(`${GET_PROJECT_STAKEHOLDER}?project_id=${projectstakeholderid}`);
     } else {
-      response = await post(`${apiUrl}${GET_PROJECT_STAKEHOLDER}`);
+      response = await post(`${GET_PROJECT_STAKEHOLDER}`);
     }
     return response;
   } catch (error) {

@@ -10,7 +10,7 @@ const DELETE_PERMISSION = "permission/deletegrid";
 // get Projects
 export const getPermission = async (permissionroleid) => {
   try {
-    const response = await post(`${apiUrl}${GET_PERMISSION}?pem_role_id=${permissionroleid}`);
+    const response = await post(`${GET_PERMISSION}?pem_role_id=${permissionroleid}`);
   
     return response;
   } catch (error) {

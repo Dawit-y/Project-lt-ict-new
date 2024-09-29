@@ -10,7 +10,7 @@ const DELETE_DOCUMENT_TYPE = "document_type/deletegrid";
 // get Projects
 export const getDocumentType = async () => {
   try {
-    const response = await post(apiUrl+GET_DOCUMENT_TYPE);
+    const response = await post(GET_DOCUMENT_TYPE);
     return response;
   } catch (error) {
     console.log(error); // Handle any errors

@@ -14,9 +14,9 @@ export const getProjectContractor = async (projectidContractor) => {
     // return response;
     let response;
     if (projectidContractor != null) {
-      response = await post(`${apiUrl}${GET_PROJECT_CONTRACTOR}?project_id=${projectidContractor}`);
+      response = await post(`${GET_PROJECT_CONTRACTOR}?project_id=${projectidContractor}`);
     } else {
-      response = await post(`${apiUrl}${GET_PROJECT_CONTRACTOR}`);
+      response = await post(`${GET_PROJECT_CONTRACTOR}`);
     }
     return response;
   } catch (error) {

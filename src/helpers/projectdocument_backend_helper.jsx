@@ -12,9 +12,9 @@ export const getProjectDocument = async (projectid) => {
   try {
     let response;
     if (projectid != null) {
-      response = await post(`${apiUrl}${GET_PROJECT_DOCUMENT}?project_id=${projectid}`);
+      response = await post(`${GET_PROJECT_DOCUMENT}?project_id=${projectid}`);
     } else {
-      response = await post(`${apiUrl}${GET_PROJECT_DOCUMENT}`);
+      response = await post(`${GET_PROJECT_DOCUMENT}`);
     }
     
     // console.log("Backend response:", response);

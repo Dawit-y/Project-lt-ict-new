@@ -50,6 +50,7 @@ import moment from "moment";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 import accessToken from "../../helpers/jwt-token-access/accessToken";
+import { error } from "toastr";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -255,6 +256,7 @@ usr_status:values.usr_status,
       users: UsersReducer.users,
       loading: UsersReducer.loading,
       update_loading: UsersReducer.update_loading,
+      
     })
   );
 
@@ -263,6 +265,7 @@ usr_status:values.usr_status,
     loading,
     update_loading,
   } = useSelector(usersProperties);
+
   
 
   useEffect(() => {

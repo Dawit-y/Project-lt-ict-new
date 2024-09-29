@@ -10,7 +10,7 @@ const DELETE_USER_ROLE = "user_role/deletegrid";
 // get Projects
 export const getUserRole = async () => {
   try {
-    const response = await post(apiUrl+GET_USER_ROLE);
+    const response = await post(GET_USER_ROLE);
     return response;
   } catch (error) {
     console.log(error); // Handle any errors

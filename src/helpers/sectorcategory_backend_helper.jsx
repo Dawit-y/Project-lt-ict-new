@@ -10,7 +10,7 @@ const DELETE_SECTOR_CATEGORY = "sector_category/deletegrid";
 // get Projects
 export const getSectorCategory = async () => {
   try {
-    const response = await post(apiUrl+GET_SECTOR_CATEGORY);
+    const response = await post(GET_SECTOR_CATEGORY);
     return response;
   } catch (error) {
     console.log(error); // Handle any errors

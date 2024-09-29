@@ -10,7 +10,8 @@ const DELETE_USERS = "users/deletegrid";
 // get Projects
 export const getUsers = async () => {
   try {
-    const response = await post(apiUrl+GET_USERS);
+    const response = await post(GET_USERS);
+    console.log("users data ",response)
     return response;
   } catch (error) {
     console.log(error); // Handle any errors

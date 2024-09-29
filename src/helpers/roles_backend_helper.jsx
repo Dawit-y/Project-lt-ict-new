@@ -10,7 +10,7 @@ const DELETE_ROLES = "roles/deletegrid";
 // get Projects
 export const getRoles = async () => {
   try {
-    const response = await post(apiUrl+GET_ROLES);
+    const response = await post(GET_ROLES);
     return response;
   } catch (error) {
     console.log(error); // Handle any errors

@@ -10,7 +10,7 @@ const DELETE_STAKEHOLDER_TYPE = "stakeholder_type/deletegrid";
 // get Projects
 export const getStakeholderType = async () => {
   try {
-    const response = await post(apiUrl+GET_STAKEHOLDER_TYPE);
+    const response = await post(GET_STAKEHOLDER_TYPE);
     return response;
   } catch (error) {
     console.log(error); // Handle any errors

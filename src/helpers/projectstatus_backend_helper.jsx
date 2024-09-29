@@ -10,7 +10,7 @@ const DELETE_PROJECT_STATUS = "project_status/deletegrid";
 // get Projects
 export const getProjectStatus = async () => {
   try {
-    const response = await post(apiUrl+GET_PROJECT_STATUS);
+    const response = await post(GET_PROJECT_STATUS);
     return response;
   } catch (error) {
     console.log(error); // Handle any errors

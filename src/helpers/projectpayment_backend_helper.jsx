@@ -14,9 +14,9 @@ export const getProjectPayment = async (project_id_payment) => {
     let response;
     if (project_id_payment != null) {
       // response = await post(`${apiUrl}${GET_PROJECT_PAYMENT}?project_payment=2`);
-      response = await post(`${apiUrl}${GET_PROJECT_PAYMENT}?project_id=${project_id_payment}`);
+      response = await post(`${GET_PROJECT_PAYMENT}?project_id=${project_id_payment}`);
     } else {
-      response = await post(`${apiUrl}${GET_PROJECT_PAYMENT}`);
+      response = await post(`${GET_PROJECT_PAYMENT}`);
     }
     return response;
   } catch (error) {
