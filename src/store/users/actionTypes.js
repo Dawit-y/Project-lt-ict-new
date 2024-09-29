@@ -1,0 +1,27 @@
+/* PROJECTS */
+export const GET_USERS = "GET_USERS";
+export const GET_USERS_SUCCESS = "GET_USERS_SUCCESS";
+export const GET_USERS_FAIL = "GET_USERS_FAIL";
+
+/**
+ * add PROJECT
+ */
+export const ADD_USERS = "ADD_USERS";
+export const ADD_USERS_SUCCESS = "ADD_USERS_SUCCESS";
+export const ADD_USERS_FAIL = "ADD_USERS_FAIL";
+
+/**
+ * Edit PROJECT
+ */
+export const UPDATE_USERS = "UPDATE_USERS";
+export const UPDATE_USERS_SUCCESS = "UPDATE_USERS_SUCCESS";
+export const UPDATE_USERS_FAIL = "UPDATE_USERS_FAIL";
+
+/**
+ * Delete PROJECT
+ */
+export const DELETE_USERS = "DELETE_USERS";
+export const DELETE_USERS_SUCCESS = "DELETE_USERS_SUCCESS";
+export const DELETE_USERS_FAIL = "DELETE_USERS_FAIL";
+
+export const TOGGLE_UPDATE_LOADING = "TOGGLE_UPDATE_LOADING";
