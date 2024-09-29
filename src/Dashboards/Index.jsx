@@ -5,6 +5,7 @@ import axios from 'axios'; // Axios for API requests
 // import DashboardComponent from "../pages/Dashboard/Dashboardcomp";
 import WelcomeComp  from "../pages/Dashboard/WelcomeComp";
 import accessToken from '../helpers/jwt-token-access/accessToken';
+import { del, get, post, put } from "../helpers/api_Lists";
 
 const Index = ({ role }) => {
   const [data, setData] = useState(null);
@@ -21,10 +22,11 @@ const Index = ({ role }) => {
           role: role, // Sending the role in the request bod
         };
         // Making the POST request to the API
+        
         const response = await axios.post('https://pmsor.awashsol.com/api/dashboard_builder', payload, {
           headers: {
             'Content-Type': 'application/json', // Ensure correct content type
-            // Add any other necessary headers here (e.g., Authorization, if required)
+            
             Authorization: accessToken, // Add accessToken in Authorization header
           },
         });

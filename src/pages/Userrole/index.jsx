@@ -76,7 +76,7 @@ const UserRoleModel = () => {
     const fetchRoles = async () => {
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_BASE_API_URL}roles/listgrid`,
+          `${import.meta.env.VITE_BASE_API_URL}roles/listgrid`,{},
           {
             headers: {
               Authorization: accessToken, // Add accessToken in Authorization header

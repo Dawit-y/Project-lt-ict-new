@@ -4,6 +4,30 @@ import * as url from "./url_Lists";
 
 const apiUrl = import.meta.env.VITE_BASE_API_URL;
 
+
+// GET Project dashboard components with Authorization header
+export const getProjectDashboardComponent = async (endPoint) => {
+  try {
+    const response = await post(
+      `${endPoint}/listgrid`
+    );
+    return response.data; // Return the response data directly
+  } catch (e) {
+    console.error("Error fetching dashboard components:", e);
+    throw e; // Rethrow error for handling elsewhere
+  }
+};
+// GET pROJECT DASHBOARD
+export const getProjectDashboard = async (role) => {
+  try {
+    const response = await post(`${url.GET_PROJECT_DASHBOARD}`, role);
+    return response.data; // Return the response data directly
+  } catch (e) {
+    console.log("Error fetching dashboard response:", e);
+    throw e; // Rethrow the error for handling in the component
+  }
+};
+
 // PROJECT TREE
 export const getProjectTreeStatus=async()=>{
   
@@ -395,6 +419,8 @@ export const fetchSearchResults = async (searchTerm, selectedFields) => {
 };
 
 export {
+
+
   getLoggedInUser,
   isUserAuthenticated,
   postFakeRegister,

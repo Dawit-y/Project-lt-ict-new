@@ -4,6 +4,7 @@ import TableContainer from "../../components/Common/TableContainer";
 import Pie from "../../Dashboards/Pie";
 import { useTranslation } from "react-i18next";
 import { Col, Row, Card, CardBody } from "reactstrap";
+import accessToken from "../../helpers/jwt-token-access/accessToken";
 
 const DashboardComponent = ({ dashboardType, objectName, columnList, endPoint }) => {
   const { t } = useTranslation();
@@ -17,8 +18,17 @@ const DashboardComponent = ({ dashboardType, objectName, columnList, endPoint })
     const fetchData = async () => {
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_BASE_API_URL}` + endPoint + '/listgrid'
+          `${import.meta.env.VITE_BASE_API_URL}` + endPoint + '/listgrid', 
+          {}, // Empty object for the request body (if no payload)
+          {
+            headers: {
+              Authorization: accessToken, // Set accessToken in Authorization header
+            },
+          }
         );
+        
+        
+
         setTableData(response.data.data);
         if (response.data.data.length > 0) {
           setTotalCount(response.data.data[0].total_count);

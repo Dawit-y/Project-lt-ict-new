@@ -1,7 +1,6 @@
 import axios from "axios";
 import { del, get, post, put } from "./api_Lists";
 //import * as url from "./url_Lists";
-import accessToken from "./jwt-token-access/accessToken";
 
 const apiUrl = import.meta.env.VITE_BASE_API_URL;
 const GET_USER_ROLE = "user_role/listgrid";
@@ -11,13 +10,7 @@ const DELETE_USER_ROLE = "user_role/deletegrid";
 // get Projects
 export const getUserRole = async () => {
   try {
-    const response = await post(apiUrl+GET_USER_ROLE, {
-      headers: {
-        Authorization: accessToken, // Add accessToken in Authorization header
-      },
-    },
-      
-    );
+    const response = await post(apiUrl+GET_USER_ROLE);
     return response;
   } catch (error) {
     console.log(error); // Handle any errors

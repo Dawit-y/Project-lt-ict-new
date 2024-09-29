@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios'; // Axios for API requests
 import DashboardComponent from "./Dashboardcomp";
+import accessToken from "../../helpers/jwt-token-access/accessToken";
+import {getProjectDashboard} from "../../helpers/Project_Backend";
 //i18n
 import { withTranslation } from "react-i18next";
 
@@ -20,21 +22,18 @@ const Dashboard = () => {
         setLoading(true);
         // Define the payload to be sent in the POST request
         const payload = { role }; // Sending the role in the request body
-        
-        // Making the POST request to the API
-        const response = await axios.post('https://pmsor.awashsol.com/api/dashboard_builder', {
-          headers: {
-            'Content-Type': 'application/json', // Ensure correct content type
-          },
-        });
 
-        // Set the data from the response (assuming response.data.data is the actual data)
-        setData(response.data.data);
-        setLoading(false);
+        // Await the response from getProjectDashboard
+        const response = await getProjectDashboard(payload);
+        console.log("Index response:", response); // Log the actual response
+
+        // Set the data from the response
+        setData(response); // Assuming response is already the data you need
       } catch (err) {
         console.error('Error fetching data:', err);
         setError(err);
-        setLoading(false);
+      } finally {
+        setLoading(false); // Ensure loading state is updated in both success and error cases
       }
     };
 

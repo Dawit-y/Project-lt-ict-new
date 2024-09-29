@@ -12,11 +12,7 @@ import accessToken from "./jwt-token-access/accessToken";
 // Get Projects
 export const getDepartment = async () => {
   try {
-    const response = await post(apiUrl + GET_DEPARTMENT, {
-      headers: {
-        Authorization: accessToken, // Add accessToken in Authorization header
-      },
-    },
+    const response = await post(GET_DEPARTMENT
   );
    
     return response;

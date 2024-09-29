@@ -49,6 +49,7 @@ import moment from "moment";
 //Import Flatepicker
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
+import accessToken from "../../helpers/jwt-token-access/accessToken";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -104,7 +105,13 @@ const handleAddressStructureChange = (e) => {
     const fetchDepartment = async () => {
       try {        
         const response = await axios.post(
-        `${import.meta.env.VITE_BASE_API_URL}department/listgrid`
+        `${import.meta.env.VITE_BASE_API_URL}department/listgrid`,{},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Correctly set the Authorization header
+          },
+        }
+      
         );
         const transformedData = response.data.data.map((item) => ({
           label: item.dep_name_or.toString(),
