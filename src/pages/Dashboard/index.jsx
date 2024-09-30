@@ -54,17 +54,14 @@ const Dashboard = () => {
 
   //meta title
   document.title = "Dashboard | Skote - Vite React Admin & Dashboard Template";
-
-  return (
-    <React.Fragment>
-
-      <div className="container" style={{ paddingTop: '80px' }} >
+return (
+      <div className="page-content">
+        <div className="container-fluid">
         <div className="row">
           {JSON.parse(roleData.components).map((component, index) => (
             <div
               key={index}
-              className="col-md-4 mb-4" // 3 columns, 4 units each (12 / 3 = 4)
-              style={{width:`${component.width}`}}
+              className={component.class_name} // 3 columns, 4 units each (12 / 3 = 4)
             >
               <DashboardComponent
                 dashboardType={component.dashboard_type}
@@ -75,9 +72,8 @@ const Dashboard = () => {
             </div>
           ))}
         </div>
-      </div>
-
-    </React.Fragment>
+        </div>
+        </div>
   );
   };
   
