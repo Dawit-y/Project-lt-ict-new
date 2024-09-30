@@ -144,6 +144,9 @@ const RolesModel = ({ onSelectItem }) => {
     setModal(false);
   }, [update_loading]);
 
+  
+
+
   const selectSearchProperties = createSelector(
     (state) => state.search,
     (search) => ({
