@@ -151,27 +151,7 @@ const UsersProfile = () => {
               </Card>
             </Col>
 
-            <Col xl="8">
-              <Row>
-                {(miniCards || []).map((card, key) => (
-                  <MiniCards
-                    title={card.title}
-                    text={card.text}
-                    iconClass={card.iconClass}
-                    key={"_card_" + key}
-                  />
-                ))}
-              </Row>
-
-              <Card>
-                <CardBody>
-                  <CardTitle className="mb-4">Projects</CardTitle>
-                  <div id="revenue-chart">
-                    <ApexRevenue dataColors='["--bs-primary"]' />
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
+            
           </Row>
         </Container>
       </div>
