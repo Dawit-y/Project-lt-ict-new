@@ -14,8 +14,6 @@ import DeleteModal from "../../components/Common/DeleteModal";
 
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns1";
 
-
-
 import {
   getDepartment as onGetDepartment,
   addDepartment as onAddDepartment,
@@ -47,7 +45,6 @@ import {
 import { ToastContainer } from "react-toastify";
 import { error } from "toastr";
 
-
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -59,7 +56,6 @@ const DepartmentModel = () => {
   //meta title
   document.title = " Department";
 
- 
   const { t } = useTranslation();
 
   const [modal, setModal] = useState(false);
@@ -99,13 +95,13 @@ const DepartmentModel = () => {
       dep_name_am: Yup.string().required(t("dep_name_am")),
       dep_name_en: Yup.string().required(t("dep_name_en")),
       dep_code: Yup.string().required(t("dep_code")),
-      // dep_available_at_region: Yup.string().required(
-      //   t("dep_available_at_region")
-      // ),
-      // dep_available_at_zone: Yup.string().required(t("dep_available_at_zone")),
-      // dep_available_at_woreda: Yup.string().required(
-      //   t("dep_available_at_woreda")
-      // ),
+      dep_available_at_region: Yup.string().required(
+        t("dep_available_at_region")
+      ),
+      dep_available_at_zone: Yup.string().required(t("dep_available_at_zone")),
+      dep_available_at_woreda: Yup.string().required(
+        t("dep_available_at_woreda")
+      ),
       dep_description: Yup.string().required(t("dep_description")),
       dep_status: Yup.string().required(t("dep_status")),
     }),
@@ -145,8 +141,8 @@ const DepartmentModel = () => {
           dep_status: values.dep_status,
         };
         // save new Departments
-        // dispatch(onAddDepartment(newDepartment));
-        console.log("added dept",newDepartment)
+        console.log("added dept", newDepartment);
+        dispatch(onAddDepartment(newDepartment));
         validation.resetForm();
       }
     },
@@ -166,7 +162,7 @@ const DepartmentModel = () => {
       department: DepartmentReducer.department,
       loading: DepartmentReducer.loading,
       update_loading: DepartmentReducer.update_loading,
-      error:DepartmentReducer.error
+      error: DepartmentReducer.error,
     })
   );
 
@@ -180,10 +176,6 @@ const DepartmentModel = () => {
     console.log("update_loading in useEffect", update_loading);
     setModal(false);
   }, [update_loading]);
-
-
-
-
 
   const selectSearchProperties = createSelector(
     (state) => state.search,
@@ -714,9 +706,11 @@ const DepartmentModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col> */}
-                  <CascadingDropdowns 
-                    validation={validation} // Pass down validation if needed
-                    t={t} // Pass down translation function
+                  <CascadingDropdowns
+                    validation={validation}
+                    dropdown1name="dep_available_at_region"
+                    dropdown2name="dep_available_at_zone"
+                    dropdown3name="dep_available_at_woreda"
                   />
                   <Col className="col-md-6 mb-3">
                     <Label>{t("dep_description")}</Label>

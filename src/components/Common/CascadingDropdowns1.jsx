@@ -1,43 +1,41 @@
 import React, { useState, useEffect } from "react";
 import { FormGroup, Label, Input, FormFeedback } from "reactstrap";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
-const CascadingDropdowns1 = ({ validation, t }) => {
-  // const [firstDropdown, setFirstDropdown] = useState("1"); // Addis Ababa ID is 1
-  const [regions, setRegions] = useState([]);
+const CascadingDropdowns1 = ({
+  validation,
+  dropdown1name,
+  dropdown2name,
+  dropdown3name,
+}) => {
   const [zones, setZones] = useState([]);
   const [woredas, setWoredas] = useState([]);
 
   const [loadingZones, setLoadingZones] = useState(false);
   const [loadingWoredas, setLoadingWoredas] = useState(false);
 
+  const { t } = useTranslation();
   // Default to Addis Ababa (ID: 1)
   const ADDIS_ABABA_ID = "1";
-  const [selectedRegion, setSelectedRegion] = useState(ADDIS_ABABA_ID);
 
-  // Fetch regions on mount
+  // On initial load, set Formik's value for dep_available_at_region to Addis Ababa's ID
   useEffect(() => {
-    axios
-      .post(
-        `${
-          import.meta.env.VITE_BASE_API_URL
-        }addressbyparent?parent_id=${1}`
-      )
-      .then((response) => {
-        setRegions(response.data.data || []);
-      })
-      .catch((error) => {
-        console.error("Error fetching regions:", error);
-      });
-  }, []);
+    if (!validation.values[dropdown1name]) {
+      validation.setFieldValue(dropdown1name, ADDIS_ABABA_ID); // Set default value in Formik
+    }
+  }, [dropdown1name, validation]);
 
   // Fetch zones for the selected region (default is Addis Ababa)
   useEffect(() => {
+    const selectedRegion = validation.values[dropdown1name];
     if (selectedRegion) {
       setLoadingZones(true);
       axios
         .post(
-          `${import.meta.env.VITE_BASE_API_URL}addressbyparent?parent_id=${selectedRegion}`
+          `${
+            import.meta.env.VITE_BASE_API_URL
+          }addressbyparent?parent_id=${selectedRegion}`
         )
         .then((response) => {
           setZones(response.data.data || []);
@@ -48,15 +46,17 @@ const CascadingDropdowns1 = ({ validation, t }) => {
           setLoadingZones(false);
         });
     }
-  }, [selectedRegion]);
+  }, [dropdown1name, validation.values[dropdown1name]]);
 
   // Fetch woredas based on the selected zone
   useEffect(() => {
-    if (validation.values.dep_available_at_zone) {
+    if (validation.values[dropdown2name]) {
       setLoadingWoredas(true);
       axios
         .post(
-          `${import.meta.env.VITE_BASE_API_URL}addressbyparent?parent_id=${validation.values.dep_available_at_zone}`
+          `${import.meta.env.VITE_BASE_API_URL}addressbyparent?parent_id=${
+            validation.values[dropdown2name]
+          }`
         )
         .then((response) => {
           setWoredas(response.data.data || []);
@@ -67,12 +67,10 @@ const CascadingDropdowns1 = ({ validation, t }) => {
           setLoadingWoredas(false);
         });
     }
-  }, [validation.values.dep_available_at_zone]);
+  }, [dropdown2name, validation.values[dropdown2name]]);
 
   // Handle region change
   const handleRegionChange = (e) => {
-    const regionId = e.target.value;
-    setSelectedRegion(regionId);
     validation.handleChange(e); // Continue handling validation changes
   };
 
@@ -80,47 +78,48 @@ const CascadingDropdowns1 = ({ validation, t }) => {
     <>
       {/* Region Dropdown */}
       <FormGroup>
-        <Label for="dep_available_at_region">{t("dep_available_at_region")}</Label>
+        <Label for={dropdown1name}>{t("dep_available_at_region")}</Label>
         <Input
           type="select"
-          name="dep_available_at_region"
-          id="dep_available_at_region"
-          value={selectedRegion}
+          name={dropdown1name}
+          id={dropdown1name}
+          value={validation.values[dropdown1name]} // Bind to Formik's state
           onChange={handleRegionChange}
           onBlur={validation.handleBlur}
           invalid={
-            validation.touched.dep_available_at_region &&
-            validation.errors.dep_available_at_region
+            validation.touched[dropdown1name] &&
+            validation.errors[dropdown1name]
               ? true
               : false
           }
         >
           <option value="">{t("select_region")}</option>
-          {regions.map((region) => (
+          <option value="1">Addis Ababa</option>
+          {/* {regions.map((region) => (
             <option key={region.id} value={region.id}>
               {region.name}
             </option>
-          ))}
+          ))} */}
         </Input>
-        {validation.touched.dep_available_at_region &&
-        validation.errors.dep_available_at_region ? (
-          <FormFeedback>{validation.errors.dep_available_at_region}</FormFeedback>
+        {validation.touched[dropdown1name] &&
+        validation.errors[dropdown1name] ? (
+          <FormFeedback>{validation.errors[dropdown1name]}</FormFeedback>
         ) : null}
       </FormGroup>
 
       {/* Zone Dropdown */}
       <FormGroup>
-        <Label for="dep_available_at_zone">{t("dep_available_at_zone")}</Label>
+        <Label for={dropdown2name}>{t("dep_available_at_zone")}</Label>
         <Input
           type="select"
-          name="dep_available_at_zone"
-          id="dep_available_at_zone"
-          value={validation.values.dep_available_at_zone}
+          name={dropdown2name}
+          id={dropdown2name}
+          value={validation.values[dropdown2name]}
           onChange={validation.handleChange}
           onBlur={validation.handleBlur}
           invalid={
-            validation.touched.dep_available_at_zone &&
-            validation.errors.dep_available_at_zone
+            validation.touched[dropdown2name] &&
+            validation.errors[dropdown2name]
               ? true
               : false
           }
@@ -137,25 +136,25 @@ const CascadingDropdowns1 = ({ validation, t }) => {
             ))
           )}
         </Input>
-        {validation.touched.dep_available_at_zone &&
-        validation.errors.dep_available_at_zone ? (
-          <FormFeedback>{validation.errors.dep_available_at_zone}</FormFeedback>
+        {validation.touched[dropdown2name] &&
+        validation.errors[dropdown2name] ? (
+          <FormFeedback>{validation.errors[dropdown2name]}</FormFeedback>
         ) : null}
       </FormGroup>
 
       {/* Woreda Dropdown */}
       <FormGroup>
-        <Label for="dep_available_at_woreda">{t("dep_available_at_woreda")}</Label>
+        <Label for={dropdown3name}>{t("dep_available_at_woreda")}</Label>
         <Input
           type="select"
-          name="dep_available_at_woreda"
-          id="dep_available_at_woreda"
-          value={validation.values.dep_available_at_woreda}
+          name={dropdown3name}
+          id={dropdown3name}
+          value={validation.values[dropdown3name]}
           onChange={validation.handleChange}
           onBlur={validation.handleBlur}
           invalid={
-            validation.touched.dep_available_at_woreda &&
-            validation.errors.dep_available_at_woreda
+            validation.touched[dropdown3name] &&
+            validation.errors[dropdown3name]
               ? true
               : false
           }
@@ -172,9 +171,9 @@ const CascadingDropdowns1 = ({ validation, t }) => {
             ))
           )}
         </Input>
-        {validation.touched.dep_available_at_woreda &&
-        validation.errors.dep_available_at_woreda ? (
-          <FormFeedback>{validation.errors.dep_available_at_woreda}</FormFeedback>
+        {validation.touched[dropdown3name] &&
+        validation.errors[dropdown3name] ? (
+          <FormFeedback>{validation.errors[dropdown3name]}</FormFeedback>
         ) : null}
       </FormGroup>
     </>
