@@ -4,8 +4,9 @@ import { Navigate } from "react-router-dom";
 import Dashboard from "../pages/Dashboard/index";
 import Login from "../pages/Authentication/Login";
 // add Unauthorized page
-import Unauthorized  from "../components/Common/NotFound";
+import Unauthorized from "../components/Common/NotFound";
 import { components } from "react-select";
+import UsersProfile from "../pages/Profile";
 
 const Calendar = lazy(() => import("../pages/Calendar/index"));
 const ProjectLists = lazy(() =>
@@ -61,7 +62,6 @@ const Notifications = lazy(() => import("../pages/notifications"));
 
 const authProtectedRoutes = [
   { path: "/dash", components: <Dashboardcard /> },
-  
 
   { path: "/dashboard", component: <Dashboard /> },
 
@@ -104,6 +104,7 @@ const authProtectedRoutes = [
   { path: "/permission", component: <Permission /> },
   { path: "/dropdowns", component: <CascadingDropdowns /> },
   { path: "/notifications", component: <Notifications /> },
+  { path: "/profile", component: <UsersProfile /> },
 
   //   // this route should be at the end of all other routes
   //   // eslint-disable-next-line react/display-name
@@ -115,7 +116,7 @@ const publicRoutes = [
   { path: "/login", component: <Login /> },
   { path: "/forgot-password", component: <ForgetPwd /> },
   { path: "/register", component: <Register /> },
-  {path:"/Unauthorized",components :<Unauthorized/> },
+  { path: "/Unauthorized", components: <Unauthorized /> },
 ];
 
 // export { authProtectedRoutes, publicRoutes };
