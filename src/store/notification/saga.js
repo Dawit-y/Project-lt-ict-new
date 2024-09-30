@@ -17,7 +17,7 @@ import { post } from "../../helpers/api_Lists";
 const apiUrl = import.meta.env.VITE_BASE_API_URL;
 const getNotifications = async () => {
   try {
-    const response = await post(apiUrl + "notification");
+    const response = await post("notification");
     return response;
   } catch (error) {
     console.log(error); // Handle any errors
@@ -28,7 +28,7 @@ const getNotifications = async () => {
 const markNotificationsAsRead = async (notificationIds) => {
   try {
     const response = await post(
-      apiUrl + `updatenotification?notification_ids=${notificationIds}`
+      `updatenotification?notification_ids=${notificationIds}`
     );
     return response;
   } catch (error) {

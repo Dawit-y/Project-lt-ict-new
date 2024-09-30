@@ -1,34 +1,32 @@
-import axios from "axios";
-import { del, get, post, put } from "./api_Lists";
-//import * as url from "./url_Lists";
 
+import { del, get, post, put } from "./api_Lists";
 const apiUrl = import.meta.env.VITE_BASE_API_URL;
 const GET_ROLES = "roles/listgrid";
 const ADD_ROLES = "roles/insertgrid";
 const UPDATE_ROLES = "roles/updategrid";
 const DELETE_ROLES = "roles/deletegrid";
+
 // get Projects
 export const getRoles = async () => {
+  
   try {
-    const response = await post(GET_ROLES);
+    const response = await post(GET_ROLES,{});
+   
     return response;
+   
   } catch (error) {
     console.log(error); // Handle any errors
   }
 };
-// add Projects
+// add Role
 export const addRoles = async (objectName) => {
+
   try {
-    const response = await axios.post(
-      `${apiUrl}`+ADD_ROLES,
-      objectName,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+    const response = await post(
+    ADD_ROLES,
+    objectName
     );
-    return response.data;
+    return response;
   } catch (error) {
     console.error("Failed to update grid:", error);
     throw error;
@@ -36,12 +34,23 @@ export const addRoles = async (objectName) => {
 };
 // update objectNames
 export const updateRoles = (objectName) =>
-  post(`${apiUrl}`+UPDATE_ROLES +`?rol_id=${objectName?.rol_id}`, objectName);
+  post(UPDATE_ROLES +`?rol_id=${objectName?.rol_id}`, objectName);
 
 // delete objectNames
 export const deleteRoles = (objectName) =>
-  // post(`${url.DELETE_ORDER}?rol_id=${order?.rol_id}`);
-  post(`${apiUrl}`+DELETE_ROLES+`?rol_id=${objectName}`);
+  {
+    console.log("delete object name ",objectName)
+    try{
+      const response=  // post(`${url.DELETE_ORDER}?rol_id=${order?.rol_id}`);
+      post(DELETE_ROLES`?rol_id=${objectName}`,{});
+      return response;
+    }catch(e){
+      console.log("problems ",e)
+    }
+  }
+
+  
+
 
 export const fetchSearchResults = async (searchTerm, selectedFields) => {
   let queryParams = [];
@@ -58,11 +67,9 @@ export const fetchSearchResults = async (searchTerm, selectedFields) => {
     }
   });
   const queryString = queryParams.join("&");
-  const response = await axios.post(
-    `${apiUrl}roles/listgrid?${queryString}`
+  const response = await post(
+    `roles/listgrid?${queryString}`
   );
   return response.data.data;
 };
-export {
-  
-};
+
