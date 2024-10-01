@@ -707,19 +707,21 @@ const ProjectStakeholderModel = (props) => {
                     <Label>{t("psh_status")}</Label>
                     <Input
                       name="psh_status"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
+                      type="select"
+                      className="form-select"
+                      onChange={(e) => {
+                        validation.setFieldValue(
+                          "psh_status",
+                          Number(e.target.value)
+                        );
+                      }}
                       onBlur={validation.handleBlur}
-                      value={validation.values.psh_status || ""}
-                      invalid={
-                        validation.touched.psh_status &&
-                        validation.errors.psh_status
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
+                      value={validation.values.psh_status}
+                    >
+                      <option value={""}>Select status</option>
+                      <option value={1}>{t("Active")}</option>
+                      <option value={0}>{t("Inactive")}</option>
+                    </Input>
                     {validation.touched.psh_status &&
                     validation.errors.psh_status ? (
                       <FormFeedback type="invalid">

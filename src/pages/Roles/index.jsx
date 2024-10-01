@@ -490,19 +490,21 @@ const RolesModel = ({ onSelectItem }) => {
                     <Label>{t("rol_status")}</Label>
                     <Input
                       name="rol_status"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
+                      type="select"
+                      className="form-select"
+                      onChange={(e) => {
+                        validation.setFieldValue(
+                          "rol_status",
+                          Number(e.target.value)
+                        );
+                      }}
                       onBlur={validation.handleBlur}
-                      value={validation.values.rol_status || ""}
-                      invalid={
-                        validation.touched.rol_status &&
-                        validation.errors.rol_status
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
+                      value={validation.values.rol_status}
+                    >
+                      <option value={""}>Select status</option>
+                      <option value={1}>{t("Active")}</option>
+                      <option value={0}>{t("Inactive")}</option>
+                    </Input>
                     {validation.touched.rol_status &&
                     validation.errors.rol_status ? (
                       <FormFeedback type="invalid">

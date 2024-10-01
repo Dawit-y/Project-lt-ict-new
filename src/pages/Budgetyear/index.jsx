@@ -503,19 +503,21 @@ const BudgetYearModel = () => {
                     <Label>{t("bdy_status")}</Label>
                     <Input
                       name="bdy_status"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
+                      type="select"
+                      className="form-select"
+                      onChange={(e) => {
+                        validation.setFieldValue(
+                          "bdy_status",
+                          Number(e.target.value)
+                        );
+                      }}
                       onBlur={validation.handleBlur}
-                      value={validation.values.bdy_status || ""}
-                      invalid={
-                        validation.touched.bdy_status &&
-                        validation.errors.bdy_status
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
+                      value={validation.values.bdy_status}
+                    >
+                      <option value={""}>Select status</option>
+                      <option value={1}>{t("Active")}</option>
+                      <option value={0}>{t("Inactive")}</option>
+                    </Input>
                     {validation.touched.bdy_status &&
                     validation.errors.bdy_status ? (
                       <FormFeedback type="invalid">

@@ -547,29 +547,31 @@ const ContractorTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("cnt_status")}</Label>
-                    <Input
-                      name="cnt_status"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.cnt_status || ""}
-                      invalid={
-                        validation.touched.cnt_status &&
-                        validation.errors.cnt_status
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.cnt_status &&
-                    validation.errors.cnt_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.cnt_status}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                      <Label>{t("cnt_status")}</Label>
+                      <Input
+                        name="cnt_status"
+                        type="select"
+                        className="form-select"
+                        onChange={(e) => {
+                          validation.setFieldValue(
+                            "cnt_status",
+                            Number(e.target.value)
+                          );
+                        }}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.cnt_status}
+                      >
+                        <option value={""}>Select status</option>
+                        <option value={1}>{t("Active")}</option>
+                        <option value={0}>{t("Inactive")}</option>
+                      </Input>
+                      {validation.touched.cnt_status &&
+                      validation.errors.cnt_status ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.cnt_status}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
                 </Row>
                 <Row>
                   <Col>

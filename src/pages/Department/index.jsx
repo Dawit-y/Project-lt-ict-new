@@ -737,29 +737,31 @@ const DepartmentModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("dep_status")}</Label>
-                    <Input
-                      name="dep_status"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.dep_status || ""}
-                      invalid={
-                        validation.touched.dep_status &&
-                        validation.errors.dep_status
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.dep_status &&
-                    validation.errors.dep_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.dep_status}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                      <Label>{t("dep_status")}</Label>
+                      <Input
+                        name="dep_status"
+                        type="select"
+                        className="form-select"
+                        onChange={(e) => {
+                          validation.setFieldValue(
+                            "dep_status",
+                            Number(e.target.value)
+                          );
+                        }}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.dep_status}
+                      >
+                        <option value={""}>Select status</option>
+                        <option value={1}>{t("Active")}</option>
+                        <option value={0}>{t("Inactive")}</option>
+                      </Input>
+                      {validation.touched.dep_status &&
+                      validation.errors.dep_status ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.dep_status}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
                 </Row>
                 <Row>
                   <Col>

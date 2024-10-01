@@ -798,19 +798,21 @@ const PagesModel = () => {
                     <Label>{t("pag_status")}</Label>
                     <Input
                       name="pag_status"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
+                      type="select"
+                      className="form-select"
+                      onChange={(e) => {
+                        validation.setFieldValue(
+                          "pag_status",
+                          Number(e.target.value)
+                        );
+                      }}
                       onBlur={validation.handleBlur}
-                      value={validation.values.pag_status || ""}
-                      invalid={
-                        validation.touched.pag_status &&
-                        validation.errors.pag_status
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
+                      value={validation.values.pag_status}
+                    >
+                      <option value={""}>Select status</option>
+                      <option value={1}>{t("Active")}</option>
+                      <option value={0}>{t("Inactive")}</option>
+                    </Input>
                     {validation.touched.pag_status &&
                     validation.errors.pag_status ? (
                       <FormFeedback type="invalid">

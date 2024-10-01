@@ -80,7 +80,7 @@ const ProjectModel = () => {
     const fetchBudgetYears = async () => {
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_BASE_API_URL1}budget_year/listgrid`
+          `${import.meta.env.VITE_BASE_API_URL}budget_year/listgrid`
         );
         const transformedData = response.data.data.map((item) => ({
           label: item.prp_budget_year.toString(),

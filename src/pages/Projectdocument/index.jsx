@@ -681,26 +681,25 @@ const ProjectDocumentModel = (props) => {
                   ) : null}
                 </Col>
                 {/* document status */}
+
                 <Col className="col-md-6 mb-3">
                   <Label>{t("prd_status")}</Label>
                   <Input
                     name="prd_status"
-                    type="select" // Change to select for dropdown
+                    type="select"
                     className="form-select"
-                    onChange={validation.handleChange}
+                    onChange={(e) => {
+                      validation.setFieldValue(
+                        "prd_status",
+                        Number(e.target.value)
+                      );
+                    }}
                     onBlur={validation.handleBlur}
-                    value={validation.values.prd_status || ""}
-                    invalid={
-                      validation.touched.prd_status &&
-                      validation.errors.prd_status
-                        ? true
-                        : false
-                    }
+                    value={validation.values.prd_status}
                   >
-                    <option value="">{t("Select Status")}</option>{" "}
-                    {/* Default option */}
-                    <option value="0">0</option>
-                    <option value="1">1</option>
+                    <option value={""}>Select status</option>
+                    <option value={1}>{t("Active")}</option>
+                    <option value={0}>{t("Inactive")}</option>
                   </Input>
                   {validation.touched.prd_status &&
                   validation.errors.prd_status ? (

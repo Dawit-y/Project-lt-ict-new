@@ -776,19 +776,21 @@ const BudgetRequestModel = (props) => {
                   <Label>{t("bdr_status")}</Label>
                   <Input
                     name="bdr_status"
-                    type="text"
-                    placeholder={t("insert_status_name_amharic")}
-                    onChange={validation.handleChange}
+                    type="select"
+                    className="form-select"
+                    onChange={(e) => {
+                      validation.setFieldValue(
+                        "bdr_status",
+                        Number(e.target.value)
+                      );
+                    }}
                     onBlur={validation.handleBlur}
-                    value={validation.values.bdr_status || ""}
-                    invalid={
-                      validation.touched.bdr_status &&
-                      validation.errors.bdr_status
-                        ? true
-                        : false
-                    }
-                    maxLength={20}
-                  />
+                    value={validation.values.bdr_status}
+                  >
+                    <option value={""}>Select status</option>
+                    <option value={1}>{t("Active")}</option>
+                    <option value={0}>{t("Inactive")}</option>
+                  </Input>
                   {validation.touched.bdr_status &&
                   validation.errors.bdr_status ? (
                     <FormFeedback type="invalid">

@@ -588,19 +588,21 @@ const ProjectCategoryModel = () => {
                     <Label>{t("pct_status")}</Label>
                     <Input
                       name="pct_status"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
+                      type="select"
+                      className="form-select"
+                      onChange={(e) => {
+                        validation.setFieldValue(
+                          "pct_status",
+                          Number(e.target.value)
+                        );
+                      }}
                       onBlur={validation.handleBlur}
-                      value={validation.values.pct_status || ""}
-                      invalid={
-                        validation.touched.pct_status &&
-                        validation.errors.pct_status
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
+                      value={validation.values.pct_status}
+                    >
+                      <option value={""}>Select status</option>
+                      <option value={1}>{t("Active")}</option>
+                      <option value={0}>{t("Inactive")}</option>
+                    </Input>
                     {validation.touched.pct_status &&
                     validation.errors.pct_status ? (
                       <FormFeedback type="invalid">

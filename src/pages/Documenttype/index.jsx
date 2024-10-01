@@ -588,19 +588,21 @@ const DocumentTypeModel = () => {
                     <Label>{t("pdt_status")}</Label>
                     <Input
                       name="pdt_status"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
+                      type="select"
+                      className="form-select"
+                      onChange={(e) => {
+                        validation.setFieldValue(
+                          "pdt_status",
+                          Number(e.target.value)
+                        );
+                      }}
                       onBlur={validation.handleBlur}
-                      value={validation.values.pdt_status || ""}
-                      invalid={
-                        validation.touched.pdt_status &&
-                        validation.errors.pdt_status
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
+                      value={validation.values.pdt_status}
+                    >
+                      <option value={""}>Select status</option>
+                      <option value={1}>{t("Active")}</option>
+                      <option value={0}>{t("Inactive")}</option>
+                    </Input>
                     {validation.touched.pdt_status &&
                     validation.errors.pdt_status ? (
                       <FormFeedback type="invalid">

@@ -551,19 +551,21 @@ const StakeholderTypeModel = () => {
                     <Label>{t("sht_status")}</Label>
                     <Input
                       name="sht_status"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
+                      type="select"
+                      className="form-select"
+                      onChange={(e) => {
+                        validation.setFieldValue(
+                          "sht_status",
+                          Number(e.target.value)
+                        );
+                      }}
                       onBlur={validation.handleBlur}
-                      value={validation.values.sht_status || ""}
-                      invalid={
-                        validation.touched.sht_status &&
-                        validation.errors.sht_status
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
+                      value={validation.values.sht_status}
+                    >
+                      <option value={""}>Select status</option>
+                      <option value={1}>{t("Active")}</option>
+                      <option value={0}>{t("Inactive")}</option>
+                    </Input>
                     {validation.touched.sht_status &&
                     validation.errors.sht_status ? (
                       <FormFeedback type="invalid">

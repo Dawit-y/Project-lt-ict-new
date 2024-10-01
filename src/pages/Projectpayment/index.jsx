@@ -749,6 +749,7 @@ const ProjectPaymentModel = (props) => {
                           : false
                       }
                     >
+                      <option value="">Select Status</option>
                       <option value="0">{t("inactive")}</option>
                       <option value="1">{t("active")}</option>
                     </Input>

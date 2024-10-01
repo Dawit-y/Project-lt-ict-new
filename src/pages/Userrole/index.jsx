@@ -76,12 +76,13 @@ const UserRoleModel = () => {
     const fetchRoles = async () => {
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_BASE_API_URL}roles/listgrid`,{},
+          `${import.meta.env.VITE_BASE_API_URL}roles/listgrid`,
+          {},
           {
             headers: {
               Authorization: accessToken, // Add accessToken in Authorization header
             },
-          },
+          }
         );
         const transformedData = response.data.data.map((item) => ({
           label: item.rol_name.toString(),
@@ -520,19 +521,21 @@ const UserRoleModel = () => {
                     <Label>{t("url_status")}</Label>
                     <Input
                       name="url_status"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
+                      type="select"
+                      className="form-select"
+                      onChange={(e) => {
+                        validation.setFieldValue(
+                          "url_status",
+                          Number(e.target.value)
+                        );
+                      }}
                       onBlur={validation.handleBlur}
-                      value={validation.values.url_status || ""}
-                      invalid={
-                        validation.touched.url_status &&
-                        validation.errors.url_status
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
+                      value={validation.values.url_status}
+                    >
+                      <option value={""}>Select status</option>
+                      <option value={1}>{t("Active")}</option>
+                      <option value={0}>{t("Inactive")}</option>
+                    </Input>
                     {validation.touched.url_status &&
                     validation.errors.url_status ? (
                       <FormFeedback type="invalid">
