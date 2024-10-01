@@ -20,26 +20,28 @@ import withRouter from "../../Common/withRouter";
 // users
 import user1 from "../../../assets/images/users/avatar-1.jpg";
 
+import { Badge } from "reactstrap";
+
 const ProfileMenu = (props) => {
   // Declare a new state variable, which we'll call "menu"
   const [menu, setMenu] = useState(false);
 
-  const [username, setusername] = useState("Admin");
+  const storedUser = localStorage.getItem("authUser");
+  const User = storedUser ? JSON.parse(storedUser) : null; // Handle null case
+  const [userProfile, setUserProfile] = useState(User); // Set state directly to Users
 
-  useEffect(() => {
-    if (localStorage.getItem("authUser")) {
-      if (import.meta.env.VITE_APP_DEFAULTAUTH === "firebase") {
-        const obj = JSON.parse(localStorage.getItem("authUser"));
-        setusername(obj.email);
-      } else if (
-        import.meta.env.VITE_APP_DEFAULTAUTH === "fake" ||
-        import.meta.env.VITE_APP_DEFAULTAUTH === "jwt"
-      ) {
-        const obj = JSON.parse(localStorage.getItem("authUser"));
-        setusername(obj.username);
-      }
+  const truncateText = (text, maxLength) => {
+    if (typeof text !== "string") {
+      return text;
     }
-  }, [props.success]);
+    return text.length <= maxLength
+      ? text
+      : `${text.substring(0, maxLength)}...`;
+  };
+
+  const userInitial = userProfile.user.usr_full_name
+    ? userProfile.user.usr_full_name.charAt(0).toUpperCase()
+    : "";
 
   return (
     <React.Fragment>
@@ -49,20 +51,38 @@ const ProfileMenu = (props) => {
         className="d-inline-block"
       >
         <DropdownToggle
-          className="btn header-item "
+          className="btn header-item d-flex align-items-center"
           id="page-header-user-dropdown"
           tag="button"
         >
-          <img
-            className="rounded-circle header-profile-user"
-            src={user1}
-            alt="Header Avatar"
-          />
-          <span className="d-none d-xl-inline-block ms-2 me-1">{username}</span>
-          <i className="mdi mdi-chevron-down d-none d-xl-inline-block" />
+          {userProfile.user.usr_picture.length > 1 ? (
+            <img
+              className="rounded-circle"
+              src={userProfile.user.usr_picture}
+              alt="Avatar"
+              style={{ width: "30px", height: "30px" }}
+            />
+          ) : (
+            <Badge
+              className="rounded-circle d-flex justify-content-center align-items-center"
+              color="primary"
+              style={{
+                width: "30px",
+                height: "30px",
+                fontSize: "20px",
+                backgroundColor: "#ccc",
+                color: "#fff",
+              }}
+            >
+              {userInitial}
+            </Badge>
+          )}
+          <span className="d-none d-xl-inline-block ms-2">
+            {truncateText(userProfile.user.usr_full_name, 6) ||
+              userProfile.user.usr_email}
+          </span>
+          <i className="mdi mdi-chevron-down d-none d-xl-inline-block ms-1" />
         </DropdownToggle>
-
-
         <DropdownMenu className="dropdown-menu-end">
           <DropdownItem tag={Link} to="/profile">
             <i className="bx bx-user font-size-16 align-middle me-1" />
@@ -87,7 +107,6 @@ const ProfileMenu = (props) => {
             <span>{props.t("Logout")}</span>
           </DropdownItem>
         </DropdownMenu>
-
       </Dropdown>
     </React.Fragment>
   );

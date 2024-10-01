@@ -71,8 +71,9 @@ const UsersProfile = () => {
                           <div className="avatar-xl profile-user-wid mb-2">
                             <img
                               src={
-                                userProfile.user.usr_picture === ""
-                                  ? "https://static.thenounproject.com/png/638636-200.png"
+                                userProfile.user.usr_picture === "" ||
+                                userProfile.user.usr_picture.length < 2
+                                  ? "https://i.pinimg.com/236x/58/79/29/5879293da8bd698f308f19b15d3aba9a.jpg"
                                   : userProfile.user.usr_picture
                               }
                               alt="User Profile"
@@ -151,7 +152,27 @@ const UsersProfile = () => {
               </Card>
             </Col>
 
-            
+            <Col xl="8">
+              <Row>
+                {(miniCards || []).map((card, key) => (
+                  <MiniCards
+                    title={card.title}
+                    text={card.text}
+                    iconClass={card.iconClass}
+                    key={"_card_" + key}
+                  />
+                ))}
+              </Row>
+
+              <Card>
+                <CardBody>
+                  <CardTitle className="mb-4">Projects</CardTitle>
+                  <div id="revenue-chart">
+                    <ApexRevenue dataColors='["--bs-primary"]' />
+                  </div>
+                </CardBody>
+              </Card>
+            </Col>
           </Row>
         </Container>
       </div>
