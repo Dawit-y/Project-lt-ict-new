@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import withRouter from "../../components/Common/withRouter";
@@ -36,24 +36,42 @@ const Login = (props) => {
   //meta title
   document.title = "Login | Skote - Vite React Admin & Dashboard Template";
   const dispatch = useDispatch();
+  const [passwordStrength, setPasswordStrength] = useState("");
 
+  
+
+ 
   const validation = useFormik({
-    // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
-
+  
     initialValues: {
       email: "wbofficer@gmail.com" || "",
       password: "12345678" || "",
     },
     validationSchema: Yup.object({
-      email: Yup.string().required("Please Enter Your Email"),
-      password: Yup.string().required("Please Enter Your Password"),
+      email: Yup.string()
+        .email("Invalid email format")
+        .required("Please Enter Your Email"),
+      password: Yup.string()
+        .required("Please Enter Your Password")
+        .min(8, "Password should be at least 8 characters long")
+        // .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+        // .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+        // .matches(/\d/, "Password must contain at least one number")
+        // .matches(/[@$!%*#?&]/, "Password must contain at least one special character"),
     }),
-    onSubmit: (values) => {
-      console.log("login page ...")
-      dispatch(loginUser(values, props.router.navigate));
+    onSubmit: async (values) => {
+      try {
+        console.log("login page ...");
+        await dispatch(loginUser(values, props.router.navigate));
+      } catch (error) {
+        console.log("error message ",error)
+        // If login fails, catch the error and display it
+        setResponseError(error.message); // Set the error message
+      }
     },
   });
+  
 
   const LoginProperties = createSelector(
     (state) => state.Login,
@@ -74,6 +92,29 @@ const Login = (props) => {
   const socialResponse = type => {
     signIn(type);
   };
+  const getPasswordStrength = (password) => {
+    let strength = 0;
+    if (password.length >= 8) strength += 1;
+    if (/[A-Z]/.test(password)) strength += 1;
+    if (/[a-z]/.test(password)) strength += 1;
+    if (/\d/.test(password)) strength += 1;
+    if (/[@$!%*#?&]/.test(password)) strength += 1;
+
+    switch (strength) {
+      case 0:
+      case 1:
+        return "Weak";
+      case 2:
+      case 3:
+        return "Moderate";
+      case 4:
+      case 5:
+        return "Strong";
+      default:
+        return "";
+    }
+  };
+
 
   return (
     <React.Fragment>
@@ -161,6 +202,7 @@ const Login = (props) => {
                         ) : null}
                       </div>
 
+                    
                       <div className="mb-3">
                         <Label className="form-label">Password</Label>
                         <Input
@@ -169,22 +211,27 @@ const Login = (props) => {
                           value={validation.values.password || ""}
                           type="password"
                           placeholder="Enter Password"
-                          onChange={validation.handleChange}
+                          onChange={(e) => {
+                            validation.handleChange(e);
+                            setPasswordStrength(getPasswordStrength(e.target.value)); // Update strength
+                          }}
                           onBlur={validation.handleBlur}
                           invalid={
-                            validation.touched.password &&
-                              validation.errors.password
-                              ? true
-                              : false
+                            validation.touched.password && validation.errors.password ? true : false
                           }
                         />
-                        {validation.touched.password &&
-                          validation.errors.password ? (
+                        {validation.touched.password && validation.errors.password ? (
                           <FormFeedback type="invalid">
                             {validation.errors.password}
                           </FormFeedback>
                         ) : null}
+
+                        {/* Password Strength Message */}
+                        {validation.values.password && (
+                          <p>Password Strength: {passwordStrength}</p>
+                        )}
                       </div>
+
 
                       <div className="form-check">
                         <input
@@ -225,27 +272,7 @@ const Login = (props) => {
                               <i className="mdi mdi-facebook" />
                             </Link>
                           </li>
-                          {/*<li className="list-inline-item">*/}
-                          {/*  <TwitterLogin*/}
-                          {/*    loginUrl={*/}
-                          {/*      "http://localhost:4000/api/v1/auth/twitter"*/}
-                          {/*    }*/}
-                          {/*    onSuccess={this.twitterResponse}*/}
-                          {/*    onFailure={this.onFailure}*/}
-                          {/*    requestTokenUrl={*/}
-                          {/*      "http://localhost:4000/api/v1/auth/twitter/revers"*/}
-                          {/*    }*/}
-                          {/*    showIcon={false}*/}
-                          {/*    tag={"div"}*/}
-                          {/*  >*/}
-                          {/*    <a*/}
-                          {/*      href=""*/}
-                          {/*      className="social-list-item bg-info text-white border-info"*/}
-                          {/*    >*/}
-                          {/*      <i className="mdi mdi-twitter"/>*/}
-                          {/*    </a>*/}
-                          {/*  </TwitterLogin>*/}
-                          {/*</li>*/}
+
                           <li className="list-inline-item">
                             <Link
                               to="#"

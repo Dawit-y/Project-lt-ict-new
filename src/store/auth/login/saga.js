@@ -36,7 +36,8 @@ function* loginUser({ payload: { user, history } }) {
     }
     history("/dashboard");
   } catch (error) {
-    yield put(apiError(error));
+    const errorMessage = error.response && error.response.data ? error.response.data.message : "Login failed, please try again.";
+    yield put(apiError(errorMessage));
   }
 }
 
