@@ -18,7 +18,7 @@ import {
   getUsers as onGetUsers,
   addUsers as onAddUsers,
   updateUsers as onUpdateUsers,
-  deleteUsers as onDeleteUsers
+  deleteUsers as onDeleteUsers,
 } from "../../store/users/actions";
 
 //redux
@@ -75,9 +75,10 @@ const UsersModel = () => {
   const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
   //START FOREIGN CALLS
   const [addressStructureOptions, setAddressStructureOptions] = useState([]);
-  const [selectedAddressStructure, setSelectedAddressStructure] = useState('');
+  const [selectedAddressStructure, setSelectedAddressStructure] = useState("");
   const [departmentOptions, setDepartmentOptions] = useState([]);
-  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     const fetchAddressStructure = async () => {
@@ -90,52 +91,51 @@ const UsersModel = () => {
           value: item.name,
         }));
         const optionsWithDefault = [
-          { label: 'select budget year', value: '' },
+          { label: "select budget year", value: "" },
           ...transformedData,
         ];
         setAddressStructureOptions(optionsWithDefault);
       } catch (error) {
-        console.error('Error fetching budget years:', error);
+        console.error("Error fetching budget years:", error);
       }
     };
     fetchAddressStructure();
   }, []);
   const handleAddressStructureChange = (e) => {
     setSelectedAddressStructure(e.target.value);
-    validation.setFieldValue('usr_zone_id', e.target.value);
-  }; 
+    validation.setFieldValue("usr_zone_id", e.target.value);
+  };
   useEffect(() => {
     const fetchDepartment = async () => {
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_BASE_API_URL}department/listgrid`, {},
+          `${import.meta.env.VITE_BASE_API_URL}department/listgrid`,
+          {},
           {
             headers: {
               Authorization: `Bearer ${accessToken}`, // Correctly set the Authorization header
             },
           }
-
         );
         const transformedData = response.data.data.map((item) => ({
           label: item.dep_name_or.toString(),
           value: item.dep_name_or.toString(),
         }));
         const optionsWithDefault = [
-          { label: 'select budget year', value: '' },
+          { label: "select budget year", value: "" },
           ...transformedData,
         ];
         setDepartmentOptions(optionsWithDefault);
       } catch (error) {
-        console.error('Error fetching budget years:', error);
+        console.error("Error fetching budget years:", error);
       }
     };
     fetchDepartment();
   }, []);
   const handleDepartmentChange = (e) => {
     setSelectedDepartment(e.target.value);
-    validation.setFieldValue('usr_department_id', e.target.value);
+    validation.setFieldValue("usr_department_id", e.target.value);
   };
-
 
   // validation
   const validation = useFormik({
@@ -162,28 +162,27 @@ const UsersModel = () => {
       usr_status: (users && users.usr_status) || "",
 
       is_deletable: (users && users.is_deletable) || 1,
-      is_editable: (users && users.is_editable) || 1
+      is_editable: (users && users.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
-      usr_email: Yup.string().required(t('usr_email')),
-      usr_password: Yup.string().required(t('usr_password')),
-      usr_full_name: Yup.string().required(t('usr_full_name')),
-      usr_phone_number: Yup.string().required(t('usr_phone_number')),
-      usr_role_id: Yup.string().required(t('usr_role_id')),
+      usr_email: Yup.string().required(t("usr_email")),
+      usr_password: Yup.string().required(t("usr_password")),
+      usr_full_name: Yup.string().required(t("usr_full_name")),
+      usr_phone_number: Yup.string().required(t("usr_phone_number")),
+      usr_role_id: Yup.string().required(t("usr_role_id")),
       // usr_region_id: Yup.string().required(t('usr_region_id')),
       // usr_woreda_id: Yup.string().required(t('usr_woreda_id')),
       // usr_kebele_id: Yup.string().required(t('usr_kebele_id')),
-      usr_sector_id: Yup.string().required(t('usr_sector_id')),
-      usr_is_active: Yup.string().required(t('usr_is_active')),
-      usr_picture: Yup.string().required(t('usr_picture')),
-      usr_last_logged_in: Yup.string().required(t('usr_last_logged_in')),
-      usr_ip: Yup.string().required(t('usr_ip')),
-      usr_remember_token: Yup.string().required(t('usr_remember_token')),
-      usr_notified: Yup.string().required(t('usr_notified')),
-      usr_description: Yup.string().required(t('usr_description')),
-      usr_status: Yup.string().required(t('usr_status')),
-
+      usr_sector_id: Yup.string().required(t("usr_sector_id")),
+      usr_is_active: Yup.string().required(t("usr_is_active")),
+      usr_picture: Yup.string().required(t("usr_picture")),
+      usr_last_logged_in: Yup.string().required(t("usr_last_logged_in")),
+      usr_ip: Yup.string().required(t("usr_ip")),
+      usr_remember_token: Yup.string().required(t("usr_remember_token")),
+      usr_notified: Yup.string().required(t("usr_notified")),
+      usr_description: Yup.string().required(t("usr_description")),
+      usr_status: Yup.string().required(t("usr_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -191,7 +190,7 @@ const UsersModel = () => {
       if (isEdit) {
         const updateUsers = {
           usr_id: users ? users.usr_id : 0,
-          // usr_id:users.usr_id, 
+          // usr_id:users.usr_id,
           usr_email: values.usr_email,
           usr_password: values.usr_password,
           usr_full_name: values.usr_full_name,
@@ -235,10 +234,9 @@ const UsersModel = () => {
           usr_notified: values.usr_notified,
           usr_description: values.usr_description,
           usr_status: values.usr_status,
-
         };
         // save new Userss
-        console.log("value added ",newUsers);
+        console.log("value added ", newUsers);
         // dispatch(onAddUsers(newUsers));
         validation.resetForm();
       }
@@ -259,7 +257,6 @@ const UsersModel = () => {
       users: UsersReducer.users,
       loading: UsersReducer.loading,
       update_loading: UsersReducer.update_loading,
-
     })
   );
 
@@ -268,8 +265,6 @@ const UsersModel = () => {
     loading,
     update_loading,
   } = useSelector(usersProperties);
-
-
 
   useEffect(() => {
     console.log("update_loading in useEffect", update_loading);
@@ -370,239 +365,224 @@ const UsersModel = () => {
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'usr_email',
+        header: "",
+        accessorKey: "usr_email",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.usr_email, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.usr_email, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'usr_password',
+        header: "",
+        accessorKey: "usr_password",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.usr_password, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.usr_password, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'usr_full_name',
+        header: "",
+        accessorKey: "usr_full_name",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.usr_full_name, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.usr_full_name, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'usr_phone_number',
+        header: "",
+        accessorKey: "usr_phone_number",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.usr_phone_number, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.usr_phone_number, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'usr_role_id',
+        header: "",
+        accessorKey: "usr_role_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.usr_role_id, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.usr_role_id, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'usr_region_id',
+        header: "",
+        accessorKey: "usr_region_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.usr_region_id, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.usr_region_id, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'usr_woreda_id',
+        header: "",
+        accessorKey: "usr_woreda_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.usr_woreda_id, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.usr_woreda_id, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'usr_kebele_id',
+        header: "",
+        accessorKey: "usr_kebele_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.usr_kebele_id, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.usr_kebele_id, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'usr_sector_id',
+        header: "",
+        accessorKey: "usr_sector_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.usr_sector_id, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.usr_sector_id, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'usr_is_active',
+        header: "",
+        accessorKey: "usr_is_active",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.usr_is_active, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.usr_is_active, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'usr_picture',
+        header: "",
+        accessorKey: "usr_picture",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.usr_picture, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.usr_picture, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'usr_last_logged_in',
+        header: "",
+        accessorKey: "usr_last_logged_in",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.usr_last_logged_in, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'usr_ip',
+        header: "",
+        accessorKey: "usr_ip",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.usr_ip, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.usr_ip, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'usr_remember_token',
+        header: "",
+        accessorKey: "usr_remember_token",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.usr_remember_token, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'usr_notified',
+        header: "",
+        accessorKey: "usr_notified",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.usr_notified, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.usr_notified, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'usr_description',
+        header: "",
+        accessorKey: "usr_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.usr_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.usr_description, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'usr_status',
+        header: "",
+        accessorKey: "usr_status",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.usr_status, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.usr_status, 30) || "-"}
             </span>
           );
         },
@@ -690,6 +670,18 @@ const UsersModel = () => {
 
   const dropdawntotal = [project_status];
 
+  //  img upload
+  const handleImageChange = (event) => {
+    event.preventDefault();
+    let reader = new FileReader();
+    let file = event.target.files[0];
+    reader.onloadend = () => {
+      setSelectedImage(reader.result);
+      validation.setFieldValue("projectImage", reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <React.Fragment>
       <UsersModal
@@ -704,10 +696,7 @@ const UsersModel = () => {
       />
       <div className="page-content">
         <div className="container-fluid">
-          <Breadcrumbs
-            title={t("users")}
-            breadcrumbItem={t("users")}
-          />
+          <Breadcrumbs title={t("users")} breadcrumbItem={t("users")} />
           {isLoading || searchLoading ? (
             <Spinners setLoading={setLoading} />
           ) : (
@@ -718,7 +707,13 @@ const UsersModel = () => {
                     <TableContainer
                       columns={columns}
                       // data={showSearchResults ? results : data}
-                      data={showSearchResults && Array.isArray(results) ? results : Array.isArray(data) ? data : []}  // Ensure data is an array
+                      data={
+                        showSearchResults && Array.isArray(results)
+                          ? results
+                          : Array.isArray(data)
+                          ? data
+                          : []
+                      } // Ensure data is an array
                       isGlobalFilter={true}
                       isAddButton={true}
                       isCustomPageSize={true}
@@ -740,7 +735,9 @@ const UsersModel = () => {
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " " + t("users")) : (t("add") + " " + t("users"))}
+              {!!isEdit
+                ? t("edit") + " " + t("users")
+                : t("add") + " " + t("users")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -757,122 +754,122 @@ const UsersModel = () => {
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('usr_email')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("usr_email")}</Label>
                     <Input
-                      name='usr_email'
-                      type='text'
-                      placeholder={t('insert_status_name_amharic')}
+                      name="usr_email"
+                      type="text"
+                      placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.usr_email || ''}
+                      value={validation.values.usr_email || ""}
                       invalid={
                         validation.touched.usr_email &&
-                          validation.errors.usr_email
+                        validation.errors.usr_email
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_email &&
-                      validation.errors.usr_email ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.usr_email ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.usr_email}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('usr_password')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("usr_password")}</Label>
                     <Input
-                      name='usr_password'
-                      type='text'
-                      placeholder={t('insert_status_name_amharic')}
+                      name="usr_password"
+                      type="text"
+                      placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.usr_password || ''}
+                      value={validation.values.usr_password || ""}
                       invalid={
                         validation.touched.usr_password &&
-                          validation.errors.usr_password
+                        validation.errors.usr_password
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_password &&
-                      validation.errors.usr_password ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.usr_password ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.usr_password}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('usr_full_name')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("usr_full_name")}</Label>
                     <Input
-                      name='usr_full_name'
-                      type='text'
-                      placeholder={t('insert_status_name_amharic')}
+                      name="usr_full_name"
+                      type="text"
+                      placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.usr_full_name || ''}
+                      value={validation.values.usr_full_name || ""}
                       invalid={
                         validation.touched.usr_full_name &&
-                          validation.errors.usr_full_name
+                        validation.errors.usr_full_name
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_full_name &&
-                      validation.errors.usr_full_name ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.usr_full_name ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.usr_full_name}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('usr_phone_number')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("usr_phone_number")}</Label>
                     <Input
-                      name='usr_phone_number'
-                      type='text'
-                      placeholder={t('insert_status_name_amharic')}
+                      name="usr_phone_number"
+                      type="text"
+                      placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.usr_phone_number || ''}
+                      value={validation.values.usr_phone_number || ""}
                       invalid={
                         validation.touched.usr_phone_number &&
-                          validation.errors.usr_phone_number
+                        validation.errors.usr_phone_number
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_phone_number &&
-                      validation.errors.usr_phone_number ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.usr_phone_number ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.usr_phone_number}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('usr_role_id')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("usr_role_id")}</Label>
                     <Input
-                      name='usr_role_id'
-                      type='text'
-                      placeholder={t('insert_status_name_amharic')}
+                      name="usr_role_id"
+                      type="text"
+                      placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.usr_role_id || ''}
+                      value={validation.values.usr_role_id || ""}
                       invalid={
                         validation.touched.usr_role_id &&
-                          validation.errors.usr_role_id
+                        validation.errors.usr_role_id
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_role_id &&
-                      validation.errors.usr_role_id ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.usr_role_id ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.usr_role_id}
                       </FormFeedback>
                     ) : null}
@@ -944,13 +941,6 @@ const UsersModel = () => {
                     ) : null}
                   </Col> */}
 
-                  <CascadingDropdowns
-                    validation={validation}
-                    dropdown1name="usr_available_at_region"
-                    dropdown2name="usr_available_at_zone"
-                    dropdown3name="usr_available_at_woreda"
-                  />
-
                   {/* <Col className='col-md-6 mb-3'>
                     <Label>{t('usr_kebele_id')}</Label>
                     <Input
@@ -975,245 +965,303 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col> */}
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('usr_sector_id')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("usr_sector_id")}</Label>
                     <Input
-                      name='usr_sector_id'
-                      type='text'
-                      placeholder={t('insert_status_name_amharic')}
+                      name="usr_sector_id"
+                      type="text"
+                      placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.usr_sector_id || ''}
+                      value={validation.values.usr_sector_id || ""}
                       invalid={
                         validation.touched.usr_sector_id &&
-                          validation.errors.usr_sector_id
+                        validation.errors.usr_sector_id
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_sector_id &&
-                      validation.errors.usr_sector_id ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.usr_sector_id ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.usr_sector_id}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('usr_department_id')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("usr_department_id")}</Label>
                     <Input
-                      name='usr_department_id'
-                      type='select'
-                      className='form-select'
+                      name="usr_department_id"
+                      type="select"
+                      className="form-select"
                       onChange={handleDepartmentChange}
                       onBlur={validation.handleBlur}
-                      value={selectedDepartment}>
-                      {departmentOptions.map(option => (
+                      value={selectedDepartment}
+                    >
+                      {departmentOptions.map((option) => (
                         <option key={option.value} value={option.value}>
                           {t(`${option.label}`)}
                         </option>
                       ))}
                     </Input>
                     {validation.touched.usr_department_id &&
-                      validation.errors.usr_department_id ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.usr_department_id ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.usr_department_id}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('usr_is_active')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("usr_is_active")}</Label>
                     <Input
-                      name='usr_is_active'
-                      type='text'
-                      placeholder={t('insert_status_name_amharic')}
+                      name="usr_is_active"
+                      type="text"
+                      placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.usr_is_active || ''}
+                      value={validation.values.usr_is_active || ""}
                       invalid={
                         validation.touched.usr_is_active &&
-                          validation.errors.usr_is_active
+                        validation.errors.usr_is_active
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_is_active &&
-                      validation.errors.usr_is_active ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.usr_is_active ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.usr_is_active}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('usr_picture')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("usr_picture")}</Label>
                     <Input
-                      name='usr_picture'
-                      type='text'
-                      placeholder={t('insert_status_name_amharic')}
+                      name="usr_picture"
+                      type="text"
+                      placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.usr_picture || ''}
+                      value={validation.values.usr_picture || ""}
                       invalid={
                         validation.touched.usr_picture &&
-                          validation.errors.usr_picture
+                        validation.errors.usr_picture
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_picture &&
-                      validation.errors.usr_picture ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.usr_picture ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.usr_picture}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('usr_last_logged_in')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("usr_last_logged_in")}</Label>
                     <Input
-                      name='usr_last_logged_in'
-                      type='text'
-                      placeholder={t('insert_status_name_amharic')}
+                      name="usr_last_logged_in"
+                      type="text"
+                      placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.usr_last_logged_in || ''}
+                      value={validation.values.usr_last_logged_in || ""}
                       invalid={
                         validation.touched.usr_last_logged_in &&
-                          validation.errors.usr_last_logged_in
+                        validation.errors.usr_last_logged_in
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_last_logged_in &&
-                      validation.errors.usr_last_logged_in ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.usr_last_logged_in ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.usr_last_logged_in}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('usr_ip')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("usr_ip")}</Label>
                     <Input
-                      name='usr_ip'
-                      type='text'
-                      placeholder={t('insert_status_name_amharic')}
+                      name="usr_ip"
+                      type="text"
+                      placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.usr_ip || ''}
+                      value={validation.values.usr_ip || ""}
                       invalid={
-                        validation.touched.usr_ip &&
-                          validation.errors.usr_ip
+                        validation.touched.usr_ip && validation.errors.usr_ip
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
-                    {validation.touched.usr_ip &&
-                      validation.errors.usr_ip ? (
-                      <FormFeedback type='invalid'>
+                    {validation.touched.usr_ip && validation.errors.usr_ip ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.usr_ip}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('usr_remember_token')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("usr_remember_token")}</Label>
                     <Input
-                      name='usr_remember_token'
-                      type='text'
-                      placeholder={t('insert_status_name_amharic')}
+                      name="usr_remember_token"
+                      type="text"
+                      placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.usr_remember_token || ''}
+                      value={validation.values.usr_remember_token || ""}
                       invalid={
                         validation.touched.usr_remember_token &&
-                          validation.errors.usr_remember_token
+                        validation.errors.usr_remember_token
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_remember_token &&
-                      validation.errors.usr_remember_token ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.usr_remember_token ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.usr_remember_token}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('usr_notified')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("usr_notified")}</Label>
                     <Input
-                      name='usr_notified'
-                      type='text'
-                      placeholder={t('insert_status_name_amharic')}
+                      name="usr_notified"
+                      type="text"
+                      placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.usr_notified || ''}
+                      value={validation.values.usr_notified || ""}
                       invalid={
                         validation.touched.usr_notified &&
-                          validation.errors.usr_notified
+                        validation.errors.usr_notified
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_notified &&
-                      validation.errors.usr_notified ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.usr_notified ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.usr_notified}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('usr_description')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("usr_description")}</Label>
                     <Input
-                      name='usr_description'
-                      type='text'
-                      placeholder={t('insert_status_name_amharic')}
+                      name="usr_description"
+                      type="text"
+                      placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.usr_description || ''}
+                      value={validation.values.usr_description || ""}
                       invalid={
                         validation.touched.usr_description &&
-                          validation.errors.usr_description
+                        validation.errors.usr_description
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_description &&
-                      validation.errors.usr_description ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.usr_description ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.usr_description}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('usr_status')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("usr_status")}</Label>
                     <Input
-                      name='usr_status'
-                      type='text'
-                      placeholder={t('insert_status_name_amharic')}
+                      name="usr_status"
+                      type="text"
+                      placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.usr_status || ''}
+                      value={validation.values.usr_status || ""}
                       invalid={
                         validation.touched.usr_status &&
-                          validation.errors.usr_status
+                        validation.errors.usr_status
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_status &&
-                      validation.errors.usr_status ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.usr_status ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.usr_status}
                       </FormFeedback>
                     ) : null}
                   </Col>
+                  <Col className="col-md-4 mb-3">
+                    <CascadingDropdowns
+                      validation={validation}
+                      dropdown1name="usr_available_at_region"
+                      dropdown2name="usr_available_at_zone"
+                      dropdown3name="usr_available_at_woreda"
+                    />
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <div className="mb-3">
+                      <Label className="form-label">User Image</Label>
 
+                      <div className="text-center">
+                        <div className="position-relative d-inline-block">
+                          <div className="position-absolute bottom-0 end-0">
+                            <Label
+                              htmlFor="project-image-input"
+                              className="mb-0"
+                              id="projectImageInput"
+                            >
+                              <div className="avatar-xs">
+                                <div className="avatar-title bg-light border rounded-circle text-muted cursor-pointer shadow font-size-16">
+                                  <i className="bx bxs-image-alt"></i>
+                                </div>
+                              </div>
+                            </Label>
+                            <UncontrolledTooltip
+                              placement="right"
+                              target="projectImageInput"
+                            >
+                              Select Image
+                            </UncontrolledTooltip>
+                            <input
+                              className="form-control d-none"
+                              id="project-image-input"
+                              type="file"
+                              accept="image/png, image/gif, image/jpeg"
+                              onChange={handleImageChange}
+                            />
+                          </div>
+                          <div className="avatar-xl">
+                            <div className="avatar-title bg-light rounded-circle">
+                              <img
+                                src={selectedImage || ""}
+                                id="projectlogo-img"
+                                alt=""
+                                className="avatar-lg h-auto rounded-circle"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        {validation.touched.usr_picture &&
+                        validation.errors.usr_picture ? (
+                          <FormFeedback type="invalid" className="d-block">
+                            {validation.errors.usr_picture}
+                          </FormFeedback>
+                        ) : null}
+                      </div>
+                    </div>
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
