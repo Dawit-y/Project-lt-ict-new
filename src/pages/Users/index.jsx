@@ -9,6 +9,7 @@ import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import SearchComponent from "../../components/Common/SearchComponent";
+import CascadingDropdowns from "../../components/Common/CascadingDropdowns";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
@@ -78,11 +79,11 @@ const UsersModel = () => {
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
 
-   useEffect(() => {
+  useEffect(() => {
     const fetchAddressStructure = async () => {
-      try {        
+      try {
         const response = await axios.post(
-        `${import.meta.env.VITE_BASE_API_URL}address_structure/listgrid`
+          `${import.meta.env.VITE_BASE_API_URL}address_structure/listgrid`
         );
         const transformedData = response.data.data.map((item) => ({
           label: item.name,
@@ -99,20 +100,21 @@ const UsersModel = () => {
     };
     fetchAddressStructure();
   }, []);
-const handleAddressStructureChange = (e) => {
+  const handleAddressStructureChange = (e) => {
     setSelectedAddressStructure(e.target.value);
     validation.setFieldValue('usr_zone_id', e.target.value);
-  }; useEffect(() => {
+  }; 
+  useEffect(() => {
     const fetchDepartment = async () => {
-      try {        
+      try {
         const response = await axios.post(
-        `${import.meta.env.VITE_BASE_API_URL}department/listgrid`,{},
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`, // Correctly set the Authorization header
-          },
-        }
-      
+          `${import.meta.env.VITE_BASE_API_URL}department/listgrid`, {},
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`, // Correctly set the Authorization header
+            },
+          }
+
         );
         const transformedData = response.data.data.map((item) => ({
           label: item.dep_name_or.toString(),
@@ -129,7 +131,7 @@ const handleAddressStructureChange = (e) => {
     };
     fetchDepartment();
   }, []);
-const handleDepartmentChange = (e) => {
+  const handleDepartmentChange = (e) => {
     setSelectedDepartment(e.target.value);
     validation.setFieldValue('usr_department_id', e.target.value);
   };
@@ -141,46 +143,46 @@ const handleDepartmentChange = (e) => {
     enableReinitialize: true,
 
     initialValues: {
-     usr_email:(users && users.usr_email) || "", 
-usr_password:(users && users.usr_password) || "", 
-usr_full_name:(users && users.usr_full_name) || "", 
-usr_phone_number:(users && users.usr_phone_number) || "", 
-usr_role_id:(users && users.usr_role_id) || "", 
-usr_region_id:(users && users.usr_region_id) || "", 
-usr_woreda_id:(users && users.usr_woreda_id) || "", 
-usr_kebele_id:(users && users.usr_kebele_id) || "", 
-usr_sector_id:(users && users.usr_sector_id) || "", 
-usr_is_active:(users && users.usr_is_active) || "", 
-usr_picture:(users && users.usr_picture) || "", 
-usr_last_logged_in:(users && users.usr_last_logged_in) || "", 
-usr_ip:(users && users.usr_ip) || "", 
-usr_remember_token:(users && users.usr_remember_token) || "", 
-usr_notified:(users && users.usr_notified) || "", 
-usr_description:(users && users.usr_description) || "", 
-usr_status:(users && users.usr_status) || "", 
+      usr_email: (users && users.usr_email) || "",
+      usr_password: (users && users.usr_password) || "",
+      usr_full_name: (users && users.usr_full_name) || "",
+      usr_phone_number: (users && users.usr_phone_number) || "",
+      usr_role_id: (users && users.usr_role_id) || "",
+      usr_region_id: (users && users.usr_region_id) || "",
+      usr_woreda_id: (users && users.usr_woreda_id) || "",
+      usr_kebele_id: (users && users.usr_kebele_id) || "",
+      usr_sector_id: (users && users.usr_sector_id) || "",
+      usr_is_active: (users && users.usr_is_active) || "",
+      usr_picture: (users && users.usr_picture) || "",
+      usr_last_logged_in: (users && users.usr_last_logged_in) || "",
+      usr_ip: (users && users.usr_ip) || "",
+      usr_remember_token: (users && users.usr_remember_token) || "",
+      usr_notified: (users && users.usr_notified) || "",
+      usr_description: (users && users.usr_description) || "",
+      usr_status: (users && users.usr_status) || "",
 
-is_deletable: (users && users.is_deletable) || 1,
-is_editable: (users && users.is_editable) || 1
+      is_deletable: (users && users.is_deletable) || 1,
+      is_editable: (users && users.is_editable) || 1
     },
 
     validationSchema: Yup.object({
       usr_email: Yup.string().required(t('usr_email')),
-usr_password: Yup.string().required(t('usr_password')),
-usr_full_name: Yup.string().required(t('usr_full_name')),
-usr_phone_number: Yup.string().required(t('usr_phone_number')),
-usr_role_id: Yup.string().required(t('usr_role_id')),
-usr_region_id: Yup.string().required(t('usr_region_id')),
-usr_woreda_id: Yup.string().required(t('usr_woreda_id')),
-usr_kebele_id: Yup.string().required(t('usr_kebele_id')),
-usr_sector_id: Yup.string().required(t('usr_sector_id')),
-usr_is_active: Yup.string().required(t('usr_is_active')),
-usr_picture: Yup.string().required(t('usr_picture')),
-usr_last_logged_in: Yup.string().required(t('usr_last_logged_in')),
-usr_ip: Yup.string().required(t('usr_ip')),
-usr_remember_token: Yup.string().required(t('usr_remember_token')),
-usr_notified: Yup.string().required(t('usr_notified')),
-usr_description: Yup.string().required(t('usr_description')),
-usr_status: Yup.string().required(t('usr_status')),
+      usr_password: Yup.string().required(t('usr_password')),
+      usr_full_name: Yup.string().required(t('usr_full_name')),
+      usr_phone_number: Yup.string().required(t('usr_phone_number')),
+      usr_role_id: Yup.string().required(t('usr_role_id')),
+      // usr_region_id: Yup.string().required(t('usr_region_id')),
+      // usr_woreda_id: Yup.string().required(t('usr_woreda_id')),
+      // usr_kebele_id: Yup.string().required(t('usr_kebele_id')),
+      usr_sector_id: Yup.string().required(t('usr_sector_id')),
+      usr_is_active: Yup.string().required(t('usr_is_active')),
+      usr_picture: Yup.string().required(t('usr_picture')),
+      usr_last_logged_in: Yup.string().required(t('usr_last_logged_in')),
+      usr_ip: Yup.string().required(t('usr_ip')),
+      usr_remember_token: Yup.string().required(t('usr_remember_token')),
+      usr_notified: Yup.string().required(t('usr_notified')),
+      usr_description: Yup.string().required(t('usr_description')),
+      usr_status: Yup.string().required(t('usr_status')),
 
     }),
     validateOnBlur: true,
@@ -190,23 +192,23 @@ usr_status: Yup.string().required(t('usr_status')),
         const updateUsers = {
           usr_id: users ? users.usr_id : 0,
           // usr_id:users.usr_id, 
-usr_email:values.usr_email, 
-usr_password:values.usr_password, 
-usr_full_name:values.usr_full_name, 
-usr_phone_number:values.usr_phone_number, 
-usr_role_id:values.usr_role_id, 
-usr_region_id:values.usr_region_id, 
-usr_woreda_id:values.usr_woreda_id, 
-usr_kebele_id:values.usr_kebele_id, 
-usr_sector_id:values.usr_sector_id, 
-usr_is_active:values.usr_is_active, 
-usr_picture:values.usr_picture, 
-usr_last_logged_in:values.usr_last_logged_in, 
-usr_ip:values.usr_ip, 
-usr_remember_token:values.usr_remember_token, 
-usr_notified:values.usr_notified, 
-usr_description:values.usr_description, 
-usr_status:values.usr_status, 
+          usr_email: values.usr_email,
+          usr_password: values.usr_password,
+          usr_full_name: values.usr_full_name,
+          usr_phone_number: values.usr_phone_number,
+          usr_role_id: values.usr_role_id,
+          usr_region_id: values.usr_region_id,
+          usr_woreda_id: values.usr_woreda_id,
+          usr_kebele_id: values.usr_kebele_id,
+          usr_sector_id: values.usr_sector_id,
+          usr_is_active: values.usr_is_active,
+          usr_picture: values.usr_picture,
+          usr_last_logged_in: values.usr_last_logged_in,
+          usr_ip: values.usr_ip,
+          usr_remember_token: values.usr_remember_token,
+          usr_notified: values.usr_notified,
+          usr_description: values.usr_description,
+          usr_status: values.usr_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -216,27 +218,28 @@ usr_status:values.usr_status,
         validation.resetForm();
       } else {
         const newUsers = {
-          usr_email:values.usr_email, 
-usr_password:values.usr_password, 
-usr_full_name:values.usr_full_name, 
-usr_phone_number:values.usr_phone_number, 
-usr_role_id:values.usr_role_id, 
-usr_region_id:values.usr_region_id, 
-usr_woreda_id:values.usr_woreda_id, 
-usr_kebele_id:values.usr_kebele_id, 
-usr_sector_id:values.usr_sector_id, 
-usr_is_active:values.usr_is_active, 
-usr_picture:values.usr_picture, 
-usr_last_logged_in:values.usr_last_logged_in, 
-usr_ip:values.usr_ip, 
-usr_remember_token:values.usr_remember_token, 
-usr_notified:values.usr_notified, 
-usr_description:values.usr_description, 
-usr_status:values.usr_status, 
+          usr_email: values.usr_email,
+          usr_password: values.usr_password,
+          usr_full_name: values.usr_full_name,
+          usr_phone_number: values.usr_phone_number,
+          usr_role_id: values.usr_role_id,
+          usr_region_id: values.usr_region_id,
+          usr_woreda_id: values.usr_woreda_id,
+          usr_kebele_id: values.usr_kebele_id,
+          usr_sector_id: values.usr_sector_id,
+          usr_is_active: values.usr_is_active,
+          usr_picture: values.usr_picture,
+          usr_last_logged_in: values.usr_last_logged_in,
+          usr_ip: values.usr_ip,
+          usr_remember_token: values.usr_remember_token,
+          usr_notified: values.usr_notified,
+          usr_description: values.usr_description,
+          usr_status: values.usr_status,
 
         };
         // save new Userss
-        dispatch(onAddUsers(newUsers));
+        console.log("value added ",newUsers);
+        // dispatch(onAddUsers(newUsers));
         validation.resetForm();
       }
     },
@@ -256,7 +259,7 @@ usr_status:values.usr_status,
       users: UsersReducer.users,
       loading: UsersReducer.loading,
       update_loading: UsersReducer.update_loading,
-      
+
     })
   );
 
@@ -266,7 +269,7 @@ usr_status:values.usr_status,
     update_loading,
   } = useSelector(usersProperties);
 
-  
+
 
   useEffect(() => {
     console.log("update_loading in useEffect", update_loading);
@@ -303,28 +306,28 @@ usr_status:values.usr_status,
     }
   };
 
-   const handleUsersClick = (arg) => {
+  const handleUsersClick = (arg) => {
     const users = arg;
     // console.log("handleUsersClick", users);
     setUsers({
-      usr_id:users.usr_id, 
-usr_email:users.usr_email, 
-usr_password:users.usr_password, 
-usr_full_name:users.usr_full_name, 
-usr_phone_number:users.usr_phone_number, 
-usr_role_id:users.usr_role_id, 
-usr_region_id:users.usr_region_id, 
-usr_woreda_id:users.usr_woreda_id, 
-usr_kebele_id:users.usr_kebele_id, 
-usr_sector_id:users.usr_sector_id, 
-usr_is_active:users.usr_is_active, 
-usr_picture:users.usr_picture, 
-usr_last_logged_in:users.usr_last_logged_in, 
-usr_ip:users.usr_ip, 
-usr_remember_token:users.usr_remember_token, 
-usr_notified:users.usr_notified, 
-usr_description:users.usr_description, 
-usr_status:users.usr_status, 
+      usr_id: users.usr_id,
+      usr_email: users.usr_email,
+      usr_password: users.usr_password,
+      usr_full_name: users.usr_full_name,
+      usr_phone_number: users.usr_phone_number,
+      usr_role_id: users.usr_role_id,
+      usr_region_id: users.usr_region_id,
+      usr_woreda_id: users.usr_woreda_id,
+      usr_kebele_id: users.usr_kebele_id,
+      usr_sector_id: users.usr_sector_id,
+      usr_is_active: users.usr_is_active,
+      usr_picture: users.usr_picture,
+      usr_last_logged_in: users.usr_last_logged_in,
+      usr_ip: users.usr_ip,
+      usr_remember_token: users.usr_remember_token,
+      usr_notified: users.usr_notified,
+      usr_description: users.usr_description,
+      usr_status: users.usr_status,
 
       is_deletable: users.is_deletable,
       is_editable: users.is_editable,
@@ -379,8 +382,8 @@ usr_status:users.usr_status,
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'usr_password',
         enableColumnFilter: false,
@@ -393,8 +396,8 @@ usr_status:users.usr_status,
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'usr_full_name',
         enableColumnFilter: false,
@@ -407,8 +410,8 @@ usr_status:users.usr_status,
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'usr_phone_number',
         enableColumnFilter: false,
@@ -421,8 +424,8 @@ usr_status:users.usr_status,
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'usr_role_id',
         enableColumnFilter: false,
@@ -435,8 +438,8 @@ usr_status:users.usr_status,
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'usr_region_id',
         enableColumnFilter: false,
@@ -449,8 +452,8 @@ usr_status:users.usr_status,
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'usr_woreda_id',
         enableColumnFilter: false,
@@ -463,8 +466,8 @@ usr_status:users.usr_status,
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'usr_kebele_id',
         enableColumnFilter: false,
@@ -477,8 +480,8 @@ usr_status:users.usr_status,
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'usr_sector_id',
         enableColumnFilter: false,
@@ -491,8 +494,8 @@ usr_status:users.usr_status,
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'usr_is_active',
         enableColumnFilter: false,
@@ -505,8 +508,8 @@ usr_status:users.usr_status,
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'usr_picture',
         enableColumnFilter: false,
@@ -519,8 +522,8 @@ usr_status:users.usr_status,
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'usr_last_logged_in',
         enableColumnFilter: false,
@@ -533,8 +536,8 @@ usr_status:users.usr_status,
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'usr_ip',
         enableColumnFilter: false,
@@ -547,8 +550,8 @@ usr_status:users.usr_status,
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'usr_remember_token',
         enableColumnFilter: false,
@@ -561,8 +564,8 @@ usr_status:users.usr_status,
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'usr_notified',
         enableColumnFilter: false,
@@ -575,8 +578,8 @@ usr_status:users.usr_status,
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'usr_description',
         enableColumnFilter: false,
@@ -589,8 +592,8 @@ usr_status:users.usr_status,
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'usr_status',
         enableColumnFilter: false,
@@ -603,7 +606,7 @@ usr_status:users.usr_status,
             </span>
           );
         },
-      }, 
+      },
 
       {
         header: t("view_detail"),
@@ -641,7 +644,7 @@ usr_status:users.usr_status,
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const userdata = cellProps.row.original;                    
+                    const userdata = cellProps.row.original;
                     handleUsersClick(userdata);
                   }}
                 >
@@ -696,7 +699,7 @@ usr_status:users.usr_status,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteUsers}
+        onDeleteClick={handleDeleteUsers}
         onCloseClick={() => setDeleteModal(false)}
       />
       <div className="page-content">
@@ -724,7 +727,7 @@ usr_status:users.usr_status,
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("users")}
+                      buttonName={t("add") + " " + t("users")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -737,7 +740,7 @@ usr_status:users.usr_status,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("users")) : (t("add") +" "+t("users"))}
+              {!!isEdit ? (t("edit") + " " + t("users")) : (t("add") + " " + t("users"))}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -755,463 +758,462 @@ usr_status:users.usr_status,
               >
                 <Row>
                   <Col className='col-md-6 mb-3'>
-                      <Label>{t('usr_email')}</Label>
-                      <Input
-                        name='usr_email'
-                        type='text'
-                        placeholder={t('insert_status_name_amharic')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_email || ''}
-                        invalid={
-                          validation.touched.usr_email &&
+                    <Label>{t('usr_email')}</Label>
+                    <Input
+                      name='usr_email'
+                      type='text'
+                      placeholder={t('insert_status_name_amharic')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.usr_email || ''}
+                      invalid={
+                        validation.touched.usr_email &&
                           validation.errors.usr_email
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.usr_email &&
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.usr_email &&
                       validation.errors.usr_email ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.usr_email}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('usr_password')}</Label>
-                      <Input
-                        name='usr_password'
-                        type='text'
-                        placeholder={t('insert_status_name_amharic')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_password || ''}
-                        invalid={
-                          validation.touched.usr_password &&
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_email}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_password')}</Label>
+                    <Input
+                      name='usr_password'
+                      type='text'
+                      placeholder={t('insert_status_name_amharic')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.usr_password || ''}
+                      invalid={
+                        validation.touched.usr_password &&
                           validation.errors.usr_password
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.usr_password &&
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.usr_password &&
                       validation.errors.usr_password ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.usr_password}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('usr_full_name')}</Label>
-                      <Input
-                        name='usr_full_name'
-                        type='text'
-                        placeholder={t('insert_status_name_amharic')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_full_name || ''}
-                        invalid={
-                          validation.touched.usr_full_name &&
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_password}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_full_name')}</Label>
+                    <Input
+                      name='usr_full_name'
+                      type='text'
+                      placeholder={t('insert_status_name_amharic')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.usr_full_name || ''}
+                      invalid={
+                        validation.touched.usr_full_name &&
                           validation.errors.usr_full_name
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.usr_full_name &&
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.usr_full_name &&
                       validation.errors.usr_full_name ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.usr_full_name}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('usr_phone_number')}</Label>
-                      <Input
-                        name='usr_phone_number'
-                        type='text'
-                        placeholder={t('insert_status_name_amharic')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_phone_number || ''}
-                        invalid={
-                          validation.touched.usr_phone_number &&
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_full_name}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_phone_number')}</Label>
+                    <Input
+                      name='usr_phone_number'
+                      type='text'
+                      placeholder={t('insert_status_name_amharic')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.usr_phone_number || ''}
+                      invalid={
+                        validation.touched.usr_phone_number &&
                           validation.errors.usr_phone_number
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.usr_phone_number &&
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.usr_phone_number &&
                       validation.errors.usr_phone_number ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.usr_phone_number}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('usr_role_id')}</Label>
-                      <Input
-                        name='usr_role_id'
-                        type='text'
-                        placeholder={t('insert_status_name_amharic')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_role_id || ''}
-                        invalid={
-                          validation.touched.usr_role_id &&
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_phone_number}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_role_id')}</Label>
+                    <Input
+                      name='usr_role_id'
+                      type='text'
+                      placeholder={t('insert_status_name_amharic')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.usr_role_id || ''}
+                      invalid={
+                        validation.touched.usr_role_id &&
                           validation.errors.usr_role_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.usr_role_id &&
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.usr_role_id &&
                       validation.errors.usr_role_id ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.usr_role_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('usr_region_id')}</Label>
-                      <Input
-                        name='usr_region_id'
-                        type='text'
-                        placeholder={t('insert_status_name_amharic')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_region_id || ''}
-                        invalid={
-                          validation.touched.usr_region_id &&
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_role_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  {/* <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_region_id')}</Label>
+                    <Input
+                      name='usr_region_id'
+                      type='text'
+                      placeholder={t('insert_status_name_amharic')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.usr_region_id || ''}
+                      invalid={
+                        validation.touched.usr_region_id &&
                           validation.errors.usr_region_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.usr_region_id &&
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.usr_region_id &&
                       validation.errors.usr_region_id ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.usr_region_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-           <Col className='col-md-6 mb-3'>
-              <Label>{t('usr_zone_id')}</Label>
-              <Input
-                name='usr_zone_id'
-                type='select'
-                className='form-select'
-                onChange={handleAddressStructureChange}
-                onBlur={validation.handleBlur}
-                value={selectedAddressStructure}>
-                {/* {addressStructureOptions.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {t(`${option.label}`)}
-                  </option>
-                ))} */}
-                {addressStructureOptions.map((option, index) => (
-                  <option key={index} value={option.value}>
-                    {t(`${option.label}`)}
-                  </option>
-                ))}
-              </Input>
-              {/* {validation.touched.usr_zone_id &&
-              validation.errors.usr_zone_id ? (
-                <FormFeedback type='invalid'>
-                  {validation.errors.usr_zone_id}
-                </FormFeedback>
-              ) : null} */}
-            </Col>
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('usr_woreda_id')}</Label>
-                      <Input
-                        name='usr_woreda_id'
-                        type='text'
-                        placeholder={t('insert_status_name_amharic')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_woreda_id || ''}
-                        invalid={
-                          validation.touched.usr_woreda_id &&
-                          validation.errors.usr_woreda_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.usr_woreda_id &&
-                      validation.errors.usr_woreda_id ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.usr_woreda_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('usr_kebele_id')}</Label>
-                      <Input
-                        name='usr_kebele_id'
-                        type='text'
-                        placeholder={t('insert_status_name_amharic')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_kebele_id || ''}
-                        invalid={
-                          validation.touched.usr_kebele_id &&
-                          validation.errors.usr_kebele_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.usr_kebele_id &&
-                      validation.errors.usr_kebele_id ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.usr_kebele_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('usr_sector_id')}</Label>
-                      <Input
-                        name='usr_sector_id'
-                        type='text'
-                        placeholder={t('insert_status_name_amharic')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_sector_id || ''}
-                        invalid={
-                          validation.touched.usr_sector_id &&
-                          validation.errors.usr_sector_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.usr_sector_id &&
-                      validation.errors.usr_sector_id ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.usr_sector_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-              <Label>{t('usr_department_id')}</Label>
-              <Input
-                name='usr_department_id'
-                type='select'
-                className='form-select'
-                onChange={handleDepartmentChange}
-                onBlur={validation.handleBlur}
-                value={selectedDepartment}>
-                {departmentOptions.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {t(`${option.label}`)}
-                  </option>
-                ))}
-              </Input>
-              {validation.touched.usr_department_id &&
-              validation.errors.usr_department_id ? (
-                <FormFeedback type='invalid'>
-                  {validation.errors.usr_department_id}
-                </FormFeedback>
-              ) : null}
-            </Col>
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('usr_is_active')}</Label>
-                      <Input
-                        name='usr_is_active'
-                        type='text'
-                        placeholder={t('insert_status_name_amharic')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_is_active || ''}
-                        invalid={
-                          validation.touched.usr_is_active &&
-                          validation.errors.usr_is_active
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.usr_is_active &&
-                      validation.errors.usr_is_active ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.usr_is_active}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('usr_picture')}</Label>
-                      <Input
-                        name='usr_picture'
-                        type='text'
-                        placeholder={t('insert_status_name_amharic')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_picture || ''}
-                        invalid={
-                          validation.touched.usr_picture &&
-                          validation.errors.usr_picture
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.usr_picture &&
-                      validation.errors.usr_picture ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.usr_picture}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('usr_last_logged_in')}</Label>
-                      <Input
-                        name='usr_last_logged_in'
-                        type='text'
-                        placeholder={t('insert_status_name_amharic')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_last_logged_in || ''}
-                        invalid={
-                          validation.touched.usr_last_logged_in &&
-                          validation.errors.usr_last_logged_in
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.usr_last_logged_in &&
-                      validation.errors.usr_last_logged_in ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.usr_last_logged_in}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('usr_ip')}</Label>
-                      <Input
-                        name='usr_ip'
-                        type='text'
-                        placeholder={t('insert_status_name_amharic')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_ip || ''}
-                        invalid={
-                          validation.touched.usr_ip &&
-                          validation.errors.usr_ip
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.usr_ip &&
-                      validation.errors.usr_ip ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.usr_ip}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('usr_remember_token')}</Label>
-                      <Input
-                        name='usr_remember_token'
-                        type='text'
-                        placeholder={t('insert_status_name_amharic')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_remember_token || ''}
-                        invalid={
-                          validation.touched.usr_remember_token &&
-                          validation.errors.usr_remember_token
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.usr_remember_token &&
-                      validation.errors.usr_remember_token ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.usr_remember_token}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('usr_notified')}</Label>
-                      <Input
-                        name='usr_notified'
-                        type='text'
-                        placeholder={t('insert_status_name_amharic')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_notified || ''}
-                        invalid={
-                          validation.touched.usr_notified &&
-                          validation.errors.usr_notified
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.usr_notified &&
-                      validation.errors.usr_notified ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.usr_notified}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('usr_description')}</Label>
-                      <Input
-                        name='usr_description'
-                        type='text'
-                        placeholder={t('insert_status_name_amharic')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_description || ''}
-                        invalid={
-                          validation.touched.usr_description &&
-                          validation.errors.usr_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.usr_description &&
-                      validation.errors.usr_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.usr_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('usr_status')}</Label>
-                      <Input
-                        name='usr_status'
-                        type='text'
-                        placeholder={t('insert_status_name_amharic')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_status || ''}
-                        invalid={
-                          validation.touched.usr_status &&
-                          validation.errors.usr_status
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.usr_status &&
-                      validation.errors.usr_status ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.usr_status}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_region_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col> */}
+                  {/* <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_zone_id')}</Label>
+                    <Input
+                      name='usr_zone_id'
+                      type='select'
+                      className='form-select'
+                      onChange={handleAddressStructureChange}
+                      onBlur={validation.handleBlur}
+                      value={selectedAddressStructure}>
+                      
+                      {addressStructureOptions.map((option, index) => (
+                        <option key={index} value={option.value}>
+                          {t(`${option.label}`)}
+                        </option>
+                      ))}
+                    </Input>
                 
+                  </Col> */}
+                  {/* <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_woreda_id')}</Label>
+                    <Input
+                      name='usr_woreda_id'
+                      type='text'
+                      placeholder={t('insert_status_name_amharic')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.usr_woreda_id || ''}
+                      invalid={
+                        validation.touched.usr_woreda_id &&
+                          validation.errors.usr_woreda_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.usr_woreda_id &&
+                      validation.errors.usr_woreda_id ? (
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_woreda_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col> */}
+
+                  <CascadingDropdowns
+                    validation={validation}
+                    dropdown1name="usr_available_at_region"
+                    dropdown2name="usr_available_at_zone"
+                    dropdown3name="usr_available_at_woreda"
+                  />
+
+                  {/* <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_kebele_id')}</Label>
+                    <Input
+                      name='usr_kebele_id'
+                      type='text'
+                      placeholder={t('insert_status_name_amharic')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.usr_kebele_id || ''}
+                      invalid={
+                        validation.touched.usr_kebele_id &&
+                          validation.errors.usr_kebele_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.usr_kebele_id &&
+                      validation.errors.usr_kebele_id ? (
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_kebele_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col> */}
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_sector_id')}</Label>
+                    <Input
+                      name='usr_sector_id'
+                      type='text'
+                      placeholder={t('insert_status_name_amharic')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.usr_sector_id || ''}
+                      invalid={
+                        validation.touched.usr_sector_id &&
+                          validation.errors.usr_sector_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.usr_sector_id &&
+                      validation.errors.usr_sector_id ? (
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_sector_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_department_id')}</Label>
+                    <Input
+                      name='usr_department_id'
+                      type='select'
+                      className='form-select'
+                      onChange={handleDepartmentChange}
+                      onBlur={validation.handleBlur}
+                      value={selectedDepartment}>
+                      {departmentOptions.map(option => (
+                        <option key={option.value} value={option.value}>
+                          {t(`${option.label}`)}
+                        </option>
+                      ))}
+                    </Input>
+                    {validation.touched.usr_department_id &&
+                      validation.errors.usr_department_id ? (
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_department_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_is_active')}</Label>
+                    <Input
+                      name='usr_is_active'
+                      type='text'
+                      placeholder={t('insert_status_name_amharic')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.usr_is_active || ''}
+                      invalid={
+                        validation.touched.usr_is_active &&
+                          validation.errors.usr_is_active
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.usr_is_active &&
+                      validation.errors.usr_is_active ? (
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_is_active}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_picture')}</Label>
+                    <Input
+                      name='usr_picture'
+                      type='text'
+                      placeholder={t('insert_status_name_amharic')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.usr_picture || ''}
+                      invalid={
+                        validation.touched.usr_picture &&
+                          validation.errors.usr_picture
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.usr_picture &&
+                      validation.errors.usr_picture ? (
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_picture}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_last_logged_in')}</Label>
+                    <Input
+                      name='usr_last_logged_in'
+                      type='text'
+                      placeholder={t('insert_status_name_amharic')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.usr_last_logged_in || ''}
+                      invalid={
+                        validation.touched.usr_last_logged_in &&
+                          validation.errors.usr_last_logged_in
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.usr_last_logged_in &&
+                      validation.errors.usr_last_logged_in ? (
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_last_logged_in}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_ip')}</Label>
+                    <Input
+                      name='usr_ip'
+                      type='text'
+                      placeholder={t('insert_status_name_amharic')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.usr_ip || ''}
+                      invalid={
+                        validation.touched.usr_ip &&
+                          validation.errors.usr_ip
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.usr_ip &&
+                      validation.errors.usr_ip ? (
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_ip}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_remember_token')}</Label>
+                    <Input
+                      name='usr_remember_token'
+                      type='text'
+                      placeholder={t('insert_status_name_amharic')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.usr_remember_token || ''}
+                      invalid={
+                        validation.touched.usr_remember_token &&
+                          validation.errors.usr_remember_token
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.usr_remember_token &&
+                      validation.errors.usr_remember_token ? (
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_remember_token}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_notified')}</Label>
+                    <Input
+                      name='usr_notified'
+                      type='text'
+                      placeholder={t('insert_status_name_amharic')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.usr_notified || ''}
+                      invalid={
+                        validation.touched.usr_notified &&
+                          validation.errors.usr_notified
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.usr_notified &&
+                      validation.errors.usr_notified ? (
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_notified}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_description')}</Label>
+                    <Input
+                      name='usr_description'
+                      type='text'
+                      placeholder={t('insert_status_name_amharic')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.usr_description || ''}
+                      invalid={
+                        validation.touched.usr_description &&
+                          validation.errors.usr_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.usr_description &&
+                      validation.errors.usr_description ? (
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('usr_status')}</Label>
+                    <Input
+                      name='usr_status'
+                      type='text'
+                      placeholder={t('insert_status_name_amharic')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.usr_status || ''}
+                      invalid={
+                        validation.touched.usr_status &&
+                          validation.errors.usr_status
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.usr_status &&
+                      validation.errors.usr_status ? (
+                      <FormFeedback type='invalid'>
+                        {validation.errors.usr_status}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+
                 </Row>
                 <Row>
                   <Col>
