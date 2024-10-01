@@ -61,7 +61,7 @@ const CascadingDropdowns = () => {
   console.log(secondOptions);
 
   return (
-    <div className="container mt-5">
+    <>
       {/* First Dropdown */}
       <FormGroup>
         <Label for="firstDropdown">City</Label>
@@ -123,7 +123,7 @@ const CascadingDropdowns = () => {
           )}
         </Input>
       </FormGroup>
-    </div>
+    </>
   );
 };
 

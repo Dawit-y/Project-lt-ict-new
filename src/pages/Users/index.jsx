@@ -78,6 +78,7 @@ const UsersModel = () => {
   const [selectedAddressStructure, setSelectedAddressStructure] = useState("");
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     const fetchAddressStructure = async () => {
@@ -669,6 +670,18 @@ const UsersModel = () => {
 
   const dropdawntotal = [project_status];
 
+  //  img upload
+  const handleImageChange = (event) => {
+    event.preventDefault();
+    let reader = new FileReader();
+    let file = event.target.files[0];
+    reader.onloadend = () => {
+      setSelectedImage(reader.result);
+      validation.setFieldValue("projectImage", reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <React.Fragment>
       <UsersModal
@@ -741,7 +754,7 @@ const UsersModel = () => {
                 }}
               >
                 <Row>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("usr_email")}</Label>
                     <Input
                       name="usr_email"
@@ -765,7 +778,7 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("usr_password")}</Label>
                     <Input
                       name="usr_password"
@@ -789,7 +802,7 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("usr_full_name")}</Label>
                     <Input
                       name="usr_full_name"
@@ -813,7 +826,7 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("usr_phone_number")}</Label>
                     <Input
                       name="usr_phone_number"
@@ -837,7 +850,7 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("usr_role_id")}</Label>
                     <Input
                       name="usr_role_id"
@@ -928,13 +941,6 @@ const UsersModel = () => {
                     ) : null}
                   </Col> */}
 
-                  <CascadingDropdowns
-                    validation={validation}
-                    dropdown1name="usr_available_at_region"
-                    dropdown2name="usr_available_at_zone"
-                    dropdown3name="usr_available_at_woreda"
-                  />
-
                   {/* <Col className='col-md-6 mb-3'>
                     <Label>{t('usr_kebele_id')}</Label>
                     <Input
@@ -959,7 +965,7 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col> */}
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("usr_sector_id")}</Label>
                     <Input
                       name="usr_sector_id"
@@ -983,7 +989,7 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("usr_department_id")}</Label>
                     <Input
                       name="usr_department_id"
@@ -1006,7 +1012,7 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("usr_is_active")}</Label>
                     <Input
                       name="usr_is_active"
@@ -1030,7 +1036,7 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("usr_picture")}</Label>
                     <Input
                       name="usr_picture"
@@ -1054,7 +1060,7 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("usr_last_logged_in")}</Label>
                     <Input
                       name="usr_last_logged_in"
@@ -1078,7 +1084,7 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("usr_ip")}</Label>
                     <Input
                       name="usr_ip"
@@ -1100,7 +1106,7 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("usr_remember_token")}</Label>
                     <Input
                       name="usr_remember_token"
@@ -1124,7 +1130,7 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("usr_notified")}</Label>
                     <Input
                       name="usr_notified"
@@ -1148,7 +1154,7 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("usr_description")}</Label>
                     <Input
                       name="usr_description"
@@ -1197,6 +1203,66 @@ const UsersModel = () => {
                         {validation.errors.usr_status}
                       </FormFeedback>
                     ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <CascadingDropdowns
+                      validation={validation}
+                      dropdown1name="usr_available_at_region"
+                      dropdown2name="usr_available_at_zone"
+                      dropdown3name="usr_available_at_woreda"
+                    />
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <div className="mb-3">
+                      <Label className="form-label">User Image</Label>
+
+                      <div className="text-center">
+                        <div className="position-relative d-inline-block">
+                          <div className="position-absolute bottom-0 end-0">
+                            <Label
+                              htmlFor="project-image-input"
+                              className="mb-0"
+                              id="projectImageInput"
+                            >
+                              <div className="avatar-xs">
+                                <div className="avatar-title bg-light border rounded-circle text-muted cursor-pointer shadow font-size-16">
+                                  <i className="bx bxs-image-alt"></i>
+                                </div>
+                              </div>
+                            </Label>
+                            <UncontrolledTooltip
+                              placement="right"
+                              target="projectImageInput"
+                            >
+                              Select Image
+                            </UncontrolledTooltip>
+                            <input
+                              className="form-control d-none"
+                              id="project-image-input"
+                              type="file"
+                              accept="image/png, image/gif, image/jpeg"
+                              onChange={handleImageChange}
+                            />
+                          </div>
+                          <div className="avatar-xl">
+                            <div className="avatar-title bg-light rounded-circle">
+                              <img
+                                src={selectedImage || ""}
+                                id="projectlogo-img"
+                                alt=""
+                                className="avatar-lg h-auto rounded-circle"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        {validation.touched.usr_picture &&
+                        validation.errors.usr_picture ? (
+                          <FormFeedback type="invalid" className="d-block">
+                            {validation.errors.usr_picture}
+                          </FormFeedback>
+                        ) : null}
+                      </div>
+                    </div>
                   </Col>
                 </Row>
                 <Row>
