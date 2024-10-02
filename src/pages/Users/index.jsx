@@ -1178,7 +1178,7 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("usr_status")}</Label>
                     <Input
                       name="usr_status"
