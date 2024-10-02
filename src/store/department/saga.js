@@ -21,31 +21,40 @@ import {
 
 import { deleteSearchResult, updateSearchResults } from "../search/action";
 
-//Include Both Helper File with needed methods
+// Include Both Helper File with needed methods
 import {
   getDepartment,
   addDepartment,
   updateDepartment,
   deleteDepartment,
-
-  // getProductComents as getProductComentsApi,
-  // onLikeComment as onLikeCommentApi,
-  // onLikeReply as onLikeReplyApi,
-  // onAddReply as onAddReplyApi,
-  // onAddComment as onAddCommentApi,
 } from "../../helpers/department_backend_helper";
 
 // toast
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getCache, setCache, clearCache } from "../../utils/cacheService";
+
+// Cache key for departments
+const DEPARTMENT_CACHE_KEY = "departments_cache";
 
 const selectShowResult = (state) => state.DepartmentR.show_result;
 
 function* fetchDepartment() {
   try {
+    // Check if cached data exists
+    const cachedData = getCache(DEPARTMENT_CACHE_KEY);
+
+    if (cachedData) {
+      yield put(getDepartmentSuccess(cachedData));
+      return; // Use cache if valid
+    }
+
+    // If no cache, fetch from API
     const response = yield call(getDepartment);
     yield put(getDepartmentSuccess(response));
-    // toast.success(`departments Loading  Successfully`, { autoClose: 2000 });
+
+    // Cache the fetched data
+    setCache(DEPARTMENT_CACHE_KEY, response);
   } catch (error) {
     yield put(getDepartmentFail(error));
   }
@@ -56,21 +65,25 @@ function* onUpdateDepartment({ payload: department, modalCallback }) {
     yield put(toggleUpdateLoading(true));
     const response = yield call(updateDepartment, department);
     yield put(updateDepartmentSuccess(response.data));
+
     const showResult = yield select(selectShowResult);
 
     if (showResult) {
       yield put(updateSearchResults(department));
     }
-    toast.success(`department ${department.dep_id} Is Updated Successfully`, {
+
+    // Invalidate cache since data is updated
+    clearCache(DEPARTMENT_CACHE_KEY);
+
+    toast.success(`Department ${department.dep_id} is updated successfully`, {
       autoClose: 2000,
     });
     if (modalCallback) modalCallback();
   } catch (error) {
     yield put(updateDepartmentFail(error));
-    toast.error(`department ${department.dep_id} Is Update Failed`, {
+    toast.error(`Department ${department.dep_id} update failed`, {
       autoClose: 2000,
     });
-
     if (modalCallback) modalCallback();
   } finally {
     yield put(toggleUpdateLoading(false));
@@ -82,17 +95,22 @@ function* onDeleteDepartment({ payload: department }) {
     yield put(toggleUpdateLoading(true));
     const response = yield call(deleteDepartment, department);
     yield put(deleteDepartmentSuccess(response));
+
     const showResult = yield select(selectShowResult);
 
     if (showResult) {
       yield put(deleteSearchResult(department));
     }
-    toast.success(`department ${response.deleted_id} Is Delete Successfully`, {
+
+    // Invalidate cache since data is deleted
+    clearCache(DEPARTMENT_CACHE_KEY);
+
+    toast.success(`Department ${response.deleted_id} is deleted successfully`, {
       autoClose: 2000,
     });
   } catch (error) {
     yield put(deleteDepartmentFail(error));
-    toast.error(`department ${department.dep_id} Is Delete Failed`, {
+    toast.error(`Department ${department.dep_id} deletion failed`, {
       autoClose: 2000,
     });
   } finally {
@@ -106,13 +124,17 @@ function* onAddDepartment({ payload: department, modalCallback }) {
     const response = yield call(addDepartment, department);
 
     yield put(addDepartmentSuccess(response.data));
-    toast.success(`department ${response.data.dep_id} Is Added Successfully`, {
+
+    // Invalidate cache since new data is added
+    clearCache(DEPARTMENT_CACHE_KEY);
+
+    toast.success(`Department ${response.data.dep_id} is added successfully`, {
       autoClose: 2000,
     });
     if (modalCallback) modalCallback();
   } catch (error) {
     yield put(addDepartmentFail(error));
-    toast.error("department Added Failed", { autoClose: 2000 });
+    toast.error("Department addition failed", { autoClose: 2000 });
     if (modalCallback) modalCallback();
   } finally {
     yield put(toggleUpdateLoading(false));

@@ -529,9 +529,9 @@ const DepartmentModel = () => {
                   validation.handleSubmit();
                   const modalCallback = () => setModal(false);
                   if (isEdit) {
-                    onUpdateDepartment(validation.values, modalCallback);
+                    onUpdateDepartment(validation.values);
                   } else {
-                    onAddDepartment(validation.values, modalCallback);
+                    onAddDepartment(validation.values);
                   }
                   return false;
                 }}
@@ -737,31 +737,31 @@ const DepartmentModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                      <Label>{t("dep_status")}</Label>
-                      <Input
-                        name="dep_status"
-                        type="select"
-                        className="form-select"
-                        onChange={(e) => {
-                          validation.setFieldValue(
-                            "dep_status",
-                            Number(e.target.value)
-                          );
-                        }}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.dep_status}
-                      >
-                        <option value={""}>Select status</option>
-                        <option value={1}>{t("Active")}</option>
-                        <option value={0}>{t("Inactive")}</option>
-                      </Input>
-                      {validation.touched.dep_status &&
-                      validation.errors.dep_status ? (
-                        <FormFeedback type="invalid">
-                          {validation.errors.dep_status}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
+                    <Label>{t("dep_status")}</Label>
+                    <Input
+                      name="dep_status"
+                      type="select"
+                      className="form-select"
+                      onChange={(e) => {
+                        validation.setFieldValue(
+                          "dep_status",
+                          Number(e.target.value)
+                        );
+                      }}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.dep_status}
+                    >
+                      <option value={""}>Select status</option>
+                      <option value={1}>{t("Active")}</option>
+                      <option value={0}>{t("Inactive")}</option>
+                    </Input>
+                    {validation.touched.dep_status &&
+                    validation.errors.dep_status ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.dep_status}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
