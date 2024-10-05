@@ -30,9 +30,9 @@ export const deleteUsers = (Users) => ({
   payload: Users,
 });
 
-export const getUsersSuccess = (Userss) => ({
+export const getUsersSuccess = (Users) => ({
   type: GET_USERS_SUCCESS,
-  payload: Userss,
+  payload: Users,
 });
 
 export const getUsersFail = (error) => ({

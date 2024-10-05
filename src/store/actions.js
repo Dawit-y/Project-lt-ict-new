@@ -31,9 +31,6 @@ export * from "./invoices/actions";
 export * from "./tasks/actions";
 
 // contacts
-export * from "./contacts/actions";
-
-// contacts
 export * from "./mails/actions";
 
 //dashboard

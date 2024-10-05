@@ -15,7 +15,6 @@ import invoiceSaga from "./invoices/saga";
 // import projectsSaga from "./projects/saga";
 import tasksSaga from "./tasks/saga";
 import mailsSaga from "./mails/saga";
-import contactsSaga from "./contacts/saga";
 
 import watchSearchSaga from "./search/sagas";
 import treeSaga from "./tree/saga";
@@ -64,7 +63,6 @@ export default function* rootSaga() {
     fork(invoiceSaga),
 
     fork(tasksSaga),
-    fork(contactsSaga),
 
     fork(watchSearchSaga),
     fork(treeSaga),

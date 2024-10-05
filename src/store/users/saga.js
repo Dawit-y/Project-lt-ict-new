@@ -27,12 +27,6 @@ import {
   addUsers,
   updateUsers,
   deleteUsers,
-
-  // getProductComents as getProductComentsApi,
-  // onLikeComment as onLikeCommentApi,
-  // onLikeReply as onLikeReplyApi,
-  // onAddReply as onAddReplyApi,
-  // onAddComment as onAddCommentApi,
 } from "../../helpers/users_backend_helper";
 
 // toast

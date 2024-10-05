@@ -8,7 +8,6 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
@@ -45,13 +44,7 @@ import {
   Badge,
 } from "reactstrap";
 import { ToastContainer } from "react-toastify";
-import moment from "moment";
-
-//Import Flatepicker
-import "flatpickr/dist/themes/material_blue.css";
-import Flatpickr from "react-flatpickr";
 import accessToken from "../../helpers/jwt-token-access/accessToken";
-import { error } from "toastr";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {

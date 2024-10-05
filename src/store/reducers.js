@@ -33,9 +33,6 @@ import invoices from "./invoices/reducer";
 //tasks
 import tasks from "./tasks/reducer";
 
-//contacts
-import contacts from "./contacts/reducer";
-
 //mails
 import mails from "./mails/reducer";
 
@@ -97,7 +94,6 @@ const rootReducer = combineReducers({
   invoices,
 
   tasks,
-  contacts,
   Dashboard,
 
   search,
