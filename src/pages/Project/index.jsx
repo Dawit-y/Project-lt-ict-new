@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
@@ -12,6 +12,11 @@ import SearchComponent from "../../components/Common/SearchComponent";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+
+import { AgGridReact } from "ag-grid-react";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 import {
   getProject as onGetProject,
@@ -67,6 +72,11 @@ const ProjectModel = () => {
   const [project, setProject] = useState(null);
   const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
   const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
+
+  const [quickFilterText, setQuickFilterText] = useState("");
+  const [selectedRows, setSelectedRows] = useState([]);
+  const gridRef = useRef(null);
+
   //START FOREIGN CALLS
   const [projectStatusOptions, setProjectStatusOptions] = useState([]);
   const [selectedProjectStatus, setSelectedProjectStatus] = useState("");
@@ -105,7 +115,6 @@ const ProjectModel = () => {
 
   const handleClick = (data) => {
     setShowCanvas(!showCanvas); // Toggle canvas visibility
-    console.log(data, "project data");
     setProjectMetaData(data);
   };
 
@@ -474,529 +483,339 @@ const ProjectModel = () => {
   const handleClearSearch = () => {
     setShowSearchResults(false);
   };
-
-  const columns = useMemo(() => {
-    const baseColumns = [
+  const columnDefs = useMemo(() => {
+    const baseColumnDefs = [
       {
-        header: "",
-        accessorKey: "prj_name",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_name, 30) || "-"}
-            </span>
-          );
+        headerName: t("prj_name"),
+        field: "prj_name",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_name, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_code",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_code, 30) || "-"}
-            </span>
-          );
+        headerName: t("prj_code"),
+        field: "prj_code",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_code, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_total_estimate_budget",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.prj_total_estimate_budget,
-                30
-              ) || "-"}
-            </span>
-          );
+        headerName: t("prj_total_estimate_budget"),
+        field: "prj_total_estimate_budget",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_total_estimate_budget, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_total_actual_budget",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.prj_total_actual_budget,
-                30
-              ) || "-"}
-            </span>
-          );
+        headerName: t("prj_total_actual_budget"),
+        field: "prj_total_actual_budget",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_total_actual_budget, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_geo_location",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_geo_location, 30) || "-"}
-            </span>
-          );
+        headerName: t("prj_geo_location"),
+        field: "prj_geo_location",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_geo_location, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_sector_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_sector_id, 30) || "-"}
-            </span>
-          );
+        headerName: t("prj_sector_id"),
+        field: "prj_sector_id",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_sector_id, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_location_region_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.prj_location_region_id,
-                30
-              ) || "-"}
-            </span>
-          );
+        headerName: t("prj_location_region_id"),
+        field: "prj_location_region_id",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_location_region_id, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_location_zone_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_location_zone_id, 30) ||
-                "-"}
-            </span>
-          );
+        headerName: t("prj_location_zone_id"),
+        field: "prj_location_zone_id",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_location_zone_id, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_location_woreda_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.prj_location_woreda_id,
-                30
-              ) || "-"}
-            </span>
-          );
+        headerName: t("prj_location_woreda_id"),
+        field: "prj_location_woreda_id",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_location_woreda_id, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_location_kebele_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.prj_location_kebele_id,
-                30
-              ) || "-"}
-            </span>
-          );
+        headerName: t("prj_location_kebele_id"),
+        field: "prj_location_kebele_id",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_location_kebele_id, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_location_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.prj_location_description,
-                30
-              ) || "-"}
-            </span>
-          );
+        headerName: t("prj_location_description"),
+        field: "prj_location_description",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_location_description, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_owner_region_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_owner_region_id, 30) ||
-                "-"}
-            </span>
-          );
+        headerName: t("prj_owner_region_id"),
+        field: "prj_owner_region_id",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_owner_region_id, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_owner_zone_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_owner_zone_id, 30) ||
-                "-"}
-            </span>
-          );
+        headerName: t("prj_owner_zone_id"),
+        field: "prj_owner_zone_id",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_owner_zone_id, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_owner_woreda_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_owner_woreda_id, 30) ||
-                "-"}
-            </span>
-          );
+        headerName: t("prj_owner_woreda_id"),
+        field: "prj_owner_woreda_id",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_owner_woreda_id, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_owner_kebele_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_owner_kebele_id, 30) ||
-                "-"}
-            </span>
-          );
+        headerName: t("prj_owner_kebele_id"),
+        field: "prj_owner_kebele_id",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_owner_kebele_id, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_owner_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_owner_description, 30) ||
-                "-"}
-            </span>
-          );
+        headerName: t("prj_owner_description"),
+        field: "prj_owner_description",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_owner_description, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_start_date_et",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_start_date_et, 30) ||
-                "-"}
-            </span>
-          );
+        headerName: t("prj_start_date_et"),
+        field: "prj_start_date_et",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_start_date_et, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_start_date_gc",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_start_date_gc, 30) ||
-                "-"}
-            </span>
-          );
+        headerName: t("prj_start_date_gc"),
+        field: "prj_start_date_gc",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_start_date_gc, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_start_date_plan_et",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.prj_start_date_plan_et,
-                30
-              ) || "-"}
-            </span>
-          );
+        headerName: t("prj_start_date_plan_et"),
+        field: "prj_start_date_plan_et",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_start_date_plan_et, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_start_date_plan_gc",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.prj_start_date_plan_gc,
-                30
-              ) || "-"}
-            </span>
-          );
+        headerName: t("prj_start_date_plan_gc"),
+        field: "prj_start_date_plan_gc",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_start_date_plan_gc, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_end_date_actual_et",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.prj_end_date_actual_et,
-                30
-              ) || "-"}
-            </span>
-          );
+        headerName: t("prj_end_date_actual_et"),
+        field: "prj_end_date_actual_et",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_end_date_actual_et, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_end_date_actual_gc",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.prj_end_date_actual_gc,
-                30
-              ) || "-"}
-            </span>
-          );
+        headerName: t("prj_end_date_actual_gc"),
+        field: "prj_end_date_actual_gc",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_end_date_actual_gc, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_end_date_plan_gc",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_end_date_plan_gc, 30) ||
-                "-"}
-            </span>
-          );
+        headerName: t("prj_end_date_plan_gc"),
+        field: "prj_end_date_plan_gc",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_end_date_plan_gc, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_end_date_plan_et",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_end_date_plan_et, 30) ||
-                "-"}
-            </span>
-          );
+        headerName: t("prj_end_date_plan_et"),
+        field: "prj_end_date_plan_et",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_end_date_plan_et, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_outcome",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_outcome, 30) || "-"}
-            </span>
-          );
+        headerName: t("prj_outcome"),
+        field: "prj_outcome",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_outcome, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_deleted",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_deleted, 30) || "-"}
-            </span>
-          );
+        headerName: t("prj_deleted"),
+        field: "prj_deleted",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_deleted, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_remark",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_remark, 30) || "-"}
-            </span>
-          );
+        headerName: t("prj_remark"),
+        field: "prj_remark",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_remark, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_created_date",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_created_date, 30) || "-"}
-            </span>
-          );
+        headerName: t("prj_created_date"),
+        field: "prj_created_date",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_created_date, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_owner_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_owner_id, 30) || "-"}
-            </span>
-          );
+        headerName: t("prj_owner_id"),
+        field: "prj_owner_id",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_owner_id, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_urban_ben_number",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_urban_ben_number, 30) ||
-                "-"}
-            </span>
-          );
+        headerName: t("prj_urban_ben_number"),
+        field: "prj_urban_ben_number",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_urban_ben_number, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "prj_rural_ben_number",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_rural_ben_number, 30) ||
-                "-"}
-            </span>
-          );
+        headerName: t("prj_rural_ben_number"),
+        field: "prj_rural_ben_number",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_rural_ben_number, 30) || "-";
         },
       },
-
       {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
+        headerName: t("prj_total_ben_number"),
+        field: "prj_total_ben_number",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_total_ben_number, 30) || "-";
         },
       },
     ];
+
+    // Adding the action buttons column
     if (previledge?.is_role_editable && previledge?.is_role_deletable) {
-      baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
+      baseColumnDefs.push({
+        headerName: t("actions"),
+        field: "actions",
+        cellRenderer: (params) => {
           return (
-            <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+            <div className="action-icons">
+              {params.data.is_editable ? (
                 <Link
                   to="#"
                   className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleProjectClick(data);
-                  }}
+                  onClick={() => handleProjectClick(params.data)}
                 >
                   <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
                   <UncontrolledTooltip placement="top" target="edittooltip">
                     Edit
                   </UncontrolledTooltip>
                 </Link>
+              ) : (
+                ""
               )}
-              {cellProps.row.original.is_editable && (
+              {params.data.is_editable ? (
                 <Link
                   to="#"
                   className="text-secondary"
-                  onClick={() => {
-                    const ProjectData = cellProps.row.original;
-                    // console.log("handleProjectClick before edit", ProjectData);
-                    handleClick(ProjectData);
-                    // console.log("update search result table dtata",)
-                  }}
-                  //  onClick={handleClick}
+                  onClick={() => handleClick(params.data)}
                 >
                   <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
-
                   <UncontrolledTooltip placement="top" target="viewtooltip">
                     View
                   </UncontrolledTooltip>
                 </Link>
+              ) : (
+                ""
               )}
-
-              {cellProps.row.original.is_deletable && (
+              {params.data.is_deletable ? (
                 <Link
                   to="#"
                   className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
+                  onClick={() => onClickDelete(params.data)}
                 >
                   <i
                     className="mdi mdi-delete font-size-18"
@@ -1006,6 +825,8 @@ const ProjectModel = () => {
                     Delete
                   </UncontrolledTooltip>
                 </Link>
+              ) : (
+                ""
               )}
             </div>
           );
@@ -1013,7 +834,7 @@ const ProjectModel = () => {
       });
     }
 
-    return baseColumns;
+    return baseColumnDefs;
   }, [handleProjectClick, toggleViewModal, onClickDelete]);
 
   const project_status = [
@@ -1023,6 +844,23 @@ const ProjectModel = () => {
   ];
 
   const dropdawntotal = [project_status];
+
+  // When selection changes, update selectedRows
+  const onSelectionChanged = () => {
+    const selectedNodes = gridRef.current.api.getSelectedNodes();
+    const selectedData = selectedNodes.map((node) => node.data);
+    setSelectedRows(selectedData);
+  };
+  // Filter by marked rows
+  const filterMarked = () => {
+    if (gridRef.current) {
+      gridRef.current.api.setRowData(selectedRows);
+    }
+  };
+  // Clear the filter and show all rows again
+  const clearFilter = () => {
+    gridRef.current.api.setRowData(showSearchResults ? results : data);
+  };
 
   return (
     <React.Fragment>
@@ -1042,31 +880,56 @@ const ProjectModel = () => {
           {isLoading || searchLoading ? (
             <Spinners setLoading={setLoading} />
           ) : (
-            <Row>
-              <Col xs="12">
-                <Card>
-                  <CardBody>
-                    <TableContainer
-                      columns={columns}
-                      data={showSearchResults ? results : data}
-                      isGlobalFilter={true}
-                      isAddButton={true}
-                      isCustomPageSize={true}
-                      handleUserClick={handleProjectClicks}
-                      isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("project")}
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                    />
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
+            <div
+              className="ag-theme-alpine"
+              style={{ height: "100%", width: "100%" }}
+            >
+              {/* Row for search input and buttons */}
+              <Row className="mb-3">
+                <Col sm="12" md="6">
+                  {/* Search Input for  Filter */}
+                  <Input
+                    type="text"
+                    placeholder="Search..."
+                    onChange={(e) => setQuickFilterText(e.target.value)}
+                    className="mb-2"
+                  />
+                </Col>
+                <Col sm="12" md="6" className="text-md-end">
+                  <Button
+                    color="primary"
+                    className="me-2"
+                    onClick={filterMarked}
+                  >
+                    Filter Marked
+                  </Button>
+                  <Button
+                    color="secondary"
+                    className="me-2"
+                    onClick={clearFilter}
+                  >
+                    Clear Filter
+                  </Button>
+                  <Button color="success" onClick={handleProjectClicks}>
+                    Add New
+                  </Button>
+                </Col>
+              </Row>
+
+              {/* AG Grid */}
+              <div style={{ height: "400px" }}>
+                <AgGridReact
+                  ref={gridRef}
+                  rowData={showSearchResults ? results : data}
+                  columnDefs={columnDefs}
+                  pagination={true}
+                  paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+                  paginationPageSize={10}
+                  quickFilterText={quickFilterText}
+                  onSelectionChanged={onSelectionChanged}
+                />
+              </div>
+            </div>
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
@@ -12,6 +12,11 @@ import CascadingDropdowns from "../../components/Common/CascadingDropdowns";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+
+import { AgGridReact } from "ag-grid-react";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 import {
   getUsers as onGetUsers,
@@ -66,6 +71,10 @@ const UsersModel = () => {
   const [users, setUsers] = useState(null);
   const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
   const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
+
+  const [quickFilterText, setQuickFilterText] = useState("");
+  const [selectedRows, setSelectedRows] = useState([]);
+  const gridRef = useRef(null);
   //START FOREIGN CALLS
   const [addressStructureOptions, setAddressStructureOptions] = useState([]);
   const [selectedAddressStructure, setSelectedAddressStructure] = useState("");
@@ -351,304 +360,198 @@ const UsersModel = () => {
     setSearchLoading(false);
   };
 
-  const handleClearSearch = () => {
-    setShowSearchResults(false);
-  };
-
-  const columns = useMemo(() => {
+  const columnDefs = useMemo(() => {
     const baseColumns = [
       {
-        header: "",
-        accessorKey: "usr_email",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.usr_email, 30) || "-"}
-            </span>
-          );
-        },
+        headerName: t("usr_email"),
+        field: "usr_email",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) =>
+          truncateText(params.data.usr_email, 30) || "-",
       },
       {
-        header: "",
-        accessorKey: "usr_password",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.usr_password, 30) || "-"}
-            </span>
-          );
-        },
+        headerName: t("usr_password"),
+        field: "usr_password",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) =>
+          truncateText(params.data.usr_password, 30) || "-",
       },
       {
-        header: "",
-        accessorKey: "usr_full_name",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.usr_full_name, 30) || "-"}
-            </span>
-          );
-        },
+        headerName: t("usr_full_name"),
+        field: "usr_full_name",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) =>
+          truncateText(params.data.usr_full_name, 30) || "-",
       },
       {
-        header: "",
-        accessorKey: "usr_phone_number",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.usr_phone_number, 30) || "-"}
-            </span>
-          );
-        },
+        headerName: t("usr_phone_number"),
+        field: "usr_phone_number",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) =>
+          truncateText(params.data.usr_phone_number, 30) || "-",
       },
       {
-        header: "",
-        accessorKey: "usr_role_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.usr_role_id, 30) || "-"}
-            </span>
-          );
-        },
+        headerName: t("usr_role_id"),
+        field: "usr_role_id",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) =>
+          truncateText(params.data.usr_role_id, 30) || "-",
       },
       {
-        header: "",
-        accessorKey: "usr_region_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.usr_region_id, 30) || "-"}
-            </span>
-          );
-        },
+        headerName: t("usr_region_id"),
+        field: "usr_region_id",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) =>
+          truncateText(params.data.usr_region_id, 30) || "-",
       },
       {
-        header: "",
-        accessorKey: "usr_woreda_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.usr_woreda_id, 30) || "-"}
-            </span>
-          );
-        },
+        headerName: t("usr_woreda_id"),
+        field: "usr_woreda_id",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) =>
+          truncateText(params.data.usr_woreda_id, 30) || "-",
       },
       {
-        header: "",
-        accessorKey: "usr_kebele_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.usr_kebele_id, 30) || "-"}
-            </span>
-          );
-        },
+        headerName: t("usr_kebele_id"),
+        field: "usr_kebele_id",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) =>
+          truncateText(params.data.usr_kebele_id, 30) || "-",
       },
       {
-        header: "",
-        accessorKey: "usr_sector_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.usr_sector_id, 30) || "-"}
-            </span>
-          );
-        },
+        headerName: t("usr_sector_id"),
+        field: "usr_sector_id",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) =>
+          truncateText(params.data.usr_sector_id, 30) || "-",
       },
       {
-        header: "",
-        accessorKey: "usr_is_active",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.usr_is_active, 30) || "-"}
-            </span>
-          );
-        },
+        headerName: t("usr_is_active"),
+        field: "usr_is_active",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) =>
+          truncateText(params.data.usr_is_active, 30) || "-",
       },
       {
-        header: "",
-        accessorKey: "usr_picture",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.usr_picture, 30) || "-"}
-            </span>
-          );
-        },
+        headerName: t("usr_picture"),
+        field: "usr_picture",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) =>
+          truncateText(params.data.usr_picture, 30) || "-",
       },
       {
-        header: "",
-        accessorKey: "usr_last_logged_in",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.usr_last_logged_in, 30) ||
-                "-"}
-            </span>
-          );
-        },
+        headerName: t("usr_last_logged_in"),
+        field: "usr_last_logged_in",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) =>
+          truncateText(params.data.usr_last_logged_in, 30) || "-",
       },
       {
-        header: "",
-        accessorKey: "usr_ip",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.usr_ip, 30) || "-"}
-            </span>
-          );
-        },
+        headerName: t("usr_ip"),
+        field: "usr_ip",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => truncateText(params.data.usr_ip, 30) || "-",
       },
       {
-        header: "",
-        accessorKey: "usr_remember_token",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.usr_remember_token, 30) ||
-                "-"}
-            </span>
-          );
-        },
+        headerName: t("usr_remember_token"),
+        field: "usr_remember_token",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) =>
+          truncateText(params.data.usr_remember_token, 30) || "-",
       },
       {
-        header: "",
-        accessorKey: "usr_notified",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.usr_notified, 30) || "-"}
-            </span>
-          );
-        },
+        headerName: t("usr_notified"),
+        field: "usr_notified",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) =>
+          truncateText(params.data.usr_notified, 30) || "-",
       },
       {
-        header: "",
-        accessorKey: "usr_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.usr_description, 30) || "-"}
-            </span>
-          );
-        },
+        headerName: t("usr_description"),
+        field: "usr_description",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) =>
+          truncateText(params.data.usr_description, 30) || "-",
       },
       {
-        header: "",
-        accessorKey: "usr_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.usr_status, 30) || "-"}
-            </span>
-          );
-        },
+        headerName: t("usr_status"),
+        field: "usr_status",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) =>
+          truncateText(params.data.usr_status, 30) || "-",
       },
-
       {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const userdata = cellProps.row.original;
-                toggleViewModal(userdata);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
+        headerName: t("view_detail"),
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => (
+          <Button
+            type="button"
+            color="primary"
+            className="btn-sm"
+            onClick={() => {
+              const userdata = params.data;
+              toggleViewModal(userdata);
+              setTransaction(userdata);
+            }}
+          >
+            {t("view_detail")}
+          </Button>
+        ),
       },
     ];
+
     if (previledge?.is_role_editable && previledge?.is_role_deletable) {
       baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const userdata = cellProps.row.original;
-                    handleUsersClick(userdata);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+        headerName: t("Action"),
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => (
+          <div className="d-flex gap-3">
+            {params.data.is_editable && (
+              <Link
+                to="#"
+                className="text-success"
+                onClick={() => handleUsersClick(params.data)}
+              >
+                <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                <UncontrolledTooltip placement="top" target="edittooltip">
+                  Edit
+                </UncontrolledTooltip>
+              </Link>
+            )}
 
-              {cellProps.row.original.is_deletable && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const userdata = cellProps.row.original;
-                    onClickDelete(userdata);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-            </div>
-          );
-        },
+            {params.data.is_deletable && (
+              <Link
+                to="#"
+                className="text-danger"
+                onClick={() => onClickDelete(params.data)}
+              >
+                <i className="mdi mdi-delete font-size-18" id="deletetooltip" />
+                <UncontrolledTooltip placement="top" target="deletetooltip">
+                  Delete
+                </UncontrolledTooltip>
+              </Link>
+            )}
+          </div>
+        ),
       });
     }
 
@@ -675,6 +578,22 @@ const UsersModel = () => {
     reader.readAsDataURL(file);
   };
 
+  // When selection changes, update selectedRows
+  const onSelectionChanged = () => {
+    const selectedNodes = gridRef.current.api.getSelectedNodes();
+    const selectedData = selectedNodes.map((node) => node.data);
+    setSelectedRows(selectedData);
+  };
+  // Filter by marked rows
+  const filterMarked = () => {
+    if (gridRef.current) {
+      gridRef.current.api.setRowData(selectedRows);
+    }
+  };
+  // Clear the filter and show all rows again
+  const clearFilter = () => {
+    gridRef.current.api.setRowData(showSearchResults ? results : data);
+  };
   return (
     <React.Fragment>
       <UsersModal
@@ -693,38 +612,56 @@ const UsersModel = () => {
           {isLoading || searchLoading ? (
             <Spinners setLoading={setLoading} />
           ) : (
-            <Row>
-              <Col xs="12">
-                <Card>
-                  <CardBody>
-                    <TableContainer
-                      columns={columns}
-                      // data={showSearchResults ? results : data}
-                      data={
-                        showSearchResults && Array.isArray(results)
-                          ? results
-                          : Array.isArray(data)
-                          ? data
-                          : []
-                      } // Ensure data is an array
-                      isGlobalFilter={true}
-                      isAddButton={true}
-                      isCustomPageSize={true}
-                      handleUserClick={handleUsersClicks}
-                      isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("users")}
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                    />
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
+            <div
+              className="ag-theme-alpine"
+              style={{ height: "100%", width: "100%" }}
+            >
+              {/* Row for search input and buttons */}
+              <Row className="mb-3">
+                <Col sm="12" md="6">
+                  {/* Search Input for  Filter */}
+                  <Input
+                    type="text"
+                    placeholder="Search..."
+                    onChange={(e) => setQuickFilterText(e.target.value)}
+                    className="mb-2"
+                  />
+                </Col>
+                <Col sm="12" md="6" className="text-md-end">
+                  <Button
+                    color="primary"
+                    className="me-2"
+                    onClick={filterMarked}
+                  >
+                    Filter Marked
+                  </Button>
+                  <Button
+                    color="secondary"
+                    className="me-2"
+                    onClick={clearFilter}
+                  >
+                    Clear Filter
+                  </Button>
+                  <Button color="success" onClick={handleUsersClicks}>
+                    Add New
+                  </Button>
+                </Col>
+              </Row>
+
+              {/* AG Grid */}
+              <div style={{ height: "400px" }}>
+                <AgGridReact
+                  ref={gridRef}
+                  rowData={showSearchResults ? results : data}
+                  columnDefs={columnDefs}
+                  pagination={true}
+                  paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+                  paginationPageSize={10}
+                  quickFilterText={quickFilterText}
+                  onSelectionChanged={onSelectionChanged}
+                />
+              </div>
+            </div>
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">

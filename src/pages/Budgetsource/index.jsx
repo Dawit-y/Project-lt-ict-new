@@ -241,18 +241,16 @@ const BudgetSourceModel = () => {
 
   const columnDefs = useMemo(() => {
     const baseColumns = [
-      {
-        headerCheckboxSelection: true, // Header checkbox for selecting all
-        checkboxSelection: true, // Checkbox per row
-        width: 50, // Set width for the checkbox column
-      },
+      // {
+      //   headerCheckboxSelection: true, // Header checkbox for selecting all
+      //   checkboxSelection: true, // Checkbox per row
+      //   width: 50, // Set width for the checkbox column
+      // },
 
       {
         headerName: t("pbs_name_or"),
-
         field: "pbs_name_or",
         sortable: true,
-
         filter: true,
         cellRenderer: (params) =>
           truncateText(params.data.pbs_name_or, 30) || "-",
@@ -446,8 +444,8 @@ const BudgetSourceModel = () => {
                   rowData={showSearchResults ? results : data}
                   columnDefs={columnDefs}
                   pagination={true}
+                  paginationPageSizeSelector={[10, 20, 30, 40, 50]}
                   paginationPageSize={10}
-                  rowSelection="multiple"
                   quickFilterText={quickFilterText}
                   onSelectionChanged={onSelectionChanged}
                 />
@@ -657,6 +655,7 @@ const BudgetSourceModel = () => {
     </React.Fragment>
   );
 };
+
 BudgetSourceModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,
 };
