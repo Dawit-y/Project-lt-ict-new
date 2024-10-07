@@ -6,9 +6,18 @@ import {
   Col,
   Container,
   Row,
+  Button,
   Table,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Label,
+  Form,
+  Input,
 } from "reactstrap";
 import { formatDistanceToNow, parseISO } from "date-fns";
+import axios from "axios";
 
 // Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb";
@@ -39,6 +48,44 @@ const UsersProfile = () => {
     { title: "Pending Projects", iconClass: "bx-hourglass", text: "12" },
     { title: "Total Cost", iconClass: "bx-package", text: "36,524 ETB" },
   ];
+
+  const [modal_backdrop, setModal_backdrop] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [passwordShown, setPasswordShown] = useState(false);
+
+  const tog_backdrop = () => {
+    setModal_backdrop(!modal_backdrop);
+  };
+
+  const togglePasswordVisibility = () => {
+    setPasswordShown(!passwordShown);
+  };
+
+  const handlePasswordChange = async () => {
+    if (!userProfile || !userProfile.user || !newPassword) {
+      setMessage("Please enter a valid password.");
+      return;
+    }
+
+    const data = {
+      usr_id: userProfile.user.usr_id, // Assuming usr_id exists
+      usr_password: newPassword,
+    };
+
+    try {
+      const response = await axios.post(
+        "https://pmsor.awashsol.com/api/user/change_password",
+        data
+      );
+      console.log(response);
+      setMessage("Password changed successfully!");
+      setModal_backdrop(false); // Close the modal on success
+    } catch (error) {
+      setMessage("Error changing password. Please try again.");
+      console.error("Error changing password:", error);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -144,6 +191,17 @@ const UsersProfile = () => {
                           </CardBody>
                         </Card>
                       </Col>
+                      <div className="d-flex flex-wrap gap-2">
+                        <Button
+                          type="button"
+                          color="primary "
+                          onClick={() => {
+                            tog_backdrop();
+                          }}
+                        >
+                          <i className="mdi mdi-pencil font-size-16"></i> Edit
+                        </Button>
+                      </div>
                     </Row>
                   </CardBody>
                 ) : (
@@ -176,7 +234,79 @@ const UsersProfile = () => {
           </Row>
         </Container>
       </div>
+
+      <Modal
+        isOpen={modal_backdrop}
+        toggle={() => {
+          tog_backdrop();
+        }}
+        backdrop={"static"}
+        id="staticBackdrop"
+        centered="true"
+      >
+        <ModalHeader
+          toggle={() => {
+            tog_backdrop();
+          }}
+        >
+          Edit Password
+        </ModalHeader>
+        <ModalBody>
+          <Form>
+            <Row className="mb-4">
+              <Label
+                htmlFor="horizontal-password-Input"
+                className="col-sm-3 col-form-label"
+              >
+                Password
+              </Label>
+              <Col sm={9} style={{ position: "relative" }}>
+                <Input
+                  type={passwordShown ? "text" : "password"}
+                  name="password"
+                  className="form-control"
+                  id="horizontal-password-Input"
+                  autoComplete="off"
+                  placeholder="Enter Your New Password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+                <i
+                  className={`mdi ${
+                    passwordShown ? "mdi-eye-off" : "mdi-eye"
+                  } font-size-16`}
+                  onClick={togglePasswordVisibility}
+                  style={{
+                    position: "absolute",
+                    right: "20px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    cursor: "pointer",
+                    zIndex: 1,
+                  }}
+                ></i>
+              </Col>
+            </Row>
+            {message && <p>{message}</p>}
+          </Form>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            type="button"
+            color="light"
+            onClick={() => {
+              setModal_backdrop(false);
+            }}
+          >
+            Close
+          </Button>
+          <Button type="button" color="success" onClick={handlePasswordChange}>
+            Edit
+          </Button>
+        </ModalFooter>
+      </Modal>
     </React.Fragment>
   );
 };
+
 export default UsersProfile;
