@@ -56,7 +56,7 @@ const truncateText = (text, maxLength) => {
 
 const ProjectDocumentModel = (props) => {
   // get passed data from the right of canva
-  const { documentData } = props;
+  const { passedId } = props;
 
   //meta title
   document.title = " ProjectDocument";
@@ -157,7 +157,7 @@ const ProjectDocumentModel = (props) => {
     enableReinitialize: true,
 
     initialValues: {
-      prd_project_id: documentData,
+      prd_project_id: passedId,
       prd_file: file,
       prd_name: (projectDocument && projectDocument.prd_name) || "",
       prd_file_path: (projectDocument && projectDocument.prd_file_path) || "",
@@ -235,7 +235,7 @@ const ProjectDocumentModel = (props) => {
   const dispatch = useDispatch();
   // Fetch ProjectDocument on component mount
   useEffect(() => {
-    dispatch(onGetProjectDocument(documentData));
+    dispatch(onGetProjectDocument(passedId));
   }, [dispatch]);
 
   const projectDocumentProperties = createSelector(
@@ -547,7 +547,7 @@ const ProjectDocumentModel = (props) => {
       />
 
       <div className="container-fluid">
-        {documentData ? null : (
+        {passedId ? null : (
           <Breadcrumbs
             title={t("project_document")}
             breadcrumbItem={t("project_document")}
@@ -641,7 +641,7 @@ const ProjectDocumentModel = (props) => {
                         placeholder={t("insert_status_name_amharic")}
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
-                        // readOnly={!!documentData}  // Conditionally set readOnly based on documentData
+                        // readOnly={!!passedId}  // Conditionally set readOnly based on passedId
                         value={documentData || validation.values.prd_project_id }
                         invalid={
                           validation.touched.prd_project_id && validation.errors.prd_project_id

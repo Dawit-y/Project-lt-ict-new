@@ -12,20 +12,18 @@ import {
   OffcanvasHeader,
   OffcanvasBody,
 } from "reactstrap";
-//Import Breadcrumb
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import classnames from "classnames";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import ProjectDocument from "../../pages/Projectdocument/index";
-import ProjectPayment from "../../pages/Projectpayment";
-import ProjectStakeholder from "../../pages/Projectstakeholder";
-import Projectcontractor from "../../pages/Projectcontractor";
-import Budgetrequest from "../../pages/Budgetrequest";
 
-const RightOffCanvas = ({ handleClick, showCanvas, canvasWidth, data }) => {
-  //meta title
-  document.title = "Right OffCanvas | For Project";
+const RightOffCanvas = ({
+  handleClick,
+  showCanvas,
+  canvasWidth,
+  name,
+  id,
+  navItems,
+  components,
+}) => {
+  const [activeTab1, setActiveTab1] = useState(1);
 
   const toggle1 = (tab) => {
     if (activeTab1 !== tab) {
@@ -33,140 +31,51 @@ const RightOffCanvas = ({ handleClick, showCanvas, canvasWidth, data }) => {
     }
   };
 
-  const [activeTab1, setActiveTab1] = useState("5");
-
   return (
     <React.Fragment>
-      {/* Right offcanvas */}
       <Offcanvas
         isOpen={showCanvas}
         direction="end"
         toggle={handleClick}
+        className={classnames("custom-offcanvas", {
+          "custom-offcanvas-close": !showCanvas,
+        })}
         style={{ width: `${canvasWidth}vw` }}
       >
-        <OffcanvasHeader toggle={handleClick}>{data.prj_name}</OffcanvasHeader>
+        <OffcanvasHeader toggle={handleClick}>{name}</OffcanvasHeader>
         <OffcanvasBody>
           <Col lg={12}>
             <Card>
               <CardBody>
                 <Nav pills className="navtab-bg nav-justified">
-                  <NavItem>
-                    <NavLink
-                      style={{ cursor: "pointer" }}
-                      className={classnames({
-                        active: activeTab1 === "5",
-                      })}
-                      onClick={() => {
-                        toggle1("5");
-                      }}
-                    >
-                      {/* <ProjectDocument/> */}
-                      <span className="d-block d-sm-none">
-                        <i className="fas fa-home"></i>
-                      </span>
-                      <span className="d-none d-sm-block">Documents</span>
-                    </NavLink>
-                  </NavItem>
-
-                  <NavItem>
-                    <NavLink
-                      style={{ cursor: "pointer" }}
-                      className={classnames({
-                        active: activeTab1 === "6",
-                      })}
-                      onClick={() => {
-                        toggle1("6");
-                      }}
-                    >
-                      <span className="d-block d-sm-none">
-                        <i className="far fa-user"></i>
-                      </span>
-                      <span className="d-none d-sm-block">Payments</span>
-                    </NavLink>
-                  </NavItem>
-
-                  <NavItem>
-                    <NavLink
-                      style={{ cursor: "pointer" }}
-                      className={classnames({
-                        active: activeTab1 === "7",
-                      })}
-                      onClick={() => {
-                        toggle1("7");
-                      }}
-                    >
-                      <span className="d-block d-sm-none">
-                        <i className="far fa-envelope"></i>
-                      </span>
-                      <span className="d-none d-sm-block">
-                        Project Stakeholder
-                      </span>
-                    </NavLink>
-                  </NavItem>
-
-                  <NavItem>
-                    <NavLink
-                      style={{ cursor: "pointer" }}
-                      className={classnames({
-                        active: activeTab1 === "8",
-                      })}
-                      onClick={() => {
-                        toggle1("8");
-                      }}
-                    >
-                      <span className="d-block d-sm-none">
-                        <i className="fas fa-cog"></i>
-                      </span>
-                      <span className="d-none d-sm-block">
-                        Projectcontractor
-                      </span>
-                    </NavLink>
-                  </NavItem>
-                  {/* budget request */}
-                  <NavItem>
-                    <NavLink
-                      style={{ cursor: "pointer" }}
-                      className={classnames({
-                        active: activeTab1 === "10",
-                      })}
-                      onClick={() => {
-                        toggle1("10");
-                      }}
-                    >
-                      <span className="d-block d-sm-none">
-                        <i className="fas fa-cog"></i>
-                      </span>
-                      <span className="d-none d-sm-block">Budgetrequest</span>
-                    </NavLink>
-                  </NavItem>
+                  {navItems.map((navItem, index) => (
+                    <NavItem key={index + 1} className="">
+                      <NavLink
+                        style={{ cursor: "pointer" }}
+                        className={`${classnames({
+                          active: activeTab1 === index + 1,
+                          "bg-light": activeTab1 !== index + 1,
+                          "w-25": navItems.length === 1,
+                        })} ms-2 border-start border-2 border-primary`}
+                        onClick={() => {
+                          toggle1(index + 1);
+                        }}
+                      >
+                        <span className="d-none d-sm-block">{navItem}</span>
+                      </NavLink>
+                    </NavItem>
+                  ))}
                 </Nav>
 
                 <TabContent
                   activeTab={activeTab1}
                   className="p-3 text-muted mt-4"
                 >
-                  <TabPane tabId="5">
-                    {/* <ProjectDocument /> */}
-                    <ProjectDocument documentData={data.prj_id} />
-                  </TabPane>
-
-                  <TabPane tabId="6">
-                    <ProjectPayment projectid={data.prj_id} />
-                  </TabPane>
-
-                  <TabPane tabId="7">
-                    <ProjectStakeholder projectid={data.prj_id} />
-                  </TabPane>
-
-                  <TabPane tabId="8">
-                    {/* <Projectcontractor/> */}
-                    <Projectcontractor projectid={data.prj_id} />
-                  </TabPane>
-                  {/* budget request */}
-                  <TabPane tabId="10">
-                    {/* <Projectcontractor/> */}
-                    <Budgetrequest projectid={data.prj_id} />
-                  </TabPane>
+                  {components.map((Component, index) => (
+                    <TabPane key={index + 1} tabId={index + 1}>
+                      <Component passedId={id} />
+                    </TabPane>
+                  ))}
                 </TabContent>
               </CardBody>
             </Card>

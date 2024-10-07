@@ -54,8 +54,8 @@ const truncateText = (text, maxLength) => {
 
 const ProjectPaymentModel = (props) => {
   //  get passed data from tab
-  const { projectid } = props;
-  console.log("project payment id ", projectid);
+  const { passedId } = props;
+  console.log("project payment id ", passedId);
   //meta title
   document.title = " ProjectPayment";
 
@@ -76,7 +76,7 @@ const ProjectPaymentModel = (props) => {
     enableReinitialize: true,
 
     initialValues: {
-      prp_project_id: projectid,
+      prp_project_id: passedId,
       prp_type: (projectPayment && projectPayment.prp_type) || "",
       prp_payment_date_et:
         (projectPayment && projectPayment.prp_payment_date_et) || "",
@@ -148,7 +148,7 @@ const ProjectPaymentModel = (props) => {
   const dispatch = useDispatch();
   // Fetch ProjectPayment on component mount
   useEffect(() => {
-    dispatch(onGetProjectPayment(projectid));
+    dispatch(onGetProjectPayment(passedId));
   }, [dispatch]);
 
   const projectPaymentProperties = createSelector(
@@ -462,14 +462,14 @@ const ProjectPaymentModel = (props) => {
         onCloseClick={() => setDeleteModal(false)}
       />
 
-      <div className={projectid ? "" : "page-content"}>
+      <div className={passedId ? "" : "page-content"}>
         <div className="container-fluid">
           {/* <Breadcrumbs
             title={t("project_payment")}
             breadcrumbItem={t("project_payment")}
           /> */}
 
-          {projectid ? null : (
+          {passedId ? null : (
             <Breadcrumbs
               title={t("project_payment")}
               breadcrumbItem={t("project_payment")}

@@ -50,7 +50,7 @@ const truncateText = (text, maxLength) => {
 
 const BudgetRequestModel = (props) => {
   //  get passed data from tab
-  const { projectid } = props;
+  const { passedId } = props;
   //meta title
   document.title = " BudgetRequest";
 
@@ -152,7 +152,7 @@ const BudgetRequestModel = (props) => {
   const dispatch = useDispatch();
   // Fetch BudgetRequest on component mount
   useEffect(() => {
-    dispatch(onGetBudgetRequest(projectid));
+    dispatch(onGetBudgetRequest(passedId));
   }, [dispatch]);
 
   const budgetRequestProperties = createSelector(
@@ -500,7 +500,7 @@ const BudgetRequestModel = (props) => {
             title={t("budget_request")}
             breadcrumbItem={t("budget_request")}
           /> */}
-        {projectid ? null : (
+        {passedId ? null : (
           <Breadcrumbs
             title={t("budget_request")}
             breadcrumbItem={t("budget_request")}

@@ -52,7 +52,7 @@ const truncateText = (text, maxLength) => {
 
 const ProjectStakeholderModel = (props) => {
   //  get passed data from tab
-  const { projectid } = props;
+  const { passedId } = props;
   //meta title
   document.title = " ProjectStakeholder";
 
@@ -100,7 +100,7 @@ const ProjectStakeholderModel = (props) => {
     enableReinitialize: true,
 
     initialValues: {
-      psh_project_id: projectid,
+      psh_project_id: passedId,
       psh_name: (projectStakeholder && projectStakeholder.psh_name) || "",
       psh_representative_name:
         (projectStakeholder && projectStakeholder.psh_representative_name) ||
@@ -172,7 +172,7 @@ const ProjectStakeholderModel = (props) => {
   const dispatch = useDispatch();
   // Fetch ProjectStakeholder on component mount
   useEffect(() => {
-    dispatch(onGetProjectStakeholder(projectid));
+    dispatch(onGetProjectStakeholder(passedId));
   }, [dispatch]);
 
   const projectStakeholderProperties = createSelector(
@@ -471,13 +471,13 @@ const ProjectStakeholderModel = (props) => {
         onDeleteClick={handleDeleteProjectStakeholder}
         onCloseClick={() => setDeleteModal(false)}
       />
-      <div className={projectid ? "" : "page-content"}>
+      <div className={passedId ? "" : "page-content"}>
         <div className="container-fluid">
           {/* <Breadcrumbs
             title={t("project_stakeholder")}
             breadcrumbItem={t("project_stakeholder")}
           /> */}
-          {projectid ? null : (
+          {passedId ? null : (
             <Breadcrumbs
               title={t("project_stakeholder")}
               breadcrumbItem={t("project_stakeholder")}

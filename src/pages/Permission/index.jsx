@@ -54,8 +54,8 @@ const truncateText = (text, maxLength) => {
 
 const PermissionModel = (props) => {
   // get data from tab page
-  const { rol_id } = props;
-  console.log("role_id", rol_id);
+  const { passedId } = props;
+  console.log("role_id", passedId);
   //meta title
   document.title = " Permission";
 
@@ -63,7 +63,7 @@ const PermissionModel = (props) => {
 
   //  add new
   const [selectedItem, setSelectedItem] = useState(null);
-  // console.log("selected item",selectedItem.rol_id)
+  // console.log("selected item",selectedItem.passedId)
   const [pageId, setPageId] = useState(null);
 
   const [modal, setModal] = useState(false);
@@ -86,7 +86,7 @@ const PermissionModel = (props) => {
       pag_id: (permission && permission.pag_id) || "",
       pag_name: (permission && permission.pag_name) || "",
       pem_id: (permission && permission.pem_id) || "",
-      pem_role_id: rol_id,
+      pem_role_id: passedId,
       pem_enabled: (permission && permission.pem_enabled) || "",
       pem_edit: (permission && permission.pem_edit) || "",
       pem_insert: (permission && permission.pem_insert) || "",
@@ -168,7 +168,7 @@ const PermissionModel = (props) => {
   const dispatch = useDispatch();
   // Fetch Permission on component mount
   useEffect(() => {
-    dispatch(onGetPermission(rol_id));
+    dispatch(onGetPermission(passedId));
   }, [dispatch]);
 
   const permissionProperties = createSelector(

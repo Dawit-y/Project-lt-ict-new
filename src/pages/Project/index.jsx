@@ -32,6 +32,11 @@ import ProjectModal from "./ProjectModal";
 import { useTranslation } from "react-i18next";
 
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
+import ProjectDocument from "../../pages/Projectdocument/index";
+import ProjectPayment from "../../pages/Projectpayment";
+import ProjectStakeholder from "../../pages/Projectstakeholder";
+import Projectcontractor from "../../pages/Projectcontractor";
+import Budgetrequest from "../../pages/Budgetrequest";
 
 import {
   Button,
@@ -800,7 +805,7 @@ const ProjectModel = () => {
               {params.data.is_editable ? (
                 <Link
                   to="#"
-                  className="text-secondary"
+                  className="text-secondary ms-2"
                   onClick={() => handleClick(params.data)}
                 >
                   <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
@@ -814,7 +819,7 @@ const ProjectModel = () => {
               {params.data.is_deletable ? (
                 <Link
                   to="#"
-                  className="text-danger"
+                  className="text-danger ms-2"
                   onClick={() => onClickDelete(params.data)}
                 >
                   <i
@@ -1803,7 +1808,22 @@ const ProjectModel = () => {
           handleClick={handleClick}
           showCanvas={showCanvas}
           canvasWidth={84}
-          data={projectMetaData}
+          name={projectMetaData.prj_name}
+          id={projectMetaData.prj_id}
+          navItems={[
+            "Documents",
+            "Payments",
+            "Project Stakeholder",
+            "Project Contractor",
+            "Budget Request",
+          ]}
+          components={[
+            ProjectDocument,
+            ProjectPayment,
+            ProjectStakeholder,
+            Projectcontractor,
+            Budgetrequest,
+          ]}
         />
       )}
     </React.Fragment>

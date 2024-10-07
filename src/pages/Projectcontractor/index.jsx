@@ -54,7 +54,7 @@ const truncateText = (text, maxLength) => {
 
 const ProjectContractorModel = (props) => {
   //  get passed data from tab
-  const { projectid } = props;
+  const { passedId } = props;
   //meta title
   document.title = " ProjectContractor";
 
@@ -124,7 +124,7 @@ const ProjectContractorModel = (props) => {
       cni_address: (projectContractor && projectContractor.cni_address) || "",
       cni_email: (projectContractor && projectContractor.cni_email) || "",
       cni_website: (projectContractor && projectContractor.cni_website) || "",
-      cni_project_id: projectid,
+      cni_project_id: passedId,
       cni_procrument_method:
         (projectContractor && projectContractor.cni_procrument_method) || "",
       cni_bid_invitation_date:
@@ -258,7 +258,7 @@ const ProjectContractorModel = (props) => {
   const dispatch = useDispatch();
   // Fetch ProjectContractor on component mount
   useEffect(() => {
-    dispatch(onGetProjectContractor(projectid));
+    dispatch(onGetProjectContractor(passedId));
   }, [dispatch]);
 
   const projectContractorProperties = createSelector(
@@ -790,13 +790,13 @@ const ProjectContractorModel = (props) => {
         onDeleteClick={handleDeleteProjectContractor}
         onCloseClick={() => setDeleteModal(false)}
       />
-      <div className={projectid ? "" : "page-content"}>
+      <div className={passedId ? "" : "page-content"}>
         <div className="container-fluid">
           {/* <Breadcrumbs
             title={t("project_contractor")}
             breadcrumbItem={t("project_contractor")}
           /> */}
-          {projectid ? null : (
+          {passedId ? null : (
             <Breadcrumbs
               title={t("project_contractor")}
               breadcrumbItem={t("project_contractor")}

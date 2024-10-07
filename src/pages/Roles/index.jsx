@@ -42,7 +42,8 @@ import {
   Badge,
 } from "reactstrap";
 import { ToastContainer } from "react-toastify";
-import PermissionListTable from "../../components/Common/PermissionListTable";
+import RightOffCanvas from "../../components/Common/RightOffCanvas";
+import Permission from "../../pages/Permission";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -546,11 +547,15 @@ const RolesModel = ({ onSelectItem }) => {
       </div>
       <ToastContainer />
       {showCanvas && (
-        <PermissionListTable
+        <RightOffCanvas
           handleClick={handleClick}
           showCanvas={showCanvas}
-          canvasWidth={75}
+          canvasWidth={84}
           data={RoleMetaData}
+          id={RoleMetaData.rol_id}
+          name={RoleMetaData.rol_name}
+          navItems={["Permission"]}
+          components={[Permission]}
         />
       )}
     </React.Fragment>
