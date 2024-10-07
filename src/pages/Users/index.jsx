@@ -12,6 +12,8 @@ import CascadingDropdowns from "../../components/Common/CascadingDropdowns";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+// pages
+import UserRoles  from  "../../pages/Userrole/index";
 
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
@@ -50,6 +52,7 @@ import {
 } from "reactstrap";
 import { ToastContainer } from "react-toastify";
 import accessToken from "../../helpers/jwt-token-access/accessToken";
+import RightOffCanvas from "../../components/Common/RightOffCanvas";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -81,6 +84,10 @@ const UsersModel = () => {
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
+  
+
+  const [projectMetaData, setProjectMetaData] = useState({});
+  const [showCanvas, setShowCanvas] = useState(false);
 
   useEffect(() => {
     const fetchAddressStructure = async () => {
@@ -343,6 +350,11 @@ const UsersModel = () => {
     setDeleteModal(true);
   };
 
+  const handleClick = (data) => {
+    setShowCanvas(!showCanvas); // Toggle canvas visibility
+    setProjectMetaData(data);
+  };
+
   const handleDeleteUsers = () => {
     if (users && users.usr_id) {
       dispatch(onDeleteUsers(users.usr_id));
@@ -550,6 +562,21 @@ const UsersModel = () => {
                 </UncontrolledTooltip>
               </Link>
             )}
+            {/* add view project  */}
+            {params.data.is_editable ? (
+                <Link
+                  to="#"
+                  className="text-secondary ms-2"
+                  onClick={() => handleClick(params.data)}
+                >
+                  <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
+                  <UncontrolledTooltip placement="top" target="viewtooltip">
+                    View
+                  </UncontrolledTooltip>
+                </Link>
+              ) : (
+                ""
+              )}
           </div>
         ),
       });
@@ -1227,6 +1254,22 @@ const UsersModel = () => {
         </div>
       </div>
       <ToastContainer />
+      {showCanvas && (
+        <RightOffCanvas
+          handleClick={handleClick}
+          showCanvas={showCanvas}
+          canvasWidth={84}
+          name={projectMetaData.prj_name}
+          id={projectMetaData.prj_id}
+          navItems={[
+            "UserRoles",
+          ]}
+          components={[
+            UserRoles,
+          
+          ]}
+        />
+      )}
     </React.Fragment>
   );
 };
