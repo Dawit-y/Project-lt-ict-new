@@ -75,7 +75,7 @@ const UsersProfile = () => {
 
     try {
       const response = await axios.post(
-        "https://pmsor.awashsol.com/api/user/change_password",
+        `${import.meta.env.VITE_BASE_API_URL}user/change_password`,
         data
       );
       console.log(response);

@@ -13,6 +13,7 @@ import {
 } from "@tanstack/react-table";
 
 import { rankItem } from "@tanstack/match-sorter-utils";
+import ExportToExcel from "../../components/Common/ExportToExcel";
 
 // Column Filter
 const Filter = ({ column }) => {
@@ -173,7 +174,9 @@ const TableContainer = ({
                 onClick={handleUserClick}
               >
                 <i className="mdi mdi-plus me-1"></i> {buttonName}
-              </Button>
+              </Button> 
+               {/* add export button */}
+               <ExportToExcel tableData={data} tablename ={buttonName.split(" ")[1]} />
             </div>
           </Col>
         )}
