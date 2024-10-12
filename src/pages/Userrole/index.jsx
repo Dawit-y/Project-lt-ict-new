@@ -55,7 +55,9 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const UserRoleModel = () => {
+const UserRoleModel = (props) => {
+ 
+  const {passedId}=props;
   //meta title
   document.title = " UserRole";
 
@@ -156,7 +158,7 @@ const UserRoleModel = () => {
   const dispatch = useDispatch();
   // Fetch UserRole on component mount
   useEffect(() => {
-    dispatch(onGetUserRole());
+    dispatch(onGetUserRole(passedId));
   }, [dispatch]);
 
   const userRoleProperties = createSelector(

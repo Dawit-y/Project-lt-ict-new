@@ -19,9 +19,10 @@ const ExportToExcel = ({ tableData ,tablename}) => {
   };
 
   return (
-    <button className="btn btn-primary" onClick={handleExportToExcel}>
-      Export to Excel
-    </button>
+    <button className="btn btn-secondary" onClick={handleExportToExcel}>
+    Export to Excel
+  </button>
+  
   );
 };
 

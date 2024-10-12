@@ -41,9 +41,9 @@ import "react-toastify/dist/ReactToastify.css";
 
 const selectShowResult = (state) => state.UserRoleR.show_result;
 
-function* fetchUserRole() {
+function* fetchUserRole({payload:userRoleId}) {
   try {
-    const response = yield call(getUserRole);
+    const response = yield call(getUserRole,userRoleId);
     yield put(getUserRoleSuccess(response));
     // toast.success(`userRoles Loading  Successfully`, { autoClose: 2000 });
   } catch (error) {

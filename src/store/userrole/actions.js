@@ -14,8 +14,9 @@ import {
   TOGGLE_UPDATE_LOADING
 } from "./actionTypes";
 
-export const getUserRole = () => ({
+export const getUserRole = (UserRoleId) => ({
   type: GET_USER_ROLE,
+  payload:UserRoleId
 });
 export const addUserRole = (UserRole) => ({
   type: ADD_USER_ROLE,

@@ -8,9 +8,11 @@ const ADD_USER_ROLE = "user_role/insertgrid";
 const UPDATE_USER_ROLE = "user_role/updategrid";
 const DELETE_USER_ROLE = "user_role/deletegrid";
 // get Projects
-export const getUserRole = async () => {
+export const getUserRole = async (userRoleID) => {
   try {
-    const response = await post(GET_USER_ROLE);
+    
+    const response = await post(`${GET_USER_ROLE}?user_id=${userRoleID}`);
+
     return response;
   } catch (error) {
     console.log(error); // Handle any errors

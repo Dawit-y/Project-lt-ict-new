@@ -87,6 +87,7 @@ const UsersModel = () => {
   
 
   const [projectMetaData, setProjectMetaData] = useState({});
+  const [userMetaData,setUserData]=useState({});
   const [showCanvas, setShowCanvas] = useState(false);
 
   useEffect(() => {
@@ -352,7 +353,9 @@ const UsersModel = () => {
 
   const handleClick = (data) => {
     setShowCanvas(!showCanvas); // Toggle canvas visibility
-    setProjectMetaData(data);
+    // setProjectMetaData(data);
+    setUserData(data);
+    
   };
 
   const handleDeleteUsers = () => {
@@ -1259,8 +1262,8 @@ const UsersModel = () => {
           handleClick={handleClick}
           showCanvas={showCanvas}
           canvasWidth={84}
-          name={projectMetaData.prj_name}
-          id={projectMetaData.prj_id}
+          name={userMetaData.usr_name}
+          id={userMetaData.usr_id}
           navItems={[
             "UserRoles",
           ]}
