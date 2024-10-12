@@ -70,7 +70,7 @@ const UsersProfile = () => {
 
     const data = {
       usr_id: userProfile.user.usr_id, // Assuming usr_id exists
-      usr_password: newPassword,
+      password: newPassword,
     };
 
     try {
