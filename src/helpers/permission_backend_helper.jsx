@@ -10,8 +10,10 @@ const DELETE_PERMISSION = "permission/deletegrid";
 // get Projects
 export const getPermission = async (permissionroleid) => {
   try {
-    const response = await post(`${GET_PERMISSION}?pem_role_id=${permissionroleid}`);
-  
+    const response = await post(
+      `${GET_PERMISSION}?pem_role_id=${permissionroleid}`
+    );
+
     return response;
   } catch (error) {
     console.log(error); // Handle any errors
@@ -21,7 +23,7 @@ export const getPermission = async (permissionroleid) => {
 export const addPermission = async (objectName) => {
   try {
     const response = await axios.post(
-      `${apiUrl}`+ADD_PERMISSION,
+      `${apiUrl}` + ADD_PERMISSION,
       objectName,
       {
         headers: {
@@ -37,12 +39,15 @@ export const addPermission = async (objectName) => {
 };
 // update objectNames
 export const updatePermission = (objectName) =>
-  post(`${apiUrl}`+UPDATE_PERMISSION +`?pem_id=${objectName?.pem_id}`, objectName);
+  post(
+    `${apiUrl}` + UPDATE_PERMISSION + `?pem_id=${objectName?.pem_id}`,
+    objectName
+  );
 
 // delete objectNames
 export const deletePermission = (objectName) =>
   // post(`${url.DELETE_ORDER}?pem_id=${order?.pem_id}`);
-  post(`${apiUrl}`+DELETE_PERMISSION+`?pem_id=${objectName}`);
+  post(`${apiUrl}` + DELETE_PERMISSION + `?pem_id=${objectName}`);
 
 export const fetchSearchResults = async (searchTerm, selectedFields) => {
   let queryParams = [];
@@ -64,6 +69,4 @@ export const fetchSearchResults = async (searchTerm, selectedFields) => {
   );
   return response.data.data;
 };
-export {
-  
-};
+export {};

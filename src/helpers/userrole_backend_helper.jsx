@@ -10,7 +10,6 @@ const DELETE_USER_ROLE = "user_role/deletegrid";
 // get Projects
 export const getUserRole = async (userRoleID) => {
   try {
-    
     const response = await post(`${GET_USER_ROLE}?user_id=${userRoleID}`);
 
     return response;
@@ -20,16 +19,13 @@ export const getUserRole = async (userRoleID) => {
 };
 // add Projects
 export const addUserRole = async (objectName) => {
+  console.log("add user role helper", objectName);
   try {
-    const response = await axios.post(
-      `${apiUrl}`+ADD_USER_ROLE,
-      objectName,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await axios.post(`${apiUrl}${ADD_USER_ROLE}`, objectName, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Failed to update grid:", error);
@@ -38,12 +34,15 @@ export const addUserRole = async (objectName) => {
 };
 // update objectNames
 export const updateUserRole = (objectName) =>
-  post(`${apiUrl}`+UPDATE_USER_ROLE +`?url_id=${objectName?.url_id}`, objectName);
+  post(
+    `${apiUrl}` + UPDATE_USER_ROLE + `?url_id=${objectName?.url_id}`,
+    objectName
+  );
 
 // delete objectNames
 export const deleteUserRole = (objectName) =>
   // post(`${url.DELETE_ORDER}?url_id=${order?.url_id}`);
-  post(`${apiUrl}`+DELETE_USER_ROLE+`?url_id=${objectName}`);
+  post(`${apiUrl}` + DELETE_USER_ROLE + `?url_id=${objectName}`);
 
 export const fetchSearchResults = async (searchTerm, selectedFields) => {
   let queryParams = [];
@@ -65,6 +64,4 @@ export const fetchSearchResults = async (searchTerm, selectedFields) => {
   );
   return response.data.data;
 };
-export {
-  
-};
+export {};

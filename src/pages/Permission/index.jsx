@@ -11,7 +11,6 @@ import Spinners from "../../components/Common/Spinner";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 //  import role page index
-import Role from "../Roles/index";
 
 import {
   getPermission as onGetPermission,
@@ -19,6 +18,8 @@ import {
   updatePermission as onUpdatePermission,
   deletePermission as onDeletePermission,
 } from "../../store/permission/actions";
+
+import { getPages } from "../../store/pages/actions";
 
 //redux
 import { useSelector, useDispatch } from "react-redux";
@@ -55,7 +56,6 @@ const truncateText = (text, maxLength) => {
 const PermissionModel = (props) => {
   // get data from tab page
   const { passedId } = props;
-  console.log("role_id", passedId);
   //meta title
   document.title = " Permission";
 
@@ -64,7 +64,7 @@ const PermissionModel = (props) => {
   //  add new
   const [selectedItem, setSelectedItem] = useState(null);
   // console.log("selected item",selectedItem.passedId)
-  const [pageId, setPageId] = useState(null);
+  // const [pageId, setPageId] = useState(null);
 
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -124,7 +124,7 @@ const PermissionModel = (props) => {
           pag_name: values.pag_name,
           pem_id: values.pem_id,
           pem_page_id: values.pem_page_id,
-          pem_role_id: values.pem_role_id,
+          pem_role_id: passedId,
           pem_enabled: values.pem_enabled,
           pem_edit: values.pem_edit,
           pem_insert: values.pem_insert,
@@ -140,13 +140,12 @@ const PermissionModel = (props) => {
         };
         // update Permission
         dispatch(onUpdatePermission(updatePermission));
-        console.log("update permission ", updatePermission);
         validation.resetForm();
       } else {
         const newPermission = {
           pem_id: values.pem_id,
           pem_page_id: values.pem_page_id,
-          pem_role_id: values.pem_role_id,
+          pem_role_id: passedId,
           pem_enabled: values.pem_enabled,
           pem_edit: values.pem_edit,
           pem_insert: values.pem_insert,
@@ -169,6 +168,7 @@ const PermissionModel = (props) => {
   // Fetch Permission on component mount
   useEffect(() => {
     dispatch(onGetPermission(passedId));
+    dispatch(getPages());
   }, [dispatch]);
 
   const permissionProperties = createSelector(
@@ -187,8 +187,23 @@ const PermissionModel = (props) => {
     update_loading,
   } = useSelector(permissionProperties);
 
+  const pagesProperties = createSelector(
+    (state) => state.PagesR, // this is geting from  reducer
+    (PagesReducer) => ({
+      // this is from Project.reducer
+      pages: PagesReducer.pages,
+      loading: PagesReducer.loading,
+      update_loading: PagesReducer.update_loading,
+    })
+  );
+
+  const {
+    pages: { data: pagesData, previledge: pagesPreviledge },
+    loading: pagesLoading,
+    update_loading: pagesUpdateLoading,
+  } = useSelector(pagesProperties);
+
   useEffect(() => {
-    console.log("update_loading in useEffect", update_loading);
     setModal(false);
   }, [update_loading]);
 
@@ -287,11 +302,7 @@ const PermissionModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pag_name, 30) || "-"}
-            </span>
-          );
+          return <span>{cellProps.row.original.pag_name}</span>;
         },
       },
       {
@@ -300,11 +311,7 @@ const PermissionModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pem_role_id, 30) || "-"}
-            </span>
-          );
+          return <span>{cellProps.row.original.pem_role_id}</span>;
         },
       },
       {
@@ -313,11 +320,7 @@ const PermissionModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pem_enabled, 30) || "-"}
-            </span>
-          );
+          return <span>{cellProps.row.original.pem_enabled}</span>;
         },
       },
       {
@@ -326,11 +329,7 @@ const PermissionModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pem_edit, 30) || "-"}
-            </span>
-          );
+          return <span>{cellProps.row.original.pem_edit}</span>;
         },
       },
       {
@@ -339,11 +338,7 @@ const PermissionModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pem_insert, 30) || "-"}
-            </span>
-          );
+          return <span>{cellProps.row.original.pem_insert}</span>;
         },
       },
       {
@@ -352,11 +347,7 @@ const PermissionModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pem_view, 30) || "-"}
-            </span>
-          );
+          return <span>{cellProps.row.original.pem_view}</span>;
         },
       },
       {
@@ -365,11 +356,7 @@ const PermissionModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pem_delete, 30) || "-"}
-            </span>
-          );
+          return <span>{cellProps.row.original.pem_delete}</span>;
         },
       },
       {
@@ -378,11 +365,7 @@ const PermissionModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pem_show, 30) || "-"}
-            </span>
-          );
+          return <span>{cellProps.row.original.pem_show}</span>;
         },
       },
       {
@@ -391,11 +374,7 @@ const PermissionModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pem_search, 30) || "-"}
-            </span>
-          );
+          return <span>{cellProps.row.original.pem_search}</span>;
         },
       },
       {
@@ -449,7 +428,7 @@ const PermissionModel = (props) => {
                   className="text-success"
                   onClick={() => {
                     const data = cellProps.row.original;
-                    setPageId(data.pag_id);
+                    setSelectedItem(data);
                     handlePermissionClick(data);
                   }}
                 >
@@ -509,12 +488,6 @@ const PermissionModel = (props) => {
       />
       <div>
         <div className="container-fluid">
-          {/* {pem_role_id?null : 
-              <Breadcrumbs
-                title={t("permission")}
-                breadcrumbItem={t("permission")}
-                />
-             } */}
           <Breadcrumbs title={t("roles")} breadcrumbItem={t("permission")} />
           {isLoading || searchLoading ? (
             <Spinners setLoading={setLoading} />
@@ -548,28 +521,21 @@ const PermissionModel = (props) => {
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
               {!!isEdit
-                ? `${selectedItem?.rol_name}` +
-                  " " +
-                  t("edit") +
-                  " " +
-                  t("permission")
-                : `${selectedItem?.rol_name}` +
-                  " " +
-                  t("add") +
-                  " " +
-                  t("permission")}
+                ? `${t("edit")} ${t("permission")} ${"for"} ${
+                    selectedItem?.pag_name
+                  } ${t("page")}`
+                : `${t("add")} ${t("permission")}`}
             </ModalHeader>
             <ModalBody>
               <Form
                 onSubmit={(e) => {
                   e.preventDefault();
                   validation.handleSubmit();
-                  const modalCallback = () => setModal(false);
+                  // const modalCallback = () => setModal(false);
                   if (isEdit) {
-                    onUpdatePermission(validation.values, modalCallback);
-                    console.log("validation", validation.values);
+                    onUpdatePermission(validation.values);
                   } else {
-                    onAddPermission(validation.values, modalCallback);
+                    onAddPermission(validation.values);
                   }
                   return false;
                 }}
@@ -580,10 +546,11 @@ const PermissionModel = (props) => {
                     <Label>{t("pem_page_id")}</Label>
                     <Input
                       name="pem_page_id"
-                      type="text"
-                      placeholder={t("insert_pem_page_id_amharic")}
-                      value={pageId}
-                      readOnly // Makes the field non-editable
+                      type="select"
+                      placeholder={t("insert_pem_page_id")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pem_page_id || ""}
                       invalid={
                         validation.touched.pem_page_id &&
                         validation.errors.pem_page_id
@@ -591,7 +558,14 @@ const PermissionModel = (props) => {
                           : false
                       }
                       maxLength={20}
-                    />
+                    >
+                      <option value="">{t("select_pages")}</option>
+                      {pagesData?.map((page) => (
+                        <option key={page.pag_id} value={page.pag_id}>
+                          {page.pag_name}
+                        </option>
+                      ))}
+                    </Input>
                     {validation.touched.pem_page_id &&
                     validation.errors.pem_page_id ? (
                       <FormFeedback type="invalid">
@@ -601,7 +575,7 @@ const PermissionModel = (props) => {
                   </Col>
 
                   {/* role id  */}
-                  <Col className="col-md-6 mb-3">
+                  {/* <Col className="col-md-6 mb-3">
                     <Label>{t("pem_role_id")}</Label>
                     <Input
                       name="pem_role_id"
@@ -610,7 +584,6 @@ const PermissionModel = (props) => {
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.pem_role_id || ""}
-                      readOnly
                       invalid={
                         validation.touched.pem_role_id &&
                         validation.errors.pem_role_id
@@ -618,14 +591,22 @@ const PermissionModel = (props) => {
                           : false
                       }
                       maxLength={20}
-                    />
+                    >
+                      <option value="">{t("select_roles")}</option>
+                      {rolesData?.map((role) => (
+                        <option key={role.rol_id} value={role.rol_id}>
+                          {role.rol_name}
+                        </option>
+                      ))}
+                    </Input>
+
                     {validation.touched.pem_role_id &&
                     validation.errors.pem_role_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pem_role_id}
                       </FormFeedback>
                     ) : null}
-                  </Col>
+                  </Col> */}
                   {/*  enable*/}
                   <Col className="col-md-6 mb-3">
                     <Label>{t("pem_enabled")}</Label>
