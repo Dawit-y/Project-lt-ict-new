@@ -27,9 +27,11 @@ import MiniCards from "./mini-card";
 
 // Import Images
 import profile1 from "/src/assets/images/profile-img.png";
+import { ToastContainer } from "react-toastify";
 
 // Import charts
 import ApexRevenue from "./ApexRevenue";
+import { toast } from "react-toastify";
 
 const UsersProfile = () => {
   document.title = "Profile | Skote - Vite React Admin & Dashboard Template";
@@ -69,7 +71,7 @@ const UsersProfile = () => {
     }
 
     const data = {
-      usr_id: userProfile.user.usr_id, // Assuming usr_id exists
+      user_id: userProfile.user.usr_id, // Assuming usr_id exists
       password: newPassword,
     };
 
@@ -80,8 +82,15 @@ const UsersProfile = () => {
       );
       console.log(response);
       setMessage("Password changed successfully!");
+      toast.success(`Password changed successfully!`, {
+        autoClose: 2000,
+      });
+      
       setModal_backdrop(false); // Close the modal on success
     } catch (error) {
+      toast.success(`Error changing password. Please try again.`, {
+        autoClose: 2000,
+      });
       setMessage("Error changing password. Please try again.");
       console.error("Error changing password:", error);
     }
@@ -305,6 +314,7 @@ const UsersProfile = () => {
           </Button>
         </ModalFooter>
       </Modal>
+      <ToastContainer />
     </React.Fragment>
   );
 };
