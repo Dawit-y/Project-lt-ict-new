@@ -445,7 +445,7 @@ const ProjectDocumentModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.prd_status, 30) || "-"}
+              {truncateText(cellProps.row.original.prd_status, 30) || `${cellProps.row.original.prd_status}`}
             </span>
           );
         },

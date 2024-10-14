@@ -361,7 +361,7 @@ const ProjectPaymentModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.prp_status, 30) || "-"}
+              {truncateText(cellProps.row.original.prp_status, 30) || `${cellProps.row.original.prp_status}`}
             </span>
           );
         },

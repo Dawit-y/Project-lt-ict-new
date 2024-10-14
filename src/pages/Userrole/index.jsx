@@ -295,7 +295,7 @@ const UserRoleModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.url_status, 30) || "-"}
+              {truncateText(cellProps.row.original.url_status, 30) || `${cellProps.row.original.url_status}`}
             </span>
           );
         },

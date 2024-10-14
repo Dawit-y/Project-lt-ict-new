@@ -405,7 +405,7 @@ const SectorInformationModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.sci_status, 30) || "-"}
+              {truncateText(cellProps.row.original.sci_status, 30) || `${cellProps.row.original.sci_status}`}
             </span>
           );
         },

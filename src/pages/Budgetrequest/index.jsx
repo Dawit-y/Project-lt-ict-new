@@ -394,7 +394,7 @@ const BudgetRequestModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdr_status, 30) || "-"}
+              {truncateText(cellProps.row.original.bdr_status, 30) || `${cellProps.row.original.bdr_status}`}
             </span>
           );
         },

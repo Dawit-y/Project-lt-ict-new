@@ -271,7 +271,7 @@ const BudgetYearModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdy_status, 30) || "-"}
+              {truncateText(cellProps.row.original.bdy_status, 30) || `${cellProps.row.original.bdy_status}`}
             </span>
           );
         },

@@ -381,7 +381,7 @@ const DepartmentModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.dep_status, 30) || "-"}
+              {truncateText(cellProps.row.original.dep_status, 30) || `${cellProps.row.original.dep_status}`}
             </span>
           );
         },

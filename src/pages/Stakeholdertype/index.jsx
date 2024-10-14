@@ -295,7 +295,7 @@ const StakeholderTypeModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.sht_status, 30) || "-"}
+              {truncateText(cellProps.row.original.sht_status, 30) || `${cellProps.row.original.sht_status}`}
             </span>
           );
         },

@@ -345,7 +345,7 @@ const AddressStructureModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.add_status, 30) || "-"}
+              {truncateText(cellProps.row.original.add_status, 30) || `${cellProps.row.original.add_status}`}
             </span>
           );
         },
