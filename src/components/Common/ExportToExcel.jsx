@@ -1,28 +1,41 @@
 import React from "react";
 import * as XLSX from "xlsx";
+import { useTranslation } from "react-i18next";
 
-const ExportToExcel = ({ tableData ,tablename}) => {
+const ExportToExcel = ({ tableData, tablename }) => {
+  const { t } = useTranslation(); // Initialize translation
 
   // Function to export data to Excel
   const handleExportToExcel = () => {
-    // 1. Convert table data to a worksheet
-    const worksheet = XLSX.utils.json_to_sheet(tableData);
+    // Ensure tableData is not empty
+    if (!tableData || tableData.length === 0) {
+      console.error("No data to export.");
+      return;
+    }
 
-    // 2. Create a new workbook
+   
+    const headers = Object.keys(tableData[0]).map((key) => t(key)); // Localize headers
+
+    const dataRows = tableData.map((row) => {
+      return Object.values(row); // Get values from each row
+    });
+
+    const combinedData = [headers, ...dataRows]; 
+
+    const worksheet = XLSX.utils.aoa_to_sheet(combinedData);
+
+   
     const workbook = XLSX.utils.book_new();
 
-    // 3. Append the worksheet to the workbook
     XLSX.utils.book_append_sheet(workbook, worksheet, "Table Data");
-
-    // 4. Create Excel file and download it
+// make dounload able 
     XLSX.writeFile(workbook, `table_${tablename}.xlsx`);
   };
 
   return (
     <button className="btn btn-secondary" onClick={handleExportToExcel}>
-    Export to Excel
-  </button>
-  
+      {t('exportToExcel')} {/* Localize button text */}
+    </button>
   );
 };
 
