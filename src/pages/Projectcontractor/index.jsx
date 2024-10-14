@@ -535,7 +535,7 @@ const ProjectContractorModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cni_address, 30) || "-"}
+              {truncateText(cellProps.row.original.cni_address, 30) || `${cellProps.row.original.cni_address}`}
             </span>
           );
         },

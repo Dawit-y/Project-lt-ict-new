@@ -292,7 +292,7 @@ const BudgetSourceModel = () => {
         sortable: true,
         filter: false,
         cellRenderer: (params) =>
-          truncateText(params.data.pbs_status, 30) || "-",
+          truncateText(params.data.pbs_status, 30) || `${params.data.pbs_status}`,
       },
       {
         headerName: t("view_detail"),

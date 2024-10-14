@@ -265,7 +265,7 @@ const RolesModel = ({ onSelectItem }) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rol_status, 30) || "-"}
+              {truncateText(cellProps.row.original.rol_status, 30) || `${cellProps.row.original.rol_status}`}
             </span>
           );
         },

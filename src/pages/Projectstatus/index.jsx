@@ -339,7 +339,7 @@ const ProjectStatusModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.prs_status, 30) || "-"}
+              {truncateText(cellProps.row.original.prs_status, 30) || `${cellProps.row.original.prs_status}`}
             </span>
           );
         },

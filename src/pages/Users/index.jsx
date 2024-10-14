@@ -510,7 +510,7 @@ const UsersModel = () => {
         sortable: true,
         filter: false,
         cellRenderer: (params) =>
-          truncateText(params.data.usr_status, 30) || "-",
+          truncateText(params.data.usr_status, 30) || `${params.data.usr_status}`,
       },
       {
         headerName: t("view_detail"),
