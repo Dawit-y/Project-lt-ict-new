@@ -183,10 +183,11 @@ const TableContainer = ({
       </Row>
 
       <div className={divClassName ? divClassName : "table-responsive"}>
-        <Table hover className={tableClass} bordered={isBordered}>
+        <Table hover className={`${tableClass} table-sm table-bordered table-striped`} bordered={isBordered}>
           <thead className={theadClass}>
             {getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
+                <th>S.N</th>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
@@ -228,6 +229,7 @@ const TableContainer = ({
           <tbody>
             {getRowModel().rows.map((row) => (
               <tr key={row.id}>
+                <td>{Number(row.id) +1 }</td>
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
