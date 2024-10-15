@@ -36,9 +36,11 @@ export const addUsers = async (objectName) => {
   }
 };
 // update objectNames
-export const updateUsers = (objectName) =>
+export const updateUsers = (objectName) =>{
+
   post(`${apiUrl}`+UPDATE_USERS +`?usr_id=${objectName?.usr_id}`, objectName);
 
+}
 // delete objectNames
 export const deleteUsers = (objectName) =>
   // post(`${url.DELETE_ORDER}?usr_id=${order?.usr_id}`);
