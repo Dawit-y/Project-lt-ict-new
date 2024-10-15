@@ -486,7 +486,7 @@ const UserRoleModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  {/* <Col className="col-md-6 mb-3">
                     <Label>{t("url_user_id")}</Label>
                     <Input
                       name="url_user_id"
@@ -509,7 +509,7 @@ const UserRoleModel = (props) => {
                         {validation.errors.url_user_id}
                       </FormFeedback>
                     ) : null}
-                  </Col>
+                  </Col> */}
                   <Col className="col-md-6 mb-3">
                     <Label>{t("url_description")}</Label>
                     <Input
