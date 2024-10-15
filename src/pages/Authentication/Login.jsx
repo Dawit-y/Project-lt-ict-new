@@ -22,6 +22,7 @@ import {
   Input,
   FormFeedback,
   Label,
+  Spinner,
 } from "reactstrap";
 
 // actions
@@ -31,6 +32,7 @@ import { loginUser, socialLogin } from "../../store/actions";
 import profile from "../../assets/images/profile-img.png";
 import logo from "../../assets/images/logo.svg";
 import lightlogo from "../../assets/images/logo-light.svg";
+import { LOGIN_TITLE , FOOTER_TEXT} from "../../constants/constantFile";
 
 const Login = (props) => {
   //meta title
@@ -38,12 +40,9 @@ const Login = (props) => {
   const dispatch = useDispatch();
   const [passwordStrength, setPasswordStrength] = useState("");
 
-  
-
- 
   const validation = useFormik({
     enableReinitialize: true,
-  
+
     initialValues: {
       email: "wbofficer@gmail.com" || "",
       password: "12345678" || "",
@@ -54,42 +53,40 @@ const Login = (props) => {
         .required("Please Enter Your Email"),
       password: Yup.string()
         .required("Please Enter Your Password")
-        .min(8, "Password should be at least 8 characters long")
-        // .matches(/[a-z]/, "Password must contain at least one lowercase letter")
-        // .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
-        // .matches(/\d/, "Password must contain at least one number")
-        // .matches(/[@$!%*#?&]/, "Password must contain at least one special character"),
+        .min(8, "Password should be at least 8 characters long"),
+      // .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+      // .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+      // .matches(/\d/, "Password must contain at least one number")
+      // .matches(/[@$!%*#?&]/, "Password must contain at least one special character"),
     }),
     onSubmit: async (values) => {
       try {
         console.log("login page ...");
         await dispatch(loginUser(values, props.router.navigate));
       } catch (error) {
-        console.log("error message ",error)
+        console.log("error message ", error);
         // If login fails, catch the error and display it
         setResponseError(error.message); // Set the error message
       }
     },
   });
-  
 
   const LoginProperties = createSelector(
     (state) => state.Login,
     (login) => ({
-      error: login.error
+      error: login.error,
+      loading: login.loading,
     })
   );
 
-  const {
-    error
-  } = useSelector(LoginProperties);
+  const { error, loading } = useSelector(LoginProperties);
 
-  const signIn = type => {
+  const signIn = (type) => {
     dispatch(socialLogin(type, props.router.navigate));
   };
 
   //for facebook and google authentication
-  const socialResponse = type => {
+  const socialResponse = (type) => {
     signIn(type);
   };
   const getPasswordStrength = (password) => {
@@ -115,7 +112,6 @@ const Login = (props) => {
     }
   };
 
-
   return (
     <React.Fragment>
       <div className="home-btn d-none d-sm-block">
@@ -133,7 +129,7 @@ const Login = (props) => {
                     <Col xs={7}>
                       <div className="text-primary p-4">
                         <h5 className="text-primary">Welcome Back !</h5>
-                        <p>Sign in to continue to Skote.</p>
+                        <p>Sign in to continue to {LOGIN_TITLE}.</p>
                       </div>
                     </Col>
                     <Col className="col-5 align-self-end">
@@ -202,7 +198,6 @@ const Login = (props) => {
                         ) : null}
                       </div>
 
-                    
                       <div className="mb-3">
                         <Label className="form-label">Password</Label>
                         <Input
@@ -213,14 +208,20 @@ const Login = (props) => {
                           placeholder="Enter Password"
                           onChange={(e) => {
                             validation.handleChange(e);
-                            setPasswordStrength(getPasswordStrength(e.target.value)); // Update strength
+                            setPasswordStrength(
+                              getPasswordStrength(e.target.value)
+                            ); // Update strength
                           }}
                           onBlur={validation.handleBlur}
                           invalid={
-                            validation.touched.password && validation.errors.password ? true : false
+                            validation.touched.password &&
+                            validation.errors.password
+                              ? true
+                              : false
                           }
                         />
-                        {validation.touched.password && validation.errors.password ? (
+                        {validation.touched.password &&
+                        validation.errors.password ? (
                           <FormFeedback type="invalid">
                             {validation.errors.password}
                           </FormFeedback>
@@ -231,7 +232,6 @@ const Login = (props) => {
                           <p>Password Strength: {passwordStrength}</p>
                         )}
                       </div>
-
 
                       <div className="form-check">
                         <input
@@ -248,44 +248,25 @@ const Login = (props) => {
                       </div>
 
                       <div className="mt-3 d-grid">
-                        <button
-                          className="btn btn-primary btn-block"
-                          type="submit"
-                        >
-                          Log In
-                        </button>
-                      </div>
-
-                      <div className="mt-4 text-center">
-                        <h5 className="font-size-14 mb-3">Sign in with</h5>
-
-                        <ul className="list-inline">
-                          <li className="list-inline-item">
-                            <Link
-                              to="#"
-                              className="social-list-item bg-primary text-white border-primary"
-                              onClick={e => {
-                                e.preventDefault();
-                                socialResponse("facebook");
-                              }}
-                            >
-                              <i className="mdi mdi-facebook" />
-                            </Link>
-                          </li>
-
-                          <li className="list-inline-item">
-                            <Link
-                              to="#"
-                              className="social-list-item bg-danger text-white border-danger"
-                              onClick={e => {
-                                e.preventDefault();
-                                socialResponse("google");
-                              }}
-                            >
-                              <i className="mdi mdi-google" />
-                            </Link>
-                          </li>
-                        </ul>
+                        {loading ? (
+                          <button
+                            className="btn btn-primary btn-block"
+                            type="submit"
+                            disabled
+                          >
+                            <span className="flex align-items-center justify-content-center">
+                              <Spinner size={"sm"} />{" "}
+                              <span className="ms-2">Log In</span>
+                            </span>
+                          </button>
+                        ) : (
+                          <button
+                            className="btn btn-primary btn-block"
+                            type="submit"
+                          >
+                            Log In
+                          </button>
+                        )}
                       </div>
 
                       <div className="mt-4 text-center">
@@ -299,17 +280,7 @@ const Login = (props) => {
                 </CardBody>
               </Card>
               <div className="mt-5 text-center">
-                <p>
-                  Don&#39;t have an account ?{" "}
-                  <Link to="/register" className="fw-medium text-primary">
-                    {" "}
-                    Signup now{" "}
-                  </Link>{" "}
-                </p>
-                <p>
-                  © {new Date().getFullYear()} Skote. Crafted with{" "}
-                  <i className="mdi mdi-heart text-danger" /> by Themesbrand
-                </p>
+                <p>© {new Date().getFullYear()}  {FOOTER_TEXT}</p>
               </div>
             </Col>
           </Row>
