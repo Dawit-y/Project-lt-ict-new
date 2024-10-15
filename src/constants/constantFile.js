@@ -30,3 +30,8 @@ export const NAVBAR_TEXTS = {
   about: "About Us",
   contact: "Contact",
 };
+
+
+//Login Page Constants
+
+export const LOGIN_TITLE = "Ormoia Project Managemnt System";

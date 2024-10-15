@@ -19,15 +19,11 @@ export const getProject = async () => {
 // add Projects
 export const addProject = async (objectName) => {
   try {
-    const response = await axios.post(
-      `${apiUrl}`+ADD_PROJECT,
-      objectName,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await axios.post(`${apiUrl}` + ADD_PROJECT, objectName, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Failed to update grid:", error);
@@ -36,12 +32,15 @@ export const addProject = async (objectName) => {
 };
 // update objectNames
 export const updateProject = (objectName) =>
-  post(`${apiUrl}`+UPDATE_PROJECT +`?prj_id=${objectName?.prj_id}`, objectName);
+  post(
+    `${apiUrl}` + UPDATE_PROJECT + `?prj_id=${objectName?.prj_id}`,
+    objectName
+  );
 
 // delete objectNames
 export const deleteProject = (objectName) =>
   // post(`${url.DELETE_ORDER}?prj_id=${order?.prj_id}`);
-  post(`${apiUrl}`+DELETE_PROJECT+`?prj_id=${objectName}`);
+  post(`${apiUrl}` + DELETE_PROJECT + `?prj_id=${objectName}`);
 
 export const fetchSearchResults = async (searchTerm, selectedFields) => {
   let queryParams = [];
@@ -58,11 +57,7 @@ export const fetchSearchResults = async (searchTerm, selectedFields) => {
     }
   });
   const queryString = queryParams.join("&");
-  const response = await axios.post(
-    `${apiUrl}project/listgrid?${queryString}`
-  );
+  const response = await axios.post(`${apiUrl}project/listgrid?${queryString}`);
   return response.data.data;
 };
-export {
-  
-};
+export {};
