@@ -128,7 +128,7 @@ const UsersModel = () => {
         );
         const transformedData = response.data.data.map((item) => ({
           label: item.dep_name_or.toString(),
-          value: item.dep_name_or.toString(),
+          value: item.dep_id,
         }));
         const optionsWithDefault = [
           { label: "select budget year", value: "" },
@@ -246,7 +246,7 @@ const UsersModel = () => {
         };
         // save new Userss
         console.log("value added ", newUsers);
-        // dispatch(onAddUsers(newUsers));
+        dispatch(onAddUsers(newUsers));
         validation.resetForm();
       }
     },
@@ -383,14 +383,7 @@ const UsersModel = () => {
         cellRenderer: (params) =>
           truncateText(params.data.usr_email, 30) || "-",
       },
-      {
-        headerName: t("usr_password"),
-        field: "usr_password",
-        sortable: true,
-        filter: false,
-        cellRenderer: (params) =>
-          truncateText(params.data.usr_password, 30) || "-",
-      },
+
       {
         headerName: t("usr_full_name"),
         field: "usr_full_name",
@@ -407,38 +400,24 @@ const UsersModel = () => {
         cellRenderer: (params) =>
           truncateText(params.data.usr_phone_number, 30) || "-",
       },
-      {
-        headerName: t("usr_role_id"),
-        field: "usr_role_id",
-        sortable: true,
-        filter: false,
-        cellRenderer: (params) =>
-          truncateText(params.data.usr_role_id, 30) || "-",
-      },
-      {
-        headerName: t("usr_region_id"),
-        field: "usr_region_id",
-        sortable: true,
-        filter: false,
-        cellRenderer: (params) =>
-          truncateText(params.data.usr_region_id, 30) || "-",
-      },
-      {
-        headerName: t("usr_woreda_id"),
-        field: "usr_woreda_id",
-        sortable: true,
-        filter: false,
-        cellRenderer: (params) =>
-          truncateText(params.data.usr_woreda_id, 30) || "-",
-      },
-      {
-        headerName: t("usr_kebele_id"),
-        field: "usr_kebele_id",
-        sortable: true,
-        filter: false,
-        cellRenderer: (params) =>
-          truncateText(params.data.usr_kebele_id, 30) || "-",
-      },
+
+      // {
+      //   headerName: t("usr_woreda_id"),
+      //   field: "usr_woreda_id",
+      //   sortable: true,
+      //   filter: false,
+
+      //   cellRenderer: (params) =>
+      //     truncateText(params.data.usr_woreda_id, 30) || "-",
+      // },
+      // {
+      //   headerName: t("usr_kebele_id"),
+      //   field: "usr_kebele_id",
+      //   sortable: true,
+      //   filter: false,
+      //   cellRenderer: (params) =>
+      //     truncateText(params.data.usr_kebele_id, 30) || "-",
+      // },
       {
         headerName: t("usr_sector_id"),
         field: "usr_sector_id",
@@ -455,66 +434,12 @@ const UsersModel = () => {
         cellRenderer: (params) =>
           truncateText(params.data.usr_is_active, 30) || "-",
       },
-      {
-        headerName: t("usr_picture"),
-        field: "usr_picture",
-        sortable: true,
-        filter: false,
-        cellRenderer: (params) =>
-          truncateText(params.data.usr_picture, 30) || "-",
-      },
-      {
-        headerName: t("usr_last_logged_in"),
-        field: "usr_last_logged_in",
-        sortable: true,
-        filter: false,
-        cellRenderer: (params) =>
-          truncateText(params.data.usr_last_logged_in, 30) || "-",
-      },
-      {
-        headerName: t("usr_ip"),
-        field: "usr_ip",
-        sortable: true,
-        filter: false,
-        cellRenderer: (params) => truncateText(params.data.usr_ip, 30) || "-",
-      },
-      {
-        headerName: t("usr_remember_token"),
-        field: "usr_remember_token",
-        sortable: true,
-        filter: false,
-        cellRenderer: (params) =>
-          truncateText(params.data.usr_remember_token, 30) || "-",
-      },
-      {
-        headerName: t("usr_notified"),
-        field: "usr_notified",
-        sortable: true,
-        filter: false,
-        cellRenderer: (params) =>
-          truncateText(params.data.usr_notified, 30) || "-",
-      },
-      {
-        headerName: t("usr_description"),
-        field: "usr_description",
-        sortable: true,
-        filter: false,
-        cellRenderer: (params) =>
-          truncateText(params.data.usr_description, 30) || "-",
-      },
-      {
-        headerName: t("usr_status"),
-        field: "usr_status",
-        sortable: true,
-        filter: false,
-        cellRenderer: (params) =>
-          truncateText(params.data.usr_status, 30) ||
-          `${params.data.usr_status}`,
-      },
+
       {
         headerName: t("view_detail"),
         sortable: true,
         filter: false,
+
         cellRenderer: (params) => (
           <Button
             type="button"
@@ -552,18 +477,6 @@ const UsersModel = () => {
               </Link>
             )}
 
-            {params.data.is_deletable && (
-              <Link
-                to="#"
-                className="text-danger"
-                onClick={() => onClickDelete(params.data)}
-              >
-                <i className="mdi mdi-delete font-size-18" id="deletetooltip" />
-                <UncontrolledTooltip placement="top" target="deletetooltip">
-                  Delete
-                </UncontrolledTooltip>
-              </Link>
-            )}
             {/* add view project  */}
             {params.data.is_editable ? (
               <Link
