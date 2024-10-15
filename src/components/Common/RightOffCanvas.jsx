@@ -30,7 +30,6 @@ const RightOffCanvas = ({
       setActiveTab1(tab);
     }
   };
-  
 
   return (
     <React.Fragment>
@@ -50,14 +49,18 @@ const RightOffCanvas = ({
               <CardBody>
                 <Nav pills className="navtab-bg nav-justified">
                   {navItems.map((navItem, index) => (
-                    <NavItem key={index + 1} className="">
+                    <NavItem key={index + 1} className="me-3">
                       <NavLink
-                        style={{ cursor: "pointer" }}
+                        style={{
+                          cursor: "pointer",
+                          borderColor:
+                            activeTab1 === index + 1 ? "#007bff" : "#ccc", // Add border color
+                        }}
                         className={`${classnames({
                           active: activeTab1 === index + 1,
                           "bg-light": activeTab1 !== index + 1,
                           "w-25": navItems.length === 1,
-                        })} ms-2 border-start border-2 border-primary`}
+                        })} ms-2 border-start border-2`}
                         onClick={() => {
                           toggle1(index + 1);
                         }}

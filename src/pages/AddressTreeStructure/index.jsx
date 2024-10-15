@@ -138,20 +138,22 @@ const App_tree = () => {
                     onChange={(e) => setNewSubFolderName(e.target.value)}
                     placeholder={
                       selectedNode
-                        ? "Enter new name or sub-folder"
-                        : "Enter sub-folder name"
+                        ? "Enter Address Name"
+                        : "Enter New Address Name"
                     }
                     className="form-control me-2"
                   />
                 </Row>
                 <Row className="mb-2 d-flex align-items-center">
                   <Col>
-                    <button
+                   {selectedNode? <button
                       onClick={addSubFolder}
                       className={`btn btn-primary ${loading ? "disabled" : ""}`}
                     >
-                      Add Sub-Address
-                    </button>
+                     Add New Address
+                    </button>:
+                     null
+                    }
                   </Col>
                   <Col>
                     <button
@@ -161,7 +163,7 @@ const App_tree = () => {
                         selectedNode ? "btn-success" : "btn-secondary disabled"
                       } ${loading ? "disabled" : ""} `}
                     >
-                      Rename Address
+                      Rename Address Name
                     </button>
                   </Col>
 

@@ -312,6 +312,7 @@ const UsersProfile = () => {
           <Button type="button" color="success" onClick={handlePasswordChange}>
             Edit
           </Button>
+          
         </ModalFooter>
       </Modal>
       <ToastContainer />

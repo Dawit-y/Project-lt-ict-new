@@ -119,7 +119,6 @@ const ProjectPaymentModel = (props) => {
           prp_payment_percentage: values.prp_payment_percentage,
           prp_description: values.prp_description,
           prp_status: values.prp_status,
-
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -361,7 +360,8 @@ const ProjectPaymentModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.prp_status, 30) || `${cellProps.row.original.prp_status}`}
+              {truncateText(cellProps.row.original.prp_status, 30) ||
+                `${cellProps.row.original.prp_status}`}
             </span>
           );
         },
@@ -554,6 +554,35 @@ const ProjectPaymentModel = (props) => {
                     <Label>{t("prp_type")}</Label>
                     <Input
                       name="prp_type"
+                      type="select"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prp_type || ""}
+                      invalid={
+                        validation.touched.prp_type &&
+                        validation.errors.prp_type
+                          ? true
+                          : false
+                      }
+                    >
+                      <option value="">Select Type</option>
+                      <option value="Advance">{t("Advance")}</option>
+                      <option value="Interim">{t("Interim")}</option>
+                      <option value="Final">{t("Final")}</option>
+                      <option value="Other">{t("Other")}</option>
+                    </Input>
+                    {validation.touched.prp_type &&
+                    validation.errors.prp_type ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prp_type}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+
+                  {/* <Col className="col-md-6 mb-3">
+                    <Label>{t("prp_type")}</Label>
+                    <Input
+                      name="prp_type"
                       type="text"
                       placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
@@ -573,7 +602,7 @@ const ProjectPaymentModel = (props) => {
                         {validation.errors.prp_type}
                       </FormFeedback>
                     ) : null}
-                  </Col>
+                  </Col> */}
                   <Col className="col-md-6 mb-3">
                     <Label>{t("prp_payment_date_et")}</Label>
                     <Input
