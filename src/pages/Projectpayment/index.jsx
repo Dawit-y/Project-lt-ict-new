@@ -753,7 +753,6 @@ const ProjectPaymentModel = (props) => {
                           ? true
                           : false
                       }
-                      maxLength={20}
                     />
                     {validation.touched.prp_description &&
                     validation.errors.prp_description ? (

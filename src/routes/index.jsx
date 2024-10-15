@@ -7,6 +7,7 @@ import Login from "../pages/Authentication/Login";
 import Unauthorized from "../components/Common/NotFound";
 import { components } from "react-select";
 import UsersProfile from "../pages/Profile";
+import ProjectPaymentList from "../pages/Projectpayment/ProjectPaymentList";
 
 const Calendar = lazy(() => import("../pages/Calendar/index"));
 const ProjectLists = lazy(() =>
@@ -105,7 +106,7 @@ const authProtectedRoutes = [
   { path: "/dropdowns", component: <CascadingDropdowns /> },
   { path: "/notifications", component: <Notifications /> },
   { path: "/profile", component: <UsersProfile /> },
-
+  { path: "/project_payment_list", component: <ProjectPaymentList /> },
   //   // this route should be at the end of all other routes
   //   // eslint-disable-next-line react/display-name
   { path: "/", exact: true, component: <Navigate to="/dashboard" /> },
