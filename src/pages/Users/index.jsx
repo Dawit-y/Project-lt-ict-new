@@ -13,7 +13,7 @@ import CascadingDropdowns from "../../components/Common/CascadingDropdowns";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 // pages
-import UserRoles  from  "../../pages/Userrole/index";
+import UserRoles from "../../pages/Userrole/index";
 
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
@@ -84,10 +84,9 @@ const UsersModel = () => {
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
-  
 
   const [projectMetaData, setProjectMetaData] = useState({});
-  const [userMetaData,setUserData]=useState({});
+  const [userMetaData, setUserData] = useState({});
   const [showCanvas, setShowCanvas] = useState(false);
 
   useEffect(() => {
@@ -355,7 +354,6 @@ const UsersModel = () => {
     setShowCanvas(!showCanvas); // Toggle canvas visibility
     // setProjectMetaData(data);
     setUserData(data);
-    
   };
 
   const handleDeleteUsers = () => {
@@ -510,7 +508,8 @@ const UsersModel = () => {
         sortable: true,
         filter: false,
         cellRenderer: (params) =>
-          truncateText(params.data.usr_status, 30) || `${params.data.usr_status}`,
+          truncateText(params.data.usr_status, 30) ||
+          `${params.data.usr_status}`,
       },
       {
         headerName: t("view_detail"),
@@ -567,19 +566,19 @@ const UsersModel = () => {
             )}
             {/* add view project  */}
             {params.data.is_editable ? (
-                <Link
-                  to="#"
-                  className="text-secondary ms-2"
-                  onClick={() => handleClick(params.data)}
-                >
-                  <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
-                  <UncontrolledTooltip placement="top" target="viewtooltip">
-                    View
-                  </UncontrolledTooltip>
-                </Link>
-              ) : (
-                ""
-              )}
+              <Link
+                to="#"
+                className="text-secondary ms-2"
+                onClick={() => handleClick(params.data)}
+              >
+                <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
+                <UncontrolledTooltip placement="top" target="viewtooltip">
+                  View
+                </UncontrolledTooltip>
+              </Link>
+            ) : (
+              ""
+            )}
           </div>
         ),
       });
@@ -1262,15 +1261,10 @@ const UsersModel = () => {
           handleClick={handleClick}
           showCanvas={showCanvas}
           canvasWidth={84}
-          name={userMetaData.usr_name}
+          name={userMetaData.usr_name || "UserRoles"}
           id={userMetaData.usr_id}
-          navItems={[
-            "UserRoles",
-          ]}
-          components={[
-            UserRoles,
-          
-          ]}
+          navItems={[]}
+          components={[UserRoles]}
         />
       )}
     </React.Fragment>

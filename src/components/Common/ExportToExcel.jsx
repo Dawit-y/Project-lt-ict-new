@@ -13,28 +13,26 @@ const ExportToExcel = ({ tableData, tablename }) => {
       return;
     }
 
-   
     const headers = Object.keys(tableData[0]).map((key) => t(key)); // Localize headers
 
     const dataRows = tableData.map((row) => {
       return Object.values(row); // Get values from each row
     });
 
-    const combinedData = [headers, ...dataRows]; 
+    const combinedData = [headers, ...dataRows];
 
     const worksheet = XLSX.utils.aoa_to_sheet(combinedData);
 
-   
     const workbook = XLSX.utils.book_new();
 
     XLSX.utils.book_append_sheet(workbook, worksheet, "Table Data");
-// make dounload able 
+    // make dounload able
     XLSX.writeFile(workbook, `table_${tablename}.xlsx`);
   };
 
   return (
-    <button className="btn btn-secondary" onClick={handleExportToExcel}>
-      {t('exportToExcel')} {/* Localize button text */}
+    <button className="btn btn-primary mb-2" onClick={handleExportToExcel}>
+      {t("exportToExcel")} {/* Localize button text */}
     </button>
   );
 };

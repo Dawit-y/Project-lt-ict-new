@@ -56,8 +56,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const UserRoleModel = (props) => {
- 
-  const {passedId}=props;
+  const { passedId } = props;
   //meta title
   document.title = " UserRole";
 
@@ -295,7 +294,8 @@ const UserRoleModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.url_status, 30) || `${cellProps.row.original.url_status}`}
+              {truncateText(cellProps.row.original.url_status, 30) ||
+                `${cellProps.row.original.url_status}`}
             </span>
           );
         },
@@ -395,188 +395,177 @@ const UserRoleModel = (props) => {
         onDeleteClick={handleDeleteUserRole}
         onCloseClick={() => setDeleteModal(false)}
       />
-      <div className="page-content">
-        <div className="container-fluid">
-          <Breadcrumbs title={t("user_role")} breadcrumbItem={t("user_role")} />
-          {isLoading || searchLoading ? (
-            <Spinners setLoading={setLoading} />
-          ) : (
+
+      {isLoading || searchLoading ? (
+        <Spinners setLoading={setLoading} />
+      ) : (
+        <TableContainer
+          columns={columns}
+          data={showSearchResults ? results : data}
+          isGlobalFilter={true}
+          isAddButton={true}
+          isCustomPageSize={true}
+          handleUserClick={handleUserRoleClicks}
+          isPagination={true}
+          // SearchPlaceholder="26 records..."
+          SearchPlaceholder={26 + " " + t("Results") + "..."}
+          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+          buttonName={t("add") + " " + t("user_role")}
+          tableClass=""
+          theadClass="table-light"
+          pagination="pagination"
+          paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+        />
+      )}
+      <Modal isOpen={modal} toggle={toggle} className="modal-xl">
+        <ModalHeader toggle={toggle} tag="h4">
+          {!!isEdit
+            ? t("edit") + " " + t("user_role")
+            : t("add") + " " + t("user_role")}
+        </ModalHeader>
+        <ModalBody>
+          <Form
+            onSubmit={(e) => {
+              e.preventDefault();
+              validation.handleSubmit();
+              const modalCallback = () => setModal(false);
+              if (isEdit) {
+                onUpdateUserRole(validation.values, modalCallback);
+              } else {
+                onAddUserRole(validation.values, modalCallback);
+              }
+              return false;
+            }}
+          >
             <Row>
-              <Col xs="12">
-                <Card>
-                  <CardBody>
-                    <TableContainer
-                      columns={columns}
-                      data={showSearchResults ? results : data}
-                      isGlobalFilter={true}
-                      isAddButton={true}
-                      isCustomPageSize={true}
-                      handleUserClick={handleUserRoleClicks}
-                      isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("user_role")}
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                    />
-                  </CardBody>
-                </Card>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("url_role_id")}</Label>
+                <Input
+                  name="url_role_id"
+                  type="select"
+                  className="form-select"
+                  onChange={handleRolesChange}
+                  onBlur={validation.handleBlur}
+                  value={selectedRoles}
+                >
+                  {rolesOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {t(`${option.label}`)}
+                    </option>
+                  ))}
+                </Input>
+                {validation.touched.url_role_id &&
+                validation.errors.url_role_id ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.url_role_id}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("url_user_id")}</Label>
+                <Input
+                  name="url_user_id"
+                  type="text"
+                  placeholder={t("insert_status_name_amharic")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.url_user_id || ""}
+                  invalid={
+                    validation.touched.url_user_id &&
+                    validation.errors.url_user_id
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                />
+                {validation.touched.url_user_id &&
+                validation.errors.url_user_id ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.url_user_id}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("url_description")}</Label>
+                <Input
+                  name="url_description"
+                  type="text"
+                  placeholder={t("insert_status_name_amharic")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.url_description || ""}
+                  invalid={
+                    validation.touched.url_description &&
+                    validation.errors.url_description
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                />
+                {validation.touched.url_description &&
+                validation.errors.url_description ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.url_description}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("url_status")}</Label>
+                <Input
+                  name="url_status"
+                  type="select"
+                  className="form-select"
+                  onChange={(e) => {
+                    validation.setFieldValue(
+                      "url_status",
+                      Number(e.target.value)
+                    );
+                  }}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.url_status}
+                >
+                  <option value={""}>Select status</option>
+                  <option value={1}>{t("Active")}</option>
+                  <option value={0}>{t("Inactive")}</option>
+                </Input>
+                {validation.touched.url_status &&
+                validation.errors.url_status ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.url_status}
+                  </FormFeedback>
+                ) : null}
               </Col>
             </Row>
-          )}
-          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-            <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit
-                ? t("edit") + " " + t("user_role")
-                : t("add") + " " + t("user_role")}
-            </ModalHeader>
-            <ModalBody>
-              <Form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  validation.handleSubmit();
-                  const modalCallback = () => setModal(false);
-                  if (isEdit) {
-                    onUpdateUserRole(validation.values, modalCallback);
-                  } else {
-                    onAddUserRole(validation.values, modalCallback);
-                  }
-                  return false;
-                }}
-              >
-                <Row>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("url_role_id")}</Label>
-                    <Input
-                      name="url_role_id"
-                      type="select"
-                      className="form-select"
-                      onChange={handleRolesChange}
-                      onBlur={validation.handleBlur}
-                      value={selectedRoles}
+            <Row>
+              <Col>
+                <div className="text-end">
+                  {update_loading ? (
+                    <Button
+                      color="success"
+                      type="submit"
+                      className="save-user"
+                      disabled={update_loading || !validation.dirty}
                     >
-                      {rolesOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {t(`${option.label}`)}
-                        </option>
-                      ))}
-                    </Input>
-                    {validation.touched.url_role_id &&
-                    validation.errors.url_role_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.url_role_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("url_user_id")}</Label>
-                    <Input
-                      name="url_user_id"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.url_user_id || ""}
-                      invalid={
-                        validation.touched.url_user_id &&
-                        validation.errors.url_user_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.url_user_id &&
-                    validation.errors.url_user_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.url_user_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("url_description")}</Label>
-                    <Input
-                      name="url_description"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.url_description || ""}
-                      invalid={
-                        validation.touched.url_description &&
-                        validation.errors.url_description
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.url_description &&
-                    validation.errors.url_description ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.url_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("url_status")}</Label>
-                    <Input
-                      name="url_status"
-                      type="select"
-                      className="form-select"
-                      onChange={(e) => {
-                        validation.setFieldValue(
-                          "url_status",
-                          Number(e.target.value)
-                        );
-                      }}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.url_status}
+                      <Spinner size={"sm"} color="#fff" />
+                      {t("Save")}
+                    </Button>
+                  ) : (
+                    <Button
+                      color="success"
+                      type="submit"
+                      className="save-user"
+                      disabled={update_loading || !validation.dirty}
                     >
-                      <option value={""}>Select status</option>
-                      <option value={1}>{t("Active")}</option>
-                      <option value={0}>{t("Inactive")}</option>
-                    </Input>
-                    {validation.touched.url_status &&
-                    validation.errors.url_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.url_status}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <div className="text-end">
-                      {update_loading ? (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={update_loading || !validation.dirty}
-                        >
-                          <Spinner size={"sm"} color="#fff" />
-                          {t("Save")}
-                        </Button>
-                      ) : (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={update_loading || !validation.dirty}
-                        >
-                          {t("Save")}
-                        </Button>
-                      )}
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
-            </ModalBody>
-          </Modal>
-        </div>
-      </div>
+                      {t("Save")}
+                    </Button>
+                  )}
+                </div>
+              </Col>
+            </Row>
+          </Form>
+        </ModalBody>
+      </Modal>
+
       <ToastContainer />
     </React.Fragment>
   );
