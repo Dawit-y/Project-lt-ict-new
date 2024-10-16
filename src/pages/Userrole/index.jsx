@@ -76,7 +76,7 @@ const UserRoleModel = (props) => {
 
   const handleRolesChange = (e) => {
     setSelectedRoles(e.target.value);
-    console.log(e.target);
+    // console.log(e.target);
     const selectedIndex = e.target.selectedIndex;
     const selectedOption = e.target.options[selectedIndex];
     const selectedLabel = selectedOption.text;
@@ -159,7 +159,7 @@ const UserRoleModel = (props) => {
     update_loading,
   } = useSelector(userRoleProperties);
 
-  console.log("user role ..", userRole);
+  // console.log("user role ..", userRole);
 
   useEffect(() => {
     dispatch(onGetRoles());
@@ -181,7 +181,7 @@ const UserRoleModel = (props) => {
     update_loading: roleupdate_loading,
   } = useSelector(rolesProperties);
 
-  console.log("roledata", roledata);
+  
 
   useEffect(() => {
     console.log("update_loading in useEffect", roleupdate_loading);
@@ -397,7 +397,7 @@ const UserRoleModel = (props) => {
   ];
 
   const dropdawntotal = [project_status];
-  console.log("Transaction data: ", JSON.stringify(transaction, null, 2)); // Pretty print the transaction object
+  // console.log("Transaction data: ", JSON.stringify(transaction, null, 2)); // Pretty print the transaction object
 
   return (
     <React.Fragment>

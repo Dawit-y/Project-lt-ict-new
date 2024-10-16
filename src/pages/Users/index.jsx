@@ -81,6 +81,8 @@ const UsersModel = () => {
   const gridRef = useRef(null);
 
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedState,setselectedState]=useState("")
+
   const [selectedImage, setSelectedImage] = useState(null);
 
   const [userMetaData, setUserData] = useState({});
@@ -281,18 +283,17 @@ const UsersModel = () => {
 
   const handleUsersClick = (arg) => {
     const users = arg;
-
     setUsers({
       usr_id: users.usr_id,
       usr_email: users.usr_email,
       usr_password: users.usr_password,
       usr_full_name: users.usr_full_name,
       usr_phone_number: users.usr_phone_number,
-      usr_role_id: users.usr_role_id,
-      usr_region_id: users.usr_region_id,
-      usr_woreda_id: users.usr_woreda_id,
-      usr_kebele_id: users.usr_kebele_id,
-      usr_sector_id: users.usr_sector_id,
+      usr_role_id: Number(users.usr_role_id),
+      usr_region_id:Number( users.usr_region_id),
+      usr_woreda_id:Number( users.usr_woreda_id),
+      usr_kebele_id: Number(users.usr_kebele_id),
+      usr_sector_id: Number(users.usr_sector_id),
       usr_is_active: users.usr_is_active,
       usr_picture: users.usr_picture,
       usr_last_logged_in: users.usr_last_logged_in,
@@ -301,7 +302,7 @@ const UsersModel = () => {
       usr_notified: users.usr_notified,
       usr_description: users.usr_description,
       usr_status: users.usr_status,
-      usr_department_id: values.usr_department_id,
+      usr_department_id: Number(users.usr_department_id),
 
       is_deletable: users.is_deletable,
       is_editable: users.is_editable,
@@ -371,23 +372,7 @@ const UsersModel = () => {
           truncateText(params.data.usr_phone_number, 30) || "-",
       },
 
-      // {
-      //   headerName: t("usr_woreda_id"),
-      //   field: "usr_woreda_id",
-      //   sortable: true,
-      //   filter: false,
-
-      //   cellRenderer: (params) =>
-      //     truncateText(params.data.usr_woreda_id, 30) || "-",
-      // },
-      // {
-      //   headerName: t("usr_kebele_id"),
-      //   field: "usr_kebele_id",
-      //   sortable: true,
-      //   filter: false,
-      //   cellRenderer: (params) =>
-      //     truncateText(params.data.usr_kebele_id, 30) || "-",
-      // },
+     
       {
         headerName: t("usr_sector_id"),
         field: "usr_sector_id",
@@ -438,7 +423,11 @@ const UsersModel = () => {
               <Link
                 to="#"
                 className="text-success"
-                onClick={() => handleUsersClick(params.data)}
+                
+                onClick={() => {
+                 
+                  handleUsersClick(params.data);
+                }}
               >
                 <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
                 <UncontrolledTooltip placement="top" target="edittooltip">
@@ -754,9 +743,25 @@ const UsersModel = () => {
                       value={selectedDepartment || ""}
                     >
                       {/* departmentOptions */}
-                      {datadepartment.map((option) => (
+                      {/* {datadepartment.map((option) => (
                         <option key={option.dep_id} value={Number(option.dep_id)}>
                           {t(`${option.dep_name_en}`)}
+                        </option>
+                      ))} */}
+                      <option value="" disabled={!isEdit}>
+                        {isEdit
+                          ? datadepartment.find(
+                              (option) => option.dep_id === validation.values.usr_department_id
+                            )
+                            ? datadepartment.find(
+                                (option) => option.dep_id === validation.values.usr_department_id
+                              ).dep_name_en
+                            : t("Select Department")
+                          : t("Select Department")}
+                      </option>
+                      {datadepartment.map((option) => (
+                        <option key={option.dep_id} value={Number(option.dep_id)}>
+                          {t(option.dep_name_en)}
                         </option>
                       ))}
                     </Input>
@@ -798,18 +803,30 @@ const UsersModel = () => {
                       name="usr_status"
                       type="select"
                       className="form-select"
-                      onChange={(e) => {
-                        validation.setFieldValue(
-                          "usr_status",
-                          Number(e.target.value)
-                        );
-                      }}
+                      // onChange={(e) => {
+                      //   validation.setFieldValue(
+                      //     "usr_status",
+                      //     Number(e.target.value)
+                      //   );
+                      // }}
+                      onChange={validation.handleChange}
+                      
                       onBlur={validation.handleBlur}
-                      value={validation.values.usr_status}
+                      value={selectedState} //selectedState
+
+                      invalid={
+                        validation.touched.usr_status &&
+                          validation.errors.usr_status
+                          ? true
+                          : false
+                      }
+                      
                     >
-                      <option value={""}>Select status</option>
-                      <option value={1}>{t("Active")}</option>
-                      <option value={0}>{t("Inactive")}</option>
+                    <option value="" disabled={!isEdit}>
+                      {isEdit ? (validation.values.usr_status === 1 ? t("Active") : t("Inactive")) : "Select status"}
+                    </option>
+                    <option value={1}>{t("Active")}</option>
+                    <option value={0}>{t("Inactive")}</option>
                     </Input>
                     {validation.touched.usr_status &&
                       validation.errors.usr_status ? (
@@ -825,6 +842,7 @@ const UsersModel = () => {
                       dropdown1name="usr_region_id"
                       dropdown2name="usr_woreda_id"
                       dropdown3name="usr_kebele_id"
+                      isEdit={isEdit} // Set to true if in edit mode, otherwise false
                     />
                   </Col>
                   <Col className="col-md-8 mb-3" style={{ backgroundColor: "#f8f9fa", color: "#333", borderRadius: "8px", padding: "20px", boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)" }}>

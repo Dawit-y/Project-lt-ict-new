@@ -8,6 +8,7 @@ const CascadingDropdowns1 = ({
   dropdown1name,
   dropdown2name,
   dropdown3name,
+  isEdit
 }) => {
   const [zones, setZones] = useState([]);
   const [woredas, setWoredas] = useState([]);
@@ -125,7 +126,23 @@ const CascadingDropdowns1 = ({
           }
           disabled={loadingZones || zones.length === 0}
         >
-          <option value="">{t("select_zone")}</option>
+          {/* <option value="">{t("select_zone")}</option>
+          {loadingZones ? (
+            <option>{t("loading")}</option>
+          ) : (
+            zones.map((zone) => (
+              <option key={zone.id} value={zone.id}>
+                {zone.name}
+              </option>
+            ))
+          )} */}
+           <option value="" disabled={!isEdit}>
+            {isEdit
+              ? (validation.values[dropdown2name]
+                  ? zones.find(zone => zone.id === validation.values[dropdown2name])?.id
+                  : t("select_zone"))
+              : t("select_zone")}
+          </option>
           {loadingZones ? (
             <option>{t("loading")}</option>
           ) : (
@@ -160,7 +177,23 @@ const CascadingDropdowns1 = ({
           }
           disabled={loadingWoredas || woredas.length === 0}
         >
-          <option value="">{t("select_woreda")}</option>
+          {/* <option value="">{t("select_woreda")}</option>
+          {loadingWoredas ? (
+            <option>{t("loading")}</option>
+          ) : (
+            woredas.map((woreda) => (
+              <option key={woreda.id} value={woreda.id}>
+                {woreda.name}
+              </option>
+            ))
+          )} */}
+           <option value="" disabled={!isEdit}>
+            {isEdit
+              ? (validation.values[dropdown3name]
+                  ? woredas.find(woreda => woreda.id === validation.values[dropdown3name])?.name
+                  : t("select_woreda"))
+              : t("select_woreda")}
+          </option>
           {loadingWoredas ? (
             <option>{t("loading")}</option>
           ) : (

@@ -29,7 +29,7 @@ export const addUsers = async (objectName) => {
         },
       }
     );
-    console.log("this is upload user response",response)
+    
     return response.data;
   } catch (error) {
     console.error("Failed to update grid:", error);
@@ -37,10 +37,30 @@ export const addUsers = async (objectName) => {
   }
 };
 // update objectNames
-export const updateUsers = (objectName) =>{
+// export const updateUsers = (objectName) =>{
 
-  post(`${apiUrl}`+UPDATE_USERS +`?usr_id=${objectName?.usr_id}`, objectName);
+//   post(UPDATE_USERS +`?usr_id=${objectName?.usr_id}`, objectName);
 
+// }
+// Update Users
+export const updateUsers = async (objectName) => {
+  console.log("Updated data:", objectName);
+
+  try {
+    const response = await axios.post(
+      `${apiUrl}${UPDATE_USERS}?usr_id=${objectName?.usr_id}`,
+      objectName,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data", 
+        },
+      }
+    );    
+    return response.data;
+  } catch (error) {
+    
+    throw error; 
+  }
 }
 // delete objectNames
 export const deleteUsers = (objectName) =>
