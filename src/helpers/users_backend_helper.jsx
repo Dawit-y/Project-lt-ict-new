@@ -25,10 +25,11 @@ export const addUsers = async (objectName) => {
       objectName,
       {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data", // Set content type for image upload
         },
       }
     );
+    console.log("this is upload user response",response)
     return response.data;
   } catch (error) {
     console.error("Failed to update grid:", error);
