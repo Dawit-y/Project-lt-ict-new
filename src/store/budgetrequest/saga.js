@@ -53,6 +53,7 @@ function* fetchBudgetRequest({ payload: projectid }) {
 function* onUpdateBudgetRequest({ payload: budgetRequest, modalCallback }) {
   try {
     yield put(toggleUpdateLoading(true));
+    console.log(budgetRequest);
     const response = yield call(updateBudgetRequest, budgetRequest);
     yield put(updateBudgetRequestSuccess(response.data));
     const showResult = yield select(selectShowResult);

@@ -55,6 +55,12 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
+const statusClasses = {
+  Accepted: "success",
+  Rejected: "danger",
+  Requested: "secondary",
+};
+
 const BudgetRequestModel = (props) => {
   //  get passed data from tab
   const { passedId } = props;
@@ -91,6 +97,8 @@ const BudgetRequestModel = (props) => {
 
       bdr_description: (budgetRequest && budgetRequest.bdr_description) || "",
       bdr_status: (budgetRequest && budgetRequest.bdr_status) || "",
+      bdr_request_status:
+        (budgetRequest && budgetRequest.bdr_request_status) || "",
 
       is_deletable: (budgetRequest && budgetRequest.is_deletable) || 1,
       is_editable: (budgetRequest && budgetRequest.is_editable) || 1,
@@ -345,6 +353,22 @@ const BudgetRequestModel = (props) => {
               {truncateText(cellProps.row.original.bdr_released_date_gc, 30) ||
                 "-"}
             </span>
+          );
+        },
+      },
+      {
+        headerName: t("bdr_request_status"),
+        accessorKey: "bdr_request_status",
+        enableSorting: false,
+        enableColumnFilter: false,
+        cell: (cellProps) => {
+          const badgeClass =
+            statusClasses[cellProps.row.original.bdr_request_status] ||
+            "secondary";
+          return (
+            <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
+              {cellProps.row.original.bdr_request_status}
+            </Badge>
           );
         },
       },

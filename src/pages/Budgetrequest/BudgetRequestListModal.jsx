@@ -1,4 +1,4 @@
-import React, { useTransition } from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
@@ -11,268 +11,270 @@ import {
   Col,
   Card,
   CardBody,
-  Table,
   CardTitle,
   Label,
-  Form,
   Input,
   InputGroup,
-  FormFeedback,
   FormGroup,
+  Spinner,
 } from "reactstrap";
+
+import {
+  getBudgetRequest as onGetBudgetRequest,
+  addBudgetRequest as onAddBudgetRequest,
+  updateBudgetRequest as onUpdateBudgetRequest,
+  deleteBudgetRequest as onDeleteBudgetRequest,
+} from "../../store/budgetrequest/actions";
+import { useDispatch, useSelector } from "react-redux";
+import { createSelector } from "reselect";
+import Select from "react-select";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
+import "flatpickr/dist/themes/material_blue.css";
+import { formatDate } from "../../utils/commonMethods";
 
 const modalStyle = {
   width: "100%",
   height: "100%",
 };
 
+// Yup validation schema
+const validationSchema = Yup.object().shape({
+  bdr_request_status: Yup.string().required("Status is required"),
+  bdr_released_amount: Yup.number()
+    .min(1, "Released amount must be greater than 0")
+    .when("bdr_request_status", {
+      is: "Accepted",
+      then: (schema) => schema.required("Released amount is required"),
+      otherwise: (schema) => schema.optional(),
+    }),
+  bdr_released_date_gc: Yup.date().required("Action date is required"),
+  bdr_action_remark: Yup.string().required("Action remark is required"),
+});
 const BudgetRequestListModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction, budgetYearMap } = props;
-
+  console.log("transaction", transaction);
+  const dispatch = useDispatch();
+  // Formik setup
   const formik = useFormik({
     initialValues: {
-      firstname: "",
-      email: "",
-      password: "",
-      city: "",
-      state: "",
-      zip: "",
-      check: "",
+      bdr_id: transaction.bdr_id || "",
+      bdr_request_status: "",
+      bdr_released_amount: "",
+      bdr_released_date_gc: "",
+      bdr_action_remark: "",
     },
-    validationSchema: Yup.object({
-      firstname: Yup.string().required("This field is required"),
-      email: Yup.string()
-        .email()
-        .matches(/^(?!.*@[^,]*,)/)
-        .required("Please Enter Your Email"),
-      password: Yup.string()
-        .min(6, "Password must be at least 6 characters")
-        .matches(RegExp("(.*[a-z].*)"), "At least lowercase letter")
-        .matches(RegExp("(.*[A-Z].*)"), "At least uppercase letter")
-        .matches(RegExp("(.*[0-9].*)"), "At least one number")
-        .required("This field is required"),
-      city: Yup.string().required("This field is required"),
-      state: Yup.string().required("This field is required"),
-      zip: Yup.string().required("This field is required"),
-      check: Yup.string().required("This field is required"),
-    }),
-
+    validationSchema,
+    enableReinitialize: true,
     onSubmit: (values) => {
-      // console.log("value", values.password);
+      console.log("Form Values:", values);
+      dispatch(onUpdateBudgetRequest(values));
+      formik.resetForm();
+      toggle();
     },
   });
+  const budgetRequestProperties = createSelector(
+    (state) => state.BudgetRequestR,
+    (BudgetRequestReducer) => ({
+      update_loading: BudgetRequestReducer.update_loading,
+    })
+  );
+
+  const { update_loading } = useSelector(budgetRequestProperties);
+
+  const handleStatusChange = (selectedOption) => {
+    formik.setFieldValue("bdr_request_status", selectedOption.value);
+  };
 
   return (
     <Modal
       isOpen={isOpen}
-      role="dialog"
-      autoFocus={true}
-      centered={true}
+      centered
       className="modal-xl"
-      tabIndex="-1"
       toggle={toggle}
       style={modalStyle}
     >
-      <div className="modal-xl">
-        <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
-        <ModalBody>
-          <Row>
-            <Col xl={3}>
-              <Card>
-                <CardBody>
-                  <h5 className="fw-semibold">Overview</h5>
-
-                  <div className="table-responsive">
-                    <table className="table">
-                      <tbody>
-                        <tr>
-                          <th scope="col">Budget Year</th>
-                          <td scope="col">
-                            {budgetYearMap[transaction.bdr_budget_year_id]}
-                          </td>
-                        </tr>
-                        <tr>
-                          <th scope="row">Requested Amount</th>
-                          <td>{transaction.bdr_requested_amount}</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">Requested Date</th>
-                          <td>{transaction.bdr_requested_date_gc}</td>
-                        </tr>
-
-                        <tr>
-                          <th scope="row">Description</th>
-                          <td>{transaction.bdr_description}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-            <Col xl={5}>
-              <Card>
-                <CardBody>
-                  <CardTitle className="mb-4">Accept Request</CardTitle>
-
-                  <Form onSubmit={formik.handleSubmit}>
-                    <Row>
-                      <Col md={6}>
-                        <div className="mb-3">
-                          <Label htmlFor="formrow-email-Input">
-                            Released Amount
-                          </Label>
-                          <Input
-                            type="text"
-                            name="email"
-                            className="form-control"
-                            id="formrow-email-Input"
-                            placeholder="Enter Your Email ID"
-                            value={formik.values.email}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            invalid={
-                              formik.touched.email && formik.errors.email
-                                ? true
-                                : false
-                            }
-                          />
-                          {formik.errors.email && formik.touched.email ? (
-                            <FormFeedback type="invalid">
-                              {formik.errors.email}
-                            </FormFeedback>
-                          ) : null}
+      <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
+      <ModalBody>
+        <Row>
+          <Col xl={5}>
+            <Card>
+              <CardBody>
+                <h5 className="fw-semibold">Overview</h5>
+                <div className="table-responsive">
+                  <table className="table">
+                    <tbody>
+                      <tr>
+                        <th scope="col">{t("bdr_budget_year_id")}</th>
+                        <td>{budgetYearMap[transaction.bdr_budget_year_id]}</td>
+                      </tr>
+                      <tr>
+                        <th>{t("bdr_requested_amount")}</th>
+                        <td>{transaction.bdr_requested_amount}</td>
+                      </tr>
+                      <tr>
+                        <th>{t("bdr_requested_date_gc")}</th>
+                        <td>{transaction.bdr_requested_date_gc}</td>
+                      </tr>
+                      <tr>
+                        <th>{t("bdr_description")}</th>
+                        <td>{transaction.bdr_description}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </CardBody>
+            </Card>
+          </Col>
+          <Col xl={7}>
+            <Card>
+              <CardBody>
+                <CardTitle className="mb-4">Take Action</CardTitle>
+                <form onSubmit={formik.handleSubmit}>
+                  <FormGroup>
+                    <Label>Status</Label>
+                    <Select
+                      name="bdr_request_status"
+                      options={[
+                        { label: "Accepted", value: "Accepted" },
+                        { label: "Rejected", value: "Rejected" },
+                      ]}
+                      onChange={handleStatusChange}
+                      className="select2-selection"
+                      invalid={
+                        formik.touched.bdr_request_status &&
+                        formik.errors.bdr_request_status
+                          ? true
+                          : false
+                      }
+                    />
+                    {formik.errors.bdr_request_status &&
+                      formik.touched.bdr_request_status && (
+                        <div className="text-danger">
+                          {formik.errors.bdr_request_status}
                         </div>
-                      </Col>
-                      <Col md={6}>
-                        <div className="mb-3">
-                          <Label htmlFor="formrow-password-Input">
-                            Released Date
-                          </Label>
-                          <FormGroup>
-                            <InputGroup>
-                              <Flatpickr
-                                id="DataPicker"
-                                className={`form-control`}
-                                name="prj_end_date_plan_gc"
-                                options={{
-                                  altInput: true,
-                                  altFormat: "Y/m/d",
-                                  dateFormat: "Y/m/d",
-                                  enableTime: false,
-                                }}
-                              />
+                      )}
+                  </FormGroup>
 
-                              <Button
-                                type="button"
-                                className="btn btn-outline-secondary"
-                                disabled
-                              >
-                                <i
-                                  className="fa fa-calendar"
-                                  aria-hidden="true"
-                                />
-                              </Button>
-                            </InputGroup>
-                          </FormGroup>
-                        </div>
-                      </Col>
-                    </Row>
-                    <div className="mb-3">
-                      <Label htmlFor="formrow-firstname-Input">
-                        Description
-                      </Label>
+                  {formik.values.bdr_request_status === "Accepted" && (
+                    <FormGroup>
+                      <Label>Released Amount</Label>
                       <Input
-                        type="textarea"
-                        rows={6}
-                        name="firstname"
-                        className="form-control"
-                        id="formrow-firstname-Input"
-                        placeholder="Enter Your First Name"
-                        value={formik.values.firstname}
+                        type="number"
+                        name="bdr_released_amount"
                         onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
+                        value={formik.values.bdr_released_amount}
                         invalid={
-                          formik.touched.firstname && formik.errors.firstname
+                          formik.touched.bdr_released_amount &&
+                          formik.errors.bdr_released_amount
                             ? true
                             : false
                         }
                       />
-                      {formik.errors.firstname && formik.touched.firstname ? (
-                        <FormFeedback type="invalid">
-                          {formik.errors.firstname}
-                        </FormFeedback>
-                      ) : null}
-                    </div>
-                    <div>
-                      <button type="submit" className="btn btn-success w-md">
-                        Accept
-                      </button>
-                    </div>
-                  </Form>
-                </CardBody>
-              </Card>
-            </Col>
-            <Col xl={4}>
-              <Card>
-                <CardBody>
-                  <CardTitle className="mb-4">Reject Request</CardTitle>
+                      {formik.errors.bdr_released_amount &&
+                        formik.touched.bdr_released_amount && (
+                          <div className="text-danger">
+                            {formik.errors.bdr_released_amount}
+                          </div>
+                        )}
+                    </FormGroup>
+                  )}
 
-                  <Form onSubmit={formik.handleSubmit}>
-                    <div className="mb-3">
-                      <Label htmlFor="formrow-firstname-Input">
-                        Rejection Reason
-                      </Label>
-                      <Input
-                        type="textarea"
-                        rows={10}
-                        name="firstname"
-                        className="form-control"
-                        id="formrow-firstname-Input"
-                        placeholder="Enter Your First Name"
-                        value={formik.values.firstname}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        invalid={
-                          formik.touched.firstname && formik.errors.firstname
-                            ? true
-                            : false
+                  <FormGroup>
+                    <Label>Action Date</Label>
+                    <InputGroup>
+                      <Flatpickr
+                        className={`form-control ${
+                          formik.touched.bdr_released_date_gc &&
+                          formik.errors.bdr_released_date_gc
+                            ? "is-invalid"
+                            : ""
+                        }`}
+                        name="bdr_released_date_gc"
+                        value={formik.values.bdr_released_date_gc}
+                        onChange={(date) =>
+                          formik.setFieldValue(
+                            "bdr_released_date_gc",
+                            formatDate(date[0])
+                          )
                         }
+                        options={{
+                          altInput: true,
+                          altFormat: "Y/m/d",
+                          dateFormat: "Y/m/d",
+                        }}
                       />
-                      {formik.errors.firstname && formik.touched.firstname ? (
-                        <FormFeedback type="invalid">
-                          {formik.errors.firstname}
-                        </FormFeedback>
-                      ) : null}
-                    </div>
-                    <div>
-                      <button type="submit" className="btn btn-danger w-md">
-                        Reject
-                      </button>
-                    </div>
-                  </Form>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
-        </ModalBody>
-        <ModalFooter>
-          <Button type="button" color="secondary" onClick={toggle}>
-            {t("Close")}
-          </Button>
-        </ModalFooter>
-      </div>
+                    </InputGroup>
+                    {formik.errors.bdr_released_date_gc &&
+                      formik.touched.bdr_released_date_gc && (
+                        <div className="text-danger">
+                          {formik.errors.bdr_released_date_gc}
+                        </div>
+                      )}
+                  </FormGroup>
+
+                  <FormGroup>
+                    <Label>Action Remark</Label>
+                    <Input
+                      type="textarea"
+                      name="bdr_action_remark"
+                      rows={4}
+                      onChange={formik.handleChange}
+                      value={formik.values.bdr_action_remark}
+                      invalid={
+                        formik.touched.bdr_action_remark &&
+                        formik.errors.bdr_action_remark
+                          ? true
+                          : false
+                      }
+                    />
+                    {formik.errors.bdr_action_remark &&
+                      formik.touched.bdr_action_remark && (
+                        <div className="text-danger">
+                          {formik.errors.bdr_action_remark}
+                        </div>
+                      )}
+                  </FormGroup>
+
+                  {update_loading ? (
+                    <Button
+                      type="submit"
+                      color="primary"
+                      className="w-md"
+                      disabled
+                    >
+                      <span className="flex align-items-center justify-content-center">
+                        <Spinner size={"sm"} />{" "}
+                        <span className="ms-2">Submit</span>
+                      </span>
+                    </Button>
+                  ) : (
+                    <Button type="submit" color="primary" className="w-md">
+                      Submit
+                    </Button>
+                  )}
+                </form>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      </ModalBody>
+      <ModalFooter>
+        <Button type="button" color="secondary" onClick={toggle}>
+          {t("Close")}
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 };
+
 BudgetRequestListModal.propTypes = {
   toggle: PropTypes.func,
   isOpen: PropTypes.bool,
   transaction: PropTypes.object,
+  budgetYearMap: PropTypes.object,
 };
+
 export default BudgetRequestListModal;

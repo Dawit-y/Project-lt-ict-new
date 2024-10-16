@@ -168,6 +168,8 @@ const BudgetRequestListModel = () => {
     update_loading,
   } = useSelector(budgetRequestProperties);
 
+  console.log("data", data);
+
   const budgetYearProperties = createSelector(
     (state) => state.BudgetYearR, // this is geting from  reducer
     (BudgetYearReducer) => ({
@@ -330,6 +332,7 @@ const BudgetRequestListModel = () => {
         filter: true,
         cellRenderer: (params) => {
           const badgeClass = statusClasses[params.value] || "secondary";
+          console.log(params);
           return (
             <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
               {params.value}
