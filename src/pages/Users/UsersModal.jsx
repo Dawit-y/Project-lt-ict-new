@@ -1,5 +1,5 @@
-import React, { useTransition, useState } from "react"
-import PropTypes from "prop-types"
+import React, { useTransition, useState } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import Switch from "react-switch";
 import axios from "axios";
@@ -12,14 +12,13 @@ import {
   Row,
   Table,
   Col,
-  Card
-  , CardBody,
+  Card,
+  CardBody,
   CardTitle,
   Form,
   Label,
-  Input
-} from "reactstrap"
-
+  Input,
+} from "reactstrap";
 
 import {
   getUsers as onGetUsers,
@@ -36,12 +35,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+  width: "100%",
+  height: "100%",
 };
 
 const UsersModal = (props) => {
-
   const { t } = useTranslation();
   const { isOpen, toggle, transaction } = props;
   const [switch1, setSwitch1] = useState(true);
@@ -157,9 +155,7 @@ const UsersModal = (props) => {
                       <div className="d-flex justify-content-center">
                         <div className="avatar-xl profile-user-wid mb-2">
                           <img
-                            src={
-                              transaction.usr_picture
-                            }
+                            src={transaction.usr_picture}
                             alt="User Profile"
                             className="img-thumbnail rounded-circle"
                           />
@@ -184,27 +180,19 @@ const UsersModal = (props) => {
                               <tbody>
                                 <tr>
                                   <th scope="row">Full Name :</th>
-                                  <td>
-                                    {transaction.usr_full_name}
-                                  </td>
+                                  <td>{transaction.usr_full_name}</td>
                                 </tr>
                                 <tr>
                                   <th scope="row">Mobile :</th>
-                                  <td>
-                                    {transaction.usr_phone_number}
-                                  </td>
+                                  <td>{transaction.usr_phone_number}</td>
                                 </tr>
                                 <tr>
                                   <th scope="row">E-mail :</th>
-                                  <td>
-                                    {transaction.usr_email}
-                                  </td>
+                                  <td>{transaction.usr_email}</td>
                                 </tr>
                                 <tr>
                                   <th scope="row">Profile Created :</th>
-                                  <td>
-                                    {transaction.usr_last_logged_in}
-                                  </td>
+                                  <td>{transaction.usr_last_logged_in}</td>
                                 </tr>
                               </tbody>
                             </Table>
@@ -229,13 +217,12 @@ const UsersModal = (props) => {
                         className="me-1 mb-sm-8 mb-2"
                         onColor="#626ed4"
                         onChange={() => {
-
                           setSwitch1(!switch1);
                           console.log("defout", transaction.usr_id);
                           const update_user = {
                             usr_id: transaction.usr_id,
-                            usr_description:"this is for demo"
-                          }
+                            usr_description: "this is for demo",
+                          };
 
                           dispatch(onUpdateUsers(update_user));
                         }}
@@ -247,75 +234,60 @@ const UsersModal = (props) => {
               </Card>
             </Col>
 
-            <Col md="6">
-              <tr>
-                <p className="mb-2">
-                  {t('usr_role_id')}: <span className="text-primary">{transaction.usr_role_id}</span>
-                </p>
-              </tr><tr>
-                <p className="mb-2">
-                  {t('usr_region_id')}: <span className="text-primary">{transaction.usr_region_id}</span>
-                </p>
-              </tr><tr>
-                <p className="mb-2">
-                  {t('usr_zone_id')}: <span className="text-primary">{transaction.usr_zone_id}</span>
-                </p>
-              </tr><tr>
-                <p className="mb-2">
-                  {t('usr_woreda_id')}: <span className="text-primary">{transaction.usr_woreda_id}</span>
-                </p>
-              </tr><tr>
-                <p className="mb-2">
-                  {t('usr_kebele_id')}: <span className="text-primary">{transaction.usr_kebele_id}</span>
-                </p>
-              </tr><tr>
-                <p className="mb-2">
-                  {t('usr_sector_id')}: <span className="text-primary">{transaction.usr_sector_id}</span>
-                </p>
-              </tr><tr>
-                <p className="mb-2">
-                  {t('usr_department_id')}: <span className="text-primary">{transaction.usr_department_id}</span>
-                </p>
-              </tr><tr>
-                <p className="mb-2">
-                  {t('usr_is_active')}: <span className="text-primary">{transaction.usr_is_active}</span>
-                </p>
-              </tr><tr>
-                <p className="mb-2">
-                  {t('usr_picture')}: <span className="text-primary">{transaction.usr_picture}</span>
-                </p>
-              </tr><tr>
-                <p className="mb-2">
-                  {t('usr_last_logged_in')}: <span className="text-primary">{transaction.usr_last_logged_in}</span>
-                </p>
-              </tr><tr>
-                <p className="mb-2">
-                  {t('usr_ip')}: <span className="text-primary">{transaction.usr_ip}</span>
-                </p>
-              </tr><tr>
-                <p className="mb-2">
-                  {t('usr_remember_token')}: <span className="text-primary">{transaction.usr_remember_token}</span>
-                </p>
-              </tr>
+            <Col className="md-6">
+              <div className="text-muted mt-4">
+                <Table className="table-nowrap mb-0">
+                  <tbody>
+                    <tr>
+                      <th scope="row">{t("usr_role_id")} </th>
+                      <td> {transaction.usr_role_id}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">{t("usr_region_id")}</th>
+                      <td>{transaction.usr_region_id}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">{t("usr_zone_id")}</th>
+                      <td>{transaction.usr_zone_id}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row"> {t("usr_kebele_id")}</th>
+                      <td>{transaction.usr_kebele_id}</td>
+                    </tr>
 
-
-
-              {transaction.is_deletable === 1 && (
-                <p className="text-danger">data is deletable</p>
-              )}
-
-              {transaction.is_editable === 1 && (
-                <p className="text-success">Editable</p>
-              )}
+                    <tr>
+                      <th scope="row"> {t("usr_sector_id")}</th>
+                      <td>{transaction.usr_sector_id}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row"> {t("usr_department_id")}</th>
+                      <td>{transaction.usr_department_id}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row"> {t("usr_is_active")}</th>
+                      <td>{transaction.usr_is_active}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Is Deleteable :</th>
+                      <td className="text-danger">
+                        {transaction.is_deletable === 1 && "Data is deletable"}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Is Editable :</th>
+                      <td className="text-success">
+                        {transaction.is_editable === 1 && "Editable"}
+                      </td>
+                    </tr>
+                  </tbody>
+                </Table>
+              </div>
             </Col>
           </Row>
-
-
-
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
 
@@ -356,8 +328,9 @@ const UsersModal = (props) => {
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
                   <i
-                    className={`mdi ${passwordShown ? "mdi-eye-off" : "mdi-eye"
-                      } font-size-16`}
+                    className={`mdi ${
+                      passwordShown ? "mdi-eye-off" : "mdi-eye"
+                    } font-size-16`}
                     onClick={togglePasswordVisibility}
                     style={{
                       position: "absolute",
@@ -383,10 +356,13 @@ const UsersModal = (props) => {
             >
               Close
             </Button>
-            <Button type="button" color="success" onClick={handlePasswordChange}>
+            <Button
+              type="button"
+              color="success"
+              onClick={handlePasswordChange}
+            >
               Edit
             </Button>
-
           </ModalFooter>
         </Modal>
       </div>

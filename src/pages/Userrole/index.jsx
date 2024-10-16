@@ -19,9 +19,7 @@ import {
   deleteUserRole as onDeleteUserRole,
 } from "../../store/userrole/actions";
 
-import {
-  getRoles as onGetRoles
-} from "../../store/roles/actions";
+import { getRoles as onGetRoles } from "../../store/roles/actions";
 //redux
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
@@ -50,6 +48,7 @@ import { ToastContainer } from "react-toastify";
 //Import Flatepicker
 import "flatpickr/dist/themes/material_blue.css";
 import accessToken from "../../helpers/jwt-token-access/accessToken";
+import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -75,24 +74,20 @@ const UserRoleModel = (props) => {
 
   const [selectedRoles, setSelectedRoles] = useState("");
 
-  const [dropdawnlable,setDropdawnLable]=useState("");
+  const [dropdawnlable, setDropdawnLable] = useState("");
   const dispatch = useDispatch();
-  
-
 
   const handleRolesChange = (e) => {
     setSelectedRoles(e.target.value);
-    console.log(e.target)
+    console.log(e.target);
     const selectedIndex = e.target.selectedIndex;
     const selectedOption = e.target.options[selectedIndex];
-    const selectedLabel = selectedOption.text;  
+    const selectedLabel = selectedOption.text;
 
     setDropdawnLable(selectedLabel);
     validation.setFieldValue("url_role_id", e.target.value);
-  
-    validation.setFieldValue("url_role_name",selectedLabel)
-   
-    
+
+    validation.setFieldValue("url_role_name", selectedLabel);
   };
   // validation
   const validation = useFormik({
@@ -135,25 +130,21 @@ const UserRoleModel = (props) => {
           url_user_id: passedId,
           url_description: values.url_description,
           url_status: values.url_status,
-          url_role_id:Number(values.url_role_id)
+          url_role_id: Number(values.url_role_id),
         };
-        
+
         dispatch(onAddUserRole(newUserRole));
         validation.resetForm();
-        
       }
     },
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
- 
-
 
   // Fetch UserRole on component mount
   useEffect(() => {
     dispatch(onGetUserRole(passedId));
   }, [dispatch]);
-
 
   const userRoleProperties = createSelector(
     (state) => state.UserRoleR, // this is geting from  reducer
@@ -171,12 +162,11 @@ const UserRoleModel = (props) => {
     update_loading,
   } = useSelector(userRoleProperties);
 
-  console.log("user role ..",userRole)
+  console.log("user role ..", userRole);
 
-    useEffect(() => {
+  useEffect(() => {
     dispatch(onGetRoles());
   }, [dispatch]);
-
 
   const rolesProperties = createSelector(
     (state) => state.RolesR, // this is geting from  reducer
@@ -189,21 +179,17 @@ const UserRoleModel = (props) => {
   );
 
   const {
-    roles: { data:roledata, previledge:rolepreviledge },
-    loading:roleloading,
-    update_loading:roleupdate_loading,
-
+    roles: { data: roledata, previledge: rolepreviledge },
+    loading: roleloading,
+    update_loading: roleupdate_loading,
   } = useSelector(rolesProperties);
 
-  console.log("roledata",roledata)
+  console.log("roledata", roledata);
 
   useEffect(() => {
     console.log("update_loading in useEffect", roleupdate_loading);
     setModal(false);
   }, [roleupdate_loading]);
-
-
-  
 
   useEffect(() => {
     console.log("update_loading in useEffect", update_loading);
@@ -220,7 +206,7 @@ const UserRoleModel = (props) => {
   const { results } = useSelector(selectSearchProperties);
 
   const [isLoading, setLoading] = useState(loading);
-  
+
   useEffect(() => {
     setUserRole(data);
   }, [data]);
@@ -248,7 +234,7 @@ const UserRoleModel = (props) => {
       url_id: userRole.url_id,
       url_user_id: userRole.url_user_id,
       url_description: userRole.url_description,
-      url_user_name:userRole.url_role_name,
+      url_user_name: userRole.url_role_name,
       url_status: userRole.url_status,
 
       is_deletable: userRole.is_deletable,
@@ -284,7 +270,7 @@ const UserRoleModel = (props) => {
     setShowSearchResults(true); // Show search results
     setSearchLoading(false);
   };
-  
+
   const handleClearSearch = () => {
     setShowSearchResults(false);
   };
@@ -299,7 +285,8 @@ const UserRoleModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rol_name, 30) || dropdawnlable}
+              {truncateText(cellProps.row.original.rol_name, 30) ||
+                dropdawnlable}
             </span>
           );
         },
@@ -413,13 +400,29 @@ const UserRoleModel = (props) => {
   ];
 
   const dropdawntotal = [project_status];
+  console.log("Transaction data: ", JSON.stringify(transaction, null, 2)); // Pretty print the transaction object
 
   return (
     <React.Fragment>
-      <UserRoleModal
+      {/* <UserRoleModal
         isOpen={modal1}
         toggle={toggleViewModal}
         transaction={transaction}
+      /> */}
+
+      <DynamicDetailsModal
+        isOpen={modal1}
+        toggle={toggleViewModal} // Function to close the modal
+        data={transaction} // Pass transaction as data to the modal
+        title="View User Role Details"
+        description={transaction.url_description}
+        fields={[
+          { label: "Role Name", key: "rol_name" },
+          { label: "Status", key: "url_status" },
+          { label: "Is Deletable", key: "is_deletable" },
+          { label: "Is Editable", key: "is_editable" },
+        ]}
+        footerText="Close"
       />
       <DeleteModal
         show={deleteModal}
@@ -502,7 +505,7 @@ const UserRoleModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                 
+
                   <Col className="col-md-6 mb-3">
                     <Label>{t("url_description")}</Label>
                     <Input
@@ -553,7 +556,6 @@ const UserRoleModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  
                 </Row>
                 <Row>
                   <Col>
