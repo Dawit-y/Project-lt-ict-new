@@ -15,7 +15,9 @@ export const getBudgetRequest = async (project_ID) => {
     let response;
     if (project_ID != null) {
       // response = await post(`${apiUrl}${GET_PROJECT_PAYMENT}?project_payment=2`);
-      response = await post(`${apiUrl}${GET_BUDGET_REQUEST}?project_id=${project_ID}`);
+      response = await post(
+        `${apiUrl}${GET_BUDGET_REQUEST}?project_id=${project_ID}`
+      );
     } else {
       response = await post(`${apiUrl}${GET_BUDGET_REQUEST}`);
     }
@@ -28,7 +30,7 @@ export const getBudgetRequest = async (project_ID) => {
 export const addBudgetRequest = async (objectName) => {
   try {
     const response = await axios.post(
-      `${apiUrl}`+ADD_BUDGET_REQUEST,
+      `${apiUrl}` + ADD_BUDGET_REQUEST,
       objectName,
       {
         headers: {
@@ -44,12 +46,15 @@ export const addBudgetRequest = async (objectName) => {
 };
 // update objectNames
 export const updateBudgetRequest = (objectName) =>
-  post(`${apiUrl}`+UPDATE_BUDGET_REQUEST +`?bdr_id=${objectName?.bdr_id}`, objectName);
+  post(
+    `${apiUrl}` + UPDATE_BUDGET_REQUEST + `?bdr_id=${objectName?.bdr_id}`,
+    objectName
+  );
 
 // delete objectNames
 export const deleteBudgetRequest = (objectName) =>
   // post(`${url.DELETE_ORDER}?bdr_id=${order?.bdr_id}`);
-  post(`${apiUrl}`+DELETE_BUDGET_REQUEST+`?bdr_id=${objectName}`);
+  post(`${apiUrl}` + DELETE_BUDGET_REQUEST + `?bdr_id=${objectName}`);
 
 export const fetchSearchResults = async (searchTerm, selectedFields) => {
   let queryParams = [];
@@ -71,6 +76,4 @@ export const fetchSearchResults = async (searchTerm, selectedFields) => {
   );
   return response.data.data;
 };
-export {
-  
-};
+export {};

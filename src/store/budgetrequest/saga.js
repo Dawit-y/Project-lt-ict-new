@@ -41,11 +41,10 @@ import "react-toastify/dist/ReactToastify.css";
 
 const selectShowResult = (state) => state.BudgetRequestR.show_result;
 
-function* fetchBudgetRequest({payload:projectid}) {
+function* fetchBudgetRequest({ payload: projectid }) {
   try {
-    const response = yield call(getBudgetRequest,projectid);
+    const response = yield call(getBudgetRequest, projectid);
     yield put(getBudgetRequestSuccess(response));
-    // toast.success(`budgetRequests Loading  Successfully`, { autoClose: 2000 });
   } catch (error) {
     yield put(getBudgetRequestFail(error));
   }
@@ -61,9 +60,12 @@ function* onUpdateBudgetRequest({ payload: budgetRequest, modalCallback }) {
     if (showResult) {
       yield put(updateSearchResults(budgetRequest));
     }
-    toast.success(`budgetRequest ${budgetRequest.bdr_id} Is Updated Successfully`, {
-      autoClose: 2000,
-    });
+    toast.success(
+      `budgetRequest ${budgetRequest.bdr_id} Is Updated Successfully`,
+      {
+        autoClose: 2000,
+      }
+    );
     if (modalCallback) modalCallback();
   } catch (error) {
     yield put(updateBudgetRequestFail(error));
@@ -87,9 +89,12 @@ function* onDeleteBudgetRequest({ payload: budgetRequest }) {
     if (showResult) {
       yield put(deleteSearchResult(budgetRequest));
     }
-    toast.success(`budgetRequest ${response.deleted_id} Is Delete Successfully`, {
-      autoClose: 2000,
-    });
+    toast.success(
+      `budgetRequest ${response.deleted_id} Is Delete Successfully`,
+      {
+        autoClose: 2000,
+      }
+    );
   } catch (error) {
     yield put(deleteBudgetRequestFail(error));
     toast.error(`budgetRequest ${budgetRequest.bdr_id} Is Delete Failed`, {
@@ -106,9 +111,12 @@ function* onAddBudgetRequest({ payload: budgetRequest, modalCallback }) {
     const response = yield call(addBudgetRequest, budgetRequest);
 
     yield put(addBudgetRequestSuccess(response.data));
-    toast.success(`budgetRequest ${response.data.bdr_id} Is Added Successfully`, {
-      autoClose: 2000,
-    });
+    toast.success(
+      `budgetRequest ${response.data.bdr_id} Is Added Successfully`,
+      {
+        autoClose: 2000,
+      }
+    );
     if (modalCallback) modalCallback();
   } catch (error) {
     yield put(addBudgetRequestFail(error));

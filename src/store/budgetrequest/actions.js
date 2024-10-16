@@ -11,7 +11,7 @@ import {
   DELETE_BUDGET_REQUEST,
   DELETE_BUDGET_REQUEST_SUCCESS,
   DELETE_BUDGET_REQUEST_FAIL,
-  TOGGLE_UPDATE_LOADING
+  TOGGLE_UPDATE_LOADING,
 } from "./actionTypes";
 
 export const getBudgetRequest = (projectid) => ({

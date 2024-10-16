@@ -46,7 +46,9 @@ const ProjectStakeholder = lazy(() =>
 );
 const StakeholderType = lazy(() => import("../pages/Stakeholdertype/index"));
 const Department = lazy(() => import("../pages/Department/index"));
-const BudgetRequest = lazy(() => import("../pages/Budgetrequest/index"));
+const BudgetRequestListModel = lazy(() =>
+  import("../pages/Budgetrequest/BudgetRequestList")
+);
 const BudgetSource = lazy(() => import("../pages/Budgetsource/index"));
 const BudgetYear = lazy(() => import("../pages/Budgetyear/index"));
 const ContractTerminationReason = lazy(() =>
@@ -69,7 +71,7 @@ const authProtectedRoutes = [
   { path: "/Project-Tree", component: <ProjectsTreeView /> },
   { path: "/address_structure", component: <AddressStructure /> },
   { path: "/department", component: <Department /> },
-  { path: "/budget_request", component: <BudgetRequest /> },
+  { path: "/budget_request", component: <BudgetRequestListModel /> },
   { path: "/budget_source", component: <BudgetSource /> },
   { path: "/budget_year", component: <BudgetYear /> },
   {
