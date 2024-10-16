@@ -29,6 +29,7 @@ import NonAuthLayout from "./components/NonAuthLayout";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import NetworkAlert from "./components/Common/NetworkAlert";
 
 const App = (props) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -119,7 +120,14 @@ const App = (props) => {
     )
   );
 
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      {!isOnline && (
+        <NetworkAlert AlertMessage={<b>Oops! No internet connection.</b>} />
+      )}
+      <RouterProvider router={router} />
+    </>
+  );
 };
 
 App.propTypes = {
