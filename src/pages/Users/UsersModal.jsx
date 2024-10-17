@@ -147,26 +147,19 @@ const UsersModal = (props) => {
 
         <ModalBody>
           <Row>
-            <Col md="6">
+            <Col className="md-6">
               <Card className="overflow-hidden">
                 <CardBody className="pt-0">
                   <Row>
-                    <Col>
-                      <div className="d-flex justify-content-center">
-                        <div className="avatar-xl profile-user-wid mb-2">
-                          <img
-                            src={transaction.usr_picture}
-                            alt="User Profile"
-                            className="img-thumbnail rounded-circle"
-                          />
-                        </div>
-                      </div>
-                      <h5 className="font-size-15 text-truncate text-center">
-                        {transaction.usr_full_name}
-                      </h5>
-                      <p className="text-muted mb-0 text-truncate text-center mb-2">
-                        {transaction.usr_department_id}
-                      </p>
+                    <Col className="md-6">
+                      <img
+                        src={`${import.meta.env.VITE_BASE_API_FILE}public/uploads/userfiles/${transaction.usr_picture}`}
+                        alt="User Profile"
+                        className="img-thumbnail w-100"
+                        style={{ height: "150px", objectFit: "cover" }}
+                      />
+
+
                       <Card>
                         <CardBody>
                           <CardTitle className="mb-4">
@@ -199,36 +192,63 @@ const UsersModal = (props) => {
                           </div>
                         </CardBody>
                       </Card>
-                    </Col>
-                    <div className="d-flex flex-wrap gap-2">
-                      <Button
-                        type="button"
-                        color="primary "
-                        onClick={() => {
-                          tog_backdrop();
-                        }}
-                      >
-                        <i className="font-size-16"></i> Reset
-                      </Button>
-                      <Label>Update user status</Label>
-                      <Switch
-                        uncheckedIcon={<OffSymbol />}
-                        checkedIcon={<OnSymbol />}
-                        className="me-1 mb-sm-8 mb-2"
-                        onColor="#626ed4"
-                        onChange={() => {
-                          setSwitch1(!switch1);
-                          console.log("defout", transaction.usr_id);
-                          const update_user = {
-                            usr_id: transaction.usr_id,
-                            usr_description: "this is for demo",
-                          };
+                      <div className="d-flex justify-content-between align-items-center gap-3 p-3" style={{ backgroundColor: "#ffff2", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)" }}>
+                        <Col>
+                          <Label className="form-label mb-2" style={{ fontSize: "16px", fontWeight: "bold" }}>
+                            Reset New Password
+                          </Label>
+                          <Button
+                            type="button"
+                            color="primary"
+                            className="px-4 py-2"
+                            style={{ borderRadius: "5px", fontWeight: "bold", fontSize: "16px" }}
+                            onClick={() => {
+                              tog_backdrop();
+                            }}
+                          >
+                            <i className="bx bx-refresh" style={{ marginRight: "8px" }}></i> Reset
+                          </Button>
+                        </Col>
 
-                          dispatch(onUpdateUsers(update_user));
-                        }}
-                        checked={switch1}
-                      />
-                    </div>
+                        <Col className="d-flex flex-column align-items-center">
+                          <Label className="form-label mb-2" style={{ fontSize: "16px", fontWeight: "bold", color: "#333" }}>
+                            Update User Status
+                          </Label>
+
+                          <div className="d-flex align-items-center">
+                            <Switch
+                              uncheckedIcon={<OffSymbol />}
+                              checkedIcon={<OnSymbol />}
+                              className="me-2"
+                              onColor="#626ed4"
+                              offColor="#d9534f"
+                              onChange={() => {
+                                setSwitch1(!switch1);
+                                console.log("default", transaction.usr_id);
+                                const update_user = {
+                                  usr_id: transaction.usr_id,
+                                  usr_description: "this is for demo",
+                                };
+                                dispatch(onUpdateUsers(update_user));
+                              }}
+                              checked={switch1}
+                            />
+
+                            {/* Display Active/Inactive based on switch state */}
+                            <span style={{
+                              fontSize: "16px",
+                              fontWeight: "bold",
+                              color: switch1 ? "#28a745" : "#d9534f" // Green for Active, Red for Inactive
+                            }}>
+                              {switch1 ? "Active" : "Inactive"}
+                            </span>
+                          </div>
+                        </Col>
+
+                      </div>
+                    </Col>
+
+
                   </Row>
                 </CardBody>
               </Card>
@@ -264,6 +284,7 @@ const UsersModal = (props) => {
                       <td>{transaction.usr_department_id}</td>
                     </tr>
                     <tr>
+
                       <th scope="row"> {t("usr_is_active")}</th>
                       <td>{transaction.usr_is_active}</td>
                     </tr>
@@ -328,9 +349,8 @@ const UsersModal = (props) => {
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
                   <i
-                    className={`mdi ${
-                      passwordShown ? "mdi-eye-off" : "mdi-eye"
-                    } font-size-16`}
+                    className={`mdi ${passwordShown ? "mdi-eye-off" : "mdi-eye"
+                      } font-size-16`}
                     onClick={togglePasswordVisibility}
                     style={{
                       position: "absolute",
