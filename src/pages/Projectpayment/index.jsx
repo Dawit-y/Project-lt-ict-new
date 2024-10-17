@@ -23,7 +23,6 @@ import {
 //redux
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
-import ProjectPaymentModal from "./ProjectPaymentModal";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -44,6 +43,7 @@ import {
   Badge,
 } from "reactstrap";
 import { ToastContainer } from "react-toastify";
+import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -451,11 +451,25 @@ const ProjectPaymentModel = (props) => {
 
   return (
     <React.Fragment>
-      <ProjectPaymentModal
+      <DynamicDetailsModal
         isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
+        toggle={toggleViewModal} // Function to close the modal
+        data={transaction} // Pass transaction as data to the modal
+        title="View Payment Details"
+        description={transaction.prp_description}
+        dateInEC={transaction.prp_payment_date_et}
+        dateInGC={transaction.prp_payment_date_gc}
+        fields={[
+          { label: "Payment Type", key: "prp_type" },
+          { label: "Payment Amount", key: "prp_payment_amount" },
+          { label: "Percentage", key: "prp_payment_percentage" },
+          { label: "Project Payment Status", key: "prp_status" },
+          { label: "Is Deletable", key: "is_deletable" },
+          { label: "Is Editable", key: "is_editable" },
+        ]}
+        footerText="Close"
       />
+
       <DeleteModal
         show={deleteModal}
         onDeleteClick={handleDeleteProjectPayment}
