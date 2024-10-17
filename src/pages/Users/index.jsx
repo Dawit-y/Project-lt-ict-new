@@ -67,6 +67,7 @@ const UsersModel = () => {
   document.title = " Users";
 
   const { t } = useTranslation();
+  
 
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -338,6 +339,17 @@ const UsersModel = () => {
     setUsers("");
     toggle();
   };
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result); // Set the image preview
+        validation.setFieldValue("usr_picture", file); // Assuming usr_picture is the field in validation
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   const handleSearch = () => {
     setSearchLoading(true); // Set loading to true when search is initiated// Update filtered data with search results
     setShowSearchResults(true); // Show search results
@@ -467,17 +479,6 @@ const UsersModel = () => {
 
   const dropdawntotal = [project_status];
 
-  //  img upload
-  const handleImageChange = (event) => {
-    event.preventDefault();
-    let reader = new FileReader();
-    let file = event.target.files[0];
-    reader.onloadend = () => {
-      setSelectedImage(reader.result);
-      validation.setFieldValue("projectImage", reader.result);
-    };
-    reader.readAsDataURL(file);
-  };
 
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
@@ -661,7 +662,7 @@ const UsersModel = () => {
                     <Label>{t("usr_phone_number")}</Label>
                     <Input
                       name="usr_phone_number"
-                      type="text"
+                      type="number"
                       placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -685,7 +686,7 @@ const UsersModel = () => {
                     <Label>{t("usr_role_id")}</Label>
                     <Input
                       name="usr_role_id"
-                      type="text"
+                      type="number"
                       placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -710,7 +711,7 @@ const UsersModel = () => {
                     <Label>{t("usr_sector_id")}</Label>
                     <Input
                       name="usr_sector_id"
-                      type="text"
+                      type="number"
                       placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -742,12 +743,7 @@ const UsersModel = () => {
                       onBlur={validation.handleBlur}
                       value={selectedDepartment || ""}
                     >
-                      {/* departmentOptions */}
-                      {/* {datadepartment.map((option) => (
-                        <option key={option.dep_id} value={Number(option.dep_id)}>
-                          {t(`${option.dep_name_en}`)}
-                        </option>
-                      ))} */}
+                      
                       <option value="" disabled={!isEdit}>
                         {isEdit
                           ? datadepartment.find(
@@ -803,12 +799,7 @@ const UsersModel = () => {
                       name="usr_status"
                       type="select"
                       className="form-select"
-                      // onChange={(e) => {
-                      //   validation.setFieldValue(
-                      //     "usr_status",
-                      //     Number(e.target.value)
-                      //   );
-                      // }}
+                      
                       onChange={validation.handleChange}
                       
                       onBlur={validation.handleBlur}
@@ -845,57 +836,86 @@ const UsersModel = () => {
                       isEdit={isEdit} // Set to true if in edit mode, otherwise false
                     />
                   </Col>
-                  <Col className="col-md-8 mb-3" style={{ backgroundColor: "#f8f9fa", color: "#333", borderRadius: "8px", padding: "20px", boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)" }}>
-                    <div className="mb-3">
-                      <Label className="form-label" style={{ fontWeight: "bold", fontSize: "16px" }}>Upload User Image</Label>
-                      <div className="text-center">
-                        <div className="position-relative d-inline-block">
-                          <div className="position-absolute bottom-0 end-0">
-                            <Label
-                              htmlFor="project-image-input"
-                              className="mb-0"
-                              id="projectImageInput"
-                            >
-                              <div className="avatar-xs">
-                                <div className="avatar-title bg-primary border rounded-circle text-white cursor-pointer shadow-sm font-size-16">
-                                  <i className="bx bxs-image-add"></i>
+                  
+                   <Col
+                      className="col-md-8 mb-3"
+                      style={{
+                        backgroundColor: "#f8f9fa",
+                        color: "#333",
+                        borderRadius: "8px",
+                        padding: "20px",
+                        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+                      }}
+                    >
+                      <div className="mb-3">
+                        <Label
+                          className="form-label"
+                          style={{ fontWeight: "bold", fontSize: "16px" }}
+                        >
+                          Upload User Image
+                        </Label>
+                        <div className="text-center">
+                          <div className="position-relative d-inline-block">
+                            <div className="position-absolute bottom-0 end-0">
+                              <Label
+                                htmlFor="project-image-input"
+                                className="mb-0"
+                                id="projectImageInput"
+                              >
+                                <div className="avatar-xs">
+                                  <div className="avatar-title bg-primary border rounded-circle text-white cursor-pointer shadow-sm font-size-16">
+                                    <i className="bx bxs-image-add"></i>
+                                  </div>
                                 </div>
-                              </div>
-                            </Label>
-                            <UncontrolledTooltip
-                              placement="right"
-                              target="projectImageInput"
-                            >
-                              Select Image
-                            </UncontrolledTooltip>
-                            <input
-                              className="form-control d-none"
-                              id="project-image-input"
-                              type="file"
-                              accept="image/png, image/gif, image/jpeg"
-                              onChange={handleImageChange}
-                            />
-                          </div>
-                          <div className="avatar-xl" style={{ marginTop: "10px" }}>
-                            <div className="avatar-title bg-light rounded-circle" style={{ overflow: "hidden", width: "120px", height: "120px", border: "2px solid #ddd" }}>
-                              <img
-                                src={selectedImage || "https://via.placeholder.com/120"}
-                                id="projectlogo-img"
-                                alt="User Image"
-                                className="img-fluid rounded-circle"
-                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                              </Label>
+                              <UncontrolledTooltip
+                                placement="right"
+                                target="projectImageInput"
+                              >
+                                Select Image
+                              </UncontrolledTooltip>
+                              <input
+                                className="form-control d-none"
+                                id="project-image-input"
+                                type="file"
+                                accept="image/png, image/gif, image/jpeg"
+                                onChange={handleImageChange}
                               />
                             </div>
+                            <div className="avatar-xl" style={{ marginTop: "10px" }}>
+                              <div
+                                className="avatar-title bg-light rounded-circle"
+                                style={{
+                                  overflow: "hidden",
+                                  width: "120px",
+                                  height: "120px",
+                                  border: "2px solid #ddd",
+                                }}
+                              >
+                                {/* Show selected image or placeholder */}
+                                <img
+                                  src={`${import.meta.env.VITE_BASE_API_FILE}public/uploads/userfiles/${validation.usr_picture}` || "https://via.placeholder.com/120"}
+                                  id="projectlogo-img"
+                                  alt="User Image"
+                                  className="img-fluid rounded-circle"
+                                  style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                              </div>
+                            </div>
                           </div>
+                          {/* Validation feedback */}
+                          {validation.touched.usr_picture && validation.errors.usr_picture ? (
+                            <FormFeedback type="invalid" className="d-block mt-2">
+                              {validation.errors.usr_picture}
+                            </FormFeedback>
+                          ) : null}
                         </div>
-                        {validation.touched.usr_picture && validation.errors.usr_picture ? (
-                          <FormFeedback type="invalid" className="d-block mt-2">
-                            {validation.errors.usr_picture}
-                          </FormFeedback>
-                        ) : null}
                       </div>
-                    </div>
-                  </Col>
+                    </Col>
 
                 </Row>
                 <Row>
