@@ -55,16 +55,24 @@ const validationSchema = Yup.object().shape({
 const BudgetRequestListModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction, budgetYearMap } = props;
-  console.log("transaction", transaction);
   const dispatch = useDispatch();
+
+  const statusOptions = [
+    { label: "Approved", value: "Approved" },
+    { label: "Rejected", value: "Rejected" },
+  ];
+
+  // Helper to find the option matching the initial value
+  const getStatusOption = (value) =>
+    statusOptions.find((option) => option.value === value) || null;
   // Formik setup
   const formik = useFormik({
     initialValues: {
       bdr_id: transaction.bdr_id || "",
-      bdr_request_status: "",
-      bdr_released_amount: "",
-      bdr_released_date_gc: "",
-      bdr_action_remark: "",
+      bdr_request_status: transaction.bdr_request_status || "",
+      bdr_released_amount: transaction.bdr_released_amount || "",
+      bdr_released_date_gc: transaction.bdr_released_date_gc || "",
+      bdr_action_remark: transaction.bdr_action_remark || "",
     },
     validationSchema,
     enableReinitialize: true,
@@ -137,10 +145,8 @@ const BudgetRequestListModal = (props) => {
                     <Label>Status</Label>
                     <Select
                       name="bdr_request_status"
-                      options={[
-                        { label: "Accepted", value: "Accepted" },
-                        { label: "Rejected", value: "Rejected" },
-                      ]}
+                      options={statusOptions}
+                      value={getStatusOption(formik.values.bdr_request_status)}
                       onChange={handleStatusChange}
                       className="select2-selection"
                       invalid={

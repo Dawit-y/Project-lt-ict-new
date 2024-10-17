@@ -174,16 +174,23 @@ const TableContainer = ({
                 onClick={handleUserClick}
               >
                 <i className="mdi mdi-plus me-1"></i> {buttonName}
-              </Button> 
-               {/* add export button */}
-               <ExportToExcel tableData={data} tablename ={buttonName.split(" ")[1]} />
+              </Button>
+              {/* add export button */}
+              <ExportToExcel
+                tableData={data}
+                tablename={buttonName.split(" ")[1]}
+              />
             </div>
           </Col>
         )}
       </Row>
 
       <div className={divClassName ? divClassName : "table-responsive"}>
-        <Table hover className={`${tableClass} table-sm table-bordered table-striped`} bordered={isBordered}>
+        <Table
+          hover
+          className={`${tableClass} table-sm table-bordered table-striped`}
+          bordered={isBordered}
+        >
           <thead className={theadClass}>
             {getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -229,7 +236,7 @@ const TableContainer = ({
           <tbody>
             {getRowModel().rows.map((row) => (
               <tr key={row.id}>
-                <td>{Number(row.id) +1 }</td>
+                <td>{Number(row.id) + 1}</td>
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

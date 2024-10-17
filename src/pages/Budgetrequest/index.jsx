@@ -56,7 +56,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const statusClasses = {
-  Accepted: "success",
+  Approved: "success",
   Rejected: "danger",
   Requested: "secondary",
 };

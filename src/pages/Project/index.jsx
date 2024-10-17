@@ -377,7 +377,6 @@ const ProjectModel = () => {
   } = useSelector(projectProperties);
 
   useEffect(() => {
-    console.log("update_loading in useEffect", update_loading);
     setModal(false);
   }, [update_loading]);
 

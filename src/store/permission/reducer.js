@@ -59,11 +59,15 @@ const PermissionReducer = (state = INIT_STATE, action) => {
         ...state,
         permission: {
           ...state.permission,
-          data: state.permission.data.map((PERMISSION) =>
-            PERMISSION.pem_id === action.payload.pem_id
-              ? { ...PERMISSION, ...action.payload } // Update the specific PERMISSION
-              : PERMISSION
-          ),
+          data: state.permission.data.map((PERMISSION) => {
+            if (
+              PERMISSION.pag_name.toString() ===
+              action.payload.pag_name.toString()
+            ) {
+              return { ...PERMISSION, ...action.payload };
+            }
+            return { ...PERMISSION };
+          }),
         },
       };
 
@@ -79,8 +83,7 @@ const PermissionReducer = (state = INIT_STATE, action) => {
         permission: {
           ...state.permission,
           data: state.permission.data.filter(
-            (PERMISSION) =>
-              PERMISSION.pem_id !== action.payload.deleted_id
+            (PERMISSION) => PERMISSION.pem_id !== action.payload.deleted_id
           ),
         },
       };

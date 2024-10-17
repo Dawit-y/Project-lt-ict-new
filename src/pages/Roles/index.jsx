@@ -141,7 +141,6 @@ const RolesModel = ({ onSelectItem }) => {
   } = useSelector(rolesProperties);
 
   useEffect(() => {
-    console.log("update_loading in useEffect", update_loading);
     setModal(false);
   }, [update_loading]);
 
@@ -199,7 +198,6 @@ const RolesModel = ({ onSelectItem }) => {
 
   const handleClick = (data) => {
     setShowCanvas(!showCanvas); // Toggle canvas visibility
-    console.log(data, "project data");
     setRoleMetaData(data);
   };
 

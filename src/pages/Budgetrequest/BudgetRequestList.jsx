@@ -58,7 +58,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const statusClasses = {
-  Accepted: "success",
+  Approved: "success",
   Rejected: "danger",
   Requested: "secondary",
 };
@@ -153,9 +153,8 @@ const BudgetRequestListModel = () => {
   }, [dispatch]);
 
   const budgetRequestProperties = createSelector(
-    (state) => state.BudgetRequestR, // this is geting from  reducer
+    (state) => state.BudgetRequestR,
     (BudgetRequestReducer) => ({
-      // this is from Project.reducer
       budgetRequest: BudgetRequestReducer.budgetRequest,
       loading: BudgetRequestReducer.loading,
       update_loading: BudgetRequestReducer.update_loading,
@@ -168,12 +167,9 @@ const BudgetRequestListModel = () => {
     update_loading,
   } = useSelector(budgetRequestProperties);
 
-  console.log("data", data);
-
   const budgetYearProperties = createSelector(
-    (state) => state.BudgetYearR, // this is geting from  reducer
+    (state) => state.BudgetYearR,
     (BudgetYearReducer) => ({
-      // this is from Project.reducer
       budgetYear: BudgetYearReducer.budgetYear,
       loading: BudgetYearReducer.loading,
       update_loading: BudgetYearReducer.update_loading,
@@ -229,7 +225,6 @@ const BudgetRequestListModel = () => {
 
   const handleBudgetRequestClick = (arg) => {
     const budgetRequest = arg;
-    // console.log("handleBudgetRequestClick", budgetRequest);
     setBudgetRequest({
       bdr_id: budgetRequest.bdr_id,
       bdr_budget_year_id: budgetRequest.bdr_budget_year_id,
@@ -332,7 +327,6 @@ const BudgetRequestListModel = () => {
         filter: true,
         cellRenderer: (params) => {
           const badgeClass = statusClasses[params.value] || "secondary";
-          console.log(params);
           return (
             <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
               {params.value}
@@ -513,37 +507,6 @@ const BudgetRequestListModel = () => {
                 }}
               >
                 <Row>
-                  {/* <Col className="col-md-6 mb-3">
-                  <Label>{t("bdr_budget_year_id")}</Label>
-                  <Input
-                    name="bdr_budget_year_id"
-                    type="select"
-                    placeholder={t("insert_status_name_amharic")}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.bdr_budget_year_id || ""}
-                    invalid={
-                      validation.touched.bdr_budget_year_id &&
-                      validation.errors.bdr_budget_year_id
-                        ? true
-                        : false
-                    }
-                    maxLength={20}
-                  >
-                    <option value="">Select Budget Year</option>
-                    {budgetYearData?.map((data) => (
-                      <option key={data.bdy_id} value={data.bdy_id}>
-                        {data.bdy_name}
-                      </option>
-                    ))}
-                  </Input>
-                  {validation.touched.bdr_budget_year_id &&
-                  validation.errors.bdr_budget_year_id ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.bdr_budget_year_id}
-                    </FormFeedback>
-                  ) : null}
-                </Col> */}
                   <Col className="col-md-6 mb-3">
                     <Label>{t(" bdr_released_amount")}</Label>
                     <Input
@@ -568,31 +531,6 @@ const BudgetRequestListModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  {/* <Col className="col-md-6 mb-3">
-                  <Label>{t("bdr_released_amount")}</Label>
-                  <Input
-                    name="bdr_released_amount"
-                    type="text"
-                    placeholder={t("insert_status_name_amharic")}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.bdr_released_amount || ""}
-                    invalid={
-                      validation.touched.bdr_released_amount &&
-                      validation.errors.bdr_released_amount
-                        ? true
-                        : false
-                    }
-                    maxLength={20}
-                  />
-                  {validation.touched.bdr_released_amount &&
-                  validation.errors.bdr_released_amount ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.bdr_released_amount}
-                    </FormFeedback>
-                  ) : null}
-                </Col> */}
-
                   <Col className="col-md-6 mb-3">
                     <FormGroup>
                       <Label>{t(" bdr_released_date_gc")}</Label>
@@ -639,54 +577,6 @@ const BudgetRequestListModel = () => {
                       ) : null}
                     </FormGroup>
                   </Col>
-                  {/* <Col className="col-md-6 mb-3">
-                  <Label>{t("bdr_released_date_ec")}</Label>
-                  <Input
-                    name="bdr_released_date_ec"
-                    type="text"
-                    placeholder={t("insert_status_name_amharic")}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.bdr_released_date_ec || ""}
-                    invalid={
-                      validation.touched.bdr_released_date_ec &&
-                      validation.errors.bdr_released_date_ec
-                        ? true
-                        : false
-                    }
-                    maxLength={20}
-                  />
-                  {validation.touched.bdr_released_date_ec &&
-                  validation.errors.bdr_released_date_ec ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.bdr_released_date_ec}
-                    </FormFeedback>
-                  ) : null}
-                </Col> */}
-                  {/* <Col className="col-md-6 mb-3">
-                  <Label>{t("bdr_released_date_gc")}</Label>
-                  <Input
-                    name="bdr_released_date_gc"
-                    type="text"
-                    placeholder={t("insert_status_name_amharic")}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.bdr_released_date_gc || ""}
-                    invalid={
-                      validation.touched.bdr_released_date_gc &&
-                      validation.errors.bdr_released_date_gc
-                        ? true
-                        : false
-                    }
-                    maxLength={20}
-                  />
-                  {validation.touched.bdr_released_date_gc &&
-                  validation.errors.bdr_released_date_gc ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.bdr_released_date_gc}
-                    </FormFeedback>
-                  ) : null}
-                </Col> */}
                   <Col className="col-md-6 mb-3">
                     <Label>{t("bdr_description")}</Label>
                     <Input
