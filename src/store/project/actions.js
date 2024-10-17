@@ -11,7 +11,11 @@ import {
   DELETE_PROJECT,
   DELETE_PROJECT_SUCCESS,
   DELETE_PROJECT_FAIL,
-  TOGGLE_UPDATE_LOADING
+  TOGGLE_UPDATE_LOADING,
+  SELECT_PROJECT,
+  FETCH_SINGLE_PROJECT_FAIL,
+  FETCH_SINGLE_PROJECT_REQUEST,
+  FETCH_SINGLE_PROJECT_SUCCESS,
 } from "./actionTypes";
 
 export const getProject = () => ({
@@ -73,4 +77,26 @@ export const deleteProjectFail = (error) => ({
 export const toggleUpdateLoading = (value) => ({
   type: TOGGLE_UPDATE_LOADING,
   payload: value,
+});
+
+export const selectProject = (prj_id) => {
+  return {
+    type: SELECT_PROJECT,
+    payload: prj_id,
+  };
+};
+
+export const fetchSingleProjectRequest = (prj_id) => ({
+  type: FETCH_SINGLE_PROJECT_REQUEST,
+  payload: prj_id,
+});
+
+export const fetchSingleProjectSuccess = (project) => ({
+  type: FETCH_SINGLE_PROJECT_SUCCESS,
+  payload: project,
+});
+
+export const fetchSingleProjectFail = (error) => ({
+  type: FETCH_SINGLE_PROJECT_FAIL,
+  payload: error,
 });

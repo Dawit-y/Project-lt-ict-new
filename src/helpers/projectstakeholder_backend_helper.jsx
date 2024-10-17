@@ -14,8 +14,9 @@ export const getProjectStakeholder = async (projectstakeholderid) => {
     // return response;
     let response;
     if (projectstakeholderid != null) {
-  
-      response = await post(`${GET_PROJECT_STAKEHOLDER}?project_id=${projectstakeholderid}`);
+      response = await post(
+        `${GET_PROJECT_STAKEHOLDER}?project_id=${projectstakeholderid}`
+      );
     } else {
       response = await post(`${GET_PROJECT_STAKEHOLDER}`);
     }
@@ -28,7 +29,7 @@ export const getProjectStakeholder = async (projectstakeholderid) => {
 export const addProjectStakeholder = async (objectName) => {
   try {
     const response = await axios.post(
-      `${apiUrl}`+ADD_PROJECT_STAKEHOLDER,
+      `${apiUrl}` + ADD_PROJECT_STAKEHOLDER,
       objectName,
       {
         headers: {
@@ -44,12 +45,15 @@ export const addProjectStakeholder = async (objectName) => {
 };
 // update objectNames
 export const updateProjectStakeholder = (objectName) =>
-  post(`${apiUrl}`+UPDATE_PROJECT_STAKEHOLDER +`?psh_id=${objectName?.psh_id}`, objectName);
+  post(
+    `${apiUrl}` + UPDATE_PROJECT_STAKEHOLDER + `?psh_id=${objectName?.psh_id}`,
+    objectName
+  );
 
 // delete objectNames
 export const deleteProjectStakeholder = (objectName) =>
   // post(`${url.DELETE_ORDER}?psh_id=${order?.psh_id}`);
-  post(`${apiUrl}`+DELETE_PROJECT_STAKEHOLDER+`?psh_id=${objectName}`);
+  post(`${apiUrl}` + DELETE_PROJECT_STAKEHOLDER + `?psh_id=${objectName}`);
 
 export const fetchSearchResults = async (searchTerm, selectedFields) => {
   let queryParams = [];
@@ -71,6 +75,4 @@ export const fetchSearchResults = async (searchTerm, selectedFields) => {
   );
   return response.data.data;
 };
-export {
-  
-};
+export {};

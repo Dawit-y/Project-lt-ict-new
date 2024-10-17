@@ -6,6 +6,7 @@ import {
   ADD_PROJECT,
   DELETE_PROJECT,
   UPDATE_PROJECT,
+  FETCH_SINGLE_PROJECT_REQUEST,
 } from "./actionTypes";
 import {
   getProjectFail,
@@ -17,6 +18,8 @@ import {
   deleteProjectSuccess,
   deleteProjectFail,
   toggleUpdateLoading,
+  fetchSingleProjectFail,
+  fetchSingleProjectSuccess,
 } from "./actions";
 
 import { deleteSearchResult, updateSearchResults } from "../search/action";
@@ -27,7 +30,7 @@ import {
   addProject,
   updateProject,
   deleteProject,
-
+  fetchSingleProjectApi,
   // getProductComents as getProductComentsApi,
   // onLikeComment as onLikeCommentApi,
   // onLikeReply as onLikeReplyApi,
@@ -119,11 +122,21 @@ function* onAddProject({ payload: project, modalCallback }) {
   }
 }
 
+function* fetchSingleProjectSaga(action) {
+  try {
+    const response = yield call(fetchSingleProjectApi, action.payload);
+    yield put(fetchSingleProjectSuccess(response.data)); // Dispatch success action
+  } catch (error) {
+    yield put(fetchSingleProjectFail(error.response.data)); // Dispatch failure action
+  }
+}
+
 function* ProjectSaga() {
   yield takeEvery(GET_PROJECT, fetchProject);
   yield takeEvery(ADD_PROJECT, onAddProject);
   yield takeEvery(UPDATE_PROJECT, onUpdateProject);
   yield takeEvery(DELETE_PROJECT, onDeleteProject);
+  yield takeEvery(FETCH_SINGLE_PROJECT_REQUEST, fetchSingleProjectSaga);
 }
 
 export default ProjectSaga;

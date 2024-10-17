@@ -16,6 +16,15 @@ export const getProject = async () => {
     console.log(error); // Handle any errors
   }
 };
+
+export const fetchSingleProjectApi = async (prj_id) => {
+  try {
+    const response = await get(`/project/${prj_id}`);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
 // add Projects
 export const addProject = async (objectName) => {
   try {

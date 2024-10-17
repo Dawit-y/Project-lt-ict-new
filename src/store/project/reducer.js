@@ -8,6 +8,10 @@ import {
   DELETE_PROJECT_SUCCESS,
   DELETE_PROJECT_FAIL,
   TOGGLE_UPDATE_LOADING,
+  SELECT_PROJECT,
+  FETCH_SINGLE_PROJECT_FAIL,
+  FETCH_SINGLE_PROJECT_REQUEST,
+  FETCH_SINGLE_PROJECT_SUCCESS,
 } from "./actionTypes";
 
 const INIT_STATE = {
@@ -16,6 +20,7 @@ const INIT_STATE = {
     data: [],
     previledge: {},
   },
+  selectedProject: null,
   error: {},
   loading: true,
 };
@@ -94,6 +99,34 @@ const ProjectReducer = (state = INIT_STATE, action) => {
       return {
         ...state,
         update_loading: action.payload,
+      };
+
+    case SELECT_PROJECT: // Handle the new action
+      return {
+        ...state,
+        selectedProject: state.project.data.find(
+          (PROJECT) => PROJECT.prj_id.toString() === action.payload.toString()
+        ), // Find and set the selected project
+      };
+
+    case FETCH_SINGLE_PROJECT_REQUEST:
+      return {
+        ...state,
+        loading: true, // Optionally, you can manage loading state
+      };
+
+    case FETCH_SINGLE_PROJECT_SUCCESS:
+      return {
+        ...state,
+        selectedProject: action.payload, // Set the selected project
+        loading: false,
+      };
+
+    case FETCH_SINGLE_PROJECT_FAIL:
+      return {
+        ...state,
+        error: action.payload,
+        loading: false,
       };
 
     default:

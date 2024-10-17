@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { isEmpty, update } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
@@ -370,7 +370,6 @@ const ProjectModel = () => {
     })
   );
 
-  
   const {
     project: { data, previledge },
     loading,
@@ -477,15 +476,7 @@ const ProjectModel = () => {
     setProject("");
     toggle();
   };
-  const handleSearch = () => {
-    setSearchLoading(true); // Set loading to true when search is initiated// Update filtered data with search results
-    setShowSearchResults(true); // Show search results
-    setSearchLoading(false);
-  };
 
-  const handleClearSearch = () => {
-    setShowSearchResults(false);
-  };
   const columnDefs = useMemo(() => {
     const baseColumnDefs = [
       {
@@ -648,6 +639,22 @@ const ProjectModel = () => {
         filter: true,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_end_date_plan_et, 30) || "-";
+        },
+      },
+      {
+        headerName: t("view_detail"),
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => {
+          const { prj_id } = params.data;
+
+          return (
+            <Link to={`/Project/${prj_id}`}>
+              <Button type="button" color="primary" className="btn-sm">
+                {t("view_detail")}
+              </Button>
+            </Link>
+          );
         },
       },
     ];
@@ -1154,7 +1161,6 @@ const ProjectModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
                     />
                     {validation.touched.prj_owner_description &&
                     validation.errors.prj_owner_description ? (
@@ -1515,7 +1521,6 @@ const ProjectModel = () => {
                             ? true
                             : false
                         }
-                        maxLength={20}
                       />
                       {validation.touched.prj_outcome &&
                       validation.errors.prj_outcome ? (
@@ -1541,7 +1546,6 @@ const ProjectModel = () => {
                             ? true
                             : false
                         }
-                        maxLength={20}
                       />
                       {validation.touched.prj_remark &&
                       validation.errors.prj_remark ? (

@@ -62,6 +62,7 @@ const CascadingDropdowns = lazy(() =>
 );
 const Dashboardcard = lazy(() => import("../Dashboards/Pie"));
 const Notifications = lazy(() => import("../pages/notifications"));
+import ProjectOverview from "../pages/Project/ProjectOverview";
 
 const authProtectedRoutes = [
   { path: "/dash", components: <Dashboardcard /> },
@@ -99,6 +100,7 @@ const authProtectedRoutes = [
   { path: "/stakeholder_type", component: <StakeholderType /> },
   { path: "/document_type", component: <DocumentType /> },
   { path: "/project", component: <Project /> },
+  { path: "/Project/:id", component: <ProjectOverview /> },
   { path: "/project_category", component: <ProjectCategory /> },
   { path: "/project_contractor", component: <ProjectContractor /> },
   { path: "/project_document", component: <ProjectDocument /> },
@@ -109,6 +111,7 @@ const authProtectedRoutes = [
   { path: "/notifications", component: <Notifications /> },
   { path: "/profile", component: <UsersProfile /> },
   { path: "/project_payment_list", component: <ProjectPaymentList /> },
+  { path: "/project_overview", component: <ProjectOverview /> },
   //   // this route should be at the end of all other routes
   //   // eslint-disable-next-line react/display-name
   { path: "/", exact: true, component: <Navigate to="/dashboard" /> },
