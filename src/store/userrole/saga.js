@@ -87,11 +87,13 @@ function* onDeleteUserRole({ payload: userRole }) {
     if (showResult) {
       yield put(deleteSearchResult(userRole));
     }
-    toast.success(`userRole ${response.deleted_id} Is Delete Successfully`, {
+    
+    toast.success(`userRole ${userRole} Is Delete Successfully`, {
       autoClose: 2000,
     });
   } catch (error) {
     yield put(deleteUserRoleFail(error));
+   
     toast.error(`userRole ${userRole.url_id} Is Delete Failed`, {
       autoClose: 2000,
     });
