@@ -1,9 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import * as Yup from "yup";
-import { useFormik } from "formik";
-import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 
@@ -22,6 +18,7 @@ import { useTranslation } from "react-i18next";
 
 import { Button, Col, Row, Input } from "reactstrap";
 import { ToastContainer } from "react-toastify";
+import PaymentAnalaysis from "./PaymentAnalaysis";
 
 const ProjectPaymentList = () => {
   document.title = "Project Payment List";
@@ -170,6 +167,8 @@ const ProjectPaymentList = () => {
     return baseColumnDefs;
   });
 
+  // console.log("here is the data" + JSON.stringify(data[0]));
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -226,12 +225,19 @@ const ProjectPaymentList = () => {
                   paginationPageSize={10}
                   quickFilterText={quickFilterText}
                   onSelectionChanged={onSelectionChanged}
+                  rowHeight={30} // Set the row height here
+                  animateRows={true} // Enables row animations
+                  domLayout="autoHeight" // Auto-size the grid to fit content
+                  onGridReady={(params) => {
+                    params.api.sizeColumnsToFit(); // Size columns to fit the grid width
+                  }}
                 />
               </div>
             </div>
           )}
         </div>
       </div>
+      <PaymentAnalaysis data={data} />
       <ToastContainer />
     </React.Fragment>
   );
