@@ -9,7 +9,7 @@ import Spinners from "../../components/Common/Spinner";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-
+import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import {
   getBudgetRequest as onGetBudgetRequest,
   addBudgetRequest as onAddBudgetRequest,
@@ -22,6 +22,7 @@ import { getBudgetYear } from "../../store/budgetyear/actions";
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
 import BudgetRequestListModal from "./BudgetRequestListModal";
+import BudgetRequestDetail from "./BudgetRequestDetail";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -81,6 +82,9 @@ const BudgetRequestListModel = () => {
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
+
+  const [budgetRequestMetaData, setBudgetRequestMetaData] = useState({});
+  const [showCanvas, setShowCanvas] = useState(false);
 
   // validation
   const validation = useFormik({
@@ -262,14 +266,10 @@ const BudgetRequestListModel = () => {
     setBudgetRequest("");
     toggle();
   };
-  const handleSearch = () => {
-    setSearchLoading(true); // Set loading to true when search is initiated// Update filtered data with search results
-    setShowSearchResults(true); // Show search results
-    setSearchLoading(false);
-  };
 
-  const handleClearSearch = () => {
-    setShowSearchResults(false);
+  const handleEyeClick = (data) => {
+    setShowCanvas(!showCanvas);
+    setBudgetRequestMetaData(data);
   };
 
   const columnDefs = useMemo(() => {
@@ -335,8 +335,8 @@ const BudgetRequestListModel = () => {
         },
       },
       {
-        headerName: t("view_detail"),
-        field: "view_detail",
+        headerName: t("take_action"),
+        field: "take_action",
         cellRenderer: (params) => {
           return (
             <Button
@@ -349,7 +349,7 @@ const BudgetRequestListModel = () => {
                 setTransaction(data);
               }}
             >
-              {t("view_detail")}
+              {t("take_action")}
             </Button>
           );
         },
@@ -358,34 +358,23 @@ const BudgetRequestListModel = () => {
 
     if (previledge?.is_role_editable && previledge?.is_role_deletable) {
       baseColumnDefs.push({
-        headerName: t("action"),
-        field: "action",
+        headerName: t("view_detail"),
+        field: "view_detail",
         cellRenderer: (params) => (
           <div className="d-flex gap-3">
-            {params.data.is_editable && (
+            {params.data.is_editable ? (
               <Link
                 to="#"
-                className="text-success"
-                onClick={() => handleBudgetRequestClick(params.data)}
+                className="text-secondary"
+                onClick={() => handleEyeClick(params.data)}
               >
-                <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                <UncontrolledTooltip placement="top" target="edittooltip">
-                  {t("edit")}
+                <i className="mdi mdi-eye font-size-18 ms-2" id="viewtooltip" />
+                <UncontrolledTooltip placement="top" target="viewtooltip">
+                  View
                 </UncontrolledTooltip>
               </Link>
-            )}
-
-            {params.data.is_deletable && (
-              <Link
-                to="#"
-                className="text-danger"
-                onClick={() => onClickDelete(params.data)}
-              >
-                <i className="mdi mdi-delete font-size-18" id="deletetooltip" />
-                <UncontrolledTooltip placement="top" target="deletetooltip">
-                  {t("delete")}
-                </UncontrolledTooltip>
-              </Link>
+            ) : (
+              ""
             )}
           </div>
         ),
@@ -660,6 +649,17 @@ const BudgetRequestListModel = () => {
         </div>
       </div>
       <ToastContainer />
+      {showCanvas && (
+        <RightOffCanvas
+          handleClick={handleEyeClick}
+          showCanvas={showCanvas}
+          canvasWidth={84}
+          name={"Detail"}
+          id={budgetRequestMetaData.bdr_id}
+          navItems={[]}
+          components={[BudgetRequestDetail]}
+        />
+      )}
     </React.Fragment>
   );
 };

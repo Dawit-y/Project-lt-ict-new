@@ -13,6 +13,7 @@ import {
   OffcanvasBody,
 } from "reactstrap";
 import classnames from "classnames";
+import { isEmpty } from "lodash";
 
 const RightOffCanvas = ({
   handleClick,
@@ -42,34 +43,38 @@ const RightOffCanvas = ({
         })}
         style={{ width: `${canvasWidth}vw` }}
       >
-        <OffcanvasHeader toggle={handleClick}>{name}</OffcanvasHeader>
+        <OffcanvasHeader toggle={handleClick} className="ms-4 me-3">
+          {name}
+        </OffcanvasHeader>
         <OffcanvasBody>
           <Col lg={12}>
-            <Card>
-              <CardBody>
-                <Nav pills className="navtab-bg nav-justified">
-                  {navItems.map((navItem, index) => (
-                    <NavItem key={index + 1} className="me-3">
-                      <NavLink
-                        style={{
-                          cursor: "pointer",
-                          borderColor:
-                            activeTab1 === index + 1 ? "#007bff" : "#ccc", // Add border color
-                        }}
-                        className={`${classnames({
-                          active: activeTab1 === index + 1,
-                          "bg-light": activeTab1 !== index + 1,
-                          "w-25": navItems.length === 1,
-                        })} ms-2 border-start border-2`}
-                        onClick={() => {
-                          toggle1(index + 1);
-                        }}
-                      >
-                        <span className="d-none d-sm-block">{navItem}</span>
-                      </NavLink>
-                    </NavItem>
-                  ))}
-                </Nav>
+            <Card className={isEmpty(navItems) ? "m-0 p-0" : ""}>
+              <CardBody className={isEmpty(navItems) ? "m-0 p-0" : ""}>
+                {navItems && (
+                  <Nav pills className="navtab-bg nav-justified">
+                    {navItems.map((navItem, index) => (
+                      <NavItem key={index + 1} className="me-3">
+                        <NavLink
+                          style={{
+                            cursor: "pointer",
+                            borderColor:
+                              activeTab1 === index + 1 ? "#007bff" : "#ccc",
+                          }}
+                          className={`${classnames({
+                            active: activeTab1 === index + 1,
+                            "bg-light": activeTab1 !== index + 1,
+                            "w-25": navItems.length === 1,
+                          })} ms-2 border-start border-2`}
+                          onClick={() => {
+                            toggle1(index + 1);
+                          }}
+                        >
+                          <span className="d-none d-sm-block">{navItem}</span>
+                        </NavLink>
+                      </NavItem>
+                    ))}
+                  </Nav>
+                )}
 
                 <TabContent
                   activeTab={activeTab1}

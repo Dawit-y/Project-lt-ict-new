@@ -11,7 +11,22 @@ const axiosApi = axios.create({
   baseURL: API_URL,
 });
 
-axiosApi.defaults.headers.common["Authorization"] = token;
+// axiosApi.defaults.headers.common["Authorization"] = token;
+
+// Add a request interceptor  in order to make befro reuest make sure access toke is 
+axiosApi.interceptors.request.use(
+  (config) => {
+    if (accessToken) {
+      config.headers["Authorization"] = accessToken; // Add token directly
+    }
+    // console.log("intrcept config",config)
+    return config;
+  },
+  (error) => {
+    // console.log("error intercept",error)
+    return Promise.reject(error);
+  }
+);
 
 axiosApi.interceptors.response.use(
   (response) => response,

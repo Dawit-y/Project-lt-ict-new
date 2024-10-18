@@ -20,7 +20,7 @@
   "Checkout": "Checkout",
   "Shops": "Shops",
   "Add Product": "Add Product",
-  
+
   "Wallet": "Wallet",
   "Buy/Sell": "Buy/Sell",
   "Exchange": "Exchange",
@@ -40,26 +40,26 @@
   "Create New": "Create New",
   "Tasks": "Tasks",
   "Task List": "Task List",
-  "Blog" : "Blog",
-  "File Manager" : "File Manager",
-  "Blog List" : "Blog List",
-  "Blog Grid" : "Blog Grid",
-  "Blog Details" : "Blog Details",
-  "Templates" : "Templates" ,
-  "Basic Action" : "Basic Action",
-  "Alert Email" : "Alert Email",
-  "Billing Email" : "Billing Email",
-  "Login 2" : "Login 2",
+  "Blog": "Blog",
+  "File Manager": "File Manager",
+  "Blog List": "Blog List",
+  "Blog Grid": "Blog Grid",
+  "Blog Details": "Blog Details",
+  "Templates": "Templates",
+  "Basic Action": "Basic Action",
+  "Alert Email": "Alert Email",
+  "Billing Email": "Billing Email",
+  "Login 2": "Login 2",
   "Register 2": "Register 2",
-  "Recover Password" : "Recover Password",
-  "Recover Password 2" : "Recover Password 2",
-  "Lock Screen 2" : "Lock Screen 2",
-  "Confirm Mail" : "Confirm Mail",
-  "Confirm Mail 2" : "Confirm Mail 2",
-  "Email verification" : "Email verification",
-  "Email verification 2" : "Email verification 2",
-  "Two step verification" : "Two Step verification",
-  "Two step verification 2" : "Two Step verification 2",
+  "Recover Password": "Recover Password",
+  "Recover Password 2": "Recover Password 2",
+  "Lock Screen 2": "Lock Screen 2",
+  "Confirm Mail": "Confirm Mail",
+  "Confirm Mail 2": "Confirm Mail 2",
+  "Email verification": "Email verification",
+  "Email verification 2": "Email verification 2",
+  "Two step verification": "Two Step verification",
+  "Two step verification 2": "Two Step verification 2",
   "Create Task": ",Create Task",
   "Contacts": "Contacts",
   "User Grid": "User Grid",
@@ -104,7 +104,7 @@
   "Forms": "Forms",
   "Form Elements": "Form Elements",
   "Form Validation": "Form Validation",
-  "Form Layouts" : "Form Layouts",
+  "Form Layouts": "Form Layouts",
   "Form Advanced": "Form Advanced",
   "Form Editors": "Form Editors",
   "Form File Upload": "Form File Upload",
@@ -155,7 +155,7 @@
   "Horizontal layout": "Horizontal layout",
   "Light Sidebar": "Light Sidebar",
   "Compact Sidebar": "Compact Sidebar",
-  
+
   "is_deletable": "Deletable",
   "is_editable": "Editable",
   "prs_color_code": "Color Code",
@@ -169,7 +169,7 @@
   "prs_status": "Status",
   "prs_status_name": "Started",
   "prs_update_time": "Update Time",
- "prs_status_name_en": "English",
+  "prs_status_name_en": "English",
   "prs_status_name_am": "Amharic",
   "prs_status_name_or": "Oromo",
   "View Details": "View Details",
@@ -197,8 +197,8 @@
   "Showing": "Showing",
   "select Status name": "Select Status Name",
   "select budget year": "Select Budget Year",
-  "budget Year":"Budget Year",
-  "budget year not defined":"Budget year is not defined",
+  "budget Year": "Budget Year",
+  "budget year not defined": "Budget year is not defined",
 
   "insert_order_number": "Insert Order Number",
   "insert_status_name_english": "Insert Status Name (English)",
@@ -216,11 +216,9 @@
   "please_specify_if_editable": "Please specify if editable",
   "please_enter_the_status_number": "Please enter the status number",
 
-
   "delete_now": "Delete Now",
   "confirm_erase": "Are you sure you want to permanently erase the data?",
   "close": "Close",
-
 
   "department": "Department",
   "dep_id": "Id",
@@ -334,7 +332,6 @@
   "prp_created_by": "Created By",
   "prp_status": "Status",
 
-
   "project_document": "Project Document",
   "prd_id": "Id",
   "prd_project_id": "Project Id",
@@ -357,6 +354,7 @@
   "bdr_requested_amount": "Requested Amount",
   "bdr_released_amount": "Released Amount",
   "bdr_project_id": "Project Id",
+  "bdr_request_status": "Request Status",
   "bdr_requested_date_ec": "Requested Date (EC)",
   "bdr_requested_date_gc": "Requested Date (GC)",
   "bdr_released_date_ec": "Released Date (EC)",
@@ -458,7 +456,6 @@
   "pem_delete_time": "Delete Time",
   "pem_created_by": "Created By",
 
-
   "pages": "Pages",
   "pag_id": "Id",
   "pag_name": "Name",
@@ -518,7 +515,6 @@
   "pbs_delete_time": "Delete Time",
   "pbs_created_by": "Created By",
   "pbs_status": "Status",
-
 
   "sector_category": "Sector Category",
   "psc_delete_time": "Delete Time",
@@ -585,13 +581,7 @@
   "sht_status": "Status",
   "address_structure": "Address Structure",
   "user_administration": "User Administration",
-  "look_up": "Look Up"
-
-
-
-
-  
-
-  
-
+  "look_up": "Look Up",
+  "take_action": "Take Action",
+  "view_detail": "View Detail"
 }

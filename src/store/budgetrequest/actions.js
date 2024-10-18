@@ -12,11 +12,12 @@ import {
   DELETE_BUDGET_REQUEST_SUCCESS,
   DELETE_BUDGET_REQUEST_FAIL,
   TOGGLE_UPDATE_LOADING,
+  SELECT_BUDGET_REQUEST
 } from "./actionTypes";
 
 export const getBudgetRequest = (projectid) => ({
   type: GET_BUDGET_REQUEST,
-  payload:projectid
+  payload: projectid,
 });
 export const addBudgetRequest = (BudgetRequest) => ({
   type: ADD_BUDGET_REQUEST,
@@ -74,4 +75,9 @@ export const deleteBudgetRequestFail = (error) => ({
 export const toggleUpdateLoading = (value) => ({
   type: TOGGLE_UPDATE_LOADING,
   payload: value,
+});
+
+export const selectBudgetRequest = (bdr_id) => ({
+  type: SELECT_BUDGET_REQUEST,
+  payload: { bdr_id },
 });

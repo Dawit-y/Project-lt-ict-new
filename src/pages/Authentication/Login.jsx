@@ -61,10 +61,10 @@ const Login = (props) => {
     }),
     onSubmit: async (values) => {
       try {
-        console.log("login page ...");
-        await dispatch(loginUser(values, props.router.navigate));
+        // console.log("login page ...");
+         dispatch(loginUser(values, props.router.navigate));
       } catch (error) {
-        console.log("error message ", error);
+        // console.log("error message ", error);
         // If login fails, catch the error and display it
         setResponseError(error.message); // Set the error message
       }
