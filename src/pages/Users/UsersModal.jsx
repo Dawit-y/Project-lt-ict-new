@@ -379,7 +379,11 @@ const UsersModal = (props) => {
             <Button
               type="button"
               color="success"
-              onClick={handlePasswordChange}
+              onClick={()=>{
+                
+                handlePasswordChange()
+              }}
+              // onClick={handlePasswordChange}
             >
               Edit
             </Button>
