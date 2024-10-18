@@ -8,6 +8,7 @@ import {
   DELETE_BUDGET_REQUEST_SUCCESS,
   DELETE_BUDGET_REQUEST_FAIL,
   TOGGLE_UPDATE_LOADING,
+  SELECT_BUDGET_REQUEST,
 } from "./actionTypes";
 
 const INIT_STATE = {
@@ -16,6 +17,7 @@ const INIT_STATE = {
     data: [],
     previledge: {},
   },
+  selectedBudget: null,
   error: {},
   loading: true,
 };
@@ -60,7 +62,8 @@ const BudgetRequestReducer = (state = INIT_STATE, action) => {
         budgetRequest: {
           ...state.budgetRequest,
           data: state.budgetRequest.data.map((BUDGET_REQUEST) =>
-            BUDGET_REQUEST.bdr_id.toString() === action.payload.bdr_id.toString()
+            BUDGET_REQUEST.bdr_id.toString() ===
+            action.payload.bdr_id.toString()
               ? { ...BUDGET_REQUEST, ...action.payload } // Update the specific BUDGET_REQUEST
               : BUDGET_REQUEST
           ),
@@ -80,7 +83,8 @@ const BudgetRequestReducer = (state = INIT_STATE, action) => {
           ...state.budgetRequest,
           data: state.budgetRequest.data.filter(
             (BUDGET_REQUEST) =>
-              BUDGET_REQUEST.bdr_id.toString() !== action.payload.deleted_id.toString()
+              BUDGET_REQUEST.bdr_id.toString() !==
+              action.payload.deleted_id.toString()
           ),
         },
       };
@@ -96,6 +100,16 @@ const BudgetRequestReducer = (state = INIT_STATE, action) => {
         update_loading: action.payload,
       };
 
+    case SELECT_BUDGET_REQUEST: {
+      const selectedBudget = state.budgetRequest.data.find(
+        (BUDGET_REQUEST) =>
+          BUDGET_REQUEST.bdr_id.toString() === action.payload.bdr_id.toString()
+      );
+      return {
+        ...state,
+        selectedBudget: selectedBudget || null,
+      };
+    }
     default:
       return state;
   }
