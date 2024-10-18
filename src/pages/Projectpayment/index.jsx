@@ -55,7 +55,6 @@ const truncateText = (text, maxLength) => {
 const ProjectPaymentModel = (props) => {
   //  get passed data from tab
   const { passedId } = props;
-  console.log("project payment id ", passedId);
   //meta title
   document.title = " ProjectPayment";
 

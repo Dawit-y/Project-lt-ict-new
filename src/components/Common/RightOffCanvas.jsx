@@ -31,7 +31,7 @@ const RightOffCanvas = ({
       setActiveTab1(tab);
     }
   };
-
+  
   return (
     <React.Fragment>
       <Offcanvas

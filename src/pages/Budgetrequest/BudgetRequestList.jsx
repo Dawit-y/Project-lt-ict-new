@@ -22,7 +22,12 @@ import { getBudgetYear } from "../../store/budgetyear/actions";
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
 import BudgetRequestListModal from "./BudgetRequestListModal";
-import BudgetRequestDetail from "./BudgetRequestDetail";
+import ProjectDocument from "../../pages/Projectdocument/index";
+import ProjectPayment from "../../pages/Projectpayment";
+import ProjectStakeholder from "../../pages/Projectstakeholder";
+import Projectcontractor from "../../pages/Projectcontractor";
+import Budgetrequest from "../../pages/Budgetrequest";
+import GeoLocation from "../../pages/GeoLocation";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -655,9 +660,23 @@ const BudgetRequestListModel = () => {
           showCanvas={showCanvas}
           canvasWidth={84}
           name={"Detail"}
-          id={budgetRequestMetaData.bdr_id}
-          navItems={[]}
-          components={[BudgetRequestDetail]}
+          id={budgetRequestMetaData.bdr_project_id}
+          navItems={[
+            "Documents",
+            "Payments",
+            "Project Stakeholder",
+            "Project Contractor",
+            "Budget Request",
+            "Geo Location",
+          ]}
+          components={[
+            ProjectDocument,
+            ProjectPayment,
+            ProjectStakeholder,
+            Projectcontractor,
+            Budgetrequest,
+            GeoLocation,
+          ]}
         />
       )}
     </React.Fragment>

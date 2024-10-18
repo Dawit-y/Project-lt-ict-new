@@ -136,6 +136,8 @@ const TableContainer = ({
     setPageIndex(pageIndexRef.current); // Apply the saved page index
   }, [data]); // Reapply the page index after data update
 
+  const rowsToFill = 7 - getRowModel().rows.length;
+
   return (
     <Fragment>
       <Row className="mb-2">
@@ -189,6 +191,7 @@ const TableContainer = ({
         <Table
           hover
           className={`${tableClass} table-sm table-bordered table-striped`}
+          style={{ minHeight: "350px" }}
           bordered={isBordered}
         >
           <thead className={theadClass}>
@@ -233,17 +236,39 @@ const TableContainer = ({
               </tr>
             ))}
           </thead>
-          <tbody>
-            {getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                <td>{Number(row.id) + 1}</td>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
+          <tbody style={{ height: "auto", maxHeight: "300px" }}>
+            {data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length + 2} className="text-center py-5">
+                  No data available
+                </td>
               </tr>
-            ))}
+            ) : (
+              getRowModel().rows.map((row) => (
+                <tr key={row.id}>
+                  <td>{Number(row.id) + 1}</td>
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+
+            {Array.from({ length: rowsToFill > 0 ? rowsToFill : 0 }).map(
+              (_, idx) => (
+                <tr
+                  key={`empty-${idx}`}
+                  style={{ height: "50px", padding: "0px" }}
+                >
+                  <td colSpan={columns.length + 1}></td>
+                </tr>
+              )
+            )}
           </tbody>
         </Table>
       </div>
