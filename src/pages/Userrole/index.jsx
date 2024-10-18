@@ -254,6 +254,7 @@ const UserRoleModel = (props) => {
   const handleDeleteUserRole = () => {
     if (userRole && userRole.url_id) {
       dispatch(onDeleteUserRole(userRole.url_id));
+      dispatch(onGetUserRole(passedId))
       setDeleteModal(false);
     }
   };

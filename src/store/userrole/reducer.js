@@ -80,7 +80,7 @@ const UserRoleReducer = (state = INIT_STATE, action) => {
           ...state.userRole,
           data: state.userRole.data.filter(
             (USER_ROLE) =>
-              USER_ROLE.url_id.toString() !== action.payload.deleted_id.toString()
+              USER_ROLE.url_id !== action.payload.deleted_id
           ),
         },
       };
