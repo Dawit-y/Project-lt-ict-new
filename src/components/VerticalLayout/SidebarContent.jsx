@@ -1,156 +1,111 @@
 import PropTypes from "prop-types";
-import React, { useEffect, useRef } from "react";
-
-// //Import Scrollbar
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import SimpleBar from "simplebar-react";
-
-// MetisMenu
-import MetisMenu from "metismenujs";
 import { Link, useLocation } from "react-router-dom";
 import withRouter from "../Common/withRouter";
-
-//i18n
 import { withTranslation } from "react-i18next";
-import { useCallback } from "react";
-
 
 const SidebarContent = (props) => {
   const ref = useRef();
   const path = useLocation();
+  const [openItems, setOpenItems] = useState({});
+  const [activeItem, setActiveItem] = useState(null); // Track the active item
 
-  const activateParentDropdown = useCallback((item) => {
-    item.classList.add("active");
-    const parent = item.parentElement;
-    const parent2El = parent.childNodes[1];
-    if (parent2El && parent2El.id !== "side-menu") {
-      parent2El.classList.add("mm-show");
-    }
+  // Helper function to check if a submenu is open
+  const isOpen = (index) => openItems[index] || false;
 
-    if (parent) {
-      parent.classList.add("mm-active");
-      const parent2 = parent.parentElement;
-
-      if (parent2) {
-        parent2.classList.add("mm-show"); // ul tag
-
-        const parent3 = parent2.parentElement; // li tag
-
-        if (parent3) {
-          parent3.classList.add("mm-active"); // li
-          parent3.childNodes[0].classList.add("mm-active"); //a
-          const parent4 = parent3.parentElement; // ul
-          if (parent4) {
-            parent4.classList.add("mm-show"); // ul
-            const parent5 = parent4.parentElement;
-            if (parent5) {
-              parent5.classList.add("mm-show"); // li
-              parent5.childNodes[0].classList.add("mm-active"); // a tag
-            }
-          }
-        }
-      }
-      scrollElement(item);
-      return false;
-    }
-    scrollElement(item);
-    return false;
-  }, []);
-
-  const removeActivation = (items) => {
-    for (var i = 0; i < items.length; ++i) {
-      var item = items[i];
-      const parent = items[i].parentElement;
-
-      if (item && item.classList.contains("active")) {
-        item.classList.remove("active");
-      }
-      if (parent) {
-        const parent2El =
-          parent.childNodes && parent.childNodes.lenght && parent.childNodes[1]
-            ? parent.childNodes[1]
-            : null;
-        if (parent2El && parent2El.id !== "side-menu") {
-          parent2El.classList.remove("mm-show");
-        }
-
-        parent.classList.remove("mm-active");
-        const parent2 = parent.parentElement;
-
-        if (parent2) {
-          parent2.classList.remove("mm-show");
-
-          const parent3 = parent2.parentElement;
-          if (parent3) {
-            parent3.classList.remove("mm-active"); // li
-            parent3.childNodes[0].classList.remove("mm-active");
-
-            const parent4 = parent3.parentElement; // ul
-            if (parent4) {
-              parent4.classList.remove("mm-show"); // ul
-              const parent5 = parent4.parentElement;
-              if (parent5) {
-                parent5.classList.remove("mm-show"); // li
-                parent5.childNodes[0].classList.remove("mm-active"); // a tag
-              }
-            }
-          }
-        }
-      }
-    }
+  const toggleOpen = (index) => {
+    setOpenItems((prevState) => ({
+      ...prevState,
+      [index]: !prevState[index], 
+    }));
   };
 
-  const activeMenu = useCallback(() => {
+  
+  const setActiveMenuItem = (itemPath) => {
+    setActiveItem(itemPath); 
+  };
+
+  // Function to open parent dropdown based on current path
+  const openParentDropdown = useCallback(() => {
     const pathName = path.pathname;
-    let matchingMenuItem = null;
-    const ul = document.getElementById("side-menu");
-    const items = ul.getElementsByTagName("a");
-    removeActivation(items);
+    const menuData = props.sidedata;
 
-    for (let i = 0; i < items.length; ++i) {
-      if (pathName === items[i].pathname) {
-        matchingMenuItem = items[i];
-        break;
+    // Iterate over the menu to find the matching submenu
+    menuData.forEach((menu, index) => {
+      if (menu.submenu) {
+        menu.submenu.forEach((submenu) => {
+          if (submenu.path === pathName) {
+            setOpenItems((prevState) => ({
+              ...prevState,
+              [index]: true, 
+            }));
+            setActiveMenuItem(submenu.path); // Set the active submenu
+          }
+        });
       }
-    }
-    if (matchingMenuItem) {
-      activateParentDropdown(matchingMenuItem);
-    }
-  }, [path.pathname, activateParentDropdown]);
+    });
+  }, [path.pathname, props.sidedata]);
 
   useEffect(() => {
-    ref.current.recalculate();
-  }, []);
+    openParentDropdown();
+  }, [openParentDropdown]);
 
-  useEffect(() => {
-    new MetisMenu("#side-menu");
-    activeMenu();
-  }, []);
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    activeMenu();
-  }, [activeMenu]);
-
-  function scrollElement(item) {
+  // Scroll element into view
+  const scrollElement = (item) => {
     if (item) {
       const currentPosition = item.offsetTop;
       if (currentPosition > window.innerHeight) {
         ref.current.getScrollElement().scrollTop = currentPosition - 300;
       }
     }
-  }
+  };
+
+  
   const renderMenu = (menuData) => {
     return menuData.map((menu, index) => (
-      <li key={index}>
-        <Link to="/#" className="has-arrow" onClick={(e) => e.preventDefault()}>
+      <li
+        key={index}
+        className={`menu-item ${isOpen(index) ? "mm-active" : ""}`}
+        style={{
+          // backgroundColor: activeItem === menu.path ? "#007bff" : "", 
+          color: activeItem === menu.path ? "#fff" : "", // Change text color when active
+        }}
+      >
+        <Link
+          to="/#"
+          className="has-arrow"
+          onClick={() => {
+            toggleOpen(index);
+            setActiveMenuItem(menu.path); // Set the active menu on click
+          }}
+          style={{
+            color: activeItem === menu.path ? "#fff" : "", // Change text color when active
+          }}
+        >
           <i className={menu.icon}></i>
           <span>{props.t(menu.title)}</span>
         </Link>
-        {menu.submenu && (
-          <ul className="sub-menu" aria-expanded="false">
+        {menu.submenu && isOpen(index) && (
+          <ul className="sub-menu" aria-expanded="true">
             {menu.submenu.map((submenu, subIndex) => (
-              <li key={subIndex}>
-                <Link to={submenu.path}>
+              <li
+                key={subIndex}
+                className={`submenu-item ${
+                  activeItem === submenu.path ? "active" : ""
+                }`}
+                style={{
+                  // backgroundColor: activeItem === submenu.path ? "#007bff" : "", // Color submenu
+                  color: activeItem === submenu.path ? "#fff" : "",
+                }}
+              >
+                <Link
+                  to={submenu.path}
+                  onClick={() => setActiveMenuItem(submenu.path)} // Set active submenu on click
+                  style={{
+                    color: activeItem === submenu.path ? "#fff" : "", // Change text color when active
+                  }}
+                >
                   {props.t(submenu.name)}
                 </Link>
               </li>
@@ -166,16 +121,13 @@ const SidebarContent = (props) => {
       <SimpleBar className="h-100" ref={ref}>
         <div id="sidebar-menu">
           <ul className="metismenu list-unstyled" id="side-menu">
-            <li className="menu-title">{props.t("Menu")}</li>
-            {renderMenu(props.sidedata)} {/* Use the sidebar data here */}
+            {renderMenu(props.sidedata)}
           </ul>
         </div>
       </SimpleBar>
     </React.Fragment>
   );
 };
- 
-
 
 SidebarContent.propTypes = {
   location: PropTypes.object,
