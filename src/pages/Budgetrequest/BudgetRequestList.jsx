@@ -55,6 +55,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import BudgetRequestAnalysis from "./BudgetRequestAnalysis";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -429,56 +430,61 @@ const BudgetRequestListModel = () => {
           {isLoading || searchLoading ? (
             <Spinners setLoading={setLoading} />
           ) : (
-            <div
-              className="ag-theme-alpine"
-              style={{ height: "100%", width: "100%" }}
-            >
-              {/* Row for search input and buttons */}
-              <Row className="mb-3">
-                <Col sm="12" md="6">
-                  {/* Search Input for  Filter */}
-                  <Input
-                    type="text"
-                    placeholder="Search..."
-                    onChange={(e) => setQuickFilterText(e.target.value)}
-                    className="mb-2"
-                  />
-                </Col>
-                <Col sm="12" md="6" className="text-md-end">
-                  <Button
-                    color="primary"
-                    className="me-2"
-                    onClick={filterMarked}
-                  >
-                    Filter Marked
-                  </Button>
-                  <Button
-                    color="secondary"
-                    className="me-2"
-                    onClick={clearFilter}
-                  >
-                    Clear Filter
-                  </Button>
-                  <Button color="success" onClick={handleBudgetRequestClicks}>
-                    Add New
-                  </Button>
-                </Col>
-              </Row>
+            <>
+              <div
+                className="ag-theme-alpine"
+                style={{ height: "100%", width: "100%" }}
+              >
+                {/* Row for search input and buttons */}
+                <Row className="mb-3">
+                  <Col sm="12" md="6">
+                    {/* Search Input for  Filter */}
+                    <Input
+                      type="text"
+                      placeholder="Search..."
+                      onChange={(e) => setQuickFilterText(e.target.value)}
+                      className="mb-2"
+                    />
+                  </Col>
+                  <Col sm="12" md="6" className="text-md-end">
+                    <Button
+                      color="primary"
+                      className="me-2"
+                      onClick={filterMarked}
+                    >
+                      Filter Marked
+                    </Button>
+                    <Button
+                      color="secondary"
+                      className="me-2"
+                      onClick={clearFilter}
+                    >
+                      Clear Filter
+                    </Button>
+                    <Button color="success" onClick={handleBudgetRequestClicks}>
+                      Add New
+                    </Button>
+                  </Col>
+                </Row>
 
-              {/* AG Grid */}
-              <div style={{ height: "400px" }}>
-                <AgGridReact
-                  ref={gridRef}
-                  rowData={showSearchResults ? results : data}
-                  columnDefs={columnDefs}
-                  pagination={true}
-                  paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                  paginationPageSize={10}
-                  quickFilterText={quickFilterText}
-                  onSelectionChanged={onSelectionChanged}
-                />
+                {/* AG Grid */}
+                <div style={{ height: "400px" }}>
+                  <AgGridReact
+                    ref={gridRef}
+                    rowData={showSearchResults ? results : data}
+                    columnDefs={columnDefs}
+                    pagination={true}
+                    paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+                    paginationPageSize={10}
+                    quickFilterText={quickFilterText}
+                    onSelectionChanged={onSelectionChanged}
+                    rowHeight={30}
+                    animateRows={true}
+                  />
+                </div>
               </div>
-            </div>
+              <BudgetRequestAnalysis data={data} />
+            </>
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">

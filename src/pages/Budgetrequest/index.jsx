@@ -143,7 +143,7 @@ const BudgetRequestModel = (props) => {
           bdr_requested_date_ec: values.bdr_requested_date_ec,
           bdr_requested_date_gc: values.bdr_requested_date_gc,
           bdr_description: values.bdr_description,
-          bdr_request_status: values.bdr_request_status,
+          bdr_request_status: "Requested",
         };
         // save new BudgetRequests
         dispatch(onAddBudgetRequest(newBudgetRequest));

@@ -43,7 +43,7 @@ const modalStyle = {
 const validationSchema = Yup.object().shape({
   bdr_request_status: Yup.string().required("Status is required"),
   bdr_released_amount: Yup.number()
-    .min(1, "Released amount must be greater than 0")
+    .min(0, "Released amount must be greater or equal to 0")
     .when("bdr_request_status", {
       is: "Accepted",
       then: (schema) => schema.required("Released amount is required"),
@@ -70,19 +70,22 @@ const BudgetRequestListModal = (props) => {
     initialValues: {
       bdr_id: transaction.bdr_id || "",
       bdr_request_status: transaction.bdr_request_status || "",
-      bdr_released_amount: transaction.bdr_released_amount || "",
+      bdr_released_amount:
+        transaction.bdr_request_status === "Approved"
+          ? transaction.bdr_released_amount || ""
+          : "",
       bdr_released_date_gc: transaction.bdr_released_date_gc || "",
       bdr_action_remark: transaction.bdr_action_remark || "",
     },
     validationSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
-      console.log("Form Values:", values);
       dispatch(onUpdateBudgetRequest(values));
       formik.resetForm();
       toggle();
     },
   });
+
   const budgetRequestProperties = createSelector(
     (state) => state.BudgetRequestR,
     (BudgetRequestReducer) => ({
@@ -163,8 +166,9 @@ const BudgetRequestListModal = (props) => {
                         </div>
                       )}
                   </FormGroup>
-
-                  {formik.values.bdr_request_status === "Accepted" && (
+                  {(formik.values.bdr_request_status === "Approved" ||
+                    (transaction.bdr_request_status === "Approved" &&
+                      transaction.bdr_released_amount)) && (
                     <FormGroup>
                       <Label>Released Amount</Label>
                       <Input
