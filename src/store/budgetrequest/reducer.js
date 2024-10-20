@@ -9,11 +9,17 @@ import {
   DELETE_BUDGET_REQUEST_FAIL,
   TOGGLE_UPDATE_LOADING,
   SELECT_BUDGET_REQUEST,
+  GET_BUDGET_REQUEST_LIST_SUCCESS,
+  GET_BUDGET_REQUEST_LIST_FAIL,
 } from "./actionTypes";
 
 const INIT_STATE = {
   update_loading: false,
   budgetRequest: {
+    data: [],
+    previledge: {},
+  },
+  budgetRequestList: { 
     data: [],
     previledge: {},
   },
@@ -41,6 +47,21 @@ const BudgetRequestReducer = (state = INIT_STATE, action) => {
         loading: false,
       };
 
+    case GET_BUDGET_REQUEST_LIST_SUCCESS: 
+      return {
+        ...state,
+        budgetRequestList: {
+          data: action.payload.data,
+          previledge: action.payload.previledge,
+        },
+      };
+
+    case GET_BUDGET_REQUEST_LIST_FAIL:
+      return {
+        ...state,
+        error: action.payload,
+      };
+
     case ADD_BUDGET_REQUEST_SUCCESS:
       return {
         ...state,
@@ -64,7 +85,7 @@ const BudgetRequestReducer = (state = INIT_STATE, action) => {
           data: state.budgetRequest.data.map((BUDGET_REQUEST) =>
             BUDGET_REQUEST.bdr_id.toString() ===
             action.payload.bdr_id.toString()
-              ? { ...BUDGET_REQUEST, ...action.payload } // Update the specific BUDGET_REQUEST
+              ? { ...BUDGET_REQUEST, ...action.payload }
               : BUDGET_REQUEST
           ),
         },
@@ -94,6 +115,7 @@ const BudgetRequestReducer = (state = INIT_STATE, action) => {
         ...state,
         error: action.payload,
       };
+
     case TOGGLE_UPDATE_LOADING:
       return {
         ...state,

@@ -11,7 +11,7 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import {
-  getBudgetRequest as onGetBudgetRequest,
+  getBudgetRequestList as onGetBudgetRequestList,
   addBudgetRequest as onAddBudgetRequest,
   updateBudgetRequest as onUpdateBudgetRequest,
   deleteBudgetRequest as onDeleteBudgetRequest,
@@ -157,21 +157,21 @@ const BudgetRequestListModel = () => {
   const dispatch = useDispatch();
   // Fetch BudgetRequest on component mount
   useEffect(() => {
-    dispatch(onGetBudgetRequest());
+    dispatch(onGetBudgetRequestList());
     dispatch(getBudgetYear());
   }, [dispatch]);
 
   const budgetRequestProperties = createSelector(
     (state) => state.BudgetRequestR,
     (BudgetRequestReducer) => ({
-      budgetRequest: BudgetRequestReducer.budgetRequest,
+      budgetRequestList: BudgetRequestReducer.budgetRequestList,
       loading: BudgetRequestReducer.loading,
       update_loading: BudgetRequestReducer.update_loading,
     })
   );
 
   const {
-    budgetRequest: { data, previledge },
+    budgetRequestList: { data, previledge },
     loading,
     update_loading,
   } = useSelector(budgetRequestProperties);
