@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Row, Col, Card, CardBody } from "reactstrap";
 import { Link } from "react-router-dom";
 import ReactApexChart from "react-apexcharts";
+import { debounce } from "lodash";
 
 const PaymentAnalysis = ({ data }) => {
   // Initialize state for payment data
@@ -16,107 +17,59 @@ const PaymentAnalysis = ({ data }) => {
     other: { name: "Total Other Payment", cost: 0 },
   });
 
-  const [averagePercentages, setAveragePercentages] = useState({
-    AdvanceAverage: 0,
-    InterimAverage: 0,
-    FinalAverage: 0,
-    OtherAverage: 0,
-  });
-
   useEffect(() => {
-    if (data && data.length > 0) {
-      const totals = { Advance: 0, Interim: 0, Final: 0, Other: 0 };
-      const percentages = {
-        AdvancePercentage: 0,
-        InterimPercentage: 0,
-        FinalPercentage: 0,
-        OtherPercentage: 0,
-      };
-      const counts = {
-        AdvanceCount: 0,
-        InterimCount: 0,
-        FinalCount: 0,
-        OtherCount: 0,
-      };
-      let totalactive = 0;
-      let totalnot_active = 0;
+    const processData = debounce(() => {
+      if (data && data.length > 0) {
+        const totals = { Advance: 0, Interim: 0, Final: 0, Other: 0 };
+        let totalactive = 0;
+        let totalnot_active = 0;
 
-      data.forEach((item) => {
-        const amount = item.prp_payment_amount || 0;
+        data.forEach((item) => {
+          const amount = item.prp_payment_amount || 0;
 
-        // Accumulate totals based on payment types
-        if (item.prp_type === "Advance") totals.Advance += amount;
-        else if (item.prp_type === "Interim") totals.Interim += amount;
-        else if (item.prp_type === "Final") totals.Final += amount;
-        else totals.Other += amount;
+          // Accumulate totals based on payment types
+          if (item.prp_type === "Advance") totals.Advance += amount;
+          else if (item.prp_type === "Interim") totals.Interim += amount;
+          else if (item.prp_type === "Final") totals.Final += amount;
+          else totals.Other += amount;
 
-        // Accumulate percentage calculations for averages
-        const payment_percentage = item.prp_payment_percentage || 0;
-        if (item.prp_type === "Advance") {
-          percentages.AdvancePercentage += payment_percentage;
-          counts.AdvanceCount++;
-        } else if (item.prp_type === "Interim") {
-          percentages.InterimPercentage += payment_percentage;
-          counts.InterimCount++;
-        } else if (item.prp_type === "Final") {
-          percentages.FinalPercentage += payment_percentage;
-          counts.FinalCount++;
-        } else {
-          percentages.OtherPercentage += payment_percentage;
-          counts.OtherCount++;
-        }
+          // Update total active and not_active based on status
+          if (item.prp_status === 1) {
+            totalactive += amount;
+          } else {
+            totalnot_active += amount;
+          }
+        });
 
-        // Update total active and not_active based on status
-        if (item.prp_status === 1) {
-          totalactive += amount;
-        } else {
-          totalnot_active += amount;
-        }
-      });
+        // Calculate the total available balance
+        const availablebalance =
+          totals.Advance + totals.Interim + totals.Final + totals.Other;
 
-      // Calculate dynamic averages
-      setAveragePercentages({
-        AdvanceAverage:
-          counts.AdvanceCount > 0
-            ? Math.ceil(percentages.AdvancePercentage / counts.AdvanceCount)
-            : 0,
-        InterimAverage:
-          counts.InterimCount > 0
-            ? Math.ceil(percentages.InterimPercentage / counts.InterimCount)
-            : 0,
-        FinalAverage:
-          counts.FinalCount > 0
-            ? Math.ceil(percentages.FinalPercentage / counts.FinalCount)
-            : 0,
-        OtherAverage:
-          counts.OtherCount > 0
-            ? Math.ceil(percentages.OtherPercentage / counts.OtherCount)
-            : 0,
-      });
+        // Calculate the percentages for the series
+        const series = [
+          parseFloat(((totals.Advance / availablebalance) * 100).toFixed(2)),
+          parseFloat(((totals.Interim / availablebalance) * 100).toFixed(2)),
+          parseFloat(((totals.Final / availablebalance) * 100).toFixed(2)),
+          parseFloat(((totals.Other / availablebalance) * 100).toFixed(2)),
+        ];
 
-      // Calculate the total available balance and set state
-      const availablebalance =
-        totals.Advance + totals.Interim + totals.Final + totals.Other;
-
-      setPaymentDatas({
-        series: [
-          averagePercentages.AdvanceAverage,
-          averagePercentages.InterimAverage,
-          averagePercentages.FinalAverage,
-          averagePercentages.OtherAverage,
-        ],
-        availablebalance,
-        active: totalactive,
-        not_active: totalnot_active,
-        Advance: { name: "Total Advance Payment", cost: totals.Advance },
-        Interim: { name: "Total Interim Payment", cost: totals.Interim },
-        Final: { name: "Total Final Payment", cost: totals.Final },
-        other: { name: "Total Other Payment", cost: totals.Other },
-      });
-    }
+        // Set the updated state
+        setPaymentDatas({
+          series,
+          availablebalance,
+          active: totalactive,
+          not_active: totalnot_active,
+          Advance: { name: "Total Advance Payment", cost: totals.Advance },
+          Interim: { name: "Total Interim Payment", cost: totals.Interim },
+          Final: { name: "Total Final Payment", cost: totals.Final },
+          other: { name: "Total Other Payment", cost: totals.Other },
+        });
+      }
+    }, 300); // 300ms debounce to prevent excessive updates
+    processData();
   }, [data]);
 
-  const walletOptions = {
+  const GraphOptions = {
     plotOptions: {
       radialBar: {
         offsetY: 0,
@@ -146,16 +99,21 @@ const PaymentAnalysis = ({ data }) => {
           },
           total: {
             show: true,
-            label: "Total",
+            label: "Max Value Is", // This can be a static placeholder text
             color: "#373d3f",
-            fontSize: "16px",
+            fontSize: "14px",
             fontWeight: 600,
             formatter: function (e) {
-              return (
-                e.globals.seriesTotals.reduce(function (e, t) {
-                  return e + t;
-                }, 0) + "%"
-              );
+              // Get the highest value from the series
+              const maxValue = Math.max(...e.globals.series);
+              // Get the index of the highest value
+              const maxIndex = e.globals.series.indexOf(maxValue);
+              // Get the corresponding label for the highest value
+              const maxLabel = e.globals.labels[maxIndex];
+              // Display the maxLabel above and maxValue below using a line break
+              // return maxLabel + "\n" + maxValue + "%";
+              // Display the maxLabel only
+              return maxLabel;
             },
           },
         },
@@ -167,7 +125,13 @@ const PaymentAnalysis = ({ data }) => {
     legend: { show: false },
   };
 
-  console.log("data data data" + paymentDatas.series);
+  // console.log("data data data" + paymentDatas.series);
+
+  const memoizedSeries = useMemo(
+    () => paymentDatas.series,
+    [paymentDatas.series]
+  );
+  const memoizedOptions = useMemo(() => GraphOptions, [GraphOptions]);
 
   return (
     <React.Fragment>
@@ -180,10 +144,10 @@ const PaymentAnalysis = ({ data }) => {
                   defaultValue="1"
                   className="form-select form-select-sm ms-2"
                 >
-                  <option value="1">March</option>
-                  <option value="2">February</option>
-                  <option value="3">January</option>
-                  <option value="4">December</option>
+                  <option value="1">2021</option>
+                  <option value="2">2022</option>
+                  <option value="3">2023</option>
+                  <option value="4">2024</option>
                 </select>
               </div>
               <h4 className="card-title mb-3">
@@ -198,7 +162,16 @@ const PaymentAnalysis = ({ data }) => {
                     </h4>
                     <p className="text-muted mb-4">
                       ~ {paymentDatas.Advance.cost.toLocaleString()} ETB (
-                      {averagePercentages.AdvanceAverage}
+                      {parseFloat(
+                        (
+                          (paymentDatas.Advance.cost /
+                            (paymentDatas.Advance.cost +
+                              paymentDatas.Interim.cost +
+                              paymentDatas.Final.cost +
+                              paymentDatas.other.cost)) *
+                          100
+                        ).toFixed(2)
+                      )}
                       %)
                       <i className="mdi mdi-arrow-up ms-1 text-success" />{" "}
                       Advance
@@ -231,8 +204,8 @@ const PaymentAnalysis = ({ data }) => {
                   <div>
                     <div id="wallet-balance-chart">
                       <ReactApexChart
-                        options={walletOptions}
-                        series={paymentDatas.series}
+                        options={memoizedOptions}
+                        series={memoizedSeries}
                         type="radialBar"
                         height={300}
                         className="apex-charts"
