@@ -45,7 +45,11 @@ const ProjectDocuments = ({ projectId }) => {
                   <td style={{ width: "45px" }}>
                     <div className="avatar-sm">
                       <span className="avatar-title rounded-circle bg-primary-subtle text-primary font-size-24">
-                        <i className="bx bxs-file-doc" />
+                        {file?.prd_file_extension === "pdf" ? (
+                          <i className="bx bxs-file-pdf" />
+                        ) : (
+                          <i className="bx bxs-file-doc" />
+                        )}
                       </span>
                     </div>
                   </td>

@@ -24,6 +24,10 @@ import {
   updateProject as onUpdateProject,
   deleteProject as onDeleteProject,
 } from "../../store/project/actions";
+import { getProjectStatus } from "../../store/projectstatus/actions";
+import { getProjectCategory } from "../../store/projectcategory/actions";
+import { getBudgetSource } from "../../store/budgetsource/actions";
+import { getSectorCategory } from "../../store/sectorcategory/actions";
 
 //redux
 import { useSelector, useDispatch } from "react-redux";
@@ -98,87 +102,6 @@ const ProjectModel = () => {
   const [projectMetaData, setProjectMetaData] = useState({});
   const [showCanvas, setShowCanvas] = useState(false);
 
-  useEffect(() => {
-    const fetchProjectStatus = async () => {
-      try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_BASE_API_URL}project_status/listgrid`
-        );
-        const transformedData = response.data.data.map((item) => ({
-          label: item.prs_status_name_or.toString(),
-          value: item.prs_status_name_or.toString(),
-        }));
-        const optionsWithDefault = [
-          { label: "select budget year", value: "" },
-          ...transformedData,
-        ];
-        setProjectStatusOptions(optionsWithDefault);
-      } catch (error) {
-        console.error("Error fetching budget years:", error);
-      }
-    };
-    fetchProjectStatus();
-  }, []);
-  const handleProjectStatusChange = (e) => {
-    setSelectedProjectStatus(e.target.value);
-    validation.setFieldValue("prj_project_status_id", e.target.value);
-  };
-
-  const handleClick = (data) => {
-    setShowCanvas(!showCanvas); // Toggle canvas visibility
-    setProjectMetaData(data);
-  };
-
-  useEffect(() => {
-    const fetchProjectCategory = async () => {
-      try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_BASE_API_URL}project_category/listgrid`
-        );
-        const transformedData = response.data.data.map((item) => ({
-          label: item.pct_name_or.toString(),
-          value: item.pct_name_or.toString(),
-        }));
-        const optionsWithDefault = [
-          { label: "select budget year", value: "" },
-          ...transformedData,
-        ];
-        setProjectCategoryOptions(optionsWithDefault);
-      } catch (error) {
-        console.error("Error fetching budget years:", error);
-      }
-    };
-    fetchProjectCategory();
-  }, []);
-  const handleProjectCategoryChange = (e) => {
-    setSelectedProjectCategory(e.target.value);
-    validation.setFieldValue("prj_project_category_id", e.target.value);
-  };
-  useEffect(() => {
-    const fetchBudgetSource = async () => {
-      try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_BASE_API_URL}budget_source/listgrid`
-        );
-        const transformedData = response.data.data.map((item) => ({
-          label: item.pbs_name_or.toString(),
-          value: item.pbs_name_or.toString(),
-        }));
-        const optionsWithDefault = [
-          { label: "select budget year", value: "" },
-          ...transformedData,
-        ];
-        setBudgetSourceOptions(optionsWithDefault);
-      } catch (error) {
-        console.error("Error fetching budget years:", error);
-      }
-    };
-    fetchBudgetSource();
-  }, []);
-  const handleBudgetSourceChange = (e) => {
-    setSelectedBudgetSource(e.target.value);
-    validation.setFieldValue("prj_project_budget_source_id", e.target.value);
-  };
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
@@ -358,12 +281,15 @@ const ProjectModel = () => {
   // Fetch Project on component mount
   useEffect(() => {
     dispatch(onGetProject());
+    dispatch(getProjectStatus());
+    dispatch(getBudgetSource());
+    dispatch(getProjectCategory());
+    dispatch(getSectorCategory());
   }, [dispatch]);
 
   const projectProperties = createSelector(
-    (state) => state.ProjectR, // this is geting from  reducer
+    (state) => state.ProjectR,
     (ProjectReducer) => ({
-      // this is from Project.reducer
       project: ProjectReducer.project,
       loading: ProjectReducer.loading,
       update_loading: ProjectReducer.update_loading,
@@ -375,6 +301,72 @@ const ProjectModel = () => {
     loading,
     update_loading,
   } = useSelector(projectProperties);
+
+  const projectStatusProperties = createSelector(
+    (state) => state.ProjectStatusR,
+    (ProjectStatusReducer) => ({
+      projectStatus: ProjectStatusReducer.projectStatus,
+      loading: ProjectStatusReducer.loading,
+      update_loading: ProjectStatusReducer.update_loading,
+    })
+  );
+  const {
+    projectStatus: {
+      data: projectStatusData,
+      previledge: projectStatusPreviledge,
+    },
+    loading: projectStatusLoading,
+    update_loading: projectStatusUpdateLoading,
+  } = useSelector(projectStatusProperties);
+
+  const projectCategoryProperties = createSelector(
+    (state) => state.ProjectCategoryR,
+    (ProjectCategoryReducer) => ({
+      projectCategory: ProjectCategoryReducer.projectCategory,
+      loading: ProjectCategoryReducer.loading,
+      update_loading: ProjectCategoryReducer.update_loading,
+    })
+  );
+  const {
+    projectCategory: {
+      data: projectCategoryData,
+      previledge: projectCategoryPreviledge,
+    },
+    loading: projectCategoryLoading,
+    update_loading: projectCategoryUpdateLoading,
+  } = useSelector(projectCategoryProperties);
+
+  const budgetSourceProperties = createSelector(
+    (state) => state.BudgetSourceR,
+    (BudgetSourceReducer) => ({
+      budgetSource: BudgetSourceReducer.budgetSource,
+      loading: BudgetSourceReducer.loading,
+      update_loading: BudgetSourceReducer.update_loading,
+    })
+  );
+  const {
+    budgetSource: {
+      data: budgetSourceData,
+      previledge: budgetSourcePreviledge,
+    },
+    loading: budgetSourceLoading,
+    update_loading: budgetSourceUpdateLoading,
+  } = useSelector(budgetSourceProperties);
+
+  const sectorCategoryProperties = createSelector(
+    (state) => state.SectorCategoryR,
+    (SectorCategoryReducer) => ({
+      sectorCategory: SectorCategoryReducer.sectorCategory,
+      loading: SectorCategoryReducer.loading,
+      update_loading: SectorCategoryReducer.update_loading,
+    })
+  );
+
+  const {
+    sectorCategory: { data: sectorCategoryData, previledge: sectorPrivledge },
+    loading: sectorLoading,
+    update_loading: sectorUpdateLoading,
+  } = useSelector(sectorCategoryProperties);
 
   useEffect(() => {
     setModal(false);
@@ -454,6 +446,11 @@ const ProjectModel = () => {
     setIsEdit(true);
 
     toggle();
+  };
+
+  const handleClick = (data) => {
+    setShowCanvas(!showCanvas); // Toggle canvas visibility
+    setProjectMetaData(data);
   };
 
   //delete projects
@@ -889,13 +886,14 @@ const ProjectModel = () => {
                       name="prj_project_status_id"
                       type="select"
                       className="form-select"
-                      onChange={handleProjectStatusChange}
+                      onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={selectedProjectStatus}
+                      value={validation.values.prj_project_status_id}
                     >
-                      {projectStatusOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {t(`${option.label}`)}
+                      <option value={""}>{t(`Select Project Status`)}</option>
+                      {projectStatusData.map((option) => (
+                        <option key={option.prs_id} value={option.prs_id}>
+                          {t(`${option.prs_status_name_or}`)}
                         </option>
                       ))}
                     </Input>
@@ -912,13 +910,14 @@ const ProjectModel = () => {
                       name="prj_project_category_id"
                       type="select"
                       className="form-select"
-                      onChange={handleProjectCategoryChange}
+                      onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={selectedProjectCategory}
+                      value={validation.values.prj_project_category_id}
                     >
-                      {projectCategoryOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {t(`${option.label}`)}
+                      <option value={""}>{t(`Select Project Category`)}</option>
+                      {projectCategoryData.map((option) => (
+                        <option key={option.pct_id} value={option.pct_id}>
+                          {t(`${option.pct_name_or}`)}
                         </option>
                       ))}
                     </Input>
@@ -935,13 +934,16 @@ const ProjectModel = () => {
                       name="prj_project_budget_source_id"
                       type="select"
                       className="form-select"
-                      onChange={handleBudgetSourceChange}
+                      onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={selectedBudgetSource}
+                      value={validation.values.prj_project_budget_source_id}
                     >
-                      {budgetSourceOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {t(`${option.label}`)}
+                      <option value={""}>
+                        {t(`Select Project Budget Source`)}
+                      </option>
+                      {budgetSourceData.map((option) => (
+                        <option key={option.pbs_id} value={option.pbs_id}>
+                          {t(`${option.pbs_name_or}`)}
                         </option>
                       ))}
                     </Input>
@@ -1005,7 +1007,7 @@ const ProjectModel = () => {
                     <Label>{t("prj_sector_id")}</Label>
                     <Input
                       name="prj_sector_id"
-                      type="text"
+                      type="select"
                       placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -1017,7 +1019,14 @@ const ProjectModel = () => {
                           : false
                       }
                       maxLength={20}
-                    />
+                    >
+                      <option value={""}>{t(`Select Project Sector`)}</option>
+                      {sectorCategoryData.map((option) => (
+                        <option key={option.psc_id} value={option.psc_id}>
+                          {t(`${option.psc_name}`)}
+                        </option>
+                      ))}
+                    </Input>
                     {validation.touched.prj_sector_id &&
                     validation.errors.prj_sector_id ? (
                       <FormFeedback type="invalid">
@@ -1597,9 +1606,9 @@ const ProjectModel = () => {
           navItems={[
             "Documents",
             "Payments",
-            "Project Stakeholder",
-            "Project Contractor",
-            "Budget Request",
+            "Stakeholders",
+            "Contractors",
+            "Budget Requests",
             "Geo Location",
           ]}
           components={[
