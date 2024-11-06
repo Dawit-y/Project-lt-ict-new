@@ -50,6 +50,7 @@ import {
   Input,
   FormFeedback,
   Label,
+  ModalFooter
 
 } from "reactstrap";
 import { ToastContainer } from "react-toastify";
@@ -67,13 +68,14 @@ const UsersModel = () => {
   document.title = " Users";
 
   const { t } = useTranslation();
-  
+
 
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
 
   const [users, setUsers] = useState(null);
+  const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
   const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
 
@@ -82,7 +84,7 @@ const UsersModel = () => {
   const gridRef = useRef(null);
 
   const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [selectedState,setselectedState]=useState("")
+  const [selectedState, setselectedState] = useState("")
 
   const [selectedImage, setSelectedImage] = useState(null);
 
@@ -162,7 +164,35 @@ const UsersModel = () => {
         // update Users
         dispatch(onUpdateUsers(updateUsers));
         validation.resetForm();
-      } else {
+      } else if (isDuplicateModalOpen) {
+        const duplcateuser = {
+          usr_email: values.usr_email,
+          usr_password: values.usr_password,
+          usr_full_name: values.usr_full_name,
+          usr_phone_number: values.usr_phone_number,
+          usr_role_id: values.usr_role_id,
+          usr_region_id: Number(values.usr_region_id),
+          usr_woreda_id: Number(values.usr_woreda_id),
+          usr_kebele_id: Number(values.usr_kebele_id),
+          usr_sector_id: Number(values.usr_sector_id),
+          usr_is_active: Number(values.usr_is_active),
+          usr_picture: values.usr_picture,
+          usr_last_logged_in: values.usr_last_logged_in,
+          usr_ip: values.usr_ip,
+          usr_remember_token: values.usr_remember_token,
+          usr_notified: Number(values.usr_notified),
+          usr_description: values.usr_description,
+          usr_status: values.usr_status,
+          usr_department_id: Number(values.usr_department_id),
+
+          is_deletable: values.is_deletable,
+          is_editable: values.is_editable,
+        };
+        // update Users
+        dispatch(onAddUsers(duplcateuser));
+        validation.resetForm();
+      }
+       else {
         const newUsers = {
           usr_email: values.usr_email,
           usr_password: values.usr_password,
@@ -276,6 +306,7 @@ const UsersModel = () => {
   const toggle = () => {
     if (modal) {
       setModal(false);
+      setIsDuplicateModalOpen(false);
       setUsers(null);
     } else {
       setModal(true);
@@ -285,14 +316,14 @@ const UsersModel = () => {
   const handleUsersClick = (arg) => {
     const users = arg;
     setUsers({
-      usr_id: users.usr_id,
+      // usr_id: users.usr_id,
       usr_email: users.usr_email,
       usr_password: users.usr_password,
       usr_full_name: users.usr_full_name,
       usr_phone_number: users.usr_phone_number,
       usr_role_id: Number(users.usr_role_id),
-      usr_region_id:Number( users.usr_region_id),
-      usr_woreda_id:Number( users.usr_woreda_id),
+      usr_region_id: Number(users.usr_region_id),
+      usr_woreda_id: Number(users.usr_woreda_id),
       usr_kebele_id: Number(users.usr_kebele_id),
       usr_sector_id: Number(users.usr_sector_id),
       usr_is_active: users.usr_is_active,
@@ -313,7 +344,37 @@ const UsersModel = () => {
 
     toggle();
   };
+  const handleUsersDuplicateClick = (arg) => {
+    const users = arg;
+    setUsers({
+      usr_id: users.usr_id,
+      usr_email: users.usr_email,
+      usr_password: users.usr_password,
+      usr_full_name: users.usr_full_name,
+      usr_phone_number: users.usr_phone_number,
+      usr_role_id: Number(users.usr_role_id),
+      usr_region_id: Number(users.usr_region_id),
+      usr_woreda_id: Number(users.usr_woreda_id),
+      usr_kebele_id: Number(users.usr_kebele_id),
+      usr_sector_id: Number(users.usr_sector_id),
+      usr_is_active: users.usr_is_active,
+      usr_picture: users.usr_picture,
+      usr_last_logged_in: users.usr_last_logged_in,
+      usr_ip: users.usr_ip,
+      usr_remember_token: users.usr_remember_token,
+      usr_notified: users.usr_notified,
+      usr_description: users.usr_description,
+      usr_status: users.usr_status,
+      usr_department_id: Number(users.usr_department_id),
 
+      is_deletable: users.is_deletable,
+      is_editable: users.is_editable,
+    });
+
+    setIsDuplicateModalOpen(true);
+
+    toggle();
+  };
   //delete projects
   const [deleteModal, setDeleteModal] = useState(false);
 
@@ -384,7 +445,7 @@ const UsersModel = () => {
           truncateText(params.data.usr_phone_number, 30) || "-",
       },
 
-     
+
       {
         headerName: t("usr_sector_id"),
         field: "usr_sector_id",
@@ -435,9 +496,9 @@ const UsersModel = () => {
               <Link
                 to="#"
                 className="text-success"
-                
+
                 onClick={() => {
-                 
+
                   handleUsersClick(params.data);
                 }}
               >
@@ -463,13 +524,31 @@ const UsersModel = () => {
             ) : (
               ""
             )}
+            {/* added duplicat  */}
+            {/* Add duplicate project icon */}
+            {params.data.is_editable && (
+              <Link
+                to="#"
+                className="text-primary"
+                onClick={() => {
+                  handleUsersDuplicateClick(params.data);
+                }}
+              >
+                <i className="mdi mdi-content-duplicate font-size-18" id="duplicateTooltip" />
+                <UncontrolledTooltip placement="top" target="duplicateTooltip">
+                  Duplicate
+                </UncontrolledTooltip>
+              </Link>
+            )}
+            {/* End of duplicate project icon */}
+
           </div>
         ),
       });
     }
 
     return baseColumns;
-  }, [handleUsersClick, toggleViewModal, onClickDelete]);
+  }, [handleUsersClick, toggleViewModal, onClickDelete,handleUsersDuplicateClick]);
 
   const project_status = [
     { label: "select Status name", value: "" },
@@ -567,9 +646,10 @@ const UsersModel = () => {
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit
+              {isDuplicateModalOpen ? t("Duplicate ") + " " + t("users") : <div>{!!isEdit
                 ? t("edit") + " " + t("users")
-                : t("add") + " " + t("users")}
+                : t("add") + " " + t("users")}</div>}
+
             </ModalHeader>
             <ModalBody>
               <Form
@@ -579,7 +659,11 @@ const UsersModel = () => {
                   const modalCallback = () => setModal(false);
                   if (isEdit) {
                     onUpdateUsers(validation.values, modalCallback);
-                  } else {
+                  }else if(isDuplicateModalOpen){
+                    console.log("is duplicated")
+                    onAddUsers(validation.values, modalCallback);
+                  } 
+                  else {
                     onAddUsers(validation.values, modalCallback);
                   }
                   return false;
@@ -738,20 +822,20 @@ const UsersModel = () => {
                       name="usr_department_id"
                       type="select"
                       className="form-select"
-                     
+
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={selectedDepartment || ""}
                     >
-                      
+
                       <option value="" disabled={!isEdit}>
                         {isEdit
                           ? datadepartment.find(
-                              (option) => option.dep_id === validation.values.usr_department_id
-                            )
+                            (option) => option.dep_id === validation.values.usr_department_id
+                          )
                             ? datadepartment.find(
-                                (option) => option.dep_id === validation.values.usr_department_id
-                              ).dep_name_en
+                              (option) => option.dep_id === validation.values.usr_department_id
+                            ).dep_name_en
                             : t("Select Department")
                           : t("Select Department")}
                       </option>
@@ -799,9 +883,9 @@ const UsersModel = () => {
                       name="usr_status"
                       type="select"
                       className="form-select"
-                      
+
                       onChange={validation.handleChange}
-                      
+
                       onBlur={validation.handleBlur}
                       value={selectedState} //selectedState
 
@@ -811,13 +895,13 @@ const UsersModel = () => {
                           ? true
                           : false
                       }
-                      
+
                     >
-                    <option value="" disabled={!isEdit}>
-                      {isEdit ? (validation.values.usr_status === 1 ? t("Active") : t("Inactive")) : "Select status"}
-                    </option>
-                    <option value={1}>{t("Active")}</option>
-                    <option value={0}>{t("Inactive")}</option>
+                      <option value="" disabled={!isEdit}>
+                        {isEdit ? (validation.values.usr_status === 1 ? t("Active") : t("Inactive")) : "Select status"}
+                      </option>
+                      <option value={1}>{t("Active")}</option>
+                      <option value={0}>{t("Inactive")}</option>
                     </Input>
                     {validation.touched.usr_status &&
                       validation.errors.usr_status ? (
@@ -836,86 +920,86 @@ const UsersModel = () => {
                       isEdit={isEdit} // Set to true if in edit mode, otherwise false
                     />
                   </Col>
-                  
-                   <Col
-                      className="col-md-8 mb-3"
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        color: "#333",
-                        borderRadius: "8px",
-                        padding: "20px",
-                        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-                      }}
-                    >
-                      <div className="mb-3">
-                        <Label
-                          className="form-label"
-                          style={{ fontWeight: "bold", fontSize: "16px" }}
-                        >
-                          Upload User Image
-                        </Label>
-                        <div className="text-center">
-                          <div className="position-relative d-inline-block">
-                            <div className="position-absolute bottom-0 end-0">
-                              <Label
-                                htmlFor="project-image-input"
-                                className="mb-0"
-                                id="projectImageInput"
-                              >
-                                <div className="avatar-xs">
-                                  <div className="avatar-title bg-primary border rounded-circle text-white cursor-pointer shadow-sm font-size-16">
-                                    <i className="bx bxs-image-add"></i>
-                                  </div>
+
+                  <Col
+                    className="col-md-8 mb-3"
+                    style={{
+                      backgroundColor: "#f8f9fa",
+                      color: "#333",
+                      borderRadius: "8px",
+                      padding: "20px",
+                      boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+                    }}
+                  >
+                    <div className="mb-3">
+                      <Label
+                        className="form-label"
+                        style={{ fontWeight: "bold", fontSize: "16px" }}
+                      >
+                        Upload User Image
+                      </Label>
+                      <div className="text-center">
+                        <div className="position-relative d-inline-block">
+                          <div className="position-absolute bottom-0 end-0">
+                            <Label
+                              htmlFor="project-image-input"
+                              className="mb-0"
+                              id="projectImageInput"
+                            >
+                              <div className="avatar-xs">
+                                <div className="avatar-title bg-primary border rounded-circle text-white cursor-pointer shadow-sm font-size-16">
+                                  <i className="bx bxs-image-add"></i>
                                 </div>
-                              </Label>
-                              <UncontrolledTooltip
-                                placement="right"
-                                target="projectImageInput"
-                              >
-                                Select Image
-                              </UncontrolledTooltip>
-                              <input
-                                className="form-control d-none"
-                                id="project-image-input"
-                                type="file"
-                                accept="image/png, image/gif, image/jpeg"
-                                onChange={handleImageChange}
+                              </div>
+                            </Label>
+                            <UncontrolledTooltip
+                              placement="right"
+                              target="projectImageInput"
+                            >
+                              Select Image
+                            </UncontrolledTooltip>
+                            <input
+                              className="form-control d-none"
+                              id="project-image-input"
+                              type="file"
+                              accept="image/png, image/gif, image/jpeg"
+                              onChange={handleImageChange}
+                            />
+                          </div>
+                          <div className="avatar-xl" style={{ marginTop: "10px" }}>
+                            <div
+                              className="avatar-title bg-light rounded-circle"
+                              style={{
+                                overflow: "hidden",
+                                width: "120px",
+                                height: "120px",
+                                border: "2px solid #ddd",
+                              }}
+                            >
+                              {/* Show selected image or placeholder */}
+                              <img
+                                src={`${import.meta.env.VITE_BASE_API_FILE}public/uploads/userfiles/${validation.usr_picture}` || "https://via.placeholder.com/120"}
+                                id="projectlogo-img"
+                                alt="User Image"
+                                className="img-fluid rounded-circle"
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                }}
                               />
                             </div>
-                            <div className="avatar-xl" style={{ marginTop: "10px" }}>
-                              <div
-                                className="avatar-title bg-light rounded-circle"
-                                style={{
-                                  overflow: "hidden",
-                                  width: "120px",
-                                  height: "120px",
-                                  border: "2px solid #ddd",
-                                }}
-                              >
-                                {/* Show selected image or placeholder */}
-                                <img
-                                  src={`${import.meta.env.VITE_BASE_API_FILE}public/uploads/userfiles/${validation.usr_picture}` || "https://via.placeholder.com/120"}
-                                  id="projectlogo-img"
-                                  alt="User Image"
-                                  className="img-fluid rounded-circle"
-                                  style={{
-                                    width: "100%",
-                                    height: "100%",
-                                    objectFit: "cover",
-                                  }}
-                                />
-                              </div>
-                            </div>
                           </div>
-                          {/* Validation feedback */}
-                          {validation.touched.usr_picture && validation.errors.usr_picture ? (
-                            <FormFeedback type="invalid" className="d-block mt-2">
-                              {validation.errors.usr_picture}
-                            </FormFeedback>
-                          ) : null}
                         </div>
+                        {/* Validation feedback */}
+                        {validation.touched.usr_picture && validation.errors.usr_picture ? (
+                          <FormFeedback type="invalid" className="d-block mt-2">
+                            {validation.errors.usr_picture}
+                          </FormFeedback>
+                        ) : null}
                       </div>
-                    </Col>
+                    </div>
+                  </Col>
 
                 </Row>
                 <Row>
@@ -937,8 +1021,8 @@ const UsersModel = () => {
                           type="submit"
                           className="save-user"
                           disabled={update_loading || !validation.dirty}
-                        >
-                          {t("Save")}
+                        >{isDuplicateModalOpen ? <div>{t("Save Duplicate")}</div> : <div>{t("Save")}</div>}
+
                         </Button>
                       )}
                     </div>
@@ -946,6 +1030,15 @@ const UsersModel = () => {
                 </Row>
               </Form>
             </ModalBody>
+            {isDuplicateModalOpen ? (
+              <ModalFooter>
+                <div className="text-center text-warning mb-4">
+                  {t("This entry contains duplicate information. Please review and modify the form to avoid duplicates. If you still wish to proceed, click Save to add this user as a new entry.")}
+                </div>
+              </ModalFooter>
+            ) : null}
+
+
           </Modal>
         </div>
       </div>
