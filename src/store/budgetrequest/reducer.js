@@ -19,7 +19,7 @@ const INIT_STATE = {
     data: [],
     previledge: {},
   },
-  budgetRequestList: { 
+  budgetRequestList: {
     data: [],
     previledge: {},
   },
@@ -47,7 +47,7 @@ const BudgetRequestReducer = (state = INIT_STATE, action) => {
         loading: false,
       };
 
-    case GET_BUDGET_REQUEST_LIST_SUCCESS: 
+    case GET_BUDGET_REQUEST_LIST_SUCCESS:
       return {
         ...state,
         budgetRequestList: {
@@ -83,6 +83,15 @@ const BudgetRequestReducer = (state = INIT_STATE, action) => {
         budgetRequest: {
           ...state.budgetRequest,
           data: state.budgetRequest.data.map((BUDGET_REQUEST) =>
+            BUDGET_REQUEST.bdr_id.toString() ===
+            action.payload.bdr_id.toString()
+              ? { ...BUDGET_REQUEST, ...action.payload }
+              : BUDGET_REQUEST
+          ),
+        },
+        budgetRequestList: {
+          ...state.budgetRequestList,
+          data: state.budgetRequestList.data.map((BUDGET_REQUEST) =>
             BUDGET_REQUEST.bdr_id.toString() ===
             action.payload.bdr_id.toString()
               ? { ...BUDGET_REQUEST, ...action.payload }

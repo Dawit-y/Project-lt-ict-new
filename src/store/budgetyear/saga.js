@@ -40,6 +40,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const selectShowResult = (state) => state.BudgetYearR.show_result;
+const budgetYearState = (state) => state.BudgetYearR.budgetYear.data
 
 function* fetchBudgetYear() {
   try {
@@ -103,9 +104,10 @@ function* onDeleteBudgetYear({ payload: budgetYear }) {
 function* onAddBudgetYear({ payload: budgetYear, modalCallback }) {
   try {
     yield put(toggleUpdateLoading(true));
-    const response = yield call(addBudgetYear, budgetYear);
 
+    const response = yield call(addBudgetYear, budgetYear);
     yield put(addBudgetYearSuccess(response.data));
+    
     toast.success(`budgetYear ${response.data.bdy_id} Is Added Successfully`, {
       autoClose: 2000,
     });

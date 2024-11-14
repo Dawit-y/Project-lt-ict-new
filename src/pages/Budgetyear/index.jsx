@@ -62,7 +62,28 @@ const BudgetYearModel = () => {
   const [budgetYear, setBudgetYear] = useState(null);
   const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
   const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
-  //START FOREIGN CALLS
+
+  const dispatch = useDispatch();
+  // Fetch BudgetYear on component mount
+  useEffect(() => {
+    dispatch(onGetBudgetYear());
+  }, [dispatch]);
+
+  const budgetYearProperties = createSelector(
+    (state) => state.BudgetYearR, // this is geting from  reducer
+    (BudgetYearReducer) => ({
+      // this is from Project.reducer
+      budgetYear: BudgetYearReducer.budgetYear,
+      loading: BudgetYearReducer.loading,
+      update_loading: BudgetYearReducer.update_loading,
+    })
+  );
+
+  const {
+    budgetYear: { data, previledge },
+    loading,
+    update_loading,
+  } = useSelector(budgetYearProperties);
 
   // validation
   const validation = useFormik({
@@ -80,8 +101,16 @@ const BudgetYearModel = () => {
     },
 
     validationSchema: Yup.object({
-      bdy_name: Yup.string().required(t("bdy_name")),
-      bdy_code: Yup.string().required(t("bdy_code")),
+      bdy_name: Yup.string()
+        .required(t("bdy_name"))
+        .test("unique-name", t("Already exists"), (value) => {
+          return !data.some((item) => item.bdy_name == value);
+        }),
+      bdy_code: Yup.string()
+        .required(t("bdy_code"))
+        .test("unique-code", t("Already exists"), (value) => {
+          return !data.some((item) => item.bdy_code == value);
+        }),
       bdy_description: Yup.string().required(t("bdy_description")),
       bdy_status: Yup.string().required(t("bdy_status")),
     }),
@@ -109,7 +138,8 @@ const BudgetYearModel = () => {
           bdy_description: values.bdy_description,
           bdy_status: values.bdy_status,
         };
-        // save new BudgetYears
+        // save new BudgetYear
+
         dispatch(onAddBudgetYear(newBudgetYear));
         validation.resetForm();
       }
@@ -117,27 +147,6 @@ const BudgetYearModel = () => {
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-  const dispatch = useDispatch();
-  // Fetch BudgetYear on component mount
-  useEffect(() => {
-    dispatch(onGetBudgetYear());
-  }, [dispatch]);
-
-  const budgetYearProperties = createSelector(
-    (state) => state.BudgetYearR, // this is geting from  reducer
-    (BudgetYearReducer) => ({
-      // this is from Project.reducer
-      budgetYear: BudgetYearReducer.budgetYear,
-      loading: BudgetYearReducer.loading,
-      update_loading: BudgetYearReducer.update_loading,
-    })
-  );
-
-  const {
-    budgetYear: { data, previledge },
-    loading,
-    update_loading,
-  } = useSelector(budgetYearProperties);
 
   useEffect(() => {
     console.log("update_loading in useEffect", update_loading);
@@ -271,7 +280,8 @@ const BudgetYearModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdy_status, 30) || `${cellProps.row.original.bdy_status}`}
+              {truncateText(cellProps.row.original.bdy_status, 30) ||
+                `${cellProps.row.original.bdy_status}`}
             </span>
           );
         },

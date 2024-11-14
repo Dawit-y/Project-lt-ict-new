@@ -583,5 +583,6 @@
   "user_administration": "User Administration",
   "look_up": "Look Up",
   "take_action": "Take Action",
-  "view_detail": "View Detail"
+  "view_detail": "View Detail",
+  "Already exists": "Already exists"
 }

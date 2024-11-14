@@ -217,8 +217,8 @@
   "Projects Status": "Haala pirojektootaa",
   "select Status name": "Haala Projeektii Filadhu",
   "select budget year": "Bara Baajataa Filadhu",
-  "budget Year":"Waggaa Baajataa",
-  "budget year not defined":"Waggaa baajataa hin ibsamne",
+  "budget Year": "Waggaa Baajataa",
+  "budget year not defined": "Waggaa baajataa hin ibsamne",
 
   "insert_order_number": "Lakkoofsa Ajajaa Galchi",
   "insert_status_name_english": "Maqaa Haala (Afaan Ingilizii) Galchi",
@@ -226,7 +226,7 @@
   "insert_status_name_amharic": "Maqaa Haala (Afaan Amaaraa) Galchi",
   "insert_description": "Ibsa Galchi",
   "insert_color_code": "Kaayyoo Akaakuu Galchi",
-  
+
   "please_enter_the_status": "Maalummaa galchaa",
   "please_enter_the_oromo_status_name": "Maalummaa Oromoo galchaa",
   "please_enter_the_english_status_name": "Maalummaa Ingiliffaa galchaa",
@@ -239,7 +239,6 @@
   "delete_now": "Amma haqi",
   "confirm_erase": "Data yeroo dheeraa guutuu haqi gochuuf ni amantaa?",
   "close": "Cufi",
-
 
   "department": "Qindoomina",
   "dep_id": "Lakkoofsa",
@@ -269,7 +268,6 @@
   "pct_delete_time": "Yeroo Haqe",
   "pct_created_by": "Kan Uume",
   "pct_status": "Haalota",
-
 
   "project": "Pirojektii",
   "prj_id": "Lakkoofsa",
@@ -355,7 +353,6 @@
   "prp_delete_time": "Yeroo Haquu",
   "prp_created_by": "Namni Uume",
   "prp_status": "Haala",
-
 
   "project_document": "Dokumantii Proojektii",
   "prd_id": "Id",
@@ -552,7 +549,6 @@
   "psc_create_time": "Yeroo Uumame",
   "psc_update_time": "Yeroo Haaromfame",
 
-
   "document_type": "Gosa Dokumentii",
   "pdt_id": "Id",
   "pdt_doc_name_or": "Maqaa Dokumentii Or",
@@ -607,5 +603,6 @@
   "sht_status": "Haala",
   "address_structure": "Seer-Lammii",
   "user_administration": "Bulchiinsa Fayyadamtootaa",
-  "look_up": "Barbaadi"
+  "look_up": "Barbaadi",
+  "Already exists": "Duraanis jira"
 }

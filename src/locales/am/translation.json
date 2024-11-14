@@ -212,9 +212,8 @@
   "Projects Status": "የፕሮግራሞች ሁኔታ",
   "select Status name": "የሁኔታ ስም ይምረጡ",
   "select budget year": "የበጀት አመት ይምረጡ",
-  "budget Year":"በጀት ዓመት",
-  "budget year not defined":"በጀት ዓመት አልተገለጸም",
-
+  "budget Year": "በጀት ዓመት",
+  "budget year not defined": "በጀት ዓመት አልተገለጸም",
 
   "insert_order_number": "ቁጥር ትዕዛዝ አስገባ",
   "insert_status_name_english": "የሁኔታ ስም (በእንግሊዝኛ) አስገባ",
@@ -235,7 +234,6 @@
   "delete_now": "አሁን አጥፋ",
   "confirm_erase": "መረጃን በድረስ ለማጥፋት እርግጠኛ ነህ/ነሽ?",
   "close": "ዝጋ",
-
 
   "department": "መምሪያ",
   "dep_id": "መታወቂያ",
@@ -265,7 +263,6 @@
   "pct_delete_time": "የማጥፊያ ጊዜ",
   "pct_created_by": "ተፈጥሯል በ",
   "pct_status": "ሁኔታ",
-
 
   "project": "ፕሮጀክት",
   "prj_id": "መታወቂያ",
@@ -368,7 +365,6 @@
   "prd_created_by": "በተፈጠረ",
   "prd_status": "ሁኔታ",
 
-
   "budget_request": "የበጀት ጥያቄ",
   "bdr_id": "መታወቂያ",
   "bdr_budget_year_id": "የበጀት እድሜ መታወቂያ",
@@ -437,7 +433,6 @@
   "usr_created_by": "በተፈጠረ",
   "usr_status": "ሁኔታ",
 
-
   "user_role": "የተጠቃሚ ሚና",
   "url_id": "መታወቂያ",
   "url_role_id": "የሚናበት መታወቂያ",
@@ -476,8 +471,6 @@
   "pem_delete_time": "የማጥፋት ጊዜ",
   "pem_created_by": "በተፈጠረ",
 
-
-
   "pages": "ገፆች",
   "pag_id": "መታወቂያ",
   "pag_name": "ስም",
@@ -495,7 +488,6 @@
   "pag_delete_time": "የማጥፋት ጊዜ",
   "pag_created_by": "በተፈጠረ",
   "pag_status": "ሁኔታ",
-
 
   "access_log": "መዳበር ተያያዥ መዝገብ",
   "acl_id": "መታወቂያ",
@@ -605,6 +597,6 @@
 
   "address_structure": "አድራሻ መዋቅር",
   "user_administration": "ተጠቃሚ አስተዳደር",
-  "look_up": "መፈለግ"
-
+  "look_up": "መፈለግ",
+  "Already exists": "አስቀድሞ አለ"
 }
