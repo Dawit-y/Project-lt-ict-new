@@ -23,8 +23,8 @@ const BudgetRequestAnalysis = ({ data }) => {
       let totalReleased = 0;
 
       data.forEach((item) => {
-        totalRequested += parseInt(item.bdr_requested_amount) || 0;
-        totalReleased += parseInt(item.bdr_released_amount) || 0;
+        totalRequested += parseFloat(item.bdr_requested_amount) || 0;
+        totalReleased += parseFloat(item.bdr_released_amount) || 0;
 
         if (item.bdr_request_status === "Approved") approvedCount++;
         else if (item.bdr_request_status === "Rejected") rejectedCount++;

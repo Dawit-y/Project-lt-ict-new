@@ -39,19 +39,6 @@ const modalStyle = {
   height: "100%",
 };
 
-// Yup validation schema
-const validationSchema = Yup.object().shape({
-  bdr_request_status: Yup.string().required("Status is required"),
-  bdr_released_amount: Yup.number()
-    .min(0, "Released amount must be greater or equal to 0")
-    .when("bdr_request_status", {
-      is: "Accepted",
-      then: (schema) => schema.required("Released amount is required"),
-      otherwise: (schema) => schema.optional(),
-    }),
-  bdr_released_date_gc: Yup.date().required("Action date is required"),
-  bdr_action_remark: Yup.string().required("Action remark is required"),
-});
 const BudgetRequestListModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction, budgetYearMap } = props;
@@ -66,6 +53,24 @@ const BudgetRequestListModal = (props) => {
   const getStatusOption = (value) =>
     statusOptions.find((option) => option.value === value) || null;
   // Formik setup
+
+  // Yup validation schema
+  const validationSchema = Yup.object().shape({
+    bdr_request_status: Yup.string().required("Status is required"),
+    bdr_released_amount: Yup.number()
+      .min(0, "Released amount must be greater or equal to 0")
+      .max(
+        transaction.bdr_requested_amount,
+        "Can not release more than requested"
+      )
+      .when("bdr_request_status", {
+        is: "Accepted",
+        then: (schema) => schema.required("Released amount is required"),
+        otherwise: (schema) => schema.optional(),
+      }),
+    bdr_released_date_gc: Yup.date().required("Action date is required"),
+    bdr_action_remark: Yup.string().required("Action remark is required"),
+  });
   const formik = useFormik({
     initialValues: {
       bdr_id: transaction.bdr_id || "",

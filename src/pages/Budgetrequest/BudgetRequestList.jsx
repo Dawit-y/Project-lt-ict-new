@@ -291,6 +291,24 @@ const BudgetRequestListModel = () => {
         },
       },
       {
+        headerName: t("prj_name"),
+        field: "prj_name",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_name, 30) || "-";
+        },
+      },
+      {
+        headerName: t("prj_code"),
+        field: "prj_code",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_code, 30) || "-";
+        },
+      },
+      {
         headerName: t("bdr_requested_amount"),
         field: "bdr_requested_amount",
         sortable: true,
