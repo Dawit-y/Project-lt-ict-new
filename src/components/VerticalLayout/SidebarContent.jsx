@@ -17,13 +17,12 @@ const SidebarContent = (props) => {
   const toggleOpen = (index) => {
     setOpenItems((prevState) => ({
       ...prevState,
-      [index]: !prevState[index], 
+      [index]: !prevState[index],
     }));
   };
 
-  
   const setActiveMenuItem = (itemPath) => {
-    setActiveItem(itemPath); 
+    setActiveItem(itemPath);
   };
 
   // Function to open parent dropdown based on current path
@@ -38,7 +37,7 @@ const SidebarContent = (props) => {
           if (submenu.path === pathName) {
             setOpenItems((prevState) => ({
               ...prevState,
-              [index]: true, 
+              [index]: true,
             }));
             setActiveMenuItem(submenu.path); // Set the active submenu
           }
@@ -61,19 +60,18 @@ const SidebarContent = (props) => {
     }
   };
 
-  
   const renderMenu = (menuData) => {
     return menuData.map((menu, index) => (
       <li
         key={index}
         className={`menu-item ${isOpen(index) ? "mm-active" : ""}`}
         style={{
-          // backgroundColor: activeItem === menu.path ? "#007bff" : "", 
+          // backgroundColor: activeItem === menu.path ? "#007bff" : "",
           color: activeItem === menu.path ? "#fff" : "", // Change text color when active
         }}
       >
         <Link
-          to="/#"
+          to="#"
           className="has-arrow"
           onClick={() => {
             toggleOpen(index);

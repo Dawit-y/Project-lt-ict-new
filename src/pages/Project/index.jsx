@@ -91,14 +91,6 @@ const ProjectModel = () => {
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
-
-  //START FOREIGN CALLS
-  const [projectStatusOptions, setProjectStatusOptions] = useState([]);
-  const [selectedProjectStatus, setSelectedProjectStatus] = useState("");
-  const [projectCategoryOptions, setProjectCategoryOptions] = useState([]);
-  const [selectedProjectCategory, setSelectedProjectCategory] = useState("");
-  const [budgetSourceOptions, setBudgetSourceOptions] = useState([]);
-  const [selectedBudgetSource, setSelectedBudgetSource] = useState("");
   const [projectMetaData, setProjectMetaData] = useState({});
   const [showCanvas, setShowCanvas] = useState(false);
 
