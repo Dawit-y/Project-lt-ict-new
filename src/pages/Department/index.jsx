@@ -21,6 +21,13 @@ import {
   deleteDepartment as onDeleteDepartment,
 } from "../../store/department/actions";
 
+import {
+  useDepartments,
+  useAddDepartment,
+  useDeleteDepartment,
+  useUpdateDepartment,
+} from "../../queries/departmentQuery";
+
 //redux
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
@@ -67,6 +74,10 @@ const DepartmentModel = () => {
   const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
   //START FOREIGN CALLS
 
+  const { data, isLoading, error } = useDepartments();
+  const addDepartment = useAddDepartment();
+  const updateDepartment = useUpdateDepartment();
+  const deleteDepartment = useDeleteDepartment();
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
@@ -109,7 +120,7 @@ const DepartmentModel = () => {
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
-        const updateDepartment = {
+        const updateDepartmentData = {
           dep_id: department ? department.dep_id : 0,
           // dep_id:department.dep_id,
           dep_name_or: values.dep_name_or,
@@ -126,10 +137,11 @@ const DepartmentModel = () => {
           is_editable: values.is_editable,
         };
         // update Department
-        dispatch(onUpdateDepartment(updateDepartment));
+        updateDepartment.mutate(updateDepartmentData);
+        // dispatch(onUpdateDepartment(updateDepartmentData));
         validation.resetForm();
       } else {
-        const newDepartment = {
+        const newDepartmentData = {
           dep_name_or: values.dep_name_or,
           dep_name_am: values.dep_name_am,
           dep_name_en: values.dep_name_en,
@@ -141,8 +153,9 @@ const DepartmentModel = () => {
           dep_status: values.dep_status,
         };
         // save new Departments
-        console.log("added dept", newDepartment);
-        dispatch(onAddDepartment(newDepartment));
+        console.log("added dept", newDepartmentData);
+        addDepartment.mutate(newDepartmentData);
+        // dispatch(onAddDepartment(newDepartment));
         validation.resetForm();
       }
     },
@@ -151,31 +164,31 @@ const DepartmentModel = () => {
   const toggleViewModal = () => setModal1(!modal1);
   const dispatch = useDispatch();
   // Fetch Department on component mount
-  useEffect(() => {
-    dispatch(onGetDepartment());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(onGetDepartment());
+  // }, [dispatch]);
 
-  const departmentProperties = createSelector(
-    (state) => state.DepartmentR, // this is geting from  reducer
-    (DepartmentReducer) => ({
-      // this is from Project.reducer
-      department: DepartmentReducer.department,
-      loading: DepartmentReducer.loading,
-      update_loading: DepartmentReducer.update_loading,
-      error: DepartmentReducer.error,
-    })
-  );
+  // const departmentProperties = createSelector(
+  //   (state) => state.DepartmentR, // this is geting from  reducer
+  //   (DepartmentReducer) => ({
+  //     // this is from Project.reducer
+  //     department: DepartmentReducer.department,
+  //     loading: DepartmentReducer.loading,
+  //     update_loading: DepartmentReducer.update_loading,
+  //     error: DepartmentReducer.error,
+  //   })
+  // );
 
-  const {
-    department: { data, previledge },
-    loading,
-    update_loading,
-  } = useSelector(departmentProperties);
+  // const {
+  //   department: { data, previledge },
+  //   loading,
+  //   update_loading,
+  // } = useSelector(departmentProperties);
 
-  useEffect(() => {
-    console.log("update_loading in useEffect", update_loading);
-    setModal(false);
-  }, [update_loading]);
+  // useEffect(() => {
+  //   console.log("update_loading in useEffect", update_loading);
+  //   setModal(false);
+  // }, [update_loading]);
 
   const selectSearchProperties = createSelector(
     (state) => state.search,
@@ -186,7 +199,7 @@ const DepartmentModel = () => {
 
   const { results } = useSelector(selectSearchProperties);
 
-  const [isLoading, setLoading] = useState(loading);
+  // const [isLoading, setLoading] = useState(loading);
   useEffect(() => {
     setDepartment(data);
   }, [data]);
@@ -381,7 +394,8 @@ const DepartmentModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.dep_status, 30) || `${cellProps.row.original.dep_status}`}
+              {truncateText(cellProps.row.original.dep_status, 30) ||
+                `${cellProps.row.original.dep_status}`}
             </span>
           );
         },
@@ -409,7 +423,10 @@ const DepartmentModel = () => {
         },
       },
     ];
-    if (previledge?.is_role_editable && previledge?.is_role_deletable) {
+    if (
+      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_deletable
+    ) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -488,7 +505,7 @@ const DepartmentModel = () => {
             breadcrumbItem={t("department")}
           />
           {isLoading || searchLoading ? (
-            <Spinners setLoading={setLoading} />
+            <Spinners />
           ) : (
             <Row>
               <Col xs="12">
@@ -496,7 +513,7 @@ const DepartmentModel = () => {
                   <CardBody>
                     <TableContainer
                       columns={columns}
-                      data={showSearchResults ? results : data}
+                      data={showSearchResults ? results : data?.data}
                       isGlobalFilter={true}
                       isAddButton={true}
                       isCustomPageSize={true}
@@ -766,12 +783,16 @@ const DepartmentModel = () => {
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {update_loading ? (
+                      {addDepartment.isPending || updateDepartment.isPending ? (
                         <Button
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addDepartment.isPending ||
+                            updateDepartment.isPending ||
+                            !validation.dirty
+                          }
                         >
                           <Spinner size={"sm"} color="#fff" />
                           {t("Save")}
@@ -781,7 +802,11 @@ const DepartmentModel = () => {
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addDepartment.isPending ||
+                            updateDepartment.isPending ||
+                            !validation.dirty
+                          }
                         >
                           {t("Save")}
                         </Button>

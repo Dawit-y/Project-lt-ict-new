@@ -3162,6 +3162,32 @@
   dependencies:
     remove-accents "0.5.0"
 
+"@tanstack/query-core@5.60.5":
+  version "5.60.5"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.60.5.tgz#37b7c5ab7e6894cea9ef341299a7a3febc2ea361"
+  integrity sha512-jiS1aC3XI3BJp83ZiTuDLerTmn9P3U95r6p+6/SNauLJaYxfIC4dMuWygwnBHIZxjn2zJqEpj3nysmPieoxfPQ==
+
+"@tanstack/query-persist-client-core@5.60.5":
+  version "5.60.5"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-persist-client-core/-/query-persist-client-core-5.60.5.tgz#0c51bf877cd92dd1b890ca3bc9f6cc523a5befb2"
+  integrity sha512-vA5MR5W8jKv9NvdsbXFztBPi+Hs8ZtiVPiLTWk+nfyqmAKXEGZlxZpUo8zTHr7GgmLZCDgx/l+HntlL58Jbl0w==
+  dependencies:
+    "@tanstack/query-core" "5.60.5"
+
+"@tanstack/react-query-persist-client@^5.60.5":
+  version "5.60.5"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query-persist-client/-/react-query-persist-client-5.60.5.tgz#d3c30976333212bb9be7fdedc925713f2666d1ec"
+  integrity sha512-O+lfL/TVNHQIPIZjQf5LL39ATKgmXXg/uX+MesYUL/v+/R2JiWXysn9LRPNTAQ3EieO91GeH/BTvnvGqnAFMmg==
+  dependencies:
+    "@tanstack/query-persist-client-core" "5.60.5"
+
+"@tanstack/react-query@^5.60.5":
+  version "5.60.5"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.60.5.tgz#3194c390f7eff20542b321c3042880dc3f1a81e2"
+  integrity sha512-M77bOsPwj1wYE56gk7iJvxGAr4IC12NWdIDhT+Eo8ldkWRHMvIR8I/rufIvT1OXoV/bl7EECwuRuMlxxWtvW2Q==
+  dependencies:
+    "@tanstack/query-core" "5.60.5"
+
 "@tanstack/react-table@^8.10.7":
   version "8.20.5"
   resolved "https://registry.yarnpkg.com/@tanstack/react-table/-/react-table-8.20.5.tgz#19987d101e1ea25ef5406dce4352cab3932449d8"
