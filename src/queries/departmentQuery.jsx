@@ -5,34 +5,45 @@ import {
   addDepartment,
   deleteDepartment,
 } from "../helpers/department_backend_helper";
-import { toast } from "react-toastify";
 
-const DEPARTMENT_QUERY_KEY = ["departments"]; // Always use an array for query keys
+const DEPARTMENT_QUERY_KEY = ["departments"];
 
 // Fetch Departments
 export const useDepartments = () => {
   return useQuery({
     queryKey: DEPARTMENT_QUERY_KEY,
     queryFn: getDepartment,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    onError: (error) => {
-      toast.error("Failed to fetch departments");
-    },
+    staleTime: 1000 * 60 * 5,
   });
 };
 
 // Add Department
+// export const useAddDepartment = () => {
+//   const queryClient = useQueryClient();
+
+//   return useMutation({
+//     mutationFn: addDepartment,
+//     onSuccess: (newDepartment) => {
+//       queryClient.invalidateQueries(DEPARTMENT_QUERY_KEY);
+//     },
+//   });
+// };
 export const useAddDepartment = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: addDepartment,
-    onSuccess: (newDepartment) => {
-      queryClient.invalidateQueries(DEPARTMENT_QUERY_KEY); // Refresh department data
-      toast.success(`Department ${newDepartment.dep_id} added successfully`);
-    },
-    onError: () => {
-      toast.error("Failed to add department");
+    onSuccess: (newDepartmentResponse) => {
+      queryClient.setQueryData(DEPARTMENT_QUERY_KEY, (oldData) => {
+        if (!oldData) return;
+
+        // Merge new department and preserve metadata
+        return {
+          ...oldData, // Retain existing metadata like `total_count`
+          previledge: newDepartmentResponse.previledge, // Update `previledge` from API response
+          data: [newDepartmentResponse.data, ...oldData.data], // Add new department at the top
+        };
+      });
     },
   });
 };
@@ -46,16 +57,16 @@ export const useUpdateDepartment = () => {
     onSuccess: (updatedDepartment) => {
       queryClient.setQueryData(DEPARTMENT_QUERY_KEY, (oldData) => {
         if (!oldData) return;
-        return oldData.map((dept) =>
-          dept.dep_id === updatedDepartment.dep_id ? updatedDepartment : dept
-        );
+
+        return {
+          ...oldData,
+          data: oldData.data.map((dept) =>
+            dept.dep_id === updatedDepartment.data.dep_id
+              ? { ...dept, ...updatedDepartment.data }
+              : dept
+          ),
+        };
       });
-      toast.success(
-        `Department ${updatedDepartment.dep_id} updated successfully`
-      );
-    },
-    onError: () => {
-      toast.error("Failed to update department");
     },
   });
 };
@@ -69,16 +80,14 @@ export const useDeleteDepartment = () => {
     onSuccess: (deletedDepartment) => {
       queryClient.setQueryData(DEPARTMENT_QUERY_KEY, (oldData) => {
         if (!oldData) return;
-        return oldData.filter(
-          (dept) => dept.dep_id !== deletedDepartment.deleted_id
-        );
+        console.log("deletedDepartment", deletedDepartment);
+        return {
+          ...oldData,
+          data: oldData.data.filter(
+            (dept) => dept.dep_id !== deletedDepartment.deleted_id
+          ),
+        };
       });
-      toast.success(
-        `Department ${deletedDepartment.deleted_id} deleted successfully`
-      );
-    },
-    onError: () => {
-      toast.error("Failed to delete department");
     },
   });
 };

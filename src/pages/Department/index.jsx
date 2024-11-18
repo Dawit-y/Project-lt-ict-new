@@ -15,22 +15,12 @@ import DeleteModal from "../../components/Common/DeleteModal";
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns1";
 
 import {
-  getDepartment as onGetDepartment,
-  addDepartment as onAddDepartment,
-  updateDepartment as onUpdateDepartment,
-  deleteDepartment as onDeleteDepartment,
-} from "../../store/department/actions";
-
-import {
   useDepartments,
   useAddDepartment,
   useDeleteDepartment,
   useUpdateDepartment,
 } from "../../queries/departmentQuery";
 
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
 import DepartmentModal from "./DepartmentModal";
 import { useTranslation } from "react-i18next";
 
@@ -49,8 +39,9 @@ import {
   Card,
   CardBody,
 } from "reactstrap";
-import { ToastContainer } from "react-toastify";
-import { error } from "toastr";
+import Select from "react-select";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -78,6 +69,34 @@ const DepartmentModel = () => {
   const addDepartment = useAddDepartment();
   const updateDepartment = useUpdateDepartment();
   const deleteDepartment = useDeleteDepartment();
+
+  const handleAddDepartment = async (department) => {
+    try {
+      await addDepartment.mutateAsync(department);
+      toast.success(`Department added successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error("Failed to add department", {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+
+  const handleUpdateDepartment = async (department) => {
+    try {
+      await updateDepartment.mutateAsync(department);
+      toast.success(`Department ${department.dep_id} updated successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error(`Failed to update department ${department.dep_id}`, {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
@@ -137,7 +156,9 @@ const DepartmentModel = () => {
           is_editable: values.is_editable,
         };
         // update Department
-        updateDepartment.mutate(updateDepartmentData);
+        console.log("is edit is true", updateDepartmentData);
+        handleUpdateDepartment(updateDepartmentData);
+
         // dispatch(onUpdateDepartment(updateDepartmentData));
         validation.resetForm();
       } else {
@@ -153,53 +174,28 @@ const DepartmentModel = () => {
           dep_status: values.dep_status,
         };
         // save new Departments
-        console.log("added dept", newDepartmentData);
-        addDepartment.mutate(newDepartmentData);
-        // dispatch(onAddDepartment(newDepartment));
+        console.log("new dept data", newDepartmentData);
+        handleAddDepartment(newDepartmentData);
         validation.resetForm();
       }
     },
   });
+  const statusOptions = [
+    { label: "Active", value: 1 },
+    { label: "Inactive", value: 0 },
+  ];
+
+  // Helper to find the option matching the initial value
+  const getStatusOption = (value) =>
+    statusOptions.find((option) => option.value === value) || null;
+
+  const handleStatusChange = (selectedOption) => {
+    validation.setFieldValue("dep_status", selectedOption.value);
+  };
+
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-  const dispatch = useDispatch();
-  // Fetch Department on component mount
-  // useEffect(() => {
-  //   dispatch(onGetDepartment());
-  // }, [dispatch]);
 
-  // const departmentProperties = createSelector(
-  //   (state) => state.DepartmentR, // this is geting from  reducer
-  //   (DepartmentReducer) => ({
-  //     // this is from Project.reducer
-  //     department: DepartmentReducer.department,
-  //     loading: DepartmentReducer.loading,
-  //     update_loading: DepartmentReducer.update_loading,
-  //     error: DepartmentReducer.error,
-  //   })
-  // );
-
-  // const {
-  //   department: { data, previledge },
-  //   loading,
-  //   update_loading,
-  // } = useSelector(departmentProperties);
-
-  // useEffect(() => {
-  //   console.log("update_loading in useEffect", update_loading);
-  //   setModal(false);
-  // }, [update_loading]);
-
-  const selectSearchProperties = createSelector(
-    (state) => state.search,
-    (search) => ({
-      results: search.results,
-    })
-  );
-
-  const { results } = useSelector(selectSearchProperties);
-
-  // const [isLoading, setLoading] = useState(loading);
   useEffect(() => {
     setDepartment(data);
   }, [data]);
@@ -222,7 +218,6 @@ const DepartmentModel = () => {
 
   const handleDepartmentClick = (arg) => {
     const department = arg;
-    // console.log("handleDepartmentClick", department);
     setDepartment({
       dep_id: department.dep_id,
       dep_name_or: department.dep_name_or,
@@ -252,9 +247,19 @@ const DepartmentModel = () => {
     setDeleteModal(true);
   };
 
-  const handleDeleteDepartment = () => {
+  const handleDeleteDepartment = async () => {
     if (department && department.dep_id) {
-      dispatch(onDeleteDepartment(department.dep_id));
+      try {
+        const id = department.dep_id;
+        await deleteDepartment.mutateAsync({ id });
+        toast.success(`Department ${id} deleted successfully`, {
+          autoClose: 2000,
+        });
+      } catch (error) {
+        toast.error(`Failed to delete department ${department.dep_id}`, {
+          autoClose: 2000,
+        });
+      }
       setDeleteModal(false);
     }
   };
@@ -444,7 +449,10 @@ const DepartmentModel = () => {
                     handleDepartmentClick(data);
                   }}
                 >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                  <i
+                    className="mdi mdi-pencil fohandleDepartmentClicknt-size-18"
+                    id="edittooltip"
+                  />
                   <UncontrolledTooltip placement="top" target="edittooltip">
                     Edit
                   </UncontrolledTooltip>
@@ -544,12 +552,6 @@ const DepartmentModel = () => {
                 onSubmit={(e) => {
                   e.preventDefault();
                   validation.handleSubmit();
-                  const modalCallback = () => setModal(false);
-                  if (isEdit) {
-                    onUpdateDepartment(validation.values);
-                  } else {
-                    onAddDepartment(validation.values);
-                  }
                   return false;
                 }}
               >
@@ -650,79 +652,6 @@ const DepartmentModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  {/* region form Area 
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("dep_available_at_region")}</Label>
-                    <Input
-                      name="dep_available_at_region"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.dep_available_at_region || ""}
-                      invalid={
-                        validation.touched.dep_available_at_region &&
-                        validation.errors.dep_available_at_region
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.dep_available_at_region &&
-                    validation.errors.dep_available_at_region ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.dep_available_at_region}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("dep_available_at_zone")}</Label>
-                    <Input
-                      name="dep_available_at_zone"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.dep_available_at_zone || ""}
-                      invalid={
-                        validation.touched.dep_available_at_zone &&
-                        validation.errors.dep_available_at_zone
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.dep_available_at_zone &&
-                    validation.errors.dep_available_at_zone ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.dep_available_at_zone}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("dep_available_at_woreda")}</Label>
-                    <Input
-                      name="dep_available_at_woreda"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.dep_available_at_woreda || ""}
-                      invalid={
-                        validation.touched.dep_available_at_woreda &&
-                        validation.errors.dep_available_at_woreda
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.dep_available_at_woreda &&
-                    validation.errors.dep_available_at_woreda ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.dep_available_at_woreda}
-                      </FormFeedback>
-                    ) : null}
-                  </Col> */}
                   <CascadingDropdowns
                     validation={validation}
                     dropdown1name="dep_available_at_region"
@@ -755,23 +684,19 @@ const DepartmentModel = () => {
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("dep_status")}</Label>
-                    <Input
+                    <Select
                       name="dep_status"
-                      type="select"
-                      className="form-select"
-                      onChange={(e) => {
-                        validation.setFieldValue(
-                          "dep_status",
-                          Number(e.target.value)
-                        );
-                      }}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.dep_status}
-                    >
-                      <option value={""}>Select status</option>
-                      <option value={1}>{t("Active")}</option>
-                      <option value={0}>{t("Inactive")}</option>
-                    </Input>
+                      options={statusOptions}
+                      value={getStatusOption(validation.values.dep_status)}
+                      onChange={handleStatusChange}
+                      className="select2-selection"
+                      invalid={
+                        validation.touched.dep_status &&
+                        validation.errors.dep_status
+                          ? true
+                          : false
+                      }
+                    />
                     {validation.touched.dep_status &&
                     validation.errors.dep_status ? (
                       <FormFeedback type="invalid">
@@ -794,7 +719,7 @@ const DepartmentModel = () => {
                             !validation.dirty
                           }
                         >
-                          <Spinner size={"sm"} color="#fff" />
+                          <Spinner size={"sm"} color="light" className="me-2" />
                           {t("Save")}
                         </Button>
                       ) : (
