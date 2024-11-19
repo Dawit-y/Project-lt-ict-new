@@ -9,25 +9,18 @@ import {
 const DEPARTMENT_QUERY_KEY = ["departments"];
 
 // Fetch Departments
-export const useDepartments = () => {
+export const useFetchDepartments = () => {
   return useQuery({
     queryKey: DEPARTMENT_QUERY_KEY,
     queryFn: getDepartment,
     staleTime: 1000 * 60 * 5,
+    meta: { persist: true },
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 };
 
 // Add Department
-// export const useAddDepartment = () => {
-//   const queryClient = useQueryClient();
-
-//   return useMutation({
-//     mutationFn: addDepartment,
-//     onSuccess: (newDepartment) => {
-//       queryClient.invalidateQueries(DEPARTMENT_QUERY_KEY);
-//     },
-//   });
-// };
 export const useAddDepartment = () => {
   const queryClient = useQueryClient();
 
@@ -36,12 +29,10 @@ export const useAddDepartment = () => {
     onSuccess: (newDepartmentResponse) => {
       queryClient.setQueryData(DEPARTMENT_QUERY_KEY, (oldData) => {
         if (!oldData) return;
-
-        // Merge new department and preserve metadata
         return {
-          ...oldData, // Retain existing metadata like `total_count`
-          previledge: newDepartmentResponse.previledge, // Update `previledge` from API response
-          data: [newDepartmentResponse.data, ...oldData.data], // Add new department at the top
+          ...oldData,
+          previledge: newDepartmentResponse.previledge,
+          data: [newDepartmentResponse.data, ...oldData.data],
         };
       });
     },
@@ -80,7 +71,6 @@ export const useDeleteDepartment = () => {
     onSuccess: (deletedDepartment) => {
       queryClient.setQueryData(DEPARTMENT_QUERY_KEY, (oldData) => {
         if (!oldData) return;
-        console.log("deletedDepartment", deletedDepartment);
         return {
           ...oldData,
           data: oldData.data.filter(

@@ -15,7 +15,7 @@ import DeleteModal from "../../components/Common/DeleteModal";
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns1";
 
 import {
-  useDepartments,
+  useFetchDepartments,
   useAddDepartment,
   useDeleteDepartment,
   useUpdateDepartment,
@@ -59,13 +59,12 @@ const DepartmentModel = () => {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-
   const [department, setDepartment] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
-  const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
-  //START FOREIGN CALLS
 
-  const { data, isLoading, error } = useDepartments();
+  const { data, isLoading, error, isError } = useFetchDepartments();
+  if (isError) {
+    console.log("fethc dep error", error);
+  }
   const addDepartment = useAddDepartment();
   const updateDepartment = useUpdateDepartment();
   const deleteDepartment = useDeleteDepartment();
@@ -156,7 +155,6 @@ const DepartmentModel = () => {
           is_editable: values.is_editable,
         };
         // update Department
-        console.log("is edit is true", updateDepartmentData);
         handleUpdateDepartment(updateDepartmentData);
 
         // dispatch(onUpdateDepartment(updateDepartmentData));
@@ -174,7 +172,6 @@ const DepartmentModel = () => {
           dep_status: values.dep_status,
         };
         // save new Departments
-        console.log("new dept data", newDepartmentData);
         handleAddDepartment(newDepartmentData);
         validation.resetForm();
       }
@@ -267,15 +264,6 @@ const DepartmentModel = () => {
     setIsEdit(false);
     setDepartment("");
     toggle();
-  };
-  const handleSearch = () => {
-    setSearchLoading(true); // Set loading to true when search is initiated// Update filtered data with search results
-    setShowSearchResults(true); // Show search results
-    setSearchLoading(false);
-  };
-
-  const handleClearSearch = () => {
-    setShowSearchResults(false);
   };
 
   const columns = useMemo(() => {
@@ -512,7 +500,7 @@ const DepartmentModel = () => {
             title={t("department")}
             breadcrumbItem={t("department")}
           />
-          {isLoading || searchLoading ? (
+          {isLoading ? (
             <Spinners />
           ) : (
             <Row>
@@ -521,7 +509,7 @@ const DepartmentModel = () => {
                   <CardBody>
                     <TableContainer
                       columns={columns}
-                      data={showSearchResults ? results : data?.data}
+                      data={data?.data}
                       isGlobalFilter={true}
                       isAddButton={true}
                       isCustomPageSize={true}
