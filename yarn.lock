@@ -6561,6 +6561,11 @@ detect-port-alt@^1.1.6:
     address "^1.0.1"
     debug "^2.6.0"
 
+dhtmlx-gantt@^9.0.2:
+  version "9.0.2"
+  resolved "https://registry.yarnpkg.com/dhtmlx-gantt/-/dhtmlx-gantt-9.0.2.tgz#8c1b227bb24c970086d58903002dc46ba4efa623"
+  integrity sha512-5wNpvhMqcsRZw0CkLyMqPSW+yWNay6mu8nVq5TVSibFsE/mhFp5ZJKxkVfDcibiemEuuIduVcyRWjs0gZ0fa9w==
+
 didyoumean@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/didyoumean/-/didyoumean-1.2.2.tgz#989346ffe9e839b4555ecf5666edea0d3e8ad037"

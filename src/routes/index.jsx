@@ -65,6 +65,8 @@ const Notifications = lazy(() => import("../pages/notifications"));
 import ProjectOverview from "../pages/Project/ProjectOverview";
 import ProjectsLocation from "../pages/ProjectsLocation";
 
+import Gantty from "../pages/GanttChart/index";
+
 const authProtectedRoutes = [
   { path: "/dash", components: <Dashboardcard /> },
 
@@ -114,6 +116,7 @@ const authProtectedRoutes = [
   { path: "/project_payment_list", component: <ProjectPaymentList /> },
   { path: "/project_overview", component: <ProjectOverview /> },
   { path: "/projects_location", component: <ProjectsLocation /> },
+ 
   //   // this route should be at the end of all other routes
   //   // eslint-disable-next-line react/display-name
   { path: "/", exact: true, component: <Navigate to="/dashboard" /> },
@@ -124,6 +127,7 @@ const publicRoutes = [
   { path: "/login", component: <Login /> },
   { path: "/forgot-password", component: <ForgetPwd /> },
   { path: "/register", component: <Register /> },
+  {path : "/gantt",component: <Gantty/>},
   { path: "/Unauthorized", components: <Unauthorized /> },
 ];
 

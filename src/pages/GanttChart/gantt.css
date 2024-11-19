@@ -1,0 +1,45 @@
+/* Fully color task bars based on priority */
+.task-color-1 .gantt_task_content {
+    background-color: #ff9999 !important; /* Priority 1 */
+  }
+  
+  .task-color-2 .gantt_task_content {
+    background-color: #99ccff !important; /* Priority 2 */
+  }
+  
+  /* Add icons to the grid */
+  .gantt-grid-row .gantt_grid_wbs {
+    padding-right: 20px;
+  }
+  
+  .gantt_grid_wbs::after {
+    content: "✎"; /* Edit icon */
+    font-size: 16px;
+    margin-left: 5px;
+    cursor: pointer;
+  }
+  .gantt_close_btn {
+    background-color: #d3d3d3; /* Light gray for Close button */
+    color: #333; /* Text color */
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    border-radius: 4px;
+  }
+  .gantt_action {
+    margin: 0 5px;
+    cursor: pointer;
+    color: #007bff;
+  }
+  .gantt_action:hover {
+    color: #0056b3;
+  }
+  .gantt_add_task {
+    cursor: pointer;
+    color: #007bff;
+    margin-left: 5px;
+    font-weight: bold;
+  }
+  .gantt_add_task:hover {
+    color: #0056b3;
+  }
+  

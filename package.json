@@ -38,6 +38,7 @@
     "bootstrap": "5.3.2",
     "chart.js": "4.4.1",
     "classnames": "^2.3.2",
+    "dhtmlx-gantt": "^9.0.2",
     "draft-js": "^0.11.7",
     "echarts": "5.4.3",
     "echarts-for-react": "^3.0.1",
