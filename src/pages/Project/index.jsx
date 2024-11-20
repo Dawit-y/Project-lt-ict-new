@@ -66,6 +66,7 @@ import {
 } from "reactstrap";
 import { ToastContainer } from "react-toastify";
 import { formatDate } from "../../utils/commonMethods";
+import PivotTableComponent from "../PivotTableComponent";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -733,7 +734,9 @@ const ProjectModel = () => {
   const clearFilter = () => {
     gridRef.current.api.setRowData(showSearchResults ? results : data);
   };
-
+  // const PivotTableData = JSON.stringify(data);
+  // console.log(data);
+  // console.log(typeof data); // Output: "number"
   return (
     <React.Fragment>
       <ProjectModal
@@ -752,56 +755,60 @@ const ProjectModel = () => {
           {isLoading || searchLoading ? (
             <Spinners setLoading={setLoading} />
           ) : (
-            <div
-              className="ag-theme-alpine"
-              style={{ height: "100%", width: "100%" }}
-            >
-              {/* Row for search input and buttons */}
-              <Row className="mb-3">
-                <Col sm="12" md="6">
-                  {/* Search Input for  Filter */}
-                  <Input
-                    type="text"
-                    placeholder="Search..."
-                    onChange={(e) => setQuickFilterText(e.target.value)}
-                    className="mb-2"
-                  />
-                </Col>
-                <Col sm="12" md="6" className="text-md-end">
-                  <Button
-                    color="primary"
-                    className="me-2"
-                    onClick={filterMarked}
-                  >
-                    Filter Marked
-                  </Button>
-                  <Button
-                    color="secondary"
-                    className="me-2"
-                    onClick={clearFilter}
-                  >
-                    Clear Filter
-                  </Button>
-                  <Button color="success" onClick={handleProjectClicks}>
-                    Add New
-                  </Button>
-                </Col>
-              </Row>
+            <>
+              <div
+                className="ag-theme-alpine mb-5"
+                style={{ height: "100%", width: "100%" }}
+              >
+                {/* Row for search input and buttons */}
+                <Row className="mb-3">
+                  <Col sm="12" md="6">
+                    {/* Search Input for  Filter */}
+                    <Input
+                      type="text"
+                      placeholder="Search..."
+                      onChange={(e) => setQuickFilterText(e.target.value)}
+                      className="mb-2"
+                    />
+                  </Col>
+                  <Col sm="12" md="6" className="text-md-end">
+                    <Button
+                      color="primary"
+                      className="me-2"
+                      onClick={filterMarked}
+                    >
+                      Filter Marked
+                    </Button>
+                    <Button
+                      color="secondary"
+                      className="me-2"
+                      onClick={clearFilter}
+                    >
+                      Clear Filter
+                    </Button>
+                    <Button color="success" onClick={handleProjectClicks}>
+                      Add New
+                    </Button>
+                  </Col>
+                </Row>
 
-              {/* AG Grid */}
-              <div style={{ height: "400px" }}>
-                <AgGridReact
-                  ref={gridRef}
-                  rowData={showSearchResults ? results : data}
-                  columnDefs={columnDefs}
-                  pagination={true}
-                  paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                  paginationPageSize={10}
-                  quickFilterText={quickFilterText}
-                  onSelectionChanged={onSelectionChanged}
-                />
+                {/* AG Grid */}
+                <div style={{ height: "400px" }}>
+                  <AgGridReact
+                    ref={gridRef}
+                    rowData={showSearchResults ? results : data}
+                    columnDefs={columnDefs}
+                    pagination={true}
+                    paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+                    paginationPageSize={10}
+                    quickFilterText={quickFilterText}
+                    onSelectionChanged={onSelectionChanged}
+                  />
+                </div>
               </div>
-            </div>
+
+              <PivotTableComponent data={data} />
+            </>
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">

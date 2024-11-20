@@ -3201,12 +3201,12 @@
   dependencies:
     "@tanstack/query-persist-client-core" "5.60.5"
 
-"@tanstack/react-query@^5.60.5":
-  version "5.60.5"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.60.5.tgz#3194c390f7eff20542b321c3042880dc3f1a81e2"
-  integrity sha512-M77bOsPwj1wYE56gk7iJvxGAr4IC12NWdIDhT+Eo8ldkWRHMvIR8I/rufIvT1OXoV/bl7EECwuRuMlxxWtvW2Q==
+"@tanstack/react-query@^5.60.6":
+  version "5.60.6"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.60.6.tgz#c53b2520297e67352d12ac0e3ec9f6c6e61c6e4a"
+  integrity sha512-FUzSDaiPkuZCmuGqrixfRRXJV9u+nrUh9lAlA5Q3ZFrOw1Js1VeBfxi1NIcJO3ZWJdKceBqKeBJdNcWStCYZnw==
   dependencies:
-    "@tanstack/query-core" "5.60.5"
+    "@tanstack/query-core" "5.60.6"
 
 "@tanstack/react-table@^8.10.7":
   version "8.20.5"
@@ -6581,6 +6581,11 @@ detect-port-alt@^1.1.6:
     address "^1.0.1"
     debug "^2.6.0"
 
+dhtmlx-gantt@^9.0.2:
+  version "9.0.2"
+  resolved "https://registry.yarnpkg.com/dhtmlx-gantt/-/dhtmlx-gantt-9.0.2.tgz#8c1b227bb24c970086d58903002dc46ba4efa623"
+  integrity sha512-5wNpvhMqcsRZw0CkLyMqPSW+yWNay6mu8nVq5TVSibFsE/mhFp5ZJKxkVfDcibiemEuuIduVcyRWjs0gZ0fa9w==
+
 didyoumean@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/didyoumean/-/didyoumean-1.2.2.tgz#989346ffe9e839b4555ecf5666edea0d3e8ad037"
@@ -8479,6 +8484,13 @@ immer@^9.0.7:
   resolved "https://registry.yarnpkg.com/immer/-/immer-9.0.21.tgz#1e025ea31a40f24fb064f1fef23e931496330176"
   integrity sha512-bc4NBHqOqSfRW7POMkHd51LvClaeMXpm8dx0e8oE2GORbq5aRK7Bxl4FyzVLdGtLmvLKL7BTDBG5ACQm4HWjTA==
 
+immutability-helper@^2.3.1:
+  version "2.9.1"
+  resolved "https://registry.yarnpkg.com/immutability-helper/-/immutability-helper-2.9.1.tgz#71c423ba387e67b6c6ceba0650572f2a2a6727df"
+  integrity sha512-r/RmRG8xO06s/k+PIaif2r5rGc3j4Yhc01jSBfwPCXDLYZwp/yxralI37Df1mwmuzcCsen/E/ITKcTEvc1PQmQ==
+  dependencies:
+    invariant "^2.2.0"
+
 immutable@^4.0.0:
   version "4.3.7"
   resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.3.7.tgz#c70145fc90d89fb02021e65c84eb0226e4e5a381"
@@ -8557,7 +8569,7 @@ internal-slot@^1.0.4, internal-slot@^1.0.7:
   resolved "https://registry.yarnpkg.com/internmap/-/internmap-2.0.3.tgz#6685f23755e43c524e251d29cbc97248e3061009"
   integrity sha512-5Hh7Y1wQbvY5ooGgPbDaL5iYLAPzMTUrjMulskHLH6wnv/A+1q5rgEaiuqEjB+oxGXIVZs1FF+R/KPN3ZSQYYg==
 
-invariant@^2.2.1, invariant@^2.2.2, invariant@^2.2.4:
+invariant@^2.2.0, invariant@^2.2.1, invariant@^2.2.2, invariant@^2.2.4:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.4.tgz#610f3c92c9359ce1db616e538008d23ff35158e6"
   integrity sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
@@ -10232,7 +10244,7 @@ minizlib@^2.0.0, minizlib@^2.1.1, minizlib@^2.1.2:
     minipass "^3.0.0"
     yallist "^4.0.0"
 
-mkdirp@^0.5.1, mkdirp@~0.5.1:
+mkdirp@^0.5.1, mkdirp@~0.5.0, mkdirp@~0.5.1:
   version "0.5.6"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.6.tgz#7def03d2432dcae4ba1d611445c48396062255f6"
   integrity sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==
@@ -10867,6 +10879,13 @@ pkg-up@^3.1.0:
   integrity sha512-nDywThFk1i4BQK4twPQ6TA4RT8bDY96yeuCVBWL3ePARCiEKDRSrNGbFIgUJpLp+XeIR65v8ra7WuJOFUBtkMA==
   dependencies:
     find-up "^3.0.0"
+
+plotly@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/plotly/-/plotly-1.0.6.tgz#b2672c3df88333625bdf684982d0e3f6521d7aaa"
+  integrity sha512-9DoPWfLJWxqXg6omu1Oj7qkvyOce0Nv+X+2SOoI9lG9mbvA7S/qGVHypwrGMV3r53ruW1Fl1A9a7ZIPt22FrpA==
+  dependencies:
+    mkdirp "~0.5.0"
 
 possible-typed-array-names@^1.0.0:
   version "1.0.0"
@@ -11517,7 +11536,7 @@ prompts@^2.0.1, prompts@^2.4.2:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@>=15.0.0, prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -11781,6 +11800,14 @@ react-drag-listview@^2.0.0:
     babel-runtime "^6.26.0"
     prop-types "^15.5.8"
 
+react-draggable@^3.0.3:
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/react-draggable/-/react-draggable-3.3.2.tgz#966ef1d90f2387af3c2d8bd3516f601ea42ca359"
+  integrity sha512-oaz8a6enjbPtx5qb0oDWxtDNuybOylvto1QLydsXgKmwT7e3GXC2eMVDwEMIUYJIFqVG72XpOv673UuuAq6LhA==
+  dependencies:
+    classnames "^2.2.5"
+    prop-types "^15.6.0"
+
 react-dropzone@^14.2.3:
   version "14.2.3"
   resolved "https://registry.yarnpkg.com/react-dropzone/-/react-dropzone-14.2.3.tgz#0acab68308fda2d54d1273a1e626264e13d4e84b"
@@ -11964,6 +11991,17 @@ react-perfect-scrollbar@^1.5.8:
     perfect-scrollbar "^1.5.0"
     prop-types "^15.6.1"
 
+react-pivottable@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/react-pivottable/-/react-pivottable-0.11.0.tgz#2ac9a28db6bdcefdb7bdeeb1ed067df229bb9dd8"
+  integrity sha512-hFU10XYL28NWVRnm+RRyHrzsAn/xIJzPgwPebUE2Hx5JZQl/Zxty3WUL/5cAcdK4AmTb9FQBRopLKLwuiI6VlA==
+  dependencies:
+    immutability-helper "^2.3.1"
+    prop-types "^15.5.10"
+    react-draggable "^3.0.3"
+    react-sortablejs "^1.3.4"
+    sortablejs "^1.6.1"
+
 react-popper@^2.2.4, react-popper@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/react-popper/-/react-popper-2.3.0.tgz#17891c620e1320dce318bad9fede46a5f71c70ba"
@@ -12140,6 +12178,13 @@ react-smooth@^2.0.5:
   dependencies:
     fast-equals "^5.0.0"
     react-transition-group "2.9.0"
+
+react-sortablejs@^1.3.4:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/react-sortablejs/-/react-sortablejs-1.5.1.tgz#ba05a554548cf9733cc2d5411ece9b97f911b63e"
+  integrity sha512-bKIc1UVhjZt55Nb6WZFxZ8Jwyngg8CTt+w+iG1pA5k9LQsg1J0X6nLppHatSSDZDECtRZKp2z47tmmhPRJNj4g==
+  dependencies:
+    prop-types ">=15.0.0"
 
 react-sparklines@^1.7.0:
   version "1.7.0"
@@ -13081,6 +13126,11 @@ socks@^2.6.2:
   dependencies:
     ip-address "^9.0.5"
     smart-buffer "^4.2.0"
+
+sortablejs@^1.6.1:
+  version "1.15.3"
+  resolved "https://registry.yarnpkg.com/sortablejs/-/sortablejs-1.15.3.tgz#033668db5ebfb11167d1249ab88e748f27959e29"
+  integrity sha512-zdK3/kwwAK1cJgy1rwl1YtNTbRmc8qW/+vgXf75A7NHag5of4pyI6uK86ktmQETyWRH7IGaE73uZOOBcGxgqZg==
 
 source-list-map@^2.0.0, source-list-map@^2.0.1:
   version "2.0.1"
