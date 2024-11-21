@@ -16,6 +16,7 @@ import CascadingDropdowns from "../../components/Common/CascadingDropdowns1";
 
 import {
   useFetchDepartments,
+  useSearchDepartments,
   useAddDepartment,
   useDeleteDepartment,
   useUpdateDepartment,
@@ -42,6 +43,7 @@ import {
 import Select from "react-select";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AdvancedSearch from "../../components/Common/AdvancedSearch";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -61,10 +63,16 @@ const DepartmentModel = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [department, setDepartment] = useState(null);
 
+  const [searchResults, setSearchResults] = useState(null);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [searcherror, setSearchError] = useState(null);
+  const [showSearchResult, setShowSearchResult] = useState(false);
+
   const { data, isLoading, error, isError } = useFetchDepartments();
   if (isError) {
     console.log("fethc dep error", error);
   }
+
   const addDepartment = useAddDepartment();
   const updateDepartment = useUpdateDepartment();
   const deleteDepartment = useDeleteDepartment();
@@ -177,6 +185,7 @@ const DepartmentModel = () => {
       }
     },
   });
+
   const statusOptions = [
     { label: "Active", value: 1 },
     { label: "Inactive", value: 0 },
@@ -264,6 +273,12 @@ const DepartmentModel = () => {
     setIsEdit(false);
     setDepartment("");
     toggle();
+  };
+
+  const handleSearchResults = ({ data, error }) => {
+    setSearchResults(data);
+    setSearchError(error);
+    setShowSearchResult(true);
   };
 
   const columns = useMemo(() => {
@@ -474,14 +489,6 @@ const DepartmentModel = () => {
     return baseColumns;
   }, [handleDepartmentClick, toggleViewModal, onClickDelete]);
 
-  const project_status = [
-    { label: "select Status name", value: "" },
-    { label: "Active", value: 1 },
-    { label: "Inactive", value: 0 },
-  ];
-
-  const dropdawntotal = [project_status];
-
   return (
     <React.Fragment>
       <DepartmentModal
@@ -500,7 +507,35 @@ const DepartmentModel = () => {
             title={t("department")}
             breadcrumbItem={t("department")}
           />
-          {isLoading ? (
+          <AdvancedSearch
+            searchHook={useSearchDepartments}
+            textSearchKeys={["dep_name_am", "dep_name_en", "dep_name_or"]}
+            dropdownSearchKeys={[
+              {
+                key: "example",
+                options: [
+                  { value: "Freelance", label: "Example1" },
+                  { value: "Full Time", label: "Example2" },
+                  { value: "Part Time", label: "Example3" },
+                  { value: "Internship", label: "Example4" },
+                ],
+              },
+            ]}
+            checkboxSearchKeys={[
+              {
+                key: "example1",
+                options: [
+                  { value: "Engineering", label: "Example1" },
+                  { value: "Science", label: "Example2" },
+                ],
+              },
+            ]}
+            onSearchResult={handleSearchResults}
+            setIsSearchLoading={setIsSearchLoading}
+            setSearchResults={setSearchResults}
+            setShowSearchResult={setShowSearchResult}
+          />
+          {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
             <Row>
@@ -509,7 +544,11 @@ const DepartmentModel = () => {
                   <CardBody>
                     <TableContainer
                       columns={columns}
-                      data={data?.data}
+                      data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
                       isGlobalFilter={true}
                       isAddButton={true}
                       isCustomPageSize={true}

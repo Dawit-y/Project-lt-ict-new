@@ -20,6 +20,17 @@ export const useFetchDepartments = () => {
   });
 };
 
+//search departments
+export const useSearchDepartments = (searchParams = {}) => {
+  return useQuery({
+    queryKey: [...DEPARTMENT_QUERY_KEY, searchParams],
+    queryFn: () => getDepartment(searchParams),
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+    enabled: false,
+  });
+};
+
 // Add Department
 export const useAddDepartment = () => {
   const queryClient = useQueryClient();
