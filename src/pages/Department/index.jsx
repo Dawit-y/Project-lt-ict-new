@@ -69,9 +69,6 @@ const DepartmentModel = () => {
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   const { data, isLoading, error, isError } = useFetchDepartments();
-  if (isError) {
-    console.log("fethc dep error", error);
-  }
 
   const addDepartment = useAddDepartment();
   const updateDepartment = useUpdateDepartment();
@@ -257,7 +254,7 @@ const DepartmentModel = () => {
     if (department && department.dep_id) {
       try {
         const id = department.dep_id;
-        await deleteDepartment.mutateAsync({ id });
+        await deleteDepartment.mutateAsync(id);
         toast.success(`Department ${id} deleted successfully`, {
           autoClose: 2000,
         });
@@ -443,7 +440,8 @@ const DepartmentModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {(cellProps.row.original?.is_editable ||
+                cellProps.row.original?.is_role_editable) && (
                 <Link
                   to="#"
                   className="text-success"
@@ -462,7 +460,8 @@ const DepartmentModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {(cellProps.row.original?.is_deletable ||
+                cellProps.row.original?.is_role_deletable) && (
                 <Link
                   to="#"
                   className="text-danger"

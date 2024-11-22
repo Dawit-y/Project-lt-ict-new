@@ -47,9 +47,9 @@ const AdvancedSearch = ({
         const result = await refetch();
         const { data, error } = result;
         onSearchResult({ data, error });
-        setIsSearchLoading(false);
       } catch (error) {
         console.error("Error during search:", error);
+      } finally {
         setIsSearchLoading(false);
       }
     };

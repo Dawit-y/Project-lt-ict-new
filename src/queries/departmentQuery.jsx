@@ -12,7 +12,7 @@ const DEPARTMENT_QUERY_KEY = ["departments"];
 export const useFetchDepartments = () => {
   return useQuery({
     queryKey: DEPARTMENT_QUERY_KEY,
-    queryFn: getDepartment,
+    queryFn: () => getDepartment(),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,
@@ -25,9 +25,11 @@ export const useSearchDepartments = (searchParams = {}) => {
   return useQuery({
     queryKey: [...DEPARTMENT_QUERY_KEY, searchParams],
     queryFn: () => getDepartment(searchParams),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
-    enabled: false,
+    refetchOnMount: false,
+    enabled: searchParams.length > 0,
   });
 };
 
@@ -40,10 +42,13 @@ export const useAddDepartment = () => {
     onSuccess: (newDepartmentResponse) => {
       queryClient.setQueryData(DEPARTMENT_QUERY_KEY, (oldData) => {
         if (!oldData) return;
+        const newDepartment = {
+          ...newDepartmentResponse.data,
+          ...newDepartmentResponse.previledge,
+        };
         return {
           ...oldData,
-          previledge: newDepartmentResponse.previledge,
-          data: [newDepartmentResponse.data, ...oldData.data],
+          data: [newDepartment, ...oldData.data],
         };
       });
     },
