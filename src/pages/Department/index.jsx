@@ -15,7 +15,8 @@ import DeleteModal from "../../components/Common/DeleteModal";
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns1";
 
 import {
-  useDepartments,
+  useFetchDepartments,
+  useSearchDepartments,
   useAddDepartment,
   useDeleteDepartment,
   useUpdateDepartment,
@@ -42,6 +43,7 @@ import {
 import Select from "react-select";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AdvancedSearch from "../../components/Common/AdvancedSearch";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -59,13 +61,15 @@ const DepartmentModel = () => {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-
   const [department, setDepartment] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
-  const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
-  //START FOREIGN CALLS
 
-  const { data, isLoading, error } = useDepartments();
+  const [searchResults, setSearchResults] = useState(null);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [searcherror, setSearchError] = useState(null);
+  const [showSearchResult, setShowSearchResult] = useState(false);
+
+  const { data, isLoading, error, isError } = useFetchDepartments();
+
   const addDepartment = useAddDepartment();
   const updateDepartment = useUpdateDepartment();
   const deleteDepartment = useDeleteDepartment();
@@ -156,7 +160,6 @@ const DepartmentModel = () => {
           is_editable: values.is_editable,
         };
         // update Department
-        console.log("is edit is true", updateDepartmentData);
         handleUpdateDepartment(updateDepartmentData);
 
         // dispatch(onUpdateDepartment(updateDepartmentData));
@@ -174,12 +177,12 @@ const DepartmentModel = () => {
           dep_status: values.dep_status,
         };
         // save new Departments
-        console.log("new dept data", newDepartmentData);
         handleAddDepartment(newDepartmentData);
         validation.resetForm();
       }
     },
   });
+
   const statusOptions = [
     { label: "Active", value: 1 },
     { label: "Inactive", value: 0 },
@@ -190,7 +193,8 @@ const DepartmentModel = () => {
     statusOptions.find((option) => option.value === value) || null;
 
   const handleStatusChange = (selectedOption) => {
-    validation.setFieldValue("dep_status", selectedOption.value);
+    console.log(selectedOption);
+    validation.setFieldValue("dep_status", selectedOption.value, true);
   };
 
   const [transaction, setTransaction] = useState({});
@@ -251,7 +255,7 @@ const DepartmentModel = () => {
     if (department && department.dep_id) {
       try {
         const id = department.dep_id;
-        await deleteDepartment.mutateAsync({ id });
+        await deleteDepartment.mutateAsync(id);
         toast.success(`Department ${id} deleted successfully`, {
           autoClose: 2000,
         });
@@ -268,14 +272,11 @@ const DepartmentModel = () => {
     setDepartment("");
     toggle();
   };
-  const handleSearch = () => {
-    setSearchLoading(true); // Set loading to true when search is initiated// Update filtered data with search results
-    setShowSearchResults(true); // Show search results
-    setSearchLoading(false);
-  };
 
-  const handleClearSearch = () => {
-    setShowSearchResults(false);
+  const handleSearchResults = ({ data, error }) => {
+    setSearchResults(data);
+    setSearchError(error);
+    setShowSearchResult(true);
   };
 
   const columns = useMemo(() => {
@@ -440,7 +441,8 @@ const DepartmentModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {(cellProps.row.original?.is_editable ||
+                cellProps.row.original?.is_role_editable) && (
                 <Link
                   to="#"
                   className="text-success"
@@ -459,7 +461,8 @@ const DepartmentModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {(cellProps.row.original?.is_deletable ||
+                cellProps.row.original?.is_role_deletable) && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -486,14 +489,6 @@ const DepartmentModel = () => {
     return baseColumns;
   }, [handleDepartmentClick, toggleViewModal, onClickDelete]);
 
-  const project_status = [
-    { label: "select Status name", value: "" },
-    { label: "Active", value: 1 },
-    { label: "Inactive", value: 0 },
-  ];
-
-  const dropdawntotal = [project_status];
-
   return (
     <React.Fragment>
       <DepartmentModal
@@ -512,7 +507,35 @@ const DepartmentModel = () => {
             title={t("department")}
             breadcrumbItem={t("department")}
           />
-          {isLoading || searchLoading ? (
+          <AdvancedSearch
+            searchHook={useSearchDepartments}
+            textSearchKeys={["dep_name_am", "dep_name_en", "dep_name_or"]}
+            dropdownSearchKeys={[
+              {
+                key: "example",
+                options: [
+                  { value: "Freelance", label: "Example1" },
+                  { value: "Full Time", label: "Example2" },
+                  { value: "Part Time", label: "Example3" },
+                  { value: "Internship", label: "Example4" },
+                ],
+              },
+            ]}
+            checkboxSearchKeys={[
+              {
+                key: "example1",
+                options: [
+                  { value: "Engineering", label: "Example1" },
+                  { value: "Science", label: "Example2" },
+                ],
+              },
+            ]}
+            onSearchResult={handleSearchResults}
+            setIsSearchLoading={setIsSearchLoading}
+            setSearchResults={setSearchResults}
+            setShowSearchResult={setShowSearchResult}
+          />
+          {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
             <Row>
@@ -521,7 +544,11 @@ const DepartmentModel = () => {
                   <CardBody>
                     <TableContainer
                       columns={columns}
-                      data={showSearchResults ? results : data?.data}
+                      data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
                       isGlobalFilter={true}
                       isAddButton={true}
                       isCustomPageSize={true}
@@ -689,6 +716,7 @@ const DepartmentModel = () => {
                       options={statusOptions}
                       value={getStatusOption(validation.values.dep_status)}
                       onChange={handleStatusChange}
+                      onBlur={validation.handleBlur}
                       className="select2-selection"
                       invalid={
                         validation.touched.dep_status &&

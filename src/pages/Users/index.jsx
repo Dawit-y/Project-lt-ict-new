@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
-import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
@@ -244,7 +242,6 @@ const UsersModel = () => {
   } = useSelector(usersProperties);
 
   useEffect(() => {
-    console.log("update_loading in useEffect", update_loading);
     setModal(false);
   }, [update_loading]);
 
@@ -276,7 +273,6 @@ const UsersModel = () => {
 
 
   useEffect(() => {
-    console.log("update_loading in useEffect", update_loading_department);
     setModal(false);
   }, [update_loading_department]);
 
@@ -660,7 +656,6 @@ const UsersModel = () => {
                   if (isEdit) {
                     onUpdateUsers(validation.values, modalCallback);
                   }else if(isDuplicateModalOpen){
-                    console.log("is duplicated")
                     onAddUsers(validation.values, modalCallback);
                   } 
                   else {

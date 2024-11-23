@@ -10,11 +10,11 @@ const DELETE_DEPARTMENT = "department/deletegrid";
 import accessToken from "./jwt-token-access/accessToken";
 
 // Get Projects
-export const getDepartment = async () => {
+export const getDepartment = async (params = {}) => {
+  const queryString = new URLSearchParams(params).toString();
+  const url = queryString ? `${GET_DEPARTMENT}?${queryString}` : GET_DEPARTMENT;
   try {
-    const response = await post(GET_DEPARTMENT
-  );
-   
+    const response = await post(url);
     return response;
   } catch (error) {
     console.log("Error:", error); // Handle any errors
@@ -25,7 +25,7 @@ export const getDepartment = async () => {
 export const addDepartment = async (objectName) => {
   try {
     const response = await axios.post(
-      `${apiUrl}`+ADD_DEPARTMENT,
+      `${apiUrl}` + ADD_DEPARTMENT,
       objectName,
       {
         headers: {
@@ -41,22 +41,24 @@ export const addDepartment = async (objectName) => {
 };
 // update objectNames
 export const updateDepartment = (objectName) =>
-  post(`${apiUrl}`+UPDATE_DEPARTMENT +`?dep_id=${objectName?.dep_id}`, objectName, {
-    headers: {
-      Authorization: accessToken, // Add accessToken in Authorization header
-    },
-  });
-
-// delete objectNames
-export const deleteDepartment = (objectName) =>
-  // post(`${url.DELETE_ORDER}?dep_id=${order?.dep_id}`);
-  post(`${apiUrl}`+DELETE_DEPARTMENT+`?dep_id=${objectName}`,
+  post(
+    `${apiUrl}` + UPDATE_DEPARTMENT + `?dep_id=${objectName?.dep_id}`,
+    objectName,
     {
       headers: {
         Authorization: accessToken, // Add accessToken in Authorization header
       },
     }
   );
+
+// delete objectNames
+export const deleteDepartment = (objectName) =>
+  // post(`${url.DELETE_ORDER}?dep_id=${order?.dep_id}`);
+  post(`${apiUrl}` + DELETE_DEPARTMENT + `?dep_id=${objectName}`, {
+    headers: {
+      Authorization: accessToken, // Add accessToken in Authorization header
+    },
+  });
 
 export const fetchSearchResults = async (searchTerm, selectedFields) => {
   let queryParams = [];
@@ -83,6 +85,4 @@ export const fetchSearchResults = async (searchTerm, selectedFields) => {
   );
   return response.data.data;
 };
-export {
-  
-};
+export {};
