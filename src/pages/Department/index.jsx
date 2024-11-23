@@ -6,7 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { Spinner } from "reactstrap";
+import { InputGroup, Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
@@ -40,7 +40,6 @@ import {
   Card,
   CardBody,
 } from "reactstrap";
-import Select from "react-select";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
@@ -118,10 +117,10 @@ const DepartmentModel = () => {
       dep_available_at_woreda:
         (department && department.dep_available_at_woreda) || "",
       dep_description: (department && department.dep_description) || "",
-      dep_status: (department && department.dep_status) || "",
+      dep_status: department && department.dep_status,
 
-      is_deletable: (department && department.is_deletable) || 1,
-      is_editable: (department && department.is_editable) || 1,
+      is_deletable: department && department.is_deletable,
+      is_editable: department && department.is_editable,
     },
 
     validationSchema: Yup.object({
@@ -183,20 +182,6 @@ const DepartmentModel = () => {
     },
   });
 
-  const statusOptions = [
-    { label: "Active", value: 1 },
-    { label: "Inactive", value: 0 },
-  ];
-
-  // Helper to find the option matching the initial value
-  const getStatusOption = (value) =>
-    statusOptions.find((option) => option.value === value) || null;
-
-  const handleStatusChange = (selectedOption) => {
-    console.log(selectedOption);
-    validation.setFieldValue("dep_status", selectedOption.value, true);
-  };
-
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
 
@@ -233,7 +218,6 @@ const DepartmentModel = () => {
       dep_available_at_woreda: department.dep_available_at_woreda,
       dep_description: department.dep_description,
       dep_status: department.dep_status,
-
       is_deletable: department.is_deletable,
       is_editable: department.is_editable,
     });
@@ -711,24 +695,31 @@ const DepartmentModel = () => {
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("dep_status")}</Label>
-                    <Select
+                    <Input
                       name="dep_status"
-                      options={statusOptions}
-                      value={getStatusOption(validation.values.dep_status)}
-                      onChange={handleStatusChange}
+                      type="select"
+                      className="form-select"
+                      onChange={(e) => {
+                        validation.setFieldValue(
+                          "dep_status",
+                          Number(e.target.value)
+                        );
+                      }}
                       onBlur={validation.handleBlur}
-                      className="select2-selection"
+                      value={validation.values.dep_status}
                       invalid={
                         validation.touched.dep_status &&
-                        validation.errors.dep_status
-                          ? true
-                          : false
+                        Boolean(validation.errors.dep_status)
                       }
-                    />
-                    {validation.touched.dep_status &&
-                    validation.errors.dep_status ? (
+                    >
+                      <option value={null}>Select status</option>
+                      <option value={1}>{t("Active")}</option>
+                      <option value={0}>{t("Inactive")}</option>
+                    </Input>
+                    {validation.touched.url_status &&
+                    validation.errors.url_status ? (
                       <FormFeedback type="invalid">
-                        {validation.errors.dep_status}
+                        {validation.errors.url_status}
                       </FormFeedback>
                     ) : null}
                   </Col>

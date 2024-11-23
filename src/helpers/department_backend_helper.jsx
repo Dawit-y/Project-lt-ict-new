@@ -17,7 +17,7 @@ export const getDepartment = async (params = {}) => {
     const response = await post(url);
     return response;
   } catch (error) {
-    console.log("Error:", error); // Handle any errors
+    console.log("Error in department:", error); // Handle any errors
   }
 };
 
@@ -35,7 +35,7 @@ export const addDepartment = async (objectName) => {
     );
     return response.data;
   } catch (error) {
-    console.error("Failed to update grid:", error);
+    console.error("Failed to Insert Department:", error);
     throw error;
   }
 };
