@@ -193,7 +193,8 @@ const DepartmentModel = () => {
     statusOptions.find((option) => option.value === value) || null;
 
   const handleStatusChange = (selectedOption) => {
-    validation.setFieldValue("dep_status", selectedOption.value);
+    console.log(selectedOption);
+    validation.setFieldValue("dep_status", selectedOption.value, true);
   };
 
   const [transaction, setTransaction] = useState({});
@@ -715,6 +716,7 @@ const DepartmentModel = () => {
                       options={statusOptions}
                       value={getStatusOption(validation.values.dep_status)}
                       onChange={handleStatusChange}
+                      onBlur={validation.handleBlur}
                       className="select2-selection"
                       invalid={
                         validation.touched.dep_status &&

@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -35,16 +34,9 @@ import {
   Input,
   FormFeedback,
   Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
+  InputGroup,
 } from "reactstrap";
 import { ToastContainer } from "react-toastify";
-
-//Import Flatepicker
-import "flatpickr/dist/themes/material_blue.css";
-import accessToken from "../../helpers/jwt-token-access/accessToken";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 
 const truncateText = (text, maxLength) => {
@@ -69,78 +61,12 @@ const UserRoleModel = (props) => {
   const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
   const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
 
-  const [selectedRoles, setSelectedRoles] = useState("");
-
-  const [dropdawnlable, setDropdawnLable] = useState("");
   const dispatch = useDispatch();
-
-  const handleRolesChange = (e) => {
-    setSelectedRoles(e.target.value);
-    // console.log(e.target);
-    const selectedIndex = e.target.selectedIndex;
-    const selectedOption = e.target.options[selectedIndex];
-    const selectedLabel = selectedOption.text;
-
-    setDropdawnLable(selectedLabel);
-    validation.setFieldValue("url_role_id", e.target.value);
-
-    validation.setFieldValue("url_role_name", selectedLabel);
-  };
-  // validation
-  const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
-    enableReinitialize: true,
-    initialValues: {
-      url_user_id: (userRole && userRole.url_user_id) || "",
-      url_description: (userRole && userRole.url_description) || "",
-      url_status: (userRole && userRole.url_status) || "",
-
-      is_deletable: (userRole && userRole.is_deletable) || 1,
-      is_editable: (userRole && userRole.is_editable) || 1,
-    },
-
-    validationSchema: Yup.object({
-      // url_user_id: Yup.string().required(t("url_user_id")),
-      url_description: Yup.string().required(t("url_description")),
-      url_status: Yup.string().required(t("url_status")),
-    }),
-    validateOnBlur: true,
-    validateOnChange: false,
-    onSubmit: (values) => {
-      if (isEdit) {
-        const updateUserRole = {
-          url_id: userRole ? userRole.url_id : 0,
-          // url_id:userRole.url_id,
-          url_user_id: values.url_user_id,
-          url_description: values.url_description,
-          url_status: values.url_status,
-
-          is_deletable: values.is_deletable,
-          is_editable: values.is_editable,
-        };
-        // update UserRole
-        dispatch(onUpdateUserRole(updateUserRole));
-        validation.resetForm();
-        setDropdawnLable("");
-      } else {
-        const newUserRole = {
-          url_user_id: passedId,
-          url_description: values.url_description,
-          url_status: values.url_status,
-          url_role_id: Number(values.url_role_id),
-        };
-
-        dispatch(onAddUserRole(newUserRole));
-        validation.resetForm();
-      }
-    },
-  });
-  const [transaction, setTransaction] = useState({});
-  const toggleViewModal = () => setModal1(!modal1);
 
   // Fetch UserRole on component mount
   useEffect(() => {
     dispatch(onGetUserRole(passedId));
+    dispatch(onGetRoles());
   }, [dispatch]);
 
   const userRoleProperties = createSelector(
@@ -159,11 +85,63 @@ const UserRoleModel = (props) => {
     update_loading,
   } = useSelector(userRoleProperties);
 
-  // console.log("user role ..", userRole);
+  // validation
+  const validation = useFormik({
+    // enableReinitialize: use this flag when initial values need to be changed
+    enableReinitialize: true,
+    initialValues: {
+      url_user_id: (userRole && userRole.url_user_id) || "",
+      url_role_id: userRole && userRole.url_role_id,
+      url_description: (userRole && userRole.url_description) || "",
+      url_status: userRole && userRole.url_status,
+      is_deletable: (userRole && userRole.is_deletable) || 1,
+      is_editable: (userRole && userRole.is_editable) || 1,
+    },
 
-  useEffect(() => {
-    dispatch(onGetRoles());
-  }, [dispatch]);
+    validationSchema: Yup.object({
+      url_role_id: Yup.number()
+        .required(t("url_role_id"))
+        .test("unique-role-id", t("Already exists"), (value) => {
+          return !data.some((item) => item.url_role_id == value);
+        }),
+      // url_user_id: Yup.string().required(t("url_user_id")),
+      url_description: Yup.string().required(t("url_description")),
+      url_status: Yup.string().required(t("url_status")),
+    }),
+    validateOnBlur: true,
+    validateOnChange: false,
+    onSubmit: (values) => {
+      if (isEdit) {
+        const updateUserRole = {
+          url_id: userRole ? userRole.url_id : 0,
+          url_role_id: values.url_role_id,
+          url_user_id: values.url_user_id,
+          url_description: values.url_description,
+          url_status: values.url_status,
+
+          is_deletable: values.is_deletable,
+          is_editable: values.is_editable,
+        };
+        // update UserRole
+        dispatch(onUpdateUserRole(updateUserRole));
+        validation.resetForm();
+      } else {
+        const newUserRole = {
+          url_user_id: passedId,
+          url_description: values.url_description,
+          url_status: values.url_status,
+          url_role_id: Number(values.url_role_id),
+        };
+
+        dispatch(onAddUserRole(newUserRole));
+        validation.resetForm();
+      }
+    },
+  });
+  const [transaction, setTransaction] = useState({});
+  const toggleViewModal = () => setModal1(!modal1);
+
+  // console.log("user role ..", userRole);
 
   const rolesProperties = createSelector(
     (state) => state.RolesR, // this is geting from  reducer
@@ -181,15 +159,14 @@ const UserRoleModel = (props) => {
     update_loading: roleupdate_loading,
   } = useSelector(rolesProperties);
 
-  
+  const roleDataMap = useMemo(() => {
+    return roledata.reduce((acc, role) => {
+      acc[role.rol_id] = role.rol_name;
+      return acc;
+    }, {});
+  }, [roledata]);
 
   useEffect(() => {
-    console.log("update_loading in useEffect", roleupdate_loading);
-    setModal(false);
-  }, [roleupdate_loading]);
-
-  useEffect(() => {
-    console.log("update_loading in useEffect", update_loading);
     setModal(false);
   }, [update_loading]);
 
@@ -226,14 +203,13 @@ const UserRoleModel = (props) => {
 
   const handleUserRoleClick = (arg) => {
     const userRole = arg;
-    // console.log("handleUserRoleClick", userRole);
     setUserRole({
       url_id: userRole.url_id,
+      url_role_id: userRole.url_role_id,
       url_user_id: userRole.url_user_id,
       url_description: userRole.url_description,
-      url_user_name: userRole.url_role_name,
+      url_role_name: userRole.rol_name,
       url_status: userRole.url_status,
-
       is_deletable: userRole.is_deletable,
       is_editable: userRole.is_editable,
     });
@@ -254,7 +230,7 @@ const UserRoleModel = (props) => {
   const handleDeleteUserRole = () => {
     if (userRole && userRole.url_id) {
       dispatch(onDeleteUserRole(userRole.url_id));
-      dispatch(onGetUserRole(passedId))
+      dispatch(onGetUserRole(passedId));
       setDeleteModal(false);
     }
   };
@@ -281,12 +257,7 @@ const UserRoleModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rol_name, 30) ||
-                dropdawnlable}
-            </span>
-          );
+          return <span>{roleDataMap[cellProps.row.original.url_role_id]}</span>;
         },
       },
       {
@@ -391,23 +362,8 @@ const UserRoleModel = (props) => {
     return baseColumns;
   }, [handleUserRoleClick, toggleViewModal, onClickDelete]);
 
-  const project_status = [
-    { label: "select Status name", value: "" },
-    { label: "Active", value: 1 },
-    { label: "Inactive", value: 0 },
-  ];
-
-  const dropdawntotal = [project_status];
-  // console.log("Transaction data: ", JSON.stringify(transaction, null, 2)); // Pretty print the transaction object
-
   return (
     <React.Fragment>
-      {/* <UserRoleModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      /> */}
-
       <DynamicDetailsModal
         isOpen={modal1}
         toggle={toggleViewModal} // Function to close the modal
@@ -460,26 +416,31 @@ const UserRoleModel = (props) => {
             onSubmit={(e) => {
               e.preventDefault();
               validation.handleSubmit();
-              const modalCallback = () => setModal(false);
-              if (isEdit) {
-                onUpdateUserRole(validation.values, modalCallback);
-              } else {
-                onAddUserRole(validation.values, modalCallback);
-              }
               return false;
             }}
           >
             <Row>
               <Col className="col-md-6 mb-3">
                 <Label>{t("url_role_id")}</Label>
+
                 <Input
                   name="url_role_id"
                   type="select"
                   className="form-select"
-                  onChange={handleRolesChange}
+                  onChange={(e) => {
+                    validation.setFieldValue(
+                      "url_role_id",
+                      Number(e.target.value)
+                    );
+                  }}
                   onBlur={validation.handleBlur}
-                  value={selectedRoles}
+                  value={validation.values.url_role_id}
+                  invalid={
+                    validation.touched.url_role_id &&
+                    Boolean(validation.errors.url_role_id)
+                  }
                 >
+                  <option value={null}>Select Role</option>
                   {roledata.map((option) => (
                     <option key={option.rol_id} value={option.rol_id}>
                       {t(`${option.rol_name}`)}
@@ -532,8 +493,12 @@ const UserRoleModel = (props) => {
                   }}
                   onBlur={validation.handleBlur}
                   value={validation.values.url_status}
+                  invalid={
+                    validation.touched.url_status &&
+                    Boolean(validation.errors.url_status)
+                  }
                 >
-                  <option value={""}>Select status</option>
+                  <option value={null}>Select status</option>
                   <option value={1}>{t("Active")}</option>
                   <option value={0}>{t("Inactive")}</option>
                 </Input>

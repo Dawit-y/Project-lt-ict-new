@@ -11,7 +11,6 @@ const DELETE_USERS = "users/deletegrid";
 export const getUsers = async () => {
   try {
     const response = await post(GET_USERS);
-    console.log("users data ",response)
     return response;
   } catch (error) {
     console.log(error); // Handle any errors
@@ -20,16 +19,12 @@ export const getUsers = async () => {
 // add Projects
 export const addUsers = async (objectName) => {
   try {
-    const response = await axios.post(
-      `${apiUrl}`+ADD_USERS,
-      objectName,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data", // Set content type for image upload
-        },
-      }
-    );
-    
+    const response = await axios.post(`${apiUrl}` + ADD_USERS, objectName, {
+      headers: {
+        "Content-Type": "multipart/form-data", // Set content type for image upload
+      },
+    });
+
     return response.data;
   } catch (error) {
     console.error("Failed to update grid:", error);
@@ -52,20 +47,19 @@ export const updateUsers = async (objectName) => {
       objectName,
       {
         headers: {
-          "Content-Type": "multipart/form-data", 
+          "Content-Type": "multipart/form-data",
         },
       }
-    );    
+    );
     return response.data;
   } catch (error) {
-    
-    throw error; 
+    throw error;
   }
-}
+};
 // delete objectNames
 export const deleteUsers = (objectName) =>
   // post(`${url.DELETE_ORDER}?usr_id=${order?.usr_id}`);
-  post(`${apiUrl}`+DELETE_USERS+`?usr_id=${objectName}`);
+  post(`${apiUrl}` + DELETE_USERS + `?usr_id=${objectName}`);
 
 export const fetchSearchResults = async (searchTerm, selectedFields) => {
   let queryParams = [];
@@ -82,11 +76,7 @@ export const fetchSearchResults = async (searchTerm, selectedFields) => {
     }
   });
   const queryString = queryParams.join("&");
-  const response = await axios.post(
-    `${apiUrl}users/listgrid?${queryString}`
-  );
+  const response = await axios.post(`${apiUrl}users/listgrid?${queryString}`);
   return response.data.data;
 };
-export {
-  
-};
+export {};
