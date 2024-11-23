@@ -294,6 +294,12 @@ const PermissionModel = (props) => {
     setShowSearchResults(false);
   };
 
+  const optionsMap = useMemo(() => {
+    return {
+      1: "Yes",
+      2: "No",
+    };
+  }, []);
   const columns = useMemo(() => {
     const baseColumns = [
       {
@@ -320,7 +326,9 @@ const PermissionModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return <span>{cellProps.row.original.pem_enabled}</span>;
+          return (
+            <span>{optionsMap[cellProps.row.original.pem_enabled] || "-"}</span>
+          );
         },
       },
       {
@@ -329,7 +337,9 @@ const PermissionModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return <span>{cellProps.row.original.pem_edit}</span>;
+          return (
+            <span>{optionsMap[cellProps.row.original.pem_edit] || "-"}</span>
+          );
         },
       },
       {
@@ -338,7 +348,9 @@ const PermissionModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return <span>{cellProps.row.original.pem_insert}</span>;
+          return (
+            <span>{optionsMap[cellProps.row.original.pem_insert] || "-"}</span>
+          );
         },
       },
       {
@@ -347,7 +359,9 @@ const PermissionModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return <span>{cellProps.row.original.pem_view}</span>;
+          return (
+            <span>{optionsMap[cellProps.row.original.pem_view] || "-"}</span>
+          );
         },
       },
       {
@@ -356,7 +370,9 @@ const PermissionModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return <span>{cellProps.row.original.pem_delete}</span>;
+          return (
+            <span>{optionsMap[cellProps.row.original.pem_delete] || "-"}</span>
+          );
         },
       },
       {
@@ -365,7 +381,9 @@ const PermissionModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return <span>{cellProps.row.original.pem_show}</span>;
+          return (
+            <span>{optionsMap[cellProps.row.original.pem_show] || "-"}</span>
+          );
         },
       },
       {
@@ -374,7 +392,9 @@ const PermissionModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return <span>{cellProps.row.original.pem_search}</span>;
+          return (
+            <span>{optionsMap[cellProps.row.original.pem_search] || "-"}</span>
+          );
         },
       },
       {
