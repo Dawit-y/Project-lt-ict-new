@@ -1,3 +1,4 @@
+import {useAccessToken} from "../../helpers/jwt-token-access/accessToken";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -17,6 +18,7 @@ import {
 } from "../../constants/constantFile";
 
 const Sidebar = (props) => {
+  const accessToken = useAccessToken();
   const [sidedata, setSidedata] = useState([]);
 
   // Cache key for storing sidedata in localStorage
@@ -24,7 +26,9 @@ const Sidebar = (props) => {
 
   // Fetch sidedata from API
   useEffect(() => {
+
     const fetchSidedata = async () => {
+
       try {
         // Check if cached sidedata exists in localStorage
         const cachedData = localStorage.getItem(SIDEDATA_CACHE_KEY);
@@ -39,8 +43,11 @@ const Sidebar = (props) => {
             {
               method: "POST",
               headers: {
-                "Content-Type": "application/json",
-              },
+                Authorization: storedUser.authorization.type+' '+storedUser.authorization.token
+    //}
+                //Authorization: accessToken, // Add accessToken in Authorization header
+          //Authorization: accessToken, // Add accessToken in Authorization header
+        },
               body: JSON.stringify({}),
             }
           );

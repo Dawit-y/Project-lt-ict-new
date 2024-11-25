@@ -39,7 +39,7 @@ const LanguageDropdown = () => {
         <DropdownToggle className="btn header-item " tag="button">
           <img
             src={get(languages, `${selectedLang}.flag`)}
-            alt="Skote"
+            alt="pms"
             height="16"
             className="me-1"
           />

@@ -318,12 +318,6 @@ const Header = props => {
                 setsocialDrp(!socialDrp);
               }}
             >
-              <DropdownToggle
-                className="btn header-item noti-icon "
-                tag="button"
-              >
-                <i className="bx bx-customize" />
-              </DropdownToggle>
               <DropdownMenu className="dropdown-menu-lg dropdown-menu-end">
                 <div className="px-lg-2">
                   <Row className="no-gutters">

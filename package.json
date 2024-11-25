@@ -32,6 +32,7 @@
     "@tinymce/tinymce-react": "^4.3.2",
     "@vis.gl/react-google-maps": "^1.3.0",
     "@vtaits/react-color-picker": "1.0.2",
+    "ag-grid-enterprise": "^32.3.3",
     "ag-grid-react": "^32.2.0",
     "apexcharts": "3.44.2",
     "axios": "1.6.2",

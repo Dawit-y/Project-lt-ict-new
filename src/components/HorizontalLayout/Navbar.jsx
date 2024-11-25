@@ -4,13 +4,13 @@ import { Row, Col, Collapse } from "reactstrap";
 import { Link } from "react-router-dom";
 import withRouter from "../Common/withRouter";
 import classname from "classnames";
-
 //i18n
 import { withTranslation } from "react-i18next";
 
 import { connect } from "react-redux";
 
 const Navbar = (props) => {
+  
   const [sidedata, setSidedata] = useState([]);
 
   // Cache key for storing sidedata in localStorage
@@ -28,12 +28,14 @@ const Navbar = (props) => {
           setSidedata(JSON.parse(cachedData));
         } else {
           // Fetch data from API if not cached
+          const storedUser = JSON.parse(localStorage.getItem('authUser'));
           const response = await fetch(
             `${import.meta.env.VITE_BASE_API_URL}menus`,
             {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                Authorization: storedUser.authorization.type+' '+storedUser.authorization.token
               },
               body: JSON.stringify({}),
             }

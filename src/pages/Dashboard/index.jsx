@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios'; // Axios for API requests
 import DashboardComponent from "./Dashboardcomp";
-import accessToken from "../../helpers/jwt-token-access/accessToken";
+import {useAccessToken} from "../../helpers/jwt-token-access/accessToken";
 import {getProjectDashboard} from "../../helpers/Project_Backend";
 //i18n
 import { withTranslation } from "react-i18next";
 
 
 const Dashboard = () => {
+   const accessToken = useAccessToken();
   const role="Deputy";
-
-
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

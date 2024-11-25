@@ -14,10 +14,12 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 
+import 'ag-grid-enterprise';
+import "ag-grid-community/styles/ag-grid.css";
+//import "ag-grid-community/styles/ag-theme-alpine.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "ag-grid-community/styles/ag-theme-quartz.css";
 import {
   getProject as onGetProject,
   addProject as onAddProject,
@@ -752,7 +754,7 @@ const ProjectModel = () => {
             <Spinners setLoading={setLoading} />
           ) : (
             <div
-              className="ag-theme-alpine mb-5"
+              className="ag-theme-quartz mb-5"
               style={{ height: "100%", width: "100%" }}
             >
               {/* Row for search input and buttons */}
@@ -798,6 +800,8 @@ const ProjectModel = () => {
                   paginationPageSize={10}
                   quickFilterText={quickFilterText}
                   onSelectionChanged={onSelectionChanged}
+                 
+         
                 />
               </div>
             </div>

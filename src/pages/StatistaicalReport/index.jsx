@@ -74,8 +74,8 @@ const StatisticalReport = () => {
   };
 
   return (
-    <Container className="page-content">
-      <Row className="mb-4">
+    <div className="page-content">
+        <div className="container-fluid">
         <Col xs="12" sm="6" lg="4">
           <FormGroup>
             <Label for="api-endpoints">Get Statistical Report</Label>
@@ -97,7 +97,6 @@ const StatisticalReport = () => {
             </Input>
           </FormGroup>
         </Col>
-      </Row>
 
       <Col xs="12">
         {loading ? (
@@ -126,7 +125,8 @@ const StatisticalReport = () => {
           )
         )}
       </Col>
-    </Container>
+    </div>
+    </div>
   );
 };
 
