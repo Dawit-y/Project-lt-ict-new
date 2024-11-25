@@ -598,5 +598,50 @@
   "address_structure": "አድራሻ መዋቅር",
   "user_administration": "ተጠቃሚ አስተዳደር",
   "look_up": "መፈለግ",
-  "Already exists": "አስቀድሞ አለ"
+  "Already exists": "አስቀድሞ አለ",
+
+
+  "Table": "ሰንጠረዥ",
+  "Table Heatmap": "ሰንጠረዥ የሙቀት ካርታ",
+  "Table Col Heatmap": "ሰንጠረዥ አሞሌ የሙቀት ካርታ",
+  "Table Row Heatmap": "ሰንጠረዥ ረድፍ የሙቀት ካርታ",
+  "Exportable TSV": "ወደ TSV ሊወጣ የሚችል",
+  "Grouped Column Chart": "የተደባበሩ አሞሌ ገበታ",
+  "Stacked Column Chart": "የተደበቁ አሞሌ ገበታ",
+  "Grouped Bar Chart": "የተደባበሩ አምባ ገበታ",
+  "Stacked Bar Chart": "የተደበቁ አምባ ገበታ",
+  "Line Chart": "መስመር ገበታ",
+  "Dot Chart": "ነጥብ ገበታ",
+  "Area Chart": "አካባቢ ገበታ",
+  "Scatter Chart": "ተበትኖ ያለ ገበታ",
+  "Multiple Pie Chart": "በርካታ ፓይ ገበታ",
+
+
+  "Count": "ቊጠር",
+    "Count Unique Values": "ብቸኛ ዋጋዎችን ቊጠር",
+    "List Unique Values": "ብቸኛ ዋጋዎችን ዝርዝር አድርግ",
+    "Sum": "ድምር",
+    "Integer Sum": "ጠቅላላ ድምር",
+    "Average": "አማካይ",
+    "Median": "መካከለኛ",
+    "Sample Variance": "የናሙና ልዩነት",
+    "Sample Standard Deviation": "የናሙና መደበኛ እርቀት",
+    "Minimum": "አነስተኛ",
+    "Maximum": "ከፍተኛ",
+    "First": "መጀመሪያ",
+    "Last": "መጨረሻ",
+    "Sum over Sum": "ድምር በላይ ድምር",
+    "Sum as Fraction of Total": "ድምር እንደ አጠቃላይ ክፍል",
+    "Sum as Fraction of Rows": "ድምር እንደ ተረት ክፍል",
+    "Sum as Fraction of Columns": "ድምር እንደ አሞሌ ክፍል",
+    "Count as Fraction of Total": "ቊጠር እንደ አጠቃላይ ክፍል",
+    "Count as Fraction of Rows": "ቊጠር እንደ ተረት ክፍል",
+    "Count as Fraction of Columns": "ቊጠር እንደ አሞሌ ክፍል",
+
+
+
+    "Get Statistical Report": "እቅፍ መረጃዎችን ያግኙ",
+    "Select To Get The Report": "ሪፖርትን ለማግኘት ይምረጡ",
+    "Report": "ሪፖርት",
+"Statistical Report": "የስርአት ሪፖርት"
 }
