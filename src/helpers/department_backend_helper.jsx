@@ -7,7 +7,7 @@ const GET_DEPARTMENT = "department/listgrid";
 const ADD_DEPARTMENT = "department/insertgrid";
 const UPDATE_DEPARTMENT = "department/updategrid";
 const DELETE_DEPARTMENT = "department/deletegrid";
-import accessToken from "./jwt-token-access/accessToken";
+import {useAccessToken} from "./jwt-token-access/accessToken";
 
 // Get Projects
 export const getDepartment = async (params = {}) => {
@@ -23,6 +23,7 @@ export const getDepartment = async (params = {}) => {
 
 // add Projects
 export const addDepartment = async (objectName) => {
+  const accessToken = useAccessToken();
   try {
     const response = await axios.post(
       `${apiUrl}` + ADD_DEPARTMENT,
@@ -40,7 +41,8 @@ export const addDepartment = async (objectName) => {
   }
 };
 // update objectNames
-export const updateDepartment = (objectName) =>
+export const updateDepartment = (objectName) =>{
+   const accessToken = useAccessToken();
   post(
     `${apiUrl}` + UPDATE_DEPARTMENT + `?dep_id=${objectName?.dep_id}`,
     objectName,
@@ -49,18 +51,21 @@ export const updateDepartment = (objectName) =>
         Authorization: accessToken, // Add accessToken in Authorization header
       },
     }
-  );
+  )
+};
 
 // delete objectNames
-export const deleteDepartment = (objectName) =>
+export const deleteDepartment = (objectName) =>{
+   const accessToken = useAccessToken();
   // post(`${url.DELETE_ORDER}?dep_id=${order?.dep_id}`);
   post(`${apiUrl}` + DELETE_DEPARTMENT + `?dep_id=${objectName}`, {
     headers: {
       Authorization: accessToken, // Add accessToken in Authorization header
     },
-  });
+  })};
 
 export const fetchSearchResults = async (searchTerm, selectedFields) => {
+   const accessToken = useAccessToken();
   let queryParams = [];
   if (searchTerm && searchTerm.search_en_value) {
     queryParams.push(
@@ -79,7 +84,7 @@ export const fetchSearchResults = async (searchTerm, selectedFields) => {
     `${apiUrl}department/listgrid?${queryString}`,
     {
       headers: {
-        Authorization: accessToken, // Add accessToken in Authorization header
+        //Authorization: accessToken, // Add accessToken in Authorization header
       },
     }
   );

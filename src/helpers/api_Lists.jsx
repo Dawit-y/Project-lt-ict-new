@@ -1,8 +1,7 @@
 import axios from "axios";
-import accessToken from "./jwt-token-access/accessToken";
 
 //pass new generated access token here
-const token = accessToken;
+//const token = accessToken;
 
 //apply base url for axios
 const API_URL = import.meta.env.VITE_BASE_API_URL;
@@ -16,9 +15,14 @@ const axiosApi = axios.create({
 // Add a request interceptor  in order to make befro reuest make sure access toke is 
 axiosApi.interceptors.request.use(
   (config) => {
-    if (accessToken) {
-      config.headers["Authorization"] = accessToken; // Add token directly
+    //const accessToken = useAccessToken();
+    const storedUser = JSON.parse(localStorage.getItem('authUser'));
+    if (storedUser && storedUser.authorization) {
+      config.headers["Authorization"] = storedUser.authorization.type+' '+storedUser.authorization.token;
     }
+   // if (accessToken) {
+      //config.headers["Authorization"] = accessToken; // Add token directly
+    //}
     // console.log("intrcept config",config)
     return config;
   },

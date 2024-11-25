@@ -4,17 +4,19 @@ import TableContainer from "../../components/Common/TableContainer";
 import Pie from "../../Dashboards/Pie";
 import { useTranslation } from "react-i18next";
 import { Col, Row, Card, CardBody } from "reactstrap";
-import accessToken from "../../helpers/jwt-token-access/accessToken";
+import {useAccessToken} from "../../helpers/jwt-token-access/accessToken";
 
 const DashboardComponent = ({ dashboardType, objectName, columnList, endPoint }) => {
+  const accessToken = useAccessToken();
   const { t } = useTranslation();
   const [dashboardData, setDashboardData] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState([]);
   
   const commonHeight = 200; 
-
+ 
   useEffect(() => {
+
     const fetchData = async () => {
       try {
         const response = await axios.post(
@@ -27,8 +29,6 @@ const DashboardComponent = ({ dashboardType, objectName, columnList, endPoint })
           }
         );
         
-        
-
         setTableData(response.data.data);
         if (response.data.data.length > 0) {
           setTotalCount(response.data.data[0].total_count);
