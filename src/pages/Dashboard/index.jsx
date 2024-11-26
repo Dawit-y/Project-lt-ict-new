@@ -44,8 +44,8 @@ const Dashboard = () => {
   if (error) return <p>Error fetching data</p>;
 
   // Find data for the given role
-  const roleData = data?.find((item) => item.role === role);
-
+  //const roleData = data?.find((item) => item.role === role);
+const roleData = data[0];
   if (!roleData) {
     return <p>Role not found</p>;
   }

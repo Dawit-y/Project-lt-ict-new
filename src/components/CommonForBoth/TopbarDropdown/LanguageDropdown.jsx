@@ -54,7 +54,7 @@ const LanguageDropdown = () => {
             >
               <img
                 src={get(languages, `${key}.flag`)}
-                alt="Skote"
+                alt="pms"
                 className="me-1"
                 height="12"
               />

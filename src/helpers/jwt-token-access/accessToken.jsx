@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-
-
 export const useAccessToken = () => {
   const [accessToken, setAccessToken] = useState(null);
   useEffect(() => {

@@ -37,6 +37,7 @@ const Sidebar = (props) => {
           // If cache exists, parse and set it in state
           setSidedata(JSON.parse(cachedData));
         } else {
+          const storedUser = JSON.parse(localStorage.getItem('authUser'));
           // Fetch data from API if not cached
           const response = await fetch(
             `${import.meta.env.VITE_BASE_API_URL}menus`,
