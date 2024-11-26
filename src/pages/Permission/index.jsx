@@ -313,15 +313,6 @@ const PermissionModel = (props) => {
       },
       {
         header: "",
-        accessorKey: "pem_role_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return <span>{cellProps.row.original.pem_role_id}</span>;
-        },
-      },
-      {
-        header: "",
         accessorKey: "pem_enabled",
         enableColumnFilter: false,
         enableSorting: true,
@@ -511,11 +502,8 @@ const PermissionModel = (props) => {
           <Breadcrumbs title={t("roles")} breadcrumbItem={t("permission")} />
           {isLoading || searchLoading ? (
             <Spinners setLoading={setLoading} />
-          ) : (
-            <Row>
-              <Col xs="12">
-                <Card>
-                  <CardBody>
+          ) : (           
+               
                     <TableContainer
                       columns={columns}
                       data={showSearchResults ? results : data}
@@ -532,11 +520,7 @@ const PermissionModel = (props) => {
                       theadClass="table-light"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                    />
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
+                    />           
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">

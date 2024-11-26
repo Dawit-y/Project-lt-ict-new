@@ -65,7 +65,7 @@ const Header = (props) => {
                   <img src={logo} alt="" height="22" />
                 </span>
                 <span className="logo-lg">
-                  <img src={logoDark} alt="" height="17" />
+                  <img src={logoDark} alt="" height="80" />
                 </span>
               </Link>
 
@@ -74,7 +74,7 @@ const Header = (props) => {
                   <img src={logoLightSvg} alt="" height="22" />
                 </span>
                 <span className="logo-lg">
-                  <img src={logoLight} alt="" height="19" />
+                  <img src={logoLight} alt="" />
                 </span>
               </Link>
             </div>

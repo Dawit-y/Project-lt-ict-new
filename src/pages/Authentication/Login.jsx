@@ -36,7 +36,7 @@ import { LOGIN_TITLE , FOOTER_TEXT} from "../../constants/constantFile";
 
 const Login = (props) => {
   //meta title
-  document.title = "Login | Skote - Vite React Admin & Dashboard Template";
+  document.title = "Login - PMS";
   const dispatch = useDispatch();
   const [passwordStrength, setPasswordStrength] = useState("");
 

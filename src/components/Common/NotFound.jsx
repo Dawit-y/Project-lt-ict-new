@@ -8,7 +8,7 @@ import error from "../../assets/images/error-img.png";
 const NotFound = () => {
   //meta title
   document.title =
-    "404 Error Page | Skote - Vite React Admin & Dashboard Template";
+    "404 Error Page | PMS";
 
   return (
     <React.Fragment>

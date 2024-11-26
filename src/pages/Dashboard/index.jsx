@@ -49,10 +49,7 @@ const roleData = data[0];
   if (!roleData) {
     return <p>Role not found</p>;
   }
-
-
   //meta title
-  document.title = "Dashboard | Skote - Vite React Admin & Dashboard Template";
 return (
       <div className="page-content">
         <div className="container-fluid">

@@ -256,20 +256,6 @@ const RolesModel = ({ onSelectItem }) => {
         },
       },
       {
-        header: "",
-        accessorKey: "rol_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rol_status, 30) || `${cellProps.row.original.rol_status}`}
-            </span>
-          );
-        },
-      },
-
-      {
         header: t("view_detail"),
         enableColumnFilter: false,
         enableSorting: true,
