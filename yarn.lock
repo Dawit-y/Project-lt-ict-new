@@ -3332,13 +3332,20 @@
   dependencies:
     "@tanstack/query-core" "5.60.5"
 
-"@tanstack/query-sync-storage-persister@^5.60.5":
-  version "5.60.5"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-sync-storage-persister/-/query-sync-storage-persister-5.60.5.tgz#08a09acebe5ec3301bb2477900a33f8fd315da2c"
-  integrity sha512-3hL9GuPLYxraF5pntxCThsYfddIQ1Kp0HSwSK88Pob0JmJUFWm7EhAMgvorYH5ZHR+mTIZfu3E3S01w5PCve2Q==
+"@tanstack/query-persist-client-core@5.60.6":
+  version "5.60.6"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-persist-client-core/-/query-persist-client-core-5.60.6.tgz#363725db8d6723c6139bec1362b2d24ea910838f"
+  integrity sha512-Rk5DiR9Mv5rQ7xXztodZlZxIXmjIhkkiB7hFlma+tWorsQO8DRuAzBH8xJTg0tLh8ydHGdiMMHHWAvJENNVGiw==
   dependencies:
-    "@tanstack/query-core" "5.60.5"
-    "@tanstack/query-persist-client-core" "5.60.5"
+    "@tanstack/query-core" "5.60.6"
+
+"@tanstack/query-sync-storage-persister@^5.60.6":
+  version "5.60.6"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-sync-storage-persister/-/query-sync-storage-persister-5.60.6.tgz#0358beb000510da4287619e154318feb48ae34aa"
+  integrity sha512-gG63GG4ljU8HkjDynKsGPlFV/RTShByccUN7cHbhAQimYvGT/FGLYbENlYPHBb3zxukkWhViyaCZQlRFowxmXQ==
+  dependencies:
+    "@tanstack/query-core" "5.60.6"
+    "@tanstack/query-persist-client-core" "5.60.6"
 
 "@tanstack/react-query-devtools@^5.60.5":
   version "5.60.5"
@@ -12102,6 +12109,11 @@ pkg-up@^3.1.0:
   integrity sha512-nDywThFk1i4BQK4twPQ6TA4RT8bDY96yeuCVBWL3ePARCiEKDRSrNGbFIgUJpLp+XeIR65v8ra7WuJOFUBtkMA==
   dependencies:
     find-up "^3.0.0"
+
+plotly.js-locales@^2.35.2:
+  version "2.35.2"
+  resolved "https://registry.yarnpkg.com/plotly.js-locales/-/plotly.js-locales-2.35.2.tgz#202f17295bb761f303d4389bb441bdfd3547f62f"
+  integrity sha512-knVbtxP2hF1+LMAy0sxuv/rBCUGbr7fw5LRkH1/5L+ajmSwDuobppeYtLQSAnRwLP1bmMBWUQTYf+1cm/MhpQg==
 
 plotly.js@^2.35.2:
   version "2.35.2"
