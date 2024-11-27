@@ -26,6 +26,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
 import ProjectDocumentModal from "./ProjectDocumentModal";
 import { useTranslation } from "react-i18next";
+import '../../App.css';
 
 import {
   Button,
@@ -137,12 +138,12 @@ const ProjectDocumentModel = (props) => {
           value: item.pdt_id.toString(),
         }));
         const optionsWithDefault = [
-          { label: "Select Document type id", value: "" },
+          { label: "Select Document type", value: "" },
           ...transformedData,
         ];
         setDocumentTypeOptions(optionsWithDefault);
       } catch (error) {
-        console.error("Error fetching budget years:", error);
+        console.error("Error fetching Document Type:", error);
       }
     };
     fetchDocumentType();
@@ -160,6 +161,7 @@ const ProjectDocumentModel = (props) => {
       prd_project_id: passedId,
       prd_file: file,
       prd_name: (projectDocument && projectDocument.prd_name) || "",
+      prd_document_type_id: (projectDocument && projectDocument.prd_document_type_id) || "",
       prd_file_path: (projectDocument && projectDocument.prd_file_path) || "",
 
       prd_size: (projectDocument && projectDocument.prd_size) || "",
@@ -177,15 +179,15 @@ const ProjectDocumentModel = (props) => {
 
     validationSchema: Yup.object({
       // prd_file:Yup.string().required(t('prd_file')),
-      // prd_project_id: Yup.string().required(t("prd_project_id")),
+      prd_document_type_id: Yup.string().required(t("prd_document_type_id")),
       prd_name: Yup.string().required(t("prd_name")),
       // prd_file_path: Yup.string().required(t("prd_file_path")),
       // prd_file_path:Yup.string().required(t("prd_file_path")),
       // prd_size: Yup.string().required(t("prd_size")),
       // prd_file_extension:Yup.string().required(t("prd_file_extension")),
 
-      prd_description: Yup.string().required(t("prd_description")),
-      prd_status: Yup.string().required(t("prd_status")),
+      //prd_description: Yup.string().required(t("prd_description")),
+      //prd_status: Yup.string().required(t("prd_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -202,6 +204,7 @@ const ProjectDocumentModel = (props) => {
           prd_uploaded_date: values.prd_uploaded_date,
           prd_description: values.prd_description,
           prd_status: values.prd_status,
+          prd_document_type_id: values.prd_document_type_id,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -220,6 +223,7 @@ const ProjectDocumentModel = (props) => {
           prd_uploaded_date: values.prd_uploaded_date,
           prd_description: values.prd_description,
           prd_status: values.prd_status,
+          prd_document_type_id: values.prd_document_type_id,
         };
         // save new ProjectDocuments
         dispatch(onAddProjectDocument(newProjectDocument));
@@ -291,11 +295,12 @@ const ProjectDocumentModel = (props) => {
 
   const handleProjectDocumentClick = (arg) => {
     const projectDocument = arg;
-    // console.log("handleProjectDocumentClick", projectDocument);
+    console.log("handleProjectDocumentClick", projectDocument);
     setProjectDocument({
       prd_id: projectDocument.prd_id,
       prd_file: projectDocument.prd_file,
       prd_project_id: projectDocument.prd_project_id,
+      prd_document_type_id: projectDocument.prd_document_type_id,
       prd_name: projectDocument.prd_name,
       prd_file_path: projectDocument.prd_file_path,
       prd_size: projectDocument.prd_size,
@@ -303,7 +308,6 @@ const ProjectDocumentModel = (props) => {
       prd_uploaded_date: projectDocument.prd_uploaded_date,
       prd_description: projectDocument.prd_description,
       prd_status: projectDocument.prd_status,
-
       is_deletable: projectDocument.is_deletable,
       is_editable: projectDocument.is_editable,
     });
@@ -344,19 +348,7 @@ const ProjectDocumentModel = (props) => {
 
   const columns = useMemo(() => {
     const baseColumns = [
-      // {
-      //   header: "",
-      //   accessorKey: "prd_project_id",
-      //   enableColumnFilter: false,
-      //   enableSorting: true,
-      //   cell: (cellProps) => {
-      //     return (
-      //       <span>
-      //         {truncateText(cellProps.row.original.prd_project_id, 30) || "-"}
-      //       </span>
-      //     );
-      //   },
-      // },
+     
       {
         header: "",
         accessorKey: "prd_name",
@@ -433,19 +425,6 @@ const ProjectDocumentModel = (props) => {
           return (
             <span>
               {truncateText(cellProps.row.original.prd_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "prd_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prd_status, 30) || `${cellProps.row.original.prd_status}`}
             </span>
           );
         },
@@ -546,7 +525,7 @@ const ProjectDocumentModel = (props) => {
         onCloseClick={() => setDeleteModal(false)}
       />
 
-      <div className="container-fluid">
+      <div className="container-fluid1">
         {passedId ? null : (
           <Breadcrumbs
             title={t("project_document")}
@@ -560,10 +539,7 @@ const ProjectDocumentModel = (props) => {
         {isLoading || searchLoading ? (
           <Spinners setLoading={setLoading} />
         ) : (
-          <Row>
-            <Col xs="12">
-              <Card>
-                <CardBody>
+         
                   <TableContainer
                     columns={columns}
                     data={showSearchResults ? results : data}
@@ -572,8 +548,7 @@ const ProjectDocumentModel = (props) => {
                     isCustomPageSize={true}
                     handleUserClick={handleProjectDocumentClicks}
                     isPagination={true}
-                    // SearchPlaceholder="26 records..."
-                    SearchPlaceholder={26 + " " + t("Results") + "..."}
+                    SearchPlaceholder={t("Results") + "..."}
                     buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                     buttonName={t("add") + " " + t("project_document")}
                     tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -581,10 +556,6 @@ const ProjectDocumentModel = (props) => {
                     pagination="pagination"
                     paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                   />
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
         )}
 
         <Modal isOpen={modal} toggle={toggle} className="modal-xl">
@@ -609,10 +580,11 @@ const ProjectDocumentModel = (props) => {
             >
               <Row>
                 {/* Document Type (Unchanged) */}
-                <Col className="col-md-6 mb-3">
-                  <Label>{t("prd_document_type_id")}</Label>
+                <Col className="col-md-4 mb-3">
+                  <Label>{t("prd_document_type_id")} <span className="text-danger">*</span></Label>
                   <Input
                     name="prd_document_type_id"
+                    id="prd_document_type_id"
                     type="select"
                     className="form-select"
                     onChange={handleDocumentTypeChange}
@@ -632,38 +604,15 @@ const ProjectDocumentModel = (props) => {
                     </FormFeedback>
                   ) : null}
                 </Col>
-                {/* Project ID */}
-                {/* <Col className="col-md-6 mb-3">
-                      <Label>{t("prd_project_id")}</Label>
-                      <Input
-                        name="prd_project_id"
-                        type="text"
-                        placeholder={t("insert_status_name_amharic")}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        // readOnly={!!passedId}  // Conditionally set readOnly based on passedId
-                        value={documentData || validation.values.prd_project_id }
-                        invalid={
-                          validation.touched.prd_project_id && validation.errors.prd_project_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prd_project_id && validation.errors.prd_project_id ? (
-                        <FormFeedback type="invalid">
-                          {validation.errors.prd_project_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> */}
+               
 
                 {/* Name */}
-                <Col className="col-md-6 mb-3">
-                  <Label>{t("prd_name")}</Label>
+                <Col className="col-md-4 mb-3">
+                  <Label>{t("prd_name")} <span className="text-danger">*</span></Label>
                   <Input
                     name="prd_name"
                     type="text"
-                    placeholder={t("insert_status_name_amharic")}
+                    placeholder={t("prd_name")}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
                     value={validation.values.prd_name || ""}
@@ -682,7 +631,7 @@ const ProjectDocumentModel = (props) => {
                 </Col>
                 {/* document status */}
 
-                <Col className="col-md-6 mb-3">
+                <Col className="col-md-6 mb-3" style={{ display: 'none'}}>
                   <Label>{t("prd_status")}</Label>
                   <Input
                     name="prd_status"
@@ -709,12 +658,13 @@ const ProjectDocumentModel = (props) => {
                   ) : null}
                 </Col>
 
-                <Col className="col-md-6 mb-3">
+                <Col className="col-md-4 mb-3">
                   <Label>{t("prd_description")}</Label>
                   <Input
                     name="prd_description"
                     type="text"
-                    placeholder={t("insert_status_name_amharic")}
+                    rows={3}
+                    placeholder={t("prd_description")}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
                     value={validation.values.prd_description || ""}

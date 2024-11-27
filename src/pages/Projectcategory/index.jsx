@@ -83,12 +83,17 @@ const ProjectCategoryModel = () => {
     },
 
     validationSchema: Yup.object({
-      pct_name_or: Yup.string().required(t("pct_name_or")),
+      pct_name_or: Yup.string()
+        .required(t("pct_name_or"))
+        .test("unique-code", t("Already exists"), (value) => {
+          return !data.some((item) => item.pct_name_or == value);
+        }),
+      //pct_name_or: Yup.string().required(t("pct_name_or")),
       pct_name_am: Yup.string().required(t("pct_name_am")),
       pct_name_en: Yup.string().required(t("pct_name_en")),
-      pct_code: Yup.string().required(t("pct_code")),
-      pct_description: Yup.string().required(t("pct_description")),
-      pct_status: Yup.string().required(t("pct_status")),
+      //pct_code: Yup.string().required(t("pct_code")),
+      //pct_description: Yup.string().required(t("pct_description")),
+      //pct_status: Yup.string().required(t("pct_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -274,7 +279,7 @@ const ProjectCategoryModel = () => {
           );
         },
       },
-      {
+    /*  {
         header: "",
         accessorKey: "pct_code",
         enableColumnFilter: false,
@@ -286,7 +291,7 @@ const ProjectCategoryModel = () => {
             </span>
           );
         },
-      },
+      },*/
       {
         header: "",
         accessorKey: "pct_description",
@@ -300,19 +305,7 @@ const ProjectCategoryModel = () => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "pct_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pct_status, 30) || `${cellProps.row.original.pct_status}`}
-            </span>
-          );
-        },
-      },
+   
 
       {
         header: t("view_detail"),
@@ -429,8 +422,7 @@ const ProjectCategoryModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleProjectCategoryClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={ t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("project_category")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -465,11 +457,11 @@ const ProjectCategoryModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pct_name_or")}</Label>
+                    <Label>{t("pct_name_or")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pct_name_or"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("pct_name_or")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.pct_name_or || ""}
@@ -489,11 +481,11 @@ const ProjectCategoryModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pct_name_am")}</Label>
+                    <Label>{t("pct_name_am")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pct_name_am"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("pct_name_am")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.pct_name_am || ""}
@@ -513,11 +505,11 @@ const ProjectCategoryModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pct_name_en")}</Label>
+                    <Label>{t("pct_name_en")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pct_name_en"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("pct_name_en")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.pct_name_en || ""}
@@ -541,7 +533,7 @@ const ProjectCategoryModel = () => {
                     <Input
                       name="pct_code"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("pct_code")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.pct_code || ""}
@@ -564,8 +556,9 @@ const ProjectCategoryModel = () => {
                     <Label>{t("pct_description")}</Label>
                     <Input
                       name="pct_description"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      type="textarea"
+                      rows={2}
+                      placeholder={t("pct_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.pct_description || ""}
@@ -583,33 +576,7 @@ const ProjectCategoryModel = () => {
                         {validation.errors.pct_description}
                       </FormFeedback>
                     ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pct_status")}</Label>
-                    <Input
-                      name="pct_status"
-                      type="select"
-                      className="form-select"
-                      onChange={(e) => {
-                        validation.setFieldValue(
-                          "pct_status",
-                          Number(e.target.value)
-                        );
-                      }}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pct_status}
-                    >
-                      <option value={""}>Select status</option>
-                      <option value={1}>{t("Active")}</option>
-                      <option value={0}>{t("Inactive")}</option>
-                    </Input>
-                    {validation.touched.pct_status &&
-                    validation.errors.pct_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pct_status}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                  </Col>              
                 </Row>
                 <Row>
                   <Col>

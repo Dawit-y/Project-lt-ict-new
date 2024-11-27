@@ -498,8 +498,7 @@ const PermissionModel = (props) => {
         onCloseClick={() => setDeleteModal(false)}
       />
       <div>
-        <div className="container-fluid">
-          <Breadcrumbs title={t("roles")} breadcrumbItem={t("permission")} />
+        <div className="container-fluid1">        
           {isLoading || searchLoading ? (
             <Spinners setLoading={setLoading} />
           ) : (           
@@ -508,7 +507,7 @@ const PermissionModel = (props) => {
                       columns={columns}
                       data={showSearchResults ? results : data}
                       isGlobalFilter={true}
-                      isAddButton={true}
+                      isAddButton={false}
                       isCustomPageSize={true}
                       handleUserClick={handlePermissionClicks}
                       isPagination={true}

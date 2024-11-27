@@ -49,10 +49,6 @@ const ContractTerminationReasonModal = (props) => {
                     <p className="mb-2">
             {t('ctr_description')}: <span className="text-primary">{transaction.ctr_description}</span>
           </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('ctr_status')}: <span className="text-primary">{transaction.ctr_status}</span>
-          </p>
           </tr>
 
           {transaction.is_deletable === 1 && (

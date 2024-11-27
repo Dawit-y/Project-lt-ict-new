@@ -6,49 +6,15 @@ import { useTranslation } from "react-i18next";
 import { Col, Row, Card, CardBody } from "reactstrap";
 import {useAccessToken} from "../../helpers/jwt-token-access/accessToken";
 
-const DashboardComponent = ({ dashboardType, objectName, columnList, endPoint }) => {
+const DashboardComponent = ({ dashboardType, objectName, columnList,tableData }) => {
   const accessToken = useAccessToken();
   const { t } = useTranslation();
   const [dashboardData, setDashboardData] = useState([]);
-  const [tableData, setTableData] = useState([]);
+  //const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState([]);
   
   const commonHeight = 200; 
  
-  useEffect(() => {
-
-    const fetchData = async () => {
-      try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_BASE_API_URL}` + endPoint + '/listgrid', 
-          {}, // Empty object for the request body (if no payload)
-          {
-            headers: {
-              Authorization: accessToken, // Set accessToken in Authorization header
-            },
-          }
-        );
-        
-        setTableData(response.data.data);
-        if (response.data.data.length > 0) {
-          setTotalCount(response.data.data[0].total_count);
-
-          const transformedData = response.data.data.map((item) => ({
-            name: item[columnList.split(",")[1]],
-            value: item[columnList.split(",")[0]],
-          }));
-          const optionsWithDefault = [...transformedData];
-          setDashboardData(optionsWithDefault);
-        } else {
-          setTotalCount(0);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchData();
-  }, []);
-
   const columns = useMemo(() => {
     return [
       {
@@ -80,6 +46,7 @@ const DashboardComponent = ({ dashboardType, objectName, columnList, endPoint })
           <Col xs="12">
             <Card>
               <CardBody style={{ height: commonHeight }}>
+              <p className="text-muted fw-medium">{t(objectName)}</p>
                 <TableContainer
                   columns={columns}
                   data={tableData}
@@ -104,29 +71,28 @@ const DashboardComponent = ({ dashboardType, objectName, columnList, endPoint })
   else if (dashboardType === 'group_count') {
     return (
       <React.Fragment>
-        <Col xl="12">
-          <Row>
-            {(tableData || [])?.map((data, key) => (
-              <Col md="4" key={"_col_" + key}>
-                <Card className="mini-stats-wid">
-                  <CardBody style={{ height: commonHeight }}> 
-                    <div className="d-flex">
-                      <div className="flex-grow-1">
-                        <p className="text-muted fw-medium">{data.label}</p>
-                        <h4 className="mb-0">{data.label}</h4>
-                      </div>
-                      <div className="avatar-sm rounded-circle bg-primary align-self-center mini-stat-icon">
-                        <span className="avatar-title rounded-circle bg-primary">
-                          <i className={"bx " + data.value + " font-size-24"}></i>
-                        </span>
-                      </div>
-                    </div>
-                  </CardBody>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </Col>
+        <Row>
+          <Col xs="12">
+            <Card>
+              <CardBody style={{ height: commonHeight }}>
+              <p className="text-muted fw-medium">{t(objectName)}</p>
+                <TableContainer
+                  columns={columns}
+                  data={tableData}
+                  isGlobalFilter={false}
+                  isAddButton={false}
+                  isCustomPageSize={false}
+                  isPagination={false}
+                  buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                  tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                  theadClass="table-light"
+                  pagination="pagination"
+                  paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                />
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
       </React.Fragment>
     );
   }
@@ -140,7 +106,7 @@ const DashboardComponent = ({ dashboardType, objectName, columnList, endPoint })
               <div className="d-flex">
                 <div className="flex-grow-1">
                   <p className="text-muted fw-medium">{t(objectName)}</p>
-                  <h4 className="mb-0">{totalCount}</h4>
+                  <h4 className="mb-0">{tableData[0].count_result}</h4>
                 </div>
                 <div className="avatar-sm rounded-circle bg-primary align-self-center mini-stat-icon">
                   <span className="avatar-title rounded-circle bg-primary">
@@ -160,8 +126,10 @@ const DashboardComponent = ({ dashboardType, objectName, columnList, endPoint })
       <React.Fragment>
         <Col xs="12">
           <Card className="mini-stats-wid">
+
             <CardBody style={{ height: commonHeight }}> 
-              <Pie chartData={dashboardData} dataColors='["--bs-primary","--bs-warning", "--bs-danger","--bs-info", "--bs-success"]' />
+            <p className="text-muted fw-medium">{t(objectName)}</p>
+              <Pie chartData={tableData} dataColors='["--bs-primary","--bs-warning", "--bs-danger","--bs-info", "--bs-success"]' />
             </CardBody>
           </Card>
         </Col>

@@ -85,11 +85,15 @@ const ContractorTypeModel = () => {
     },
 
     validationSchema: Yup.object({
-      cnt_type_name_or: Yup.string().required(t("cnt_type_name_or")),
+      cnt_type_name_or: Yup.string()
+        .required(t("cnt_type_name_or"))
+        .test("unique-code", t("Already exists"), (value) => {
+          return !data.some((item) => item.cnt_type_name_or == value);
+        }),
       cnt_type_name_am: Yup.string().required(t("cnt_type_name_am")),
       cnt_type_name_en: Yup.string().required(t("cnt_type_name_en")),
-      cnt_description: Yup.string().required(t("cnt_description")),
-      cnt_status: Yup.string().required(t("cnt_status")),
+      //cnt_description: Yup.string().required(t("cnt_description")),
+      //cnt_status: Yup.string().required(t("cnt_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -286,19 +290,7 @@ const ContractorTypeModel = () => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "cnt_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.cnt_status, 30) || "-"}
-            </span>
-          );
-        },
-      },
+    
 
       {
         header: t("view_detail"),
@@ -415,8 +407,7 @@ const ContractorTypeModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleContractorTypeClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("contractor_type")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -455,7 +446,7 @@ const ContractorTypeModel = () => {
                     <Input
                       name="cnt_type_name_or"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("cnt_type_name_or")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.cnt_type_name_or || ""}
@@ -479,7 +470,7 @@ const ContractorTypeModel = () => {
                     <Input
                       name="cnt_type_name_am"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("cnt_type_name_am")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.cnt_type_name_am || ""}
@@ -503,7 +494,7 @@ const ContractorTypeModel = () => {
                     <Input
                       name="cnt_type_name_en"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("cnt_type_name_en")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.cnt_type_name_en || ""}
@@ -527,7 +518,7 @@ const ContractorTypeModel = () => {
                     <Input
                       name="cnt_description"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("cnt_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.cnt_description || ""}
@@ -546,7 +537,7 @@ const ContractorTypeModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-6 mb-3" style={{ display: 'none'}}>
                       <Label>{t("cnt_status")}</Label>
                       <Input
                         name="cnt_status"

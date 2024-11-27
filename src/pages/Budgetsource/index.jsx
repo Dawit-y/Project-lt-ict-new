@@ -88,7 +88,11 @@ const BudgetSourceModel = () => {
     },
 
     validationSchema: Yup.object({
-      pbs_name_or: Yup.string().required(t("pbs_name_or")),
+       pbs_name_or: Yup.string()
+        .required(t("pbs_name_or"))
+        .test("unique-code", t("Already exists"), (value) => {
+          return !data.some((item) => item.pbs_name_or == value);
+        }),     
       pbs_name_am: Yup.string().required(t("pbs_name_am")),
       pbs_name_en: Yup.string().required(t("pbs_name_en")),
       pbs_code: Yup.string().required(t("pbs_code")),
