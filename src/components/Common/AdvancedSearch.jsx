@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardBody, Col, Row, Collapse, Label, Input } from "reactstrap";
 import Select from "react-select";
-
+import { useTranslation } from "react-i18next";
 const AdvancedSearch = ({
   searchHook,
   textSearchKeys,
@@ -12,11 +12,11 @@ const AdvancedSearch = ({
   setSearchResults,
   setShowSearchResult,
 }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
   const [params, setParams] = useState({});
   const [searchParams, setSearchParams] = useState({});
-
   const { refetch } = searchHook(searchParams);
 
   // Handle updates for all input types
@@ -82,16 +82,18 @@ const AdvancedSearch = ({
             <CardBody>
               <form action="#">
                 <Row className="g-3">
+                 <Col xxl={10} lg={10}>
+                 <Row>
                   {/* Text Inputs */}
                   {textSearchKeys.map((key) => (
-                    <Col xxl={4} lg={4} key={key}>
+                    <Col xxl={2} lg={2} key={key}>
                       <div className="position-relative">
                         <Input
                           type="text"
                           id={key}
                           name={key}
                           autoComplete="off"
-                          placeholder={key}
+                          placeholder={t(key)}
                           value={params[key] || ""}
                           onChange={(e) => handleSearchKey(key, e.target.value)}
                         />
@@ -101,7 +103,7 @@ const AdvancedSearch = ({
 
                   {/* Dropdown Inputs */}
                   {dropdownSearchKeys.map(({ key, options }) => (
-                    <Col xxl={2} lg={4} key={key}>
+                    <Col xxl={2} lg={2} key={key}>
                       <div className="position-relative">
                         <Select
                           className="select2"
@@ -120,19 +122,22 @@ const AdvancedSearch = ({
                       </div>
                     </Col>
                   ))}
-                  <Col xxl={2} lg={6}>
-                    <div className="position-relative h-100 hstack gap-3">
+                  </Row>
+                  </Col>
+                  <Col xxl={2} lg={2}>
+                  <Col xxl={12} lg={12}>
+                    <div className="position-relative h-100 hstack gap-3 pull-right">
                       <button
                         type="button"
                         className="btn btn-primary h-100 w-100"
                         onClick={handleSearch}
                         disabled={isButtonDisabled()}
                       >
-                        <i className="bx bx-search-alt align-middle"></i> Search
+                        <i className="bx bx-search-alt align-middle"></i>
                       </button>
                       <button
                         type="button"
-                        className="btn btn-outline-danger d-flex align-items-center justify-content-center h-100 w-100"
+                        className="btn btn-outline-danger align-middle h-100 w-100"
                         onClick={handleClear}
                       >
                         <svg
@@ -146,7 +151,6 @@ const AdvancedSearch = ({
                           <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
                           <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
                         </svg>
-                        Clear
                       </button>
 
                       {checkboxSearchKeys.length > 0 && (
@@ -155,10 +159,10 @@ const AdvancedSearch = ({
                           className="btn btn-secondary h-100 w-100"
                         >
                           <i className="bx bx-filter-alt align-middle"></i>{" "}
-                          Advance
                         </a>
                       )}
                     </div>
+                  </Col>
                   </Col>
 
                   <Collapse isOpen={isOpen} id="collapseExample">

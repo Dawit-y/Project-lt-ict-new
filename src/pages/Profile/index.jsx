@@ -34,7 +34,7 @@ import ApexRevenue from "./ApexRevenue";
 import { toast } from "react-toastify";
 
 const UsersProfile = () => {
-  document.title = "Profile | Skote - Vite React Admin & Dashboard Template";
+  document.title = "Profile | PMS";
 
   const storedUser = localStorage.getItem("authUser");
   const Users = storedUser ? JSON.parse(storedUser) : null; // Handle null case

@@ -118,7 +118,12 @@ const SectorInformationModel = () => {
     },
 
     validationSchema: Yup.object({
-      sci_name_or: Yup.string().required(t("sci_name_or")),
+      sci_name_or: Yup.string()
+        .required(t("sci_name_or"))
+        .test("unique-code", t("Already exists"), (value) => {
+          return !data.some((item) => item.sci_name_or == value);
+        }),
+      //sci_name_or: Yup.string().required(t("sci_name_or")),
       sci_name_am: Yup.string().required(t("sci_name_am")),
       sci_name_en: Yup.string().required(t("sci_name_en")),
       sci_code: Yup.string().required(t("sci_code")),

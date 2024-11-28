@@ -40,10 +40,13 @@ import {
   Card,
   CardBody,
   FormGroup,
+  InputGroup,
   Badge,
 } from "reactstrap";
 import { ToastContainer } from "react-toastify";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
+import Flatpickr from "react-flatpickr";
+import { formatDate } from "../../utils/commonMethods";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -95,14 +98,14 @@ const ProjectPaymentModel = (props) => {
     validationSchema: Yup.object({
       // prp_project_id: Yup.string().required(t("prp_project_id")),
       prp_type: Yup.string().required(t("prp_type")),
-      prp_payment_date_et: Yup.string().required(t("prp_payment_date_et")),
+     // prp_payment_date_et: Yup.string().required(t("prp_payment_date_et")),
       prp_payment_date_gc: Yup.string().required(t("prp_payment_date_gc")),
       prp_payment_amount: Yup.string().required(t("prp_payment_amount")),
       prp_payment_percentage: Yup.string().required(
         t("prp_payment_percentage")
       ),
-      prp_description: Yup.string().required(t("prp_description")),
-      prp_status: Yup.string().required(t("prp_status")),
+      //prp_description: Yup.string().required(t("prp_description")),
+      //prp_status: Yup.string().required(t("prp_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -254,19 +257,7 @@ const ProjectPaymentModel = (props) => {
 
   const columns = useMemo(() => {
     const baseColumns = [
-      // {
-      //   header: "",
-      //   accessorKey: "prp_project_id",
-      //   enableColumnFilter: false,
-      //   enableSorting: true,
-      //   cell: (cellProps) => {
-      //     return (
-      //       <span>
-      //         {truncateText(cellProps.row.original.prp_project_id, 30) || "-"}
-      //       </span>
-      //     );
-      //   },
-      // },
+     
       {
         header: "",
         accessorKey: "prp_type",
@@ -275,25 +266,12 @@ const ProjectPaymentModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.prp_type, 30) || "-"}
+              {truncateText(cellProps.row.original.prp_type, 50) || "-"}
             </span>
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "prp_payment_date_et",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prp_payment_date_et, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
+  
       {
         header: "",
         accessorKey: "prp_payment_date_gc",
@@ -351,20 +329,7 @@ const ProjectPaymentModel = (props) => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "prp_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prp_status, 30) ||
-                `${cellProps.row.original.prp_status}`}
-            </span>
-          );
-        },
-      },
+     
 
       {
         header: t("view_detail"),
@@ -476,7 +441,7 @@ const ProjectPaymentModel = (props) => {
       />
 
       <div className={passedId ? "" : "page-content"}>
-        <div className="container-fluid">
+        <div className="container-fluid1">
           {/* <Breadcrumbs
             title={t("project_payment")}
             breadcrumbItem={t("project_payment")}
@@ -492,10 +457,6 @@ const ProjectPaymentModel = (props) => {
           {isLoading || searchLoading ? (
             <Spinners setLoading={setLoading} />
           ) : (
-            <Row>
-              <Col xs="12">
-                <Card>
-                  <CardBody>
                     <TableContainer
                       columns={columns}
                       data={showSearchResults ? results : data}
@@ -504,8 +465,7 @@ const ProjectPaymentModel = (props) => {
                       isCustomPageSize={true}
                       handleUserClick={handleProjectPaymentClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("project_payment")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -513,10 +473,6 @@ const ProjectPaymentModel = (props) => {
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                     />
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
@@ -539,32 +495,9 @@ const ProjectPaymentModel = (props) => {
                 }}
               >
                 <Row>
-                  {/* <Col className="col-md-6 mb-3">
-                    <Label>{t("prp_project_id")}</Label>
-                    <Input
-                      name="prp_project_id"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_project_id || ""}
-                      invalid={
-                        validation.touched.prp_project_id &&
-                        validation.errors.prp_project_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prp_project_id &&
-                    validation.errors.prp_project_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_project_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col> */}
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prp_type")}</Label>
+                
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("prp_type")}<span className="text-danger">*</span></Label>
                     <Input
                       name="prp_type"
                       type="select"
@@ -592,36 +525,13 @@ const ProjectPaymentModel = (props) => {
                     ) : null}
                   </Col>
 
-                  {/* <Col className="col-md-6 mb-3">
-                    <Label>{t("prp_type")}</Label>
-                    <Input
-                      name="prp_type"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_type || ""}
-                      invalid={
-                        validation.touched.prp_type &&
-                        validation.errors.prp_type
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prp_type &&
-                    validation.errors.prp_type ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_type}
-                      </FormFeedback>
-                    ) : null}
-                  </Col> */}
-                  <Col className="col-md-6 mb-3">
+                 
+                  <Col className="col-md-6 mb-3" style={{ display: 'none'}}>
                     <Label>{t("prp_payment_date_et")}</Label>
                     <Input
                       name="prp_payment_date_et"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("prp_payment_date_et")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.prp_payment_date_et || ""}
@@ -640,36 +550,61 @@ const ProjectPaymentModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prp_payment_date_gc")}</Label>
-                    <Input
-                      name="prp_payment_date_gc"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_payment_date_gc || ""}
-                      invalid={
-                        validation.touched.prp_payment_date_gc &&
-                        validation.errors.prp_payment_date_gc
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prp_payment_date_gc &&
-                    validation.errors.prp_payment_date_gc ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_payment_date_gc}
-                      </FormFeedback>
-                    ) : null}
+         
+                    <Col className="col-md-3 mb-3">
+                    <FormGroup>
+                      <Label>{t("prp_payment_date_gc")}<span className="text-danger">*</span></Label>
+                      <InputGroup>
+                        <Flatpickr
+                          id="DataPicker"
+                          className={`form-control ${
+                            validation.touched.prp_payment_date_gc &&
+                            validation.errors.prp_payment_date_gc
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                          name="prp_payment_date_gc"
+                          options={{
+                            altInput: true,
+                            altFormat: "Y/m/d",
+                            dateFormat: "Y/m/d",
+                            enableTime: false,
+                          }}
+                          value={validation.values.prp_payment_date_gc || ""}
+                          onChange={(date) => {
+                            const formatedDate = formatDate(date[0]);
+                            validation.setFieldValue(
+                              "prp_payment_date_gc",
+                              formatedDate
+                            ); // Set value in Formik
+                          }}
+                          onBlur={validation.handleBlur}
+                        />
+
+                        <Button
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          disabled
+                        >
+                          <i className="fa fa-calendar" aria-hidden="true" />
+                        </Button>
+                      </InputGroup>
+                      {validation.touched.prp_payment_date_gc &&
+                      validation.errors.prp_payment_date_gc ? (
+                        <FormFeedback>
+                          {validation.errors.prp_payment_date_gc}
+                        </FormFeedback>
+                      ) : null}
+                    </FormGroup>
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prp_payment_amount")}</Label>
+
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("prp_payment_amount")}<span className="text-danger">*</span></Label>
                     <Input
                       name="prp_payment_amount"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      type="number"
+                      required="required"
+                      placeholder={t("prp_payment_amount")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.prp_payment_amount || ""}
@@ -688,32 +623,8 @@ const ProjectPaymentModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  {/* percentage */}
-                  {/* <Col className="col-md-6 mb-3">
-                    <Label>{t("prp_payment_percentage")}</Label>
-                    <Input
-                      name="prp_payment_percentage"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_payment_percentage || ""}
-                      invalid={
-                        validation.touched.prp_payment_percentage &&
-                        validation.errors.prp_payment_percentage
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prp_payment_percentage &&
-                    validation.errors.prp_payment_percentage ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_payment_percentage}
-                      </FormFeedback>
-                    ) : null}
-                  </Col> */}
-                  <Col className="col-md-6 mb-3">
+              
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("prp_payment_percentage")}</Label>
                     <div className="d-flex align-items-center">
                       <Input
@@ -755,8 +666,9 @@ const ProjectPaymentModel = (props) => {
                     <Label>{t("prp_description")}</Label>
                     <Input
                       name="prp_description"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      type="textarea"
+                      rows={3}
+                      placeholder={t("prp_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.prp_description || ""}
@@ -775,7 +687,7 @@ const ProjectPaymentModel = (props) => {
                     ) : null}
                   </Col>
                   {/* status */}
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-6 mb-3" style={{ display: 'none'}}>
                     <Label>{t("prp_status")}</Label>
                     <Input
                       name="prp_status"

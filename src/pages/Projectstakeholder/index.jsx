@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
+import axios from "axios";
+
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
@@ -77,10 +79,10 @@ const ProjectStakeholderModel = (props) => {
         );
         const transformedData = response.data.data.map((item) => ({
           label: item.sht_type_name_or.toString(),
-          value: item.sht_type_name_or.toString(),
+          value: item.sht_id.toString(),
         }));
         const optionsWithDefault = [
-          { label: "select budget year", value: "" },
+          { label: "Select Stakeholder Type", value: "" },
           ...transformedData,
         ];
         setStakeholderTypeOptions(optionsWithDefault);
@@ -127,9 +129,9 @@ const ProjectStakeholderModel = (props) => {
       psh_representative_phone: Yup.string().required(
         t("psh_representative_phone")
       ),
-      psh_role: Yup.string().required(t("psh_role")),
-      psh_description: Yup.string().required(t("psh_description")),
-      psh_status: Yup.string().required(t("psh_status")),
+      //psh_role: Yup.string().required(t("psh_role")),
+      //psh_description: Yup.string().required(t("psh_description")),
+      //psh_status: Yup.string().required(t("psh_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -144,6 +146,7 @@ const ProjectStakeholderModel = (props) => {
           psh_role: values.psh_role,
           psh_description: values.psh_description,
           psh_status: values.psh_status,
+          psh_stakeholder_type: values.psh_stakeholder_type,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -160,6 +163,8 @@ const ProjectStakeholderModel = (props) => {
           psh_role: values.psh_role,
           psh_description: values.psh_description,
           psh_status: values.psh_status,
+          psh_stakeholder_type: values.psh_stakeholder_type,
+
         };
         // save new ProjectStakeholders
         dispatch(onAddProjectStakeholder(newProjectStakeholder));
@@ -238,7 +243,7 @@ const ProjectStakeholderModel = (props) => {
       psh_role: projectStakeholder.psh_role,
       psh_description: projectStakeholder.psh_description,
       psh_status: projectStakeholder.psh_status,
-
+      psh_stakeholder_type: projectStakeholder.psh_stakeholder_type,
       is_deletable: projectStakeholder.is_deletable,
       is_editable: projectStakeholder.is_editable,
     });
@@ -279,19 +284,7 @@ const ProjectStakeholderModel = (props) => {
 
   const columns = useMemo(() => {
     const baseColumns = [
-      // {
-      //   header: "",
-      //   accessorKey: "psh_project_id",
-      //   enableColumnFilter: false,
-      //   enableSorting: true,
-      //   cell: (cellProps) => {
-      //     return (
-      //       <span>
-      //         {truncateText(cellProps.row.original.psh_project_id, 30) || "-"}
-      //       </span>
-      //     );
-      //   },
-      // },
+   
       {
         header: "",
         accessorKey: "psh_name",
@@ -363,7 +356,7 @@ const ProjectStakeholderModel = (props) => {
           );
         },
       },
-      {
+      /*{
         header: "",
         accessorKey: "psh_status",
         enableColumnFilter: false,
@@ -375,7 +368,7 @@ const ProjectStakeholderModel = (props) => {
             </span>
           );
         },
-      },
+      },*/
 
       {
         header: t("view_detail"),
@@ -472,7 +465,7 @@ const ProjectStakeholderModel = (props) => {
         onCloseClick={() => setDeleteModal(false)}
       />
       <div className={passedId ? "" : "page-content"}>
-        <div className="container-fluid">
+        <div className="container-fluid1">
           {/* <Breadcrumbs
             title={t("project_stakeholder")}
             breadcrumbItem={t("project_stakeholder")}
@@ -486,10 +479,6 @@ const ProjectStakeholderModel = (props) => {
           {isLoading || searchLoading ? (
             <Spinners setLoading={setLoading} />
           ) : (
-            <Row>
-              <Col xs="12">
-                <Card>
-                  <CardBody>
                     <TableContainer
                       columns={columns}
                       data={showSearchResults ? results : data}
@@ -507,10 +496,6 @@ const ProjectStakeholderModel = (props) => {
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                     />
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
@@ -536,36 +521,13 @@ const ProjectStakeholderModel = (props) => {
                 }}
               >
                 <Row>
-                  {/* <Col className="col-md-6 mb-3">
-                    <Label>{t("psh_project_id")}</Label>
-                    <Input
-                      name="psh_project_id"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.psh_project_id || ""}
-                      invalid={
-                        validation.touched.psh_project_id &&
-                        validation.errors.psh_project_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.psh_project_id &&
-                    validation.errors.psh_project_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.psh_project_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col> */}
+               
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("psh_name")}</Label>
+                    <Label>{t("psh_name")}<span className="text-danger">*</span></Label>
                     <Input
                       name="psh_name"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("psh_name")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.psh_name || ""}
@@ -585,7 +547,7 @@ const ProjectStakeholderModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("psh_stakeholder_type")}</Label>
+                    <Label>{t("psh_stakeholder_type")}<span className="text-danger">*</span></Label>
                     <Input
                       name="psh_stakeholder_type"
                       type="select"
@@ -608,11 +570,11 @@ const ProjectStakeholderModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("psh_representative_name")}</Label>
+                    <Label>{t("psh_representative_name")}<span className="text-danger">*</span></Label>
                     <Input
                       name="psh_representative_name"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("psh_representative_name")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.psh_representative_name || ""}
@@ -632,11 +594,11 @@ const ProjectStakeholderModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("psh_representative_phone")}</Label>
+                    <Label>{t("psh_representative_phone")}<span className="text-danger">*</span></Label>
                     <Input
                       name="psh_representative_phone"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("psh_representative_phone")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.psh_representative_phone || ""}
@@ -660,7 +622,7 @@ const ProjectStakeholderModel = (props) => {
                     <Input
                       name="psh_role"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("psh_role")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.psh_role || ""}
@@ -684,7 +646,7 @@ const ProjectStakeholderModel = (props) => {
                     <Input
                       name="psh_description"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("psh_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.psh_description || ""}
@@ -703,7 +665,7 @@ const ProjectStakeholderModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-6 mb-3" style={{ display: 'none'}}>
                     <Label>{t("psh_status")}</Label>
                     <Input
                       name="psh_status"

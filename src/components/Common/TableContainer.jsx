@@ -191,7 +191,6 @@ const TableContainer = ({
         <Table
           hover
           className={`${tableClass} table-sm table-bordered table-striped`}
-          style={{ minHeight: "350px" }}
           bordered={isBordered}
         >
           <thead className={theadClass}>
@@ -236,7 +235,7 @@ const TableContainer = ({
               </tr>
             ))}
           </thead>
-          <tbody style={{ height: "auto", maxHeight: "300px" }}>
+          <tbody style={{ height: "auto" }}>
             {data.length === 0 ? (
               <tr>
                 <td colSpan={columns.length + 2} className="text-center py-5">
@@ -257,17 +256,6 @@ const TableContainer = ({
                   ))}
                 </tr>
               ))
-            )}
-
-            {Array.from({ length: rowsToFill > 0 ? rowsToFill : 0 }).map(
-              (_, idx) => (
-                <tr
-                  key={`empty-${idx}`}
-                  style={{ height: "50px", padding: "0px" }}
-                >
-                  <td colSpan={columns.length + 1}></td>
-                </tr>
-              )
             )}
           </tbody>
         </Table>

@@ -72,7 +72,6 @@ const SectorCategoryModel = () => {
 
     initialValues: {
       psc_status: (sectorCategory && sectorCategory.psc_status) || "",
-      psc_id: (sectorCategory && sectorCategory.psc_id) || "",
       psc_name: (sectorCategory && sectorCategory.psc_name) || "",
       psc_code: (sectorCategory && sectorCategory.psc_code) || "",
       psc_sector_id: (sectorCategory && sectorCategory.psc_sector_id) || "",
@@ -83,21 +82,23 @@ const SectorCategoryModel = () => {
     },
 
     validationSchema: Yup.object({
-      psc_status: Yup.string().required(t("psc_status")),
-      psc_id: Yup.string().required(t("psc_id")),
-      psc_name: Yup.string().required(t("psc_name")),
-      psc_code: Yup.string().required(t("psc_code")),
-      psc_sector_id: Yup.string().required(t("psc_sector_id")),
-      psc_description: Yup.string().required(t("psc_description")),
+      //psc_status: Yup.string().required(t("psc_status")),
+      //psc_name: Yup.string().required(t("psc_name")),
+      psc_name: Yup.string()
+        .required(t("psc_name"))
+        .test("unique-code", t("Already exists"), (value) => {
+          return !data.some((item) => item.psc_name == value);
+        }),
+      //psc_code: Yup.string().required(t("psc_code")),
+      //psc_description: Yup.string().required(t("psc_description")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateSectorCategory = {
-          psc_delete_time: sectorCategory ? sectorCategory.psc_delete_time : 0,
+          psc_id: sectorCategory ? sectorCategory.psc_id : 0,
           psc_status: values.psc_status,
-          psc_id: values.psc_id,
           psc_name: values.psc_name,
           psc_code: values.psc_code,
           psc_sector_id: values.psc_sector_id,
@@ -112,7 +113,6 @@ const SectorCategoryModel = () => {
       } else {
         const newSectorCategory = {
           psc_status: values.psc_status,
-          psc_id: values.psc_id,
           psc_name: values.psc_name,
           psc_code: values.psc_code,
           psc_sector_id: values.psc_sector_id,
@@ -187,7 +187,6 @@ const SectorCategoryModel = () => {
     const sectorCategory = arg;
     // console.log("handleSectorCategoryClick", sectorCategory);
     setSectorCategory({
-      psc_delete_time: sectorCategory.psc_delete_time,
       psc_status: sectorCategory.psc_status,
       psc_id: sectorCategory.psc_id,
       psc_name: sectorCategory.psc_name,
@@ -213,8 +212,8 @@ const SectorCategoryModel = () => {
   };
 
   const handleDeleteSectorCategory = () => {
-    if (sectorCategory && sectorCategory.psc_delete_time) {
-      dispatch(onDeleteSectorCategory(sectorCategory.psc_delete_time));
+    if (sectorCategory && sectorCategory.psc_id) {
+      dispatch(onDeleteSectorCategory(sectorCategory.psc_id));
       setDeleteModal(false);
     }
   };
@@ -235,32 +234,7 @@ const SectorCategoryModel = () => {
 
   const columns = useMemo(() => {
     const baseColumns = [
-      {
-        header: "",
-        accessorKey: "psc_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.psc_status, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "psc_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.psc_id, 30) || "-"}
-            </span>
-          );
-        },
-      },
+     
       {
         header: "",
         accessorKey: "psc_name",
@@ -287,19 +261,7 @@ const SectorCategoryModel = () => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "psc_sector_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.psc_sector_id, 30) || "-"}
-            </span>
-          );
-        },
-      },
+     
       {
         header: "",
         accessorKey: "psc_description",
@@ -429,8 +391,7 @@ const SectorCategoryModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleSectorCategoryClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("sector_category")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -464,7 +425,7 @@ const SectorCategoryModel = () => {
                 }}
               >
                 <Row>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-6 mb-3" style={{ display: 'none'}}>
                     <Label>{t("psc_status")}</Label>
                     <Input
                       name="psc_status"
@@ -490,34 +451,13 @@ const SectorCategoryModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
+             
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("psc_id")}</Label>
-                    <Input
-                      name="psc_id"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.psc_id || ""}
-                      invalid={
-                        validation.touched.psc_id && validation.errors.psc_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.psc_id && validation.errors.psc_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.psc_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("psc_name")}</Label>
+                    <Label>{t("psc_name")}<span className="text-danger">*</span></Label>
                     <Input
                       name="psc_name"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("psc_name")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.psc_name || ""}
@@ -527,7 +467,7 @@ const SectorCategoryModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={40}
                     />
                     {validation.touched.psc_name &&
                     validation.errors.psc_name ? (
@@ -541,7 +481,7 @@ const SectorCategoryModel = () => {
                     <Input
                       name="psc_code"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("psc_code")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.psc_code || ""}
@@ -551,7 +491,7 @@ const SectorCategoryModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={40}
                     />
                     {validation.touched.psc_code &&
                     validation.errors.psc_code ? (
@@ -560,36 +500,14 @@ const SectorCategoryModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("psc_sector_id")}</Label>
-                    <Input
-                      name="psc_sector_id"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.psc_sector_id || ""}
-                      invalid={
-                        validation.touched.psc_sector_id &&
-                        validation.errors.psc_sector_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.psc_sector_id &&
-                    validation.errors.psc_sector_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.psc_sector_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                  
                   <Col className="col-md-6 mb-3">
                     <Label>{t("psc_description")}</Label>
                     <Input
                       name="psc_description"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      type="textarea"
+                      rows={2}
+                      placeholder={t("psc_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.psc_description || ""}
@@ -599,7 +517,7 @@ const SectorCategoryModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.psc_description &&
                     validation.errors.psc_description ? (

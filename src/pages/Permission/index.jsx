@@ -313,15 +313,6 @@ const PermissionModel = (props) => {
       },
       {
         header: "",
-        accessorKey: "pem_role_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return <span>{cellProps.row.original.pem_role_id}</span>;
-        },
-      },
-      {
-        header: "",
         accessorKey: "pem_enabled",
         enableColumnFilter: false,
         enableSorting: true,
@@ -507,20 +498,16 @@ const PermissionModel = (props) => {
         onCloseClick={() => setDeleteModal(false)}
       />
       <div>
-        <div className="container-fluid">
-          <Breadcrumbs title={t("roles")} breadcrumbItem={t("permission")} />
+        <div className="container-fluid1">        
           {isLoading || searchLoading ? (
             <Spinners setLoading={setLoading} />
-          ) : (
-            <Row>
-              <Col xs="12">
-                <Card>
-                  <CardBody>
+          ) : (           
+               
                     <TableContainer
                       columns={columns}
                       data={showSearchResults ? results : data}
                       isGlobalFilter={true}
-                      isAddButton={true}
+                      isAddButton={false}
                       isCustomPageSize={true}
                       handleUserClick={handlePermissionClicks}
                       isPagination={true}
@@ -532,11 +519,7 @@ const PermissionModel = (props) => {
                       theadClass="table-light"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                    />
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
+                    />           
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">

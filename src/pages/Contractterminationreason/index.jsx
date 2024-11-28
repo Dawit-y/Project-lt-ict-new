@@ -75,38 +75,35 @@ const ContractTerminationReasonModel = () => {
     initialValues: {
       ctr_reason_name_or:
         (contractTerminationReason &&
-          contractTerminationReason.ctr_reason_name_or) ||
-        "",
+          contractTerminationReason.ctr_reason_name_or) ||"",
       ctr_reason_name_am:
         (contractTerminationReason &&
-          contractTerminationReason.ctr_reason_name_am) ||
-        "",
+          contractTerminationReason.ctr_reason_name_am) ||"",
       ctr_reason_name_en:
         (contractTerminationReason &&
-          contractTerminationReason.ctr_reason_name_en) ||
-        "",
+          contractTerminationReason.ctr_reason_name_en) || "",
       ctr_description:
-        (contractTerminationReason &&
-          contractTerminationReason.ctr_description) ||
-        "",
+        (contractTerminationReason && contractTerminationReason.ctr_description) || "",
       ctr_status:
         (contractTerminationReason && contractTerminationReason.ctr_status) ||
         "",
 
       is_deletable:
-        (contractTerminationReason && contractTerminationReason.is_deletable) ||
-        1,
+        (contractTerminationReason && contractTerminationReason.is_deletable) ||1,
       is_editable:
-        (contractTerminationReason && contractTerminationReason.is_editable) ||
-        1,
+        (contractTerminationReason && contractTerminationReason.is_editable) ||1,
     },
 
     validationSchema: Yup.object({
-      ctr_reason_name_or: Yup.string().required(t("ctr_reason_name_or")),
+       ctr_reason_name_or: Yup.string()
+        .required(t("ctr_reason_name_or"))
+        .test("unique-code", t("Already exists"), (value) => {
+          return !data.some((item) => item.ctr_reason_name_or == value);
+        }),
       ctr_reason_name_am: Yup.string().required(t("ctr_reason_name_am")),
       ctr_reason_name_en: Yup.string().required(t("ctr_reason_name_en")),
-      ctr_description: Yup.string().required(t("ctr_description")),
-      ctr_status: Yup.string().required(t("ctr_status")),
+      //ctr_description: Yup.string().required(t("ctr_description")),
+      //ctr_status: Yup.string().required(t("ctr_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -313,19 +310,7 @@ const ContractTerminationReasonModel = () => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "ctr_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.ctr_status, 30) || "-"}
-            </span>
-          );
-        },
-      },
+      
 
       {
         header: t("view_detail"),
@@ -443,7 +428,7 @@ const ContractTerminationReasonModel = () => {
                       handleUserClick={handleContractTerminationReasonClicks}
                       isPagination={true}
                       // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={
                         t("add") + " " + t("contract_termination_reason")
@@ -486,11 +471,11 @@ const ContractTerminationReasonModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("ctr_reason_name_or")}</Label>
+                    <Label>{t("ctr_reason_name_or")}<span className="text-danger">*</span></Label>
                     <Input
                       name="ctr_reason_name_or"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("ctr_reason_name_or")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.ctr_reason_name_or || ""}
@@ -500,7 +485,7 @@ const ContractTerminationReasonModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={40}
                     />
                     {validation.touched.ctr_reason_name_or &&
                     validation.errors.ctr_reason_name_or ? (
@@ -510,11 +495,11 @@ const ContractTerminationReasonModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("ctr_reason_name_am")}</Label>
+                    <Label>{t("ctr_reason_name_am")}<span className="text-danger">*</span></Label>
                     <Input
                       name="ctr_reason_name_am"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("ctr_reason_name_am")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.ctr_reason_name_am || ""}
@@ -524,7 +509,7 @@ const ContractTerminationReasonModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={40}
                     />
                     {validation.touched.ctr_reason_name_am &&
                     validation.errors.ctr_reason_name_am ? (
@@ -534,11 +519,11 @@ const ContractTerminationReasonModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("ctr_reason_name_en")}</Label>
+                    <Label>{t("ctr_reason_name_en")}<span className="text-danger">*</span></Label>
                     <Input
                       name="ctr_reason_name_en"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("ctr_reason_name_en")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.ctr_reason_name_en || ""}
@@ -548,7 +533,7 @@ const ContractTerminationReasonModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={40}
                     />
                     {validation.touched.ctr_reason_name_en &&
                     validation.errors.ctr_reason_name_en ? (
@@ -562,7 +547,7 @@ const ContractTerminationReasonModel = () => {
                     <Input
                       name="ctr_description"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("ctr_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.ctr_description || ""}
@@ -572,7 +557,7 @@ const ContractTerminationReasonModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={50}
                     />
                     {validation.touched.ctr_description &&
                     validation.errors.ctr_description ? (
@@ -581,7 +566,7 @@ const ContractTerminationReasonModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-6 mb-3" style={{ display: 'none'}}>
                     <Label>{t("ctr_status")}</Label>
                     <Input
                       name="ctr_status"

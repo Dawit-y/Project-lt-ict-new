@@ -49,10 +49,6 @@ const ContractorTypeModal = (props) => {
                     <p className="mb-2">
             {t('cnt_description')}: <span className="text-primary">{transaction.cnt_description}</span>
           </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('cnt_status')}: <span className="text-primary">{transaction.cnt_status}</span>
-          </p>
           </tr>
 
           {transaction.is_deletable === 1 && (

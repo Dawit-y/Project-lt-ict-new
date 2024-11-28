@@ -274,21 +274,6 @@ const UserRoleModel = (props) => {
         },
       },
       {
-        header: "",
-        accessorKey: "url_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.url_status, 30) ||
-                `${cellProps.row.original.url_status}`}
-            </span>
-          );
-        },
-      },
-
-      {
         header: t("view_detail"),
         enableColumnFilter: false,
         enableSorting: true,

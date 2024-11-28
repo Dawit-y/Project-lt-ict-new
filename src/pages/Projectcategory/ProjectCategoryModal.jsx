@@ -53,10 +53,6 @@ const ProjectCategoryModal = (props) => {
                     <p className="mb-2">
             {t('pct_description')}: <span className="text-primary">{transaction.pct_description}</span>
           </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pct_status')}: <span className="text-primary">{transaction.pct_status}</span>
-          </p>
           </tr>
 
           {transaction.is_deletable === 1 && (

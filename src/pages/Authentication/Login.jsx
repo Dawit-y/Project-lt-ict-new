@@ -36,7 +36,7 @@ import { LOGIN_TITLE , FOOTER_TEXT} from "../../constants/constantFile";
 
 const Login = (props) => {
   //meta title
-  document.title = "Login | Skote - Vite React Admin & Dashboard Template";
+  document.title = "Login - PMS";
   const dispatch = useDispatch();
   const [passwordStrength, setPasswordStrength] = useState("");
 
@@ -61,7 +61,7 @@ const Login = (props) => {
     }),
     onSubmit: async (values) => {
       try {
-        // console.log("login page ...");
+        // console.log("login page ...");        
          dispatch(loginUser(values, props.router.navigate));
       } catch (error) {
         // console.log("error message ", error);

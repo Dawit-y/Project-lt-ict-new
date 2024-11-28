@@ -86,11 +86,16 @@ const StakeholderTypeModel = () => {
     },
 
     validationSchema: Yup.object({
-      sht_type_name_or: Yup.string().required(t("sht_type_name_or")),
+       sht_type_name_or: Yup.string()
+        .required(t("sht_type_name_or"))
+        .test("unique-code", t("Already exists"), (value) => {
+          return !data.some((item) => item.sht_type_name_or == value);
+        }),
+      //sht_type_name_or: Yup.string().required(t("sht_type_name_or")),
       sht_type_name_am: Yup.string().required(t("sht_type_name_am")),
       sht_type_name_en: Yup.string().required(t("sht_type_name_en")),
-      sht_description: Yup.string().required(t("sht_description")),
-      sht_status: Yup.string().required(t("sht_status")),
+     // sht_description: Yup.string().required(t("sht_description")),
+     // sht_status: Yup.string().required(t("sht_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -288,20 +293,6 @@ const StakeholderTypeModel = () => {
         },
       },
       {
-        header: "",
-        accessorKey: "sht_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.sht_status, 30) || `${cellProps.row.original.sht_status}`}
-            </span>
-          );
-        },
-      },
-
-      {
         header: t("view_detail"),
         enableColumnFilter: false,
         enableSorting: true,
@@ -416,8 +407,7 @@ const StakeholderTypeModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleStakeholderTypeClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={ t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("stakeholder_type")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -456,7 +446,7 @@ const StakeholderTypeModel = () => {
                     <Input
                       name="sht_type_name_or"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("sht_type_name_or")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.sht_type_name_or || ""}
@@ -466,7 +456,7 @@ const StakeholderTypeModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={40}
                     />
                     {validation.touched.sht_type_name_or &&
                     validation.errors.sht_type_name_or ? (
@@ -480,7 +470,7 @@ const StakeholderTypeModel = () => {
                     <Input
                       name="sht_type_name_am"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("sht_type_name_am")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.sht_type_name_am || ""}
@@ -490,7 +480,7 @@ const StakeholderTypeModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={40}
                     />
                     {validation.touched.sht_type_name_am &&
                     validation.errors.sht_type_name_am ? (
@@ -504,7 +494,7 @@ const StakeholderTypeModel = () => {
                     <Input
                       name="sht_type_name_en"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("sht_type_name_en")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.sht_type_name_en || ""}
@@ -514,7 +504,7 @@ const StakeholderTypeModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={40}
                     />
                     {validation.touched.sht_type_name_en &&
                     validation.errors.sht_type_name_en ? (
@@ -527,8 +517,9 @@ const StakeholderTypeModel = () => {
                     <Label>{t("sht_description")}</Label>
                     <Input
                       name="sht_description"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      type="textarea"
+                      rows={2}
+                      placeholder={t("sht_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.sht_description || ""}
@@ -538,7 +529,7 @@ const StakeholderTypeModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.sht_description &&
                     validation.errors.sht_description ? (
@@ -547,32 +538,7 @@ const StakeholderTypeModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("sht_status")}</Label>
-                    <Input
-                      name="sht_status"
-                      type="select"
-                      className="form-select"
-                      onChange={(e) => {
-                        validation.setFieldValue(
-                          "sht_status",
-                          Number(e.target.value)
-                        );
-                      }}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.sht_status}
-                    >
-                      <option value={""}>Select status</option>
-                      <option value={1}>{t("Active")}</option>
-                      <option value={0}>{t("Inactive")}</option>
-                    </Input>
-                    {validation.touched.sht_status &&
-                    validation.errors.sht_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.sht_status}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                 
                 </Row>
                 <Row>
                   <Col>

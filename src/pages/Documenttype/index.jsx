@@ -83,12 +83,18 @@ const DocumentTypeModel = () => {
     },
 
     validationSchema: Yup.object({
-      pdt_doc_name_or: Yup.string().required(t("pdt_doc_name_or")),
-      pdt_doc_name_am: Yup.string().required(t("pdt_doc_name_am")),
-      pdt_doc_name_en: Yup.string().required(t("pdt_doc_name_en")),
-      pdt_code: Yup.string().required(t("pdt_code")),
-      pdt_description: Yup.string().required(t("pdt_description")),
-      pdt_status: Yup.string().required(t("pdt_status")),
+      pdt_doc_name_or: Yup.string()
+        .required(t("pdt_doc_name_or"))
+        .test("unique-code", t("Already exists"), (value) => {
+          return !data.some((item) => item.pdt_doc_name_or == value);
+        }),
+
+      //pdt_doc_name_or: Yup.string().required(t("pdt_doc_name_or")),
+      //pdt_doc_name_am: Yup.string().required(t("pdt_doc_name_am")),
+      //pdt_doc_name_en: Yup.string().required(t("pdt_doc_name_en")),
+      //pdt_code: Yup.string().required(t("pdt_code")),
+      //pdt_description: Yup.string().required(t("pdt_description")),
+      //pdt_status: Yup.string().required(t("pdt_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -274,19 +280,7 @@ const DocumentTypeModel = () => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "pdt_code",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pdt_code, 30) || "-"}
-            </span>
-          );
-        },
-      },
+   
       {
         header: "",
         accessorKey: "pdt_description",
@@ -300,20 +294,7 @@ const DocumentTypeModel = () => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "pdt_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pdt_status, 30) || `${cellProps.row.original.pdt_status}`}
-            </span>
-          );
-        },
-      },
-
+  
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -429,8 +410,7 @@ const DocumentTypeModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleDocumentTypeClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("document_type")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -465,11 +445,11 @@ const DocumentTypeModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pdt_doc_name_or")}</Label>
+                    <Label>{t("pdt_doc_name_or")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pdt_doc_name_or"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("pdt_doc_name_or")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.pdt_doc_name_or || ""}
@@ -493,7 +473,7 @@ const DocumentTypeModel = () => {
                     <Input
                       name="pdt_doc_name_am"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("pdt_doc_name_am")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.pdt_doc_name_am || ""}
@@ -517,7 +497,7 @@ const DocumentTypeModel = () => {
                     <Input
                       name="pdt_doc_name_en"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("pdt_doc_name_en")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.pdt_doc_name_en || ""}
@@ -536,12 +516,12 @@ const DocumentTypeModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-6 mb-3" style={{ display: 'none'}}>
                     <Label>{t("pdt_code")}</Label>
                     <Input
                       name="pdt_code"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("pdt_code")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.pdt_code || ""}
@@ -564,8 +544,9 @@ const DocumentTypeModel = () => {
                     <Label>{t("pdt_description")}</Label>
                     <Input
                       name="pdt_description"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      type="textarea"
+                      rows={2}
+                      placeholder={t("pdt_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.pdt_description || ""}
@@ -584,32 +565,7 @@ const DocumentTypeModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pdt_status")}</Label>
-                    <Input
-                      name="pdt_status"
-                      type="select"
-                      className="form-select"
-                      onChange={(e) => {
-                        validation.setFieldValue(
-                          "pdt_status",
-                          Number(e.target.value)
-                        );
-                      }}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pdt_status}
-                    >
-                      <option value={""}>Select status</option>
-                      <option value={1}>{t("Active")}</option>
-                      <option value={0}>{t("Inactive")}</option>
-                    </Input>
-                    {validation.touched.pdt_status &&
-                    validation.errors.pdt_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pdt_status}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                  
                 </Row>
                 <Row>
                   <Col>
