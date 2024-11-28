@@ -17,7 +17,7 @@ pipeline {
             steps {
              
                 nodejs(NODE_VERSION) {
-                    sh 'npm install'
+                    sh 'npm install --force'
                 }
             }
         }
