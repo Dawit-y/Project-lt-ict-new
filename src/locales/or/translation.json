@@ -606,7 +606,6 @@
   "look_up": "Barbaadi",
   "Already exists": "Duraanis jira",
 
-
   "Table": "Teessuma",
   "Table Heatmap": "Teessuma kaarataa ho'a",
   "Table Col Heatmap": "Teessuma kaarataa ho'a saaqa",
@@ -646,5 +645,7 @@
   "Get Statistical Report": "Odeeffannoo Herregaa argachuu",
   "Select To Get The Report": "Odeeffannoo argachuuf filadhu",
   "Report": "Gabaasa",
-  "Statistical Report": "Gabaasa Lakkoofsa"
+  "Statistical Report": "Gabaasa Lakkoofsa",
+  "Error occured while fetching": "Dogoggorri yeroo fidu uumame",
+  "Retry": "irra deebi'ii yaali"
 }

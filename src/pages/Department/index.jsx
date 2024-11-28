@@ -40,6 +40,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -64,7 +65,7 @@ const DepartmentModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError } = useFetchDepartments();
+  const { data, isLoading, error, isError, refetch } = useFetchDepartments();
 
   const addDepartment = useAddDepartment();
   const updateDepartment = useUpdateDepartment();
@@ -475,6 +476,10 @@ const DepartmentModel = () => {
 
     return baseColumns;
   }, [handleDepartmentClick, toggleViewModal, onClickDelete]);
+
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
 
   return (
     <React.Fragment>
