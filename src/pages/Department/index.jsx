@@ -125,22 +125,34 @@ const DepartmentModel = () => {
       dep_name_or: Yup.string()
         .required(t("dep_name_or"))
         .test("unique-dep_name_or", t("Already exists"), (value) => {
-          return !data?.data.some((item) => item.dep_name_or == value);
+          return !data?.data.some(
+            (item) =>
+              item.dep_name_or == value && item.dep_id !== department?.dep_id
+          );
         }),
       dep_name_am: Yup.string()
         .required(t("dep_name_am"))
         .test("unique-dep_name_am", t("Already exists"), (value) => {
-          return !data?.data.some((item) => item.dep_name_am == value);
+          return !data?.data.some(
+            (item) =>
+              item.dep_name_am == value && item.dep_id !== department?.dep_id
+          );
         }),
       dep_name_en: Yup.string()
         .required(t("dep_name_en"))
         .test("unique-dep_name_en", t("Already exists"), (value) => {
-          return !data?.data.some((item) => item.dep_name_en == value);
+          return !data?.data.some(
+            (item) =>
+              item.dep_name_en == value && item.dep_id !== department?.dep_id
+          );
         }),
       dep_code: Yup.string()
         .required(t("dep_code"))
         .test("unique-code", t("Already exists"), (value) => {
-          return !data?.data.some((item) => item.dep_code == value);
+          return !data?.data.some(
+            (item) =>
+              item.dep_code == value && item.dep_id !== department?.dep_id
+          );
         }),
       dep_available_at_region: Yup.boolean(),
       dep_available_at_zone: Yup.boolean(),

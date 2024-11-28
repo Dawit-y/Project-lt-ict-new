@@ -102,7 +102,10 @@ const UserRoleModel = (props) => {
       url_role_id: Yup.number()
         .required(t("url_role_id"))
         .test("unique-role-id", t("Already exists"), (value) => {
-          return !data.some((item) => item.url_role_id == value);
+          return !data.some(
+            (item) =>
+              item.url_role_id == value && item.url_id !== userRole?.url_id
+          );
         }),
       // url_user_id: Yup.string().required(t("url_user_id")),
       url_description: Yup.string().required(t("url_description")),

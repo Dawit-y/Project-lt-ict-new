@@ -94,7 +94,7 @@ const BudgetYearModel = () => {
       bdy_name: (budgetYear && budgetYear.bdy_name) || "",
       bdy_code: (budgetYear && budgetYear.bdy_code) || "",
       bdy_description: (budgetYear && budgetYear.bdy_description) || "",
-      bdy_status: (budgetYear && budgetYear.bdy_status) || "",
+      bdy_status: budgetYear && budgetYear.bdy_status,
 
       is_deletable: (budgetYear && budgetYear.is_deletable) || 1,
       is_editable: (budgetYear && budgetYear.is_editable) || 1,
@@ -104,12 +104,18 @@ const BudgetYearModel = () => {
       bdy_name: Yup.string()
         .required(t("bdy_name"))
         .test("unique-name", t("Already exists"), (value) => {
-          return !data.some((item) => item.bdy_name == value);
+          return !data.some(
+            (item) =>
+              item.bdy_name == value && item.bdy_id !== budgetYear?.bdy_id
+          );
         }),
       bdy_code: Yup.string()
         .required(t("bdy_code"))
         .test("unique-code", t("Already exists"), (value) => {
-          return !data.some((item) => item.bdy_code == value);
+          return !data.some(
+            (item) =>
+              item.bdy_code == value && item.bdy_id !== budgetYear?.bdy_id
+          );
         }),
       bdy_description: Yup.string().required(t("bdy_description")),
       bdy_status: Yup.string().required(t("bdy_status")),
@@ -386,7 +392,7 @@ const BudgetYearModel = () => {
           <Breadcrumbs
             title={t("budget_year")}
             breadcrumbItem={t("budget_year")}
-          />          
+          />
           {isLoading || searchLoading ? (
             <Spinners setLoading={setLoading} />
           ) : (
@@ -523,8 +529,14 @@ const BudgetYearModel = () => {
                       }}
                       onBlur={validation.handleBlur}
                       value={validation.values.bdy_status}
+                      invalid={
+                        validation.touched.bdy_status &&
+                        validation.errors.bdy_status
+                          ? true
+                          : false
+                      }
                     >
-                      <option value={""}>Select status</option>
+                      <option value={null}>Select status</option>
                       <option value={1}>{t("Active")}</option>
                       <option value={0}>{t("Inactive")}</option>
                     </Input>
