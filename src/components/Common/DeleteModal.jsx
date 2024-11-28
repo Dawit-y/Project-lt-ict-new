@@ -4,7 +4,7 @@ import { Modal, ModalBody } from "reactstrap";
 import { useTranslation } from "react-i18next";
 import { Spinner } from "reactstrap";
 
-const DeleteModal = ({ show, onDeleteClick, onCloseClick, update_loading }) => {
+const DeleteModal = ({ show, onDeleteClick, onCloseClick, isLoading }) => {
   const { t } = useTranslation();
   return (
     <Modal size="md" isOpen={show} toggle={onCloseClick} centered={true}>
@@ -23,14 +23,14 @@ const DeleteModal = ({ show, onDeleteClick, onCloseClick, update_loading }) => {
           <p className="text-muted font-size-16 mb-4">{t("confirm_erase")}</p>
 
           <div className="hstack gap-2 justify-content-center mb-0">
-            {update_loading ? (
+            {isLoading ? (
               <button
                 type="button"
                 className="btn btn-danger"
                 onClick={onDeleteClick}
-                disabled={true}
+                disabled={isLoading}
               >
-                <Spinner size={"sm"} color="#fff" />
+                <Spinner size={"sm"} color="#fff" className="me-1" />
                 <span> {t("delete_now")}</span>
               </button>
             ) : (

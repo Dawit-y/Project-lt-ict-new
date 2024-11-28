@@ -6,14 +6,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { InputGroup, Spinner } from "reactstrap";
+import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns1";
-
 import {
   useFetchDepartments,
   useSearchDepartments,
@@ -111,11 +108,11 @@ const DepartmentModel = () => {
       dep_name_en: (department && department.dep_name_en) || "",
       dep_code: (department && department.dep_code) || "",
       dep_available_at_region:
-        (department && department.dep_available_at_region) || "",
+        (department && department.dep_available_at_region) || false,
       dep_available_at_zone:
-        (department && department.dep_available_at_zone) || "",
+        (department && department.dep_available_at_zone) || false,
       dep_available_at_woreda:
-        (department && department.dep_available_at_woreda) || "",
+        (department && department.dep_available_at_woreda) || false,
       dep_description: (department && department.dep_description) || "",
       dep_status: department && department.dep_status,
 
@@ -124,17 +121,29 @@ const DepartmentModel = () => {
     },
 
     validationSchema: Yup.object({
-      dep_name_or: Yup.string().required(t("dep_name_or")),
-      dep_name_am: Yup.string().required(t("dep_name_am")),
-      dep_name_en: Yup.string().required(t("dep_name_en")),
-      dep_code: Yup.string().required(t("dep_code")),
-      dep_available_at_region: Yup.string().required(
-        t("dep_available_at_region")
-      ),
-      dep_available_at_zone: Yup.string().required(t("dep_available_at_zone")),
-      dep_available_at_woreda: Yup.string().required(
-        t("dep_available_at_woreda")
-      ),
+      dep_name_or: Yup.string()
+        .required(t("dep_name_or"))
+        .test("unique-dep_name_or", t("Already exists"), (value) => {
+          return !data?.data.some((item) => item.dep_name_or == value);
+        }),
+      dep_name_am: Yup.string()
+        .required(t("dep_name_am"))
+        .test("unique-dep_name_am", t("Already exists"), (value) => {
+          return !data?.data.some((item) => item.dep_name_am == value);
+        }),
+      dep_name_en: Yup.string()
+        .required(t("dep_name_en"))
+        .test("unique-dep_name_en", t("Already exists"), (value) => {
+          return !data?.data.some((item) => item.dep_name_en == value);
+        }),
+      dep_code: Yup.string()
+        .required(t("dep_code"))
+        .test("unique-code", t("Already exists"), (value) => {
+          return !data?.data.some((item) => item.dep_code == value);
+        }),
+      dep_available_at_region: Yup.boolean(),
+      dep_available_at_zone: Yup.boolean(),
+      dep_available_at_woreda: Yup.boolean(),
       dep_description: Yup.string().required(t("dep_description")),
       dep_status: Yup.string().required(t("dep_status")),
     }),
@@ -144,14 +153,13 @@ const DepartmentModel = () => {
       if (isEdit) {
         const updateDepartmentData = {
           dep_id: department ? department.dep_id : 0,
-          // dep_id:department.dep_id,
           dep_name_or: values.dep_name_or,
           dep_name_am: values.dep_name_am,
           dep_name_en: values.dep_name_en,
           dep_code: values.dep_code,
-          dep_available_at_region: values.dep_available_at_region,
-          dep_available_at_zone: values.dep_available_at_zone,
-          dep_available_at_woreda: values.dep_available_at_woreda,
+          dep_available_at_region: values.dep_available_at_region ? 1 : 0,
+          dep_available_at_zone: values.dep_available_at_zone ? 1 : 0,
+          dep_available_at_woreda: values.dep_available_at_woreda ? 1 : 0,
           dep_description: values.dep_description,
           dep_status: values.dep_status,
 
@@ -160,8 +168,6 @@ const DepartmentModel = () => {
         };
         // update Department
         handleUpdateDepartment(updateDepartmentData);
-
-        // dispatch(onUpdateDepartment(updateDepartmentData));
         validation.resetForm();
       } else {
         const newDepartmentData = {
@@ -169,9 +175,9 @@ const DepartmentModel = () => {
           dep_name_am: values.dep_name_am,
           dep_name_en: values.dep_name_en,
           dep_code: values.dep_code,
-          dep_available_at_region: values.dep_available_at_region,
-          dep_available_at_zone: values.dep_available_at_zone,
-          dep_available_at_woreda: values.dep_available_at_woreda,
+          dep_available_at_region: values.dep_available_at_region ? 1 : 0,
+          dep_available_at_zone: values.dep_available_at_zone ? 1 : 0,
+          dep_available_at_woreda: values.dep_available_at_woreda ? 1 : 0,
           dep_description: values.dep_description,
           dep_status: values.dep_status,
         };
@@ -213,9 +219,9 @@ const DepartmentModel = () => {
       dep_name_am: department.dep_name_am,
       dep_name_en: department.dep_name_en,
       dep_code: department.dep_code,
-      dep_available_at_region: department.dep_available_at_region,
-      dep_available_at_zone: department.dep_available_at_zone,
-      dep_available_at_woreda: department.dep_available_at_woreda,
+      dep_available_at_region: department.dep_available_at_region === 1,
+      dep_available_at_zone: department.dep_available_at_zone === 1,
+      dep_available_at_woreda: department.dep_available_at_woreda === 1,
       dep_description: department.dep_description,
       dep_status: department.dep_status,
       is_deletable: department.is_deletable,
@@ -325,10 +331,9 @@ const DepartmentModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
-                cellProps.row.original.dep_available_at_region,
-                30
-              ) || "-"}
+              {cellProps.row.original.dep_available_at_region == 1
+                ? "Yes"
+                : "No"}
             </span>
           );
         },
@@ -341,8 +346,7 @@ const DepartmentModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.dep_available_at_zone, 30) ||
-                "-"}
+              {cellProps.row.original.dep_available_at_zone == 1 ? "Yes" : "No"}
             </span>
           );
         },
@@ -355,10 +359,9 @@ const DepartmentModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
-                cellProps.row.original.dep_available_at_woreda,
-                30
-              ) || "-"}
+              {cellProps.row.original.dep_available_at_woreda == 1
+                ? "Yes"
+                : "No"}
             </span>
           );
         },
@@ -484,6 +487,7 @@ const DepartmentModel = () => {
         show={deleteModal}
         onDeleteClick={handleDeleteDepartment}
         onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteDepartment.isPending}
       />
       <div className="page-content">
         <div className="container-fluid">
@@ -538,7 +542,6 @@ const DepartmentModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleDepartmentClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("department")}
@@ -663,12 +666,89 @@ const DepartmentModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <CascadingDropdowns
-                    validation={validation}
-                    dropdown1name="dep_available_at_region"
-                    dropdown2name="dep_available_at_zone"
-                    dropdown3name="dep_available_at_woreda"
-                  />
+                  <Row>
+                    <Col className="col-md-6 col-xl-4 mb-3">
+                      <Label for="dep_available_at_region" className="me-1">
+                        {t("dep_available_at_region")}
+                      </Label>
+                      <Input
+                        id="dep_available_at_region"
+                        name="dep_available_at_region"
+                        type="checkbox"
+                        placeholder={t("insert_status_name_amharic")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.dep_available_at_region}
+                        invalid={
+                          validation.touched.dep_available_at_region &&
+                          validation.errors.dep_available_at_region
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.dep_available_at_region &&
+                      validation.errors.dep_available_at_region ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.dep_available_at_region}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
+                    <Col className="col-md-6 col-xl-4 mb-3">
+                      <Label className="me-1" for="dep_available_at_zone">
+                        {t("dep_available_at_zone")}
+                      </Label>
+                      <Input
+                        id="dep_available_at_zone"
+                        name="dep_available_at_zone"
+                        type="checkbox"
+                        placeholder={t("insert_status_name_amharic")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.dep_available_at_zone}
+                        invalid={
+                          validation.touched.dep_available_at_zone &&
+                          validation.errors.dep_available_at_zone
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.dep_available_at_zone &&
+                      validation.errors.dep_available_at_zone ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.dep_available_at_zone}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
+                    <Col className="col-md-6 col-xl-4 mb-3">
+                      <Label className="me-1" for="dep_available_at_woreda">
+                        {t("dep_available_at_woreda")}
+                      </Label>
+                      <Input
+                        id="dep_available_at_woreda"
+                        name="dep_available_at_woreda"
+                        type="checkbox"
+                        placeholder={t("insert_status_name_amharic")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.dep_available_at_woreda}
+                        invalid={
+                          validation.touched.dep_available_at_woreda &&
+                          validation.errors.dep_available_at_woreda
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.dep_available_at_woreda &&
+                      validation.errors.dep_available_at_woreda ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.dep_available_at_woreda}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
+                  </Row>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("dep_description")}</Label>
                     <Input

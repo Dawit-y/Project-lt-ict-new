@@ -90,7 +90,7 @@ export const useDeleteDepartment = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (dept) => dept.dep_id !== deletedDepartment.deleted_id
+            (dept) => dept.dep_id !== parseInt(deletedDepartment.deleted_id)
           ),
         };
       });
