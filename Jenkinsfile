@@ -17,7 +17,7 @@ pipeline {
             steps {
              
                 nodejs(NODE_VERSION) {
-                    sh 'npm install'
+                    sh 'npm install force'
                 }
             }
         }
@@ -35,7 +35,7 @@ pipeline {
             steps {
                 
                 nodejs(NODE_VERSION) {
-                    sh 'npm run build'
+                    sh 'npm run dev'
                 }
             }
         }
