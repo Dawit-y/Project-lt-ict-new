@@ -17,7 +17,7 @@ pipeline {
             steps {
              
                 nodejs(NODE_VERSION) {
-                    sh 'npm install --force'
+                    sh 'npm install'
                 }
             }
         }
@@ -44,6 +44,7 @@ pipeline {
             steps {
                 // Deployment commands (e.g., upload to server or cloud storage)
                 echo 'Deploying the application...'
+                
             }
         }
     }
