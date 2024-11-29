@@ -15,7 +15,7 @@ import DeleteModal from "../../components/Common/DeleteModal";
 
 import { AgGridReact } from "ag-grid-react";
 
-import 'ag-grid-enterprise';
+import "ag-grid-enterprise";
 import "ag-grid-community/styles/ag-grid.css";
 //import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -466,249 +466,249 @@ const ProjectModel = () => {
     toggle();
   };
 
-  const columnDefs = useMemo(() => {
-    const baseColumnDefs = [
-      {
-        headerName: t("prj_name"),
-        field: "prj_name",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_name, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_code"),
-        field: "prj_code",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_code, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_total_estimate_budget"),
-        field: "prj_total_estimate_budget",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_total_estimate_budget, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_total_actual_budget"),
-        field: "prj_total_actual_budget",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_total_actual_budget, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_sector_id"),
-        field: "prj_sector_id",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_sector_id, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_location_zone_id"),
-        field: "prj_location_zone_id",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_location_zone_id, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_location_woreda_id"),
-        field: "prj_location_woreda_id",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_location_woreda_id, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_location_kebele_id"),
-        field: "prj_location_kebele_id",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_location_kebele_id, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_owner_zone_id"),
-        field: "prj_owner_zone_id",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_owner_zone_id, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_owner_woreda_id"),
-        field: "prj_owner_woreda_id",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_owner_woreda_id, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_start_date_et"),
-        field: "prj_start_date_et",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_start_date_et, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_start_date_gc"),
-        field: "prj_start_date_gc",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_start_date_gc, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_start_date_plan_et"),
-        field: "prj_start_date_plan_et",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_start_date_plan_et, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_start_date_plan_gc"),
-        field: "prj_start_date_plan_gc",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_start_date_plan_gc, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_end_date_actual_et"),
-        field: "prj_end_date_actual_et",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_end_date_actual_et, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_end_date_actual_gc"),
-        field: "prj_end_date_actual_gc",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_end_date_actual_gc, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_end_date_plan_gc"),
-        field: "prj_end_date_plan_gc",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_end_date_plan_gc, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_end_date_plan_et"),
-        field: "prj_end_date_plan_et",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_end_date_plan_et, 30) || "-";
-        },
-      },
-      {
-        headerName: t("view_detail"),
-        sortable: true,
-        filter: false,
-        cellRenderer: (params) => {
-          const { prj_id } = params.data;
+  // const columnDefs = useMemo(() => {
+  //   const baseColumnDefs = [
+  //     {
+  //       headerName: t("prj_name"),
+  //       field: "prj_name",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_name, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_code"),
+  //       field: "prj_code",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_code, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_total_estimate_budget"),
+  //       field: "prj_total_estimate_budget",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_total_estimate_budget, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_total_actual_budget"),
+  //       field: "prj_total_actual_budget",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_total_actual_budget, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_sector_id"),
+  //       field: "prj_sector_id",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_sector_id, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_location_zone_id"),
+  //       field: "prj_location_zone_id",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_location_zone_id, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_location_woreda_id"),
+  //       field: "prj_location_woreda_id",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_location_woreda_id, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_location_kebele_id"),
+  //       field: "prj_location_kebele_id",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_location_kebele_id, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_owner_zone_id"),
+  //       field: "prj_owner_zone_id",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_owner_zone_id, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_owner_woreda_id"),
+  //       field: "prj_owner_woreda_id",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_owner_woreda_id, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_start_date_et"),
+  //       field: "prj_start_date_et",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_start_date_et, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_start_date_gc"),
+  //       field: "prj_start_date_gc",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_start_date_gc, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_start_date_plan_et"),
+  //       field: "prj_start_date_plan_et",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_start_date_plan_et, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_start_date_plan_gc"),
+  //       field: "prj_start_date_plan_gc",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_start_date_plan_gc, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_end_date_actual_et"),
+  //       field: "prj_end_date_actual_et",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_end_date_actual_et, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_end_date_actual_gc"),
+  //       field: "prj_end_date_actual_gc",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_end_date_actual_gc, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_end_date_plan_gc"),
+  //       field: "prj_end_date_plan_gc",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_end_date_plan_gc, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_end_date_plan_et"),
+  //       field: "prj_end_date_plan_et",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_end_date_plan_et, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("view_detail"),
+  //       sortable: true,
+  //       filter: false,
+  //       cellRenderer: (params) => {
+  //         const { prj_id } = params.data;
 
-          return (
-            <Link to={`/Project/${prj_id}`}>
-              <Button type="button" color="primary" className="btn-sm">
-                {t("view_detail")}
-              </Button>
-            </Link>
-          );
-        },
-      },
-    ];
+  //         return (
+  //           <Link to={`/Project/${prj_id}`}>
+  //             <Button type="button" color="primary" className="btn-sm">
+  //               {t("view_detail")}
+  //             </Button>
+  //           </Link>
+  //         );
+  //       },
+  //     },
+  //   ];
 
-    // Adding the action buttons column
-    if (previledge?.is_role_editable && previledge?.is_role_deletable) {
-      baseColumnDefs.push({
-        headerName: t("actions"),
-        field: "actions",
-        cellRenderer: (params) => {
-          return (
-            <div className="action-icons">
-              {params.data.is_editable ? (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => handleProjectClick(params.data)}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              ) : (
-                ""
-              )}
-              {params.data.is_editable ? (
-                <Link
-                  to="#"
-                  className="text-secondary ms-2"
-                  onClick={() => handleClick(params.data)}
-                >
-                  <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
-                  <UncontrolledTooltip placement="top" target="viewtooltip">
-                    View
-                  </UncontrolledTooltip>
-                </Link>
-              ) : (
-                ""
-              )}
-              {params.data.is_deletable ? (
-                <Link
-                  to="#"
-                  className="text-danger ms-2"
-                  onClick={() => onClickDelete(params.data)}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              ) : (
-                ""
-              )}
-            </div>
-          );
-        },
-      });
-    }
+  //   // Adding the action buttons column
+  //   if (previledge?.is_role_editable && previledge?.is_role_deletable) {
+  //     baseColumnDefs.push({
+  //       headerName: t("actions"),
+  //       field: "actions",
+  //       cellRenderer: (params) => {
+  //         return (
+  //           <div className="action-icons">
+  //             {params.data.is_editable ? (
+  //               <Link
+  //                 to="#"
+  //                 className="text-success"
+  //                 onClick={() => handleProjectClick(params.data)}
+  //               >
+  //                 <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+  //                 <UncontrolledTooltip placement="top" target="edittooltip">
+  //                   Edit
+  //                 </UncontrolledTooltip>
+  //               </Link>
+  //             ) : (
+  //               ""
+  //             )}
+  //             {params.data.is_editable ? (
+  //               <Link
+  //                 to="#"
+  //                 className="text-secondary ms-2"
+  //                 onClick={() => handleClick(params.data)}
+  //               >
+  //                 <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
+  //                 <UncontrolledTooltip placement="top" target="viewtooltip">
+  //                   View
+  //                 </UncontrolledTooltip>
+  //               </Link>
+  //             ) : (
+  //               ""
+  //             )}
+  //             {params.data.is_deletable ? (
+  //               <Link
+  //                 to="#"
+  //                 className="text-danger ms-2"
+  //                 onClick={() => onClickDelete(params.data)}
+  //               >
+  //                 <i
+  //                   className="mdi mdi-delete font-size-18"
+  //                   id="deletetooltip"
+  //                 />
+  //                 <UncontrolledTooltip placement="top" target="deletetooltip">
+  //                   Delete
+  //                 </UncontrolledTooltip>
+  //               </Link>
+  //             ) : (
+  //               ""
+  //             )}
+  //           </div>
+  //         );
+  //       },
+  //     });
+  //   }
 
-    return baseColumnDefs;
-  }, [handleProjectClick, toggleViewModal, onClickDelete]);
+  //   return baseColumnDefs;
+  // }, [handleProjectClick, toggleViewModal, onClickDelete]);
 
   const project_status = [
     { label: "select Status name", value: "" },
@@ -735,6 +735,104 @@ const ProjectModel = () => {
     gridRef.current.api.setRowData(showSearchResults ? results : data);
   };
 
+  const [columnDefs] = useState([
+    {
+      field: "prj_id",
+      headerName: "Project ID",
+      checkboxSelection: true,
+      headerCheckboxSelection: true,
+      pivot: false, // Project ID is not likely to be used as a pivot
+      sortable: true,
+      filter: "agTextColumnFilter",
+    },
+    {
+      field: "prj_name",
+      headerName: "Project Name",
+      sortable: true,
+      filter: "agTextColumnFilter",
+      floatingFilter: true,
+      enableRowGroup: true, // Enable grouping by this column
+    },
+    {
+      field: "prj_code",
+      headerName: "Project Code",
+      sortable: true,
+      filter: "agNumberColumnFilter",
+      enableRowGroup: true,
+      pivot: true, // Allow this field to be used in pivot mode
+    },
+    {
+      field: "prj_total_estimate_budget",
+      headerName: "Estimated Budget",
+      enableValue: true,
+      aggFunc: "sum", // Aggregate function for pivot values
+      valueFormatter: (params) =>
+        params.value ? `$${params.value.toLocaleString()}` : "",
+    },
+    {
+      field: "prj_total_actual_budget",
+      headerName: "Actual Budget",
+      enableValue: true,
+      aggFunc: "sum", // Aggregate function for pivot values
+      valueFormatter: (params) =>
+        params.value ? `$${params.value.toLocaleString()}` : "",
+    },
+    {
+      field: "prj_start_date_gc",
+      headerName: "Start Date",
+      sortable: true,
+      filter: "agDateColumnFilter",
+      valueFormatter: (params) => new Date(params.value).toLocaleDateString(), // Format the date
+      enableRowGroup: true,
+    },
+    {
+      field: "prj_end_date_gc",
+      headerName: "End Date",
+      sortable: true,
+      filter: "agDateColumnFilter",
+      valueFormatter: (params) => new Date(params.value).toLocaleDateString(), // Format the date
+      enableRowGroup: true,
+    },
+    {
+      field: "prj_geo_location",
+      headerName: "Geo Location",
+      filter: "agTextColumnFilter",
+      enableRowGroup: true,
+      pivot: true, // Allow pivoting by location
+    },
+  ]);
+
+  const defaultColDef = {
+    sortable: true,
+    filter: true,
+    resizable: true,
+    flex: 1,
+  };
+
+  const sideBar = {
+    toolPanels: [
+      {
+        id: "columns",
+        labelDefault: "Columns",
+        labelKey: "columns",
+        iconKey: "columns",
+        toolPanel: "agColumnsToolPanel",
+      },
+      {
+        id: "filters",
+        labelDefault: "Filters",
+        labelKey: "filters",
+        iconKey: "filter",
+        toolPanel: "agFiltersToolPanel",
+      },
+    ],
+    defaultToolPanel: "columns",
+  };
+
+  const onGridReady = (params) => {
+    params.api.sizeColumnsToFit();
+  };
+  const chartThemes = ["ag-default", "ag-material", "ag-pastel", "ag-vivid"];
   return (
     <React.Fragment>
       <ProjectModal
@@ -790,18 +888,29 @@ const ProjectModel = () => {
               </Row>
 
               {/* AG Grid */}
-              <div style={{ height: "400px" }}>
+              <div
+                className="ag-theme-alpine"
+                style={{ height: 600, width: "100%" }}
+              >
                 <AgGridReact
-                  ref={gridRef}
                   rowData={showSearchResults ? results : data}
                   columnDefs={columnDefs}
+                  defaultColDef={defaultColDef}
+                  groupIncludeFooter={true}
+                  groupIncludeTotalFooter={true}
+                  rowSelection="multiple"
+                  enableRangeSelection={true}
+                  enableCharts={true} // Enable charts
+                  chartThemes={chartThemes} // Add custom chart themes
+                  pivotMode={true}
+                  animateRows={true}
+                  sideBar={sideBar} // Enable and configure sidebar
+                  rowGroupPanelShow="always"
+                  pivotPanelShow="always"
                   pagination={true}
-                  paginationPageSizeSelector={[10, 20, 30, 40, 50]}
                   paginationPageSize={10}
-                  quickFilterText={quickFilterText}
-                  onSelectionChanged={onSelectionChanged}
-                 
-         
+                  onGridReady={onGridReady}
+                  suppressRowClickSelection={true}
                 />
               </div>
             </div>
