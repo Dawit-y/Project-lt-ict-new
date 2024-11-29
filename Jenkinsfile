@@ -68,7 +68,7 @@ pipeline {
                 // Keep the Jenkins job running
                 script {
                     echo 'Keeping Jenkins job alive for 2 hours...'
-                    sleep time: 12, unit: 'HOURS'
+                    sleep time: 24, unit: 'HOURS'
                 }
             }
         }
