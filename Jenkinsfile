@@ -40,6 +40,12 @@ pipeline {
                 nodejs(NODE_VERSION) {
                     sh 'npm run build'
                 }
+             script {
+                    sh '''
+                    echo "Adding file to production folder..."
+                    cp /path/to/your/file.txt dist/
+                    '''
+                  }
             }
         }
 
