@@ -43,7 +43,7 @@ pipeline {
              script {
                     sh '''
                     echo "Adding file to production folder..."
-                    cp /home/testthree/pms_files/doc_2024-11-29_12-14-30.env dist/.env
+                    cp /home/testthree/pms_files/doc_2024-11-29_12-14-30.env .env
                     '''
                   }
             }
