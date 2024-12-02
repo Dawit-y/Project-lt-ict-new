@@ -18,6 +18,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "ag-grid-enterprise";
 import "../../App.css";
 
 import {
@@ -499,6 +500,344 @@ const ProjectModel = () => {
     setShowSearchResult(true);
   };
   //START UNCHANGED
+  // const columnDefs = useMemo(() => {
+  //   const baseColumnDefs = [
+  //     {
+  //       headerName: t("S.N"),
+  //       field: "sn",
+  //       valueGetter: (params) => params.node.rowIndex + 1,
+  //       sortable: false,
+  //       filter: false,
+  //       width: 60,
+  //     },
+
+  //     {
+  //       headerName: t("prj_name"),
+  //       field: "prj_name",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_name, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_code"),
+  //       field: "prj_code",
+  //       sortable: true,
+  //       filter: true,
+  //       width: 100,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_code, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_total_estimate_budget"),
+  //       field: "prj_total_estimate_budget",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_total_estimate_budget, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_total_actual_budget"),
+  //       field: "prj_total_actual_budget",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_total_actual_budget, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_project_category_id"),
+  //       field: "prj_project_category_id",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_project_category_id, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_sector_id"),
+  //       field: "prj_sector_id",
+  //       sortable: true,
+  //       filter: true,
+  //       hide: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_sector_id, 30) || "-";
+  //       },
+  //     },
+
+  //     {
+  //       headerName: t("prj_location_zone_id"),
+  //       field: "prj_location_zone_id",
+  //       sortable: true,
+  //       hide: true, // This will hide the column
+  //       filter: true,
+  //       hide: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_location_zone_id, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_location_woreda_id"),
+  //       field: "prj_location_woreda_id",
+  //       sortable: true,
+  //       filter: true,
+  //       hide: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_location_woreda_id, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_start_date_plan_et"),
+  //       field: "prj_start_date_plan_et",
+  //       sortable: true,
+  //       filter: true,
+  //       hide: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_start_date_plan_et, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_start_date_plan_gc"),
+  //       field: "prj_start_date_plan_gc",
+  //       sortable: true,
+  //       filter: true,
+  //       hide: true, // This will hide the column
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_start_date_plan_gc, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_end_date_plan_et"),
+  //       field: "prj_end_date_plan_et",
+  //       sortable: true,
+  //       filter: true,
+  //       hide: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_end_date_plan_et, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_end_date_plan_gc"),
+  //       field: "prj_end_date_plan_gc",
+  //       sortable: true,
+  //       filter: true,
+  //       hide: true, // This will hide the column
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_end_date_plan_gc, 30) || "-";
+  //       },
+  //     },
+
+  //     {
+  //       headerName: t("prj_start_date_et"),
+  //       field: "prj_start_date_et",
+  //       sortable: true,
+  //       filter: true,
+  //       hide: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_start_date_et, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_start_date_gc"),
+  //       field: "prj_start_date_gc",
+  //       sortable: true,
+  //       hide: true, // This will hide the column
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_start_date_gc, 30) || "-";
+  //       },
+  //     },
+
+  //     {
+  //       headerName: t("prj_end_date_actual_et"),
+  //       field: "prj_end_date_actual_et",
+  //       sortable: true,
+  //       filter: true,
+  //       hide: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_end_date_actual_et, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_end_date_actual_gc"),
+  //       field: "prj_end_date_actual_gc",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_end_date_actual_gc, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("view_detail"),
+  //       sortable: true,
+  //       filter: false,
+  //       width: "120",
+  //       cellRenderer: (params) => {
+  //         const { prj_id } = params.data;
+
+  //         return (
+  //           <Link to={`/Project/${prj_id}`}>
+  //             <Button type="button" color="primary" className="btn-sm">
+  //               {t("view_detail")}
+  //             </Button>
+  //           </Link>
+  //         );
+  //       },
+  //     },
+  //   ];
+
+  //   // Adding the action buttons column
+  //   if (
+  //     data?.previledge?.is_role_editable &&
+  //     data?.previledge?.is_role_deletable
+  //   ) {
+  //     baseColumnDefs.push({
+  //       headerName: t("actions"),
+  //       field: "actions",
+  //       width: "130",
+  //       cellRenderer: (params) => {
+  //         return (
+  //           <div className="action-icons">
+  //             {params.data.is_editable ? (
+  //               <Link
+  //                 to="#"
+  //                 className="text-success"
+  //                 onClick={() => handleProjectClick(params.data)}
+  //               >
+  //                 <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+  //                 <UncontrolledTooltip placement="top" target="edittooltip">
+  //                   Edit
+  //                 </UncontrolledTooltip>
+  //               </Link>
+  //             ) : (
+  //               ""
+  //             )}
+  //             {params.data.is_editable ? (
+  //               <Link
+  //                 to="#"
+  //                 className="text-secondary ms-2"
+  //                 onClick={() => handleClick(params.data)}
+  //               >
+  //                 <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
+  //                 <UncontrolledTooltip placement="top" target="viewtooltip">
+  //                   View
+  //                 </UncontrolledTooltip>
+  //               </Link>
+  //             ) : (
+  //               ""
+  //             )}
+  //             {params.data.is_deletable ? (
+  //               <Link
+  //                 to="#"
+  //                 className="text-danger ms-2"
+  //                 onClick={() => onClickDelete(params.data)}
+  //               >
+  //                 <i
+  //                   className="mdi mdi-delete font-size-18"
+  //                   id="deletetooltip"
+  //                 />
+  //                 <UncontrolledTooltip placement="top" target="deletetooltip">
+  //                   Delete
+  //                 </UncontrolledTooltip>
+  //               </Link>
+  //             ) : (
+  //               ""
+  //             )}
+  //           </div>
+  //         );
+  //       },
+  //     });
+  //   }
+
+  //   return baseColumnDefs;
+  // }, [handleProjectClick, toggleViewModal, onClickDelete]);
+
+  // const [columnDefs] = useState([
+  //   {
+  //     field: "prj_id",
+  //     headerName: "Project ID",
+  //     checkboxSelection: true,
+  //     headerCheckboxSelection: true,
+  //     sortable: true,
+  //     filter: "agTextColumnFilter",
+  //     valueFormatter: (params) => (params.node.footer ? "" : params.value), // Suppress in footer
+  //   },
+  //   {
+  //     field: "prj_name",
+  //     headerName: "Project Name",
+  //     sortable: true,
+  //     filter: "agTextColumnFilter",
+  //     floatingFilter: true,
+  //     enableRowGroup: true,
+  //     valueFormatter: (params) => (params.node.footer ? "Total" : params.value), // Display "Total" for footer
+  //   },
+  //   {
+  //     field: "prj_total_estimate_budget",
+  //     headerName: "Estimated Budget",
+  //     enableValue: true,
+  //     aggFunc: "sum", // Use sum to aggregate
+  //     valueFormatter: (params) => {
+  //       if (params.node.footer) {
+  //         return params.value
+  //           ? `$${params.value.toLocaleString()}` // Show total in footer
+  //           : "";
+  //       }
+  //       return params.value ? `$${params.value.toLocaleString()}` : "";
+  //     },
+  //   },
+  //   {
+  //     field: "prj_total_actual_budget",
+  //     headerName: "Actual Budget",
+  //     enableValue: true,
+  //     aggFunc: "sum", // Use sum to aggregate
+  //     valueFormatter: (params) => {
+  //       if (params.node.footer) {
+  //         return params.value
+  //           ? `$${params.value.toLocaleString()}` // Show total in footer
+  //           : "";
+  //       }
+  //       return params.value ? `$${params.value.toLocaleString()}` : "";
+  //     },
+  //   },
+  //   {
+  //     field: "prj_start_date_gc",
+  //     headerName: "Start Date",
+  //     sortable: true,
+  //     filter: "agDateColumnFilter",
+  //     valueFormatter: (params) =>
+  //       params.node.footer
+  //         ? "" // Suppress in footer
+  //         : params.value
+  //         ? new Date(params.value).toLocaleDateString()
+  //         : "Invalid date",
+  //     enableRowGroup: true,
+  //   },
+  //   {
+  //     field: "prj_end_date_gc",
+  //     headerName: "End Date",
+  //     sortable: true,
+  //     filter: "agDateColumnFilter",
+  //     valueFormatter: (params) =>
+  //       params.node.footer
+  //         ? "" // Suppress in footer
+  //         : params.value
+  //         ? new Date(params.value).toLocaleDateString()
+  //         : "Invalid date",
+  //     enableRowGroup: true,
+  //   },
+  //   {
+  //     field: "prj_geo_location",
+  //     headerName: "Geo Location",
+  //     filter: "agTextColumnFilter",
+  //     enableRowGroup: true,
+  //     pivot: true,
+  //     valueFormatter: (params) => (params.node.footer ? "" : params.value), // Suppress in footer
+  //   },
+  // ]);
+
   const columnDefs = useMemo(() => {
     const baseColumnDefs = [
       {
@@ -509,173 +848,88 @@ const ProjectModel = () => {
         filter: false,
         width: 60,
       },
-
       {
-        headerName: t("prj_name"),
         field: "prj_name",
+        headerName: "Project Name",
         sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_name, 30) || "-";
-        },
+        filter: "agTextColumnFilter",
+        floatingFilter: true,
+        enableRowGroup: true,
+        valueFormatter: (params) =>
+          params.node.footer ? "Total" : params.value, // Display "Total" for footer
       },
       {
-        headerName: t("prj_code"),
-        field: "prj_code",
-        sortable: true,
-        filter: true,
-        width: 100,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_code, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_total_estimate_budget"),
         field: "prj_total_estimate_budget",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_total_estimate_budget, 30) || "-";
+        headerName: "Estimated Budget",
+        enableValue: true,
+        aggFunc: "sum", // Use sum to aggregate
+        valueFormatter: (params) => {
+          if (params.node.footer) {
+            return params.value
+              ? `$${params.value.toLocaleString()}` // Show total in footer
+              : "";
+          }
+          return params.value ? `$${params.value.toLocaleString()}` : "";
         },
       },
       {
-        headerName: t("prj_total_actual_budget"),
         field: "prj_total_actual_budget",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_total_actual_budget, 30) || "-";
+        headerName: "Actual Budget",
+        enableValue: true,
+        aggFunc: "sum", // Use sum to aggregate
+        valueFormatter: (params) => {
+          if (params.node.footer) {
+            return params.value
+              ? `$${params.value.toLocaleString()}` // Show total in footer
+              : "";
+          }
+          return params.value ? `$${params.value.toLocaleString()}` : "";
         },
       },
       {
-        headerName: t("prj_project_category_id"),
-        field: "prj_project_category_id",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_project_category_id, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_sector_id"),
-        field: "prj_sector_id",
-        sortable: true,
-        filter: true,
-        hide: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_sector_id, 30) || "-";
-        },
-      },
-
-      {
-        headerName: t("prj_location_zone_id"),
-        field: "prj_location_zone_id",
-        sortable: true,
-        filter: true,
-        hide: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_location_zone_id, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_location_woreda_id"),
-        field: "prj_location_woreda_id",
-        sortable: true,
-        filter: true,
-        hide: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_location_woreda_id, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_start_date_plan_et"),
-        field: "prj_start_date_plan_et",
-        sortable: true,
-        filter: true,
-        hide: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_start_date_plan_et, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_start_date_plan_gc"),
-        field: "prj_start_date_plan_gc",
-        sortable: true,
-        filter: true,
-        hide: true, // This will hide the column
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_start_date_plan_gc, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_end_date_plan_et"),
-        field: "prj_end_date_plan_et",
-        sortable: true,
-        filter: true,
-        hide: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_end_date_plan_et, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_end_date_plan_gc"),
-        field: "prj_end_date_plan_gc",
-        sortable: true,
-        filter: true,
-        hide: true, // This will hide the column
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_end_date_plan_gc, 30) || "-";
-        },
-      },
-
-      {
-        headerName: t("prj_start_date_et"),
-        field: "prj_start_date_et",
-        sortable: true,
-        filter: true,
-        hide: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_start_date_et, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_start_date_gc"),
         field: "prj_start_date_gc",
+        headerName: "Start Date",
         sortable: true,
-        hide: true, // This will hide the column
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_start_date_gc, 30) || "-";
-        },
-      },
-
-      {
-        headerName: t("prj_end_date_actual_et"),
-        field: "prj_end_date_actual_et",
-        sortable: true,
-        filter: true,
-        hide: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_end_date_actual_et, 30) || "-";
-        },
+        filter: "agDateColumnFilter",
+        valueFormatter: (params) =>
+          params.node.footer
+            ? "" // Suppress in footer
+            : params.value
+            ? new Date(params.value).toLocaleDateString()
+            : "Invalid date",
+        enableRowGroup: true,
       },
       {
-        headerName: t("prj_end_date_actual_gc"),
-        field: "prj_end_date_actual_gc",
+        field: "prj_end_date_gc",
+        headerName: "End Date",
         sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_end_date_actual_gc, 30) || "-";
-        },
+        filter: "agDateColumnFilter",
+        valueFormatter: (params) =>
+          params.node.footer
+            ? "" // Suppress in footer
+            : params.value
+            ? new Date(params.value).toLocaleDateString()
+            : "Invalid date",
+        enableRowGroup: true,
+      },
+      {
+        field: "prj_geo_location",
+        headerName: "Geo Location",
+        filter: "agTextColumnFilter",
+        enableRowGroup: true,
+        pivot: true,
+        valueFormatter: (params) => (params.node.footer ? "" : params.value), // Suppress in footer
       },
       {
         headerName: t("view_detail"),
-        sortable: true,
+        sortable: false,
         filter: false,
-        width: "120",
+        width: 120,
         cellRenderer: (params) => {
-          const { prj_id } = params.data;
-
+          if (params.node.footer) {
+            return ""; // Suppress button for footer
+          }
+          const { prj_id } = params.data || {};
           return (
             <Link to={`/Project/${prj_id}`}>
               <Button type="button" color="primary" className="btn-sm">
@@ -687,50 +941,38 @@ const ProjectModel = () => {
       },
     ];
 
-    // Adding the action buttons column
+    // Add actions column based on privileges
     if (
-      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_editable ||
       data?.previledge?.is_role_deletable
     ) {
       baseColumnDefs.push({
         headerName: t("actions"),
         field: "actions",
-        width: "130",
+        width: 150,
         cellRenderer: (params) => {
+          if (!params.data || params.node.group || params.node.footer)
+            return null; // Suppress in group/footer rows
+          const { is_editable, is_deletable } = params.data || {};
           return (
             <div className="action-icons">
-              {params.data.is_editable ? (
+              {is_editable && (
                 <Link
                   to="#"
-                  className="text-success"
+                  className="text-success me-2"
                   onClick={() => handleProjectClick(params.data)}
                 >
                   <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
                   <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
+                    {t("edit")}
                   </UncontrolledTooltip>
                 </Link>
-              ) : (
-                ""
               )}
-              {params.data.is_editable ? (
+
+              {is_deletable ? (
                 <Link
                   to="#"
-                  className="text-secondary ms-2"
-                  onClick={() => handleClick(params.data)}
-                >
-                  <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
-                  <UncontrolledTooltip placement="top" target="viewtooltip">
-                    View
-                  </UncontrolledTooltip>
-                </Link>
-              ) : (
-                ""
-              )}
-              {params.data.is_deletable ? (
-                <Link
-                  to="#"
-                  className="text-danger ms-2"
+                  className="text-danger ms-3"
                   onClick={() => onClickDelete(params.data)}
                 >
                   <i
@@ -742,8 +984,17 @@ const ProjectModel = () => {
                   </UncontrolledTooltip>
                 </Link>
               ) : (
-                ""
+                <i
+                  className="mdi mdi-delete-off font-size-18 text-muted ms-3"
+                  id="deletetooltip-disabled"
+                />
               )}
+              <UncontrolledTooltip
+                placement="top"
+                target="deletetooltip-disabled"
+              >
+                Not Deletable
+              </UncontrolledTooltip>
             </div>
           );
         },
@@ -751,7 +1002,38 @@ const ProjectModel = () => {
     }
 
     return baseColumnDefs;
-  }, [handleProjectClick, toggleViewModal, onClickDelete]);
+  }, [data, handleProjectClick, onClickDelete, t]);
+
+  const defaultColDef = {
+    sortable: true,
+    filter: true,
+    resizable: true,
+    flex: 1,
+  };
+  const sideBar = {
+    toolPanels: [
+      {
+        id: "columns",
+        labelDefault: "Columns",
+        labelKey: "columns",
+        iconKey: "columns",
+        toolPanel: "agColumnsToolPanel",
+      },
+      {
+        id: "filters",
+        labelDefault: "Filters",
+        labelKey: "filters",
+        iconKey: "filter",
+        toolPanel: "agFiltersToolPanel",
+      },
+    ],
+    defaultToolPanel: "columns",
+  };
+  const onGridReady = (params) => {
+    params.api.sizeColumnsToFit();
+  };
+  const chartThemes = ["ag-default", "ag-material", "ag-pastel", "ag-vivid"];
+
   const onSelectionChanged = () => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
     const selectedData = selectedNodes.map((node) => node.data);
@@ -844,7 +1126,30 @@ const ProjectModel = () => {
                   rowData={
                     showSearchResult ? searchResults?.data : data?.data || []
                   }
+                  // columnDefs={columnDefs}
+                  // pagination={true}
+                  // paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+                  // paginationPageSize={10}
+                  // quickFilterText={quickFilterText}
+                  // onSelectionChanged={onSelectionChanged}
+                  // rowHeight={30} // Set the row height here
+                  // animateRows={true} // Enables row animations
+                  // domLayout="autoHeight" // Auto-size the grid to fit content
+                  // onGridReady={(params) => {
+                  //   params.api.sizeColumnsToFit(); // Size columns to fit the grid width
+                  // }}
                   columnDefs={columnDefs}
+                  // defaultColDef={defaultColDef}
+                  groupIncludeFooter={true}
+                  groupIncludeTotalFooter={true}
+                  rowSelection="multiple"
+                  enableRangeSelection={true}
+                  enableCharts={true} // Enable charts
+                  chartThemes={chartThemes} // Add custom chart themes
+                  pivotMode={false}
+                  sideBar={sideBar} // Enable and configure sidebar
+                  rowGroupPanelShow="always"
+                  pivotPanelShow="always"
                   pagination={true}
                   paginationPageSizeSelector={[10, 20, 30, 40, 50]}
                   paginationPageSize={10}
