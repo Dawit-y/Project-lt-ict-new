@@ -18,7 +18,8 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import '../../App.css';
+import "ag-grid-enterprise";
+import "../../App.css";
 
 import {
   useFetchProjects,
@@ -61,7 +62,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -75,7 +76,7 @@ const truncateText = (text, maxLength) => {
 const statusClasses = {
   "Kan Xumurame": "success", // Green for completed
   "Kan Jalqabame": "info", // Yellow for started
-  "Adeemsarra Kan jiru": "warning",      // Add other statuses as needed
+  "Adeemsarra Kan jiru": "warning", // Add other statuses as needed
   "Adda Kan Cite": "danger", // Example status
 };
 const ProjectModel = () => {
@@ -88,7 +89,7 @@ const ProjectModel = () => {
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [project, setProject] = useState(null);
-   const [quickFilterText, setQuickFilterText] = useState("");
+  const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
   const [searchResults, setSearchResults] = useState(null);
@@ -105,7 +106,7 @@ const ProjectModel = () => {
   const [selectedProjectCategory, setSelectedProjectCategory] = useState("");
   const [sectorOptions, setSectorOptions] = useState([]);
   const [selectedSector, setSelectedSector] = useState("");
-   const handleClick = (data) => {
+  const handleClick = (data) => {
     setShowCanvas(!showCanvas); // Toggle canvas visibility
     setProjectMetaData(data);
   };
@@ -157,13 +158,13 @@ const ProjectModel = () => {
     };
     fetchSector();
   }, []);
-  
-   const handleSectorChange = (e) => {
+
+  const handleSectorChange = (e) => {
     setSelectedSector(e.target.value);
     validation.setFieldValue("prj_sector_id", e.target.value);
   };
   //END FOREIGN
-//START CRUD
+  //START CRUD
   const handleAddProject = async (data) => {
     try {
       await addProject.mutateAsync(data);
@@ -210,50 +211,54 @@ const ProjectModel = () => {
   //END CRUD
   //START FOREIGN CALLS
 
-  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     prj_name:(project && project.prj_name) || "", 
-prj_code:(project && project.prj_code) || "", 
-prj_project_status_id:(project && project.prj_project_status_id) || "", 
-prj_project_category_id:(project && project.prj_project_category_id) || "", 
-prj_project_budget_source_id:(project && project.prj_project_budget_source_id) || "", 
-prj_total_estimate_budget:(project && project.prj_total_estimate_budget) || "", 
-prj_total_actual_budget:(project && project.prj_total_actual_budget) || "", 
-prj_geo_location:(project && project.prj_geo_location) || "", 
-prj_sector_id:(project && project.prj_sector_id) || "", 
-prj_location_region_id:(project && project.prj_location_region_id) || "", 
-prj_location_zone_id:(project && project.prj_location_zone_id) || "", 
-prj_location_woreda_id:(project && project.prj_location_woreda_id) || "", 
-prj_location_kebele_id:(project && project.prj_location_kebele_id) || "", 
-prj_location_description:(project && project.prj_location_description) || "", 
-prj_owner_region_id:(project && project.prj_owner_region_id) || "", 
-prj_owner_zone_id:(project && project.prj_owner_zone_id) || "", 
-prj_owner_woreda_id:(project && project.prj_owner_woreda_id) || "", 
-prj_owner_kebele_id:(project && project.prj_owner_kebele_id) || "", 
-prj_owner_description:(project && project.prj_owner_description) || "", 
-prj_start_date_et:(project && project.prj_start_date_et) || "", 
-prj_start_date_gc:(project && project.prj_start_date_gc) || "", 
-prj_start_date_plan_et:(project && project.prj_start_date_plan_et) || "", 
-prj_start_date_plan_gc:(project && project.prj_start_date_plan_gc) || "", 
-prj_end_date_actual_et:(project && project.prj_end_date_actual_et) || "", 
-prj_end_date_actual_gc:(project && project.prj_end_date_actual_gc) || "", 
-prj_end_date_plan_gc:(project && project.prj_end_date_plan_gc) || "", 
-prj_end_date_plan_et:(project && project.prj_end_date_plan_et) || "", 
-prj_outcome:(project && project.prj_outcome) || "", 
-prj_deleted:(project && project.prj_deleted) || "", 
-prj_remark:(project && project.prj_remark) || "", 
-prj_created_date:(project && project.prj_created_date) || "", 
-prj_owner_id:(project && project.prj_owner_id) || "", 
-prj_urban_ben_number:(project && project.prj_urban_ben_number) || "", 
-prj_rural_ben_number:(project && project.prj_rural_ben_number) || "", 
+      prj_name: (project && project.prj_name) || "",
+      prj_code: (project && project.prj_code) || "",
+      prj_project_status_id: (project && project.prj_project_status_id) || "",
+      prj_project_category_id:
+        (project && project.prj_project_category_id) || "",
+      prj_project_budget_source_id:
+        (project && project.prj_project_budget_source_id) || "",
+      prj_total_estimate_budget:
+        (project && project.prj_total_estimate_budget) || "",
+      prj_total_actual_budget:
+        (project && project.prj_total_actual_budget) || "",
+      prj_geo_location: (project && project.prj_geo_location) || "",
+      prj_sector_id: (project && project.prj_sector_id) || "",
+      prj_location_region_id: (project && project.prj_location_region_id) || "",
+      prj_location_zone_id: (project && project.prj_location_zone_id) || "",
+      prj_location_woreda_id: (project && project.prj_location_woreda_id) || "",
+      prj_location_kebele_id: (project && project.prj_location_kebele_id) || "",
+      prj_location_description:
+        (project && project.prj_location_description) || "",
+      prj_owner_region_id: (project && project.prj_owner_region_id) || "",
+      prj_owner_zone_id: (project && project.prj_owner_zone_id) || "",
+      prj_owner_woreda_id: (project && project.prj_owner_woreda_id) || "",
+      prj_owner_kebele_id: (project && project.prj_owner_kebele_id) || "",
+      prj_owner_description: (project && project.prj_owner_description) || "",
+      prj_start_date_et: (project && project.prj_start_date_et) || "",
+      prj_start_date_gc: (project && project.prj_start_date_gc) || "",
+      prj_start_date_plan_et: (project && project.prj_start_date_plan_et) || "",
+      prj_start_date_plan_gc: (project && project.prj_start_date_plan_gc) || "",
+      prj_end_date_actual_et: (project && project.prj_end_date_actual_et) || "",
+      prj_end_date_actual_gc: (project && project.prj_end_date_actual_gc) || "",
+      prj_end_date_plan_gc: (project && project.prj_end_date_plan_gc) || "",
+      prj_end_date_plan_et: (project && project.prj_end_date_plan_et) || "",
+      prj_outcome: (project && project.prj_outcome) || "",
+      prj_deleted: (project && project.prj_deleted) || "",
+      prj_remark: (project && project.prj_remark) || "",
+      prj_created_date: (project && project.prj_created_date) || "",
+      prj_owner_id: (project && project.prj_owner_id) || "",
+      prj_urban_ben_number: (project && project.prj_urban_ben_number) || "",
+      prj_rural_ben_number: (project && project.prj_rural_ben_number) || "",
 
-is_deletable: (project && project.is_deletable) || 1,
-is_editable: (project && project.is_editable) || 1
+      is_deletable: (project && project.is_deletable) || 1,
+      is_editable: (project && project.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
@@ -261,50 +266,60 @@ is_editable: (project && project.is_editable) || 1
         .required(t("prj_name"))
         .test("unique-prj_name", t("Already exists"), (value) => {
           return !data?.data.some(
-            (item) =>
-              item.prj_name == value && item.prj_id !== project?.prj_id
+            (item) => item.prj_name == value && item.prj_id !== project?.prj_id
           );
         }),
       prj_code: Yup.string()
         .required(t("prj_code"))
         .test("unique-prj_code", t("Already exists"), (value) => {
           return !data?.data.some(
-            (item) =>
-              item.prj_code == value && item.prj_id !== project?.prj_id
+            (item) => item.prj_code == value && item.prj_id !== project?.prj_id
           );
         }),
-//prj_project_status_id: Yup.string().required(t('prj_project_status_id')),
-prj_project_category_id: Yup.string().required(t('prj_project_category_id')),
-//prj_project_budget_source_id: Yup.string().required(t('prj_project_budget_source_id')),
-prj_total_estimate_budget: Yup.string().required(t('prj_total_estimate_budget')),
-prj_total_actual_budget: Yup.string().required(t('prj_total_actual_budget')),
-//prj_geo_location: Yup.string().required(t('prj_geo_location')),
-prj_sector_id: Yup.string().required(t('prj_sector_id')),
-prj_location_region_id: Yup.string().required(t('prj_location_region_id')),
-//prj_location_zone_id: Yup.string().required(t('prj_location_zone_id')),
-//prj_location_woreda_id: Yup.string().required(t('prj_location_woreda_id')),
-//prj_location_kebele_id: Yup.string().required(t('prj_location_kebele_id')),
-//prj_location_description: Yup.string().required(t('prj_location_description')),
-//prj_owner_region_id: Yup.string().required(t('prj_owner_region_id')),
-//prj_owner_zone_id: Yup.string().required(t('prj_owner_zone_id')),
-//prj_owner_woreda_id: Yup.string().required(t('prj_owner_woreda_id')),
-//prj_owner_kebele_id: Yup.string().required(t('prj_owner_kebele_id')),
-//prj_owner_description: Yup.string().required(t('prj_owner_description')),
-//prj_start_date_et: Yup.string().required(t('prj_start_date_et')),
-prj_start_date_gc: Yup.string().required(t('prj_start_date_gc')),
-//prj_start_date_plan_et: Yup.string().required(t('prj_start_date_plan_et')),
-prj_start_date_plan_gc: Yup.string().required(t('prj_start_date_plan_gc')),
-//prj_end_date_actual_et: Yup.string().required(t('prj_end_date_actual_et')),
-prj_end_date_actual_gc: Yup.string().required(t('prj_end_date_actual_gc')),
-prj_end_date_plan_gc: Yup.string().required(t('prj_end_date_plan_gc')),
-//prj_end_date_plan_et: Yup.string().required(t('prj_end_date_plan_et')),
-//prj_outcome: Yup.string().required(t('prj_outcome')),
-//prj_deleted: Yup.string().required(t('prj_deleted')),
-//prj_remark: Yup.string().required(t('prj_remark')),
-//prj_created_date: Yup.string().required(t('prj_created_date')),
-//prj_owner_id: Yup.string().required(t('prj_owner_id')),
-//prj_urban_ben_number: Yup.string().required(t('prj_urban_ben_number')),
-//prj_rural_ben_number: Yup.string().required(t('prj_rural_ben_number')),
+      //prj_project_status_id: Yup.string().required(t('prj_project_status_id')),
+      prj_project_category_id: Yup.string().required(
+        t("prj_project_category_id")
+      ),
+      //prj_project_budget_source_id: Yup.string().required(t('prj_project_budget_source_id')),
+      prj_total_estimate_budget: Yup.string().required(
+        t("prj_total_estimate_budget")
+      ),
+      prj_total_actual_budget: Yup.string().required(
+        t("prj_total_actual_budget")
+      ),
+      //prj_geo_location: Yup.string().required(t('prj_geo_location')),
+      prj_sector_id: Yup.string().required(t("prj_sector_id")),
+      prj_location_region_id: Yup.string().required(
+        t("prj_location_region_id")
+      ),
+      //prj_location_zone_id: Yup.string().required(t('prj_location_zone_id')),
+      //prj_location_woreda_id: Yup.string().required(t('prj_location_woreda_id')),
+      //prj_location_kebele_id: Yup.string().required(t('prj_location_kebele_id')),
+      //prj_location_description: Yup.string().required(t('prj_location_description')),
+      //prj_owner_region_id: Yup.string().required(t('prj_owner_region_id')),
+      //prj_owner_zone_id: Yup.string().required(t('prj_owner_zone_id')),
+      //prj_owner_woreda_id: Yup.string().required(t('prj_owner_woreda_id')),
+      //prj_owner_kebele_id: Yup.string().required(t('prj_owner_kebele_id')),
+      //prj_owner_description: Yup.string().required(t('prj_owner_description')),
+      //prj_start_date_et: Yup.string().required(t('prj_start_date_et')),
+      prj_start_date_gc: Yup.string().required(t("prj_start_date_gc")),
+      //prj_start_date_plan_et: Yup.string().required(t('prj_start_date_plan_et')),
+      prj_start_date_plan_gc: Yup.string().required(
+        t("prj_start_date_plan_gc")
+      ),
+      //prj_end_date_actual_et: Yup.string().required(t('prj_end_date_actual_et')),
+      prj_end_date_actual_gc: Yup.string().required(
+        t("prj_end_date_actual_gc")
+      ),
+      prj_end_date_plan_gc: Yup.string().required(t("prj_end_date_plan_gc")),
+      //prj_end_date_plan_et: Yup.string().required(t('prj_end_date_plan_et')),
+      //prj_outcome: Yup.string().required(t('prj_outcome')),
+      //prj_deleted: Yup.string().required(t('prj_deleted')),
+      //prj_remark: Yup.string().required(t('prj_remark')),
+      //prj_created_date: Yup.string().required(t('prj_created_date')),
+      //prj_owner_id: Yup.string().required(t('prj_owner_id')),
+      //prj_urban_ben_number: Yup.string().required(t('prj_urban_ben_number')),
+      //prj_rural_ben_number: Yup.string().required(t('prj_rural_ben_number')),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -312,41 +327,41 @@ prj_end_date_plan_gc: Yup.string().required(t('prj_end_date_plan_gc')),
       if (isEdit) {
         const updateProject = {
           prj_id: project ? project.prj_id : 0,
-          prj_id:project.prj_id, 
-prj_name:values.prj_name, 
-prj_code:values.prj_code, 
-prj_project_status_id:values.prj_project_status_id, 
-prj_project_category_id:values.prj_project_category_id, 
-prj_project_budget_source_id:values.prj_project_budget_source_id, 
-prj_total_estimate_budget:values.prj_total_estimate_budget, 
-prj_total_actual_budget:values.prj_total_actual_budget, 
-prj_geo_location:values.prj_geo_location, 
-prj_sector_id:values.prj_sector_id, 
-prj_location_region_id:values.prj_location_region_id, 
-prj_location_zone_id:values.prj_location_zone_id, 
-prj_location_woreda_id:values.prj_location_woreda_id, 
-prj_location_kebele_id:values.prj_location_kebele_id, 
-prj_location_description:values.prj_location_description, 
-prj_owner_region_id:values.prj_owner_region_id, 
-prj_owner_zone_id:values.prj_owner_zone_id, 
-prj_owner_woreda_id:values.prj_owner_woreda_id, 
-prj_owner_kebele_id:values.prj_owner_kebele_id, 
-prj_owner_description:values.prj_owner_description, 
-prj_start_date_et:values.prj_start_date_et, 
-prj_start_date_gc:values.prj_start_date_gc, 
-prj_start_date_plan_et:values.prj_start_date_plan_et, 
-prj_start_date_plan_gc:values.prj_start_date_plan_gc, 
-prj_end_date_actual_et:values.prj_end_date_actual_et, 
-prj_end_date_actual_gc:values.prj_end_date_actual_gc, 
-prj_end_date_plan_gc:values.prj_end_date_plan_gc, 
-prj_end_date_plan_et:values.prj_end_date_plan_et, 
-prj_outcome:values.prj_outcome, 
-prj_deleted:values.prj_deleted, 
-prj_remark:values.prj_remark, 
-prj_created_date:values.prj_created_date, 
-prj_owner_id:values.prj_owner_id, 
-prj_urban_ben_number:values.prj_urban_ben_number, 
-prj_rural_ben_number:values.prj_rural_ben_number, 
+          prj_id: project.prj_id,
+          prj_name: values.prj_name,
+          prj_code: values.prj_code,
+          prj_project_status_id: values.prj_project_status_id,
+          prj_project_category_id: values.prj_project_category_id,
+          prj_project_budget_source_id: values.prj_project_budget_source_id,
+          prj_total_estimate_budget: values.prj_total_estimate_budget,
+          prj_total_actual_budget: values.prj_total_actual_budget,
+          prj_geo_location: values.prj_geo_location,
+          prj_sector_id: values.prj_sector_id,
+          prj_location_region_id: values.prj_location_region_id,
+          prj_location_zone_id: values.prj_location_zone_id,
+          prj_location_woreda_id: values.prj_location_woreda_id,
+          prj_location_kebele_id: values.prj_location_kebele_id,
+          prj_location_description: values.prj_location_description,
+          prj_owner_region_id: values.prj_owner_region_id,
+          prj_owner_zone_id: values.prj_owner_zone_id,
+          prj_owner_woreda_id: values.prj_owner_woreda_id,
+          prj_owner_kebele_id: values.prj_owner_kebele_id,
+          prj_owner_description: values.prj_owner_description,
+          prj_start_date_et: values.prj_start_date_et,
+          prj_start_date_gc: values.prj_start_date_gc,
+          prj_start_date_plan_et: values.prj_start_date_plan_et,
+          prj_start_date_plan_gc: values.prj_start_date_plan_gc,
+          prj_end_date_actual_et: values.prj_end_date_actual_et,
+          prj_end_date_actual_gc: values.prj_end_date_actual_gc,
+          prj_end_date_plan_gc: values.prj_end_date_plan_gc,
+          prj_end_date_plan_et: values.prj_end_date_plan_et,
+          prj_outcome: values.prj_outcome,
+          prj_deleted: values.prj_deleted,
+          prj_remark: values.prj_remark,
+          prj_created_date: values.prj_created_date,
+          prj_owner_id: values.prj_owner_id,
+          prj_urban_ben_number: values.prj_urban_ben_number,
+          prj_rural_ben_number: values.prj_rural_ben_number,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -356,41 +371,40 @@ prj_rural_ben_number:values.prj_rural_ben_number,
         validation.resetForm();
       } else {
         const newProject = {
-          prj_name:values.prj_name, 
-prj_code:values.prj_code, 
-prj_project_status_id:values.prj_project_status_id, 
-prj_project_category_id:values.prj_project_category_id, 
-prj_project_budget_source_id:values.prj_project_budget_source_id, 
-prj_total_estimate_budget:values.prj_total_estimate_budget, 
-prj_total_actual_budget:values.prj_total_actual_budget, 
-prj_geo_location:values.prj_geo_location, 
-prj_sector_id:values.prj_sector_id, 
-prj_location_region_id:values.prj_location_region_id, 
-prj_location_zone_id:values.prj_location_zone_id, 
-prj_location_woreda_id:values.prj_location_woreda_id, 
-prj_location_kebele_id:values.prj_location_kebele_id, 
-prj_location_description:values.prj_location_description, 
-prj_owner_region_id:values.prj_owner_region_id, 
-prj_owner_zone_id:values.prj_owner_zone_id, 
-prj_owner_woreda_id:values.prj_owner_woreda_id, 
-prj_owner_kebele_id:values.prj_owner_kebele_id, 
-prj_owner_description:values.prj_owner_description, 
-prj_start_date_et:values.prj_start_date_et, 
-prj_start_date_gc:values.prj_start_date_gc, 
-prj_start_date_plan_et:values.prj_start_date_plan_et, 
-prj_start_date_plan_gc:values.prj_start_date_plan_gc, 
-prj_end_date_actual_et:values.prj_end_date_actual_et, 
-prj_end_date_actual_gc:values.prj_end_date_actual_gc, 
-prj_end_date_plan_gc:values.prj_end_date_plan_gc, 
-prj_end_date_plan_et:values.prj_end_date_plan_et, 
-prj_outcome:values.prj_outcome, 
-prj_deleted:values.prj_deleted, 
-prj_remark:values.prj_remark, 
-prj_created_date:values.prj_created_date, 
-prj_owner_id:values.prj_owner_id, 
-prj_urban_ben_number:values.prj_urban_ben_number, 
-prj_rural_ben_number:values.prj_rural_ben_number, 
-
+          prj_name: values.prj_name,
+          prj_code: values.prj_code,
+          prj_project_status_id: values.prj_project_status_id,
+          prj_project_category_id: values.prj_project_category_id,
+          prj_project_budget_source_id: values.prj_project_budget_source_id,
+          prj_total_estimate_budget: values.prj_total_estimate_budget,
+          prj_total_actual_budget: values.prj_total_actual_budget,
+          prj_geo_location: values.prj_geo_location,
+          prj_sector_id: values.prj_sector_id,
+          prj_location_region_id: values.prj_location_region_id,
+          prj_location_zone_id: values.prj_location_zone_id,
+          prj_location_woreda_id: values.prj_location_woreda_id,
+          prj_location_kebele_id: values.prj_location_kebele_id,
+          prj_location_description: values.prj_location_description,
+          prj_owner_region_id: values.prj_owner_region_id,
+          prj_owner_zone_id: values.prj_owner_zone_id,
+          prj_owner_woreda_id: values.prj_owner_woreda_id,
+          prj_owner_kebele_id: values.prj_owner_kebele_id,
+          prj_owner_description: values.prj_owner_description,
+          prj_start_date_et: values.prj_start_date_et,
+          prj_start_date_gc: values.prj_start_date_gc,
+          prj_start_date_plan_et: values.prj_start_date_plan_et,
+          prj_start_date_plan_gc: values.prj_start_date_plan_gc,
+          prj_end_date_actual_et: values.prj_end_date_actual_et,
+          prj_end_date_actual_gc: values.prj_end_date_actual_gc,
+          prj_end_date_plan_gc: values.prj_end_date_plan_gc,
+          prj_end_date_plan_et: values.prj_end_date_plan_et,
+          prj_outcome: values.prj_outcome,
+          prj_deleted: values.prj_deleted,
+          prj_remark: values.prj_remark,
+          prj_created_date: values.prj_created_date,
+          prj_owner_id: values.prj_owner_id,
+          prj_urban_ben_number: values.prj_urban_ben_number,
+          prj_rural_ben_number: values.prj_rural_ben_number,
         };
         // save new Project
         handleAddProject(newProject);
@@ -405,60 +419,60 @@ prj_rural_ben_number:values.prj_rural_ben_number,
   useEffect(() => {
     setProject(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setProject(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setProject(null);
+      setProject(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleProjectClick = (arg) => {
+  const handleProjectClick = (arg) => {
     const project = arg;
     // console.log("handleProjectClick", project);
     setProject({
-      prj_id:project.prj_id, 
-prj_name:project.prj_name, 
-prj_code:project.prj_code, 
-prj_project_status_id:project.prj_project_status_id, 
-prj_project_category_id:project.prj_project_category_id, 
-prj_project_budget_source_id:project.prj_project_budget_source_id, 
-prj_total_estimate_budget:project.prj_total_estimate_budget, 
-prj_total_actual_budget:project.prj_total_actual_budget, 
-prj_geo_location:project.prj_geo_location, 
-prj_sector_id:project.prj_sector_id, 
-prj_location_region_id:project.prj_location_region_id, 
-prj_location_zone_id:project.prj_location_zone_id, 
-prj_location_woreda_id:project.prj_location_woreda_id, 
-prj_location_kebele_id:project.prj_location_kebele_id, 
-prj_location_description:project.prj_location_description, 
-prj_owner_region_id:project.prj_owner_region_id, 
-prj_owner_zone_id:project.prj_owner_zone_id, 
-prj_owner_woreda_id:project.prj_owner_woreda_id, 
-prj_owner_kebele_id:project.prj_owner_kebele_id, 
-prj_owner_description:project.prj_owner_description, 
-prj_start_date_et:project.prj_start_date_et, 
-prj_start_date_gc:project.prj_start_date_gc, 
-prj_start_date_plan_et:project.prj_start_date_plan_et, 
-prj_start_date_plan_gc:project.prj_start_date_plan_gc, 
-prj_end_date_actual_et:project.prj_end_date_actual_et, 
-prj_end_date_actual_gc:project.prj_end_date_actual_gc, 
-prj_end_date_plan_gc:project.prj_end_date_plan_gc, 
-prj_end_date_plan_et:project.prj_end_date_plan_et, 
-prj_outcome:project.prj_outcome, 
-prj_deleted:project.prj_deleted, 
-prj_remark:project.prj_remark, 
-prj_created_date:project.prj_created_date, 
-prj_owner_id:project.prj_owner_id, 
-prj_urban_ben_number:project.prj_urban_ben_number, 
-prj_rural_ben_number:project.prj_rural_ben_number, 
+      prj_id: project.prj_id,
+      prj_name: project.prj_name,
+      prj_code: project.prj_code,
+      prj_project_status_id: project.prj_project_status_id,
+      prj_project_category_id: project.prj_project_category_id,
+      prj_project_budget_source_id: project.prj_project_budget_source_id,
+      prj_total_estimate_budget: project.prj_total_estimate_budget,
+      prj_total_actual_budget: project.prj_total_actual_budget,
+      prj_geo_location: project.prj_geo_location,
+      prj_sector_id: project.prj_sector_id,
+      prj_location_region_id: project.prj_location_region_id,
+      prj_location_zone_id: project.prj_location_zone_id,
+      prj_location_woreda_id: project.prj_location_woreda_id,
+      prj_location_kebele_id: project.prj_location_kebele_id,
+      prj_location_description: project.prj_location_description,
+      prj_owner_region_id: project.prj_owner_region_id,
+      prj_owner_zone_id: project.prj_owner_zone_id,
+      prj_owner_woreda_id: project.prj_owner_woreda_id,
+      prj_owner_kebele_id: project.prj_owner_kebele_id,
+      prj_owner_description: project.prj_owner_description,
+      prj_start_date_et: project.prj_start_date_et,
+      prj_start_date_gc: project.prj_start_date_gc,
+      prj_start_date_plan_et: project.prj_start_date_plan_et,
+      prj_start_date_plan_gc: project.prj_start_date_plan_gc,
+      prj_end_date_actual_et: project.prj_end_date_actual_et,
+      prj_end_date_actual_gc: project.prj_end_date_actual_gc,
+      prj_end_date_plan_gc: project.prj_end_date_plan_gc,
+      prj_end_date_plan_et: project.prj_end_date_plan_et,
+      prj_outcome: project.prj_outcome,
+      prj_deleted: project.prj_deleted,
+      prj_remark: project.prj_remark,
+      prj_created_date: project.prj_created_date,
+      prj_owner_id: project.prj_owner_id,
+      prj_urban_ben_number: project.prj_urban_ben_number,
+      prj_rural_ben_number: project.prj_rural_ben_number,
 
       is_deletable: project.is_deletable,
       is_editable: project.is_editable,
@@ -480,192 +494,443 @@ prj_rural_ben_number:project.prj_rural_ben_number,
     setIsEdit(false);
     setProject("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
   };
   //START UNCHANGED
+  // const columnDefs = useMemo(() => {
+  //   const baseColumnDefs = [
+  //     {
+  //       headerName: t("S.N"),
+  //       field: "sn",
+  //       valueGetter: (params) => params.node.rowIndex + 1,
+  //       sortable: false,
+  //       filter: false,
+  //       width: 60,
+  //     },
+
+  //     {
+  //       headerName: t("prj_name"),
+  //       field: "prj_name",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_name, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_code"),
+  //       field: "prj_code",
+  //       sortable: true,
+  //       filter: true,
+  //       width: 100,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_code, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_total_estimate_budget"),
+  //       field: "prj_total_estimate_budget",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_total_estimate_budget, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_total_actual_budget"),
+  //       field: "prj_total_actual_budget",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_total_actual_budget, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_project_category_id"),
+  //       field: "prj_project_category_id",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_project_category_id, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_sector_id"),
+  //       field: "prj_sector_id",
+  //       sortable: true,
+  //       filter: true,
+  //       hide: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_sector_id, 30) || "-";
+  //       },
+  //     },
+
+  //     {
+  //       headerName: t("prj_location_zone_id"),
+  //       field: "prj_location_zone_id",
+  //       sortable: true,
+  //       hide: true, // This will hide the column
+  //       filter: true,
+  //       hide: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_location_zone_id, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_location_woreda_id"),
+  //       field: "prj_location_woreda_id",
+  //       sortable: true,
+  //       filter: true,
+  //       hide: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_location_woreda_id, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_start_date_plan_et"),
+  //       field: "prj_start_date_plan_et",
+  //       sortable: true,
+  //       filter: true,
+  //       hide: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_start_date_plan_et, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_start_date_plan_gc"),
+  //       field: "prj_start_date_plan_gc",
+  //       sortable: true,
+  //       filter: true,
+  //       hide: true, // This will hide the column
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_start_date_plan_gc, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_end_date_plan_et"),
+  //       field: "prj_end_date_plan_et",
+  //       sortable: true,
+  //       filter: true,
+  //       hide: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_end_date_plan_et, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_end_date_plan_gc"),
+  //       field: "prj_end_date_plan_gc",
+  //       sortable: true,
+  //       filter: true,
+  //       hide: true, // This will hide the column
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_end_date_plan_gc, 30) || "-";
+  //       },
+  //     },
+
+  //     {
+  //       headerName: t("prj_start_date_et"),
+  //       field: "prj_start_date_et",
+  //       sortable: true,
+  //       filter: true,
+  //       hide: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_start_date_et, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_start_date_gc"),
+  //       field: "prj_start_date_gc",
+  //       sortable: true,
+  //       hide: true, // This will hide the column
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_start_date_gc, 30) || "-";
+  //       },
+  //     },
+
+  //     {
+  //       headerName: t("prj_end_date_actual_et"),
+  //       field: "prj_end_date_actual_et",
+  //       sortable: true,
+  //       filter: true,
+  //       hide: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_end_date_actual_et, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("prj_end_date_actual_gc"),
+  //       field: "prj_end_date_actual_gc",
+  //       sortable: true,
+  //       filter: true,
+  //       cellRenderer: (params) => {
+  //         return truncateText(params.data.prj_end_date_actual_gc, 30) || "-";
+  //       },
+  //     },
+  //     {
+  //       headerName: t("view_detail"),
+  //       sortable: true,
+  //       filter: false,
+  //       width: "120",
+  //       cellRenderer: (params) => {
+  //         const { prj_id } = params.data;
+
+  //         return (
+  //           <Link to={`/Project/${prj_id}`}>
+  //             <Button type="button" color="primary" className="btn-sm">
+  //               {t("view_detail")}
+  //             </Button>
+  //           </Link>
+  //         );
+  //       },
+  //     },
+  //   ];
+
+  //   // Adding the action buttons column
+  //   if (
+  //     data?.previledge?.is_role_editable &&
+  //     data?.previledge?.is_role_deletable
+  //   ) {
+  //     baseColumnDefs.push({
+  //       headerName: t("actions"),
+  //       field: "actions",
+  //       width: "130",
+  //       cellRenderer: (params) => {
+  //         return (
+  //           <div className="action-icons">
+  //             {params.data.is_editable ? (
+  //               <Link
+  //                 to="#"
+  //                 className="text-success"
+  //                 onClick={() => handleProjectClick(params.data)}
+  //               >
+  //                 <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+  //                 <UncontrolledTooltip placement="top" target="edittooltip">
+  //                   Edit
+  //                 </UncontrolledTooltip>
+  //               </Link>
+  //             ) : (
+  //               ""
+  //             )}
+  //             {params.data.is_editable ? (
+  //               <Link
+  //                 to="#"
+  //                 className="text-secondary ms-2"
+  //                 onClick={() => handleClick(params.data)}
+  //               >
+  //                 <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
+  //                 <UncontrolledTooltip placement="top" target="viewtooltip">
+  //                   View
+  //                 </UncontrolledTooltip>
+  //               </Link>
+  //             ) : (
+  //               ""
+  //             )}
+  //             {params.data.is_deletable ? (
+  //               <Link
+  //                 to="#"
+  //                 className="text-danger ms-2"
+  //                 onClick={() => onClickDelete(params.data)}
+  //               >
+  //                 <i
+  //                   className="mdi mdi-delete font-size-18"
+  //                   id="deletetooltip"
+  //                 />
+  //                 <UncontrolledTooltip placement="top" target="deletetooltip">
+  //                   Delete
+  //                 </UncontrolledTooltip>
+  //               </Link>
+  //             ) : (
+  //               ""
+  //             )}
+  //           </div>
+  //         );
+  //       },
+  //     });
+  //   }
+
+  //   return baseColumnDefs;
+  // }, [handleProjectClick, toggleViewModal, onClickDelete]);
+
+  // const [columnDefs] = useState([
+  //   {
+  //     field: "prj_id",
+  //     headerName: "Project ID",
+  //     checkboxSelection: true,
+  //     headerCheckboxSelection: true,
+  //     sortable: true,
+  //     filter: "agTextColumnFilter",
+  //     valueFormatter: (params) => (params.node.footer ? "" : params.value), // Suppress in footer
+  //   },
+  //   {
+  //     field: "prj_name",
+  //     headerName: "Project Name",
+  //     sortable: true,
+  //     filter: "agTextColumnFilter",
+  //     floatingFilter: true,
+  //     enableRowGroup: true,
+  //     valueFormatter: (params) => (params.node.footer ? "Total" : params.value), // Display "Total" for footer
+  //   },
+  //   {
+  //     field: "prj_total_estimate_budget",
+  //     headerName: "Estimated Budget",
+  //     enableValue: true,
+  //     aggFunc: "sum", // Use sum to aggregate
+  //     valueFormatter: (params) => {
+  //       if (params.node.footer) {
+  //         return params.value
+  //           ? `$${params.value.toLocaleString()}` // Show total in footer
+  //           : "";
+  //       }
+  //       return params.value ? `$${params.value.toLocaleString()}` : "";
+  //     },
+  //   },
+  //   {
+  //     field: "prj_total_actual_budget",
+  //     headerName: "Actual Budget",
+  //     enableValue: true,
+  //     aggFunc: "sum", // Use sum to aggregate
+  //     valueFormatter: (params) => {
+  //       if (params.node.footer) {
+  //         return params.value
+  //           ? `$${params.value.toLocaleString()}` // Show total in footer
+  //           : "";
+  //       }
+  //       return params.value ? `$${params.value.toLocaleString()}` : "";
+  //     },
+  //   },
+  //   {
+  //     field: "prj_start_date_gc",
+  //     headerName: "Start Date",
+  //     sortable: true,
+  //     filter: "agDateColumnFilter",
+  //     valueFormatter: (params) =>
+  //       params.node.footer
+  //         ? "" // Suppress in footer
+  //         : params.value
+  //         ? new Date(params.value).toLocaleDateString()
+  //         : "Invalid date",
+  //     enableRowGroup: true,
+  //   },
+  //   {
+  //     field: "prj_end_date_gc",
+  //     headerName: "End Date",
+  //     sortable: true,
+  //     filter: "agDateColumnFilter",
+  //     valueFormatter: (params) =>
+  //       params.node.footer
+  //         ? "" // Suppress in footer
+  //         : params.value
+  //         ? new Date(params.value).toLocaleDateString()
+  //         : "Invalid date",
+  //     enableRowGroup: true,
+  //   },
+  //   {
+  //     field: "prj_geo_location",
+  //     headerName: "Geo Location",
+  //     filter: "agTextColumnFilter",
+  //     enableRowGroup: true,
+  //     pivot: true,
+  //     valueFormatter: (params) => (params.node.footer ? "" : params.value), // Suppress in footer
+  //   },
+  // ]);
+
   const columnDefs = useMemo(() => {
     const baseColumnDefs = [
-   
-   {
-      headerName: t("S.N"),
-      field: "sn",
-      valueGetter: (params) => params.node.rowIndex + 1,
-      sortable: false,
-      filter: false,
-      width: 60,
-     },
-
       {
-        headerName: t("prj_name"),
+        headerName: t("S.N"),
+        field: "sn",
+        valueGetter: (params) => params.node.rowIndex + 1,
+        sortable: false,
+        filter: false,
+        width: 60,
+      },
+      {
         field: "prj_name",
+        headerName: "Project Name",
         sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_name, 30) || "-";
-        },
+        filter: "agTextColumnFilter",
+        floatingFilter: true,
+        enableRowGroup: true,
+        valueFormatter: (params) =>
+          params.node.footer ? "Total" : params.value, // Display "Total" for footer
       },
       {
-        headerName: t("prj_code"),
-        field: "prj_code",
-        sortable: true,
-        filter: true,
-        width: 100,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_code, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_total_estimate_budget"),
         field: "prj_total_estimate_budget",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_total_estimate_budget, 30) || "-";
+        headerName: "Estimated Budget",
+        enableValue: true,
+        aggFunc: "sum", // Use sum to aggregate
+        valueFormatter: (params) => {
+          if (params.node.footer) {
+            return params.value
+              ? `$${params.value.toLocaleString()}` // Show total in footer
+              : "";
+          }
+          return params.value ? `$${params.value.toLocaleString()}` : "";
         },
       },
       {
-        headerName: t("prj_total_actual_budget"),
         field: "prj_total_actual_budget",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_total_actual_budget, 30) || "-";
-        },
-      },
-        {
-        headerName: t("prj_project_category_id"),
-        field: "prj_project_category_id",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_project_category_id, 30) || "-";
-        },
-      },
-        {
-        headerName: t("prj_sector_id"),
-        field: "prj_sector_id",
-        sortable: true,
-        filter: true,
-        hide:true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_sector_id, 30) || "-";
-        },
-      },
-  
-      {
-        headerName: t("prj_location_zone_id"),
-        field: "prj_location_zone_id",
-        sortable: true,
-        hide: true, // This will hide the column
-        filter: true,
-        hide:true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_location_zone_id, 30) || "-";
+        headerName: "Actual Budget",
+        enableValue: true,
+        aggFunc: "sum", // Use sum to aggregate
+        valueFormatter: (params) => {
+          if (params.node.footer) {
+            return params.value
+              ? `$${params.value.toLocaleString()}` // Show total in footer
+              : "";
+          }
+          return params.value ? `$${params.value.toLocaleString()}` : "";
         },
       },
       {
-        headerName: t("prj_location_woreda_id"),
-        field: "prj_location_woreda_id",
-        sortable: true,
-        filter: true,
-        hide:true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_location_woreda_id, 30) || "-";
-        },
-      },      
-      {
-        headerName: t("prj_start_date_plan_et"),
-        field: "prj_start_date_plan_et",
-        sortable: true,
-        filter: true,
-        hide:true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_start_date_plan_et, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_start_date_plan_gc"),
-        field: "prj_start_date_plan_gc",
-        sortable: true,
-        filter: true,
-        hide: true, // This will hide the column
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_start_date_plan_gc, 30) || "-";
-        },
-      },
-        {
-        headerName: t("prj_end_date_plan_et"),
-        field: "prj_end_date_plan_et",
-        sortable: true,
-        filter: true,
-        hide:true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_end_date_plan_et, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_end_date_plan_gc"),
-        field: "prj_end_date_plan_gc",
-        sortable: true,
-        filter: true,
-          hide: true, // This will hide the column
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_end_date_plan_gc, 30) || "-";
-        },
-      },
-
-      {
-        headerName: t("prj_start_date_et"),
-        field: "prj_start_date_et",
-        sortable: true,
-        filter: true,
-        hide:true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_start_date_et, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_start_date_gc"),
         field: "prj_start_date_gc",
+        headerName: "Start Date",
         sortable: true,
-          hide: true, // This will hide the column
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_start_date_gc, 30) || "-";
-        },
-      },
-
-      {
-        headerName: t("prj_end_date_actual_et"),
-        field: "prj_end_date_actual_et",
-        sortable: true,
-        filter: true,
-        hide:true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_end_date_actual_et, 30) || "-";
-        },
+        filter: "agDateColumnFilter",
+        valueFormatter: (params) =>
+          params.node.footer
+            ? "" // Suppress in footer
+            : params.value
+            ? new Date(params.value).toLocaleDateString()
+            : "Invalid date",
+        enableRowGroup: true,
       },
       {
-        headerName: t("prj_end_date_actual_gc"),
-        field: "prj_end_date_actual_gc",
+        field: "prj_end_date_gc",
+        headerName: "End Date",
         sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_end_date_actual_gc, 30) || "-";
-        },
+        filter: "agDateColumnFilter",
+        valueFormatter: (params) =>
+          params.node.footer
+            ? "" // Suppress in footer
+            : params.value
+            ? new Date(params.value).toLocaleDateString()
+            : "Invalid date",
+        enableRowGroup: true,
+      },
+      {
+        field: "prj_geo_location",
+        headerName: "Geo Location",
+        filter: "agTextColumnFilter",
+        enableRowGroup: true,
+        pivot: true,
+        valueFormatter: (params) => (params.node.footer ? "" : params.value), // Suppress in footer
       },
       {
         headerName: t("view_detail"),
-        sortable: true,
+        sortable: false,
         filter: false,
-        width:"120",
+        width: 120,
         cellRenderer: (params) => {
-          const { prj_id } = params.data;
-
+          if (params.node.footer) {
+            return ""; // Suppress button for footer
+          }
+          const { prj_id } = params.data || {};
           return (
             <Link to={`/Project/${prj_id}`}>
               <Button type="button" color="primary" className="btn-sm">
@@ -677,50 +942,38 @@ prj_rural_ben_number:project.prj_rural_ben_number,
       },
     ];
 
-    // Adding the action buttons column
-   if (
-      data?.previledge?.is_role_editable &&
+    // Add actions column based on privileges
+    if (
+      data?.previledge?.is_role_editable ||
       data?.previledge?.is_role_deletable
     ) {
       baseColumnDefs.push({
         headerName: t("actions"),
         field: "actions",
-        width:"130",
+        width: 150,
         cellRenderer: (params) => {
+          if (!params.data || params.node.group || params.node.footer)
+            return null; // Suppress in group/footer rows
+          const { is_editable, is_deletable } = params.data || {};
           return (
             <div className="action-icons">
-              {params.data.is_editable ? (
+              {is_editable && (
                 <Link
                   to="#"
-                  className="text-success"
+                  className="text-success me-2"
                   onClick={() => handleProjectClick(params.data)}
                 >
                   <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
                   <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
+                    {t("edit")}
                   </UncontrolledTooltip>
                 </Link>
-              ) : (
-                ""
               )}
-              {params.data.is_editable ? (
+
+              {is_deletable ? (
                 <Link
                   to="#"
-                  className="text-secondary ms-2"
-                  onClick={() => handleClick(params.data)}
-                >
-                  <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
-                  <UncontrolledTooltip placement="top" target="viewtooltip">
-                    View
-                  </UncontrolledTooltip>
-                </Link>
-              ) : (
-                ""
-              )}
-              {params.data.is_deletable ? (
-                <Link
-                  to="#"
-                  className="text-danger ms-2"
+                  className="text-danger ms-3"
                   onClick={() => onClickDelete(params.data)}
                 >
                   <i
@@ -732,8 +985,17 @@ prj_rural_ben_number:project.prj_rural_ben_number,
                   </UncontrolledTooltip>
                 </Link>
               ) : (
-                ""
+                <i
+                  className="mdi mdi-delete-off font-size-18 text-muted ms-3"
+                  id="deletetooltip-disabled"
+                />
               )}
+              <UncontrolledTooltip
+                placement="top"
+                target="deletetooltip-disabled"
+              >
+                Not Deletable
+              </UncontrolledTooltip>
             </div>
           );
         },
@@ -741,8 +1003,39 @@ prj_rural_ben_number:project.prj_rural_ben_number,
     }
 
     return baseColumnDefs;
-  }, [handleProjectClick, toggleViewModal, onClickDelete]);
-const onSelectionChanged = () => {
+  }, [data, handleProjectClick, onClickDelete, t]);
+
+  const defaultColDef = {
+    sortable: true,
+    filter: true,
+    resizable: true,
+    flex: 1,
+  };
+  const sideBar = {
+    toolPanels: [
+      {
+        id: "columns",
+        labelDefault: "Columns",
+        labelKey: "columns",
+        iconKey: "columns",
+        toolPanel: "agColumnsToolPanel",
+      },
+      {
+        id: "filters",
+        labelDefault: "Filters",
+        labelKey: "filters",
+        iconKey: "filter",
+        toolPanel: "agFiltersToolPanel",
+      },
+    ],
+    defaultToolPanel: "columns",
+  };
+  const onGridReady = (params) => {
+    params.api.sizeColumnsToFit();
+  };
+  const chartThemes = ["ag-default", "ag-material", "ag-pastel", "ag-vivid"];
+
+  const onSelectionChanged = () => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
     const selectedData = selectedNodes.map((node) => node.data);
     setSelectedRows(selectedData);
@@ -766,19 +1059,16 @@ const onSelectionChanged = () => {
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteProject}
+        onDeleteClick={handleDeleteProject}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteProject.isPending}
       />
       <div className="page-content">
         <div className="container-fluid">
-          <Breadcrumbs
-            title={t("project")}
-            breadcrumbItem={t("project")}
-          />
+          <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
           <AdvancedSearch
             searchHook={useSearchProjects}
-            textSearchKeys={["prj_name","prj_code"]}
+            textSearchKeys={["prj_name", "prj_code"]}
             dropdownSearchKeys={[
               {
                 key: "prj_project_category_id",
@@ -829,10 +1119,32 @@ const onSelectionChanged = () => {
                 <AgGridReact
                   ref={gridRef}
                   rowData={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []}
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
+                  // columnDefs={columnDefs}
+                  // pagination={true}
+                  // paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+                  // paginationPageSize={10}
+                  // quickFilterText={quickFilterText}
+                  // onSelectionChanged={onSelectionChanged}
+                  // rowHeight={30} // Set the row height here
+                  // animateRows={true} // Enables row animations
+                  // domLayout="autoHeight" // Auto-size the grid to fit content
+                  // onGridReady={(params) => {
+                  //   params.api.sizeColumnsToFit(); // Size columns to fit the grid width
+                  // }}
                   columnDefs={columnDefs}
+                  // defaultColDef={defaultColDef}
+                  groupIncludeFooter={true}
+                  groupIncludeTotalFooter={true}
+                  rowSelection="multiple"
+                  enableRangeSelection={true}
+                  enableCharts={true} // Enable charts
+                  chartThemes={chartThemes} // Add custom chart themes
+                  pivotMode={false}
+                  sideBar={sideBar} // Enable and configure sidebar
+                  rowGroupPanelShow="always"
+                  pivotPanelShow="always"
                   pagination={true}
                   paginationPageSizeSelector={[10, 20, 30, 40, 50]}
                   paginationPageSize={10}
@@ -850,7 +1162,9 @@ const onSelectionChanged = () => {
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("project")) : (t("add") +" "+t("project"))}
+              {!!isEdit
+                ? t("edit") + " " + t("project")
+                : t("add") + " " + t("project")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -861,7 +1175,7 @@ const onSelectionChanged = () => {
                 }}
               >
                 <Row>
-                <Col className="col-md-12 mb-3">
+                  <Col className="col-md-12 mb-3">
                     <CascadingDropdowns
                       validation={validation}
                       dropdown1name="prj_location_region_id"
@@ -870,80 +1184,89 @@ const onSelectionChanged = () => {
                       isEdit={isEdit} // Set to true if in edit mode, otherwise false
                     />
                   </Col>
-                  <Col className='col-md-12 mb-3'>
-                      <Label>{t('prj_location_description')}</Label>
-                      <Input
-                        name='prj_location_description'
-                        type='textarea'
-                        placeholder={t('prj_location_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prj_location_description || ''}
-                        invalid={
-                          validation.touched.prj_location_description &&
-                          validation.errors.prj_location_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prj_location_description &&
-                      validation.errors.prj_location_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prj_location_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
-                  <Col className='col-md-4 mb-3'>
-                      <Label>{t('prj_name')}<span className="text-danger">*</span></Label>
-                      <Input
-                        name='prj_name'
-                        type='text'
-                        placeholder={t('prj_name')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prj_name || ''}
-                        invalid={
-                          validation.touched.prj_name &&
-                          validation.errors.prj_name
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prj_name &&
-                      validation.errors.prj_name ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prj_name}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-4 mb-3'>
-                      <Label>{t('prj_code')}<span className="text-danger">*</span></Label>
-                      <Input
-                        name='prj_code'
-                        type='text'
-                        placeholder={t('prj_code')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prj_code || ''}
-                        invalid={
-                          validation.touched.prj_code &&
-                          validation.errors.prj_code
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prj_code &&
-                      validation.errors.prj_code ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prj_code}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className="col-md-4 mb-3">
-                    <Label>{t("prj_project_category_id")}<span className="text-danger">*</span></Label>
+                  <Col className="col-md-12 mb-3">
+                    <Label>{t("prj_location_description")}</Label>
+                    <Input
+                      name="prj_location_description"
+                      type="textarea"
+                      placeholder={t("prj_location_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prj_location_description || ""}
+                      invalid={
+                        validation.touched.prj_location_description &&
+                        validation.errors.prj_location_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prj_location_description &&
+                    validation.errors.prj_location_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prj_location_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <Label>
+                      {t("prj_name")}
+                      <span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      name="prj_name"
+                      type="text"
+                      placeholder={t("prj_name")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prj_name || ""}
+                      invalid={
+                        validation.touched.prj_name &&
+                        validation.errors.prj_name
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prj_name &&
+                    validation.errors.prj_name ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prj_name}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <Label>
+                      {t("prj_code")}
+                      <span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      name="prj_code"
+                      type="text"
+                      placeholder={t("prj_code")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prj_code || ""}
+                      invalid={
+                        validation.touched.prj_code &&
+                        validation.errors.prj_code
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prj_code &&
+                    validation.errors.prj_code ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prj_code}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <Label>
+                      {t("prj_project_category_id")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prj_project_category_id"
                       type="select"
@@ -965,57 +1288,63 @@ const onSelectionChanged = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-<Col className='col-md-4 mb-3'>
-                      <Label>{t('prj_total_estimate_budget')}<span className="text-danger">*</span></Label>
-                      <Input
-                        name='prj_total_estimate_budget'
-                        type='number'
-                        placeholder={t('prj_total_estimate_budget')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prj_total_estimate_budget || ''}
-                        invalid={
-                          validation.touched.prj_total_estimate_budget &&
-                          validation.errors.prj_total_estimate_budget
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prj_total_estimate_budget &&
-                      validation.errors.prj_total_estimate_budget ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prj_total_estimate_budget}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-4 mb-3'>
-                      <Label>{t('prj_total_actual_budget')}</Label>
-                      <Input
-                        name='prj_total_actual_budget'
-                        type='number'
-                        placeholder={t('prj_total_actual_budget')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prj_total_actual_budget || ''}
-                        invalid={
-                          validation.touched.prj_total_actual_budget &&
-                          validation.errors.prj_total_actual_budget
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prj_total_actual_budget &&
-                      validation.errors.prj_total_actual_budget ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prj_total_actual_budget}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
- 
-<Col className="col-md-4 mb-3">
-                    <Label>{t("prj_sector_id")}<span className="text-danger">*</span></Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>
+                      {t("prj_total_estimate_budget")}
+                      <span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      name="prj_total_estimate_budget"
+                      type="number"
+                      placeholder={t("prj_total_estimate_budget")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prj_total_estimate_budget || ""}
+                      invalid={
+                        validation.touched.prj_total_estimate_budget &&
+                        validation.errors.prj_total_estimate_budget
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prj_total_estimate_budget &&
+                    validation.errors.prj_total_estimate_budget ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prj_total_estimate_budget}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("prj_total_actual_budget")}</Label>
+                    <Input
+                      name="prj_total_actual_budget"
+                      type="number"
+                      placeholder={t("prj_total_actual_budget")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prj_total_actual_budget || ""}
+                      invalid={
+                        validation.touched.prj_total_actual_budget &&
+                        validation.errors.prj_total_actual_budget
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prj_total_actual_budget &&
+                    validation.errors.prj_total_actual_budget ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prj_total_actual_budget}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+
+                  <Col className="col-md-4 mb-3">
+                    <Label>
+                      {t("prj_sector_id")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prj_sector_id"
                       type="select"
@@ -1037,198 +1366,198 @@ const onSelectionChanged = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-<Col className='col-md-4 mb-3'>
-                      <Label>{t('prj_start_date_gc')}</Label>
-                      <Input
-                        name='prj_start_date_gc'
-                        type='text'
-                        placeholder={t('prj_start_date_gc')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prj_start_date_gc || ''}
-                        invalid={
-                          validation.touched.prj_start_date_gc &&
-                          validation.errors.prj_start_date_gc
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prj_start_date_gc &&
-                      validation.errors.prj_start_date_gc ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prj_start_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-4 mb-3'>
-                      <Label>{t('prj_start_date_plan_gc')}</Label>
-                      <Input
-                        name='prj_start_date_plan_gc'
-                        type='text'
-                        placeholder={t('prj_start_date_plan_gc')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prj_start_date_plan_gc || ''}
-                        invalid={
-                          validation.touched.prj_start_date_plan_gc &&
-                          validation.errors.prj_start_date_plan_gc
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prj_start_date_plan_gc &&
-                      validation.errors.prj_start_date_plan_gc ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prj_start_date_plan_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
-<Col className='col-md-4 mb-3'>
-                      <Label>{t('prj_end_date_actual_gc')}</Label>
-                      <Input
-                        name='prj_end_date_actual_gc'
-                        type='text'
-                        placeholder={t('prj_end_date_actual_gc')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prj_end_date_actual_gc || ''}
-                        invalid={
-                          validation.touched.prj_end_date_actual_gc &&
-                          validation.errors.prj_end_date_actual_gc
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prj_end_date_actual_gc &&
-                      validation.errors.prj_end_date_actual_gc ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prj_end_date_actual_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-4 mb-3'>
-                      <Label>{t('prj_end_date_plan_gc')}</Label>
-                      <Input
-                        name='prj_end_date_plan_gc'
-                        type='text'
-                        placeholder={t('prj_end_date_plan_gc')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prj_end_date_plan_gc || ''}
-                        invalid={
-                          validation.touched.prj_end_date_plan_gc &&
-                          validation.errors.prj_end_date_plan_gc
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prj_end_date_plan_gc &&
-                      validation.errors.prj_end_date_plan_gc ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prj_end_date_plan_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
-                    <Col className='col-md-4 mb-3'>
-                      <Label>{t('prj_urban_ben_number')}</Label>
-                      <Input
-                        name='prj_urban_ben_number'
-                        type='number'
-                        placeholder={t('prj_urban_ben_number')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prj_urban_ben_number || ''}
-                        invalid={
-                          validation.touched.prj_urban_ben_number &&
-                          validation.errors.prj_urban_ben_number
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prj_urban_ben_number &&
-                      validation.errors.prj_urban_ben_number ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prj_urban_ben_number}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-4 mb-3'>
-                      <Label>{t('prj_rural_ben_number')}</Label>
-                      <Input
-                        name='prj_rural_ben_number'
-                        type='number'
-                        placeholder={t('prj_rural_ben_number')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prj_rural_ben_number || ''}
-                        invalid={
-                          validation.touched.prj_rural_ben_number &&
-                          validation.errors.prj_rural_ben_number
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prj_rural_ben_number &&
-                      validation.errors.prj_rural_ben_number ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prj_rural_ben_number}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prj_outcome')}</Label>
-                      <Input
-                        name='prj_outcome'
-                        type='textarea'
-                        placeholder={t('prj_outcome')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prj_outcome || ''}
-                        invalid={
-                          validation.touched.prj_outcome &&
-                          validation.errors.prj_outcome
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prj_outcome &&
-                      validation.errors.prj_outcome ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prj_outcome}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prj_remark')}</Label>
-                      <Input
-                        name='prj_remark'
-                        type='textarea'
-                        placeholder={t('prj_remark')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prj_remark || ''}
-                        invalid={
-                          validation.touched.prj_remark &&
-                          validation.errors.prj_remark
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prj_remark &&
-                      validation.errors.prj_remark ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prj_remark}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>                
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("prj_start_date_gc")}</Label>
+                    <Input
+                      name="prj_start_date_gc"
+                      type="text"
+                      placeholder={t("prj_start_date_gc")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prj_start_date_gc || ""}
+                      invalid={
+                        validation.touched.prj_start_date_gc &&
+                        validation.errors.prj_start_date_gc
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prj_start_date_gc &&
+                    validation.errors.prj_start_date_gc ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prj_start_date_gc}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("prj_start_date_plan_gc")}</Label>
+                    <Input
+                      name="prj_start_date_plan_gc"
+                      type="text"
+                      placeholder={t("prj_start_date_plan_gc")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prj_start_date_plan_gc || ""}
+                      invalid={
+                        validation.touched.prj_start_date_plan_gc &&
+                        validation.errors.prj_start_date_plan_gc
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prj_start_date_plan_gc &&
+                    validation.errors.prj_start_date_plan_gc ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prj_start_date_plan_gc}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("prj_end_date_actual_gc")}</Label>
+                    <Input
+                      name="prj_end_date_actual_gc"
+                      type="text"
+                      placeholder={t("prj_end_date_actual_gc")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prj_end_date_actual_gc || ""}
+                      invalid={
+                        validation.touched.prj_end_date_actual_gc &&
+                        validation.errors.prj_end_date_actual_gc
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prj_end_date_actual_gc &&
+                    validation.errors.prj_end_date_actual_gc ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prj_end_date_actual_gc}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("prj_end_date_plan_gc")}</Label>
+                    <Input
+                      name="prj_end_date_plan_gc"
+                      type="text"
+                      placeholder={t("prj_end_date_plan_gc")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prj_end_date_plan_gc || ""}
+                      invalid={
+                        validation.touched.prj_end_date_plan_gc &&
+                        validation.errors.prj_end_date_plan_gc
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prj_end_date_plan_gc &&
+                    validation.errors.prj_end_date_plan_gc ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prj_end_date_plan_gc}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("prj_urban_ben_number")}</Label>
+                    <Input
+                      name="prj_urban_ben_number"
+                      type="number"
+                      placeholder={t("prj_urban_ben_number")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prj_urban_ben_number || ""}
+                      invalid={
+                        validation.touched.prj_urban_ben_number &&
+                        validation.errors.prj_urban_ben_number
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prj_urban_ben_number &&
+                    validation.errors.prj_urban_ben_number ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prj_urban_ben_number}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("prj_rural_ben_number")}</Label>
+                    <Input
+                      name="prj_rural_ben_number"
+                      type="number"
+                      placeholder={t("prj_rural_ben_number")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prj_rural_ben_number || ""}
+                      invalid={
+                        validation.touched.prj_rural_ben_number &&
+                        validation.errors.prj_rural_ben_number
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prj_rural_ben_number &&
+                    validation.errors.prj_rural_ben_number ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prj_rural_ben_number}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prj_outcome")}</Label>
+                    <Input
+                      name="prj_outcome"
+                      type="textarea"
+                      placeholder={t("prj_outcome")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prj_outcome || ""}
+                      invalid={
+                        validation.touched.prj_outcome &&
+                        validation.errors.prj_outcome
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prj_outcome &&
+                    validation.errors.prj_outcome ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prj_outcome}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prj_remark")}</Label>
+                    <Input
+                      name="prj_remark"
+                      type="textarea"
+                      placeholder={t("prj_remark")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prj_remark || ""}
+                      invalid={
+                        validation.touched.prj_remark &&
+                        validation.errors.prj_remark
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prj_remark &&
+                    validation.errors.prj_remark ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prj_remark}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
@@ -1283,7 +1612,7 @@ const onSelectionChanged = () => {
             "Stakeholder",
             "Contractor",
             "Budget Request",
-            "Geo Location"         
+            "Geo Location",
           ]}
           components={[
             ProjectDocument,
@@ -1291,7 +1620,7 @@ const onSelectionChanged = () => {
             ProjectStakeholder,
             Projectcontractor,
             Budgetrequest,
-            GeoLocation         
+            GeoLocation,
           ]}
         />
       )}
