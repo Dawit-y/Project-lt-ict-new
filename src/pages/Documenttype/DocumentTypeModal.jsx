@@ -53,6 +53,10 @@ const DocumentTypeModal = (props) => {
                     <p className="mb-2">
             {t('pdt_description')}: <span className="text-primary">{transaction.pdt_description}</span>
           </p>
+          </tr><tr>
+                    <p className="mb-2">
+            {t('pdt_status')}: <span className="text-primary">{transaction.pdt_status}</span>
+          </p>
           </tr>
 
           {transaction.is_deletable === 1 && (

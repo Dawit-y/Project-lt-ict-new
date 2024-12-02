@@ -3,27 +3,32 @@ import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
+import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
+import SearchComponent from "../../components/Common/SearchComponent";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 
 import {
-  getSectorInformation as onGetSectorInformation,
-  addSectorInformation as onAddSectorInformation,
-  updateSectorInformation as onUpdateSectorInformation,
-  deleteSectorInformation as onDeleteSectorInformation,
-} from "../../store/sectorinformation/actions";
-
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
+  useFetchSectorInformations,
+  useSearchSectorInformations,
+  useAddSectorInformation,
+  useDeleteSectorInformation,
+  useUpdateSectorInformation,
+} from "../../queries/sectorinformation_query";
+import {
+  useFetchSectorCategorys
+} from "../../queries/sectorcategory_query";
 import SectorInformationModal from "./SectorInformationModal";
 import { useTranslation } from "react-i18next";
+
+import { useSelector, useDispatch } from "react-redux";
+import { createSelector } from "reselect";
 
 import {
   Button,
@@ -42,7 +47,10 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer,toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -54,88 +62,138 @@ const truncateText = (text, maxLength) => {
 const SectorInformationModel = () => {
   //meta title
   document.title = " SectorInformation";
-
   const { t } = useTranslation();
-
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-
   const [sectorInformation, setSectorInformation] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
-  const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
-  //START FOREIGN CALLS
+
+  const [searchResults, setSearchResults] = useState(null);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [searcherror, setSearchError] = useState(null);
+  const [showSearchResult, setShowSearchResult] = useState(false);
+
+  const { data, isLoading, error, isError, refetch } = useFetchSectorInformations();
+const cat = useFetchSectorCategorys();
+  const addSectorInformation = useAddSectorInformation();
+  const updateSectorInformation = useUpdateSectorInformation();
+  const deleteSectorInformation = useDeleteSectorInformation();
+    //START FOREIGN CALLS
   const [sectorCategoryOptions, setSectorCategoryOptions] = useState([]);
   const [selectedSectorCategory, setSelectedSectorCategory] = useState("");
-
   useEffect(() => {
-    const fetchSectorCategory = async () => {
-      try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_BASE_API_URL}sector_category/listgrid`
-        );
-        const transformedData = response.data.data.map((item) => ({
-          label: item.psc_name.toString(),
-          value: item.psc_name.toString(),
-        }));
-        const optionsWithDefault = [
-          { label: "select budget year", value: "" },
-          ...transformedData,
-        ];
-        setSectorCategoryOptions(optionsWithDefault);
-      } catch (error) {
-        console.error("Error fetching budget years:", error);
-      }
-    };
-    fetchSectorCategory();
-  }, []);
-  const handleSectorCategoryChange = (e) => {
+  const fetchSectorCategory = async () => {
+    try {
+       // Assuming useFetchSectorCategorys returns a promise
+      const transformedData = cat.data.data.map((item) => ({
+        label: item.psc_name.toString(),
+        value: item.psc_id,
+      }));
+
+      const optionsWithDefault = [
+        { label: "Select Sector Category", value: "" }, // Capitalized "Select" and no space after colon
+        ...transformedData,
+      ];
+
+      setSectorCategoryOptions(optionsWithDefault);
+    } catch (error) {
+      console.error("Error fetching sector categories:", error);
+    }
+  };
+
+  fetchSectorCategory();
+}, []);
+   const handleSectorCategoryChange = (e) => {
     setSelectedSectorCategory(e.target.value);
     validation.setFieldValue("sci_sector_category_id", e.target.value);
   };
+
+//START CRUD
+  const handleAddSectorInformation = async (data) => {
+    try {
+      await addSectorInformation.mutateAsync(data);
+      toast.success(`Data added successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error("Failed to add data", {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+
+  const handleUpdateSectorInformation = async (data) => {
+    try {
+      await updateSectorInformation.mutateAsync(data);
+      toast.success(`data updated successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error(`Failed to update Data`, {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+  const handleDeleteSectorInformation = async () => {
+    if (sectorInformation && sectorInformation.sci_id) {
+      try {
+        const id = sectorInformation.sci_id;
+        await deleteSectorInformation.mutateAsync(id);
+        toast.success(`Data deleted successfully`, {
+          autoClose: 2000,
+        });
+      } catch (error) {
+        toast.error(`Failed to delete Data`, {
+          autoClose: 2000,
+        });
+      }
+      setDeleteModal(false);
+    }
+  };
+  //END CRUD
+  //START FOREIGN CALLS
+
+  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-      sci_name_or: (sectorInformation && sectorInformation.sci_name_or) || "",
-      sci_name_am: (sectorInformation && sectorInformation.sci_name_am) || "",
-      sci_name_en: (sectorInformation && sectorInformation.sci_name_en) || "",
-      sci_code: (sectorInformation && sectorInformation.sci_code) || "",
-      sci_available_at_region:
-        (sectorInformation && sectorInformation.sci_available_at_region) || "",
-      sci_available_at_zone:
-        (sectorInformation && sectorInformation.sci_available_at_zone) || "",
-      sci_available_at_woreda:
-        (sectorInformation && sectorInformation.sci_available_at_woreda) || "",
-      sci_description:
-        (sectorInformation && sectorInformation.sci_description) || "",
-      sci_status: (sectorInformation && sectorInformation.sci_status) || "",
+     sci_name_or:(sectorInformation && sectorInformation.sci_name_or) || "", 
+sci_name_am:(sectorInformation && sectorInformation.sci_name_am) || "", 
+sci_name_en:(sectorInformation && sectorInformation.sci_name_en) || "", 
+sci_code:(sectorInformation && sectorInformation.sci_code) || "", 
+sci_sector_category_id:(sectorInformation && sectorInformation.sci_sector_category_id) || "", 
+sci_available_at_region:(sectorInformation && sectorInformation.sci_available_at_region) || false,
+sci_available_at_zone:(sectorInformation && sectorInformation.sci_available_at_zone) || false,
+sci_available_at_woreda:(sectorInformation && sectorInformation.sci_available_at_woreda) || false,
+sci_description:(sectorInformation && sectorInformation.sci_description) || "", 
+sci_status:(sectorInformation && sectorInformation.sci_status) || "", 
 
-      is_deletable: (sectorInformation && sectorInformation.is_deletable) || 1,
-      is_editable: (sectorInformation && sectorInformation.is_editable) || 1,
+is_deletable: (sectorInformation && sectorInformation.is_deletable) || 1,
+is_editable: (sectorInformation && sectorInformation.is_editable) || 1
     },
 
     validationSchema: Yup.object({
       sci_name_or: Yup.string()
         .required(t("sci_name_or"))
-        .test("unique-code", t("Already exists"), (value) => {
-          return !data.some((item) => item.sci_name_or == value);
+        .test("unique-sci_name_or", t("Already exists"), (value) => {
+          return !data?.data.some(
+            (item) =>
+              item.sci_name_or == value && item.sci_id !== sectorInformation?.sci_id
+          );
         }),
-      //sci_name_or: Yup.string().required(t("sci_name_or")),
-      sci_name_am: Yup.string().required(t("sci_name_am")),
-      sci_name_en: Yup.string().required(t("sci_name_en")),
-      sci_code: Yup.string().required(t("sci_code")),
-      sci_available_at_region: Yup.string().required(
-        t("sci_available_at_region")
-      ),
-      sci_available_at_zone: Yup.string().required(t("sci_available_at_zone")),
-      sci_available_at_woreda: Yup.string().required(
-        t("sci_available_at_woreda")
-      ),
-      sci_description: Yup.string().required(t("sci_description")),
-      sci_status: Yup.string().required(t("sci_status")),
+sci_name_am: Yup.string().required(t('sci_name_am')),
+sci_name_en: Yup.string().required(t('sci_name_en')),
+sci_code: Yup.string().required(t('sci_code')),
+sci_sector_category_id: Yup.string().required(t('sci_sector_category_id')),
+sci_available_at_region: Yup.boolean(),
+sci_available_at_zone: Yup.boolean(),
+sci_available_at_woreda: Yup.boolean(),
+
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -143,279 +201,222 @@ const SectorInformationModel = () => {
       if (isEdit) {
         const updateSectorInformation = {
           sci_id: sectorInformation ? sectorInformation.sci_id : 0,
-          sci_name_or: values.sci_name_or,
-          sci_name_am: values.sci_name_am,
-          sci_name_en: values.sci_name_en,
-          sci_code: values.sci_code,
-          sci_available_at_region: values.sci_available_at_region,
-          sci_available_at_zone: values.sci_available_at_zone,
-          sci_available_at_woreda: values.sci_available_at_woreda,
-          sci_description: values.sci_description,
-          sci_status: values.sci_status,
+          sci_id:sectorInformation.sci_id, 
+sci_name_or:values.sci_name_or, 
+sci_name_am:values.sci_name_am, 
+sci_name_en:values.sci_name_en, 
+sci_code:values.sci_code, 
+sci_sector_category_id:values.sci_sector_category_id, 
+sci_available_at_region:values.sci_available_at_region ? 1 : 0,
+sci_available_at_zone:values.sci_available_at_zone ? 1 : 0, 
+sci_available_at_woreda:values.sci_available_at_woreda ? 1 : 0, 
+sci_description:values.sci_description, 
+sci_status:values.sci_status, 
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
         // update SectorInformation
-        dispatch(onUpdateSectorInformation(updateSectorInformation));
+        handleUpdateSectorInformation(updateSectorInformation);
         validation.resetForm();
       } else {
         const newSectorInformation = {
-          sci_name_or: values.sci_name_or,
-          sci_name_am: values.sci_name_am,
-          sci_name_en: values.sci_name_en,
-          sci_code: values.sci_code,
-          sci_available_at_region: values.sci_available_at_region,
-          sci_available_at_zone: values.sci_available_at_zone,
-          sci_available_at_woreda: values.sci_available_at_woreda,
-          sci_description: values.sci_description,
-          sci_status: values.sci_status,
+          sci_name_or:values.sci_name_or, 
+sci_name_am:values.sci_name_am, 
+sci_name_en:values.sci_name_en, 
+sci_code:values.sci_code, 
+sci_sector_category_id:values.sci_sector_category_id, 
+sci_available_at_region:values.sci_available_at_region ? 1 : 0, 
+sci_available_at_zone:values.sci_available_at_zone ? 1 : 0, 
+sci_available_at_woreda:values.sci_available_at_woreda ? 1 : 0, 
+sci_description:values.sci_description, 
+sci_status:values.sci_status, 
+
         };
-        // save new SectorInformations
-        dispatch(onAddSectorInformation(newSectorInformation));
+        // save new SectorInformation
+        handleAddSectorInformation(newSectorInformation);
         validation.resetForm();
       }
     },
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-  const dispatch = useDispatch();
+
   // Fetch SectorInformation on component mount
-  useEffect(() => {
-    dispatch(onGetSectorInformation());
-  }, [dispatch]);
-
-  const sectorInformationProperties = createSelector(
-    (state) => state.SectorInformationR, // this is geting from  reducer
-    (SectorInformationReducer) => ({
-      // this is from Project.reducer
-      sectorInformation: SectorInformationReducer.sectorInformation,
-      loading: SectorInformationReducer.loading,
-      update_loading: SectorInformationReducer.update_loading,
-    })
-  );
-
-  const {
-    sectorInformation: { data, previledge },
-    loading,
-    update_loading,
-  } = useSelector(sectorInformationProperties);
-
-  useEffect(() => {
-    console.log("update_loading in useEffect", update_loading);
-    setModal(false);
-  }, [update_loading]);
-
-  const selectSearchProperties = createSelector(
-    (state) => state.search,
-    (search) => ({
-      results: search.results,
-    })
-  );
-
-  const { results } = useSelector(selectSearchProperties);
-
-  const [isLoading, setLoading] = useState(loading);
   useEffect(() => {
     setSectorInformation(data);
   }, [data]);
-
-  useEffect(() => {
+useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setSectorInformation(data);
       setIsEdit(false);
     }
   }, [data]);
-
-  const toggle = () => {
+const toggle = () => {
     if (modal) {
       setModal(false);
-      setSectorInformation(null);
+       setSectorInformation(null);
     } else {
       setModal(true);
     }
   };
 
-  const handleSectorInformationClick = (arg) => {
+   const handleSectorInformationClick = (arg) => {
     const sectorInformation = arg;
     // console.log("handleSectorInformationClick", sectorInformation);
     setSectorInformation({
-      sci_id: sectorInformation.sci_id,
-      sci_name_or: sectorInformation.sci_name_or,
-      sci_name_am: sectorInformation.sci_name_am,
-      sci_name_en: sectorInformation.sci_name_en,
-      sci_code: sectorInformation.sci_code,
-      sci_available_at_region: sectorInformation.sci_available_at_region,
-      sci_available_at_zone: sectorInformation.sci_available_at_zone,
-      sci_available_at_woreda: sectorInformation.sci_available_at_woreda,
-      sci_description: sectorInformation.sci_description,
-      sci_status: sectorInformation.sci_status,
+      sci_id:sectorInformation.sci_id, 
+sci_name_or:sectorInformation.sci_name_or, 
+sci_name_am:sectorInformation.sci_name_am, 
+sci_name_en:sectorInformation.sci_name_en, 
+sci_code:sectorInformation.sci_code, 
+sci_sector_category_id:sectorInformation.sci_sector_category_id, 
+sci_available_at_region:sectorInformation.sci_available_at_region=== 1,
+sci_available_at_zone:sectorInformation.sci_available_at_zone=== 1,
+sci_available_at_woreda:sectorInformation.sci_available_at_woreda=== 1,
+sci_description:sectorInformation.sci_description, 
+sci_status:sectorInformation.sci_status, 
 
       is_deletable: sectorInformation.is_deletable,
       is_editable: sectorInformation.is_editable,
-    });
-
+    });      
+setSelectedSectorCategory(sectorInformation.sci_sector_category_id);    
     setIsEdit(true);
-
     toggle();
   };
 
   //delete projects
   const [deleteModal, setDeleteModal] = useState(false);
-
   const onClickDelete = (sectorInformation) => {
     setSectorInformation(sectorInformation);
     setDeleteModal(true);
   };
 
-  const handleDeleteSectorInformation = () => {
-    if (sectorInformation && sectorInformation.sci_id) {
-      dispatch(onDeleteSectorInformation(sectorInformation.sci_id));
-      setDeleteModal(false);
-    }
-  };
   const handleSectorInformationClicks = () => {
     setIsEdit(false);
     setSectorInformation("");
     toggle();
+  }
+;  const handleSearchResults = ({ data, error }) => {
+    setSearchResults(data);
+    setSearchError(error);
+    setShowSearchResult(true);
   };
-  const handleSearch = () => {
-    setSearchLoading(true); // Set loading to true when search is initiated// Update filtered data with search results
-    setShowSearchResults(true); // Show search results
-    setSearchLoading(false);
-  };
-
-  const handleClearSearch = () => {
-    setShowSearchResults(false);
-  };
-
+  //START UNCHANGED
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: "",
-        accessorKey: "sci_name_or",
+        header: '',
+        accessorKey: 'sci_name_or',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.sci_name_or, 30) || "-"}
+              {truncateText(cellProps.row.original.sci_name_or, 30) ||
+                '-'}
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "sci_name_am",
+      }, 
+{
+        header: '',
+        accessorKey: 'sci_name_am',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.sci_name_am, 30) || "-"}
+              {truncateText(cellProps.row.original.sci_name_am, 30) ||
+                '-'}
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "sci_name_en",
+      }, 
+{
+        header: '',
+        accessorKey: 'sci_name_en',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.sci_name_en, 30) || "-"}
+              {truncateText(cellProps.row.original.sci_name_en, 30) ||
+                '-'}
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "sci_code",
+      }, 
+{
+        header: '',
+        accessorKey: 'sci_code',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.sci_code, 30) || "-"}
+              {truncateText(cellProps.row.original.sci_code, 30) ||
+                '-'}
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "sci_available_at_region",
+      }, 
+{
+        header: '',
+        accessorKey: 'sector_category_name',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
-                cellProps.row.original.sci_available_at_region,
-                30
-              ) || "-"}
+              {truncateText(cellProps.row.original.sector_category_name, 30) ||
+                '-'}
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "sci_available_at_zone",
+      }, 
+{
+        header: '',
+        accessorKey: 'sci_available_at_region',
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.sci_available_at_region, 30) ||
+                '-'}
+            </span>
+          );
+        },
+      }, 
+{
+        header: '',
+        accessorKey: 'sci_available_at_zone',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.sci_available_at_zone, 30) ||
-                "-"}
+                '-'}
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "sci_available_at_woreda",
+      }, 
+{
+        header: '',
+        accessorKey: 'sci_available_at_woreda',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
-                cellProps.row.original.sci_available_at_woreda,
-                30
-              ) || "-"}
+              {truncateText(cellProps.row.original.sci_available_at_woreda, 30) ||
+                '-'}
             </span>
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "sci_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.sci_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "sci_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.sci_status, 30) || `${cellProps.row.original.sci_status}`}
-            </span>
-          );
-        },
-      },
-
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -438,7 +439,10 @@ const SectorInformationModel = () => {
         },
       },
     ];
-    if (previledge?.is_role_editable && previledge?.is_role_deletable) {
+     if (
+      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_deletable
+    ) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -452,7 +456,7 @@ const SectorInformationModel = () => {
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;
+                    const data = cellProps.row.original;                    
                     handleSectorInformationClick(data);
                   }}
                 >
@@ -490,14 +494,6 @@ const SectorInformationModel = () => {
     return baseColumns;
   }, [handleSectorInformationClick, toggleViewModal, onClickDelete]);
 
-  const project_status = [
-    { label: "select Status name", value: "" },
-    { label: "Active", value: 1 },
-    { label: "Inactive", value: 0 },
-  ];
-
-  const dropdawntotal = [project_status];
-
   return (
     <React.Fragment>
       <SectorInformationModal
@@ -507,8 +503,9 @@ const SectorInformationModel = () => {
       />
       <DeleteModal
         show={deleteModal}
-        onDeleteClick={handleDeleteSectorInformation}
+       onDeleteClick={handleDeleteSectorInformation}
         onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteSectorInformation.isPending}
       />
       <div className="page-content">
         <div className="container-fluid">
@@ -516,8 +513,18 @@ const SectorInformationModel = () => {
             title={t("sector_information")}
             breadcrumbItem={t("sector_information")}
           />
-          {isLoading || searchLoading ? (
-            <Spinners setLoading={setLoading} />
+          <AdvancedSearch
+            searchHook={useSearchSectorInformations}
+            textSearchKeys={["sci_name_or"]}
+            dropdownSearchKeys={[]}
+            checkboxSearchKeys={[]}
+            onSearchResult={handleSearchResults}
+            setIsSearchLoading={setIsSearchLoading}
+            setSearchResults={setSearchResults}
+            setShowSearchResult={setShowSearchResult}
+          />
+          {isLoading || isSearchLoading ? (
+            <Spinners />
           ) : (
             <Row>
               <Col xs="12">
@@ -525,7 +532,11 @@ const SectorInformationModel = () => {
                   <CardBody>
                     <TableContainer
                       columns={columns}
-                      data={showSearchResults ? results : data}
+                      data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
                       isGlobalFilter={true}
                       isAddButton={true}
                       isCustomPageSize={true}
@@ -534,7 +545,7 @@ const SectorInformationModel = () => {
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("sector_information")}
+                      buttonName={t("add") +" "+ t("sector_information")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -547,122 +558,114 @@ const SectorInformationModel = () => {
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit
-                ? t("edit") + " " + t("sector_information")
-                : t("add") + " " + t("sector_information")}
+              {!!isEdit ? (t("edit") + " "+t("sector_information")) : (t("add") +" "+t("sector_information"))}
             </ModalHeader>
             <ModalBody>
               <Form
                 onSubmit={(e) => {
                   e.preventDefault();
                   validation.handleSubmit();
-                  const modalCallback = () => setModal(false);
-                  if (isEdit) {
-                    onUpdateSectorInformation(validation.values, modalCallback);
-                  } else {
-                    onAddSectorInformation(validation.values, modalCallback);
-                  }
                   return false;
                 }}
               >
                 <Row>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("sci_name_or")}</Label>
-                    <Input
-                      name="sci_name_or"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.sci_name_or || ""}
-                      invalid={
-                        validation.touched.sci_name_or &&
-                        validation.errors.sci_name_or
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.sci_name_or &&
-                    validation.errors.sci_name_or ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.sci_name_or}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("sci_name_am")}</Label>
-                    <Input
-                      name="sci_name_am"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.sci_name_am || ""}
-                      invalid={
-                        validation.touched.sci_name_am &&
-                        validation.errors.sci_name_am
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.sci_name_am &&
-                    validation.errors.sci_name_am ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.sci_name_am}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("sci_name_en")}</Label>
-                    <Input
-                      name="sci_name_en"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.sci_name_en || ""}
-                      invalid={
-                        validation.touched.sci_name_en &&
-                        validation.errors.sci_name_en
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.sci_name_en &&
-                    validation.errors.sci_name_en ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.sci_name_en}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("sci_code")}</Label>
-                    <Input
-                      name="sci_code"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.sci_code || ""}
-                      invalid={
-                        validation.touched.sci_code &&
-                        validation.errors.sci_code
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.sci_code &&
-                    validation.errors.sci_code ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.sci_code}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className='col-md-6 mb-3'>
+                      <Label>{t('sci_name_or')}</Label>
+                      <Input
+                        name='sci_name_or'
+                        type='text'
+                        placeholder={t('sci_name_or')}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.sci_name_or || ''}
+                        invalid={
+                          validation.touched.sci_name_or &&
+                          validation.errors.sci_name_or
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.sci_name_or &&
+                      validation.errors.sci_name_or ? (
+                        <FormFeedback type='invalid'>
+                          {validation.errors.sci_name_or}
+                        </FormFeedback>
+                      ) : null}
+                    </Col> 
+<Col className='col-md-6 mb-3'>
+                      <Label>{t('sci_name_am')}</Label>
+                      <Input
+                        name='sci_name_am'
+                        type='text'
+                        placeholder={t('sci_name_am')}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.sci_name_am || ''}
+                        invalid={
+                          validation.touched.sci_name_am &&
+                          validation.errors.sci_name_am
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.sci_name_am &&
+                      validation.errors.sci_name_am ? (
+                        <FormFeedback type='invalid'>
+                          {validation.errors.sci_name_am}
+                        </FormFeedback>
+                      ) : null}
+                    </Col> 
+<Col className='col-md-6 mb-3'>
+                      <Label>{t('sci_name_en')}</Label>
+                      <Input
+                        name='sci_name_en'
+                        type='text'
+                        placeholder={t('sci_name_en')}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.sci_name_en || ''}
+                        invalid={
+                          validation.touched.sci_name_en &&
+                          validation.errors.sci_name_en
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.sci_name_en &&
+                      validation.errors.sci_name_en ? (
+                        <FormFeedback type='invalid'>
+                          {validation.errors.sci_name_en}
+                        </FormFeedback>
+                      ) : null}
+                    </Col> 
+<Col className='col-md-6 mb-3'>
+                      <Label>{t('sci_code')}</Label>
+                      <Input
+                        name='sci_code'
+                        type='text'
+                        placeholder={t('sci_code')}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.sci_code || ''}
+                        invalid={
+                          validation.touched.sci_code &&
+                          validation.errors.sci_code
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.sci_code &&
+                      validation.errors.sci_code ? (
+                        <FormFeedback type='invalid'>
+                          {validation.errors.sci_code}
+                        </FormFeedback>
+                      ) : null}
+                    </Col> 
+<Col className="col-md-6 mb-3">
                     <Label>{t("sci_sector_category_id")}</Label>
                     <Input
                       name="sci_sector_category_id"
@@ -685,140 +688,120 @@ const SectorInformationModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("sci_available_at_region")}</Label>
-                    <Input
-                      name="sci_available_at_region"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.sci_available_at_region || ""}
-                      invalid={
-                        validation.touched.sci_available_at_region &&
-                        validation.errors.sci_available_at_region
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.sci_available_at_region &&
-                    validation.errors.sci_available_at_region ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.sci_available_at_region}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("sci_available_at_zone")}</Label>
-                    <Input
-                      name="sci_available_at_zone"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.sci_available_at_zone || ""}
-                      invalid={
-                        validation.touched.sci_available_at_zone &&
-                        validation.errors.sci_available_at_zone
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.sci_available_at_zone &&
-                    validation.errors.sci_available_at_zone ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.sci_available_at_zone}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("sci_available_at_woreda")}</Label>
-                    <Input
-                      name="sci_available_at_woreda"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.sci_available_at_woreda || ""}
-                      invalid={
-                        validation.touched.sci_available_at_woreda &&
-                        validation.errors.sci_available_at_woreda
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.sci_available_at_woreda &&
-                    validation.errors.sci_available_at_woreda ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.sci_available_at_woreda}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("sci_description")}</Label>
-                    <Input
-                      name="sci_description"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.sci_description || ""}
-                      invalid={
-                        validation.touched.sci_description &&
-                        validation.errors.sci_description
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.sci_description &&
-                    validation.errors.sci_description ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.sci_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("sci_status")}</Label>
-                    <Input
-                      name="sci_status"
-                      type="select"
-                      className="form-select"
-                      onChange={(e) => {
-                        validation.setFieldValue(
-                          "sci_status",
-                          Number(e.target.value)
-                        );
-                      }}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.sci_status}
-                    >
-                      <option value={""}>Select status</option>
-                      <option value={1}>{t("Active")}</option>
-                      <option value={0}>{t("Inactive")}</option>
-                    </Input>
-                    {validation.touched.sci_status &&
-                    validation.errors.sci_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.sci_status}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                  <Row>
+<Col className='col-md-4 mb-3'>
+                      <Label>{t('sci_available_at_region')}</Label>
+                      <Input
+                        name='sci_available_at_region'
+                        type='checkbox'
+                        placeholder={t('sci_available_at_region')}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.sci_available_at_region}
+                        invalid={
+                          validation.touched.sci_available_at_region &&
+                          validation.errors.sci_available_at_region
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.sci_available_at_region &&
+                      validation.errors.sci_available_at_region ? (
+                        <FormFeedback type='invalid'>
+                          {validation.errors.sci_available_at_region}
+                        </FormFeedback>
+                      ) : null}
+                    </Col> 
+<Col className='col-md-4 mb-3'>
+                      <Label>{t('sci_available_at_zone')}</Label>
+                      <Input
+                        name='sci_available_at_zone'
+                        type='checkbox'
+                        placeholder={t('sci_available_at_zone')}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.sci_available_at_zone}
+                        invalid={
+                          validation.touched.sci_available_at_zone &&
+                          validation.errors.sci_available_at_zone
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.sci_available_at_zone &&
+                      validation.errors.sci_available_at_zone ? (
+                        <FormFeedback type='invalid'>
+                          {validation.errors.sci_available_at_zone}
+                        </FormFeedback>
+                      ) : null}
+                    </Col> 
+<Col className='col-md-4 mb-3'>
+                      <Label>{t('sci_available_at_woreda')}</Label>
+                      <Input
+                        name='sci_available_at_woreda'
+                        type='checkbox'
+                        placeholder={t('sci_available_at_woreda')}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.sci_available_at_woreda}
+                        invalid={
+                          validation.touched.sci_available_at_woreda &&
+                          validation.errors.sci_available_at_woreda
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.sci_available_at_woreda &&
+                      validation.errors.sci_available_at_woreda ? (
+                        <FormFeedback type='invalid'>
+                          {validation.errors.sci_available_at_woreda}
+                        </FormFeedback>
+                      ) : null}
+                    </Col> 
+                    </Row>
+<Col className='col-md-6 mb-3'>
+                      <Label>{t('sci_description')}</Label>
+                      <Input
+                        name='sci_description'
+                        type='textarea'
+                        placeholder={t('sci_description')}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.sci_description || ''}
+                        invalid={
+                          validation.touched.sci_description &&
+                          validation.errors.sci_description
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.sci_description &&
+                      validation.errors.sci_description ? (
+                        <FormFeedback type='invalid'>
+                          {validation.errors.sci_description}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {update_loading ? (
+                      {addSectorInformation.isPending || updateSectorInformation.isPending ? (
                         <Button
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addSectorInformation.isPending ||
+                            updateSectorInformation.isPending ||
+                            !validation.dirty
+                          }
                         >
-                          <Spinner size={"sm"} color="#fff" />
+                          <Spinner size={"sm"} color="light" className="me-2" />
                           {t("Save")}
                         </Button>
                       ) : (
@@ -826,7 +809,11 @@ const SectorInformationModel = () => {
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addSectorInformation.isPending ||
+                            updateSectorInformation.isPending ||
+                            !validation.dirty
+                          }
                         >
                           {t("Save")}
                         </Button>

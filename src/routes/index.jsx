@@ -67,12 +67,27 @@ import ProjectsLocation from "../pages/ProjectsLocation";
 
 import Gantty from "../pages/GanttChart/index";
 import StatisticalReport from "../pages/StatistaicalReport";
+//Newly added
+import ExpenditureCode from '../pages/Expenditurecode/index';
+import ProjectBudgetExpenditure from '../pages/Projectbudgetexpenditure/index';
+import ProjectEmployee from '../pages/Projectemployee/index';
+import ProjectHandover from '../pages/Projecthandover/index';
+import ProjectPerformance from '../pages/Projectperformance/index';
+import ProjectPlan from '../pages/Projectplan/index';
+import ProjectSupplimentary from '../pages/Projectsupplimentary/index';
+import ProjectVariation from '../pages/Projectvariation/index';
 
 const authProtectedRoutes = [
+  {path: '/expenditure_code', component: <ExpenditureCode/> },
+  {path: '/project_budget_expenditure', component: <ProjectBudgetExpenditure/> },
+   {path: '/project_employee', component: <ProjectEmployee/> },
+ {path: '/project_handover', component: <ProjectHandover/> },
+  {path: '/project_performance', component: <ProjectPerformance/> },
+ {path: '/project_plan', component: <ProjectPlan/> },
+  {path: '/project_supplimentary', component: <ProjectSupplimentary/> },
+ {path: '/project_variation', component: <ProjectVariation/> },
   { path: "/dash", components: <Dashboardcard /> },
-
   { path: "/dashboard", component: <Dashboard /> },
-
   //File Manager
   { path: "/Project-Tree", component: <ProjectsTreeView /> },
   { path: "/address_structure", component: <AddressStructure /> },

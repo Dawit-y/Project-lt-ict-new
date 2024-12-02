@@ -105,7 +105,7 @@ const AdvancedSearch = ({
 
                       {/* Dropdown Inputs */}
                       {dropdownSearchKeys.map(({ key, options }) => (
-                        <Col xxl={2} lg={2} key={key}>
+                        <Col xxl={3} lg={3} key={key}>
                           <div className="position-relative">
                             <Select
                               className="select2"

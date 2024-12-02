@@ -84,9 +84,16 @@ const RolesModel = ({ onSelectItem }) => {
     },
 
     validationSchema: Yup.object({
-      rol_name: Yup.string().required(t("rol_name")),
-      rol_description: Yup.string().required(t("rol_description")),
-      rol_status: Yup.string().required(t("rol_status")),
+     rol_name: Yup.string()
+        .required(t("rol_name"))
+        .test("unique-role-id", t("Already exists"), (value) => {
+          return !data.some(
+            (item) =>
+              item.rol_name == value
+          );
+        }),
+
+      //rol_name: Yup.string().required(t("rol_name")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -451,7 +458,7 @@ const RolesModel = ({ onSelectItem }) => {
                     <Label>{t("rol_description")}</Label>
                     <Input
                       name="rol_description"
-                      type="text"
+                      type="textarea"
                       placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -468,32 +475,6 @@ const RolesModel = ({ onSelectItem }) => {
                     validation.errors.rol_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.rol_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("rol_status")}</Label>
-                    <Input
-                      name="rol_status"
-                      type="select"
-                      className="form-select"
-                      onChange={(e) => {
-                        validation.setFieldValue(
-                          "rol_status",
-                          Number(e.target.value)
-                        );
-                      }}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.rol_status}
-                    >
-                      <option value={""}>Select status</option>
-                      <option value={1}>{t("Active")}</option>
-                      <option value={0}>{t("Inactive")}</option>
-                    </Input>
-                    {validation.touched.rol_status &&
-                    validation.errors.rol_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.rol_status}
                       </FormFeedback>
                     ) : null}
                   </Col>

@@ -17,7 +17,7 @@ import {
   useAddDepartment,
   useDeleteDepartment,
   useUpdateDepartment,
-} from "../../queries/departmentQuery";
+} from "../../queries/department_query";
 
 import DepartmentModal from "./DepartmentModal";
 import { useTranslation } from "react-i18next";
@@ -380,34 +380,6 @@ const DepartmentModel = () => {
         },
       },
       {
-        header: "",
-        accessorKey: "dep_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.dep_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "dep_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.dep_status, 30) ||
-                `${cellProps.row.original.dep_status}`}
-            </span>
-          );
-        },
-      },
-
-      {
         header: t("view_detail"),
         enableColumnFilter: false,
         enableSorting: true,
@@ -514,7 +486,7 @@ const DepartmentModel = () => {
           />
           <AdvancedSearch
             searchHook={useSearchDepartments}
-            textSearchKeys={["dep_name_am", "dep_name_en", "dep_name_or"]}
+            textSearchKeys={["dep_name_or","dep_name_am", "dep_name_en"]}
             dropdownSearchKeys={[
               {
                 key: "example",

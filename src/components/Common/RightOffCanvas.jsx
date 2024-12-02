@@ -75,7 +75,6 @@ const RightOffCanvas = ({
                     ))}
                   </Nav>
                 )}
-
                 <TabContent
                   activeTab={activeTab1}
                   className="p-3 text-muted mt-4"
@@ -94,5 +93,4 @@ const RightOffCanvas = ({
     </React.Fragment>
   );
 };
-
 export default RightOffCanvas;

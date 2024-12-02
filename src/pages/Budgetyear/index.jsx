@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -8,22 +9,23 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
+import SearchComponent from "../../components/Common/SearchComponent";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 
 import {
-  getBudgetYear as onGetBudgetYear,
-  addBudgetYear as onAddBudgetYear,
-  updateBudgetYear as onUpdateBudgetYear,
-  deleteBudgetYear as onDeleteBudgetYear,
-} from "../../store/budgetyear/actions";
-
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
+  useFetchBudgetYears,
+  useSearchBudgetYears,
+  useAddBudgetYear,
+  useDeleteBudgetYear,
+  useUpdateBudgetYear,
+} from "../../queries/budgetyear_query";
 import BudgetYearModal from "./BudgetYearModal";
 import { useTranslation } from "react-i18next";
+
+import { useSelector, useDispatch } from "react-redux";
+import { createSelector } from "reselect";
 
 import {
   Button,
@@ -39,8 +41,13 @@ import {
   Label,
   Card,
   CardBody,
+  FormGroup,
+  Badge,
 } from "reactstrap";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer,toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -52,73 +59,95 @@ const truncateText = (text, maxLength) => {
 const BudgetYearModel = () => {
   //meta title
   document.title = " BudgetYear";
-
   const { t } = useTranslation();
-
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-
   const [budgetYear, setBudgetYear] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
-  const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
 
-  const dispatch = useDispatch();
-  // Fetch BudgetYear on component mount
-  useEffect(() => {
-    dispatch(onGetBudgetYear());
-  }, [dispatch]);
+  const [searchResults, setSearchResults] = useState(null);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [searcherror, setSearchError] = useState(null);
+  const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const budgetYearProperties = createSelector(
-    (state) => state.BudgetYearR, // this is geting from  reducer
-    (BudgetYearReducer) => ({
-      // this is from Project.reducer
-      budgetYear: BudgetYearReducer.budgetYear,
-      loading: BudgetYearReducer.loading,
-      update_loading: BudgetYearReducer.update_loading,
-    })
-  );
+  const { data, isLoading, error, isError, refetch } = useFetchBudgetYears();
 
-  const {
-    budgetYear: { data, previledge },
-    loading,
-    update_loading,
-  } = useSelector(budgetYearProperties);
+  const addBudgetYear = useAddBudgetYear();
+  const updateBudgetYear = useUpdateBudgetYear();
+  const deleteBudgetYear = useDeleteBudgetYear();
+//START CRUD
+  const handleAddBudgetYear = async (data) => {
+    try {
+      await addBudgetYear.mutateAsync(data);
+      toast.success(`Data added successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error("Failed to add data", {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
 
+  const handleUpdateBudgetYear = async (data) => {
+    try {
+      await updateBudgetYear.mutateAsync(data);
+      toast.success(`data updated successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error(`Failed to update Data`, {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+  const handleDeleteBudgetYear = async () => {
+    if (budgetYear && budgetYear.bdy_id) {
+      try {
+        const id = budgetYear.bdy_id;
+        await deleteBudgetYear.mutateAsync(id);
+        toast.success(`Data deleted successfully`, {
+          autoClose: 2000,
+        });
+      } catch (error) {
+        toast.error(`Failed to delete Data`, {
+          autoClose: 2000,
+        });
+      }
+      setDeleteModal(false);
+    }
+  };
+  //END CRUD
+  //START FOREIGN CALLS
+
+  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-      bdy_name: (budgetYear && budgetYear.bdy_name) || "",
-      bdy_code: (budgetYear && budgetYear.bdy_code) || "",
-      bdy_description: (budgetYear && budgetYear.bdy_description) || "",
-      bdy_status: budgetYear && budgetYear.bdy_status,
+     bdy_name:(budgetYear && budgetYear.bdy_name) || "", 
+bdy_code:(budgetYear && budgetYear.bdy_code) || "", 
+bdy_description:(budgetYear && budgetYear.bdy_description) || "", 
+bdy_status:(budgetYear && budgetYear.bdy_status) || "", 
 
-      is_deletable: (budgetYear && budgetYear.is_deletable) || 1,
-      is_editable: (budgetYear && budgetYear.is_editable) || 1,
+is_deletable: (budgetYear && budgetYear.is_deletable) || 1,
+is_editable: (budgetYear && budgetYear.is_editable) || 1
     },
 
     validationSchema: Yup.object({
       bdy_name: Yup.string()
         .required(t("bdy_name"))
-        .test("unique-name", t("Already exists"), (value) => {
-          return !data.some(
+        .test("unique-bdy_name", t("Already exists"), (value) => {
+          return !data?.data.some(
             (item) =>
               item.bdy_name == value && item.bdy_id !== budgetYear?.bdy_id
           );
         }),
-      bdy_code: Yup.string()
-        .required(t("bdy_code"))
-        .test("unique-code", t("Already exists"), (value) => {
-          return !data.some(
-            (item) =>
-              item.bdy_code == value && item.bdy_id !== budgetYear?.bdy_id
-          );
-        }),
-      bdy_description: Yup.string().required(t("bdy_description")),
-      bdy_status: Yup.string().required(t("bdy_status")),
+bdy_code: Yup.string().required(t('bdy_code'))
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -126,27 +155,29 @@ const BudgetYearModel = () => {
       if (isEdit) {
         const updateBudgetYear = {
           bdy_id: budgetYear ? budgetYear.bdy_id : 0,
-          bdy_name: values.bdy_name,
-          bdy_code: values.bdy_code,
-          bdy_description: values.bdy_description,
-          bdy_status: values.bdy_status,
+          bdy_id:budgetYear.bdy_id, 
+bdy_name:values.bdy_name, 
+bdy_code:values.bdy_code, 
+bdy_description:values.bdy_description, 
+bdy_status:values.bdy_status, 
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
         // update BudgetYear
-        dispatch(onUpdateBudgetYear(updateBudgetYear));
+        handleUpdateBudgetYear(updateBudgetYear);
         validation.resetForm();
       } else {
         const newBudgetYear = {
-          bdy_name: values.bdy_name,
-          bdy_code: values.bdy_code,
-          bdy_description: values.bdy_description,
-          bdy_status: values.bdy_status,
+          bdy_name:values.bdy_name, 
+bdy_code:values.bdy_code, 
+bdy_description:values.bdy_description, 
+bdy_status:values.bdy_status, 
+is_deletable:1,
+          is_editable: 1,
         };
         // save new BudgetYear
-
-        dispatch(onAddBudgetYear(newBudgetYear));
+        handleAddBudgetYear(newBudgetYear);
         validation.resetForm();
       }
     },
@@ -154,145 +185,104 @@ const BudgetYearModel = () => {
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
 
-  useEffect(() => {
-    console.log("update_loading in useEffect", update_loading);
-    setModal(false);
-  }, [update_loading]);
-
-  const selectSearchProperties = createSelector(
-    (state) => state.search,
-    (search) => ({
-      results: search.results,
-    })
-  );
-
-  const { results } = useSelector(selectSearchProperties);
-
-  const [isLoading, setLoading] = useState(loading);
+  // Fetch BudgetYear on component mount
   useEffect(() => {
     setBudgetYear(data);
   }, [data]);
-
-  useEffect(() => {
+useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setBudgetYear(data);
       setIsEdit(false);
     }
   }, [data]);
-
-  const toggle = () => {
+const toggle = () => {
     if (modal) {
       setModal(false);
-      setBudgetYear(null);
+       setBudgetYear(null);
     } else {
       setModal(true);
     }
   };
 
-  const handleBudgetYearClick = (arg) => {
+   const handleBudgetYearClick = (arg) => {
     const budgetYear = arg;
     // console.log("handleBudgetYearClick", budgetYear);
     setBudgetYear({
-      bdy_id: budgetYear.bdy_id,
-      bdy_name: budgetYear.bdy_name,
-      bdy_code: budgetYear.bdy_code,
-      bdy_description: budgetYear.bdy_description,
-      bdy_status: budgetYear.bdy_status,
+      bdy_id:budgetYear.bdy_id, 
+bdy_name:budgetYear.bdy_name, 
+bdy_code:budgetYear.bdy_code, 
+bdy_description:budgetYear.bdy_description, 
+bdy_status:budgetYear.bdy_status, 
 
       is_deletable: budgetYear.is_deletable,
       is_editable: budgetYear.is_editable,
     });
-
     setIsEdit(true);
-
     toggle();
   };
 
   //delete projects
   const [deleteModal, setDeleteModal] = useState(false);
-
   const onClickDelete = (budgetYear) => {
     setBudgetYear(budgetYear);
     setDeleteModal(true);
   };
 
-  const handleDeleteBudgetYear = () => {
-    if (budgetYear && budgetYear.bdy_id) {
-      dispatch(onDeleteBudgetYear(budgetYear.bdy_id));
-      setDeleteModal(false);
-    }
-  };
   const handleBudgetYearClicks = () => {
     setIsEdit(false);
     setBudgetYear("");
     toggle();
+  }
+;  const handleSearchResults = ({ data, error }) => {
+    setSearchResults(data);
+    setSearchError(error);
+    setShowSearchResult(true);
   };
-  const handleSearch = () => {
-    setSearchLoading(true); // Set loading to true when search is initiated// Update filtered data with search results
-    setShowSearchResults(true); // Show search results
-    setSearchLoading(false);
-  };
-
-  const handleClearSearch = () => {
-    setShowSearchResults(false);
-  };
-
+  //START UNCHANGED
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: "",
-        accessorKey: "bdy_name",
+        header: '',
+        accessorKey: 'bdy_name',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdy_name, 30) || "-"}
+              {truncateText(cellProps.row.original.bdy_name, 30) ||
+                '-'}
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "bdy_code",
+      }, 
+{
+        header: '',
+        accessorKey: 'bdy_code',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdy_code, 30) || "-"}
+              {truncateText(cellProps.row.original.bdy_code, 30) ||
+                '-'}
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "bdy_description",
+      }, 
+{
+        header: '',
+        accessorKey: 'bdy_description',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdy_description, 30) || "-"}
+              {truncateText(cellProps.row.original.bdy_description, 30) ||
+                '-'}
             </span>
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "bdy_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bdy_status, 30) ||
-                `${cellProps.row.original.bdy_status}`}
-            </span>
-          );
-        },
-      },
-
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -315,7 +305,10 @@ const BudgetYearModel = () => {
         },
       },
     ];
-    if (previledge?.is_role_editable && previledge?.is_role_deletable) {
+     if (
+      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_deletable
+    ) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -329,7 +322,7 @@ const BudgetYearModel = () => {
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;
+                    const data = cellProps.row.original;                    
                     handleBudgetYearClick(data);
                   }}
                 >
@@ -367,14 +360,6 @@ const BudgetYearModel = () => {
     return baseColumns;
   }, [handleBudgetYearClick, toggleViewModal, onClickDelete]);
 
-  const project_status = [
-    { label: "select Status name", value: "" },
-    { label: "Active", value: 1 },
-    { label: "Inactive", value: 0 },
-  ];
-
-  const dropdawntotal = [project_status];
-
   return (
     <React.Fragment>
       <BudgetYearModal
@@ -384,8 +369,9 @@ const BudgetYearModel = () => {
       />
       <DeleteModal
         show={deleteModal}
-        onDeleteClick={handleDeleteBudgetYear}
+       onDeleteClick={handleDeleteBudgetYear}
         onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteBudgetYear.isPending}
       />
       <div className="page-content">
         <div className="container-fluid">
@@ -393,8 +379,18 @@ const BudgetYearModel = () => {
             title={t("budget_year")}
             breadcrumbItem={t("budget_year")}
           />
-          {isLoading || searchLoading ? (
-            <Spinners setLoading={setLoading} />
+           <AdvancedSearch
+            searchHook={useSearchBudgetYears}
+            textSearchKeys={["bdy_name", "bdy_code"]}
+            dropdownSearchKeys={[]}
+            checkboxSearchKeys={[]}
+            onSearchResult={handleSearchResults}
+            setIsSearchLoading={setIsSearchLoading}
+            setSearchResults={setSearchResults}
+            setShowSearchResult={setShowSearchResult}
+          />
+          {isLoading || isSearchLoading ? (
+            <Spinners />
           ) : (
             <Row>
               <Col xs="12">
@@ -402,7 +398,11 @@ const BudgetYearModel = () => {
                   <CardBody>
                     <TableContainer
                       columns={columns}
-                      data={showSearchResults ? results : data}
+                      data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
                       isGlobalFilter={true}
                       isAddButton={true}
                       isCustomPageSize={true}
@@ -411,7 +411,7 @@ const BudgetYearModel = () => {
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("budget_year")}
+                      buttonName={t("add") +" "+ t("budget_year")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -424,141 +424,105 @@ const BudgetYearModel = () => {
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit
-                ? t("edit") + " " + t("budget_year")
-                : t("add") + " " + t("budget_year")}
+              {!!isEdit ? (t("edit") + " "+t("budget_year")) : (t("add") +" "+t("budget_year"))}
             </ModalHeader>
             <ModalBody>
               <Form
                 onSubmit={(e) => {
                   e.preventDefault();
                   validation.handleSubmit();
-                  const modalCallback = () => setModal(false);
-                  if (isEdit) {
-                    onUpdateBudgetYear(validation.values, modalCallback);
-                  } else {
-                    onAddBudgetYear(validation.values, modalCallback);
-                  }
                   return false;
                 }}
               >
                 <Row>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("bdy_name")}</Label>
-                    <Input
-                      name="bdy_name"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bdy_name || ""}
-                      invalid={
-                        validation.touched.bdy_name &&
-                        validation.errors.bdy_name
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.bdy_name &&
-                    validation.errors.bdy_name ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bdy_name}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("bdy_code")}</Label>
-                    <Input
-                      name="bdy_code"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bdy_code || ""}
-                      invalid={
-                        validation.touched.bdy_code &&
-                        validation.errors.bdy_code
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.bdy_code &&
-                    validation.errors.bdy_code ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bdy_code}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("bdy_description")}</Label>
-                    <Input
-                      name="bdy_description"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bdy_description || ""}
-                      invalid={
-                        validation.touched.bdy_description &&
-                        validation.errors.bdy_description
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.bdy_description &&
-                    validation.errors.bdy_description ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bdy_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("bdy_status")}</Label>
-                    <Input
-                      name="bdy_status"
-                      type="select"
-                      className="form-select"
-                      onChange={(e) => {
-                        validation.setFieldValue(
-                          "bdy_status",
-                          Number(e.target.value)
-                        );
-                      }}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bdy_status}
-                      invalid={
-                        validation.touched.bdy_status &&
-                        validation.errors.bdy_status
-                          ? true
-                          : false
-                      }
-                    >
-                      <option value={null}>Select status</option>
-                      <option value={1}>{t("Active")}</option>
-                      <option value={0}>{t("Inactive")}</option>
-                    </Input>
-                    {validation.touched.bdy_status &&
-                    validation.errors.bdy_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bdy_status}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                      <Label>{t('bdy_name')}</Label>
+                      <Input
+                        name='bdy_name'
+                        type='text'
+                        placeholder={t('bdy_name')}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.bdy_name || ''}
+                        invalid={
+                          validation.touched.bdy_name &&
+                          validation.errors.bdy_name
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.bdy_name &&
+                      validation.errors.bdy_name ? (
+                        <FormFeedback type='invalid'>
+                          {validation.errors.bdy_name}
+                        </FormFeedback>
+                      ) : null}
+                    </Col> 
+<Col className='col-md-6 mb-3'>
+                      <Label>{t('bdy_code')}</Label>
+                      <Input
+                        name='bdy_code'
+                        type='text'
+                        placeholder={t('bdy_code')}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.bdy_code || ''}
+                        invalid={
+                          validation.touched.bdy_code &&
+                          validation.errors.bdy_code
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.bdy_code &&
+                      validation.errors.bdy_code ? (
+                        <FormFeedback type='invalid'>
+                          {validation.errors.bdy_code}
+                        </FormFeedback>
+                      ) : null}
+                    </Col> 
+<Col className='col-md-6 mb-3'>
+                      <Label>{t('bdy_description')}</Label>
+                      <Input
+                        name='bdy_description'
+                        type='textarea'
+                        placeholder={t('bdy_description')}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.bdy_description || ''}
+                        invalid={
+                          validation.touched.bdy_description &&
+                          validation.errors.bdy_description
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.bdy_description &&
+                      validation.errors.bdy_description ? (
+                        <FormFeedback type='invalid'>
+                          {validation.errors.bdy_description}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {update_loading ? (
+                      {addBudgetYear.isPending || updateBudgetYear.isPending ? (
                         <Button
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addBudgetYear.isPending ||
+                            updateBudgetYear.isPending ||
+                            !validation.dirty
+                          }
                         >
-                          <Spinner size={"sm"} color="#fff" />
+                          <Spinner size={"sm"} color="light" className="me-2" />
                           {t("Save")}
                         </Button>
                       ) : (
@@ -566,7 +530,11 @@ const BudgetYearModel = () => {
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addBudgetYear.isPending ||
+                            updateBudgetYear.isPending ||
+                            !validation.dirty
+                          }
                         >
                           {t("Save")}
                         </Button>

@@ -1,28 +1,31 @@
 import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
+import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
+import SearchComponent from "../../components/Common/SearchComponent";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 
 import {
-  getDocumentType as onGetDocumentType,
-  addDocumentType as onAddDocumentType,
-  updateDocumentType as onUpdateDocumentType,
-  deleteDocumentType as onDeleteDocumentType,
-} from "../../store/documenttype/actions";
-
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
+  useFetchDocumentTypes,
+  useSearchDocumentTypes,
+  useAddDocumentType,
+  useDeleteDocumentType,
+  useUpdateDocumentType,
+} from "../../queries/documenttype_query";
 import DocumentTypeModal from "./DocumentTypeModal";
 import { useTranslation } from "react-i18next";
+
+import { useSelector, useDispatch } from "react-redux";
+import { createSelector } from "reselect";
 
 import {
   Button,
@@ -41,7 +44,10 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer,toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -53,48 +59,99 @@ const truncateText = (text, maxLength) => {
 const DocumentTypeModel = () => {
   //meta title
   document.title = " DocumentType";
-
   const { t } = useTranslation();
-
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-
   const [documentType, setDocumentType] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
-  const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
+
+  const [searchResults, setSearchResults] = useState(null);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [searcherror, setSearchError] = useState(null);
+  const [showSearchResult, setShowSearchResult] = useState(false);
+
+  const { data, isLoading, error, isError, refetch } = useFetchDocumentTypes();
+
+  const addDocumentType = useAddDocumentType();
+  const updateDocumentType = useUpdateDocumentType();
+  const deleteDocumentType = useDeleteDocumentType();
+//START CRUD
+  const handleAddDocumentType = async (data) => {
+    try {
+      await addDocumentType.mutateAsync(data);
+      toast.success(`Data added successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error("Failed to add data", {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+
+  const handleUpdateDocumentType = async (data) => {
+    try {
+      await updateDocumentType.mutateAsync(data);
+      toast.success(`data updated successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error(`Failed to update Data`, {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+  const handleDeleteDocumentType = async () => {
+    if (documentType && documentType.pdt_id) {
+      try {
+        const id = documentType.pdt_id;
+        await deleteDocumentType.mutateAsync(id);
+        toast.success(`Data deleted successfully`, {
+          autoClose: 2000,
+        });
+      } catch (error) {
+        toast.error(`Failed to delete Data`, {
+          autoClose: 2000,
+        });
+      }
+      setDeleteModal(false);
+    }
+  };
+  //END CRUD
   //START FOREIGN CALLS
 
+  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-      pdt_doc_name_or: (documentType && documentType.pdt_doc_name_or) || "",
-      pdt_doc_name_am: (documentType && documentType.pdt_doc_name_am) || "",
-      pdt_doc_name_en: (documentType && documentType.pdt_doc_name_en) || "",
-      pdt_code: (documentType && documentType.pdt_code) || "",
-      pdt_description: (documentType && documentType.pdt_description) || "",
-      pdt_status: (documentType && documentType.pdt_status) || "",
+     pdt_doc_name_or:(documentType && documentType.pdt_doc_name_or) || "", 
+pdt_doc_name_am:(documentType && documentType.pdt_doc_name_am) || "", 
+pdt_doc_name_en:(documentType && documentType.pdt_doc_name_en) || "", 
+pdt_code:(documentType && documentType.pdt_code) || "", 
+pdt_description:(documentType && documentType.pdt_description) || "", 
+pdt_status:(documentType && documentType.pdt_status) || "", 
 
-      is_deletable: (documentType && documentType.is_deletable) || 1,
-      is_editable: (documentType && documentType.is_editable) || 1,
+is_deletable: (documentType && documentType.is_deletable) || 1,
+is_editable: (documentType && documentType.is_editable) || 1
     },
 
     validationSchema: Yup.object({
-      pdt_doc_name_or: Yup.string()
+     pdt_doc_name_or: Yup.string()
         .required(t("pdt_doc_name_or"))
-        .test("unique-code", t("Already exists"), (value) => {
-          return !data.some((item) => item.pdt_doc_name_or == value);
+        .test("unique-pdt_doc_name_or", t("Already exists"), (value) => {
+          return !data?.data.some(
+            (item) =>
+              item.pdt_doc_name_or == value && item.pdt_id !== documentType?.pdt_id
+          );
         }),
-
-      //pdt_doc_name_or: Yup.string().required(t("pdt_doc_name_or")),
-      //pdt_doc_name_am: Yup.string().required(t("pdt_doc_name_am")),
-      //pdt_doc_name_en: Yup.string().required(t("pdt_doc_name_en")),
-      //pdt_code: Yup.string().required(t("pdt_code")),
-      //pdt_description: Yup.string().required(t("pdt_description")),
-      //pdt_status: Yup.string().required(t("pdt_status")),
+pdt_doc_name_am: Yup.string().required(t('pdt_doc_name_am')),
+pdt_doc_name_en: Yup.string().required(t('pdt_doc_name_en')),
+pdt_code: Yup.string().required(t('pdt_code'))
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -102,199 +159,167 @@ const DocumentTypeModel = () => {
       if (isEdit) {
         const updateDocumentType = {
           pdt_id: documentType ? documentType.pdt_id : 0,
-          pdt_doc_name_or: values.pdt_doc_name_or,
-          pdt_doc_name_am: values.pdt_doc_name_am,
-          pdt_doc_name_en: values.pdt_doc_name_en,
-          pdt_code: values.pdt_code,
-          pdt_description: values.pdt_description,
-          pdt_status: values.pdt_status,
+          pdt_id:documentType.pdt_id, 
+pdt_doc_name_or:values.pdt_doc_name_or, 
+pdt_doc_name_am:values.pdt_doc_name_am, 
+pdt_doc_name_en:values.pdt_doc_name_en, 
+pdt_code:values.pdt_code, 
+pdt_description:values.pdt_description, 
+pdt_status:values.pdt_status, 
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
         // update DocumentType
-        dispatch(onUpdateDocumentType(updateDocumentType));
+        handleUpdateDocumentType(updateDocumentType);
         validation.resetForm();
       } else {
         const newDocumentType = {
-          pdt_doc_name_or: values.pdt_doc_name_or,
-          pdt_doc_name_am: values.pdt_doc_name_am,
-          pdt_doc_name_en: values.pdt_doc_name_en,
-          pdt_code: values.pdt_code,
-          pdt_description: values.pdt_description,
-          pdt_status: values.pdt_status,
+          pdt_doc_name_or:values.pdt_doc_name_or, 
+pdt_doc_name_am:values.pdt_doc_name_am, 
+pdt_doc_name_en:values.pdt_doc_name_en, 
+pdt_code:values.pdt_code, 
+pdt_description:values.pdt_description, 
+pdt_status:values.pdt_status, 
+
         };
-        // save new DocumentTypes
-        dispatch(onAddDocumentType(newDocumentType));
+        // save new DocumentType
+        handleAddDocumentType(newDocumentType);
         validation.resetForm();
       }
     },
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-  const dispatch = useDispatch();
+
   // Fetch DocumentType on component mount
-  useEffect(() => {
-    dispatch(onGetDocumentType());
-  }, [dispatch]);
-
-  const documentTypeProperties = createSelector(
-    (state) => state.DocumentTypeR, // this is geting from  reducer
-    (DocumentTypeReducer) => ({
-      // this is from Project.reducer
-      documentType: DocumentTypeReducer.documentType,
-      loading: DocumentTypeReducer.loading,
-      update_loading: DocumentTypeReducer.update_loading,
-    })
-  );
-
-  const {
-    documentType: { data, previledge },
-    loading,
-    update_loading,
-  } = useSelector(documentTypeProperties);
-
-  useEffect(() => {
-    console.log("update_loading in useEffect", update_loading);
-    setModal(false);
-  }, [update_loading]);
-
-  const selectSearchProperties = createSelector(
-    (state) => state.search,
-    (search) => ({
-      results: search.results,
-    })
-  );
-
-  const { results } = useSelector(selectSearchProperties);
-
-  const [isLoading, setLoading] = useState(loading);
   useEffect(() => {
     setDocumentType(data);
   }, [data]);
-
-  useEffect(() => {
+useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setDocumentType(data);
       setIsEdit(false);
     }
   }, [data]);
-
-  const toggle = () => {
+const toggle = () => {
     if (modal) {
       setModal(false);
-      setDocumentType(null);
+       setDocumentType(null);
     } else {
       setModal(true);
     }
   };
 
-  const handleDocumentTypeClick = (arg) => {
+   const handleDocumentTypeClick = (arg) => {
     const documentType = arg;
     // console.log("handleDocumentTypeClick", documentType);
     setDocumentType({
-      pdt_id: documentType.pdt_id,
-      pdt_doc_name_or: documentType.pdt_doc_name_or,
-      pdt_doc_name_am: documentType.pdt_doc_name_am,
-      pdt_doc_name_en: documentType.pdt_doc_name_en,
-      pdt_code: documentType.pdt_code,
-      pdt_description: documentType.pdt_description,
-      pdt_status: documentType.pdt_status,
+      pdt_id:documentType.pdt_id, 
+pdt_doc_name_or:documentType.pdt_doc_name_or, 
+pdt_doc_name_am:documentType.pdt_doc_name_am, 
+pdt_doc_name_en:documentType.pdt_doc_name_en, 
+pdt_code:documentType.pdt_code, 
+pdt_description:documentType.pdt_description, 
+pdt_status:documentType.pdt_status, 
 
       is_deletable: documentType.is_deletable,
       is_editable: documentType.is_editable,
     });
-
     setIsEdit(true);
-
     toggle();
   };
 
   //delete projects
   const [deleteModal, setDeleteModal] = useState(false);
-
   const onClickDelete = (documentType) => {
     setDocumentType(documentType);
     setDeleteModal(true);
   };
 
-  const handleDeleteDocumentType = () => {
-    if (documentType && documentType.pdt_id) {
-      dispatch(onDeleteDocumentType(documentType.pdt_id));
-      setDeleteModal(false);
-    }
-  };
   const handleDocumentTypeClicks = () => {
     setIsEdit(false);
     setDocumentType("");
     toggle();
+  }
+;  const handleSearchResults = ({ data, error }) => {
+    setSearchResults(data);
+    setSearchError(error);
+    setShowSearchResult(true);
   };
-  const handleSearch = () => {
-    setSearchLoading(true); // Set loading to true when search is initiated// Update filtered data with search results
-    setShowSearchResults(true); // Show search results
-    setSearchLoading(false);
-  };
-
-  const handleClearSearch = () => {
-    setShowSearchResults(false);
-  };
-
+  //START UNCHANGED
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: "",
-        accessorKey: "pdt_doc_name_or",
+        header: '',
+        accessorKey: 'pdt_doc_name_or',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pdt_doc_name_or, 30) || "-"}
+              {truncateText(cellProps.row.original.pdt_doc_name_or, 30) ||
+                '-'}
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "pdt_doc_name_am",
+      }, 
+{
+        header: '',
+        accessorKey: 'pdt_doc_name_am',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pdt_doc_name_am, 30) || "-"}
+              {truncateText(cellProps.row.original.pdt_doc_name_am, 30) ||
+                '-'}
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "pdt_doc_name_en",
+      }, 
+{
+        header: '',
+        accessorKey: 'pdt_doc_name_en',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pdt_doc_name_en, 30) || "-"}
+              {truncateText(cellProps.row.original.pdt_doc_name_en, 30) ||
+                '-'}
             </span>
           );
         },
-      },
-   
-      {
-        header: "",
-        accessorKey: "pdt_description",
+      }, 
+{
+        header: '',
+        accessorKey: 'pdt_code',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pdt_description, 30) || "-"}
+              {truncateText(cellProps.row.original.pdt_code, 30) ||
+                '-'}
+            </span>
+          );
+        },
+      }, 
+{
+        header: '',
+        accessorKey: 'pdt_description',
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.pdt_description, 30) ||
+                '-'}
             </span>
           );
         },
       },
-  
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -317,7 +342,10 @@ const DocumentTypeModel = () => {
         },
       },
     ];
-    if (previledge?.is_role_editable && previledge?.is_role_deletable) {
+     if (
+      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_deletable
+    ) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -331,7 +359,7 @@ const DocumentTypeModel = () => {
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;
+                    const data = cellProps.row.original;                    
                     handleDocumentTypeClick(data);
                   }}
                 >
@@ -369,14 +397,6 @@ const DocumentTypeModel = () => {
     return baseColumns;
   }, [handleDocumentTypeClick, toggleViewModal, onClickDelete]);
 
-  const project_status = [
-    { label: "select Status name", value: "" },
-    { label: "Active", value: 1 },
-    { label: "Inactive", value: 0 },
-  ];
-
-  const dropdawntotal = [project_status];
-
   return (
     <React.Fragment>
       <DocumentTypeModal
@@ -386,8 +406,9 @@ const DocumentTypeModel = () => {
       />
       <DeleteModal
         show={deleteModal}
-        onDeleteClick={handleDeleteDocumentType}
+       onDeleteClick={handleDeleteDocumentType}
         onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteDocumentType.isPending}
       />
       <div className="page-content">
         <div className="container-fluid">
@@ -395,8 +416,18 @@ const DocumentTypeModel = () => {
             title={t("document_type")}
             breadcrumbItem={t("document_type")}
           />
-          {isLoading || searchLoading ? (
-            <Spinners setLoading={setLoading} />
+          <AdvancedSearch
+            searchHook={useSearchDocumentTypes}
+            textSearchKeys={["pdt_doc_name_or"]}
+            dropdownSearchKeys={[]}
+            checkboxSearchKeys={[]}
+            onSearchResult={handleSearchResults}
+            setIsSearchLoading={setIsSearchLoading}
+            setSearchResults={setSearchResults}
+            setShowSearchResult={setShowSearchResult}
+          />
+          {isLoading || isSearchLoading ? (
+            <Spinners />
           ) : (
             <Row>
               <Col xs="12">
@@ -404,15 +435,20 @@ const DocumentTypeModel = () => {
                   <CardBody>
                     <TableContainer
                       columns={columns}
-                      data={showSearchResults ? results : data}
+                      data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
                       isGlobalFilter={true}
                       isAddButton={true}
                       isCustomPageSize={true}
                       handleUserClick={handleDocumentTypeClicks}
                       isPagination={true}
-                      SearchPlaceholder={t("Results") + "..."}
+                      // SearchPlaceholder="26 records..."
+                      SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("document_type")}
+                      buttonName={t("add") +" "+ t("document_type")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -425,159 +461,153 @@ const DocumentTypeModel = () => {
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit
-                ? t("edit") + " " + t("document_type")
-                : t("add") + " " + t("document_type")}
+              {!!isEdit ? (t("edit") + " "+t("document_type")) : (t("add") +" "+t("document_type"))}
             </ModalHeader>
             <ModalBody>
               <Form
                 onSubmit={(e) => {
                   e.preventDefault();
                   validation.handleSubmit();
-                  const modalCallback = () => setModal(false);
-                  if (isEdit) {
-                    onUpdateDocumentType(validation.values, modalCallback);
-                  } else {
-                    onAddDocumentType(validation.values, modalCallback);
-                  }
                   return false;
                 }}
               >
                 <Row>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pdt_doc_name_or")}<span className="text-danger">*</span></Label>
-                    <Input
-                      name="pdt_doc_name_or"
-                      type="text"
-                      placeholder={t("pdt_doc_name_or")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pdt_doc_name_or || ""}
-                      invalid={
-                        validation.touched.pdt_doc_name_or &&
-                        validation.errors.pdt_doc_name_or
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pdt_doc_name_or &&
-                    validation.errors.pdt_doc_name_or ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pdt_doc_name_or}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pdt_doc_name_am")}</Label>
-                    <Input
-                      name="pdt_doc_name_am"
-                      type="text"
-                      placeholder={t("pdt_doc_name_am")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pdt_doc_name_am || ""}
-                      invalid={
-                        validation.touched.pdt_doc_name_am &&
-                        validation.errors.pdt_doc_name_am
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pdt_doc_name_am &&
-                    validation.errors.pdt_doc_name_am ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pdt_doc_name_am}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pdt_doc_name_en")}</Label>
-                    <Input
-                      name="pdt_doc_name_en"
-                      type="text"
-                      placeholder={t("pdt_doc_name_en")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pdt_doc_name_en || ""}
-                      invalid={
-                        validation.touched.pdt_doc_name_en &&
-                        validation.errors.pdt_doc_name_en
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pdt_doc_name_en &&
-                    validation.errors.pdt_doc_name_en ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pdt_doc_name_en}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3" style={{ display: 'none'}}>
-                    <Label>{t("pdt_code")}</Label>
-                    <Input
-                      name="pdt_code"
-                      type="text"
-                      placeholder={t("pdt_code")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pdt_code || ""}
-                      invalid={
-                        validation.touched.pdt_code &&
-                        validation.errors.pdt_code
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pdt_code &&
-                    validation.errors.pdt_code ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pdt_code}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pdt_description")}</Label>
-                    <Input
-                      name="pdt_description"
-                      type="textarea"
-                      rows={2}
-                      placeholder={t("pdt_description")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pdt_description || ""}
-                      invalid={
-                        validation.touched.pdt_description &&
-                        validation.errors.pdt_description
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pdt_description &&
-                    validation.errors.pdt_description ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pdt_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  
+                  <Col className='col-md-6 mb-3'>
+                      <Label>{t('pdt_doc_name_or')}</Label>
+                      <Input
+                        name='pdt_doc_name_or'
+                        type='text'
+                        placeholder={t('pdt_doc_name_or')}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.pdt_doc_name_or || ''}
+                        invalid={
+                          validation.touched.pdt_doc_name_or &&
+                          validation.errors.pdt_doc_name_or
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.pdt_doc_name_or &&
+                      validation.errors.pdt_doc_name_or ? (
+                        <FormFeedback type='invalid'>
+                          {validation.errors.pdt_doc_name_or}
+                        </FormFeedback>
+                      ) : null}
+                    </Col> 
+<Col className='col-md-6 mb-3'>
+                      <Label>{t('pdt_doc_name_am')}</Label>
+                      <Input
+                        name='pdt_doc_name_am'
+                        type='text'
+                        placeholder={t('pdt_doc_name_am')}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.pdt_doc_name_am || ''}
+                        invalid={
+                          validation.touched.pdt_doc_name_am &&
+                          validation.errors.pdt_doc_name_am
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.pdt_doc_name_am &&
+                      validation.errors.pdt_doc_name_am ? (
+                        <FormFeedback type='invalid'>
+                          {validation.errors.pdt_doc_name_am}
+                        </FormFeedback>
+                      ) : null}
+                    </Col> 
+<Col className='col-md-6 mb-3'>
+                      <Label>{t('pdt_doc_name_en')}</Label>
+                      <Input
+                        name='pdt_doc_name_en'
+                        type='text'
+                        placeholder={t('pdt_doc_name_en')}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.pdt_doc_name_en || ''}
+                        invalid={
+                          validation.touched.pdt_doc_name_en &&
+                          validation.errors.pdt_doc_name_en
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.pdt_doc_name_en &&
+                      validation.errors.pdt_doc_name_en ? (
+                        <FormFeedback type='invalid'>
+                          {validation.errors.pdt_doc_name_en}
+                        </FormFeedback>
+                      ) : null}
+                    </Col> 
+<Col className='col-md-6 mb-3'>
+                      <Label>{t('pdt_code')}</Label>
+                      <Input
+                        name='pdt_code'
+                        type='text'
+                        placeholder={t('pdt_code')}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.pdt_code || ''}
+                        invalid={
+                          validation.touched.pdt_code &&
+                          validation.errors.pdt_code
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.pdt_code &&
+                      validation.errors.pdt_code ? (
+                        <FormFeedback type='invalid'>
+                          {validation.errors.pdt_code}
+                        </FormFeedback>
+                      ) : null}
+                    </Col> 
+<Col className='col-md-6 mb-3'>
+                      <Label>{t('pdt_description')}</Label>
+                      <Input
+                        name='pdt_description'
+                        type='textarea'
+                        placeholder={t('pdt_description')}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.pdt_description || ''}
+                        invalid={
+                          validation.touched.pdt_description &&
+                          validation.errors.pdt_description
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.pdt_description &&
+                      validation.errors.pdt_description ? (
+                        <FormFeedback type='invalid'>
+                          {validation.errors.pdt_description}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {update_loading ? (
+                      {addDocumentType.isPending || updateDocumentType.isPending ? (
                         <Button
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addDocumentType.isPending ||
+                            updateDocumentType.isPending ||
+                            !validation.dirty
+                          }
                         >
-                          <Spinner size={"sm"} color="#fff" />
+                          <Spinner size={"sm"} color="light" className="me-2" />
                           {t("Save")}
                         </Button>
                       ) : (
@@ -585,7 +615,11 @@ const DocumentTypeModel = () => {
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addDocumentType.isPending ||
+                            updateDocumentType.isPending ||
+                            !validation.dirty
+                          }
                         >
                           {t("Save")}
                         </Button>

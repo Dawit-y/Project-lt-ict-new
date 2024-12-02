@@ -459,7 +459,7 @@ const BudgetRequestModel = (props) => {
         onDeleteClick={handleDeleteBudgetRequest}
         onCloseClick={() => setDeleteModal(false)}
       />
-      <div className="container-fluid">
+      <div className="container-fluid1">
         {passedId ? null : (
           <Breadcrumbs
             title={t("budget_request")}
@@ -469,10 +469,6 @@ const BudgetRequestModel = (props) => {
         {isLoading || searchLoading ? (
           <Spinners setLoading={setLoading} />
         ) : (
-          <Row>
-            <Col xs="12">
-              <Card>
-                <CardBody>
                   <TableContainer
                     columns={columns}
                     data={showSearchResults ? results : data}
@@ -490,10 +486,6 @@ const BudgetRequestModel = (props) => {
                     pagination="pagination"
                     paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                   />
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
         )}
         <Modal isOpen={modal} toggle={toggle} className="modal-xl">
           <ModalHeader toggle={toggle} tag="h4">

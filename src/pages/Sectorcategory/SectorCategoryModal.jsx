@@ -33,7 +33,7 @@ const SectorCategoryModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-      <tr>
+        <tr>
                     <p className="mb-2">
             {t('psc_name')}: <span className="text-primary">{transaction.psc_name}</span>
           </p>
@@ -43,7 +43,15 @@ const SectorCategoryModal = (props) => {
           </p>
           </tr><tr>
                     <p className="mb-2">
+            {t('psc_sector_id')}: <span className="text-primary">{transaction.psc_sector_id}</span>
+          </p>
+          </tr><tr>
+                    <p className="mb-2">
             {t('psc_description')}: <span className="text-primary">{transaction.psc_description}</span>
+          </p>
+          </tr><tr>
+                    <p className="mb-2">
+            {t('psc_status')}: <span className="text-primary">{transaction.psc_status}</span>
           </p>
           </tr>
 

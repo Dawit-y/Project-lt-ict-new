@@ -29,7 +29,9 @@ import {
   getDepartment as onGetDepartment,
 
 } from "../../store/department/actions";
-
+import {
+  useFetchSectorInformations
+} from "../../queries/sectorinformation_query";
 //redux
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
@@ -66,7 +68,7 @@ const UsersModel = () => {
   document.title = " Users";
 
   const { t } = useTranslation();
-
+const sector = useFetchSectorInformations();
 
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -88,7 +90,35 @@ const UsersModel = () => {
 
   const [userMetaData, setUserData] = useState({});
   const [showCanvas, setShowCanvas] = useState(false);
+    //START FOREIGN CALLS
+  const [sectorOptions, setSectorOptions] = useState([]);
+  const [selectedSector, setSelectedSector] = useState("");
+  useEffect(() => {
+  const fetchSector = async () => {
+    try {
+       // Assuming useFetchSectorInformations returns a promise
+      const transformedData = sector.data.data.map((item) => ({
+        label: item.sci_name_or.toString(),
+        value: item.sci_id,
+      }));
 
+      const optionsWithDefault = [
+        { label: "Select Sector", value: "" }, // Capitalized "Select" and no space after colon
+        ...transformedData,
+      ];
+
+      setSectorOptions(optionsWithDefault);
+    } catch (error) {
+      console.error("Error fetching sector:", error);
+    }
+  };
+
+  fetchSector();
+}, []);
+   const handleSectorChange = (e) => {
+    setSelectedSector(e.target.value);
+    validation.setFieldValue("usr_sector_id", e.target.value);
+  };
 
   // validation
   const validation = useFormik({
@@ -120,15 +150,21 @@ const UsersModel = () => {
     },
 
     validationSchema: Yup.object({
-      usr_email: Yup.string().required(t("usr_email")),
+       usr_email: Yup.string()
+        .required(t("usr_email"))
+        .test("unique-role-id", t("Already exists"), (value) => {
+          return !data.some(
+            (item) =>
+              item.usr_email == value
+          );
+        }),
+
+      //usr_email: Yup.string().required(t("usr_email")),
       usr_password: Yup.string().required(t("usr_password")),
       usr_full_name: Yup.string().required(t("usr_full_name")),
       usr_phone_number: Yup.string().required(t("usr_phone_number")),
-      usr_role_id: Yup.string().required(t("usr_role_id")),
       usr_sector_id: Yup.string().required(t("usr_sector_id")),
-      usr_department_id: Yup.string().required(t("usr_department_id")),
-      usr_description: Yup.string().required(t("usr_description")),
-      usr_status: Yup.string().required(t("usr_status")),
+      usr_department_id: Yup.string().required(t("usr_department_id"))
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -312,7 +348,7 @@ const UsersModel = () => {
   const handleUsersClick = (arg) => {
     const users = arg;
     setUsers({
-      // usr_id: users.usr_id,
+      usr_id: users.usr_id,
       usr_email: users.usr_email,
       usr_password: users.usr_password,
       usr_full_name: users.usr_full_name,
@@ -330,12 +366,11 @@ const UsersModel = () => {
       usr_notified: users.usr_notified,
       usr_description: users.usr_description,
       usr_status: users.usr_status,
-      usr_department_id: Number(users.usr_department_id),
-
+      usr_department_id: Number(users.usr_department_id),      
       is_deletable: users.is_deletable,
       is_editable: users.is_editable,
     });
-
+setSelectedSector(users.usr_sector_id); 
     setIsEdit(true);
 
     toggle();
@@ -415,11 +450,17 @@ const UsersModel = () => {
 
   const columnDefs = useMemo(() => {
     const baseColumns = [
+       {
+    headerName: "Row",
+    valueGetter: "node.rowIndex + 1",
+    width:"70"
+  },
       {
         headerName: t("usr_email"),
         field: "usr_email",
         sortable: true,
         filter: false,
+        width:"200",
         cellRenderer: (params) =>
           truncateText(params.data.usr_email, 30) || "-",
       },
@@ -437,33 +478,33 @@ const UsersModel = () => {
         field: "usr_phone_number",
         sortable: true,
         filter: false,
+        width:"140",
         cellRenderer: (params) =>
           truncateText(params.data.usr_phone_number, 30) || "-",
       },
-
-
       {
         headerName: t("usr_sector_id"),
-        field: "usr_sector_id",
+        width:"200",
+        field: "sector_name",
         sortable: true,
         filter: false,
         cellRenderer: (params) =>
-          truncateText(params.data.usr_sector_id, 30) || "-",
+          truncateText(params.data.sector_name, 30) || "-",
       },
       {
         headerName: t("usr_is_active"),
         field: "usr_is_active",
         sortable: true,
         filter: false,
+         width:"100",
         cellRenderer: (params) =>
           truncateText(params.data.usr_is_active, 30) || "-",
       },
-
       {
         headerName: t("view_detail"),
+         width:"140",
         sortable: true,
         filter: false,
-
         cellRenderer: (params) => (
           <Button
             type="button"
@@ -486,6 +527,7 @@ const UsersModel = () => {
         headerName: t("Action"),
         sortable: true,
         filter: false,
+         width:"230",
         cellRenderer: (params) => (
           <div className="d-flex gap-3">
             {params.data.is_editable && (
@@ -606,13 +648,6 @@ const UsersModel = () => {
                 </Col>
                 <Col sm="12" md="6" className="text-md-end">
                   <Button
-                    color="primary"
-                    className="me-2"
-                    onClick={filterMarked}
-                  >
-                    Filter Marked
-                  </Button>
-                  <Button
                     color="secondary"
                     className="me-2"
                     onClick={clearFilter}
@@ -626,16 +661,22 @@ const UsersModel = () => {
               </Row>
 
               {/* AG Grid */}
-              <div style={{ height: "400px" }}>
+              <div style={{ height: "600px" }}>
                 <AgGridReact
                   ref={gridRef}
                   rowData={showSearchResults ? results : data}
                   columnDefs={columnDefs}
                   pagination={true}
                   paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                  paginationPageSize={10}
+                  paginationPageSize={20}
                   quickFilterText={quickFilterText}
                   onSelectionChanged={onSelectionChanged}
+                  rowHeight={30} // Set the row height here
+                  animateRows={true} // Enables row animations
+                  domLayout="autoHeight" // Auto-size the grid to fit content
+                  onGridReady={(params) => {
+                    params.api.sizeColumnsToFit(); // Size columns to fit the grid width
+                  }}
                 />
               </div>
             </div>
@@ -761,50 +802,24 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>{t("usr_role_id")}</Label>
-                    <Input
-                      name="usr_role_id"
-                      type="number"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.usr_role_id || ""}
-                      invalid={
-                        validation.touched.usr_role_id &&
-                          validation.errors.usr_role_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.usr_role_id &&
-                      validation.errors.usr_role_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.usr_role_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-
-                  <Col className="col-md-4 mb-3">
+<Col className="col-md-4 mb-3">
                     <Label>{t("usr_sector_id")}</Label>
                     <Input
                       name="usr_sector_id"
-                      type="number"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
+                      type="select"
+                      className="form-select"
+                      onChange={handleSectorChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.usr_sector_id || ""}
-                      invalid={
-                        validation.touched.usr_sector_id &&
-                          validation.errors.usr_sector_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
+                      value={selectedSector}
+                    >
+                      {sectorOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {t(`${option.label}`)}
+                        </option>
+                      ))}
+                    </Input>
                     {validation.touched.usr_sector_id &&
-                      validation.errors.usr_sector_id ? (
+                    validation.errors.usr_sector_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_sector_id}
                       </FormFeedback>
@@ -852,7 +867,7 @@ const UsersModel = () => {
                     <Label>{t("usr_description")}</Label>
                     <Input
                       name="usr_description"
-                      type="text"
+                      type="textarea"
                       placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -872,40 +887,6 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>{t("usr_status")}</Label>
-                    <Input
-                      name="usr_status"
-                      type="select"
-                      className="form-select"
-
-                      onChange={validation.handleChange}
-
-                      onBlur={validation.handleBlur}
-                      value={selectedState} //selectedState
-
-                      invalid={
-                        validation.touched.usr_status &&
-                          validation.errors.usr_status
-                          ? true
-                          : false
-                      }
-
-                    >
-                      <option value="" disabled={!isEdit}>
-                        {isEdit ? (validation.values.usr_status === 1 ? t("Active") : t("Inactive")) : "Select status"}
-                      </option>
-                      <option value={1}>{t("Active")}</option>
-                      <option value={0}>{t("Inactive")}</option>
-                    </Input>
-                    {validation.touched.usr_status &&
-                      validation.errors.usr_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.usr_status}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-
                   <Col className="col-md-4 mb-3">
                     <CascadingDropdowns
                       validation={validation}

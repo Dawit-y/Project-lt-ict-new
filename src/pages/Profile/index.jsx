@@ -107,17 +107,7 @@ const UsersProfile = () => {
             <Col xl="4">
               <Card className="overflow-hidden">
                 <div className="bg-primary-subtle">
-                  <Row>
-                    <Col xs="7">
-                      <div className="text-primary p-3">
-                        <h5 className="text-primary">Welcome Back!</h5>
-                        <p>It will seem like simplified</p>
-                      </div>
-                    </Col>
-                    <Col xs="5" className="align-self-end">
-                      <img src={profile1} alt="" className="img-fluid" />
-                    </Col>
-                  </Row>
+                
                 </div>
                 {userProfile && userProfile.user ? (
                   <CardBody className="pt-0">
@@ -133,7 +123,7 @@ const UsersProfile = () => {
                                   : userProfile.user.usr_picture
                               }
                               alt="User Profile"
-                              className="img-thumbnail rounded-circle"
+                              className="img-thumbnail rounded-circle mt-3"
                             />
                           </div>
                         </div>
@@ -216,28 +206,6 @@ const UsersProfile = () => {
                 ) : (
                   <h1>No users found</h1>
                 )}
-              </Card>
-            </Col>
-
-            <Col xl="8">
-              <Row>
-                {(miniCards || []).map((card, key) => (
-                  <MiniCards
-                    title={card.title}
-                    text={card.text}
-                    iconClass={card.iconClass}
-                    key={"_card_" + key}
-                  />
-                ))}
-              </Row>
-
-              <Card>
-                <CardBody>
-                  <CardTitle className="mb-4">Projects</CardTitle>
-                  <div id="revenue-chart">
-                    <ApexRevenue dataColors='["--bs-primary"]' />
-                  </div>
-                </CardBody>
               </Card>
             </Col>
           </Row>
