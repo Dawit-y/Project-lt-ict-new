@@ -2,11 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Card, CardBody, Col, Row, Collapse, Label, Input } from "reactstrap";
 import Select from "react-select";
 import { useTranslation } from "react-i18next";
+import { useFormik } from "formik";
+
 const AdvancedSearch = ({
   searchHook,
   textSearchKeys,
   dropdownSearchKeys,
   checkboxSearchKeys,
+  Component,
+  component_params = {},
   onSearchResult,
   setIsSearchLoading,
   setSearchResults,
@@ -19,6 +23,17 @@ const AdvancedSearch = ({
   const [searchParams, setSearchParams] = useState({});
   const { refetch } = searchHook(searchParams);
 
+  const initialValues = component_params
+    ? Object.keys(component_params).reduce((acc, key) => {
+        acc[component_params[key]] = ""; // Default value for form fields
+        return acc;
+      }, {})
+    : {};
+  // Initialize useFormik with dynamically generated initialValues
+  const validation = useFormik({
+    initialValues,
+    onSubmit: (values) => {},
+  });
   // Handle updates for all input types
   const handleSearchKey = (key, value, type = "text") => {
     setParams((prevParams) => {
@@ -36,7 +51,22 @@ const AdvancedSearch = ({
   };
 
   const handleSearch = () => {
-    setSearchParams(params);
+    validation.handleSubmit();
+    const transformedValues = Object.fromEntries(
+      Object.entries(validation.values)
+        .filter(([key, value]) => value !== "") // Exclude entries with empty string values
+        .map(([key, value]) => [
+          key,
+          /^\d+$/.test(value) ? parseInt(value, 10) : value,
+        ])
+    );
+
+    const combinedParams = {
+      ...params,
+      ...transformedValues,
+    };
+
+    setSearchParams(combinedParams);
   };
 
   // Refetch whenever searchParams changes
@@ -64,16 +94,27 @@ const AdvancedSearch = ({
     setSearchParams({});
     setSearchResults(null);
     setShowSearchResult(false);
+    validation.resetForm();
   };
   const isButtonDisabled = () => {
-    return !Object.values(params).some((value) => {
+    // Check if params have any valid values
+    const hasParamsValue = Object.values(params).some((value) => {
       if (Array.isArray(value)) {
         return value?.length > 0;
       }
       return value != null && value !== "";
     });
-  };
 
+    const hasComponentValue = () => {
+      if (!validation?.values || !component_params) return false;
+      const secondPropKey = Object.values(component_params)[1];
+      if (!secondPropKey) return false;
+      const value = validation.values[secondPropKey];
+      return value != null && value !== "";
+    };
+
+    return !(hasParamsValue || hasComponentValue());
+  };
   return (
     <React.Fragment>
       <Row>
@@ -87,7 +128,7 @@ const AdvancedSearch = ({
                       {/* Text Inputs */}
                       {textSearchKeys.map((key) => (
                         <Col xxl={2} lg={2} key={key}>
-                          <div className="position-relative">
+                          <div className="position-relative mb-2">
                             <Input
                               type="text"
                               id={key}
@@ -106,7 +147,7 @@ const AdvancedSearch = ({
                       {/* Dropdown Inputs */}
                       {dropdownSearchKeys.map(({ key, options }) => (
                         <Col xxl={3} lg={3} key={key}>
-                          <div className="position-relative">
+                          <div className="position-relative mb-2">
                             <Select
                               className="select2"
                               id={key}
@@ -166,7 +207,17 @@ const AdvancedSearch = ({
                       </div>
                     </Col>
                   </Col>
-
+                  <Row className="mt-2">
+                    <Col>
+                      {Component && (
+                        <Component
+                          {...component_params}
+                          validation={validation}
+                          isEdit={false}
+                        />
+                      )}
+                    </Col>
+                  </Row>
                   <Collapse isOpen={isOpen} id="collapseExample">
                     <div>
                       <Row className="g-3">

@@ -44,7 +44,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -75,7 +75,7 @@ const ProjectStatusModel = () => {
   const addProjectStatus = useAddProjectStatus();
   const updateProjectStatus = useUpdateProjectStatus();
   const deleteProjectStatus = useDeleteProjectStatus();
-//START CRUD
+  //START CRUD
   const handleAddProjectStatus = async (data) => {
     try {
       await addProjectStatus.mutateAsync(data);
@@ -122,24 +122,26 @@ const ProjectStatusModel = () => {
   //END CRUD
   //START FOREIGN CALLS
 
-  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     prs_status_name_or:(projectStatus && projectStatus.prs_status_name_or) || "", 
-prs_status_name_am:(projectStatus && projectStatus.prs_status_name_am) || "", 
-prs_status_name_en:(projectStatus && projectStatus.prs_status_name_en) || "", 
-prs_color_code:(projectStatus && projectStatus.prs_color_code) || "", 
-prs_order_number:(projectStatus && projectStatus.prs_order_number) || "", 
-prs_description:(projectStatus && projectStatus.prs_description) || "", 
-prs_status:(projectStatus && projectStatus.prs_status) || "", 
-prs_spare_column:(projectStatus && projectStatus.prs_spare_column) || "", 
+      prs_status_name_or:
+        (projectStatus && projectStatus.prs_status_name_or) || "",
+      prs_status_name_am:
+        (projectStatus && projectStatus.prs_status_name_am) || "",
+      prs_status_name_en:
+        (projectStatus && projectStatus.prs_status_name_en) || "",
+      prs_color_code: (projectStatus && projectStatus.prs_color_code) || "",
+      prs_order_number: (projectStatus && projectStatus.prs_order_number) || "",
+      prs_description: (projectStatus && projectStatus.prs_description) || "",
+      prs_status: (projectStatus && projectStatus.prs_status) || "",
+      prs_spare_column: (projectStatus && projectStatus.prs_spare_column) || "",
 
-is_deletable: (projectStatus && projectStatus.is_deletable) || 1,
-is_editable: (projectStatus && projectStatus.is_editable) || 1
+      is_deletable: (projectStatus && projectStatus.is_deletable) || 1,
+      is_editable: (projectStatus && projectStatus.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
@@ -148,15 +150,14 @@ is_editable: (projectStatus && projectStatus.is_editable) || 1
         .test("unique-prs_status_name_or", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
-              item.prs_status_name_or == value && item.prs_id !== projectStatus?.prs_id
+              item.prs_status_name_or == value &&
+              item.prs_id !== projectStatus?.prs_id
           );
         }),
-
-      prs_status_name_or: Yup.string().required(t('prs_status_name_or')),
-prs_status_name_am: Yup.string().required(t('prs_status_name_am')),
-prs_status_name_en: Yup.string().required(t('prs_status_name_en')),
-prs_color_code: Yup.string().required(t('prs_color_code')),
-prs_order_number: Yup.string().required(t('prs_order_number'))
+      prs_status_name_am: Yup.string().required(t("prs_status_name_am")),
+      prs_status_name_en: Yup.string().required(t("prs_status_name_en")),
+      prs_color_code: Yup.string().required(t("prs_color_code")),
+      prs_order_number: Yup.string().required(t("prs_order_number")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -164,15 +165,14 @@ prs_order_number: Yup.string().required(t('prs_order_number'))
       if (isEdit) {
         const updateProjectStatus = {
           prs_id: projectStatus ? projectStatus.prs_id : 0,
-          prs_id:projectStatus.prs_id, 
-prs_status_name_or:values.prs_status_name_or, 
-prs_status_name_am:values.prs_status_name_am, 
-prs_status_name_en:values.prs_status_name_en, 
-prs_color_code:values.prs_color_code, 
-prs_order_number:values.prs_order_number, 
-prs_description:values.prs_description, 
-prs_status:values.prs_status, 
-prs_spare_column:values.prs_spare_column, 
+          prs_status_name_or: values.prs_status_name_or,
+          prs_status_name_am: values.prs_status_name_am,
+          prs_status_name_en: values.prs_status_name_en,
+          prs_color_code: values.prs_color_code,
+          prs_order_number: values.prs_order_number,
+          prs_description: values.prs_description,
+          prs_status: values.prs_status,
+          prs_spare_column: values.prs_spare_column,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -182,15 +182,14 @@ prs_spare_column:values.prs_spare_column,
         validation.resetForm();
       } else {
         const newProjectStatus = {
-          prs_status_name_or:values.prs_status_name_or, 
-prs_status_name_am:values.prs_status_name_am, 
-prs_status_name_en:values.prs_status_name_en, 
-prs_color_code:values.prs_color_code, 
-prs_order_number:values.prs_order_number, 
-prs_description:values.prs_description, 
-prs_status:values.prs_status, 
-prs_spare_column:values.prs_spare_column, 
-
+          prs_status_name_or: values.prs_status_name_or,
+          prs_status_name_am: values.prs_status_name_am,
+          prs_status_name_en: values.prs_status_name_en,
+          prs_color_code: values.prs_color_code,
+          prs_order_number: values.prs_order_number,
+          prs_description: values.prs_description,
+          prs_status: values.prs_status,
+          prs_spare_column: values.prs_spare_column,
         };
         // save new ProjectStatus
         handleAddProjectStatus(newProjectStatus);
@@ -205,34 +204,34 @@ prs_spare_column:values.prs_spare_column,
   useEffect(() => {
     setProjectStatus(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setProjectStatus(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setProjectStatus(null);
+      setProjectStatus(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleProjectStatusClick = (arg) => {
+  const handleProjectStatusClick = (arg) => {
     const projectStatus = arg;
     // console.log("handleProjectStatusClick", projectStatus);
     setProjectStatus({
-      prs_id:projectStatus.prs_id, 
-prs_status_name_or:projectStatus.prs_status_name_or, 
-prs_status_name_am:projectStatus.prs_status_name_am, 
-prs_status_name_en:projectStatus.prs_status_name_en, 
-prs_color_code:projectStatus.prs_color_code, 
-prs_order_number:projectStatus.prs_order_number, 
-prs_description:projectStatus.prs_description, 
-prs_status:projectStatus.prs_status, 
-prs_spare_column:projectStatus.prs_spare_column, 
+      prs_id: projectStatus.prs_id,
+      prs_status_name_or: projectStatus.prs_status_name_or,
+      prs_status_name_am: projectStatus.prs_status_name_am,
+      prs_status_name_en: projectStatus.prs_status_name_en,
+      prs_color_code: projectStatus.prs_color_code,
+      prs_order_number: projectStatus.prs_order_number,
+      prs_description: projectStatus.prs_description,
+      prs_status: projectStatus.prs_status,
+      prs_spare_column: projectStatus.prs_spare_column,
 
       is_deletable: projectStatus.is_deletable,
       is_editable: projectStatus.is_editable,
@@ -252,8 +251,8 @@ prs_spare_column:projectStatus.prs_spare_column,
     setIsEdit(false);
     setProjectStatus("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -262,89 +261,86 @@ prs_spare_column:projectStatus.prs_spare_column,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'prs_status_name_or',
+        header: "",
+        accessorKey: "prs_status_name_or",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.prs_status_name_or, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'prs_status_name_am',
+      },
+      {
+        header: "",
+        accessorKey: "prs_status_name_am",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.prs_status_name_am, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'prs_status_name_en',
+      },
+      {
+        header: "",
+        accessorKey: "prs_status_name_en",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.prs_status_name_en, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'prs_color_code',
+      },
+      {
+        header: "",
+        accessorKey: "prs_color_code",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.prs_color_code, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.prs_color_code, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'prs_order_number',
+      },
+      {
+        header: "",
+        accessorKey: "prs_order_number",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.prs_order_number, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.prs_order_number, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'prs_description',
+      },
+      {
+        header: "",
+        accessorKey: "prs_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.prs_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.prs_description, 30) || "-"}
             </span>
           );
         },
-      }, 
+      },
 
       {
         header: t("view_detail"),
@@ -368,7 +364,7 @@ prs_spare_column:projectStatus.prs_spare_column,
         },
       },
     ];
-     if (
+    if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
     ) {
@@ -385,7 +381,7 @@ prs_spare_column:projectStatus.prs_spare_column,
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleProjectStatusClick(data);
                   }}
                 >
@@ -432,7 +428,7 @@ prs_spare_column:projectStatus.prs_spare_column,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteProjectStatus}
+        onDeleteClick={handleDeleteProjectStatus}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteProjectStatus.isPending}
       />
@@ -474,7 +470,7 @@ prs_spare_column:projectStatus.prs_spare_column,
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("project_status")}
+                      buttonName={t("add") + " " + t("project_status")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -487,7 +483,9 @@ prs_spare_column:projectStatus.prs_spare_column,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("project_status")) : (t("add") +" "+t("project_status"))}
+              {!!isEdit
+                ? t("edit") + " " + t("project_status")
+                : t("add") + " " + t("project_status")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -498,156 +496,156 @@ prs_spare_column:projectStatus.prs_spare_column,
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('prs_status_name_or')}</Label>
-                      <Input
-                        name='prs_status_name_or'
-                        type='text'
-                        placeholder={t('prs_status_name_or')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prs_status_name_or || ''}
-                        invalid={
-                          validation.touched.prs_status_name_or &&
-                          validation.errors.prs_status_name_or
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prs_status_name_or &&
-                      validation.errors.prs_status_name_or ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prs_status_name_or}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prs_status_name_am')}</Label>
-                      <Input
-                        name='prs_status_name_am'
-                        type='text'
-                        placeholder={t('prs_status_name_am')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prs_status_name_am || ''}
-                        invalid={
-                          validation.touched.prs_status_name_am &&
-                          validation.errors.prs_status_name_am
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prs_status_name_am &&
-                      validation.errors.prs_status_name_am ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prs_status_name_am}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prs_status_name_en')}</Label>
-                      <Input
-                        name='prs_status_name_en'
-                        type='text'
-                        placeholder={t('prs_status_name_en')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prs_status_name_en || ''}
-                        invalid={
-                          validation.touched.prs_status_name_en &&
-                          validation.errors.prs_status_name_en
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prs_status_name_en &&
-                      validation.errors.prs_status_name_en ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prs_status_name_en}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prs_color_code')}</Label>
-                      <Input
-                        name='prs_color_code'
-                        type='text'
-                        placeholder={t('prs_color_code')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prs_color_code || ''}
-                        invalid={
-                          validation.touched.prs_color_code &&
-                          validation.errors.prs_color_code
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prs_color_code &&
-                      validation.errors.prs_color_code ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prs_color_code}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prs_order_number')}</Label>
-                      <Input
-                        name='prs_order_number'
-                        type='text'
-                        placeholder={t('prs_order_number')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prs_order_number || ''}
-                        invalid={
-                          validation.touched.prs_order_number &&
-                          validation.errors.prs_order_number
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prs_order_number &&
-                      validation.errors.prs_order_number ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prs_order_number}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prs_description')}</Label>
-                      <Input
-                        name='prs_description'
-                        type='textarea'
-                        placeholder={t('prs_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prs_description || ''}
-                        invalid={
-                          validation.touched.prs_description &&
-                          validation.errors.prs_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prs_description &&
-                      validation.errors.prs_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prs_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
-                
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prs_status_name_or")}</Label>
+                    <Input
+                      name="prs_status_name_or"
+                      type="text"
+                      placeholder={t("prs_status_name_or")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prs_status_name_or || ""}
+                      invalid={
+                        validation.touched.prs_status_name_or &&
+                        validation.errors.prs_status_name_or
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prs_status_name_or &&
+                    validation.errors.prs_status_name_or ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prs_status_name_or}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prs_status_name_am")}</Label>
+                    <Input
+                      name="prs_status_name_am"
+                      type="text"
+                      placeholder={t("prs_status_name_am")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prs_status_name_am || ""}
+                      invalid={
+                        validation.touched.prs_status_name_am &&
+                        validation.errors.prs_status_name_am
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prs_status_name_am &&
+                    validation.errors.prs_status_name_am ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prs_status_name_am}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prs_status_name_en")}</Label>
+                    <Input
+                      name="prs_status_name_en"
+                      type="text"
+                      placeholder={t("prs_status_name_en")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prs_status_name_en || ""}
+                      invalid={
+                        validation.touched.prs_status_name_en &&
+                        validation.errors.prs_status_name_en
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prs_status_name_en &&
+                    validation.errors.prs_status_name_en ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prs_status_name_en}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prs_color_code")}</Label>
+                    <Input
+                      name="prs_color_code"
+                      type="text"
+                      placeholder={t("prs_color_code")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prs_color_code || ""}
+                      invalid={
+                        validation.touched.prs_color_code &&
+                        validation.errors.prs_color_code
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prs_color_code &&
+                    validation.errors.prs_color_code ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prs_color_code}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prs_order_number")}</Label>
+                    <Input
+                      name="prs_order_number"
+                      type="text"
+                      placeholder={t("prs_order_number")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prs_order_number || ""}
+                      invalid={
+                        validation.touched.prs_order_number &&
+                        validation.errors.prs_order_number
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prs_order_number &&
+                    validation.errors.prs_order_number ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prs_order_number}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prs_description")}</Label>
+                    <Input
+                      name="prs_description"
+                      type="textarea"
+                      placeholder={t("prs_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prs_description || ""}
+                      invalid={
+                        validation.touched.prs_description &&
+                        validation.errors.prs_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prs_description &&
+                    validation.errors.prs_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prs_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {addProjectStatus.isPending || updateProjectStatus.isPending ? (
+                      {addProjectStatus.isPending ||
+                      updateProjectStatus.isPending ? (
                         <Button
                           color="success"
                           type="submit"

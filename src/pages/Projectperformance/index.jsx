@@ -44,7 +44,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -56,7 +56,7 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const ProjectPerformanceModel =  (props) => {
+const ProjectPerformanceModel = (props) => {
   //  get passed data from tab
   const { passedId } = props;
   //meta title
@@ -72,12 +72,13 @@ const ProjectPerformanceModel =  (props) => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useFetchProjectPerformances(passedId);
+  const { data, isLoading, error, isError, refetch } =
+    useFetchProjectPerformances(passedId);
 
   const addProjectPerformance = useAddProjectPerformance();
   const updateProjectPerformance = useUpdateProjectPerformance();
   const deleteProjectPerformance = useDeleteProjectPerformance();
-//START CRUD
+  //START CRUD
   const handleAddProjectPerformance = async (data) => {
     try {
       await addProjectPerformance.mutateAsync(data);
@@ -124,58 +125,69 @@ const ProjectPerformanceModel =  (props) => {
   //END CRUD
   //START FOREIGN CALLS
 
-  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     prp_project_id:(projectPerformance && projectPerformance.prp_project_id) || "", 
-prp_project_status_id:(projectPerformance && projectPerformance.prp_project_status_id) || "", 
-prp_record_date_ec:(projectPerformance && projectPerformance.prp_record_date_ec) || "", 
-prp_record_date_gc:(projectPerformance && projectPerformance.prp_record_date_gc) || "", 
-prp_total_budget_used:(projectPerformance && projectPerformance.prp_total_budget_used) || "", 
-prp_physical_performance:(projectPerformance && projectPerformance.prp_physical_performance) || "", 
-prp_description:(projectPerformance && projectPerformance.prp_description) || "", 
-prp_status:(projectPerformance && projectPerformance.prp_status) || "", 
-prp_created_date:(projectPerformance && projectPerformance.prp_created_date) || "", 
-prp_termination_reason_id:(projectPerformance && projectPerformance.prp_termination_reason_id) || "", 
+      prp_project_id:
+        (projectPerformance && projectPerformance.prp_project_id) || "",
+      prp_project_status_id:
+        (projectPerformance && projectPerformance.prp_project_status_id) || "",
+      prp_record_date_ec:
+        (projectPerformance && projectPerformance.prp_record_date_ec) || "",
+      prp_record_date_gc:
+        (projectPerformance && projectPerformance.prp_record_date_gc) || "",
+      prp_total_budget_used:
+        (projectPerformance && projectPerformance.prp_total_budget_used) || "",
+      prp_physical_performance:
+        (projectPerformance && projectPerformance.prp_physical_performance) ||
+        "",
+      prp_description:
+        (projectPerformance && projectPerformance.prp_description) || "",
+      prp_status: (projectPerformance && projectPerformance.prp_status) || "",
+      prp_created_date:
+        (projectPerformance && projectPerformance.prp_created_date) || "",
+      prp_termination_reason_id:
+        (projectPerformance && projectPerformance.prp_termination_reason_id) ||
+        "",
 
-is_deletable: (projectPerformance && projectPerformance.is_deletable) || 1,
-is_editable: (projectPerformance && projectPerformance.is_editable) || 1
+      is_deletable:
+        (projectPerformance && projectPerformance.is_deletable) || 1,
+      is_editable: (projectPerformance && projectPerformance.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
-     // prp_project_id: Yup.string().required(t('prp_project_id')),
-prp_project_status_id: Yup.string().required(t('prp_project_status_id')),
-//prp_record_date_ec: Yup.string().required(t('prp_record_date_ec')),
-//prp_record_date_gc: Yup.string().required(t('prp_record_date_gc')),
-prp_total_budget_used: Yup.string().required(t('prp_total_budget_used')),
-prp_physical_performance: Yup.string().required(t('prp_physical_performance')),
-prp_description: Yup.string().required(t('prp_description')),
-//prp_status: Yup.string().required(t('prp_status')),
-//prp_created_date: Yup.string().required(t('prp_created_date')),
-//prp_termination_reason_id: Yup.string().required(t('prp_termination_reason_id')),
-
+      // prp_project_id: Yup.string().required(t('prp_project_id')),
+      prp_project_status_id: Yup.string().required(t("prp_project_status_id")),
+      //prp_record_date_ec: Yup.string().required(t('prp_record_date_ec')),
+      //prp_record_date_gc: Yup.string().required(t('prp_record_date_gc')),
+      prp_total_budget_used: Yup.string().required(t("prp_total_budget_used")),
+      prp_physical_performance: Yup.string().required(
+        t("prp_physical_performance")
+      ),
+      prp_description: Yup.string().required(t("prp_description")),
+      //prp_status: Yup.string().required(t('prp_status')),
+      //prp_created_date: Yup.string().required(t('prp_created_date')),
+      //prp_termination_reason_id: Yup.string().required(t('prp_termination_reason_id')),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateProjectPerformance = {
-          prp_id: projectPerformance ? projectPerformance.prp_id : 0,
-          prp_id:projectPerformance.prp_id, 
-prp_project_id:values.prp_project_id, 
-prp_project_status_id:values.prp_project_status_id, 
-prp_record_date_ec:values.prp_record_date_ec, 
-prp_record_date_gc:values.prp_record_date_gc, 
-prp_total_budget_used:values.prp_total_budget_used, 
-prp_physical_performance:values.prp_physical_performance, 
-prp_description:values.prp_description, 
-prp_status:values.prp_status, 
-prp_created_date:values.prp_created_date, 
-prp_termination_reason_id:values.prp_termination_reason_id, 
+          prp_id: projectPerformance?.prp_id,
+          prp_project_id: values.prp_project_id,
+          prp_project_status_id: values.prp_project_status_id,
+          prp_record_date_ec: values.prp_record_date_ec,
+          prp_record_date_gc: values.prp_record_date_gc,
+          prp_total_budget_used: values.prp_total_budget_used,
+          prp_physical_performance: values.prp_physical_performance,
+          prp_description: values.prp_description,
+          prp_status: values.prp_status,
+          prp_created_date: values.prp_created_date,
+          prp_termination_reason_id: values.prp_termination_reason_id,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -185,17 +197,16 @@ prp_termination_reason_id:values.prp_termination_reason_id,
         validation.resetForm();
       } else {
         const newProjectPerformance = {
-          prp_project_id:values.prp_project_id, 
-prp_project_status_id:values.prp_project_status_id, 
-prp_record_date_ec:values.prp_record_date_ec, 
-prp_record_date_gc:values.prp_record_date_gc, 
-prp_total_budget_used:values.prp_total_budget_used, 
-prp_physical_performance:values.prp_physical_performance, 
-prp_description:values.prp_description, 
-prp_status:values.prp_status, 
-prp_created_date:values.prp_created_date, 
-prp_termination_reason_id:values.prp_termination_reason_id, 
-
+          prp_project_id: values.prp_project_id,
+          prp_project_status_id: values.prp_project_status_id,
+          prp_record_date_ec: values.prp_record_date_ec,
+          prp_record_date_gc: values.prp_record_date_gc,
+          prp_total_budget_used: values.prp_total_budget_used,
+          prp_physical_performance: values.prp_physical_performance,
+          prp_description: values.prp_description,
+          prp_status: values.prp_status,
+          prp_created_date: values.prp_created_date,
+          prp_termination_reason_id: values.prp_termination_reason_id,
         };
         // save new ProjectPerformance
         handleAddProjectPerformance(newProjectPerformance);
@@ -210,36 +221,36 @@ prp_termination_reason_id:values.prp_termination_reason_id,
   useEffect(() => {
     setProjectPerformance(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setProjectPerformance(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setProjectPerformance(null);
+      setProjectPerformance(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleProjectPerformanceClick = (arg) => {
+  const handleProjectPerformanceClick = (arg) => {
     const projectPerformance = arg;
     // console.log("handleProjectPerformanceClick", projectPerformance);
     setProjectPerformance({
-      prp_id:projectPerformance.prp_id, 
-prp_project_id:projectPerformance.prp_project_id, 
-prp_project_status_id:projectPerformance.prp_project_status_id, 
-prp_record_date_ec:projectPerformance.prp_record_date_ec, 
-prp_record_date_gc:projectPerformance.prp_record_date_gc, 
-prp_total_budget_used:projectPerformance.prp_total_budget_used, 
-prp_physical_performance:projectPerformance.prp_physical_performance, 
-prp_description:projectPerformance.prp_description, 
-prp_status:projectPerformance.prp_status, 
-prp_created_date:projectPerformance.prp_created_date, 
-prp_termination_reason_id:projectPerformance.prp_termination_reason_id, 
+      prp_id: projectPerformance.prp_id,
+      prp_project_id: projectPerformance.prp_project_id,
+      prp_project_status_id: projectPerformance.prp_project_status_id,
+      prp_record_date_ec: projectPerformance.prp_record_date_ec,
+      prp_record_date_gc: projectPerformance.prp_record_date_gc,
+      prp_total_budget_used: projectPerformance.prp_total_budget_used,
+      prp_physical_performance: projectPerformance.prp_physical_performance,
+      prp_description: projectPerformance.prp_description,
+      prp_status: projectPerformance.prp_status,
+      prp_created_date: projectPerformance.prp_created_date,
+      prp_termination_reason_id: projectPerformance.prp_termination_reason_id,
 
       is_deletable: projectPerformance.is_deletable,
       is_editable: projectPerformance.is_editable,
@@ -259,8 +270,8 @@ prp_termination_reason_id:projectPerformance.prp_termination_reason_id,
     setIsEdit(false);
     setProjectPerformance("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -268,90 +279,93 @@ prp_termination_reason_id:projectPerformance.prp_termination_reason_id,
   //START UNCHANGED
   const columns = useMemo(() => {
     const baseColumns = [
-{
-        header: '',
-        accessorKey: 'prp_project_status_id',
+      {
+        header: "",
+        accessorKey: "prp_project_status_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.prp_project_status_id, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
       },
-{
-        header: '',
-        accessorKey: 'prp_record_date_gc',
+      {
+        header: "",
+        accessorKey: "prp_record_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.prp_record_date_gc, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'prp_total_budget_used',
+      },
+      {
+        header: "",
+        accessorKey: "prp_total_budget_used",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.prp_total_budget_used, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'prp_physical_performance',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prp_physical_performance, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'prp_description',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prp_description, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
       },
-{
-        header: '',
-        accessorKey: 'prp_termination_reason_id',
+      {
+        header: "",
+        accessorKey: "prp_physical_performance",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.prp_termination_reason_id, 30) ||
-                '-'}
+              {truncateText(
+                cellProps.row.original.prp_physical_performance,
+                30
+              ) || "-"}
             </span>
           );
         },
-      }, 
+      },
+      {
+        header: "",
+        accessorKey: "prp_description",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.prp_description, 30) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: "prp_termination_reason_id",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(
+                cellProps.row.original.prp_termination_reason_id,
+                30
+              ) || "-"}
+            </span>
+          );
+        },
+      },
 
       {
         header: t("view_detail"),
@@ -375,7 +389,7 @@ prp_termination_reason_id:projectPerformance.prp_termination_reason_id,
         },
       },
     ];
-     if (
+    if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
     ) {
@@ -392,7 +406,7 @@ prp_termination_reason_id:projectPerformance.prp_termination_reason_id,
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleProjectPerformanceClick(data);
                   }}
                 >
@@ -439,7 +453,7 @@ prp_termination_reason_id:projectPerformance.prp_termination_reason_id,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteProjectPerformance}
+        onDeleteClick={handleDeleteProjectPerformance}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteProjectPerformance.isPending}
       />
@@ -448,32 +462,29 @@ prp_termination_reason_id:projectPerformance.prp_termination_reason_id,
           {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
-
-                    <TableContainer
-                      columns={columns}
-                      data={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      isGlobalFilter={true}
-                      isAddButton={true}
-                      isCustomPageSize={true}
-                      handleUserClick={handleProjectPerformanceClicks}
-                      isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("project_performance")}
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                    />
+            <TableContainer
+              columns={columns}
+              data={showSearchResult ? searchResults?.data : data?.data || []}
+              isGlobalFilter={true}
+              isAddButton={true}
+              isCustomPageSize={true}
+              handleUserClick={handleProjectPerformanceClicks}
+              isPagination={true}
+              // SearchPlaceholder="26 records..."
+              SearchPlaceholder={26 + " " + t("Results") + "..."}
+              buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+              buttonName={t("add") + " " + t("project_performance")}
+              tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+              theadClass="table-light"
+              pagination="pagination"
+              paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+            />
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("project_performance")) : (t("add") +" "+t("project_performance"))}
+              {!!isEdit
+                ? t("edit") + " " + t("project_performance")
+                : t("add") + " " + t("project_performance")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -484,131 +495,132 @@ prp_termination_reason_id:projectPerformance.prp_termination_reason_id,
                 }}
               >
                 <Row>
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prp_project_status_id')}</Label>
-                      <Input
-                        name='prp_project_status_id'
-                        type='text'
-                        placeholder={t('prp_project_status_id')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prp_project_status_id || ''}
-                        invalid={
-                          validation.touched.prp_project_status_id &&
-                          validation.errors.prp_project_status_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prp_project_status_id &&
-                      validation.errors.prp_project_status_id ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prp_project_status_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prp_record_date_gc')}</Label>
-                      <Input
-                        name='prp_record_date_gc'
-                        type='text'
-                        placeholder={t('prp_record_date_gc')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prp_record_date_gc || ''}
-                        invalid={
-                          validation.touched.prp_record_date_gc &&
-                          validation.errors.prp_record_date_gc
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prp_record_date_gc &&
-                      validation.errors.prp_record_date_gc ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prp_record_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prp_total_budget_used')}</Label>
-                      <Input
-                        name='prp_total_budget_used'
-                        type='number'
-                        placeholder={t('prp_total_budget_used')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prp_total_budget_used || ''}
-                        invalid={
-                          validation.touched.prp_total_budget_used &&
-                          validation.errors.prp_total_budget_used
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prp_total_budget_used &&
-                      validation.errors.prp_total_budget_used ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prp_total_budget_used}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prp_physical_performance')}</Label>
-                      <Input
-                        name='prp_physical_performance'
-                        type='number'
-                        placeholder={t('prp_physical_performance')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prp_physical_performance || ''}
-                        invalid={
-                          validation.touched.prp_physical_performance &&
-                          validation.errors.prp_physical_performance
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prp_physical_performance &&
-                      validation.errors.prp_physical_performance ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prp_physical_performance}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prp_description')}</Label>
-                      <Input
-                        name='prp_description'
-                        type='textarea'
-                        placeholder={t('prp_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prp_description || ''}
-                        invalid={
-                          validation.touched.prp_description &&
-                          validation.errors.prp_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prp_description &&
-                      validation.errors.prp_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prp_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prp_project_status_id")}</Label>
+                    <Input
+                      name="prp_project_status_id"
+                      type="text"
+                      placeholder={t("prp_project_status_id")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prp_project_status_id || ""}
+                      invalid={
+                        validation.touched.prp_project_status_id &&
+                        validation.errors.prp_project_status_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prp_project_status_id &&
+                    validation.errors.prp_project_status_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prp_project_status_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prp_record_date_gc")}</Label>
+                    <Input
+                      name="prp_record_date_gc"
+                      type="text"
+                      placeholder={t("prp_record_date_gc")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prp_record_date_gc || ""}
+                      invalid={
+                        validation.touched.prp_record_date_gc &&
+                        validation.errors.prp_record_date_gc
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prp_record_date_gc &&
+                    validation.errors.prp_record_date_gc ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prp_record_date_gc}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prp_total_budget_used")}</Label>
+                    <Input
+                      name="prp_total_budget_used"
+                      type="number"
+                      placeholder={t("prp_total_budget_used")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prp_total_budget_used || ""}
+                      invalid={
+                        validation.touched.prp_total_budget_used &&
+                        validation.errors.prp_total_budget_used
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prp_total_budget_used &&
+                    validation.errors.prp_total_budget_used ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prp_total_budget_used}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prp_physical_performance")}</Label>
+                    <Input
+                      name="prp_physical_performance"
+                      type="number"
+                      placeholder={t("prp_physical_performance")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prp_physical_performance || ""}
+                      invalid={
+                        validation.touched.prp_physical_performance &&
+                        validation.errors.prp_physical_performance
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prp_physical_performance &&
+                    validation.errors.prp_physical_performance ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prp_physical_performance}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prp_description")}</Label>
+                    <Input
+                      name="prp_description"
+                      type="textarea"
+                      placeholder={t("prp_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prp_description || ""}
+                      invalid={
+                        validation.touched.prp_description &&
+                        validation.errors.prp_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prp_description &&
+                    validation.errors.prp_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prp_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {addProjectPerformance.isPending || updateProjectPerformance.isPending ? (
+                      {addProjectPerformance.isPending ||
+                      updateProjectPerformance.isPending ? (
                         <Button
                           color="success"
                           type="submit"

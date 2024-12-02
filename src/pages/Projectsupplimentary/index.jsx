@@ -44,7 +44,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -70,12 +70,13 @@ const ProjectSupplimentaryModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useFetchProjectSupplimentarys();
+  const { data, isLoading, error, isError, refetch } =
+    useFetchProjectSupplimentarys();
 
   const addProjectSupplimentary = useAddProjectSupplimentary();
   const updateProjectSupplimentary = useUpdateProjectSupplimentary();
   const deleteProjectSupplimentary = useDeleteProjectSupplimentary();
-//START CRUD
+  //START CRUD
   const handleAddProjectSupplimentary = async (data) => {
     try {
       await addProjectSupplimentary.mutateAsync(data);
@@ -122,55 +123,69 @@ const ProjectSupplimentaryModel = () => {
   //END CRUD
   //START FOREIGN CALLS
 
-  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     prs_requested_amount:(projectSupplimentary && projectSupplimentary.prs_requested_amount) || "", 
-prs_released_amount:(projectSupplimentary && projectSupplimentary.prs_released_amount) || "", 
-prs_project_id:(projectSupplimentary && projectSupplimentary.prs_project_id) || "", 
-prs_requested_date_ec:(projectSupplimentary && projectSupplimentary.prs_requested_date_ec) || "", 
-prs_requested_date_gc:(projectSupplimentary && projectSupplimentary.prs_requested_date_gc) || "", 
-prs_released_date_ec:(projectSupplimentary && projectSupplimentary.prs_released_date_ec) || "", 
-prs_released_date_gc:(projectSupplimentary && projectSupplimentary.prs_released_date_gc) || "", 
-prs_description:(projectSupplimentary && projectSupplimentary.prs_description) || "", 
-prs_status:(projectSupplimentary && projectSupplimentary.prs_status) || "", 
+      prs_requested_amount:
+        (projectSupplimentary && projectSupplimentary.prs_requested_amount) ||
+        "",
+      prs_released_amount:
+        (projectSupplimentary && projectSupplimentary.prs_released_amount) ||
+        "",
+      prs_project_id:
+        (projectSupplimentary && projectSupplimentary.prs_project_id) || "",
+      prs_requested_date_ec:
+        (projectSupplimentary && projectSupplimentary.prs_requested_date_ec) ||
+        "",
+      prs_requested_date_gc:
+        (projectSupplimentary && projectSupplimentary.prs_requested_date_gc) ||
+        "",
+      prs_released_date_ec:
+        (projectSupplimentary && projectSupplimentary.prs_released_date_ec) ||
+        "",
+      prs_released_date_gc:
+        (projectSupplimentary && projectSupplimentary.prs_released_date_gc) ||
+        "",
+      prs_description:
+        (projectSupplimentary && projectSupplimentary.prs_description) || "",
+      prs_status:
+        (projectSupplimentary && projectSupplimentary.prs_status) || "",
 
-is_deletable: (projectSupplimentary && projectSupplimentary.is_deletable) || 1,
-is_editable: (projectSupplimentary && projectSupplimentary.is_editable) || 1
+      is_deletable:
+        (projectSupplimentary && projectSupplimentary.is_deletable) || 1,
+      is_editable:
+        (projectSupplimentary && projectSupplimentary.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
-      prs_requested_amount: Yup.string().required(t('prs_requested_amount')),
-prs_released_amount: Yup.string().required(t('prs_released_amount')),
-prs_project_id: Yup.string().required(t('prs_project_id')),
-prs_requested_date_ec: Yup.string().required(t('prs_requested_date_ec')),
-prs_requested_date_gc: Yup.string().required(t('prs_requested_date_gc')),
-prs_released_date_ec: Yup.string().required(t('prs_released_date_ec')),
-prs_released_date_gc: Yup.string().required(t('prs_released_date_gc')),
-prs_description: Yup.string().required(t('prs_description')),
-prs_status: Yup.string().required(t('prs_status')),
-
+      prs_requested_amount: Yup.string().required(t("prs_requested_amount")),
+      prs_released_amount: Yup.string().required(t("prs_released_amount")),
+      prs_project_id: Yup.string().required(t("prs_project_id")),
+      prs_requested_date_ec: Yup.string().required(t("prs_requested_date_ec")),
+      prs_requested_date_gc: Yup.string().required(t("prs_requested_date_gc")),
+      prs_released_date_ec: Yup.string().required(t("prs_released_date_ec")),
+      prs_released_date_gc: Yup.string().required(t("prs_released_date_gc")),
+      prs_description: Yup.string().required(t("prs_description")),
+      prs_status: Yup.string().required(t("prs_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateProjectSupplimentary = {
-          prs_id: projectSupplimentary ? projectSupplimentary.prs_id : 0,
-          prs_id:projectSupplimentary.prs_id, 
-prs_requested_amount:values.prs_requested_amount, 
-prs_released_amount:values.prs_released_amount, 
-prs_project_id:values.prs_project_id, 
-prs_requested_date_ec:values.prs_requested_date_ec, 
-prs_requested_date_gc:values.prs_requested_date_gc, 
-prs_released_date_ec:values.prs_released_date_ec, 
-prs_released_date_gc:values.prs_released_date_gc, 
-prs_description:values.prs_description, 
-prs_status:values.prs_status, 
+          prs_id: projectSupplimentary?.prs_id,
+          prs_requested_amount: values.prs_requested_amount,
+          prs_released_amount: values.prs_released_amount,
+          prs_project_id: values.prs_project_id,
+          prs_requested_date_ec: values.prs_requested_date_ec,
+          prs_requested_date_gc: values.prs_requested_date_gc,
+          prs_released_date_ec: values.prs_released_date_ec,
+          prs_released_date_gc: values.prs_released_date_gc,
+          prs_description: values.prs_description,
+          prs_status: values.prs_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -180,16 +195,15 @@ prs_status:values.prs_status,
         validation.resetForm();
       } else {
         const newProjectSupplimentary = {
-          prs_requested_amount:values.prs_requested_amount, 
-prs_released_amount:values.prs_released_amount, 
-prs_project_id:values.prs_project_id, 
-prs_requested_date_ec:values.prs_requested_date_ec, 
-prs_requested_date_gc:values.prs_requested_date_gc, 
-prs_released_date_ec:values.prs_released_date_ec, 
-prs_released_date_gc:values.prs_released_date_gc, 
-prs_description:values.prs_description, 
-prs_status:values.prs_status, 
-
+          prs_requested_amount: values.prs_requested_amount,
+          prs_released_amount: values.prs_released_amount,
+          prs_project_id: values.prs_project_id,
+          prs_requested_date_ec: values.prs_requested_date_ec,
+          prs_requested_date_gc: values.prs_requested_date_gc,
+          prs_released_date_ec: values.prs_released_date_ec,
+          prs_released_date_gc: values.prs_released_date_gc,
+          prs_description: values.prs_description,
+          prs_status: values.prs_status,
         };
         // save new ProjectSupplimentary
         handleAddProjectSupplimentary(newProjectSupplimentary);
@@ -204,35 +218,35 @@ prs_status:values.prs_status,
   useEffect(() => {
     setProjectSupplimentary(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setProjectSupplimentary(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setProjectSupplimentary(null);
+      setProjectSupplimentary(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleProjectSupplimentaryClick = (arg) => {
+  const handleProjectSupplimentaryClick = (arg) => {
     const projectSupplimentary = arg;
     // console.log("handleProjectSupplimentaryClick", projectSupplimentary);
     setProjectSupplimentary({
-      prs_id:projectSupplimentary.prs_id, 
-prs_requested_amount:projectSupplimentary.prs_requested_amount, 
-prs_released_amount:projectSupplimentary.prs_released_amount, 
-prs_project_id:projectSupplimentary.prs_project_id, 
-prs_requested_date_ec:projectSupplimentary.prs_requested_date_ec, 
-prs_requested_date_gc:projectSupplimentary.prs_requested_date_gc, 
-prs_released_date_ec:projectSupplimentary.prs_released_date_ec, 
-prs_released_date_gc:projectSupplimentary.prs_released_date_gc, 
-prs_description:projectSupplimentary.prs_description, 
-prs_status:projectSupplimentary.prs_status, 
+      prs_id: projectSupplimentary.prs_id,
+      prs_requested_amount: projectSupplimentary.prs_requested_amount,
+      prs_released_amount: projectSupplimentary.prs_released_amount,
+      prs_project_id: projectSupplimentary.prs_project_id,
+      prs_requested_date_ec: projectSupplimentary.prs_requested_date_ec,
+      prs_requested_date_gc: projectSupplimentary.prs_requested_date_gc,
+      prs_released_date_ec: projectSupplimentary.prs_released_date_ec,
+      prs_released_date_gc: projectSupplimentary.prs_released_date_gc,
+      prs_description: projectSupplimentary.prs_description,
+      prs_status: projectSupplimentary.prs_status,
 
       is_deletable: projectSupplimentary.is_deletable,
       is_editable: projectSupplimentary.is_editable,
@@ -252,8 +266,8 @@ prs_status:projectSupplimentary.prs_status,
     setIsEdit(false);
     setProjectSupplimentary("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -262,131 +276,128 @@ prs_status:projectSupplimentary.prs_status,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'prs_requested_amount',
+        header: "",
+        accessorKey: "prs_requested_amount",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.prs_requested_amount, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'prs_released_amount',
+      },
+      {
+        header: "",
+        accessorKey: "prs_released_amount",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.prs_released_amount, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'prs_project_id',
+      },
+      {
+        header: "",
+        accessorKey: "prs_project_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.prs_project_id, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.prs_project_id, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'prs_requested_date_ec',
+      },
+      {
+        header: "",
+        accessorKey: "prs_requested_date_ec",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.prs_requested_date_ec, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'prs_requested_date_gc',
+      },
+      {
+        header: "",
+        accessorKey: "prs_requested_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.prs_requested_date_gc, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'prs_released_date_ec',
+      },
+      {
+        header: "",
+        accessorKey: "prs_released_date_ec",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.prs_released_date_ec, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'prs_released_date_gc',
+      },
+      {
+        header: "",
+        accessorKey: "prs_released_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.prs_released_date_gc, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'prs_description',
+      },
+      {
+        header: "",
+        accessorKey: "prs_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.prs_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.prs_description, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'prs_status',
+      },
+      {
+        header: "",
+        accessorKey: "prs_status",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.prs_status, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.prs_status, 30) || "-"}
             </span>
           );
         },
-      }, 
+      },
 
       {
         header: t("view_detail"),
@@ -410,7 +421,7 @@ prs_status:projectSupplimentary.prs_status,
         },
       },
     ];
-     if (
+    if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
     ) {
@@ -427,7 +438,7 @@ prs_status:projectSupplimentary.prs_status,
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleProjectSupplimentaryClick(data);
                   }}
                 >
@@ -474,7 +485,7 @@ prs_status:projectSupplimentary.prs_status,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteProjectSupplimentary}
+        onDeleteClick={handleDeleteProjectSupplimentary}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteProjectSupplimentary.isPending}
       />
@@ -534,7 +545,7 @@ prs_status:projectSupplimentary.prs_status,
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("project_supplimentary")}
+                      buttonName={t("add") + " " + t("project_supplimentary")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -547,7 +558,9 @@ prs_status:projectSupplimentary.prs_status,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("project_supplimentary")) : (t("add") +" "+t("project_supplimentary"))}
+              {!!isEdit
+                ? t("edit") + " " + t("project_supplimentary")
+                : t("add") + " " + t("project_supplimentary")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -558,228 +571,228 @@ prs_status:projectSupplimentary.prs_status,
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('prs_requested_amount')}</Label>
-                      <Input
-                        name='prs_requested_amount'
-                        type='text'
-                        placeholder={t('prs_requested_amount')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prs_requested_amount || ''}
-                        invalid={
-                          validation.touched.prs_requested_amount &&
-                          validation.errors.prs_requested_amount
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prs_requested_amount &&
-                      validation.errors.prs_requested_amount ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prs_requested_amount}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prs_released_amount')}</Label>
-                      <Input
-                        name='prs_released_amount'
-                        type='text'
-                        placeholder={t('prs_released_amount')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prs_released_amount || ''}
-                        invalid={
-                          validation.touched.prs_released_amount &&
-                          validation.errors.prs_released_amount
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prs_released_amount &&
-                      validation.errors.prs_released_amount ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prs_released_amount}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prs_project_id')}</Label>
-                      <Input
-                        name='prs_project_id'
-                        type='text'
-                        placeholder={t('prs_project_id')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prs_project_id || ''}
-                        invalid={
-                          validation.touched.prs_project_id &&
-                          validation.errors.prs_project_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prs_project_id &&
-                      validation.errors.prs_project_id ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prs_project_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prs_requested_date_ec')}</Label>
-                      <Input
-                        name='prs_requested_date_ec'
-                        type='text'
-                        placeholder={t('prs_requested_date_ec')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prs_requested_date_ec || ''}
-                        invalid={
-                          validation.touched.prs_requested_date_ec &&
-                          validation.errors.prs_requested_date_ec
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prs_requested_date_ec &&
-                      validation.errors.prs_requested_date_ec ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prs_requested_date_ec}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prs_requested_date_gc')}</Label>
-                      <Input
-                        name='prs_requested_date_gc'
-                        type='text'
-                        placeholder={t('prs_requested_date_gc')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prs_requested_date_gc || ''}
-                        invalid={
-                          validation.touched.prs_requested_date_gc &&
-                          validation.errors.prs_requested_date_gc
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prs_requested_date_gc &&
-                      validation.errors.prs_requested_date_gc ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prs_requested_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prs_released_date_ec')}</Label>
-                      <Input
-                        name='prs_released_date_ec'
-                        type='text'
-                        placeholder={t('prs_released_date_ec')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prs_released_date_ec || ''}
-                        invalid={
-                          validation.touched.prs_released_date_ec &&
-                          validation.errors.prs_released_date_ec
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prs_released_date_ec &&
-                      validation.errors.prs_released_date_ec ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prs_released_date_ec}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prs_released_date_gc')}</Label>
-                      <Input
-                        name='prs_released_date_gc'
-                        type='text'
-                        placeholder={t('prs_released_date_gc')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prs_released_date_gc || ''}
-                        invalid={
-                          validation.touched.prs_released_date_gc &&
-                          validation.errors.prs_released_date_gc
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prs_released_date_gc &&
-                      validation.errors.prs_released_date_gc ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prs_released_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prs_description')}</Label>
-                      <Input
-                        name='prs_description'
-                        type='text'
-                        placeholder={t('prs_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prs_description || ''}
-                        invalid={
-                          validation.touched.prs_description &&
-                          validation.errors.prs_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prs_description &&
-                      validation.errors.prs_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prs_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('prs_status')}</Label>
-                      <Input
-                        name='prs_status'
-                        type='text'
-                        placeholder={t('prs_status')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.prs_status || ''}
-                        invalid={
-                          validation.touched.prs_status &&
-                          validation.errors.prs_status
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.prs_status &&
-                      validation.errors.prs_status ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.prs_status}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-                
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prs_requested_amount")}</Label>
+                    <Input
+                      name="prs_requested_amount"
+                      type="text"
+                      placeholder={t("prs_requested_amount")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prs_requested_amount || ""}
+                      invalid={
+                        validation.touched.prs_requested_amount &&
+                        validation.errors.prs_requested_amount
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prs_requested_amount &&
+                    validation.errors.prs_requested_amount ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prs_requested_amount}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prs_released_amount")}</Label>
+                    <Input
+                      name="prs_released_amount"
+                      type="text"
+                      placeholder={t("prs_released_amount")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prs_released_amount || ""}
+                      invalid={
+                        validation.touched.prs_released_amount &&
+                        validation.errors.prs_released_amount
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prs_released_amount &&
+                    validation.errors.prs_released_amount ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prs_released_amount}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prs_project_id")}</Label>
+                    <Input
+                      name="prs_project_id"
+                      type="text"
+                      placeholder={t("prs_project_id")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prs_project_id || ""}
+                      invalid={
+                        validation.touched.prs_project_id &&
+                        validation.errors.prs_project_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prs_project_id &&
+                    validation.errors.prs_project_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prs_project_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prs_requested_date_ec")}</Label>
+                    <Input
+                      name="prs_requested_date_ec"
+                      type="text"
+                      placeholder={t("prs_requested_date_ec")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prs_requested_date_ec || ""}
+                      invalid={
+                        validation.touched.prs_requested_date_ec &&
+                        validation.errors.prs_requested_date_ec
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prs_requested_date_ec &&
+                    validation.errors.prs_requested_date_ec ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prs_requested_date_ec}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prs_requested_date_gc")}</Label>
+                    <Input
+                      name="prs_requested_date_gc"
+                      type="text"
+                      placeholder={t("prs_requested_date_gc")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prs_requested_date_gc || ""}
+                      invalid={
+                        validation.touched.prs_requested_date_gc &&
+                        validation.errors.prs_requested_date_gc
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prs_requested_date_gc &&
+                    validation.errors.prs_requested_date_gc ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prs_requested_date_gc}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prs_released_date_ec")}</Label>
+                    <Input
+                      name="prs_released_date_ec"
+                      type="text"
+                      placeholder={t("prs_released_date_ec")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prs_released_date_ec || ""}
+                      invalid={
+                        validation.touched.prs_released_date_ec &&
+                        validation.errors.prs_released_date_ec
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prs_released_date_ec &&
+                    validation.errors.prs_released_date_ec ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prs_released_date_ec}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prs_released_date_gc")}</Label>
+                    <Input
+                      name="prs_released_date_gc"
+                      type="text"
+                      placeholder={t("prs_released_date_gc")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prs_released_date_gc || ""}
+                      invalid={
+                        validation.touched.prs_released_date_gc &&
+                        validation.errors.prs_released_date_gc
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prs_released_date_gc &&
+                    validation.errors.prs_released_date_gc ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prs_released_date_gc}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prs_description")}</Label>
+                    <Input
+                      name="prs_description"
+                      type="text"
+                      placeholder={t("prs_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prs_description || ""}
+                      invalid={
+                        validation.touched.prs_description &&
+                        validation.errors.prs_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prs_description &&
+                    validation.errors.prs_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prs_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prs_status")}</Label>
+                    <Input
+                      name="prs_status"
+                      type="text"
+                      placeholder={t("prs_status")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prs_status || ""}
+                      invalid={
+                        validation.touched.prs_status &&
+                        validation.errors.prs_status
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.prs_status &&
+                    validation.errors.prs_status ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prs_status}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {addProjectSupplimentary.isPending || updateProjectSupplimentary.isPending ? (
+                      {addProjectSupplimentary.isPending ||
+                      updateProjectSupplimentary.isPending ? (
                         <Button
                           color="success"
                           type="submit"

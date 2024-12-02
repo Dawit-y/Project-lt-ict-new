@@ -44,7 +44,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -70,12 +70,13 @@ const ProjectVariationModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useFetchProjectVariations();
+  const { data, isLoading, error, isError, refetch } =
+    useFetchProjectVariations();
 
   const addProjectVariation = useAddProjectVariation();
   const updateProjectVariation = useUpdateProjectVariation();
   const deleteProjectVariation = useDeleteProjectVariation();
-//START CRUD
+  //START CRUD
   const handleAddProjectVariation = async (data) => {
     try {
       await addProjectVariation.mutateAsync(data);
@@ -122,38 +123,44 @@ const ProjectVariationModel = () => {
   //END CRUD
   //START FOREIGN CALLS
 
-  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     bdr_requested_amount:(projectVariation && projectVariation.bdr_requested_amount) || "", 
-bdr_released_amount:(projectVariation && projectVariation.bdr_released_amount) || "", 
-bdr_project_id:(projectVariation && projectVariation.bdr_project_id) || "", 
-bdr_requested_date_ec:(projectVariation && projectVariation.bdr_requested_date_ec) || "", 
-bdr_requested_date_gc:(projectVariation && projectVariation.bdr_requested_date_gc) || "", 
-bdr_released_date_ec:(projectVariation && projectVariation.bdr_released_date_ec) || "", 
-bdr_released_date_gc:(projectVariation && projectVariation.bdr_released_date_gc) || "", 
-bdr_description:(projectVariation && projectVariation.bdr_description) || "", 
-bdr_status:(projectVariation && projectVariation.bdr_status) || "", 
+      bdr_requested_amount:
+        (projectVariation && projectVariation.bdr_requested_amount) || "",
+      bdr_released_amount:
+        (projectVariation && projectVariation.bdr_released_amount) || "",
+      bdr_project_id:
+        (projectVariation && projectVariation.bdr_project_id) || "",
+      bdr_requested_date_ec:
+        (projectVariation && projectVariation.bdr_requested_date_ec) || "",
+      bdr_requested_date_gc:
+        (projectVariation && projectVariation.bdr_requested_date_gc) || "",
+      bdr_released_date_ec:
+        (projectVariation && projectVariation.bdr_released_date_ec) || "",
+      bdr_released_date_gc:
+        (projectVariation && projectVariation.bdr_released_date_gc) || "",
+      bdr_description:
+        (projectVariation && projectVariation.bdr_description) || "",
+      bdr_status: (projectVariation && projectVariation.bdr_status) || "",
 
-is_deletable: (projectVariation && projectVariation.is_deletable) || 1,
-is_editable: (projectVariation && projectVariation.is_editable) || 1
+      is_deletable: (projectVariation && projectVariation.is_deletable) || 1,
+      is_editable: (projectVariation && projectVariation.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
-      bdr_requested_amount: Yup.string().required(t('bdr_requested_amount')),
-bdr_released_amount: Yup.string().required(t('bdr_released_amount')),
-bdr_project_id: Yup.string().required(t('bdr_project_id')),
-bdr_requested_date_ec: Yup.string().required(t('bdr_requested_date_ec')),
-bdr_requested_date_gc: Yup.string().required(t('bdr_requested_date_gc')),
-bdr_released_date_ec: Yup.string().required(t('bdr_released_date_ec')),
-bdr_released_date_gc: Yup.string().required(t('bdr_released_date_gc')),
-bdr_description: Yup.string().required(t('bdr_description')),
-bdr_status: Yup.string().required(t('bdr_status')),
-
+      bdr_requested_amount: Yup.string().required(t("bdr_requested_amount")),
+      bdr_released_amount: Yup.string().required(t("bdr_released_amount")),
+      bdr_project_id: Yup.string().required(t("bdr_project_id")),
+      bdr_requested_date_ec: Yup.string().required(t("bdr_requested_date_ec")),
+      bdr_requested_date_gc: Yup.string().required(t("bdr_requested_date_gc")),
+      bdr_released_date_ec: Yup.string().required(t("bdr_released_date_ec")),
+      bdr_released_date_gc: Yup.string().required(t("bdr_released_date_gc")),
+      bdr_description: Yup.string().required(t("bdr_description")),
+      bdr_status: Yup.string().required(t("bdr_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -161,16 +168,15 @@ bdr_status: Yup.string().required(t('bdr_status')),
       if (isEdit) {
         const updateProjectVariation = {
           bdr_id: projectVariation ? projectVariation.bdr_id : 0,
-          bdr_id:projectVariation.bdr_id, 
-bdr_requested_amount:values.bdr_requested_amount, 
-bdr_released_amount:values.bdr_released_amount, 
-bdr_project_id:values.bdr_project_id, 
-bdr_requested_date_ec:values.bdr_requested_date_ec, 
-bdr_requested_date_gc:values.bdr_requested_date_gc, 
-bdr_released_date_ec:values.bdr_released_date_ec, 
-bdr_released_date_gc:values.bdr_released_date_gc, 
-bdr_description:values.bdr_description, 
-bdr_status:values.bdr_status, 
+          bdr_requested_amount: values.bdr_requested_amount,
+          bdr_released_amount: values.bdr_released_amount,
+          bdr_project_id: values.bdr_project_id,
+          bdr_requested_date_ec: values.bdr_requested_date_ec,
+          bdr_requested_date_gc: values.bdr_requested_date_gc,
+          bdr_released_date_ec: values.bdr_released_date_ec,
+          bdr_released_date_gc: values.bdr_released_date_gc,
+          bdr_description: values.bdr_description,
+          bdr_status: values.bdr_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -180,16 +186,15 @@ bdr_status:values.bdr_status,
         validation.resetForm();
       } else {
         const newProjectVariation = {
-          bdr_requested_amount:values.bdr_requested_amount, 
-bdr_released_amount:values.bdr_released_amount, 
-bdr_project_id:values.bdr_project_id, 
-bdr_requested_date_ec:values.bdr_requested_date_ec, 
-bdr_requested_date_gc:values.bdr_requested_date_gc, 
-bdr_released_date_ec:values.bdr_released_date_ec, 
-bdr_released_date_gc:values.bdr_released_date_gc, 
-bdr_description:values.bdr_description, 
-bdr_status:values.bdr_status, 
-
+          bdr_requested_amount: values.bdr_requested_amount,
+          bdr_released_amount: values.bdr_released_amount,
+          bdr_project_id: values.bdr_project_id,
+          bdr_requested_date_ec: values.bdr_requested_date_ec,
+          bdr_requested_date_gc: values.bdr_requested_date_gc,
+          bdr_released_date_ec: values.bdr_released_date_ec,
+          bdr_released_date_gc: values.bdr_released_date_gc,
+          bdr_description: values.bdr_description,
+          bdr_status: values.bdr_status,
         };
         // save new ProjectVariation
         handleAddProjectVariation(newProjectVariation);
@@ -204,35 +209,35 @@ bdr_status:values.bdr_status,
   useEffect(() => {
     setProjectVariation(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setProjectVariation(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setProjectVariation(null);
+      setProjectVariation(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleProjectVariationClick = (arg) => {
+  const handleProjectVariationClick = (arg) => {
     const projectVariation = arg;
     // console.log("handleProjectVariationClick", projectVariation);
     setProjectVariation({
-      bdr_id:projectVariation.bdr_id, 
-bdr_requested_amount:projectVariation.bdr_requested_amount, 
-bdr_released_amount:projectVariation.bdr_released_amount, 
-bdr_project_id:projectVariation.bdr_project_id, 
-bdr_requested_date_ec:projectVariation.bdr_requested_date_ec, 
-bdr_requested_date_gc:projectVariation.bdr_requested_date_gc, 
-bdr_released_date_ec:projectVariation.bdr_released_date_ec, 
-bdr_released_date_gc:projectVariation.bdr_released_date_gc, 
-bdr_description:projectVariation.bdr_description, 
-bdr_status:projectVariation.bdr_status, 
+      bdr_id: projectVariation.bdr_id,
+      bdr_requested_amount: projectVariation.bdr_requested_amount,
+      bdr_released_amount: projectVariation.bdr_released_amount,
+      bdr_project_id: projectVariation.bdr_project_id,
+      bdr_requested_date_ec: projectVariation.bdr_requested_date_ec,
+      bdr_requested_date_gc: projectVariation.bdr_requested_date_gc,
+      bdr_released_date_ec: projectVariation.bdr_released_date_ec,
+      bdr_released_date_gc: projectVariation.bdr_released_date_gc,
+      bdr_description: projectVariation.bdr_description,
+      bdr_status: projectVariation.bdr_status,
 
       is_deletable: projectVariation.is_deletable,
       is_editable: projectVariation.is_editable,
@@ -252,8 +257,8 @@ bdr_status:projectVariation.bdr_status,
     setIsEdit(false);
     setProjectVariation("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -262,131 +267,128 @@ bdr_status:projectVariation.bdr_status,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'bdr_requested_amount',
+        header: "",
+        accessorKey: "bdr_requested_amount",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.bdr_requested_amount, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'bdr_released_amount',
+      },
+      {
+        header: "",
+        accessorKey: "bdr_released_amount",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.bdr_released_amount, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'bdr_project_id',
+      },
+      {
+        header: "",
+        accessorKey: "bdr_project_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdr_project_id, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.bdr_project_id, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'bdr_requested_date_ec',
+      },
+      {
+        header: "",
+        accessorKey: "bdr_requested_date_ec",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.bdr_requested_date_ec, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'bdr_requested_date_gc',
+      },
+      {
+        header: "",
+        accessorKey: "bdr_requested_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.bdr_requested_date_gc, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'bdr_released_date_ec',
+      },
+      {
+        header: "",
+        accessorKey: "bdr_released_date_ec",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.bdr_released_date_ec, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'bdr_released_date_gc',
+      },
+      {
+        header: "",
+        accessorKey: "bdr_released_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.bdr_released_date_gc, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'bdr_description',
+      },
+      {
+        header: "",
+        accessorKey: "bdr_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdr_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.bdr_description, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'bdr_status',
+      },
+      {
+        header: "",
+        accessorKey: "bdr_status",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdr_status, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.bdr_status, 30) || "-"}
             </span>
           );
         },
-      }, 
+      },
 
       {
         header: t("view_detail"),
@@ -410,7 +412,7 @@ bdr_status:projectVariation.bdr_status,
         },
       },
     ];
-     if (
+    if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
     ) {
@@ -427,7 +429,7 @@ bdr_status:projectVariation.bdr_status,
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleProjectVariationClick(data);
                   }}
                 >
@@ -474,7 +476,7 @@ bdr_status:projectVariation.bdr_status,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteProjectVariation}
+        onDeleteClick={handleDeleteProjectVariation}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteProjectVariation.isPending}
       />
@@ -534,7 +536,7 @@ bdr_status:projectVariation.bdr_status,
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("project_variation")}
+                      buttonName={t("add") + " " + t("project_variation")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -547,7 +549,9 @@ bdr_status:projectVariation.bdr_status,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("project_variation")) : (t("add") +" "+t("project_variation"))}
+              {!!isEdit
+                ? t("edit") + " " + t("project_variation")
+                : t("add") + " " + t("project_variation")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -558,228 +562,228 @@ bdr_status:projectVariation.bdr_status,
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('bdr_requested_amount')}</Label>
-                      <Input
-                        name='bdr_requested_amount'
-                        type='text'
-                        placeholder={t('bdr_requested_amount')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdr_requested_amount || ''}
-                        invalid={
-                          validation.touched.bdr_requested_amount &&
-                          validation.errors.bdr_requested_amount
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bdr_requested_amount &&
-                      validation.errors.bdr_requested_amount ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdr_requested_amount}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bdr_released_amount')}</Label>
-                      <Input
-                        name='bdr_released_amount'
-                        type='text'
-                        placeholder={t('bdr_released_amount')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdr_released_amount || ''}
-                        invalid={
-                          validation.touched.bdr_released_amount &&
-                          validation.errors.bdr_released_amount
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bdr_released_amount &&
-                      validation.errors.bdr_released_amount ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdr_released_amount}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bdr_project_id')}</Label>
-                      <Input
-                        name='bdr_project_id'
-                        type='text'
-                        placeholder={t('bdr_project_id')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdr_project_id || ''}
-                        invalid={
-                          validation.touched.bdr_project_id &&
-                          validation.errors.bdr_project_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bdr_project_id &&
-                      validation.errors.bdr_project_id ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdr_project_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bdr_requested_date_ec')}</Label>
-                      <Input
-                        name='bdr_requested_date_ec'
-                        type='text'
-                        placeholder={t('bdr_requested_date_ec')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdr_requested_date_ec || ''}
-                        invalid={
-                          validation.touched.bdr_requested_date_ec &&
-                          validation.errors.bdr_requested_date_ec
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bdr_requested_date_ec &&
-                      validation.errors.bdr_requested_date_ec ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdr_requested_date_ec}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bdr_requested_date_gc')}</Label>
-                      <Input
-                        name='bdr_requested_date_gc'
-                        type='text'
-                        placeholder={t('bdr_requested_date_gc')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdr_requested_date_gc || ''}
-                        invalid={
-                          validation.touched.bdr_requested_date_gc &&
-                          validation.errors.bdr_requested_date_gc
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bdr_requested_date_gc &&
-                      validation.errors.bdr_requested_date_gc ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdr_requested_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bdr_released_date_ec')}</Label>
-                      <Input
-                        name='bdr_released_date_ec'
-                        type='text'
-                        placeholder={t('bdr_released_date_ec')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdr_released_date_ec || ''}
-                        invalid={
-                          validation.touched.bdr_released_date_ec &&
-                          validation.errors.bdr_released_date_ec
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bdr_released_date_ec &&
-                      validation.errors.bdr_released_date_ec ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdr_released_date_ec}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bdr_released_date_gc')}</Label>
-                      <Input
-                        name='bdr_released_date_gc'
-                        type='text'
-                        placeholder={t('bdr_released_date_gc')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdr_released_date_gc || ''}
-                        invalid={
-                          validation.touched.bdr_released_date_gc &&
-                          validation.errors.bdr_released_date_gc
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bdr_released_date_gc &&
-                      validation.errors.bdr_released_date_gc ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdr_released_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bdr_description')}</Label>
-                      <Input
-                        name='bdr_description'
-                        type='text'
-                        placeholder={t('bdr_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdr_description || ''}
-                        invalid={
-                          validation.touched.bdr_description &&
-                          validation.errors.bdr_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bdr_description &&
-                      validation.errors.bdr_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdr_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bdr_status')}</Label>
-                      <Input
-                        name='bdr_status'
-                        type='text'
-                        placeholder={t('bdr_status')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdr_status || ''}
-                        invalid={
-                          validation.touched.bdr_status &&
-                          validation.errors.bdr_status
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bdr_status &&
-                      validation.errors.bdr_status ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdr_status}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-                
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("bdr_requested_amount")}</Label>
+                    <Input
+                      name="bdr_requested_amount"
+                      type="text"
+                      placeholder={t("bdr_requested_amount")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdr_requested_amount || ""}
+                      invalid={
+                        validation.touched.bdr_requested_amount &&
+                        validation.errors.bdr_requested_amount
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bdr_requested_amount &&
+                    validation.errors.bdr_requested_amount ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.bdr_requested_amount}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("bdr_released_amount")}</Label>
+                    <Input
+                      name="bdr_released_amount"
+                      type="text"
+                      placeholder={t("bdr_released_amount")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdr_released_amount || ""}
+                      invalid={
+                        validation.touched.bdr_released_amount &&
+                        validation.errors.bdr_released_amount
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bdr_released_amount &&
+                    validation.errors.bdr_released_amount ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.bdr_released_amount}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("bdr_project_id")}</Label>
+                    <Input
+                      name="bdr_project_id"
+                      type="text"
+                      placeholder={t("bdr_project_id")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdr_project_id || ""}
+                      invalid={
+                        validation.touched.bdr_project_id &&
+                        validation.errors.bdr_project_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bdr_project_id &&
+                    validation.errors.bdr_project_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.bdr_project_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("bdr_requested_date_ec")}</Label>
+                    <Input
+                      name="bdr_requested_date_ec"
+                      type="text"
+                      placeholder={t("bdr_requested_date_ec")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdr_requested_date_ec || ""}
+                      invalid={
+                        validation.touched.bdr_requested_date_ec &&
+                        validation.errors.bdr_requested_date_ec
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bdr_requested_date_ec &&
+                    validation.errors.bdr_requested_date_ec ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.bdr_requested_date_ec}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("bdr_requested_date_gc")}</Label>
+                    <Input
+                      name="bdr_requested_date_gc"
+                      type="text"
+                      placeholder={t("bdr_requested_date_gc")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdr_requested_date_gc || ""}
+                      invalid={
+                        validation.touched.bdr_requested_date_gc &&
+                        validation.errors.bdr_requested_date_gc
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bdr_requested_date_gc &&
+                    validation.errors.bdr_requested_date_gc ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.bdr_requested_date_gc}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("bdr_released_date_ec")}</Label>
+                    <Input
+                      name="bdr_released_date_ec"
+                      type="text"
+                      placeholder={t("bdr_released_date_ec")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdr_released_date_ec || ""}
+                      invalid={
+                        validation.touched.bdr_released_date_ec &&
+                        validation.errors.bdr_released_date_ec
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bdr_released_date_ec &&
+                    validation.errors.bdr_released_date_ec ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.bdr_released_date_ec}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("bdr_released_date_gc")}</Label>
+                    <Input
+                      name="bdr_released_date_gc"
+                      type="text"
+                      placeholder={t("bdr_released_date_gc")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdr_released_date_gc || ""}
+                      invalid={
+                        validation.touched.bdr_released_date_gc &&
+                        validation.errors.bdr_released_date_gc
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bdr_released_date_gc &&
+                    validation.errors.bdr_released_date_gc ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.bdr_released_date_gc}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("bdr_description")}</Label>
+                    <Input
+                      name="bdr_description"
+                      type="text"
+                      placeholder={t("bdr_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdr_description || ""}
+                      invalid={
+                        validation.touched.bdr_description &&
+                        validation.errors.bdr_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bdr_description &&
+                    validation.errors.bdr_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.bdr_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("bdr_status")}</Label>
+                    <Input
+                      name="bdr_status"
+                      type="text"
+                      placeholder={t("bdr_status")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdr_status || ""}
+                      invalid={
+                        validation.touched.bdr_status &&
+                        validation.errors.bdr_status
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bdr_status &&
+                    validation.errors.bdr_status ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.bdr_status}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {addProjectVariation.isPending || updateProjectVariation.isPending ? (
+                      {addProjectVariation.isPending ||
+                      updateProjectVariation.isPending ? (
                         <Button
                           color="success"
                           type="submit"

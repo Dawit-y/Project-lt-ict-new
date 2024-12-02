@@ -44,7 +44,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -63,19 +63,21 @@ const ProjectBudgetExpenditureModel = () => {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [projectBudgetExpenditure, setProjectBudgetExpenditure] = useState(null);
+  const [projectBudgetExpenditure, setProjectBudgetExpenditure] =
+    useState(null);
 
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useFetchProjectBudgetExpenditures();
+  const { data, isLoading, error, isError, refetch } =
+    useFetchProjectBudgetExpenditures();
 
   const addProjectBudgetExpenditure = useAddProjectBudgetExpenditure();
   const updateProjectBudgetExpenditure = useUpdateProjectBudgetExpenditure();
   const deleteProjectBudgetExpenditure = useDeleteProjectBudgetExpenditure();
-//START CRUD
+  //START CRUD
   const handleAddProjectBudgetExpenditure = async (data) => {
     try {
       await addProjectBudgetExpenditure.mutateAsync(data);
@@ -122,55 +124,75 @@ const ProjectBudgetExpenditureModel = () => {
   //END CRUD
   //START FOREIGN CALLS
 
-  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     pbe_reason:(projectBudgetExpenditure && projectBudgetExpenditure.pbe_reason) || "", 
-pbe_project_id:(projectBudgetExpenditure && projectBudgetExpenditure.pbe_project_id) || "", 
-pbe_budget_code_id:(projectBudgetExpenditure && projectBudgetExpenditure.pbe_budget_code_id) || "", 
-pbe_used_date_ec:(projectBudgetExpenditure && projectBudgetExpenditure.pbe_used_date_ec) || "", 
-pbe_used_date_gc:(projectBudgetExpenditure && projectBudgetExpenditure.pbe_used_date_gc) || "", 
-ppe_amount:(projectBudgetExpenditure && projectBudgetExpenditure.ppe_amount) || "", 
-pbe_status:(projectBudgetExpenditure && projectBudgetExpenditure.pbe_status) || "", 
-pbe_description:(projectBudgetExpenditure && projectBudgetExpenditure.pbe_description) || "", 
-pbe_created_date:(projectBudgetExpenditure && projectBudgetExpenditure.pbe_created_date) || "", 
+      pbe_reason:
+        (projectBudgetExpenditure && projectBudgetExpenditure.pbe_reason) || "",
+      pbe_project_id:
+        (projectBudgetExpenditure && projectBudgetExpenditure.pbe_project_id) ||
+        "",
+      pbe_budget_code_id:
+        (projectBudgetExpenditure &&
+          projectBudgetExpenditure.pbe_budget_code_id) ||
+        "",
+      pbe_used_date_ec:
+        (projectBudgetExpenditure &&
+          projectBudgetExpenditure.pbe_used_date_ec) ||
+        "",
+      pbe_used_date_gc:
+        (projectBudgetExpenditure &&
+          projectBudgetExpenditure.pbe_used_date_gc) ||
+        "",
+      ppe_amount:
+        (projectBudgetExpenditure && projectBudgetExpenditure.ppe_amount) || "",
+      pbe_status:
+        (projectBudgetExpenditure && projectBudgetExpenditure.pbe_status) || "",
+      pbe_description:
+        (projectBudgetExpenditure &&
+          projectBudgetExpenditure.pbe_description) ||
+        "",
+      pbe_created_date:
+        (projectBudgetExpenditure &&
+          projectBudgetExpenditure.pbe_created_date) ||
+        "",
 
-is_deletable: (projectBudgetExpenditure && projectBudgetExpenditure.is_deletable) || 1,
-is_editable: (projectBudgetExpenditure && projectBudgetExpenditure.is_editable) || 1
+      is_deletable:
+        (projectBudgetExpenditure && projectBudgetExpenditure.is_deletable) ||
+        1,
+      is_editable:
+        (projectBudgetExpenditure && projectBudgetExpenditure.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
-      pbe_reason: Yup.string().required(t('pbe_reason')),
-pbe_project_id: Yup.string().required(t('pbe_project_id')),
-pbe_budget_code_id: Yup.string().required(t('pbe_budget_code_id')),
-pbe_used_date_ec: Yup.string().required(t('pbe_used_date_ec')),
-pbe_used_date_gc: Yup.string().required(t('pbe_used_date_gc')),
-ppe_amount: Yup.string().required(t('ppe_amount')),
-pbe_status: Yup.string().required(t('pbe_status')),
-pbe_description: Yup.string().required(t('pbe_description')),
-pbe_created_date: Yup.string().required(t('pbe_created_date')),
-
+      pbe_reason: Yup.string().required(t("pbe_reason")),
+      pbe_project_id: Yup.string().required(t("pbe_project_id")),
+      pbe_budget_code_id: Yup.string().required(t("pbe_budget_code_id")),
+      pbe_used_date_ec: Yup.string().required(t("pbe_used_date_ec")),
+      pbe_used_date_gc: Yup.string().required(t("pbe_used_date_gc")),
+      ppe_amount: Yup.string().required(t("ppe_amount")),
+      pbe_status: Yup.string().required(t("pbe_status")),
+      pbe_description: Yup.string().required(t("pbe_description")),
+      pbe_created_date: Yup.string().required(t("pbe_created_date")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateProjectBudgetExpenditure = {
-          pbe_id: projectBudgetExpenditure ? projectBudgetExpenditure.pbe_id : 0,
-          pbe_id:projectBudgetExpenditure.pbe_id, 
-pbe_reason:values.pbe_reason, 
-pbe_project_id:values.pbe_project_id, 
-pbe_budget_code_id:values.pbe_budget_code_id, 
-pbe_used_date_ec:values.pbe_used_date_ec, 
-pbe_used_date_gc:values.pbe_used_date_gc, 
-ppe_amount:values.ppe_amount, 
-pbe_status:values.pbe_status, 
-pbe_description:values.pbe_description, 
-pbe_created_date:values.pbe_created_date, 
+          pbe_id: projectBudgetExpenditure?.pbe_id,
+          pbe_reason: values.pbe_reason,
+          pbe_project_id: values.pbe_project_id,
+          pbe_budget_code_id: values.pbe_budget_code_id,
+          pbe_used_date_ec: values.pbe_used_date_ec,
+          pbe_used_date_gc: values.pbe_used_date_gc,
+          ppe_amount: values.ppe_amount,
+          pbe_status: values.pbe_status,
+          pbe_description: values.pbe_description,
+          pbe_created_date: values.pbe_created_date,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -180,16 +202,15 @@ pbe_created_date:values.pbe_created_date,
         validation.resetForm();
       } else {
         const newProjectBudgetExpenditure = {
-          pbe_reason:values.pbe_reason, 
-pbe_project_id:values.pbe_project_id, 
-pbe_budget_code_id:values.pbe_budget_code_id, 
-pbe_used_date_ec:values.pbe_used_date_ec, 
-pbe_used_date_gc:values.pbe_used_date_gc, 
-ppe_amount:values.ppe_amount, 
-pbe_status:values.pbe_status, 
-pbe_description:values.pbe_description, 
-pbe_created_date:values.pbe_created_date, 
-
+          pbe_reason: values.pbe_reason,
+          pbe_project_id: values.pbe_project_id,
+          pbe_budget_code_id: values.pbe_budget_code_id,
+          pbe_used_date_ec: values.pbe_used_date_ec,
+          pbe_used_date_gc: values.pbe_used_date_gc,
+          ppe_amount: values.ppe_amount,
+          pbe_status: values.pbe_status,
+          pbe_description: values.pbe_description,
+          pbe_created_date: values.pbe_created_date,
         };
         // save new ProjectBudgetExpenditure
         handleAddProjectBudgetExpenditure(newProjectBudgetExpenditure);
@@ -204,35 +225,35 @@ pbe_created_date:values.pbe_created_date,
   useEffect(() => {
     setProjectBudgetExpenditure(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setProjectBudgetExpenditure(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setProjectBudgetExpenditure(null);
+      setProjectBudgetExpenditure(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleProjectBudgetExpenditureClick = (arg) => {
+  const handleProjectBudgetExpenditureClick = (arg) => {
     const projectBudgetExpenditure = arg;
     // console.log("handleProjectBudgetExpenditureClick", projectBudgetExpenditure);
     setProjectBudgetExpenditure({
-      pbe_id:projectBudgetExpenditure.pbe_id, 
-pbe_reason:projectBudgetExpenditure.pbe_reason, 
-pbe_project_id:projectBudgetExpenditure.pbe_project_id, 
-pbe_budget_code_id:projectBudgetExpenditure.pbe_budget_code_id, 
-pbe_used_date_ec:projectBudgetExpenditure.pbe_used_date_ec, 
-pbe_used_date_gc:projectBudgetExpenditure.pbe_used_date_gc, 
-ppe_amount:projectBudgetExpenditure.ppe_amount, 
-pbe_status:projectBudgetExpenditure.pbe_status, 
-pbe_description:projectBudgetExpenditure.pbe_description, 
-pbe_created_date:projectBudgetExpenditure.pbe_created_date, 
+      pbe_id: projectBudgetExpenditure.pbe_id,
+      pbe_reason: projectBudgetExpenditure.pbe_reason,
+      pbe_project_id: projectBudgetExpenditure.pbe_project_id,
+      pbe_budget_code_id: projectBudgetExpenditure.pbe_budget_code_id,
+      pbe_used_date_ec: projectBudgetExpenditure.pbe_used_date_ec,
+      pbe_used_date_gc: projectBudgetExpenditure.pbe_used_date_gc,
+      ppe_amount: projectBudgetExpenditure.ppe_amount,
+      pbe_status: projectBudgetExpenditure.pbe_status,
+      pbe_description: projectBudgetExpenditure.pbe_description,
+      pbe_created_date: projectBudgetExpenditure.pbe_created_date,
 
       is_deletable: projectBudgetExpenditure.is_deletable,
       is_editable: projectBudgetExpenditure.is_editable,
@@ -252,8 +273,8 @@ pbe_created_date:projectBudgetExpenditure.pbe_created_date,
     setIsEdit(false);
     setProjectBudgetExpenditure("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -262,131 +283,123 @@ pbe_created_date:projectBudgetExpenditure.pbe_created_date,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'pbe_reason',
+        header: "",
+        accessorKey: "pbe_reason",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pbe_reason, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pbe_reason, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pbe_project_id',
+      },
+      {
+        header: "",
+        accessorKey: "pbe_project_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pbe_project_id, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pbe_project_id, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pbe_budget_code_id',
+      },
+      {
+        header: "",
+        accessorKey: "pbe_budget_code_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.pbe_budget_code_id, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pbe_used_date_ec',
+      },
+      {
+        header: "",
+        accessorKey: "pbe_used_date_ec",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pbe_used_date_ec, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pbe_used_date_ec, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pbe_used_date_gc',
+      },
+      {
+        header: "",
+        accessorKey: "pbe_used_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pbe_used_date_gc, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pbe_used_date_gc, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'ppe_amount',
+      },
+      {
+        header: "",
+        accessorKey: "ppe_amount",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.ppe_amount, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.ppe_amount, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pbe_status',
+      },
+      {
+        header: "",
+        accessorKey: "pbe_status",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pbe_status, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pbe_status, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pbe_description',
+      },
+      {
+        header: "",
+        accessorKey: "pbe_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pbe_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pbe_description, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pbe_created_date',
+      },
+      {
+        header: "",
+        accessorKey: "pbe_created_date",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pbe_created_date, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pbe_created_date, 30) || "-"}
             </span>
           );
         },
-      }, 
+      },
 
       {
         header: t("view_detail"),
@@ -410,7 +423,7 @@ pbe_created_date:projectBudgetExpenditure.pbe_created_date,
         },
       },
     ];
-     if (
+    if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
     ) {
@@ -427,7 +440,7 @@ pbe_created_date:projectBudgetExpenditure.pbe_created_date,
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleProjectBudgetExpenditureClick(data);
                   }}
                 >
@@ -474,7 +487,7 @@ pbe_created_date:projectBudgetExpenditure.pbe_created_date,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteProjectBudgetExpenditure}
+        onDeleteClick={handleDeleteProjectBudgetExpenditure}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteProjectBudgetExpenditure.isPending}
       />
@@ -534,7 +547,9 @@ pbe_created_date:projectBudgetExpenditure.pbe_created_date,
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("project_budget_expenditure")}
+                      buttonName={
+                        t("add") + " " + t("project_budget_expenditure")
+                      }
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -547,7 +562,9 @@ pbe_created_date:projectBudgetExpenditure.pbe_created_date,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("project_budget_expenditure")) : (t("add") +" "+t("project_budget_expenditure"))}
+              {!!isEdit
+                ? t("edit") + " " + t("project_budget_expenditure")
+                : t("add") + " " + t("project_budget_expenditure")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -558,228 +575,228 @@ pbe_created_date:projectBudgetExpenditure.pbe_created_date,
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('pbe_reason')}</Label>
-                      <Input
-                        name='pbe_reason'
-                        type='text'
-                        placeholder={t('pbe_reason')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pbe_reason || ''}
-                        invalid={
-                          validation.touched.pbe_reason &&
-                          validation.errors.pbe_reason
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pbe_reason &&
-                      validation.errors.pbe_reason ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pbe_reason}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pbe_project_id')}</Label>
-                      <Input
-                        name='pbe_project_id'
-                        type='text'
-                        placeholder={t('pbe_project_id')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pbe_project_id || ''}
-                        invalid={
-                          validation.touched.pbe_project_id &&
-                          validation.errors.pbe_project_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pbe_project_id &&
-                      validation.errors.pbe_project_id ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pbe_project_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pbe_budget_code_id')}</Label>
-                      <Input
-                        name='pbe_budget_code_id'
-                        type='text'
-                        placeholder={t('pbe_budget_code_id')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pbe_budget_code_id || ''}
-                        invalid={
-                          validation.touched.pbe_budget_code_id &&
-                          validation.errors.pbe_budget_code_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pbe_budget_code_id &&
-                      validation.errors.pbe_budget_code_id ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pbe_budget_code_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pbe_used_date_ec')}</Label>
-                      <Input
-                        name='pbe_used_date_ec'
-                        type='text'
-                        placeholder={t('pbe_used_date_ec')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pbe_used_date_ec || ''}
-                        invalid={
-                          validation.touched.pbe_used_date_ec &&
-                          validation.errors.pbe_used_date_ec
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pbe_used_date_ec &&
-                      validation.errors.pbe_used_date_ec ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pbe_used_date_ec}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pbe_used_date_gc')}</Label>
-                      <Input
-                        name='pbe_used_date_gc'
-                        type='text'
-                        placeholder={t('pbe_used_date_gc')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pbe_used_date_gc || ''}
-                        invalid={
-                          validation.touched.pbe_used_date_gc &&
-                          validation.errors.pbe_used_date_gc
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pbe_used_date_gc &&
-                      validation.errors.pbe_used_date_gc ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pbe_used_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('ppe_amount')}</Label>
-                      <Input
-                        name='ppe_amount'
-                        type='text'
-                        placeholder={t('ppe_amount')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.ppe_amount || ''}
-                        invalid={
-                          validation.touched.ppe_amount &&
-                          validation.errors.ppe_amount
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.ppe_amount &&
-                      validation.errors.ppe_amount ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.ppe_amount}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pbe_status')}</Label>
-                      <Input
-                        name='pbe_status'
-                        type='text'
-                        placeholder={t('pbe_status')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pbe_status || ''}
-                        invalid={
-                          validation.touched.pbe_status &&
-                          validation.errors.pbe_status
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pbe_status &&
-                      validation.errors.pbe_status ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pbe_status}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pbe_description')}</Label>
-                      <Input
-                        name='pbe_description'
-                        type='text'
-                        placeholder={t('pbe_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pbe_description || ''}
-                        invalid={
-                          validation.touched.pbe_description &&
-                          validation.errors.pbe_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pbe_description &&
-                      validation.errors.pbe_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pbe_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pbe_created_date')}</Label>
-                      <Input
-                        name='pbe_created_date'
-                        type='text'
-                        placeholder={t('pbe_created_date')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pbe_created_date || ''}
-                        invalid={
-                          validation.touched.pbe_created_date &&
-                          validation.errors.pbe_created_date
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pbe_created_date &&
-                      validation.errors.pbe_created_date ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pbe_created_date}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-                
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pbe_reason")}</Label>
+                    <Input
+                      name="pbe_reason"
+                      type="text"
+                      placeholder={t("pbe_reason")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pbe_reason || ""}
+                      invalid={
+                        validation.touched.pbe_reason &&
+                        validation.errors.pbe_reason
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pbe_reason &&
+                    validation.errors.pbe_reason ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pbe_reason}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pbe_project_id")}</Label>
+                    <Input
+                      name="pbe_project_id"
+                      type="text"
+                      placeholder={t("pbe_project_id")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pbe_project_id || ""}
+                      invalid={
+                        validation.touched.pbe_project_id &&
+                        validation.errors.pbe_project_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pbe_project_id &&
+                    validation.errors.pbe_project_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pbe_project_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pbe_budget_code_id")}</Label>
+                    <Input
+                      name="pbe_budget_code_id"
+                      type="text"
+                      placeholder={t("pbe_budget_code_id")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pbe_budget_code_id || ""}
+                      invalid={
+                        validation.touched.pbe_budget_code_id &&
+                        validation.errors.pbe_budget_code_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pbe_budget_code_id &&
+                    validation.errors.pbe_budget_code_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pbe_budget_code_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pbe_used_date_ec")}</Label>
+                    <Input
+                      name="pbe_used_date_ec"
+                      type="text"
+                      placeholder={t("pbe_used_date_ec")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pbe_used_date_ec || ""}
+                      invalid={
+                        validation.touched.pbe_used_date_ec &&
+                        validation.errors.pbe_used_date_ec
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pbe_used_date_ec &&
+                    validation.errors.pbe_used_date_ec ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pbe_used_date_ec}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pbe_used_date_gc")}</Label>
+                    <Input
+                      name="pbe_used_date_gc"
+                      type="text"
+                      placeholder={t("pbe_used_date_gc")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pbe_used_date_gc || ""}
+                      invalid={
+                        validation.touched.pbe_used_date_gc &&
+                        validation.errors.pbe_used_date_gc
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pbe_used_date_gc &&
+                    validation.errors.pbe_used_date_gc ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pbe_used_date_gc}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("ppe_amount")}</Label>
+                    <Input
+                      name="ppe_amount"
+                      type="text"
+                      placeholder={t("ppe_amount")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.ppe_amount || ""}
+                      invalid={
+                        validation.touched.ppe_amount &&
+                        validation.errors.ppe_amount
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.ppe_amount &&
+                    validation.errors.ppe_amount ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.ppe_amount}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pbe_status")}</Label>
+                    <Input
+                      name="pbe_status"
+                      type="text"
+                      placeholder={t("pbe_status")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pbe_status || ""}
+                      invalid={
+                        validation.touched.pbe_status &&
+                        validation.errors.pbe_status
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pbe_status &&
+                    validation.errors.pbe_status ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pbe_status}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pbe_description")}</Label>
+                    <Input
+                      name="pbe_description"
+                      type="text"
+                      placeholder={t("pbe_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pbe_description || ""}
+                      invalid={
+                        validation.touched.pbe_description &&
+                        validation.errors.pbe_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pbe_description &&
+                    validation.errors.pbe_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pbe_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pbe_created_date")}</Label>
+                    <Input
+                      name="pbe_created_date"
+                      type="text"
+                      placeholder={t("pbe_created_date")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pbe_created_date || ""}
+                      invalid={
+                        validation.touched.pbe_created_date &&
+                        validation.errors.pbe_created_date
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pbe_created_date &&
+                    validation.errors.pbe_created_date ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pbe_created_date}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {addProjectBudgetExpenditure.isPending || updateProjectBudgetExpenditure.isPending ? (
+                      {addProjectBudgetExpenditure.isPending ||
+                      updateProjectBudgetExpenditure.isPending ? (
                         <Button
                           color="success"
                           type="submit"

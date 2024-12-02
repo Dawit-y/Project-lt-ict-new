@@ -44,7 +44,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -75,7 +75,7 @@ const ProjectPlanModel = () => {
   const addProjectPlan = useAddProjectPlan();
   const updateProjectPlan = useUpdateProjectPlan();
   const deleteProjectPlan = useDeleteProjectPlan();
-//START CRUD
+  //START CRUD
   const handleAddProjectPlan = async (data) => {
     try {
       await addProjectPlan.mutateAsync(data);
@@ -122,55 +122,52 @@ const ProjectPlanModel = () => {
   //END CRUD
   //START FOREIGN CALLS
 
-  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     pld_name:(projectPlan && projectPlan.pld_name) || "", 
-pld_project_id:(projectPlan && projectPlan.pld_project_id) || "", 
-pld_budget_year_id:(projectPlan && projectPlan.pld_budget_year_id) || "", 
-pld_start_date_ec:(projectPlan && projectPlan.pld_start_date_ec) || "", 
-pld_start_date_gc:(projectPlan && projectPlan.pld_start_date_gc) || "", 
-pld_end_date_ec:(projectPlan && projectPlan.pld_end_date_ec) || "", 
-pld_end_date_gc:(projectPlan && projectPlan.pld_end_date_gc) || "", 
-pld_description:(projectPlan && projectPlan.pld_description) || "", 
-pld_status:(projectPlan && projectPlan.pld_status) || "", 
+      pld_name: (projectPlan && projectPlan.pld_name) || "",
+      pld_project_id: (projectPlan && projectPlan.pld_project_id) || "",
+      pld_budget_year_id: (projectPlan && projectPlan.pld_budget_year_id) || "",
+      pld_start_date_ec: (projectPlan && projectPlan.pld_start_date_ec) || "",
+      pld_start_date_gc: (projectPlan && projectPlan.pld_start_date_gc) || "",
+      pld_end_date_ec: (projectPlan && projectPlan.pld_end_date_ec) || "",
+      pld_end_date_gc: (projectPlan && projectPlan.pld_end_date_gc) || "",
+      pld_description: (projectPlan && projectPlan.pld_description) || "",
+      pld_status: (projectPlan && projectPlan.pld_status) || "",
 
-is_deletable: (projectPlan && projectPlan.is_deletable) || 1,
-is_editable: (projectPlan && projectPlan.is_editable) || 1
+      is_deletable: (projectPlan && projectPlan.is_deletable) || 1,
+      is_editable: (projectPlan && projectPlan.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
-      pld_name: Yup.string().required(t('pld_name')),
-pld_project_id: Yup.string().required(t('pld_project_id')),
-pld_budget_year_id: Yup.string().required(t('pld_budget_year_id')),
-pld_start_date_ec: Yup.string().required(t('pld_start_date_ec')),
-pld_start_date_gc: Yup.string().required(t('pld_start_date_gc')),
-pld_end_date_ec: Yup.string().required(t('pld_end_date_ec')),
-pld_end_date_gc: Yup.string().required(t('pld_end_date_gc')),
-pld_description: Yup.string().required(t('pld_description')),
-pld_status: Yup.string().required(t('pld_status')),
-
+      pld_name: Yup.string().required(t("pld_name")),
+      pld_project_id: Yup.string().required(t("pld_project_id")),
+      pld_budget_year_id: Yup.string().required(t("pld_budget_year_id")),
+      pld_start_date_ec: Yup.string().required(t("pld_start_date_ec")),
+      pld_start_date_gc: Yup.string().required(t("pld_start_date_gc")),
+      pld_end_date_ec: Yup.string().required(t("pld_end_date_ec")),
+      pld_end_date_gc: Yup.string().required(t("pld_end_date_gc")),
+      pld_description: Yup.string().required(t("pld_description")),
+      pld_status: Yup.string().required(t("pld_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateProjectPlan = {
-          pld_id: projectPlan ? projectPlan.pld_id : 0,
-          pld_id:projectPlan.pld_id, 
-pld_name:values.pld_name, 
-pld_project_id:values.pld_project_id, 
-pld_budget_year_id:values.pld_budget_year_id, 
-pld_start_date_ec:values.pld_start_date_ec, 
-pld_start_date_gc:values.pld_start_date_gc, 
-pld_end_date_ec:values.pld_end_date_ec, 
-pld_end_date_gc:values.pld_end_date_gc, 
-pld_description:values.pld_description, 
-pld_status:values.pld_status, 
+          pld_id: projectPlan?.pld_id,
+          pld_name: values.pld_name,
+          pld_project_id: values.pld_project_id,
+          pld_budget_year_id: values.pld_budget_year_id,
+          pld_start_date_ec: values.pld_start_date_ec,
+          pld_start_date_gc: values.pld_start_date_gc,
+          pld_end_date_ec: values.pld_end_date_ec,
+          pld_end_date_gc: values.pld_end_date_gc,
+          pld_description: values.pld_description,
+          pld_status: values.pld_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -180,16 +177,15 @@ pld_status:values.pld_status,
         validation.resetForm();
       } else {
         const newProjectPlan = {
-          pld_name:values.pld_name, 
-pld_project_id:values.pld_project_id, 
-pld_budget_year_id:values.pld_budget_year_id, 
-pld_start_date_ec:values.pld_start_date_ec, 
-pld_start_date_gc:values.pld_start_date_gc, 
-pld_end_date_ec:values.pld_end_date_ec, 
-pld_end_date_gc:values.pld_end_date_gc, 
-pld_description:values.pld_description, 
-pld_status:values.pld_status, 
-
+          pld_name: values.pld_name,
+          pld_project_id: values.pld_project_id,
+          pld_budget_year_id: values.pld_budget_year_id,
+          pld_start_date_ec: values.pld_start_date_ec,
+          pld_start_date_gc: values.pld_start_date_gc,
+          pld_end_date_ec: values.pld_end_date_ec,
+          pld_end_date_gc: values.pld_end_date_gc,
+          pld_description: values.pld_description,
+          pld_status: values.pld_status,
         };
         // save new ProjectPlan
         handleAddProjectPlan(newProjectPlan);
@@ -204,35 +200,35 @@ pld_status:values.pld_status,
   useEffect(() => {
     setProjectPlan(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setProjectPlan(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setProjectPlan(null);
+      setProjectPlan(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleProjectPlanClick = (arg) => {
+  const handleProjectPlanClick = (arg) => {
     const projectPlan = arg;
     // console.log("handleProjectPlanClick", projectPlan);
     setProjectPlan({
-      pld_id:projectPlan.pld_id, 
-pld_name:projectPlan.pld_name, 
-pld_project_id:projectPlan.pld_project_id, 
-pld_budget_year_id:projectPlan.pld_budget_year_id, 
-pld_start_date_ec:projectPlan.pld_start_date_ec, 
-pld_start_date_gc:projectPlan.pld_start_date_gc, 
-pld_end_date_ec:projectPlan.pld_end_date_ec, 
-pld_end_date_gc:projectPlan.pld_end_date_gc, 
-pld_description:projectPlan.pld_description, 
-pld_status:projectPlan.pld_status, 
+      pld_id: projectPlan.pld_id,
+      pld_name: projectPlan.pld_name,
+      pld_project_id: projectPlan.pld_project_id,
+      pld_budget_year_id: projectPlan.pld_budget_year_id,
+      pld_start_date_ec: projectPlan.pld_start_date_ec,
+      pld_start_date_gc: projectPlan.pld_start_date_gc,
+      pld_end_date_ec: projectPlan.pld_end_date_ec,
+      pld_end_date_gc: projectPlan.pld_end_date_gc,
+      pld_description: projectPlan.pld_description,
+      pld_status: projectPlan.pld_status,
 
       is_deletable: projectPlan.is_deletable,
       is_editable: projectPlan.is_editable,
@@ -252,8 +248,8 @@ pld_status:projectPlan.pld_status,
     setIsEdit(false);
     setProjectPlan("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -262,131 +258,125 @@ pld_status:projectPlan.pld_status,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'pld_name',
+        header: "",
+        accessorKey: "pld_name",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pld_name, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pld_name, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pld_project_id',
+      },
+      {
+        header: "",
+        accessorKey: "pld_project_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pld_project_id, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pld_project_id, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pld_budget_year_id',
+      },
+      {
+        header: "",
+        accessorKey: "pld_budget_year_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.pld_budget_year_id, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pld_start_date_ec',
+      },
+      {
+        header: "",
+        accessorKey: "pld_start_date_ec",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.pld_start_date_ec, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pld_start_date_gc',
+      },
+      {
+        header: "",
+        accessorKey: "pld_start_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.pld_start_date_gc, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pld_end_date_ec',
+      },
+      {
+        header: "",
+        accessorKey: "pld_end_date_ec",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pld_end_date_ec, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pld_end_date_ec, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pld_end_date_gc',
+      },
+      {
+        header: "",
+        accessorKey: "pld_end_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pld_end_date_gc, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pld_end_date_gc, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pld_description',
+      },
+      {
+        header: "",
+        accessorKey: "pld_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pld_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pld_description, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pld_status',
+      },
+      {
+        header: "",
+        accessorKey: "pld_status",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pld_status, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pld_status, 30) || "-"}
             </span>
           );
         },
-      }, 
+      },
 
       {
         header: t("view_detail"),
@@ -410,7 +400,7 @@ pld_status:projectPlan.pld_status,
         },
       },
     ];
-     if (
+    if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
     ) {
@@ -427,7 +417,7 @@ pld_status:projectPlan.pld_status,
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleProjectPlanClick(data);
                   }}
                 >
@@ -474,7 +464,7 @@ pld_status:projectPlan.pld_status,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteProjectPlan}
+        onDeleteClick={handleDeleteProjectPlan}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteProjectPlan.isPending}
       />
@@ -534,7 +524,7 @@ pld_status:projectPlan.pld_status,
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("project_plan")}
+                      buttonName={t("add") + " " + t("project_plan")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -547,7 +537,9 @@ pld_status:projectPlan.pld_status,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("project_plan")) : (t("add") +" "+t("project_plan"))}
+              {!!isEdit
+                ? t("edit") + " " + t("project_plan")
+                : t("add") + " " + t("project_plan")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -558,228 +550,228 @@ pld_status:projectPlan.pld_status,
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('pld_name')}</Label>
-                      <Input
-                        name='pld_name'
-                        type='text'
-                        placeholder={t('pld_name')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pld_name || ''}
-                        invalid={
-                          validation.touched.pld_name &&
-                          validation.errors.pld_name
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pld_name &&
-                      validation.errors.pld_name ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pld_name}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pld_project_id')}</Label>
-                      <Input
-                        name='pld_project_id'
-                        type='text'
-                        placeholder={t('pld_project_id')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pld_project_id || ''}
-                        invalid={
-                          validation.touched.pld_project_id &&
-                          validation.errors.pld_project_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pld_project_id &&
-                      validation.errors.pld_project_id ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pld_project_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pld_budget_year_id')}</Label>
-                      <Input
-                        name='pld_budget_year_id'
-                        type='text'
-                        placeholder={t('pld_budget_year_id')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pld_budget_year_id || ''}
-                        invalid={
-                          validation.touched.pld_budget_year_id &&
-                          validation.errors.pld_budget_year_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pld_budget_year_id &&
-                      validation.errors.pld_budget_year_id ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pld_budget_year_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pld_start_date_ec')}</Label>
-                      <Input
-                        name='pld_start_date_ec'
-                        type='text'
-                        placeholder={t('pld_start_date_ec')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pld_start_date_ec || ''}
-                        invalid={
-                          validation.touched.pld_start_date_ec &&
-                          validation.errors.pld_start_date_ec
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pld_start_date_ec &&
-                      validation.errors.pld_start_date_ec ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pld_start_date_ec}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pld_start_date_gc')}</Label>
-                      <Input
-                        name='pld_start_date_gc'
-                        type='text'
-                        placeholder={t('pld_start_date_gc')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pld_start_date_gc || ''}
-                        invalid={
-                          validation.touched.pld_start_date_gc &&
-                          validation.errors.pld_start_date_gc
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pld_start_date_gc &&
-                      validation.errors.pld_start_date_gc ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pld_start_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pld_end_date_ec')}</Label>
-                      <Input
-                        name='pld_end_date_ec'
-                        type='text'
-                        placeholder={t('pld_end_date_ec')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pld_end_date_ec || ''}
-                        invalid={
-                          validation.touched.pld_end_date_ec &&
-                          validation.errors.pld_end_date_ec
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pld_end_date_ec &&
-                      validation.errors.pld_end_date_ec ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pld_end_date_ec}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pld_end_date_gc')}</Label>
-                      <Input
-                        name='pld_end_date_gc'
-                        type='text'
-                        placeholder={t('pld_end_date_gc')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pld_end_date_gc || ''}
-                        invalid={
-                          validation.touched.pld_end_date_gc &&
-                          validation.errors.pld_end_date_gc
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pld_end_date_gc &&
-                      validation.errors.pld_end_date_gc ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pld_end_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pld_description')}</Label>
-                      <Input
-                        name='pld_description'
-                        type='text'
-                        placeholder={t('pld_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pld_description || ''}
-                        invalid={
-                          validation.touched.pld_description &&
-                          validation.errors.pld_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pld_description &&
-                      validation.errors.pld_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pld_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pld_status')}</Label>
-                      <Input
-                        name='pld_status'
-                        type='text'
-                        placeholder={t('pld_status')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pld_status || ''}
-                        invalid={
-                          validation.touched.pld_status &&
-                          validation.errors.pld_status
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pld_status &&
-                      validation.errors.pld_status ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pld_status}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-                
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pld_name")}</Label>
+                    <Input
+                      name="pld_name"
+                      type="text"
+                      placeholder={t("pld_name")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pld_name || ""}
+                      invalid={
+                        validation.touched.pld_name &&
+                        validation.errors.pld_name
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pld_name &&
+                    validation.errors.pld_name ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pld_name}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pld_project_id")}</Label>
+                    <Input
+                      name="pld_project_id"
+                      type="text"
+                      placeholder={t("pld_project_id")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pld_project_id || ""}
+                      invalid={
+                        validation.touched.pld_project_id &&
+                        validation.errors.pld_project_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pld_project_id &&
+                    validation.errors.pld_project_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pld_project_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pld_budget_year_id")}</Label>
+                    <Input
+                      name="pld_budget_year_id"
+                      type="text"
+                      placeholder={t("pld_budget_year_id")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pld_budget_year_id || ""}
+                      invalid={
+                        validation.touched.pld_budget_year_id &&
+                        validation.errors.pld_budget_year_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pld_budget_year_id &&
+                    validation.errors.pld_budget_year_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pld_budget_year_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pld_start_date_ec")}</Label>
+                    <Input
+                      name="pld_start_date_ec"
+                      type="text"
+                      placeholder={t("pld_start_date_ec")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pld_start_date_ec || ""}
+                      invalid={
+                        validation.touched.pld_start_date_ec &&
+                        validation.errors.pld_start_date_ec
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pld_start_date_ec &&
+                    validation.errors.pld_start_date_ec ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pld_start_date_ec}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pld_start_date_gc")}</Label>
+                    <Input
+                      name="pld_start_date_gc"
+                      type="text"
+                      placeholder={t("pld_start_date_gc")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pld_start_date_gc || ""}
+                      invalid={
+                        validation.touched.pld_start_date_gc &&
+                        validation.errors.pld_start_date_gc
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pld_start_date_gc &&
+                    validation.errors.pld_start_date_gc ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pld_start_date_gc}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pld_end_date_ec")}</Label>
+                    <Input
+                      name="pld_end_date_ec"
+                      type="text"
+                      placeholder={t("pld_end_date_ec")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pld_end_date_ec || ""}
+                      invalid={
+                        validation.touched.pld_end_date_ec &&
+                        validation.errors.pld_end_date_ec
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pld_end_date_ec &&
+                    validation.errors.pld_end_date_ec ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pld_end_date_ec}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pld_end_date_gc")}</Label>
+                    <Input
+                      name="pld_end_date_gc"
+                      type="text"
+                      placeholder={t("pld_end_date_gc")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pld_end_date_gc || ""}
+                      invalid={
+                        validation.touched.pld_end_date_gc &&
+                        validation.errors.pld_end_date_gc
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pld_end_date_gc &&
+                    validation.errors.pld_end_date_gc ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pld_end_date_gc}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pld_description")}</Label>
+                    <Input
+                      name="pld_description"
+                      type="text"
+                      placeholder={t("pld_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pld_description || ""}
+                      invalid={
+                        validation.touched.pld_description &&
+                        validation.errors.pld_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pld_description &&
+                    validation.errors.pld_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pld_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pld_status")}</Label>
+                    <Input
+                      name="pld_status"
+                      type="text"
+                      placeholder={t("pld_status")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pld_status || ""}
+                      invalid={
+                        validation.touched.pld_status &&
+                        validation.errors.pld_status
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pld_status &&
+                    validation.errors.pld_status ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pld_status}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {addProjectPlan.isPending || updateProjectPlan.isPending ? (
+                      {addProjectPlan.isPending ||
+                      updateProjectPlan.isPending ? (
                         <Button
                           color="success"
                           type="submit"

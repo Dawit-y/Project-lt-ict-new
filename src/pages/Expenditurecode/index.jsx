@@ -44,7 +44,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -70,12 +70,13 @@ const ExpenditureCodeModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useFetchExpenditureCodes();
+  const { data, isLoading, error, isError, refetch } =
+    useFetchExpenditureCodes();
 
   const addExpenditureCode = useAddExpenditureCode();
   const updateExpenditureCode = useUpdateExpenditureCode();
   const deleteExpenditureCode = useDeleteExpenditureCode();
-//START CRUD
+  //START CRUD
   const handleAddExpenditureCode = async (data) => {
     try {
       await addExpenditureCode.mutateAsync(data);
@@ -122,23 +123,23 @@ const ExpenditureCodeModel = () => {
   //END CRUD
   //START FOREIGN CALLS
 
-  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     pec_name:(expenditureCode && expenditureCode.pec_name) || "", 
-pec_code:(expenditureCode && expenditureCode.pec_code) || "", 
-pec_status:(expenditureCode && expenditureCode.pec_status) || "", 
-pec_description:(expenditureCode && expenditureCode.pec_description) || "", 
-is_deletable: (expenditureCode && expenditureCode.is_deletable) || 1,
-is_editable: (expenditureCode && expenditureCode.is_editable) || 1
+      pec_name: (expenditureCode && expenditureCode.pec_name) || "",
+      pec_code: (expenditureCode && expenditureCode.pec_code) || "",
+      pec_status: (expenditureCode && expenditureCode.pec_status) || "",
+      pec_description:
+        (expenditureCode && expenditureCode.pec_description) || "",
+      is_deletable: (expenditureCode && expenditureCode.is_deletable) || 1,
+      is_editable: (expenditureCode && expenditureCode.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
-       pec_name: Yup.string()
+      pec_name: Yup.string()
         .required(t("pec_name"))
         .test("unique-pec_name", t("Already exists"), (value) => {
           return !data?.data.some(
@@ -146,7 +147,7 @@ is_editable: (expenditureCode && expenditureCode.is_editable) || 1
               item.pec_name == value && item.pec_id !== expenditureCode?.pec_id
           );
         }),
-        pec_code: Yup.string()
+      pec_code: Yup.string()
         .required(t("pec_code"))
         .test("unique-pec_code", t("Already exists"), (value) => {
           return !data?.data.some(
@@ -160,12 +161,11 @@ is_editable: (expenditureCode && expenditureCode.is_editable) || 1
     onSubmit: (values) => {
       if (isEdit) {
         const updateExpenditureCode = {
-          pec_id: expenditureCode ? expenditureCode.pec_id : 0,
-          pec_id:expenditureCode.pec_id, 
-pec_name:values.pec_name, 
-pec_code:values.pec_code, 
-pec_status:values.pec_status, 
-pec_description:values.pec_description,
+          pec_id: expenditureCode?.pec_id,
+          pec_name: values.pec_name,
+          pec_code: values.pec_code,
+          pec_status: values.pec_status,
+          pec_description: values.pec_description,
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -174,10 +174,10 @@ pec_description:values.pec_description,
         validation.resetForm();
       } else {
         const newExpenditureCode = {
-          pec_name:values.pec_name, 
-pec_code:values.pec_code, 
-pec_status:values.pec_status, 
-pec_description:values.pec_description
+          pec_name: values.pec_name,
+          pec_code: values.pec_code,
+          pec_status: values.pec_status,
+          pec_description: values.pec_description,
         };
         // save new ExpenditureCode
         handleAddExpenditureCode(newExpenditureCode);
@@ -192,31 +192,31 @@ pec_description:values.pec_description
   useEffect(() => {
     setExpenditureCode(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setExpenditureCode(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setExpenditureCode(null);
+      setExpenditureCode(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleExpenditureCodeClick = (arg) => {
+  const handleExpenditureCodeClick = (arg) => {
     const expenditureCode = arg;
     // console.log("handleExpenditureCodeClick", expenditureCode);
     setExpenditureCode({
-      pec_id:expenditureCode.pec_id, 
-pec_name:expenditureCode.pec_name, 
-pec_code:expenditureCode.pec_code, 
-pec_status:expenditureCode.pec_status, 
-pec_description:expenditureCode.pec_description, 
-pec_created_date:expenditureCode.pec_created_date, 
+      pec_id: expenditureCode.pec_id,
+      pec_name: expenditureCode.pec_name,
+      pec_code: expenditureCode.pec_code,
+      pec_status: expenditureCode.pec_status,
+      pec_description: expenditureCode.pec_description,
+      pec_created_date: expenditureCode.pec_created_date,
 
       is_deletable: expenditureCode.is_deletable,
       is_editable: expenditureCode.is_editable,
@@ -236,8 +236,8 @@ pec_created_date:expenditureCode.pec_created_date,
     setIsEdit(false);
     setExpenditureCode("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -246,47 +246,44 @@ pec_created_date:expenditureCode.pec_created_date,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'pec_name',
+        header: "",
+        accessorKey: "pec_name",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pec_name, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'pec_code',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pec_code, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pec_name, 30) || "-"}
             </span>
           );
         },
       },
-{
-        header: '',
-        accessorKey: 'pec_description',
+      {
+        header: "",
+        accessorKey: "pec_code",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pec_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pec_code, 30) || "-"}
             </span>
           );
         },
-      }, 
+      },
+      {
+        header: "",
+        accessorKey: "pec_description",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.pec_description, 30) || "-"}
+            </span>
+          );
+        },
+      },
 
       {
         header: t("view_detail"),
@@ -310,7 +307,7 @@ pec_created_date:expenditureCode.pec_created_date,
         },
       },
     ];
-     if (
+    if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
     ) {
@@ -327,7 +324,7 @@ pec_created_date:expenditureCode.pec_created_date,
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleExpenditureCodeClick(data);
                   }}
                 >
@@ -374,7 +371,7 @@ pec_created_date:expenditureCode.pec_created_date,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteExpenditureCode}
+        onDeleteClick={handleDeleteExpenditureCode}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteExpenditureCode.isPending}
       />
@@ -416,7 +413,7 @@ pec_created_date:expenditureCode.pec_created_date,
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("expenditure_code")}
+                      buttonName={t("add") + " " + t("expenditure_code")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -429,7 +426,9 @@ pec_created_date:expenditureCode.pec_created_date,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("expenditure_code")) : (t("add") +" "+t("expenditure_code"))}
+              {!!isEdit
+                ? t("edit") + " " + t("expenditure_code")
+                : t("add") + " " + t("expenditure_code")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -440,83 +439,84 @@ pec_created_date:expenditureCode.pec_created_date,
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('pec_name')}</Label>
-                      <Input
-                        name='pec_name'
-                        type='text'
-                        placeholder={t('pec_name')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pec_name || ''}
-                        invalid={
-                          validation.touched.pec_name &&
-                          validation.errors.pec_name
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pec_name &&
-                      validation.errors.pec_name ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pec_name}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pec_code')}</Label>
-                      <Input
-                        name='pec_code'
-                        type='text'
-                        placeholder={t('pec_code')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pec_code || ''}
-                        invalid={
-                          validation.touched.pec_code &&
-                          validation.errors.pec_code
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pec_code &&
-                      validation.errors.pec_code ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pec_code}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pec_description')}</Label>
-                      <Input
-                        name='pec_description'
-                        type='textarea'
-                        placeholder={t('pec_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pec_description || ''}
-                        invalid={
-                          validation.touched.pec_description &&
-                          validation.errors.pec_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pec_description &&
-                      validation.errors.pec_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pec_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pec_name")}</Label>
+                    <Input
+                      name="pec_name"
+                      type="text"
+                      placeholder={t("pec_name")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pec_name || ""}
+                      invalid={
+                        validation.touched.pec_name &&
+                        validation.errors.pec_name
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pec_name &&
+                    validation.errors.pec_name ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pec_name}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pec_code")}</Label>
+                    <Input
+                      name="pec_code"
+                      type="text"
+                      placeholder={t("pec_code")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pec_code || ""}
+                      invalid={
+                        validation.touched.pec_code &&
+                        validation.errors.pec_code
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pec_code &&
+                    validation.errors.pec_code ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pec_code}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pec_description")}</Label>
+                    <Input
+                      name="pec_description"
+                      type="textarea"
+                      placeholder={t("pec_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pec_description || ""}
+                      invalid={
+                        validation.touched.pec_description &&
+                        validation.errors.pec_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pec_description &&
+                    validation.errors.pec_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pec_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {addExpenditureCode.isPending || updateExpenditureCode.isPending ? (
+                      {addExpenditureCode.isPending ||
+                      updateExpenditureCode.isPending ? (
                         <Button
                           color="success"
                           type="submit"

@@ -44,7 +44,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -70,12 +70,13 @@ const ContractorTypeModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useFetchContractorTypes();
+  const { data, isLoading, error, isError, refetch } =
+    useFetchContractorTypes();
 
   const addContractorType = useAddContractorType();
   const updateContractorType = useUpdateContractorType();
   const deleteContractorType = useDeleteContractorType();
-//START CRUD
+  //START CRUD
   const handleAddContractorType = async (data) => {
     try {
       await addContractorType.mutateAsync(data);
@@ -122,47 +123,49 @@ const ContractorTypeModel = () => {
   //END CRUD
   //START FOREIGN CALLS
 
-  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     cnt_type_name_or:(contractorType && contractorType.cnt_type_name_or) || "", 
-cnt_type_name_am:(contractorType && contractorType.cnt_type_name_am) || "", 
-cnt_type_name_en:(contractorType && contractorType.cnt_type_name_en) || "", 
-cnt_description:(contractorType && contractorType.cnt_description) || "", 
-cnt_status:(contractorType && contractorType.cnt_status) || "", 
+      cnt_type_name_or:
+        (contractorType && contractorType.cnt_type_name_or) || "",
+      cnt_type_name_am:
+        (contractorType && contractorType.cnt_type_name_am) || "",
+      cnt_type_name_en:
+        (contractorType && contractorType.cnt_type_name_en) || "",
+      cnt_description: (contractorType && contractorType.cnt_description) || "",
+      cnt_status: (contractorType && contractorType.cnt_status) || "",
 
-is_deletable: (contractorType && contractorType.is_deletable) || 1,
-is_editable: (contractorType && contractorType.is_editable) || 1
+      is_deletable: (contractorType && contractorType.is_deletable) || 1,
+      is_editable: (contractorType && contractorType.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
-       cnt_type_name_or: Yup.string()
+      cnt_type_name_or: Yup.string()
         .required(t("cnt_type_name_or"))
         .test("unique-cnt_type_name_or", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
-              item.cnt_type_name_or == value && item.cnt_id !== contractorType?.cnt_id
+              item.cnt_type_name_or == value &&
+              item.cnt_id !== contractorType?.cnt_id
           );
         }),
-cnt_type_name_am: Yup.string().required(t('cnt_type_name_am')),
-cnt_type_name_en: Yup.string().required(t('cnt_type_name_en'))
+      cnt_type_name_am: Yup.string().required(t("cnt_type_name_am")),
+      cnt_type_name_en: Yup.string().required(t("cnt_type_name_en")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateContractorType = {
-          cnt_id: contractorType ? contractorType.cnt_id : 0,
-          cnt_id:contractorType.cnt_id, 
-cnt_type_name_or:values.cnt_type_name_or, 
-cnt_type_name_am:values.cnt_type_name_am, 
-cnt_type_name_en:values.cnt_type_name_en, 
-cnt_description:values.cnt_description, 
-cnt_status:values.cnt_status, 
+          cnt_id: contractorType?.cnt_id,
+          cnt_type_name_or: values.cnt_type_name_or,
+          cnt_type_name_am: values.cnt_type_name_am,
+          cnt_type_name_en: values.cnt_type_name_en,
+          cnt_description: values.cnt_description,
+          cnt_status: values.cnt_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -172,12 +175,11 @@ cnt_status:values.cnt_status,
         validation.resetForm();
       } else {
         const newContractorType = {
-          cnt_type_name_or:values.cnt_type_name_or, 
-cnt_type_name_am:values.cnt_type_name_am, 
-cnt_type_name_en:values.cnt_type_name_en, 
-cnt_description:values.cnt_description, 
-cnt_status:values.cnt_status, 
-
+          cnt_type_name_or: values.cnt_type_name_or,
+          cnt_type_name_am: values.cnt_type_name_am,
+          cnt_type_name_en: values.cnt_type_name_en,
+          cnt_description: values.cnt_description,
+          cnt_status: values.cnt_status,
         };
         // save new ContractorType
         handleAddContractorType(newContractorType);
@@ -192,31 +194,31 @@ cnt_status:values.cnt_status,
   useEffect(() => {
     setContractorType(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setContractorType(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setContractorType(null);
+      setContractorType(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleContractorTypeClick = (arg) => {
+  const handleContractorTypeClick = (arg) => {
     const contractorType = arg;
     // console.log("handleContractorTypeClick", contractorType);
     setContractorType({
-      cnt_id:contractorType.cnt_id, 
-cnt_type_name_or:contractorType.cnt_type_name_or, 
-cnt_type_name_am:contractorType.cnt_type_name_am, 
-cnt_type_name_en:contractorType.cnt_type_name_en, 
-cnt_description:contractorType.cnt_description, 
-cnt_status:contractorType.cnt_status, 
+      cnt_id: contractorType.cnt_id,
+      cnt_type_name_or: contractorType.cnt_type_name_or,
+      cnt_type_name_am: contractorType.cnt_type_name_am,
+      cnt_type_name_en: contractorType.cnt_type_name_en,
+      cnt_description: contractorType.cnt_description,
+      cnt_status: contractorType.cnt_status,
 
       is_deletable: contractorType.is_deletable,
       is_editable: contractorType.is_editable,
@@ -236,8 +238,8 @@ cnt_status:contractorType.cnt_status,
     setIsEdit(false);
     setContractorType("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -246,61 +248,57 @@ cnt_status:contractorType.cnt_status,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'cnt_type_name_or',
+        header: "",
+        accessorKey: "cnt_type_name_or",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cnt_type_name_or, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.cnt_type_name_or, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'cnt_type_name_am',
+      },
+      {
+        header: "",
+        accessorKey: "cnt_type_name_am",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cnt_type_name_am, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.cnt_type_name_am, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'cnt_type_name_en',
+      },
+      {
+        header: "",
+        accessorKey: "cnt_type_name_en",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cnt_type_name_en, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.cnt_type_name_en, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'cnt_description',
+      },
+      {
+        header: "",
+        accessorKey: "cnt_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cnt_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.cnt_description, 30) || "-"}
             </span>
           );
         },
-      }, 
+      },
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -323,7 +321,7 @@ cnt_status:contractorType.cnt_status,
         },
       },
     ];
-     if (
+    if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
     ) {
@@ -340,7 +338,7 @@ cnt_status:contractorType.cnt_status,
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleContractorTypeClick(data);
                   }}
                 >
@@ -387,7 +385,7 @@ cnt_status:contractorType.cnt_status,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteContractorType}
+        onDeleteClick={handleDeleteContractorType}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteContractorType.isPending}
       />
@@ -429,7 +427,7 @@ cnt_status:contractorType.cnt_status,
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("contractor_type")}
+                      buttonName={t("add") + " " + t("contractor_type")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -442,7 +440,9 @@ cnt_status:contractorType.cnt_status,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("contractor_type")) : (t("add") +" "+t("contractor_type"))}
+              {!!isEdit
+                ? t("edit") + " " + t("contractor_type")
+                : t("add") + " " + t("contractor_type")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -453,107 +453,108 @@ cnt_status:contractorType.cnt_status,
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('cnt_type_name_or')}</Label>
-                      <Input
-                        name='cnt_type_name_or'
-                        type='text'
-                        placeholder={t('cnt_type_name_or')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.cnt_type_name_or || ''}
-                        invalid={
-                          validation.touched.cnt_type_name_or &&
-                          validation.errors.cnt_type_name_or
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.cnt_type_name_or &&
-                      validation.errors.cnt_type_name_or ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.cnt_type_name_or}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('cnt_type_name_am')}</Label>
-                      <Input
-                        name='cnt_type_name_am'
-                        type='text'
-                        placeholder={t('cnt_type_name_am')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.cnt_type_name_am || ''}
-                        invalid={
-                          validation.touched.cnt_type_name_am &&
-                          validation.errors.cnt_type_name_am
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.cnt_type_name_am &&
-                      validation.errors.cnt_type_name_am ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.cnt_type_name_am}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('cnt_type_name_en')}</Label>
-                      <Input
-                        name='cnt_type_name_en'
-                        type='text'
-                        placeholder={t('cnt_type_name_en')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.cnt_type_name_en || ''}
-                        invalid={
-                          validation.touched.cnt_type_name_en &&
-                          validation.errors.cnt_type_name_en
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.cnt_type_name_en &&
-                      validation.errors.cnt_type_name_en ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.cnt_type_name_en}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('cnt_description')}</Label>
-                      <Input
-                        name='cnt_description'
-                        type='textarea'
-                        placeholder={t('cnt_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.cnt_description || ''}
-                        invalid={
-                          validation.touched.cnt_description &&
-                          validation.errors.cnt_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.cnt_description &&
-                      validation.errors.cnt_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.cnt_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("cnt_type_name_or")}</Label>
+                    <Input
+                      name="cnt_type_name_or"
+                      type="text"
+                      placeholder={t("cnt_type_name_or")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.cnt_type_name_or || ""}
+                      invalid={
+                        validation.touched.cnt_type_name_or &&
+                        validation.errors.cnt_type_name_or
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.cnt_type_name_or &&
+                    validation.errors.cnt_type_name_or ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.cnt_type_name_or}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("cnt_type_name_am")}</Label>
+                    <Input
+                      name="cnt_type_name_am"
+                      type="text"
+                      placeholder={t("cnt_type_name_am")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.cnt_type_name_am || ""}
+                      invalid={
+                        validation.touched.cnt_type_name_am &&
+                        validation.errors.cnt_type_name_am
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.cnt_type_name_am &&
+                    validation.errors.cnt_type_name_am ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.cnt_type_name_am}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("cnt_type_name_en")}</Label>
+                    <Input
+                      name="cnt_type_name_en"
+                      type="text"
+                      placeholder={t("cnt_type_name_en")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.cnt_type_name_en || ""}
+                      invalid={
+                        validation.touched.cnt_type_name_en &&
+                        validation.errors.cnt_type_name_en
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.cnt_type_name_en &&
+                    validation.errors.cnt_type_name_en ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.cnt_type_name_en}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("cnt_description")}</Label>
+                    <Input
+                      name="cnt_description"
+                      type="textarea"
+                      placeholder={t("cnt_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.cnt_description || ""}
+                      invalid={
+                        validation.touched.cnt_description &&
+                        validation.errors.cnt_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.cnt_description &&
+                    validation.errors.cnt_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.cnt_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {addContractorType.isPending || updateContractorType.isPending ? (
+                      {addContractorType.isPending ||
+                      updateContractorType.isPending ? (
                         <Button
                           color="success"
                           type="submit"

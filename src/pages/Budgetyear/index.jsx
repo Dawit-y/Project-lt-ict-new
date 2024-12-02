@@ -44,7 +44,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -75,7 +75,7 @@ const BudgetYearModel = () => {
   const addBudgetYear = useAddBudgetYear();
   const updateBudgetYear = useUpdateBudgetYear();
   const deleteBudgetYear = useDeleteBudgetYear();
-//START CRUD
+  //START CRUD
   const handleAddBudgetYear = async (data) => {
     try {
       await addBudgetYear.mutateAsync(data);
@@ -122,20 +122,19 @@ const BudgetYearModel = () => {
   //END CRUD
   //START FOREIGN CALLS
 
-  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     bdy_name:(budgetYear && budgetYear.bdy_name) || "", 
-bdy_code:(budgetYear && budgetYear.bdy_code) || "", 
-bdy_description:(budgetYear && budgetYear.bdy_description) || "", 
-bdy_status:(budgetYear && budgetYear.bdy_status) || "", 
+      bdy_name: (budgetYear && budgetYear.bdy_name) || "",
+      bdy_code: (budgetYear && budgetYear.bdy_code) || "",
+      bdy_description: (budgetYear && budgetYear.bdy_description) || "",
+      bdy_status: (budgetYear && budgetYear.bdy_status) || "",
 
-is_deletable: (budgetYear && budgetYear.is_deletable) || 1,
-is_editable: (budgetYear && budgetYear.is_editable) || 1
+      is_deletable: (budgetYear && budgetYear.is_deletable) || 1,
+      is_editable: (budgetYear && budgetYear.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
@@ -147,19 +146,18 @@ is_editable: (budgetYear && budgetYear.is_editable) || 1
               item.bdy_name == value && item.bdy_id !== budgetYear?.bdy_id
           );
         }),
-bdy_code: Yup.string().required(t('bdy_code'))
+      bdy_code: Yup.string().required(t("bdy_code")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateBudgetYear = {
-          bdy_id: budgetYear ? budgetYear.bdy_id : 0,
-          bdy_id:budgetYear.bdy_id, 
-bdy_name:values.bdy_name, 
-bdy_code:values.bdy_code, 
-bdy_description:values.bdy_description, 
-bdy_status:values.bdy_status, 
+          bdy_id: budgetYear?.bdy_id,
+          bdy_name: values.bdy_name,
+          bdy_code: values.bdy_code,
+          bdy_description: values.bdy_description,
+          bdy_status: values.bdy_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -169,11 +167,11 @@ bdy_status:values.bdy_status,
         validation.resetForm();
       } else {
         const newBudgetYear = {
-          bdy_name:values.bdy_name, 
-bdy_code:values.bdy_code, 
-bdy_description:values.bdy_description, 
-bdy_status:values.bdy_status, 
-is_deletable:1,
+          bdy_name: values.bdy_name,
+          bdy_code: values.bdy_code,
+          bdy_description: values.bdy_description,
+          bdy_status: values.bdy_status,
+          is_deletable: 1,
           is_editable: 1,
         };
         // save new BudgetYear
@@ -189,30 +187,30 @@ is_deletable:1,
   useEffect(() => {
     setBudgetYear(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setBudgetYear(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setBudgetYear(null);
+      setBudgetYear(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleBudgetYearClick = (arg) => {
+  const handleBudgetYearClick = (arg) => {
     const budgetYear = arg;
     // console.log("handleBudgetYearClick", budgetYear);
     setBudgetYear({
-      bdy_id:budgetYear.bdy_id, 
-bdy_name:budgetYear.bdy_name, 
-bdy_code:budgetYear.bdy_code, 
-bdy_description:budgetYear.bdy_description, 
-bdy_status:budgetYear.bdy_status, 
+      bdy_id: budgetYear.bdy_id,
+      bdy_name: budgetYear.bdy_name,
+      bdy_code: budgetYear.bdy_code,
+      bdy_description: budgetYear.bdy_description,
+      bdy_status: budgetYear.bdy_status,
 
       is_deletable: budgetYear.is_deletable,
       is_editable: budgetYear.is_editable,
@@ -232,8 +230,8 @@ bdy_status:budgetYear.bdy_status,
     setIsEdit(false);
     setBudgetYear("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -242,43 +240,40 @@ bdy_status:budgetYear.bdy_status,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'bdy_name',
+        header: "",
+        accessorKey: "bdy_name",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdy_name, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.bdy_name, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'bdy_code',
+      },
+      {
+        header: "",
+        accessorKey: "bdy_code",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdy_code, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.bdy_code, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'bdy_description',
+      },
+      {
+        header: "",
+        accessorKey: "bdy_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdy_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.bdy_description, 30) || "-"}
             </span>
           );
         },
@@ -305,7 +300,7 @@ bdy_status:budgetYear.bdy_status,
         },
       },
     ];
-     if (
+    if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
     ) {
@@ -322,7 +317,7 @@ bdy_status:budgetYear.bdy_status,
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleBudgetYearClick(data);
                   }}
                 >
@@ -369,7 +364,7 @@ bdy_status:budgetYear.bdy_status,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteBudgetYear}
+        onDeleteClick={handleDeleteBudgetYear}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteBudgetYear.isPending}
       />
@@ -379,7 +374,7 @@ bdy_status:budgetYear.bdy_status,
             title={t("budget_year")}
             breadcrumbItem={t("budget_year")}
           />
-           <AdvancedSearch
+          <AdvancedSearch
             searchHook={useSearchBudgetYears}
             textSearchKeys={["bdy_name", "bdy_code"]}
             dropdownSearchKeys={[]}
@@ -411,7 +406,7 @@ bdy_status:budgetYear.bdy_status,
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("budget_year")}
+                      buttonName={t("add") + " " + t("budget_year")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -424,7 +419,9 @@ bdy_status:budgetYear.bdy_status,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("budget_year")) : (t("add") +" "+t("budget_year"))}
+              {!!isEdit
+                ? t("edit") + " " + t("budget_year")
+                : t("add") + " " + t("budget_year")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -435,78 +432,78 @@ bdy_status:budgetYear.bdy_status,
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('bdy_name')}</Label>
-                      <Input
-                        name='bdy_name'
-                        type='text'
-                        placeholder={t('bdy_name')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdy_name || ''}
-                        invalid={
-                          validation.touched.bdy_name &&
-                          validation.errors.bdy_name
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bdy_name &&
-                      validation.errors.bdy_name ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdy_name}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bdy_code')}</Label>
-                      <Input
-                        name='bdy_code'
-                        type='text'
-                        placeholder={t('bdy_code')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdy_code || ''}
-                        invalid={
-                          validation.touched.bdy_code &&
-                          validation.errors.bdy_code
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bdy_code &&
-                      validation.errors.bdy_code ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdy_code}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bdy_description')}</Label>
-                      <Input
-                        name='bdy_description'
-                        type='textarea'
-                        placeholder={t('bdy_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdy_description || ''}
-                        invalid={
-                          validation.touched.bdy_description &&
-                          validation.errors.bdy_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bdy_description &&
-                      validation.errors.bdy_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdy_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("bdy_name")}</Label>
+                    <Input
+                      name="bdy_name"
+                      type="text"
+                      placeholder={t("bdy_name")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdy_name || ""}
+                      invalid={
+                        validation.touched.bdy_name &&
+                        validation.errors.bdy_name
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bdy_name &&
+                    validation.errors.bdy_name ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.bdy_name}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("bdy_code")}</Label>
+                    <Input
+                      name="bdy_code"
+                      type="text"
+                      placeholder={t("bdy_code")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdy_code || ""}
+                      invalid={
+                        validation.touched.bdy_code &&
+                        validation.errors.bdy_code
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bdy_code &&
+                    validation.errors.bdy_code ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.bdy_code}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("bdy_description")}</Label>
+                    <Input
+                      name="bdy_description"
+                      type="textarea"
+                      placeholder={t("bdy_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdy_description || ""}
+                      invalid={
+                        validation.touched.bdy_description &&
+                        validation.errors.bdy_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bdy_description &&
+                    validation.errors.bdy_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.bdy_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>

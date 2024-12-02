@@ -1,4 +1,4 @@
-import { post,get} from "./api_Lists";
+import { post, get } from "./api_Lists";
 
 const apiUrl = import.meta.env.VITE_BASE_API_URL;
 const GET_PROJECT = "project/listgrid";
@@ -8,8 +8,9 @@ const DELETE_PROJECT = "project/deletegrid";
 // get project
 export const getProject = async (params = {}) => {
   const queryString = new URLSearchParams(params).toString();
+  console.log("queryString", queryString);
   const url = queryString ? `${GET_PROJECT}?${queryString}` : GET_PROJECT;
-   try {
+  try {
     const response = await post(url);
     return response;
   } catch (error) {
@@ -23,11 +24,14 @@ export const addProject = async (objectName) =>
 
 // update project
 export const updateProject = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROJECT +`?prj_id=${objectName?.prj_id}`, objectName);
+  post(
+    `${apiUrl}` + UPDATE_PROJECT + `?prj_id=${objectName?.prj_id}`,
+    objectName
+  );
 
 // delete  project
 export const deleteProject = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROJECT+`?prj_id=${objectName}`);
+  post(`${apiUrl}` + DELETE_PROJECT + `?prj_id=${objectName}`);
 
 export const fetchSingleProjectApi = async (prj_id) => {
   try {

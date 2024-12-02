@@ -44,7 +44,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -63,19 +63,21 @@ const ContractTerminationReasonModel = () => {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [contractTerminationReason, setContractTerminationReason] = useState(null);
+  const [contractTerminationReason, setContractTerminationReason] =
+    useState(null);
 
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useFetchContractTerminationReasons();
+  const { data, isLoading, error, isError, refetch } =
+    useFetchContractTerminationReasons();
 
   const addContractTerminationReason = useAddContractTerminationReason();
   const updateContractTerminationReason = useUpdateContractTerminationReason();
   const deleteContractTerminationReason = useDeleteContractTerminationReason();
-//START CRUD
+  //START CRUD
   const handleAddContractTerminationReason = async (data) => {
     try {
       await addContractTerminationReason.mutateAsync(data);
@@ -122,47 +124,64 @@ const ContractTerminationReasonModel = () => {
   //END CRUD
   //START FOREIGN CALLS
 
-  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     ctr_reason_name_or:(contractTerminationReason && contractTerminationReason.ctr_reason_name_or) || "", 
-ctr_reason_name_am:(contractTerminationReason && contractTerminationReason.ctr_reason_name_am) || "", 
-ctr_reason_name_en:(contractTerminationReason && contractTerminationReason.ctr_reason_name_en) || "", 
-ctr_description:(contractTerminationReason && contractTerminationReason.ctr_description) || "", 
-ctr_status:(contractTerminationReason && contractTerminationReason.ctr_status) || "", 
+      ctr_reason_name_or:
+        (contractTerminationReason &&
+          contractTerminationReason.ctr_reason_name_or) ||
+        "",
+      ctr_reason_name_am:
+        (contractTerminationReason &&
+          contractTerminationReason.ctr_reason_name_am) ||
+        "",
+      ctr_reason_name_en:
+        (contractTerminationReason &&
+          contractTerminationReason.ctr_reason_name_en) ||
+        "",
+      ctr_description:
+        (contractTerminationReason &&
+          contractTerminationReason.ctr_description) ||
+        "",
+      ctr_status:
+        (contractTerminationReason && contractTerminationReason.ctr_status) ||
+        "",
 
-is_deletable: (contractTerminationReason && contractTerminationReason.is_deletable) || 1,
-is_editable: (contractTerminationReason && contractTerminationReason.is_editable) || 1
+      is_deletable:
+        (contractTerminationReason && contractTerminationReason.is_deletable) ||
+        1,
+      is_editable:
+        (contractTerminationReason && contractTerminationReason.is_editable) ||
+        1,
     },
 
     validationSchema: Yup.object({
-       ctr_reason_name_or: Yup.string()
+      ctr_reason_name_or: Yup.string()
         .required(t("ctr_reason_name_or"))
         .test("unique-ctr_reason_name_or", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
-              item.ctr_reason_name_or == value && item.ctr_id !== contractTerminationReason?.ctr_id
+              item.ctr_reason_name_or == value &&
+              item.ctr_id !== contractTerminationReason?.ctr_id
           );
         }),
-ctr_reason_name_am: Yup.string().required(t('ctr_reason_name_am')),
-ctr_reason_name_en: Yup.string().required(t('ctr_reason_name_en'))
+      ctr_reason_name_am: Yup.string().required(t("ctr_reason_name_am")),
+      ctr_reason_name_en: Yup.string().required(t("ctr_reason_name_en")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateContractTerminationReason = {
-          ctr_id: contractTerminationReason ? contractTerminationReason.ctr_id : 0,
-          ctr_id:contractTerminationReason.ctr_id, 
-ctr_reason_name_or:values.ctr_reason_name_or, 
-ctr_reason_name_am:values.ctr_reason_name_am, 
-ctr_reason_name_en:values.ctr_reason_name_en, 
-ctr_description:values.ctr_description, 
-ctr_status:values.ctr_status, 
+          ctr_id: contractTerminationReason?.ctr_id,
+          ctr_reason_name_or: values.ctr_reason_name_or,
+          ctr_reason_name_am: values.ctr_reason_name_am,
+          ctr_reason_name_en: values.ctr_reason_name_en,
+          ctr_description: values.ctr_description,
+          ctr_status: values.ctr_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -172,12 +191,11 @@ ctr_status:values.ctr_status,
         validation.resetForm();
       } else {
         const newContractTerminationReason = {
-          ctr_reason_name_or:values.ctr_reason_name_or, 
-ctr_reason_name_am:values.ctr_reason_name_am, 
-ctr_reason_name_en:values.ctr_reason_name_en, 
-ctr_description:values.ctr_description, 
-ctr_status:values.ctr_status, 
-
+          ctr_reason_name_or: values.ctr_reason_name_or,
+          ctr_reason_name_am: values.ctr_reason_name_am,
+          ctr_reason_name_en: values.ctr_reason_name_en,
+          ctr_description: values.ctr_description,
+          ctr_status: values.ctr_status,
         };
         // save new ContractTerminationReason
         handleAddContractTerminationReason(newContractTerminationReason);
@@ -192,31 +210,31 @@ ctr_status:values.ctr_status,
   useEffect(() => {
     setContractTerminationReason(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setContractTerminationReason(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setContractTerminationReason(null);
+      setContractTerminationReason(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleContractTerminationReasonClick = (arg) => {
+  const handleContractTerminationReasonClick = (arg) => {
     const contractTerminationReason = arg;
     // console.log("handleContractTerminationReasonClick", contractTerminationReason);
     setContractTerminationReason({
-      ctr_id:contractTerminationReason.ctr_id, 
-ctr_reason_name_or:contractTerminationReason.ctr_reason_name_or, 
-ctr_reason_name_am:contractTerminationReason.ctr_reason_name_am, 
-ctr_reason_name_en:contractTerminationReason.ctr_reason_name_en, 
-ctr_description:contractTerminationReason.ctr_description, 
-ctr_status:contractTerminationReason.ctr_status, 
+      ctr_id: contractTerminationReason.ctr_id,
+      ctr_reason_name_or: contractTerminationReason.ctr_reason_name_or,
+      ctr_reason_name_am: contractTerminationReason.ctr_reason_name_am,
+      ctr_reason_name_en: contractTerminationReason.ctr_reason_name_en,
+      ctr_description: contractTerminationReason.ctr_description,
+      ctr_status: contractTerminationReason.ctr_status,
 
       is_deletable: contractTerminationReason.is_deletable,
       is_editable: contractTerminationReason.is_editable,
@@ -236,8 +254,8 @@ ctr_status:contractTerminationReason.ctr_status,
     setIsEdit(false);
     setContractTerminationReason("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -246,61 +264,60 @@ ctr_status:contractTerminationReason.ctr_status,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'ctr_reason_name_or',
+        header: "",
+        accessorKey: "ctr_reason_name_or",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.ctr_reason_name_or, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'ctr_reason_name_am',
+      },
+      {
+        header: "",
+        accessorKey: "ctr_reason_name_am",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.ctr_reason_name_am, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'ctr_reason_name_en',
+      },
+      {
+        header: "",
+        accessorKey: "ctr_reason_name_en",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.ctr_reason_name_en, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'ctr_description',
+      },
+      {
+        header: "",
+        accessorKey: "ctr_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.ctr_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.ctr_description, 30) || "-"}
             </span>
           );
         },
-      }, 
+      },
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -323,7 +340,7 @@ ctr_status:contractTerminationReason.ctr_status,
         },
       },
     ];
-     if (
+    if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
     ) {
@@ -340,7 +357,7 @@ ctr_status:contractTerminationReason.ctr_status,
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleContractTerminationReasonClick(data);
                   }}
                 >
@@ -387,7 +404,7 @@ ctr_status:contractTerminationReason.ctr_status,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteContractTerminationReason}
+        onDeleteClick={handleDeleteContractTerminationReason}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteContractTerminationReason.isPending}
       />
@@ -429,7 +446,9 @@ ctr_status:contractTerminationReason.ctr_status,
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("contract_termination_reason")}
+                      buttonName={
+                        t("add") + " " + t("contract_termination_reason")
+                      }
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -442,7 +461,9 @@ ctr_status:contractTerminationReason.ctr_status,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("contract_termination_reason")) : (t("add") +" "+t("contract_termination_reason"))}
+              {!!isEdit
+                ? t("edit") + " " + t("contract_termination_reason")
+                : t("add") + " " + t("contract_termination_reason")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -453,107 +474,108 @@ ctr_status:contractTerminationReason.ctr_status,
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('ctr_reason_name_or')}</Label>
-                      <Input
-                        name='ctr_reason_name_or'
-                        type='text'
-                        placeholder={t('ctr_reason_name_or')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.ctr_reason_name_or || ''}
-                        invalid={
-                          validation.touched.ctr_reason_name_or &&
-                          validation.errors.ctr_reason_name_or
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.ctr_reason_name_or &&
-                      validation.errors.ctr_reason_name_or ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.ctr_reason_name_or}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('ctr_reason_name_am')}</Label>
-                      <Input
-                        name='ctr_reason_name_am'
-                        type='text'
-                        placeholder={t('ctr_reason_name_am')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.ctr_reason_name_am || ''}
-                        invalid={
-                          validation.touched.ctr_reason_name_am &&
-                          validation.errors.ctr_reason_name_am
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.ctr_reason_name_am &&
-                      validation.errors.ctr_reason_name_am ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.ctr_reason_name_am}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('ctr_reason_name_en')}</Label>
-                      <Input
-                        name='ctr_reason_name_en'
-                        type='text'
-                        placeholder={t('ctr_reason_name_en')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.ctr_reason_name_en || ''}
-                        invalid={
-                          validation.touched.ctr_reason_name_en &&
-                          validation.errors.ctr_reason_name_en
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.ctr_reason_name_en &&
-                      validation.errors.ctr_reason_name_en ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.ctr_reason_name_en}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('ctr_description')}</Label>
-                      <Input
-                        name='ctr_description'
-                        type='textarea'
-                        placeholder={t('ctr_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.ctr_description || ''}
-                        invalid={
-                          validation.touched.ctr_description &&
-                          validation.errors.ctr_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.ctr_description &&
-                      validation.errors.ctr_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.ctr_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("ctr_reason_name_or")}</Label>
+                    <Input
+                      name="ctr_reason_name_or"
+                      type="text"
+                      placeholder={t("ctr_reason_name_or")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.ctr_reason_name_or || ""}
+                      invalid={
+                        validation.touched.ctr_reason_name_or &&
+                        validation.errors.ctr_reason_name_or
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.ctr_reason_name_or &&
+                    validation.errors.ctr_reason_name_or ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.ctr_reason_name_or}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("ctr_reason_name_am")}</Label>
+                    <Input
+                      name="ctr_reason_name_am"
+                      type="text"
+                      placeholder={t("ctr_reason_name_am")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.ctr_reason_name_am || ""}
+                      invalid={
+                        validation.touched.ctr_reason_name_am &&
+                        validation.errors.ctr_reason_name_am
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.ctr_reason_name_am &&
+                    validation.errors.ctr_reason_name_am ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.ctr_reason_name_am}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("ctr_reason_name_en")}</Label>
+                    <Input
+                      name="ctr_reason_name_en"
+                      type="text"
+                      placeholder={t("ctr_reason_name_en")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.ctr_reason_name_en || ""}
+                      invalid={
+                        validation.touched.ctr_reason_name_en &&
+                        validation.errors.ctr_reason_name_en
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.ctr_reason_name_en &&
+                    validation.errors.ctr_reason_name_en ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.ctr_reason_name_en}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("ctr_description")}</Label>
+                    <Input
+                      name="ctr_description"
+                      type="textarea"
+                      placeholder={t("ctr_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.ctr_description || ""}
+                      invalid={
+                        validation.touched.ctr_description &&
+                        validation.errors.ctr_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.ctr_description &&
+                    validation.errors.ctr_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.ctr_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {addContractTerminationReason.isPending || updateContractTerminationReason.isPending ? (
+                      {addContractTerminationReason.isPending ||
+                      updateContractTerminationReason.isPending ? (
                         <Button
                           color="success"
                           type="submit"

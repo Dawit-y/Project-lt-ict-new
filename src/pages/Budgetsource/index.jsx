@@ -44,7 +44,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -75,7 +75,7 @@ const BudgetSourceModel = () => {
   const addBudgetSource = useAddBudgetSource();
   const updateBudgetSource = useUpdateBudgetSource();
   const deleteBudgetSource = useDeleteBudgetSource();
-//START CRUD
+  //START CRUD
   const handleAddBudgetSource = async (data) => {
     try {
       await addBudgetSource.mutateAsync(data);
@@ -122,22 +122,21 @@ const BudgetSourceModel = () => {
   //END CRUD
   //START FOREIGN CALLS
 
-  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     pbs_name_or:(budgetSource && budgetSource.pbs_name_or) || "", 
-pbs_name_am:(budgetSource && budgetSource.pbs_name_am) || "", 
-pbs_name_en:(budgetSource && budgetSource.pbs_name_en) || "", 
-pbs_code:(budgetSource && budgetSource.pbs_code) || "", 
-pbs_description:(budgetSource && budgetSource.pbs_description) || "", 
-pbs_status:(budgetSource && budgetSource.pbs_status) || "", 
+      pbs_name_or: (budgetSource && budgetSource.pbs_name_or) || "",
+      pbs_name_am: (budgetSource && budgetSource.pbs_name_am) || "",
+      pbs_name_en: (budgetSource && budgetSource.pbs_name_en) || "",
+      pbs_code: (budgetSource && budgetSource.pbs_code) || "",
+      pbs_description: (budgetSource && budgetSource.pbs_description) || "",
+      pbs_status: (budgetSource && budgetSource.pbs_status) || "",
 
-is_deletable: (budgetSource && budgetSource.is_deletable) || 1,
-is_editable: (budgetSource && budgetSource.is_editable) || 1
+      is_deletable: (budgetSource && budgetSource.is_deletable) || 1,
+      is_editable: (budgetSource && budgetSource.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
@@ -149,24 +148,22 @@ is_editable: (budgetSource && budgetSource.is_editable) || 1
               item.pbs_name_or == value && item.pbs_id !== budgetSource?.pbs_id
           );
         }),
-pbs_name_am: Yup.string().required(t('pbs_name_am')),
-pbs_name_en: Yup.string().required(t('pbs_name_en')),
-pbs_code: Yup.string().required(t('pbs_code'))
-
+      pbs_name_am: Yup.string().required(t("pbs_name_am")),
+      pbs_name_en: Yup.string().required(t("pbs_name_en")),
+      pbs_code: Yup.string().required(t("pbs_code")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateBudgetSource = {
-          pbs_id: budgetSource ? budgetSource.pbs_id : 0,
-          pbs_id:budgetSource.pbs_id, 
-pbs_name_or:values.pbs_name_or, 
-pbs_name_am:values.pbs_name_am, 
-pbs_name_en:values.pbs_name_en, 
-pbs_code:values.pbs_code, 
-pbs_description:values.pbs_description, 
-pbs_status:values.pbs_status, 
+          pbs_id: budgetSource?.pbs_id,
+          pbs_name_or: values.pbs_name_or,
+          pbs_name_am: values.pbs_name_am,
+          pbs_name_en: values.pbs_name_en,
+          pbs_code: values.pbs_code,
+          pbs_description: values.pbs_description,
+          pbs_status: values.pbs_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -176,13 +173,12 @@ pbs_status:values.pbs_status,
         validation.resetForm();
       } else {
         const newBudgetSource = {
-          pbs_name_or:values.pbs_name_or, 
-pbs_name_am:values.pbs_name_am, 
-pbs_name_en:values.pbs_name_en, 
-pbs_code:values.pbs_code, 
-pbs_description:values.pbs_description, 
-pbs_status:values.pbs_status, 
-
+          pbs_name_or: values.pbs_name_or,
+          pbs_name_am: values.pbs_name_am,
+          pbs_name_en: values.pbs_name_en,
+          pbs_code: values.pbs_code,
+          pbs_description: values.pbs_description,
+          pbs_status: values.pbs_status,
         };
         // save new BudgetSource
         handleAddBudgetSource(newBudgetSource);
@@ -197,32 +193,32 @@ pbs_status:values.pbs_status,
   useEffect(() => {
     setBudgetSource(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setBudgetSource(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setBudgetSource(null);
+      setBudgetSource(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleBudgetSourceClick = (arg) => {
+  const handleBudgetSourceClick = (arg) => {
     const budgetSource = arg;
     // console.log("handleBudgetSourceClick", budgetSource);
     setBudgetSource({
-      pbs_id:budgetSource.pbs_id, 
-pbs_name_or:budgetSource.pbs_name_or, 
-pbs_name_am:budgetSource.pbs_name_am, 
-pbs_name_en:budgetSource.pbs_name_en, 
-pbs_code:budgetSource.pbs_code, 
-pbs_description:budgetSource.pbs_description, 
-pbs_status:budgetSource.pbs_status, 
+      pbs_id: budgetSource.pbs_id,
+      pbs_name_or: budgetSource.pbs_name_or,
+      pbs_name_am: budgetSource.pbs_name_am,
+      pbs_name_en: budgetSource.pbs_name_en,
+      pbs_code: budgetSource.pbs_code,
+      pbs_description: budgetSource.pbs_description,
+      pbs_status: budgetSource.pbs_status,
 
       is_deletable: budgetSource.is_deletable,
       is_editable: budgetSource.is_editable,
@@ -242,8 +238,8 @@ pbs_status:budgetSource.pbs_status,
     setIsEdit(false);
     setBudgetSource("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -252,71 +248,66 @@ pbs_status:budgetSource.pbs_status,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'pbs_name_or',
+        header: "",
+        accessorKey: "pbs_name_or",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pbs_name_or, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pbs_name_or, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pbs_name_am',
+      },
+      {
+        header: "",
+        accessorKey: "pbs_name_am",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pbs_name_am, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pbs_name_am, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pbs_name_en',
+      },
+      {
+        header: "",
+        accessorKey: "pbs_name_en",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pbs_name_en, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pbs_name_en, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pbs_code',
+      },
+      {
+        header: "",
+        accessorKey: "pbs_code",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pbs_code, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pbs_code, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pbs_description',
+      },
+      {
+        header: "",
+        accessorKey: "pbs_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pbs_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pbs_description, 30) || "-"}
             </span>
           );
         },
@@ -343,7 +334,7 @@ pbs_status:budgetSource.pbs_status,
         },
       },
     ];
-     if (
+    if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
     ) {
@@ -360,7 +351,7 @@ pbs_status:budgetSource.pbs_status,
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleBudgetSourceClick(data);
                   }}
                 >
@@ -407,7 +398,7 @@ pbs_status:budgetSource.pbs_status,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteBudgetSource}
+        onDeleteClick={handleDeleteBudgetSource}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteBudgetSource.isPending}
       />
@@ -467,7 +458,7 @@ pbs_status:budgetSource.pbs_status,
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("budget_source")}
+                      buttonName={t("add") + " " + t("budget_source")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -480,7 +471,9 @@ pbs_status:budgetSource.pbs_status,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("budget_source")) : (t("add") +" "+t("budget_source"))}
+              {!!isEdit
+                ? t("edit") + " " + t("budget_source")
+                : t("add") + " " + t("budget_source")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -491,131 +484,132 @@ pbs_status:budgetSource.pbs_status,
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('pbs_name_or')}</Label>
-                      <Input
-                        name='pbs_name_or'
-                        type='text'
-                        placeholder={t('pbs_name_or')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pbs_name_or || ''}
-                        invalid={
-                          validation.touched.pbs_name_or &&
-                          validation.errors.pbs_name_or
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pbs_name_or &&
-                      validation.errors.pbs_name_or ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pbs_name_or}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pbs_name_am')}</Label>
-                      <Input
-                        name='pbs_name_am'
-                        type='text'
-                        placeholder={t('pbs_name_am')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pbs_name_am || ''}
-                        invalid={
-                          validation.touched.pbs_name_am &&
-                          validation.errors.pbs_name_am
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pbs_name_am &&
-                      validation.errors.pbs_name_am ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pbs_name_am}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pbs_name_en')}</Label>
-                      <Input
-                        name='pbs_name_en'
-                        type='text'
-                        placeholder={t('pbs_name_en')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pbs_name_en || ''}
-                        invalid={
-                          validation.touched.pbs_name_en &&
-                          validation.errors.pbs_name_en
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pbs_name_en &&
-                      validation.errors.pbs_name_en ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pbs_name_en}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pbs_code')}</Label>
-                      <Input
-                        name='pbs_code'
-                        type='text'
-                        placeholder={t('pbs_code')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pbs_code || ''}
-                        invalid={
-                          validation.touched.pbs_code &&
-                          validation.errors.pbs_code
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pbs_code &&
-                      validation.errors.pbs_code ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pbs_code}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pbs_description')}</Label>
-                      <Input
-                        name='pbs_description'
-                        type='textarea'
-                        placeholder={t('pbs_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pbs_description || ''}
-                        invalid={
-                          validation.touched.pbs_description &&
-                          validation.errors.pbs_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pbs_description &&
-                      validation.errors.pbs_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pbs_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pbs_name_or")}</Label>
+                    <Input
+                      name="pbs_name_or"
+                      type="text"
+                      placeholder={t("pbs_name_or")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pbs_name_or || ""}
+                      invalid={
+                        validation.touched.pbs_name_or &&
+                        validation.errors.pbs_name_or
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pbs_name_or &&
+                    validation.errors.pbs_name_or ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pbs_name_or}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pbs_name_am")}</Label>
+                    <Input
+                      name="pbs_name_am"
+                      type="text"
+                      placeholder={t("pbs_name_am")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pbs_name_am || ""}
+                      invalid={
+                        validation.touched.pbs_name_am &&
+                        validation.errors.pbs_name_am
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pbs_name_am &&
+                    validation.errors.pbs_name_am ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pbs_name_am}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pbs_name_en")}</Label>
+                    <Input
+                      name="pbs_name_en"
+                      type="text"
+                      placeholder={t("pbs_name_en")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pbs_name_en || ""}
+                      invalid={
+                        validation.touched.pbs_name_en &&
+                        validation.errors.pbs_name_en
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pbs_name_en &&
+                    validation.errors.pbs_name_en ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pbs_name_en}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pbs_code")}</Label>
+                    <Input
+                      name="pbs_code"
+                      type="text"
+                      placeholder={t("pbs_code")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pbs_code || ""}
+                      invalid={
+                        validation.touched.pbs_code &&
+                        validation.errors.pbs_code
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pbs_code &&
+                    validation.errors.pbs_code ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pbs_code}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pbs_description")}</Label>
+                    <Input
+                      name="pbs_description"
+                      type="textarea"
+                      placeholder={t("pbs_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pbs_description || ""}
+                      invalid={
+                        validation.touched.pbs_description &&
+                        validation.errors.pbs_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pbs_description &&
+                    validation.errors.pbs_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pbs_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {addBudgetSource.isPending || updateBudgetSource.isPending ? (
+                      {addBudgetSource.isPending ||
+                      updateBudgetSource.isPending ? (
                         <Button
                           color="success"
                           type="submit"

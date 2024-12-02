@@ -44,7 +44,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -70,12 +70,13 @@ const StakeholderTypeModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useFetchStakeholderTypes();
+  const { data, isLoading, error, isError, refetch } =
+    useFetchStakeholderTypes();
 
   const addStakeholderType = useAddStakeholderType();
   const updateStakeholderType = useUpdateStakeholderType();
   const deleteStakeholderType = useDeleteStakeholderType();
-//START CRUD
+  //START CRUD
   const handleAddStakeholderType = async (data) => {
     try {
       await addStakeholderType.mutateAsync(data);
@@ -122,47 +123,50 @@ const StakeholderTypeModel = () => {
   //END CRUD
   //START FOREIGN CALLS
 
-  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     sht_type_name_or:(stakeholderType && stakeholderType.sht_type_name_or) || "", 
-sht_type_name_am:(stakeholderType && stakeholderType.sht_type_name_am) || "", 
-sht_type_name_en:(stakeholderType && stakeholderType.sht_type_name_en) || "", 
-sht_description:(stakeholderType && stakeholderType.sht_description) || "", 
-sht_status:(stakeholderType && stakeholderType.sht_status) || "", 
+      sht_type_name_or:
+        (stakeholderType && stakeholderType.sht_type_name_or) || "",
+      sht_type_name_am:
+        (stakeholderType && stakeholderType.sht_type_name_am) || "",
+      sht_type_name_en:
+        (stakeholderType && stakeholderType.sht_type_name_en) || "",
+      sht_description:
+        (stakeholderType && stakeholderType.sht_description) || "",
+      sht_status: (stakeholderType && stakeholderType.sht_status) || "",
 
-is_deletable: (stakeholderType && stakeholderType.is_deletable) || 1,
-is_editable: (stakeholderType && stakeholderType.is_editable) || 1
+      is_deletable: (stakeholderType && stakeholderType.is_deletable) || 1,
+      is_editable: (stakeholderType && stakeholderType.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
-       sht_type_name_or: Yup.string()
+      sht_type_name_or: Yup.string()
         .required(t("sht_type_name_or"))
         .test("unique-sht_type_name_or", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
-              item.sht_type_name_or == value && item.sht_id !== stakeholderType?.sht_id
+              item.sht_type_name_or == value &&
+              item.sht_id !== stakeholderType?.sht_id
           );
         }),
-sht_type_name_am: Yup.string().required(t('sht_type_name_am')),
-sht_type_name_en: Yup.string().required(t('sht_type_name_en'))
+      sht_type_name_am: Yup.string().required(t("sht_type_name_am")),
+      sht_type_name_en: Yup.string().required(t("sht_type_name_en")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateStakeholderType = {
-          sht_id: stakeholderType ? stakeholderType.sht_id : 0,
-          sht_id:stakeholderType.sht_id, 
-sht_type_name_or:values.sht_type_name_or, 
-sht_type_name_am:values.sht_type_name_am, 
-sht_type_name_en:values.sht_type_name_en, 
-sht_description:values.sht_description, 
-sht_status:values.sht_status, 
+          sht_id: stakeholderType?.sht_id,
+          sht_type_name_or: values.sht_type_name_or,
+          sht_type_name_am: values.sht_type_name_am,
+          sht_type_name_en: values.sht_type_name_en,
+          sht_description: values.sht_description,
+          sht_status: values.sht_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -172,12 +176,11 @@ sht_status:values.sht_status,
         validation.resetForm();
       } else {
         const newStakeholderType = {
-          sht_type_name_or:values.sht_type_name_or, 
-sht_type_name_am:values.sht_type_name_am, 
-sht_type_name_en:values.sht_type_name_en, 
-sht_description:values.sht_description, 
-sht_status:values.sht_status, 
-
+          sht_type_name_or: values.sht_type_name_or,
+          sht_type_name_am: values.sht_type_name_am,
+          sht_type_name_en: values.sht_type_name_en,
+          sht_description: values.sht_description,
+          sht_status: values.sht_status,
         };
         // save new StakeholderType
         handleAddStakeholderType(newStakeholderType);
@@ -192,31 +195,31 @@ sht_status:values.sht_status,
   useEffect(() => {
     setStakeholderType(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setStakeholderType(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setStakeholderType(null);
+      setStakeholderType(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleStakeholderTypeClick = (arg) => {
+  const handleStakeholderTypeClick = (arg) => {
     const stakeholderType = arg;
     // console.log("handleStakeholderTypeClick", stakeholderType);
     setStakeholderType({
-      sht_id:stakeholderType.sht_id, 
-sht_type_name_or:stakeholderType.sht_type_name_or, 
-sht_type_name_am:stakeholderType.sht_type_name_am, 
-sht_type_name_en:stakeholderType.sht_type_name_en, 
-sht_description:stakeholderType.sht_description, 
-sht_status:stakeholderType.sht_status, 
+      sht_id: stakeholderType.sht_id,
+      sht_type_name_or: stakeholderType.sht_type_name_or,
+      sht_type_name_am: stakeholderType.sht_type_name_am,
+      sht_type_name_en: stakeholderType.sht_type_name_en,
+      sht_description: stakeholderType.sht_description,
+      sht_status: stakeholderType.sht_status,
 
       is_deletable: stakeholderType.is_deletable,
       is_editable: stakeholderType.is_editable,
@@ -236,8 +239,8 @@ sht_status:stakeholderType.sht_status,
     setIsEdit(false);
     setStakeholderType("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -246,57 +249,53 @@ sht_status:stakeholderType.sht_status,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'sht_type_name_or',
+        header: "",
+        accessorKey: "sht_type_name_or",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.sht_type_name_or, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.sht_type_name_or, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'sht_type_name_am',
+      },
+      {
+        header: "",
+        accessorKey: "sht_type_name_am",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.sht_type_name_am, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.sht_type_name_am, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'sht_type_name_en',
+      },
+      {
+        header: "",
+        accessorKey: "sht_type_name_en",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.sht_type_name_en, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.sht_type_name_en, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'sht_description',
+      },
+      {
+        header: "",
+        accessorKey: "sht_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.sht_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.sht_description, 30) || "-"}
             </span>
           );
         },
@@ -323,7 +322,7 @@ sht_status:stakeholderType.sht_status,
         },
       },
     ];
-     if (
+    if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
     ) {
@@ -340,7 +339,7 @@ sht_status:stakeholderType.sht_status,
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleStakeholderTypeClick(data);
                   }}
                 >
@@ -387,7 +386,7 @@ sht_status:stakeholderType.sht_status,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteStakeholderType}
+        onDeleteClick={handleDeleteStakeholderType}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteStakeholderType.isPending}
       />
@@ -429,7 +428,7 @@ sht_status:stakeholderType.sht_status,
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("stakeholder_type")}
+                      buttonName={t("add") + " " + t("stakeholder_type")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -442,7 +441,9 @@ sht_status:stakeholderType.sht_status,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("stakeholder_type")) : (t("add") +" "+t("stakeholder_type"))}
+              {!!isEdit
+                ? t("edit") + " " + t("stakeholder_type")
+                : t("add") + " " + t("stakeholder_type")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -453,107 +454,108 @@ sht_status:stakeholderType.sht_status,
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('sht_type_name_or')}</Label>
-                      <Input
-                        name='sht_type_name_or'
-                        type='text'
-                        placeholder={t('sht_type_name_or')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.sht_type_name_or || ''}
-                        invalid={
-                          validation.touched.sht_type_name_or &&
-                          validation.errors.sht_type_name_or
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.sht_type_name_or &&
-                      validation.errors.sht_type_name_or ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.sht_type_name_or}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('sht_type_name_am')}</Label>
-                      <Input
-                        name='sht_type_name_am'
-                        type='text'
-                        placeholder={t('sht_type_name_am')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.sht_type_name_am || ''}
-                        invalid={
-                          validation.touched.sht_type_name_am &&
-                          validation.errors.sht_type_name_am
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.sht_type_name_am &&
-                      validation.errors.sht_type_name_am ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.sht_type_name_am}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('sht_type_name_en')}</Label>
-                      <Input
-                        name='sht_type_name_en'
-                        type='text'
-                        placeholder={t('sht_type_name_en')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.sht_type_name_en || ''}
-                        invalid={
-                          validation.touched.sht_type_name_en &&
-                          validation.errors.sht_type_name_en
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.sht_type_name_en &&
-                      validation.errors.sht_type_name_en ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.sht_type_name_en}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('sht_description')}</Label>
-                      <Input
-                        name='sht_description'
-                        type='textarea'
-                        placeholder={t('sht_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.sht_description || ''}
-                        invalid={
-                          validation.touched.sht_description &&
-                          validation.errors.sht_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.sht_description &&
-                      validation.errors.sht_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.sht_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("sht_type_name_or")}</Label>
+                    <Input
+                      name="sht_type_name_or"
+                      type="text"
+                      placeholder={t("sht_type_name_or")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.sht_type_name_or || ""}
+                      invalid={
+                        validation.touched.sht_type_name_or &&
+                        validation.errors.sht_type_name_or
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.sht_type_name_or &&
+                    validation.errors.sht_type_name_or ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.sht_type_name_or}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("sht_type_name_am")}</Label>
+                    <Input
+                      name="sht_type_name_am"
+                      type="text"
+                      placeholder={t("sht_type_name_am")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.sht_type_name_am || ""}
+                      invalid={
+                        validation.touched.sht_type_name_am &&
+                        validation.errors.sht_type_name_am
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.sht_type_name_am &&
+                    validation.errors.sht_type_name_am ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.sht_type_name_am}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("sht_type_name_en")}</Label>
+                    <Input
+                      name="sht_type_name_en"
+                      type="text"
+                      placeholder={t("sht_type_name_en")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.sht_type_name_en || ""}
+                      invalid={
+                        validation.touched.sht_type_name_en &&
+                        validation.errors.sht_type_name_en
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.sht_type_name_en &&
+                    validation.errors.sht_type_name_en ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.sht_type_name_en}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("sht_description")}</Label>
+                    <Input
+                      name="sht_description"
+                      type="textarea"
+                      placeholder={t("sht_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.sht_description || ""}
+                      invalid={
+                        validation.touched.sht_description &&
+                        validation.errors.sht_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.sht_description &&
+                    validation.errors.sht_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.sht_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {addStakeholderType.isPending || updateStakeholderType.isPending ? (
+                      {addStakeholderType.isPending ||
+                      updateStakeholderType.isPending ? (
                         <Button
                           color="success"
                           type="submit"

@@ -44,7 +44,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -70,12 +70,13 @@ const SectorCategoryModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useFetchSectorCategorys();
+  const { data, isLoading, error, isError, refetch } =
+    useFetchSectorCategorys();
 
   const addSectorCategory = useAddSectorCategory();
   const updateSectorCategory = useUpdateSectorCategory();
   const deleteSectorCategory = useDeleteSectorCategory();
-//START CRUD
+  //START CRUD
   const handleAddSectorCategory = async (data) => {
     try {
       await addSectorCategory.mutateAsync(data);
@@ -122,25 +123,24 @@ const SectorCategoryModel = () => {
   //END CRUD
   //START FOREIGN CALLS
 
-  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     psc_name:(sectorCategory && sectorCategory.psc_name) || "", 
-psc_code:(sectorCategory && sectorCategory.psc_code) || "", 
-psc_sector_id:(sectorCategory && sectorCategory.psc_sector_id) || "", 
-psc_description:(sectorCategory && sectorCategory.psc_description) || "", 
-psc_status:(sectorCategory && sectorCategory.psc_status) || "", 
+      psc_name: (sectorCategory && sectorCategory.psc_name) || "",
+      psc_code: (sectorCategory && sectorCategory.psc_code) || "",
+      psc_sector_id: (sectorCategory && sectorCategory.psc_sector_id) || "",
+      psc_description: (sectorCategory && sectorCategory.psc_description) || "",
+      psc_status: (sectorCategory && sectorCategory.psc_status) || "",
 
-is_deletable: (sectorCategory && sectorCategory.is_deletable) || 1,
-is_editable: (sectorCategory && sectorCategory.is_editable) || 1
+      is_deletable: (sectorCategory && sectorCategory.is_deletable) || 1,
+      is_editable: (sectorCategory && sectorCategory.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
-       psc_name: Yup.string()
+      psc_name: Yup.string()
         .required(t("psc_name"))
         .test("unique-psc_name", t("Already exists"), (value) => {
           return !data?.data.some(
@@ -149,21 +149,19 @@ is_editable: (sectorCategory && sectorCategory.is_editable) || 1
           );
         }),
 
-psc_code: Yup.string().required(t('psc_code'))
-
+      psc_code: Yup.string().required(t("psc_code")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateSectorCategory = {
-          psc_id: sectorCategory ? sectorCategory.psc_id : 0,
-          psc_id:sectorCategory.psc_id, 
-psc_name:values.psc_name, 
-psc_code:values.psc_code, 
-psc_sector_id:values.psc_sector_id, 
-psc_description:values.psc_description, 
-psc_status:values.psc_status, 
+          psc_id: sectorCategory?.psc_id,
+          psc_name: values.psc_name,
+          psc_code: values.psc_code,
+          psc_sector_id: values.psc_sector_id,
+          psc_description: values.psc_description,
+          psc_status: values.psc_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -173,12 +171,11 @@ psc_status:values.psc_status,
         validation.resetForm();
       } else {
         const newSectorCategory = {
-          psc_name:values.psc_name, 
-psc_code:values.psc_code, 
-psc_sector_id:values.psc_sector_id, 
-psc_description:values.psc_description, 
-psc_status:values.psc_status, 
-
+          psc_name: values.psc_name,
+          psc_code: values.psc_code,
+          psc_sector_id: values.psc_sector_id,
+          psc_description: values.psc_description,
+          psc_status: values.psc_status,
         };
         // save new SectorCategory
         handleAddSectorCategory(newSectorCategory);
@@ -193,31 +190,31 @@ psc_status:values.psc_status,
   useEffect(() => {
     setSectorCategory(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setSectorCategory(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setSectorCategory(null);
+      setSectorCategory(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleSectorCategoryClick = (arg) => {
+  const handleSectorCategoryClick = (arg) => {
     const sectorCategory = arg;
     // console.log("handleSectorCategoryClick", sectorCategory);
     setSectorCategory({
-      psc_id:sectorCategory.psc_id, 
-psc_name:sectorCategory.psc_name, 
-psc_code:sectorCategory.psc_code, 
-psc_sector_id:sectorCategory.psc_sector_id, 
-psc_description:sectorCategory.psc_description, 
-psc_status:sectorCategory.psc_status, 
+      psc_id: sectorCategory.psc_id,
+      psc_name: sectorCategory.psc_name,
+      psc_code: sectorCategory.psc_code,
+      psc_sector_id: sectorCategory.psc_sector_id,
+      psc_description: sectorCategory.psc_description,
+      psc_status: sectorCategory.psc_status,
 
       is_deletable: sectorCategory.is_deletable,
       is_editable: sectorCategory.is_editable,
@@ -237,8 +234,8 @@ psc_status:sectorCategory.psc_status,
     setIsEdit(false);
     setSectorCategory("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -247,47 +244,44 @@ psc_status:sectorCategory.psc_status,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'psc_name',
+        header: "",
+        accessorKey: "psc_name",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.psc_name, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.psc_name, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'psc_code',
+      },
+      {
+        header: "",
+        accessorKey: "psc_code",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.psc_code, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.psc_code, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'psc_description',
+      },
+      {
+        header: "",
+        accessorKey: "psc_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.psc_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.psc_description, 30) || "-"}
             </span>
           );
         },
-      }, 
+      },
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -310,7 +304,7 @@ psc_status:sectorCategory.psc_status,
         },
       },
     ];
-     if (
+    if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
     ) {
@@ -327,7 +321,7 @@ psc_status:sectorCategory.psc_status,
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleSectorCategoryClick(data);
                   }}
                 >
@@ -374,7 +368,7 @@ psc_status:sectorCategory.psc_status,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteSectorCategory}
+        onDeleteClick={handleDeleteSectorCategory}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteSectorCategory.isPending}
       />
@@ -386,7 +380,7 @@ psc_status:sectorCategory.psc_status,
           />
           <AdvancedSearch
             searchHook={useSearchSectorCategorys}
-            textSearchKeys={["psc_name","psc_code"]}
+            textSearchKeys={["psc_name", "psc_code"]}
             dropdownSearchKeys={[]}
             checkboxSearchKeys={[]}
             onSearchResult={handleSearchResults}
@@ -416,7 +410,7 @@ psc_status:sectorCategory.psc_status,
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("sector_category")}
+                      buttonName={t("add") + " " + t("sector_category")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -429,7 +423,9 @@ psc_status:sectorCategory.psc_status,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("sector_category")) : (t("add") +" "+t("sector_category"))}
+              {!!isEdit
+                ? t("edit") + " " + t("sector_category")
+                : t("add") + " " + t("sector_category")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -440,83 +436,84 @@ psc_status:sectorCategory.psc_status,
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('psc_name')}</Label>
-                      <Input
-                        name='psc_name'
-                        type='text'
-                        placeholder={t('psc_name')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.psc_name || ''}
-                        invalid={
-                          validation.touched.psc_name &&
-                          validation.errors.psc_name
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.psc_name &&
-                      validation.errors.psc_name ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.psc_name}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('psc_code')}</Label>
-                      <Input
-                        name='psc_code'
-                        type='text'
-                        placeholder={t('psc_code')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.psc_code || ''}
-                        invalid={
-                          validation.touched.psc_code &&
-                          validation.errors.psc_code
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.psc_code &&
-                      validation.errors.psc_code ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.psc_code}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('psc_description')}</Label>
-                      <Input
-                        name='psc_description'
-                        type='textarea'
-                        placeholder={t('psc_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.psc_description || ''}
-                        invalid={
-                          validation.touched.psc_description &&
-                          validation.errors.psc_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.psc_description &&
-                      validation.errors.psc_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.psc_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("psc_name")}</Label>
+                    <Input
+                      name="psc_name"
+                      type="text"
+                      placeholder={t("psc_name")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.psc_name || ""}
+                      invalid={
+                        validation.touched.psc_name &&
+                        validation.errors.psc_name
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.psc_name &&
+                    validation.errors.psc_name ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.psc_name}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("psc_code")}</Label>
+                    <Input
+                      name="psc_code"
+                      type="text"
+                      placeholder={t("psc_code")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.psc_code || ""}
+                      invalid={
+                        validation.touched.psc_code &&
+                        validation.errors.psc_code
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.psc_code &&
+                    validation.errors.psc_code ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.psc_code}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("psc_description")}</Label>
+                    <Input
+                      name="psc_description"
+                      type="textarea"
+                      placeholder={t("psc_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.psc_description || ""}
+                      invalid={
+                        validation.touched.psc_description &&
+                        validation.errors.psc_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.psc_description &&
+                    validation.errors.psc_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.psc_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {addSectorCategory.isPending || updateSectorCategory.isPending ? (
+                      {addSectorCategory.isPending ||
+                      updateSectorCategory.isPending ? (
                         <Button
                           color="success"
                           type="submit"
