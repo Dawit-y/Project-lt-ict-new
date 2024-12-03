@@ -126,45 +126,47 @@ const AdvancedSearch = ({
                   <Col xxl={10} lg={10}>
                     <Row>
                       {/* Text Inputs */}
-                      {textSearchKeys.map((key) => (
-                        <Col xxl={2} lg={2} key={key}>
-                          <div className="position-relative mb-2">
-                            <Input
-                              type="text"
-                              id={key}
-                              name={key}
-                              autoComplete="off"
-                              placeholder={t(key)}
-                              value={params[key] || ""}
-                              onChange={(e) =>
-                                handleSearchKey(key, e.target.value)
-                              }
-                            />
-                          </div>
-                        </Col>
-                      ))}
+                      {textSearchKeys &&
+                        textSearchKeys.map((key) => (
+                          <Col xxl={2} lg={2} key={key}>
+                            <div className="position-relative mb-2">
+                              <Input
+                                type="text"
+                                id={key}
+                                name={key}
+                                autoComplete="off"
+                                placeholder={t(key)}
+                                value={params[key] || ""}
+                                onChange={(e) =>
+                                  handleSearchKey(key, e.target.value)
+                                }
+                              />
+                            </div>
+                          </Col>
+                        ))}
 
                       {/* Dropdown Inputs */}
-                      {dropdownSearchKeys.map(({ key, options }) => (
-                        <Col xxl={3} lg={3} key={key}>
-                          <div className="position-relative mb-2">
-                            <Select
-                              className="select2"
-                              id={key}
-                              name={key}
-                              options={options}
-                              value={
-                                options.find(
-                                  (option) => option.value === params[key]
-                                ) || null
-                              }
-                              onChange={(option) =>
-                                handleSearchKey(key, option.value)
-                              }
-                            />
-                          </div>
-                        </Col>
-                      ))}
+                      {dropdownSearchKeys &&
+                        dropdownSearchKeys.map(({ key, options }) => (
+                          <Col xxl={3} lg={3} key={key}>
+                            <div className="position-relative mb-2">
+                              <Select
+                                className="select2"
+                                id={key}
+                                name={key}
+                                options={options}
+                                value={
+                                  options.find(
+                                    (option) => option.value === params[key]
+                                  ) || null
+                                }
+                                onChange={(option) =>
+                                  handleSearchKey(key, option.value)
+                                }
+                              />
+                            </div>
+                          </Col>
+                        ))}
                     </Row>
                   </Col>
                   <Col xxl={2} lg={2}>
@@ -196,7 +198,8 @@ const AdvancedSearch = ({
                           </svg>
                         </button>
 
-                        {checkboxSearchKeys.length > 0 && (
+                        {(checkboxSearchKeys?.length > 0 ||
+                          dropdownSearchKeys?.length > 0) && (
                           <a
                             onClick={toggle}
                             className="btn btn-secondary h-100 w-100"
@@ -206,63 +209,64 @@ const AdvancedSearch = ({
                         )}
                       </div>
                     </Col>
-                  </Col>                  
+                  </Col>
                   <Collapse isOpen={isOpen} id="collapseExample">
                     <div>
-                    <Row className="mt-2">
-                    <Col>
-                      {Component && (
-                        <Component
-                          {...component_params}
-                          validation={validation}
-                          isEdit={false}
-                        />
-                      )}
-                    </Col>
-                  </Row>
-                      {/*<Row className="g-3">
-                        {checkboxSearchKeys.map(({ key, options }) => (
-                          <Col key={key} xxl={4} lg={6}>
-                            <div>
-                              <Label
-                                htmlFor={key}
-                                className="form-label fw-semibold"
-                              >
-                                {key}
-                              </Label>
-                            </div>
-                            {(options || []).map((item, index) => (
-                              <div
-                                className="form-check form-check-inline"
-                                key={index}
-                              >
-                                <Input
-                                  className="form-check-input"
-                                  type="checkbox"
-                                  id={`inlineCheckbox${index}`}
-                                  value={item.value}
-                                  checked={(params[key] || []).includes(
-                                    item.value
-                                  )} // Controlled checkbox
-                                  onChange={(e) =>
-                                    handleSearchKey(
-                                      key,
-                                      e.target.checked ? item.value : null,
-                                      "checkbox"
-                                    )
-                                  }
-                                />
+                      <Row className="mt-2">
+                        <Col>
+                          {Component && (
+                            <Component
+                              {...component_params}
+                              validation={validation}
+                              isEdit={false}
+                            />
+                          )}
+                        </Col>
+                      </Row>
+                      <Row className="g-3">
+                        {checkboxSearchKeys &&
+                          checkboxSearchKeys.map(({ key, options }) => (
+                            <Col key={key} xxl={4} lg={6}>
+                              <div>
                                 <Label
-                                  className="form-check-label"
-                                  htmlFor={`inlineCheckbox${index}`}
+                                  htmlFor={key}
+                                  className="form-label fw-semibold"
                                 >
-                                  {item.label}
+                                  {key}
                                 </Label>
                               </div>
-                            ))}
-                          </Col>
-                        ))}
-                      </Row>*/}
+                              {(options || []).map((item, index) => (
+                                <div
+                                  className="form-check form-check-inline"
+                                  key={index}
+                                >
+                                  <Input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    id={`inlineCheckbox${index}`}
+                                    value={item.value}
+                                    checked={(params[key] || []).includes(
+                                      item.value
+                                    )} // Controlled checkbox
+                                    onChange={(e) =>
+                                      handleSearchKey(
+                                        key,
+                                        e.target.checked ? item.value : null,
+                                        "checkbox"
+                                      )
+                                    }
+                                  />
+                                  <Label
+                                    className="form-check-label"
+                                    htmlFor={`inlineCheckbox${index}`}
+                                  >
+                                    {item.label}
+                                  </Label>
+                                </div>
+                              ))}
+                            </Col>
+                          ))}
+                      </Row>
                     </div>
                   </Collapse>
                 </Row>
