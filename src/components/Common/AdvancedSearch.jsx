@@ -206,8 +206,10 @@ const AdvancedSearch = ({
                         )}
                       </div>
                     </Col>
-                  </Col>
-                  <Row className="mt-2">
+                  </Col>                  
+                  <Collapse isOpen={isOpen} id="collapseExample">
+                    <div>
+                    <Row className="mt-2">
                     <Col>
                       {Component && (
                         <Component
@@ -218,9 +220,7 @@ const AdvancedSearch = ({
                       )}
                     </Col>
                   </Row>
-                  <Collapse isOpen={isOpen} id="collapseExample">
-                    <div>
-                      <Row className="g-3">
+                      {/*<Row className="g-3">
                         {checkboxSearchKeys.map(({ key, options }) => (
                           <Col key={key} xxl={4} lg={6}>
                             <div>
@@ -262,7 +262,7 @@ const AdvancedSearch = ({
                             ))}
                           </Col>
                         ))}
-                      </Row>
+                      </Row>*/}
                     </div>
                   </Collapse>
                 </Row>

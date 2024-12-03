@@ -61,6 +61,7 @@ import {
   CardBody,
   FormGroup,
   Badge,
+  InputGroup
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -900,7 +901,7 @@ const ProjectModel = () => {
         enableRowGroup: true,
       },
       {
-        field: "prj_end_date_gc",
+        field: "prj_end_date_actual_gc",
         headerName: "End Date",
         sortable: true,
         filter: "agDateColumnFilter",
@@ -911,14 +912,6 @@ const ProjectModel = () => {
             ? new Date(params.value).toLocaleDateString()
             : "Invalid date",
         enableRowGroup: true,
-      },
-      {
-        field: "prj_geo_location",
-        headerName: "Geo Location",
-        filter: "agTextColumnFilter",
-        enableRowGroup: true,
-        pivot: true,
-        valueFormatter: (params) => (params.node.footer ? "" : params.value), // Suppress in footer
       },
       {
         headerName: t("view_detail"),
@@ -989,12 +982,16 @@ const ProjectModel = () => {
                   id="deletetooltip-disabled"
                 />
               )}
-              <UncontrolledTooltip
-                placement="top"
-                target="deletetooltip-disabled"
-              >
-                Not Deletable
-              </UncontrolledTooltip>
+              <Link
+                  to="#"
+                  className="text-secondary ms-2"
+                  onClick={() => handleClick(params.data)}
+                >
+                  <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
+                  <UncontrolledTooltip placement="top" target="viewtooltip">
+                    View
+                  </UncontrolledTooltip>
+                </Link>
             </div>
           );
         },
@@ -1114,7 +1111,7 @@ const ProjectModel = () => {
                 </Col>
                 <Col sm="12" md="6" className="text-md-end">
                   <Button color="success" onClick={handleProjectClicks}>
-                    Add New
+                    {t("Add New Project")}
                   </Button>
                 </Col>
               </Row>
@@ -1371,29 +1368,51 @@ const ProjectModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>{t("prj_start_date_gc")}</Label>
-                    <Input
-                      name="prj_start_date_gc"
-                      type="text"
-                      placeholder={t("prj_start_date_gc")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prj_start_date_gc || ""}
-                      invalid={
-                        validation.touched.prj_start_date_gc &&
-                        validation.errors.prj_start_date_gc
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prj_start_date_gc &&
-                    validation.errors.prj_start_date_gc ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prj_start_date_gc}
-                      </FormFeedback>
-                    ) : null}
+                 <Col className="col-md-4 mb-3">
+                    <FormGroup>
+                      <Label>{t("prj_start_date_gc")}</Label>
+                      <InputGroup>
+                        <Flatpickr
+                          id="DataPicker"
+                          className={`form-control ${
+                            validation.touched.prj_start_date_gc &&
+                            validation.errors.prj_start_date_gc
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                          name="prj_start_date_gc"
+                          options={{
+                            altInput: true,
+                            altFormat: "Y/m/d",
+                            dateFormat: "Y/m/d",
+                            enableTime: false,
+                          }}
+                          value={validation.values.prj_start_date_gc || ""}
+                          onChange={(date) => {
+                            const formatedDate = formatDate(date[0]);
+                            validation.setFieldValue(
+                              "prj_start_date_gc",
+                              formatedDate
+                            ); // Set value in Formik
+                          }}
+                          onBlur={validation.handleBlur}
+                        />
+
+                        <Button
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          disabled
+                        >
+                          <i className="fa fa-calendar" aria-hidden="true" />
+                        </Button>
+                      </InputGroup>
+                      {validation.touched.prj_start_date_gc &&
+                      validation.errors.prj_start_date_gc ? (
+                        <FormFeedback>
+                          {validation.errors.prj_start_date_gc}
+                        </FormFeedback>
+                      ) : null}
+                    </FormGroup>
                   </Col>
                   <Col className="col-md-4 mb-3">
                     <Label>{t("prj_start_date_plan_gc")}</Label>
@@ -1420,28 +1439,50 @@ const ProjectModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("prj_end_date_actual_gc")}</Label>
-                    <Input
-                      name="prj_end_date_actual_gc"
-                      type="text"
-                      placeholder={t("prj_end_date_actual_gc")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prj_end_date_actual_gc || ""}
-                      invalid={
-                        validation.touched.prj_end_date_actual_gc &&
-                        validation.errors.prj_end_date_actual_gc
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prj_end_date_actual_gc &&
-                    validation.errors.prj_end_date_actual_gc ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prj_end_date_actual_gc}
-                      </FormFeedback>
-                    ) : null}
+                    <FormGroup>
+                      <Label>{t("prj_end_date_actual_gc")}</Label>
+                      <InputGroup>
+                        <Flatpickr
+                          id="DataPicker"
+                          className={`form-control ${
+                            validation.touched.prj_end_date_actual_gc &&
+                            validation.errors.prj_end_date_actual_gc
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                          name="prj_end_date_actual_gc"
+                          options={{
+                            altInput: true,
+                            altFormat: "Y/m/d",
+                            dateFormat: "Y/m/d",
+                            enableTime: false,
+                          }}
+                          value={validation.values.prj_end_date_actual_gc || ""}
+                          onChange={(date) => {
+                            const formatedDate = formatDate(date[0]);
+                            validation.setFieldValue(
+                              "prj_end_date_actual_gc",
+                              formatedDate
+                            ); // Set value in Formik
+                          }}
+                          onBlur={validation.handleBlur}
+                        />
+
+                        <Button
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          disabled
+                        >
+                          <i className="fa fa-calendar" aria-hidden="true" />
+                        </Button>
+                      </InputGroup>
+                      {validation.touched.prj_end_date_actual_gc &&
+                      validation.errors.prj_end_date_actual_gc ? (
+                        <FormFeedback>
+                          {validation.errors.prj_end_date_actual_gc}
+                        </FormFeedback>
+                      ) : null}
+                    </FormGroup>
                   </Col>
                   <Col className="col-md-4 mb-3">
                     <Label>{t("prj_end_date_plan_gc")}</Label>

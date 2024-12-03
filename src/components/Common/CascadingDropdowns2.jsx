@@ -99,7 +99,7 @@ const CascadingDropdowns1 = ({
               }
             >
               <option value="">{t("select_region")}</option>
-              <option value="1">Addis Ababa</option>
+              <option value="1">Oromia</option>
               {/* {regions.map((region) => (
             <option key={region.id} value={region.id}>
               {region.name}

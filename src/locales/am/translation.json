@@ -768,5 +768,12 @@
 "emp_update_time":"Update Time",
 "emp_delete_time":"Delete Time",
 "emp_created_by":"Created By",
-"emp_current_status":"Current Status"
+"emp_current_status":"Current Status",
+"actions":"Actions",
+"select_region":"ክልል ምረጥ",
+"select_zone":"ዞን ምረጥ",
+"select_woreda":"ወረዳ ምረጥ",
+"region":"ክልል",
+"zone":"ዞን",
+"woreda":"ወረዳ"
 }

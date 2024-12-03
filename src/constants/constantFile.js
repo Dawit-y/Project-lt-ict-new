@@ -4,7 +4,7 @@ import logoLightSvg from "../../src/assets/images/logo-light.svg";
 import logoDark from "../../src/assets/images/logo-dark.png";
 // Application Texts
 export const APP_NAME = "PROJECT Managemnt";
-export const FOOTER_TEXT = "Design & Develop by LT ICT Solution";
+export const FOOTER_TEXT = "Design & Develop by LT ICT Solution PLC";
 export const COPYRIGHT_YEAR = new Date().getFullYear();
 
 // Logo files
@@ -34,4 +34,4 @@ export const NAVBAR_TEXTS = {
 
 //Login Page Constants
 
-export const LOGIN_TITLE = "Ormoia Project Managemnt System";
+export const LOGIN_TITLE = "Project Managemnt System";
