@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
@@ -18,21 +17,14 @@ import {
   FormGroup,
   Spinner,
 } from "reactstrap";
-
-import {
-  getBudgetRequest as onGetBudgetRequest,
-  addBudgetRequest as onAddBudgetRequest,
-  updateBudgetRequest as onUpdateBudgetRequest,
-  deleteBudgetRequest as onDeleteBudgetRequest,
-} from "../../store/budgetrequest/actions";
-import { useDispatch, useSelector } from "react-redux";
-import { createSelector } from "reselect";
 import Select from "react-select";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/material_blue.css";
 import { formatDate } from "../../utils/commonMethods";
+import { useUpdateBudgetRequest } from "../../queries/budget_request_query";
+import { toast } from "react-toastify";
 
 const modalStyle = {
   width: "100%",
@@ -41,20 +33,31 @@ const modalStyle = {
 
 const BudgetRequestListModal = (props) => {
   const { t } = useTranslation();
-  const { isOpen, toggle, transaction, budgetYearMap } = props;
-  const dispatch = useDispatch();
+  const { isOpen, toggle, transaction, budgetYearMap = {} } = props;
+  const { mutateAsync, isPending } = useUpdateBudgetRequest();
 
   const statusOptions = [
     { label: "Approved", value: "Approved" },
     { label: "Rejected", value: "Rejected" },
   ];
 
-  // Helper to find the option matching the initial value
   const getStatusOption = (value) =>
     statusOptions.find((option) => option.value === value) || null;
-  // Formik setup
 
-  // Yup validation schema
+  const handleUpdateBudgetRequest = async (data) => {
+    try {
+      await mutateAsync(data);
+      toast.success(`data updated successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error(`Failed to update Data`, {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+
   const validationSchema = Yup.object().shape({
     bdr_request_status: Yup.string().required("Status is required"),
     bdr_released_amount: Yup.number()
@@ -85,20 +88,11 @@ const BudgetRequestListModal = (props) => {
     validationSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
-      dispatch(onUpdateBudgetRequest(values));
+      handleUpdateBudgetRequest(values);
       formik.resetForm();
       toggle();
     },
   });
-
-  const budgetRequestProperties = createSelector(
-    (state) => state.BudgetRequestR,
-    (BudgetRequestReducer) => ({
-      update_loading: BudgetRequestReducer.update_loading,
-    })
-  );
-
-  const { update_loading } = useSelector(budgetRequestProperties);
 
   const handleStatusChange = (selectedOption) => {
     formik.setFieldValue("bdr_request_status", selectedOption.value);
@@ -253,7 +247,7 @@ const BudgetRequestListModal = (props) => {
                       )}
                   </FormGroup>
 
-                  {update_loading ? (
+                  {isPending ? (
                     <Button
                       type="submit"
                       color="primary"

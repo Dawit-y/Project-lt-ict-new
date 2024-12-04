@@ -10,7 +10,7 @@ const DELETE_BUDGET_YEAR = "budget_year/deletegrid";
 // get Projects
 export const getBudgetYear = async () => {
   try {
-    const response = await post(apiUrl+GET_BUDGET_YEAR);
+    const response = await post(apiUrl + GET_BUDGET_YEAR);
     return response;
   } catch (error) {
     console.log(error); // Handle any errors
@@ -20,7 +20,7 @@ export const getBudgetYear = async () => {
 export const addBudgetYear = async (objectName) => {
   try {
     const response = await axios.post(
-      `${apiUrl}`+ADD_BUDGET_YEAR,
+      `${apiUrl}` + ADD_BUDGET_YEAR,
       objectName,
       {
         headers: {
@@ -36,12 +36,15 @@ export const addBudgetYear = async (objectName) => {
 };
 // update objectNames
 export const updateBudgetYear = (objectName) =>
-  post(`${apiUrl}`+UPDATE_BUDGET_YEAR +`?bdy_id=${objectName?.bdy_id}`, objectName);
+  post(
+    `${apiUrl}` + UPDATE_BUDGET_YEAR + `?bdy_id=${objectName?.bdy_id}`,
+    objectName
+  );
 
 // delete objectNames
 export const deleteBudgetYear = (objectName) =>
   // post(`${url.DELETE_ORDER}?bdy_id=${order?.bdy_id}`);
-  post(`${apiUrl}`+DELETE_BUDGET_YEAR+`?bdy_id=${objectName}`);
+  post(`${apiUrl}` + DELETE_BUDGET_YEAR + `?bdy_id=${objectName}`);
 
 export const fetchSearchResults = async (searchTerm, selectedFields) => {
   let queryParams = [];
@@ -63,6 +66,4 @@ export const fetchSearchResults = async (searchTerm, selectedFields) => {
   );
   return response.data.data;
 };
-export {
-  
-};
+export {};

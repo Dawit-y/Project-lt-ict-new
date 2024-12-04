@@ -19,6 +19,14 @@ import {
 } from "../../store/budgetrequest/actions";
 import { getBudgetYear } from "../../store/budgetyear/actions";
 
+import {
+  useFetchBudgetRequests,
+  useAddBudgetRequest,
+  useUpdateBudgetRequest,
+  useDeleteBudgetRequest,
+} from "../../queries/budget_request_query";
+import { useFetchBudgetYears } from "../../queries/budgetyear_query";
+
 //redux
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
@@ -43,7 +51,7 @@ import {
   InputGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 import { formatDate } from "../../utils/commonMethods";
@@ -64,6 +72,7 @@ const statusClasses = {
 const BudgetRequestModel = (props) => {
   //  get passed data from tab
   const { passedId } = props;
+  const params = { project_id: passedId };
   //meta title
   document.title = " BudgetRequest";
 
@@ -76,7 +85,41 @@ const BudgetRequestModel = (props) => {
   const [budgetRequest, setBudgetRequest] = useState(null);
   const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
   const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
-  //START FOREIGN CALLS
+
+  const { data, isLoading } = useFetchBudgetRequests(params);
+  const { data: budgetYearData } = useFetchBudgetYears();
+
+  const addBudgetRequest = useAddBudgetRequest();
+  const updateBudgetRequest = useUpdateBudgetRequest();
+  const deleteBudgetRequest = useDeleteBudgetRequest();
+
+  const handleAddBudgetRequest = async (data) => {
+    try {
+      await addBudgetRequest.mutateAsync(data);
+      toast.success(`Data added successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error("Failed to add data", {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+
+  const handleUpdateBudgetRequest = async (data) => {
+    try {
+      await updateBudgetRequest.mutateAsync(data);
+      toast.success(`data updated successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error(`Failed to update Data`, {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
 
   // validation
   const validation = useFormik({
@@ -107,12 +150,7 @@ const BudgetRequestModel = (props) => {
     validationSchema: Yup.object({
       bdr_budget_year_id: Yup.string().required(t("bdr_budget_year_id")),
       bdr_requested_amount: Yup.number().required(t("bdr_requested_amount")),
-      // bdr_released_amount: Yup.number().required(t("bdr_released_amount")),
-      // bdr_project_id: Yup.string().required(t("bdr_project_id")),
-      // bdr_requested_date_ec: Yup.string().required(t("bdr_requested_date_ec")),
       bdr_requested_date_gc: Yup.string().required(t("bdr_requested_date_gc")),
-      // bdr_released_date_ec: Yup.string().required(t("bdr_released_date_ec")),
-      // bdr_released_date_gc: Yup.string().required(t("bdr_released_date_gc")),
       bdr_description: Yup.string(),
       bdr_status: Yup.string(),
     }),
@@ -120,7 +158,7 @@ const BudgetRequestModel = (props) => {
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
-        const updateBudgetRequest = {
+        const updatedBudgetRequest = {
           bdr_id: budgetRequest ? budgetRequest.bdr_id : 0,
           bdr_project_id: passedId,
           bdr_budget_year_id: values.bdr_budget_year_id,
@@ -133,7 +171,7 @@ const BudgetRequestModel = (props) => {
           is_editable: values.is_editable,
         };
         // update BudgetRequest
-        dispatch(onUpdateBudgetRequest(updateBudgetRequest));
+        handleUpdateBudgetRequest(updatedBudgetRequest);
         validation.resetForm();
       } else {
         const newBudgetRequest = {
@@ -146,81 +184,30 @@ const BudgetRequestModel = (props) => {
           bdr_request_status: "Requested",
         };
         // save new BudgetRequests
-        dispatch(onAddBudgetRequest(newBudgetRequest));
+        handleAddBudgetRequest(newBudgetRequest);
         validation.resetForm();
       }
     },
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-  const dispatch = useDispatch();
-  // Fetch BudgetRequest on component mount
-  useEffect(() => {
-    dispatch(onGetBudgetRequest(passedId));
-    dispatch(getBudgetYear());
-  }, [dispatch]);
-
-  const budgetRequestProperties = createSelector(
-    (state) => state.BudgetRequestR, // this is geting from  reducer
-    (BudgetRequestReducer) => ({
-      // this is from Project.reducer
-      budgetRequest: BudgetRequestReducer.budgetRequest,
-      loading: BudgetRequestReducer.loading,
-      update_loading: BudgetRequestReducer.update_loading,
-    })
-  );
-
-  const {
-    budgetRequest: { data, previledge },
-    loading,
-    update_loading,
-  } = useSelector(budgetRequestProperties);
-
-  const budgetYearProperties = createSelector(
-    (state) => state.BudgetYearR, // this is geting from  reducer
-    (BudgetYearReducer) => ({
-      // this is from Project.reducer
-      budgetYear: BudgetYearReducer.budgetYear,
-      loading: BudgetYearReducer.loading,
-      update_loading: BudgetYearReducer.update_loading,
-    })
-  );
-
-  const {
-    budgetYear: { data: budgetYearData, previledge: budgetYearPreviledge },
-    loading: budgetYearLoading,
-    update_loading: budgetYearUpdateLoading,
-  } = useSelector(budgetYearProperties);
 
   const budgetYearMap = useMemo(() => {
-    return budgetYearData.reduce((acc, year) => {
-      acc[year.bdy_id] = year.bdy_name;
-      return acc;
-    }, {});
+    return (
+      budgetYearData?.data?.reduce((acc, year) => {
+        acc[year.bdy_id] = year.bdy_name;
+        return acc;
+      }, {}) || {}
+    );
   }, [budgetYearData]);
 
   useEffect(() => {
-    console.log("update_loading in useEffect", update_loading);
-    setModal(false);
-  }, [update_loading]);
-
-  const selectSearchProperties = createSelector(
-    (state) => state.search,
-    (search) => ({
-      results: search.results,
-    })
-  );
-
-  const { results } = useSelector(selectSearchProperties);
-
-  const [isLoading, setLoading] = useState(loading);
-  useEffect(() => {
-    setBudgetRequest(data);
+    setBudgetRequest(data?.data);
   }, [data]);
 
   useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
-      setBudgetRequest(data);
+      setBudgetRequest(data?.data);
       setIsEdit(false);
     }
   }, [data]);
@@ -264,25 +251,27 @@ const BudgetRequestModel = (props) => {
     setDeleteModal(true);
   };
 
-  const handleDeleteBudgetRequest = () => {
+  const handleDeleteBudgetRequest = async () => {
     if (budgetRequest && budgetRequest.bdr_id) {
-      dispatch(onDeleteBudgetRequest(budgetRequest.bdr_id));
+      try {
+        const id = budgetRequest.bdr_id;
+        await deleteBudgetRequest.mutateAsync(id);
+        toast.success(`Budget Request ${id} deleted successfully`, {
+          autoClose: 2000,
+        });
+      } catch (error) {
+        toast.error(`Failed to delete Budget Request ${budgetRequest.bdr_id}`, {
+          autoClose: 2000,
+        });
+      }
       setDeleteModal(false);
     }
   };
+
   const handleBudgetRequestClicks = () => {
     setIsEdit(false);
     setBudgetRequest("");
     toggle();
-  };
-  const handleSearch = () => {
-    setSearchLoading(true); // Set loading to true when search is initiated// Update filtered data with search results
-    setShowSearchResults(true); // Show search results
-    setSearchLoading(false);
-  };
-
-  const handleClearSearch = () => {
-    setShowSearchResults(false);
   };
 
   const columns = useMemo(() => {
@@ -395,7 +384,10 @@ const BudgetRequestModel = (props) => {
         },
       },
     ];
-    if (previledge?.is_role_editable && previledge?.is_role_deletable) {
+    if (
+      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_deletable
+    ) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -404,7 +396,8 @@ const BudgetRequestModel = (props) => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {(cellProps.row.original?.is_editable ||
+                cellProps.row.original?.is_role_editable) && (
                 <Link
                   to="#"
                   className="text-success"
@@ -420,7 +413,8 @@ const BudgetRequestModel = (props) => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {(cellProps.row.original?.is_deletable ||
+                cellProps.row.original?.is_role_deletable) && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -458,6 +452,7 @@ const BudgetRequestModel = (props) => {
         show={deleteModal}
         onDeleteClick={handleDeleteBudgetRequest}
         onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteBudgetRequest.isPending}
       />
       <div className="container-fluid1">
         {passedId ? null : (
@@ -467,25 +462,25 @@ const BudgetRequestModel = (props) => {
           />
         )}
         {isLoading || searchLoading ? (
-          <Spinners setLoading={setLoading} />
+          <Spinners />
         ) : (
-                  <TableContainer
-                    columns={columns}
-                    data={showSearchResults ? results : data}
-                    isGlobalFilter={true}
-                    isAddButton={true}
-                    isCustomPageSize={true}
-                    handleUserClick={handleBudgetRequestClicks}
-                    isPagination={true}
-                    // SearchPlaceholder="26 records..."
-                    SearchPlaceholder={26 + " " + t("Results") + "..."}
-                    buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                    buttonName={t("add") + " " + t("budget_request")}
-                    tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                    theadClass="table-light"
-                    pagination="pagination"
-                    paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                  />
+          <TableContainer
+            columns={columns}
+            data={data?.data}
+            isGlobalFilter={true}
+            isAddButton={true}
+            isCustomPageSize={true}
+            handleUserClick={handleBudgetRequestClicks}
+            isPagination={true}
+            // SearchPlaceholder="26 records..."
+            SearchPlaceholder={26 + " " + t("Results") + "..."}
+            buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+            buttonName={t("add") + " " + t("budget_request")}
+            tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+            theadClass="table-light"
+            pagination="pagination"
+            paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+          />
         )}
         <Modal isOpen={modal} toggle={toggle} className="modal-xl">
           <ModalHeader toggle={toggle} tag="h4">
@@ -498,12 +493,6 @@ const BudgetRequestModel = (props) => {
               onSubmit={(e) => {
                 e.preventDefault();
                 validation.handleSubmit();
-                const modalCallback = () => setModal(false);
-                if (isEdit) {
-                  onUpdateBudgetRequest(validation.values, modalCallback);
-                } else {
-                  onAddBudgetRequest(validation.values, modalCallback);
-                }
                 return false;
               }}
             >
@@ -526,7 +515,7 @@ const BudgetRequestModel = (props) => {
                     maxLength={20}
                   >
                     <option value="">Select Budget Year</option>
-                    {budgetYearData?.map((data) => (
+                    {budgetYearData?.data?.map((data) => (
                       <option key={data.bdy_id} value={data.bdy_id}>
                         {data.bdy_name}
                       </option>
@@ -736,14 +725,19 @@ const BudgetRequestModel = (props) => {
               <Row>
                 <Col>
                   <div className="text-end">
-                    {update_loading ? (
+                    {addBudgetRequest.isPending ||
+                    updateBudgetRequest.isPending ? (
                       <Button
                         color="success"
                         type="submit"
                         className="save-user"
-                        disabled={update_loading || !validation.dirty}
+                        disabled={
+                          addBudgetRequest.isPending ||
+                          updateBudgetRequest.isPending ||
+                          !validation.dirty
+                        }
                       >
-                        <Spinner size={"sm"} color="#fff" />
+                        <Spinner size={"sm"} color="#fff" className="me-2" />
                         {t("Save")}
                       </Button>
                     ) : (
@@ -751,7 +745,11 @@ const BudgetRequestModel = (props) => {
                         color="success"
                         type="submit"
                         className="save-user"
-                        disabled={update_loading || !validation.dirty}
+                        disabled={
+                          addBudgetRequest.isPending ||
+                          updateBudgetRequest.isPending ||
+                          !validation.dirty
+                        }
                       >
                         {t("Save")}
                       </Button>

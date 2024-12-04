@@ -198,8 +198,7 @@ const AdvancedSearch = ({
                           </svg>
                         </button>
 
-                        {(checkboxSearchKeys?.length > 0 ||
-                          dropdownSearchKeys?.length > 0) && (
+                        {(checkboxSearchKeys?.length > 0 || Component) && (
                           <a
                             onClick={toggle}
                             className="btn btn-secondary h-100 w-100"
