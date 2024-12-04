@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState, useRef } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
+import { before, isEmpty, update } from "lodash";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
@@ -61,7 +61,7 @@ import {
   CardBody,
   FormGroup,
   Badge,
-  InputGroup
+  InputGroup,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -74,12 +74,7 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-const statusClasses = {
-  "Kan Xumurame": "success", // Green for completed
-  "Kan Jalqabame": "info", // Yellow for started
-  "Adeemsarra Kan jiru": "warning", // Add other statuses as needed
-  "Adda Kan Cite": "danger", // Example status
-};
+
 const ProjectModel = () => {
   //meta title
   document.title = " Project";
@@ -500,344 +495,110 @@ const ProjectModel = () => {
     setSearchError(error);
     setShowSearchResult(true);
   };
-  //START UNCHANGED
-  // const columnDefs = useMemo(() => {
-  //   const baseColumnDefs = [
-  //     {
-  //       headerName: t("S.N"),
-  //       field: "sn",
-  //       valueGetter: (params) => params.node.rowIndex + 1,
-  //       sortable: false,
-  //       filter: false,
-  //       width: 60,
-  //     },
 
-  //     {
-  //       headerName: t("prj_name"),
-  //       field: "prj_name",
-  //       sortable: true,
-  //       filter: true,
-  //       cellRenderer: (params) => {
-  //         return truncateText(params.data.prj_name, 30) || "-";
-  //       },
-  //     },
-  //     {
-  //       headerName: t("prj_code"),
-  //       field: "prj_code",
-  //       sortable: true,
-  //       filter: true,
-  //       width: 100,
-  //       cellRenderer: (params) => {
-  //         return truncateText(params.data.prj_code, 30) || "-";
-  //       },
-  //     },
-  //     {
-  //       headerName: t("prj_total_estimate_budget"),
-  //       field: "prj_total_estimate_budget",
-  //       sortable: true,
-  //       filter: true,
-  //       cellRenderer: (params) => {
-  //         return truncateText(params.data.prj_total_estimate_budget, 30) || "-";
-  //       },
-  //     },
-  //     {
-  //       headerName: t("prj_total_actual_budget"),
-  //       field: "prj_total_actual_budget",
-  //       sortable: true,
-  //       filter: true,
-  //       cellRenderer: (params) => {
-  //         return truncateText(params.data.prj_total_actual_budget, 30) || "-";
-  //       },
-  //     },
-  //     {
-  //       headerName: t("prj_project_category_id"),
-  //       field: "prj_project_category_id",
-  //       sortable: true,
-  //       filter: true,
-  //       cellRenderer: (params) => {
-  //         return truncateText(params.data.prj_project_category_id, 30) || "-";
-  //       },
-  //     },
-  //     {
-  //       headerName: t("prj_sector_id"),
-  //       field: "prj_sector_id",
-  //       sortable: true,
-  //       filter: true,
-  //       hide: true,
-  //       cellRenderer: (params) => {
-  //         return truncateText(params.data.prj_sector_id, 30) || "-";
-  //       },
-  //     },
+  const localeText = {
+    // For Pagination Panel
+    page: t("page"),
+    more: t("more"),
+    to: t("to"),
+    of: t("of"),
+    next: t("next"),
+    last: t("last"),
+    first: t("first"),
+    previous: t("previous"),
+    loadingOoo: t("loadingOoo"),
+    noRowsToShow: t("noRowsToShow"),
 
-  //     {
-  //       headerName: t("prj_location_zone_id"),
-  //       field: "prj_location_zone_id",
-  //       sortable: true,
-  //       hide: true, // This will hide the column
-  //       filter: true,
-  //       hide: true,
-  //       cellRenderer: (params) => {
-  //         return truncateText(params.data.prj_location_zone_id, 30) || "-";
-  //       },
-  //     },
-  //     {
-  //       headerName: t("prj_location_woreda_id"),
-  //       field: "prj_location_woreda_id",
-  //       sortable: true,
-  //       filter: true,
-  //       hide: true,
-  //       cellRenderer: (params) => {
-  //         return truncateText(params.data.prj_location_woreda_id, 30) || "-";
-  //       },
-  //     },
-  //     {
-  //       headerName: t("prj_start_date_plan_et"),
-  //       field: "prj_start_date_plan_et",
-  //       sortable: true,
-  //       filter: true,
-  //       hide: true,
-  //       cellRenderer: (params) => {
-  //         return truncateText(params.data.prj_start_date_plan_et, 30) || "-";
-  //       },
-  //     },
-  //     {
-  //       headerName: t("prj_start_date_plan_gc"),
-  //       field: "prj_start_date_plan_gc",
-  //       sortable: true,
-  //       filter: true,
-  //       hide: true, // This will hide the column
-  //       cellRenderer: (params) => {
-  //         return truncateText(params.data.prj_start_date_plan_gc, 30) || "-";
-  //       },
-  //     },
-  //     {
-  //       headerName: t("prj_end_date_plan_et"),
-  //       field: "prj_end_date_plan_et",
-  //       sortable: true,
-  //       filter: true,
-  //       hide: true,
-  //       cellRenderer: (params) => {
-  //         return truncateText(params.data.prj_end_date_plan_et, 30) || "-";
-  //       },
-  //     },
-  //     {
-  //       headerName: t("prj_end_date_plan_gc"),
-  //       field: "prj_end_date_plan_gc",
-  //       sortable: true,
-  //       filter: true,
-  //       hide: true, // This will hide the column
-  //       cellRenderer: (params) => {
-  //         return truncateText(params.data.prj_end_date_plan_gc, 30) || "-";
-  //       },
-  //     },
+    // For Set Filter
+    selectAll: t("selectAll"),
+    selectAllSearchResults: t("selectAllSearchResults"),
+    searchOoo: t("search..."),
+    blank: t("blanks"),
+    notBlank: t("notBlank"),
+    noMatches: t("noMatches"),
+    columns: t("columns"),
+    filters: t("filters"),
+    values: t("values"),
+    rowGroup: t("rowGroup"),
+    pageSize: t("pageSize"),
+    sortAscending: t("sortAscending"),
+    sortDescending: t("sortDescending"),
+    chooseColumns: t("chooseColumns"),
+    noPin: t("noPin"),
+    pinLeft: t("pinLeft"),
+    pinRight: t("pinRight"),
+    dragHereToSetRowGroups: t("dragHereToSetRowGroups"),
+    // For Number Filter & Text Filter
+    filterOoo: t("filterOoo"),
+    equals: t("equals"),
+    notEqual: t("notEqual"),
+    lessThan: t("lessThan"),
+    greaterThan: t("greaterThan"),
+    inRange: t("inRange"),
+    lessThanOrEqual: t("lessThanOrEqual"),
+    greaterThanOrEqual: t("greaterThanOrEqual"),
+    contains: t("contains"),
+    notContains: t("notContains"),
+    startsWith: t("startsWith"),
+    endsWith: t("endsWith"),
 
-  //     {
-  //       headerName: t("prj_start_date_et"),
-  //       field: "prj_start_date_et",
-  //       sortable: true,
-  //       filter: true,
-  //       hide: true,
-  //       cellRenderer: (params) => {
-  //         return truncateText(params.data.prj_start_date_et, 30) || "-";
-  //       },
-  //     },
-  //     {
-  //       headerName: t("prj_start_date_gc"),
-  //       field: "prj_start_date_gc",
-  //       sortable: true,
-  //       hide: true, // This will hide the column
-  //       filter: true,
-  //       cellRenderer: (params) => {
-  //         return truncateText(params.data.prj_start_date_gc, 30) || "-";
-  //       },
-  //     },
+    // For Column Menu
+    pinColumn: t("pinColumn"),
+    before: t("before"),
+    after: t("after"),
+    valueAggregation: t("valueAggregation"),
+    autosizeThiscolumn: t("autosizeThiscolumn"),
+    autosizeAllColumns: t("autosizeAllColumns"),
+    groupBy: t("groupBy"),
+    ungroupBy: t("ungroupBy"),
+    resetColumns: t("resetColumns"),
+    expandAll: t("expandAll"),
+    collapseAll: t("collapseAll"),
+    copy: t("copy"),
+    ctrlC: t("ctrlC"),
+    copyWithHeaders: t("copyWithHeaders"),
+    paste: t("paste"),
+    ctrlV: t("ctrlV"),
+    export: t("export"),
 
-  //     {
-  //       headerName: t("prj_end_date_actual_et"),
-  //       field: "prj_end_date_actual_et",
-  //       sortable: true,
-  //       filter: true,
-  //       hide: true,
-  //       cellRenderer: (params) => {
-  //         return truncateText(params.data.prj_end_date_actual_et, 30) || "-";
-  //       },
-  //     },
-  //     {
-  //       headerName: t("prj_end_date_actual_gc"),
-  //       field: "prj_end_date_actual_gc",
-  //       sortable: true,
-  //       filter: true,
-  //       cellRenderer: (params) => {
-  //         return truncateText(params.data.prj_end_date_actual_gc, 30) || "-";
-  //       },
-  //     },
-  //     {
-  //       headerName: t("view_detail"),
-  //       sortable: true,
-  //       filter: false,
-  //       width: "120",
-  //       cellRenderer: (params) => {
-  //         const { prj_id } = params.data;
+    // Enterprise Menu Aggregation and Status Bar
+    sum: t("sum"),
+    min: t("min"),
+    max: t("max"),
+    none: t("none"),
+    count: t("count"),
+    average: t("average"),
+    filteredRows: t("filteredRows"),
+    selectedRows: t("selectedRows"),
+    totalRows: t("totalRows"),
+    totalAndFilteredRows: t("totalAndFilteredRows"),
 
-  //         return (
-  //           <Link to={`/Project/${prj_id}`}>
-  //             <Button type="button" color="primary" className="btn-sm">
-  //               {t("view_detail")}
-  //             </Button>
-  //           </Link>
-  //         );
-  //       },
-  //     },
-  //   ];
+    // Charts
+    pivotChartTitle: t("pivotChartTitle"),
+    rangeChartTitle: t("rangeChartTitle"),
+    columnChart: t("columnChart"),
+    groupedColumn: t("groupedColumn"),
+    stackedColumn: t("stackedColumn"),
+    barChart: t("barChart"),
+    pieChart: t("pieChart"),
+    doughnutChart: t("doughnutChart"),
+    line: t("line"),
+    areaChart: t("areaChart"),
+    stackedArea: t("stackedArea"),
 
-  //   // Adding the action buttons column
-  //   if (
-  //     data?.previledge?.is_role_editable &&
-  //     data?.previledge?.is_role_deletable
-  //   ) {
-  //     baseColumnDefs.push({
-  //       headerName: t("actions"),
-  //       field: "actions",
-  //       width: "130",
-  //       cellRenderer: (params) => {
-  //         return (
-  //           <div className="action-icons">
-  //             {params.data.is_editable ? (
-  //               <Link
-  //                 to="#"
-  //                 className="text-success"
-  //                 onClick={() => handleProjectClick(params.data)}
-  //               >
-  //                 <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-  //                 <UncontrolledTooltip placement="top" target="edittooltip">
-  //                   Edit
-  //                 </UncontrolledTooltip>
-  //               </Link>
-  //             ) : (
-  //               ""
-  //             )}
-  //             {params.data.is_editable ? (
-  //               <Link
-  //                 to="#"
-  //                 className="text-secondary ms-2"
-  //                 onClick={() => handleClick(params.data)}
-  //               >
-  //                 <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
-  //                 <UncontrolledTooltip placement="top" target="viewtooltip">
-  //                   View
-  //                 </UncontrolledTooltip>
-  //               </Link>
-  //             ) : (
-  //               ""
-  //             )}
-  //             {params.data.is_deletable ? (
-  //               <Link
-  //                 to="#"
-  //                 className="text-danger ms-2"
-  //                 onClick={() => onClickDelete(params.data)}
-  //               >
-  //                 <i
-  //                   className="mdi mdi-delete font-size-18"
-  //                   id="deletetooltip"
-  //                 />
-  //                 <UncontrolledTooltip placement="top" target="deletetooltip">
-  //                   Delete
-  //                 </UncontrolledTooltip>
-  //               </Link>
-  //             ) : (
-  //               ""
-  //             )}
-  //           </div>
-  //         );
-  //       },
-  //     });
-  //   }
+    // Pivot Mode
+    pivotMode: t("pivotMode"),
+    pivotColumnGroupTotals: t("pivotColumnGroupTotals"),
+    pivotColumnGroupFilterTotals: t("pivotColumnGroupFilterTotals"),
 
-  //   return baseColumnDefs;
-  // }, [handleProjectClick, toggleViewModal, onClickDelete]);
-
-  // const [columnDefs] = useState([
-  //   {
-  //     field: "prj_id",
-  //     headerName: "Project ID",
-  //     checkboxSelection: true,
-  //     headerCheckboxSelection: true,
-  //     sortable: true,
-  //     filter: "agTextColumnFilter",
-  //     valueFormatter: (params) => (params.node.footer ? "" : params.value), // Suppress in footer
-  //   },
-  //   {
-  //     field: "prj_name",
-  //     headerName: "Project Name",
-  //     sortable: true,
-  //     filter: "agTextColumnFilter",
-  //     floatingFilter: true,
-  //     enableRowGroup: true,
-  //     valueFormatter: (params) => (params.node.footer ? "Total" : params.value), // Display "Total" for footer
-  //   },
-  //   {
-  //     field: "prj_total_estimate_budget",
-  //     headerName: "Estimated Budget",
-  //     enableValue: true,
-  //     aggFunc: "sum", // Use sum to aggregate
-  //     valueFormatter: (params) => {
-  //       if (params.node.footer) {
-  //         return params.value
-  //           ? `$${params.value.toLocaleString()}` // Show total in footer
-  //           : "";
-  //       }
-  //       return params.value ? `$${params.value.toLocaleString()}` : "";
-  //     },
-  //   },
-  //   {
-  //     field: "prj_total_actual_budget",
-  //     headerName: "Actual Budget",
-  //     enableValue: true,
-  //     aggFunc: "sum", // Use sum to aggregate
-  //     valueFormatter: (params) => {
-  //       if (params.node.footer) {
-  //         return params.value
-  //           ? `$${params.value.toLocaleString()}` // Show total in footer
-  //           : "";
-  //       }
-  //       return params.value ? `$${params.value.toLocaleString()}` : "";
-  //     },
-  //   },
-  //   {
-  //     field: "prj_start_date_gc",
-  //     headerName: "Start Date",
-  //     sortable: true,
-  //     filter: "agDateColumnFilter",
-  //     valueFormatter: (params) =>
-  //       params.node.footer
-  //         ? "" // Suppress in footer
-  //         : params.value
-  //         ? new Date(params.value).toLocaleDateString()
-  //         : "Invalid date",
-  //     enableRowGroup: true,
-  //   },
-  //   {
-  //     field: "prj_end_date_gc",
-  //     headerName: "End Date",
-  //     sortable: true,
-  //     filter: "agDateColumnFilter",
-  //     valueFormatter: (params) =>
-  //       params.node.footer
-  //         ? "" // Suppress in footer
-  //         : params.value
-  //         ? new Date(params.value).toLocaleDateString()
-  //         : "Invalid date",
-  //     enableRowGroup: true,
-  //   },
-  //   {
-  //     field: "prj_geo_location",
-  //     headerName: "Geo Location",
-  //     filter: "agTextColumnFilter",
-  //     enableRowGroup: true,
-  //     pivot: true,
-  //     valueFormatter: (params) => (params.node.footer ? "" : params.value), // Suppress in footer
-  //   },
-  // ]);
+    // Miscellaneous
+    ariaHidden: t("ariaHidden"),
+    ariaVisible: t("ariaVisible"),
+    ariaChecked: t("ariaChecked"),
+    ariaUnchecked: t("ariaUnchecked"),
+    ariaIndeterminate: t("ariaIndeterminate"),
+    // Add more keys based on your requirements or AG Grid's localization documentation
+  };
 
   const columnDefs = useMemo(() => {
     const baseColumnDefs = [
@@ -851,19 +612,19 @@ const ProjectModel = () => {
       },
       {
         field: "prj_name",
-        headerName: "Project Name",
+        headerName: t("prj_name"),
         sortable: true,
         filter: "agTextColumnFilter",
         floatingFilter: true,
         enableRowGroup: true,
         valueFormatter: (params) =>
-          params.node.footer ? "Total" : params.value, // Display "Total" for footer
+          params.node.footer ? t("Total") : params.value, // Display "Total" for footer
       },
       {
         field: "prj_total_estimate_budget",
-        headerName: "Estimated Budget",
+        headerName: t("prj_total_estimate_budget"),
         enableValue: true,
-        aggFunc: "sum", // Use sum to aggregate
+        aggFunc: t("sum"), // Use sum to aggregate
         valueFormatter: (params) => {
           if (params.node.footer) {
             return params.value
@@ -875,9 +636,9 @@ const ProjectModel = () => {
       },
       {
         field: "prj_total_actual_budget",
-        headerName: "Actual Budget",
+        headerName: t("prj_total_actual_budget"),
         enableValue: true,
-        aggFunc: "sum", // Use sum to aggregate
+        aggFunc: t("sum"), // Use sum to aggregate
         valueFormatter: (params) => {
           if (params.node.footer) {
             return params.value
@@ -889,7 +650,7 @@ const ProjectModel = () => {
       },
       {
         field: "prj_start_date_gc",
-        headerName: "Start Date",
+        headerName: t("prj_start_date_gc"),
         sortable: true,
         filter: "agDateColumnFilter",
         valueFormatter: (params) =>
@@ -902,7 +663,7 @@ const ProjectModel = () => {
       },
       {
         field: "prj_end_date_actual_gc",
-        headerName: "End Date",
+        headerName: t("prj_end_date_actual_gc"),
         sortable: true,
         filter: "agDateColumnFilter",
         valueFormatter: (params) =>
@@ -914,7 +675,7 @@ const ProjectModel = () => {
         enableRowGroup: true,
       },
       {
-        headerName: t("view_detail"),
+        headerName: t("view_details"),
         sortable: false,
         filter: false,
         width: 120,
@@ -926,7 +687,7 @@ const ProjectModel = () => {
           return (
             <Link to={`/Project/${prj_id}`}>
               <Button type="button" color="primary" className="btn-sm">
-                {t("view_detail")}
+                {t("view_details")}
               </Button>
             </Link>
           );
@@ -983,15 +744,15 @@ const ProjectModel = () => {
                 />
               )}
               <Link
-                  to="#"
-                  className="text-secondary ms-2"
-                  onClick={() => handleClick(params.data)}
-                >
-                  <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
-                  <UncontrolledTooltip placement="top" target="viewtooltip">
-                    View
-                  </UncontrolledTooltip>
-                </Link>
+                to="#"
+                className="text-secondary ms-2"
+                onClick={() => handleClick(params.data)}
+              >
+                <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
+                <UncontrolledTooltip placement="top" target="viewtooltip">
+                  View
+                </UncontrolledTooltip>
+              </Link>
             </div>
           );
         },
@@ -1104,7 +865,7 @@ const ProjectModel = () => {
                   {/* Search Input for  Filter */}
                   <Input
                     type="text"
-                    placeholder="Search..."
+                    placeholder={t("Search") + "..."}
                     onChange={(e) => setQuickFilterText(e.target.value)}
                     className="mb-2"
                   />
@@ -1123,20 +884,7 @@ const ProjectModel = () => {
                   rowData={
                     showSearchResult ? searchResults?.data : data?.data || []
                   }
-                  // columnDefs={columnDefs}
-                  // pagination={true}
-                  // paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                  // paginationPageSize={10}
-                  // quickFilterText={quickFilterText}
-                  // onSelectionChanged={onSelectionChanged}
-                  // rowHeight={30} // Set the row height here
-                  // animateRows={true} // Enables row animations
-                  // domLayout="autoHeight" // Auto-size the grid to fit content
-                  // onGridReady={(params) => {
-                  //   params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                  // }}
                   columnDefs={columnDefs}
-                  // defaultColDef={defaultColDef}
                   groupIncludeFooter={true}
                   groupIncludeTotalFooter={true}
                   rowSelection="multiple"
@@ -1158,6 +906,7 @@ const ProjectModel = () => {
                   onGridReady={(params) => {
                     params.api.sizeColumnsToFit(); // Size columns to fit the grid width
                   }}
+                  localeText={localeText} // Dynamically translated texts
                 />
               </div>
             </div>
@@ -1368,7 +1117,7 @@ const ProjectModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                 <Col className="col-md-4 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <FormGroup>
                       <Label>{t("prj_start_date_gc")}</Label>
                       <InputGroup>
