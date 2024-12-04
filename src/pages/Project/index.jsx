@@ -686,7 +686,7 @@ const ProjectModel = () => {
           const { prj_id } = params.data || {};
           return (
             <Link to={`/Project/${prj_id}`}>
-              <Button type="button" color="primary" className="btn-sm">
+              <Button type="button" color="primary" className="btn-sm mb-1">
                 {t("view_details")}
               </Button>
             </Link>
