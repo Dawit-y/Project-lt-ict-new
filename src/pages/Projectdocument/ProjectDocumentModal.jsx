@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
@@ -14,25 +14,22 @@ import {
   TabPane,
   Table,
 } from "reactstrap";
+import { IoMdDownload } from "react-icons/io";
 import classnames from "classnames";
-import axios from "axios";
-
-import { pdfjs } from "react-pdf";
-
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
+import { pdfjs, Document, Page } from "react-pdf";
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
   import.meta.url
 ).toString();
 
-import { Document, Page } from "react-pdf";
-
 const modalStyle = {
   width: "100%",
-  height: "100%",
+  marginTop: "30px",
 };
 
 const pdfViewerStyle = {
-  height: "500px",
   width: "100%",
   overflow: "auto",
   display: "flex",
@@ -41,6 +38,31 @@ const pdfViewerStyle = {
 };
 
 const API_URL = import.meta.env.VITE_BASE_URL;
+
+const Preview = ({ file, onDocumentLoadSuccess, pageNumber }) => {
+  const path = useMemo(
+    () => `${API_URL}/public/uploads/projectfiles/${file}`,
+    [file]
+  );
+
+  const memoizedOptions = useMemo(
+    () => ({
+      workerSrc: pdfjs.GlobalWorkerOptions.workerSrc,
+    }),
+    []
+  );
+
+  return (
+    <Document
+      file={path}
+      onLoadSuccess={onDocumentLoadSuccess}
+      onLoadError={(error) => console.error("PDF loading error:", error)}
+      options={memoizedOptions}
+    >
+      <Page pageNumber={pageNumber} scale={1} />
+    </Document>
+  );
+};
 
 const ProjectDocumentModal = (props) => {
   const { t } = useTranslation();
@@ -57,7 +79,6 @@ const ProjectDocumentModal = (props) => {
   const toggleTab = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
   };
-  console.log(transaction);
   return (
     <Modal
       isOpen={isOpen}
@@ -69,7 +90,7 @@ const ProjectDocumentModal = (props) => {
       toggle={toggle}
       style={modalStyle}
     >
-      <div className="modal-xl">
+      <div className="modal-xl mt-30px">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
           <Nav tabs>
@@ -176,54 +197,63 @@ const ProjectDocumentModal = (props) => {
               )}
             </TabPane>
             <TabPane tabId="pdf">
-              <div style={pdfViewerStyle}>
-                {transaction?.prd_size > 10485760 ? (
-                  <div>
-                    <h6 className="text-danger mt-2">Unable to preview pdf</h6>
-                    <a
-                      className="btn btn-primary"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href={`${API_URL}/public/uploads/projectfiles/${transaction?.prd_file_path}`}
-                    >
-                      Download PDF
-                    </a>
-                  </div>
-                ) : (
-                  <>
-                    <Document
-                      file={`${API_URL}/public/uploads/projectfiles/${transaction?.prd_file_path}`}
-                      onLoadSuccess={onDocumentLoadSuccess}
-                      options={{
-                        workerSrc: pdfjs.GlobalWorkerOptions.workerSrc,
-                      }}
-                    >
-                      <Page pageNumber={pageNumber} scale={1.5} />
-                    </Document>
-                  </>
-                )}
-              </div>
-              <div className="absolute bottom-0 d-flex gap-2">
-                <p>
-                  Page {pageNumber} of {numPages}
-                </p>
-                <Button
-                  disabled={pageNumber <= 1}
-                  onClick={() => setPageNumber((prevPage) => prevPage - 1)}
-                >
-                  Previous
-                </Button>
-                <Button
-                  disabled={pageNumber >= numPages}
-                  onClick={() => setPageNumber((prevPage) => prevPage + 1)}
-                >
-                  Next
-                </Button>
+              <div style={{ paddingTop: "30px", height: "100%" }}>
+                <div style={pdfViewerStyle}>
+                  {transaction?.prd_size > 10485760 ? (
+                    <div>
+                      <h6 className="text-danger mt-2">
+                        Unable to preview Document
+                      </h6>
+                      <a
+                        className="btn btn-primary"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href={`${API_URL}/public/uploads/projectfiles/${transaction?.prd_file_path}`}
+                      >
+                        <IoMdDownload /> <span className="ms-2">Download</span>
+                      </a>
+                    </div>
+                  ) : (
+                    <Preview
+                      file={transaction?.prd_file_path}
+                      onDocumentLoadSuccess={onDocumentLoadSuccess}
+                      pageNumber={pageNumber}
+                    />
+                  )}
+                </div>
               </div>
             </TabPane>
           </TabContent>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter
+          className={`d-flex align-items-center ${
+            activeTab == "pdf" && transaction?.prd_size < 10485760
+              ? "justify-content-between"
+              : "justify-content-end"
+          } `}
+        >
+          {activeTab == "pdf" && transaction?.prd_size < 10485760 && (
+            <div className="d-flex align-items-center gap-3">
+              <p className="mb-0">
+                Page {pageNumber} of {numPages}
+              </p>
+              <Button
+                disabled={pageNumber <= 1}
+                onClick={() => setPageNumber((prevPage) => prevPage - 1)}
+                color="primary"
+              >
+                Previous
+              </Button>
+              <Button
+                disabled={pageNumber >= numPages}
+                onClick={() => setPageNumber((prevPage) => prevPage + 1)}
+                color="primary"
+              >
+                Next
+              </Button>
+            </div>
+          )}
+
           <Button type="button" color="secondary" onClick={toggle}>
             {t("Close")}
           </Button>
