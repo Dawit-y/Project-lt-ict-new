@@ -26,7 +26,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
 import ProjectDocumentModal from "./ProjectDocumentModal";
 import { useTranslation } from "react-i18next";
-import '../../App.css';
+import "../../App.css";
 
 import {
   Button,
@@ -161,7 +161,8 @@ const ProjectDocumentModel = (props) => {
       prd_project_id: passedId,
       prd_file: file,
       prd_name: (projectDocument && projectDocument.prd_name) || "",
-      prd_document_type_id: (projectDocument && projectDocument.prd_document_type_id) || "",
+      prd_document_type_id:
+        (projectDocument && projectDocument.prd_document_type_id) || "",
       prd_file_path: (projectDocument && projectDocument.prd_file_path) || "",
 
       prd_size: (projectDocument && projectDocument.prd_size) || "",
@@ -346,9 +347,14 @@ const ProjectDocumentModel = (props) => {
     setShowSearchResults(false);
   };
 
+  const bytesToMB = (bytes) => {
+    if (isNaN(bytes) || bytes < 0) return "0 MB";
+    const mb = bytes / (1024 * 1024);
+    return `${mb.toFixed(2)} MB`;
+  };
+
   const columns = useMemo(() => {
     const baseColumns = [
-     
       {
         header: "",
         accessorKey: "prd_name",
@@ -382,9 +388,7 @@ const ProjectDocumentModel = (props) => {
         enableSorting: true,
         cell: (cellProps) => {
           return (
-            <span>
-              {truncateText(cellProps.row.original.prd_size, 30) || "-"}
-            </span>
+            <span>{bytesToMB(cellProps.row.original.prd_size) || "-"}</span>
           );
         },
       },
@@ -539,23 +543,22 @@ const ProjectDocumentModel = (props) => {
         {isLoading || searchLoading ? (
           <Spinners setLoading={setLoading} />
         ) : (
-         
-                  <TableContainer
-                    columns={columns}
-                    data={showSearchResults ? results : data}
-                    isGlobalFilter={true}
-                    isAddButton={true}
-                    isCustomPageSize={true}
-                    handleUserClick={handleProjectDocumentClicks}
-                    isPagination={true}
-                    SearchPlaceholder={t("Results") + "..."}
-                    buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                    buttonName={t("add") + " " + t("project_document")}
-                    tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                    theadClass="table-light"
-                    pagination="pagination"
-                    paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                  />
+          <TableContainer
+            columns={columns}
+            data={showSearchResults ? results : data}
+            isGlobalFilter={true}
+            isAddButton={true}
+            isCustomPageSize={true}
+            handleUserClick={handleProjectDocumentClicks}
+            isPagination={true}
+            SearchPlaceholder={t("Results") + "..."}
+            buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+            buttonName={t("add") + " " + t("project_document")}
+            tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+            theadClass="table-light"
+            pagination="pagination"
+            paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+          />
         )}
 
         <Modal isOpen={modal} toggle={toggle} className="modal-xl">
@@ -581,7 +584,10 @@ const ProjectDocumentModel = (props) => {
               <Row>
                 {/* Document Type (Unchanged) */}
                 <Col className="col-md-4 mb-3">
-                  <Label>{t("prd_document_type_id")} <span className="text-danger">*</span></Label>
+                  <Label>
+                    {t("prd_document_type_id")}{" "}
+                    <span className="text-danger">*</span>
+                  </Label>
                   <Input
                     name="prd_document_type_id"
                     id="prd_document_type_id"
@@ -604,11 +610,12 @@ const ProjectDocumentModel = (props) => {
                     </FormFeedback>
                   ) : null}
                 </Col>
-               
 
                 {/* Name */}
                 <Col className="col-md-4 mb-3">
-                  <Label>{t("prd_name")} <span className="text-danger">*</span></Label>
+                  <Label>
+                    {t("prd_name")} <span className="text-danger">*</span>
+                  </Label>
                   <Input
                     name="prd_name"
                     type="text"
@@ -631,7 +638,7 @@ const ProjectDocumentModel = (props) => {
                 </Col>
                 {/* document status */}
 
-                <Col className="col-md-6 mb-3" style={{ display: 'none'}}>
+                <Col className="col-md-6 mb-3" style={{ display: "none" }}>
                   <Label>{t("prd_status")}</Label>
                   <Input
                     name="prd_status"
