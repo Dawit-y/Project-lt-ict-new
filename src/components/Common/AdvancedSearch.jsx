@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Card, CardBody, Col, Row, Collapse, Label, Input } from "reactstrap";
+import { Card, CardBody, Col, Row, Collapse, Label, Input,FormGroup,InputGroup,Button  } from "reactstrap";
 import Select from "react-select";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
-
+import "flatpickr/dist/themes/material_blue.css";
+import Flatpickr from "react-flatpickr";
 const AdvancedSearch = ({
   searchHook,
   textSearchKeys,
@@ -15,6 +16,7 @@ const AdvancedSearch = ({
   setIsSearchLoading,
   setSearchResults,
   setShowSearchResult,
+  dateSearchKeys
 }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -126,6 +128,41 @@ const AdvancedSearch = ({
                   <Col xxl={10} lg={10}>
                     <Row>
                       {/* Text Inputs */}
+{dateSearchKeys && dateSearchKeys.map((key) => (                          
+  <Col xxl={2} lg={2} key={key}>
+                    <FormGroup>
+                      <InputGroup>
+                        <Flatpickr
+                         id={key}
+                          name={key}
+                          className={`form-control`}
+                          type="text"
+                          placeholder={t(key)}
+                          autoComplete="off"
+                          options={{
+                            altInput: true,
+                            altFormat: "Y/m/d",
+                            dateFormat: "Y/m/d",
+                            enableTime: false,
+                          }}
+                          value={params[key] || ""}
+                          onChange={(e) =>{
+                              console.log("date "+ e);
+                                  handleSearchKey(key, e.target);
+                                }
+                                }
+                        />
+                        <Button
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          disabled
+                        >
+                          <i className="fa fa-calendar" aria-hidden="true" />
+                        </Button>
+                      </InputGroup>
+                    </FormGroup>
+</Col>
+                        ))}
                       {textSearchKeys &&
                         textSearchKeys.map((key) => (
                           <Col xxl={2} lg={2} key={key}>
@@ -137,8 +174,9 @@ const AdvancedSearch = ({
                                 autoComplete="off"
                                 placeholder={t(key)}
                                 value={params[key] || ""}
-                                onChange={(e) =>
+                                onChange={(e) =>{                                
                                   handleSearchKey(key, e.target.value)
+                                }
                                 }
                               />
                             </div>

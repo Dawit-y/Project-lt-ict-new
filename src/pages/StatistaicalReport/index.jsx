@@ -31,7 +31,7 @@ const StatisticalReport = () => {
     },
     {
       name: "Projects",
-      url: "https://pmsor.awashsol.com/api/project/listgrid",
+      url: "https://pmsor.awashsol.com/api/project/statistics",
     },
   ]);
   const [selectedEndpoint, setSelectedEndpoint] = useState("");

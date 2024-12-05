@@ -40,7 +40,7 @@ const pdfViewerStyle = {
   alignItems: "center",
 };
 
-const API_URL = import.meta.env.VITE_BASE_URL;
+const API_URL = import.meta.env.VITE_BASE_API_FILE;
 
 const ProjectDocumentModal = (props) => {
   const { t } = useTranslation();

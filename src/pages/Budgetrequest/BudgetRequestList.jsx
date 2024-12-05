@@ -349,7 +349,7 @@ const BudgetRequestListModel = () => {
                   />
                 </div>
               </div>
-              <BudgetRequestAnalysis data={data?.data} />
+              <BudgetRequestAnalysis data={showSearchResult ? searchResults?.data : data?.data || []} />
             </>
           )}
         </div>

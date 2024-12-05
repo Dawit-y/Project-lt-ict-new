@@ -617,6 +617,7 @@ const ProjectModel = () => {
         filter: "agTextColumnFilter",
         floatingFilter: true,
         enableRowGroup: true,
+        width:300,
         valueFormatter: (params) =>
           params.node.footer ? t("Total") : params.value, // Display "Total" for footer
       },

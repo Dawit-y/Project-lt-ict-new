@@ -7,7 +7,6 @@ import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns1";
-import CascadingDropdownsearch from "../../components/Common/CascadingDropdowns2";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
@@ -18,15 +17,6 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import {
-  useFetchUserss,
-  useSearchUserss,
-  useAddUsers,
-  useDeleteUsers,
-  useUpdateUsers,
-} from "../../queries/users_query";
 
 import {
   getUsers as onGetUsers,
@@ -67,7 +57,7 @@ import {
   Badge
 
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
 
 const truncateText = (text, maxLength) => {
@@ -94,16 +84,7 @@ const department = useFetchDepartments();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
- const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useFetchUserss();
-
-  const addUsers = useAddUsers();
-  const updateUsers = useUpdateUsers();
-  const deleteUsers = useDeleteUsers();
   const [users, setUsers] = useState(null);
   const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
@@ -121,51 +102,6 @@ const [departmentOptions, setDepartmentOptions] = useState([]);
 
   const [userMetaData, setUserData] = useState({});
   const [showCanvas, setShowCanvas] = useState(false);
-  //START CRUD
-  const handleAddUsers = async (data) => {
-    try {
-      await addUsers.mutateAsync(data);
-      toast.success(`Data added successfully`, {
-        autoClose: 2000,
-      });
-    } catch (error) {
-      toast.error("Failed to add data", {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-
-  const handleUpdateUsers = async (data) => {
-    try {
-      await updateUsers.mutateAsync(data);
-      toast.success(`data updated successfully`, {
-        autoClose: 2000,
-      });
-    } catch (error) {
-      toast.error(`Failed to update Data`, {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleDeleteUsers = async () => {
-    if (users && users.usr_id) {
-      try {
-        const id = users.usr_id;
-        await deleteUsers.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
-          autoClose: 2000,
-        });
-      } catch (error) {
-        toast.error(`Failed to delete Data`, {
-          autoClose: 2000,
-        });
-      }
-      setDeleteModal(false);
-    }
-  };
-  //END CRUD
     //START FOREIGN CALLS
   const [sectorOptions, setSectorOptions] = useState([]);
   const [selectedSector, setSelectedSector] = useState("");
@@ -222,11 +158,7 @@ const [departmentOptions, setDepartmentOptions] = useState([]);
     setSelectedDepartment(e.target.value);
     validation.setFieldValue("usr_department_id", e.target.value);
   };
- const handleSearchResults = ({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
-  };
+
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
@@ -257,15 +189,15 @@ const [departmentOptions, setDepartmentOptions] = useState([]);
     },
 
     validationSchema: Yup.object({
-usr_email: Yup.string()
+       usr_email: Yup.string()
         .required(t("usr_email"))
-        .test("unique-usr_email", t("Already exists"), (value) => {
-          return !data?.data.some(
+        .test("unique-role-id", t("Already exists"), (value) => {
+          return !data.some(
             (item) =>
-              item.usr_email == value &&
-              item.usr_id !== users?.usr_id
+              item.usr_email == value && item.usr_id !== users?.usr_id
           );
         }),
+
       //usr_email: Yup.string().required(t("usr_email")),
       usr_password: Yup.string().required(t("usr_password")),
       usr_full_name: Yup.string().required(t("usr_full_name")),
@@ -287,7 +219,6 @@ usr_email: Yup.string()
           usr_role_id: values.usr_role_id,
           usr_region_id: Number(values.usr_region_id),
           usr_woreda_id: Number(values.usr_woreda_id),
-          usr_zone_id: Number(values.usr_zone_id),
           usr_kebele_id: Number(values.usr_kebele_id),
           usr_sector_id: Number(values.usr_sector_id),
           usr_is_active: Number(values.usr_is_active),
@@ -304,7 +235,8 @@ usr_email: Yup.string()
           is_editable: values.is_editable,
         };
         // update Users
-handleUpdateUsers(updateUsers);
+
+        dispatch(onUpdateUsers(updateUsers));
         validation.resetForm();
       } else if (isDuplicateModalOpen) {
         const duplcateuser = {
@@ -314,7 +246,6 @@ handleUpdateUsers(updateUsers);
           usr_phone_number: values.usr_phone_number,
           usr_role_id: values.usr_role_id,
           usr_region_id: Number(values.usr_region_id),
-          usr_zone_id: Number(values.usr_zone_id),
           usr_woreda_id: Number(values.usr_woreda_id),
           usr_kebele_id: Number(values.usr_kebele_id),
           usr_sector_id: Number(values.usr_sector_id),
@@ -333,7 +264,7 @@ handleUpdateUsers(updateUsers);
         };
         setSelectedDepartment(values.usr_department_id);
         // update Users
-       handleAddUsers(duplcateuser);
+        dispatch(onAddUsers(duplcateuser));
         validation.resetForm();
       }
        else {
@@ -344,7 +275,6 @@ handleUpdateUsers(updateUsers);
           usr_phone_number: values.usr_phone_number,
           usr_role_id: Number(values.usr_role_id),
           usr_region_id: Number(values.usr_region_id),
-          usr_zone_id: Number(values.usr_zone_id),
           usr_woreda_id: Number(values.usr_woreda_id),
           usr_kebele_id: Number(values.usr_kebele_id),
           usr_sector_id: Number(values.usr_sector_id),
@@ -359,7 +289,7 @@ handleUpdateUsers(updateUsers);
           usr_department_id: Number(values.usr_department_id)
         };
 
-        handleAddUsers(newUsers);
+        dispatch(onAddUsers(newUsers));
         validation.resetForm();
       }
     },
@@ -367,7 +297,43 @@ handleUpdateUsers(updateUsers);
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
   const dispatch = useDispatch();
+  // Fetch Users on component mount
+  useEffect(() => {
+    dispatch(onGetUsers());
+  }, [dispatch]);
 
+  const usersProperties = createSelector(
+    (state) => state.UsersR, // this is geting from  reducer
+    (UsersReducer) => ({
+      // this is from Project.reducer
+      users: UsersReducer.users,
+      loading: UsersReducer.loading,
+      update_loading: UsersReducer.update_loading,
+    })
+  );
+
+  const {
+    users: { data, previledge },
+    loading,
+    update_loading,
+  } = useSelector(usersProperties);
+
+  useEffect(() => {
+    setModal(false);
+  }, [update_loading]);
+
+  // end  fetch dpt
+
+  const selectSearchProperties = createSelector(
+    (state) => state.search,
+    (search) => ({
+      results: search.results,
+    })
+  );
+
+  const { results } = useSelector(selectSearchProperties);
+
+  const [isLoading, setLoading] = useState(loading);
   useEffect(() => {
     setUsers(data);
   }, [data]);
@@ -463,6 +429,13 @@ setSelectedSector(users.usr_sector_id);
     setShowCanvas(!showCanvas); // Toggle canvas visibility
     // setProjectMetaData(data);
     setUserData(data);
+  };
+
+  const handleDeleteUsers = () => {
+    if (users && users.usr_id) {
+      dispatch(onDeleteUsers(users.usr_id));
+      setDeleteModal(false);
+    }
   };
   const handleUsersClicks = () => {
     setIsEdit(false);
@@ -565,10 +538,8 @@ setSelectedSector(users.usr_sector_id);
         ),
       },
     ];
- if (
-      data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable
-    ) {
+
+    if (previledge?.is_role_editable && previledge?.is_role_deletable) {
       baseColumns.push({
         headerName: t("Action"),
         sortable: true,
@@ -655,6 +626,10 @@ setSelectedSector(users.usr_sector_id);
       gridRef.current.api.setRowData(selectedRows);
     }
   };
+  // Clear the filter and show all rows again
+  const clearFilter = () => {
+    gridRef.current.api.setRowData(showSearchResults ? results : data);
+  };
   return (
     <React.Fragment>
       <UsersModal
@@ -670,32 +645,8 @@ setSelectedSector(users.usr_sector_id);
       <div className="page-content">
         <div className="container-fluid">
           <Breadcrumbs title={t("users")} breadcrumbItem={t("users")} />
-          <AdvancedSearch
-            searchHook={useSearchUserss}
-            textSearchKeys={["usr_email"]}
-            dropdownSearchKeys={[]}
-            checkboxSearchKeys={[
-              {
-                key: "example1",
-                options: [
-                  { value: "Engineering", label: "Example1" },
-                  { value: "Science", label: "Example2" },
-                ],
-              },
-            ]}
-            Component={CascadingDropdownsearch}
-            component_params={{
-              dropdown1name: "usr_region_id",
-              dropdown2name: "usr_zone_id",
-              dropdown3name: "usr_woreda_id",
-            }}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          />
-          {isLoading || isSearchLoading ? (
-            <Spinners />
+          {isLoading || searchLoading ? (
+            <Spinners setLoading={setLoading} />
           ) : (
             <div
               className="ag-theme-alpine"
@@ -713,6 +664,13 @@ setSelectedSector(users.usr_sector_id);
                   />
                 </Col>
                 <Col sm="12" md="6" className="text-md-end">
+                  <Button
+                    color="secondary"
+                    className="me-2"
+                    onClick={clearFilter}
+                  >
+                    Clear Filter
+                  </Button>
                   <Button color="success" onClick={handleUsersClicks}>
                     Add New
                   </Button>
@@ -723,9 +681,7 @@ setSelectedSector(users.usr_sector_id);
               <div style={{ height: "600px" }}>
                 <AgGridReact
                   ref={gridRef}
-                  rowData={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
+                  rowData={showSearchResults ? results : data}
                   columnDefs={columnDefs}
                   pagination={true}
                   paginationPageSizeSelector={[10, 20, 30, 40, 50]}
@@ -754,6 +710,15 @@ setSelectedSector(users.usr_sector_id);
                 onSubmit={(e) => {
                   e.preventDefault();
                   validation.handleSubmit();
+                  const modalCallback = () => setModal(false);
+                  if (isEdit) {
+                    onUpdateUsers(validation.values, modalCallback);
+                  }else if(isDuplicateModalOpen){
+                    onAddUsers(validation.values, modalCallback);
+                  } 
+                  else {
+                    onAddUsers(validation.values, modalCallback);
+                  }
                   return false;
                 }}
               >
@@ -931,8 +896,8 @@ setSelectedSector(users.usr_sector_id);
                     <CascadingDropdowns
                       validation={validation}
                       dropdown1name="usr_region_id"
-                      dropdown2name="usr_zone_id"
-                      dropdown3name="usr_woreda_id"
+                      dropdown2name="usr_woreda_id"
+                      dropdown3name="usr_kebele_id"
                       isEdit={isEdit} // Set to true if in edit mode, otherwise false
                     />
                   </Col>
@@ -1020,19 +985,15 @@ setSelectedSector(users.usr_sector_id);
                 </Row>
                 <Row>
                   <Col>
-                  <div className="text-end">
-                      {addUsers.isPending || updateUsers.isPending ? (
+                    <div className="text-end">
+                      {update_loading ? (
                         <Button
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={
-                            addUsers.isPending ||
-                            updateUsers.isPending ||
-                            !validation.dirty
-                          }
+                          disabled={update_loading || !validation.dirty}
                         >
-                          <Spinner size={"sm"} color="light" className="me-2" />
+                          <Spinner size={"sm"} color="#fff" />
                           {t("Save")}
                         </Button>
                       ) : (
@@ -1040,13 +1001,9 @@ setSelectedSector(users.usr_sector_id);
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={
-                            addUsers.isPending ||
-                            updateUsers.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                         {isDuplicateModalOpen ? <div>{t("Save Duplicate")}</div> : <div>{t("Save")}</div>}
+                          disabled={update_loading || !validation.dirty}
+                        >{isDuplicateModalOpen ? <div>{t("Save Duplicate")}</div> : <div>{t("Save")}</div>}
+
                         </Button>
                       )}
                     </div>
