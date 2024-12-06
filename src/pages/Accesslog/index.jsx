@@ -70,7 +70,7 @@ const AccessLogModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useFetchAccessLogs();
+  const { data, isLoading, error, isError, refetch } = useState(null);
   const pageInfo = useFetchPagess();
   const addAccessLog = useAddAccessLog();
   const updateAccessLog = useUpdateAccessLog();
@@ -186,7 +186,6 @@ acl_status: Yup.string().required(t('acl_status')),
       if (isEdit) {
         const updateAccessLog = {
           acl_id: accessLog ? accessLog.acl_id : 0,
-          acl_id:accessLog.acl_id, 
 acl_ip:values.acl_ip, 
 acl_user_id:values.acl_user_id, 
 acl_role_id:values.acl_role_id, 
@@ -361,13 +360,13 @@ acl_status:accessLog.acl_status,
       }, 
 {
         header: '',
-        accessorKey: 'acl_detail',
+        accessorKey: 'acl_create_time',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.acl_detail, 30) ||
+              {truncateText(cellProps.row.original.acl_create_time, 30) ||
                 '-'}
             </span>
           );
@@ -485,8 +484,8 @@ acl_status:accessLog.acl_status,
           />
           <AdvancedSearch
             searchHook={useSearchAccessLogs}
-            textSearchKeys={["acl_ip"]}
-            dateSearchKeys={["acl_create_time"]}
+            textSearchKeys={["acl_user_id"]}
+            dateSearchKeys={["log_time"]}
             dropdownSearchKeys={[
               {
                 key: "acl_role_id",

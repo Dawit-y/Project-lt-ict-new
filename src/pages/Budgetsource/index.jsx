@@ -411,26 +411,8 @@ const BudgetSourceModel = () => {
           <AdvancedSearch
             searchHook={useSearchBudgetSources}
             textSearchKeys={["pbs_name_or"]}
-            dropdownSearchKeys={[
-              {
-                key: "example",
-                options: [
-                  { value: "Freelance", label: "Example1" },
-                  { value: "Full Time", label: "Example2" },
-                  { value: "Part Time", label: "Example3" },
-                  { value: "Internship", label: "Example4" },
-                ],
-              },
-            ]}
-            checkboxSearchKeys={[
-              {
-                key: "example1",
-                options: [
-                  { value: "Engineering", label: "Example1" },
-                  { value: "Science", label: "Example2" },
-                ],
-              },
-            ]}
+            dropdownSearchKeys={[]}
+            checkboxSearchKeys={[]}
             onSearchResult={handleSearchResults}
             setIsSearchLoading={setIsSearchLoading}
             setSearchResults={setSearchResults}
