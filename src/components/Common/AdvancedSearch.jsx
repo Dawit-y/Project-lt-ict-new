@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
+import { formatDateHyphen } from "../../utils/commonMethods";
 const AdvancedSearch = ({
   searchHook,
   textSearchKeys,
@@ -117,6 +118,10 @@ const AdvancedSearch = ({
 
     return !(hasParamsValue || hasComponentValue());
   };
+  const [selectedDate, setSelectedDate] = useState(null);
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
   return (
     <React.Fragment>
       <Row>
@@ -129,38 +134,52 @@ const AdvancedSearch = ({
                     <Row>
                       {/* Text Inputs */}
 {dateSearchKeys && dateSearchKeys.map((key) => (                          
-  <Col xxl={2} lg={2} key={key}>
+  <Col xxl={3} lg={3} key={key}>
                     <FormGroup>
                       <InputGroup>
                         <Flatpickr
-                         id={key}
-                          name={key}
+                         id={`${key}Start`}
+                          name={`${key}Start`}
                           className={`form-control`}
                           type="text"
-                          placeholder={t(key)}
+                         /* placeholder={`${t(key)}_start`}*/
+                          placeholder={t(`${key}_start`)}
                           autoComplete="off"
                           options={{
                             altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
+                            altFormat: "Y-m-d",
+                            dateFormat: "Y-m-d",
                             enableTime: false,
                           }}
                           value={params[key] || ""}
                           onChange={(e) =>{
-                              console.log("date "+ e);
-                                  handleSearchKey(key, e.target);
+                                  handleSearchKey(`${key}Start`, formatDateHyphen(e[0]));
                                 }
                                 }
                         />
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
-                      </InputGroup>
-                    </FormGroup>
+                        <Flatpickr
+                         id={`${key}End`}
+                          name={`${key}End`}
+                          className={`form-control`}
+                          type="text"
+                          placeholder={t(`${key}_end`)}
+                          autoComplete="off"
+                          options={{
+                            altInput: true,
+                            altFormat: "Y-m-d",
+                            dateFormat: "Y-m-d",
+                            enableTime: false,
+                          }}
+                          value={params[key] || ""}
+                          onChange={(datee) =>{
+                              console.log("date "+ formatDateHyphen(datee[0]));
+                                  handleSearchKey(`${key}End`, formatDateHyphen(datee[0]));
+                                }
+                                }
+                        />
+                      
+                    </InputGroup>
+                        </FormGroup>
 </Col>
                         ))}
                       {textSearchKeys &&

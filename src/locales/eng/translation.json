@@ -754,5 +754,9 @@
 "select_woreda":"Select Woreda",
 "region":"Region",
 "zone":"Zone",
-"woreda":"Woreda"
+"woreda":"Woreda",
+"payment_date_start":"Payment Start Date",
+"payment_date_end":"Payment End Date",
+"log_time_start":"Start Log Time",
+"log_time_end":"End Log Time"
 }

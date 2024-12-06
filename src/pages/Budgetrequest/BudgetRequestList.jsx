@@ -111,13 +111,20 @@ const BudgetRequestListModel = () => {
   const columnDefs = useMemo(() => {
     const baseColumnDefs = [
       {
+        headerName: t("S.N"),
+        field: "sn",
+        valueGetter: (params) => params.node.rowIndex + 1,
+        sortable: false,
+        filter: false,
+        width: 60,
+      },
+      {
         headerName: t("bdr_budget_year_id"),
-        field: "bdr_budget_year_id",
+        field: "bdy_name",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          const budgetYearName = budgetYearMap[params.value] || "";
-          return budgetYearName;
+        return truncateText(params.data.bdy_name, 30) || "-";
         },
       },
       {
@@ -310,27 +317,7 @@ const BudgetRequestListModel = () => {
                       className="mb-2"
                     />
                   </Col>
-                  <Col sm="12" md="6" className="text-md-end">
-                    <Button
-                      color="primary"
-                      className="me-2"
-                      onClick={filterMarked}
-                    >
-                      Filter Marked
-                    </Button>
-                    <Button
-                      color="secondary"
-                      className="me-2"
-                      onClick={clearFilter}
-                    >
-                      Clear Filter
-                    </Button>
-                    {/* <Button color="success" onClick={handleBudgetRequestClicks}>
-                      Add New
-                    </Button> */}
-                  </Col>
                 </Row>
-
                 {/* AG Grid */}
                 <div style={{ height: "400px" }}>
                   <AgGridReact

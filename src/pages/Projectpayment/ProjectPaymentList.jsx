@@ -10,24 +10,35 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 // import { getProject as onGetProject } from "../../store/project/actions";
 import { getProjectPayment as onGetProjectPayment } from "../../store/projectpayment/actions";
-
+import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 //redux
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
 import { useTranslation } from "react-i18next";
 
 import { Button, Col, Row, Input } from "reactstrap";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer,toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import PaymentAnalaysis from "./PaymentAnalaysis";
-
+import {
+  useFetchProjectPayments,
+  useSearchProjectPayments
+} from "../../queries/projectpayment_query";
 const ProjectPaymentList = () => {
   document.title = "Project Payment List";
 
   const { t } = useTranslation();
   //   const [project, setProject] = useState(null);
   const [projectPayment, setProjectPayment] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
-  const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
+  const [searchResults, setSearchResults] = useState(null);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [searcherror, setSearchError] = useState(null);
+  const [showSearchResult, setShowSearchResult] = useState(false);
+
+  //const { data, isLoading, error, isError, refetch } = useFetchProjectPayments();
+  const { data, isLoading, error, isError, refetch } = useState(false);
 
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
@@ -50,38 +61,6 @@ const ProjectPaymentList = () => {
     gridRef.current.api.setRowData(showSearchResults ? results : data);
   };
 
-  const dispatch = useDispatch();
-  // Fetch ProjectPayment on component mount
-  useEffect(() => {
-    dispatch(onGetProjectPayment());
-  }, [dispatch]);
-
-  const projectPaymentProperties = createSelector(
-    (state) => state.ProjectPaymentR, // this is geting from  reducer
-    (ProjectPaymentReducer) => ({
-      // this is from Project.reducer
-      projectPayment: ProjectPaymentReducer.projectPayment,
-      loading: ProjectPaymentReducer.loading,
-      update_loading: ProjectPaymentReducer.update_loading,
-    })
-  );
-
-  const {
-    projectPayment: { data },
-    loading,
-    update_loading,
-  } = useSelector(projectPaymentProperties);
-
-  const selectSearchProperties = createSelector(
-    (state) => state.search,
-    (search) => ({
-      results: search.results,
-    })
-  );
-
-  const { results } = useSelector(selectSearchProperties);
-
-  const [isLoading, setLoading] = useState(loading);
   useEffect(() => {
     setProjectPayment(data);
   }, [data]);
@@ -94,9 +73,39 @@ const ProjectPaymentList = () => {
       ? text
       : `${text.substring(0, maxLength)}...`;
   };
-
+const handleSearchResults = ({ data, error }) => {
+    setSearchResults(data);
+    setSearchError(error);
+    setShowSearchResult(true);
+  };
   const columnDefs = useMemo(() => {
     const baseColumnDefs = [
+      {
+        headerName: t("S.N"),
+        field: "sn",
+        valueGetter: (params) => params.node.rowIndex + 1,
+        sortable: false,
+        filter: false,
+        width: 60,
+      },
+      {
+        headerName: t("prj_name"),
+        field: "prj_name",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_name, 30) || "-";
+        },
+      },
+      {
+        headerName: t("prj_code"),
+        field: "prj_code",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_code, 30) || "-";
+        },
+      },
       {
         headerName: t("prp_type"),
         field: "prp_type",
@@ -106,16 +115,6 @@ const ProjectPaymentList = () => {
           return truncateText(params.data.prp_type, 30) || "-";
         },
       },
-      {
-        headerName: t("prp_payment_date_et"),
-        field: "prp_payment_date_et",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prp_payment_date_et, 30) || "-";
-        },
-      },
-
       {
         headerName: t("prp_payment_date_gc"),
         field: "prp_payment_date_gc",
@@ -152,23 +151,11 @@ const ProjectPaymentList = () => {
         cellRenderer: (params) => {
           return truncateText(params.data.prp_description, 30) || "-";
         },
-      },
-      {
-        headerName: t("prp_status"),
-        field: "prp_status",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return params.data.prp_status;
-        },
-      },
+      }
     ];
-
     return baseColumnDefs;
   });
-
   // console.log("here is the data" + JSON.stringify(data[0]));
-
   return (
     <React.Fragment>
       <div className="page-content">
@@ -177,8 +164,34 @@ const ProjectPaymentList = () => {
             title={t("project")}
             breadcrumbItem={t("Project Payment List")}
           />
-          {isLoading || searchLoading ? (
-            <Spinners setLoading={setLoading} />
+          <AdvancedSearch
+            searchHook={useSearchProjectPayments}
+            textSearchKeys={["prj_name","prj_code"]}
+            dateSearchKeys={["payment_date"]}
+            dropdownSearchKeys={[
+              {
+                key: "prp_type",
+                options: [
+                  { value: "Advance", label: "Advance" },
+                  { value: "Interim", label: "Interim" },
+                  { value: "Final", label: "Final" },
+                ],
+              },
+            ]}
+            checkboxSearchKeys={[]}
+            Component={CascadingDropdowns}
+            component_params={{
+              dropdown1name: "prj_location_region_id",
+              dropdown2name: "prj_location_zone_id",
+              dropdown3name: "prj_location_woreda_id",
+            }}
+            onSearchResult={handleSearchResults}
+            setIsSearchLoading={setIsSearchLoading}
+            setSearchResults={setSearchResults}
+            setShowSearchResult={setShowSearchResult}
+          />
+         {isLoading || isSearchLoading ? (
+            <Spinners />
           ) : (
             <div
               className="ag-theme-alpine"
@@ -197,28 +210,17 @@ const ProjectPaymentList = () => {
                   />
                 </Col>
                 <Col sm="12" md="6" className="text-md-end">
-                  <Button
-                    color="primary"
-                    className="me-2"
-                    onClick={filterMarked}
-                  >
-                    Filter Marked
-                  </Button>
-                  <Button
-                    color="secondary"
-                    className="me-2"
-                    onClick={clearFilter}
-                  >
-                    Clear Filter
-                  </Button>
                 </Col>
               </Row>
 
               {/* AG Grid */}
-              <div style={{ height: "400px" }}>
+              <div>
                 <AgGridReact
                   ref={gridRef}
-                  rowData={showSearchResults ? results : data}
+                  rowData={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []}
                   columnDefs={columnDefs}
                   pagination={true}
                   paginationPageSizeSelector={[10, 20, 30, 40, 50]}
@@ -237,7 +239,11 @@ const ProjectPaymentList = () => {
           )}
         </div>
       </div>
-      <PaymentAnalaysis data={data} />
+      <PaymentAnalaysis data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                        } />
       <ToastContainer />
     </React.Fragment>
   );
