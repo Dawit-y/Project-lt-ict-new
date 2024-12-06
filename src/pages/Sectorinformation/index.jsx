@@ -25,9 +25,6 @@ import { useFetchSectorCategorys } from "../../queries/sectorcategory_query";
 import SectorInformationModal from "./SectorInformationModal";
 import { useTranslation } from "react-i18next";
 
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
 import {
   Button,
   Col,
@@ -42,12 +39,11 @@ import {
   Label,
   Card,
   CardBody,
-  FormGroup,
-  Badge,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import { createSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const truncateText = (text, maxLength) => {
@@ -73,41 +69,16 @@ const SectorInformationModel = () => {
 
   const { data, isLoading, error, isError, refetch } =
     useFetchSectorInformations();
-  const cat = useFetchSectorCategorys();
+  const { data: sectorCategoryData } = useFetchSectorCategorys();
+  const sectorCategoryOptions = createSelectOptions(
+    sectorCategoryData?.data || [],
+    "psc_id",
+    "psc_name"
+  );
   const addSectorInformation = useAddSectorInformation();
   const updateSectorInformation = useUpdateSectorInformation();
   const deleteSectorInformation = useDeleteSectorInformation();
-  //START FOREIGN CALLS
-  const [sectorCategoryOptions, setSectorCategoryOptions] = useState([]);
-  const [selectedSectorCategory, setSelectedSectorCategory] = useState("");
-  useEffect(() => {
-    const fetchSectorCategory = async () => {
-      try {
-        // Assuming useFetchSectorCategorys returns a promise
-        const transformedData = cat.data.data.map((item) => ({
-          label: item.psc_name.toString(),
-          value: item.psc_id,
-        }));
 
-        const optionsWithDefault = [
-          { label: "Select Sector Category", value: "" }, // Capitalized "Select" and no space after colon
-          ...transformedData,
-        ];
-
-        setSectorCategoryOptions(optionsWithDefault);
-      } catch (error) {
-        console.error("Error fetching sector categories:", error);
-      }
-    };
-
-    fetchSectorCategory();
-  }, []);
-  const handleSectorCategoryChange = (e) => {
-    setSelectedSectorCategory(e.target.value);
-    validation.setFieldValue("sci_sector_category_id", e.target.value);
-  };
-
-  //START CRUD
   const handleAddSectorInformation = async (data) => {
     try {
       await addSectorInformation.mutateAsync(data);
@@ -499,6 +470,9 @@ const SectorInformationModel = () => {
     return baseColumns;
   }, [handleSectorInformationClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
   return (
     <React.Fragment>
       <SectorInformationModal
@@ -678,10 +652,17 @@ const SectorInformationModel = () => {
                       name="sci_sector_category_id"
                       type="select"
                       className="form-select"
-                      onChange={handleSectorCategoryChange}
+                      onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={selectedSectorCategory}
+                      value={validation.values.sci_sector_category_id || ""}
+                      invalid={
+                        validation.touched.sci_sector_category_id &&
+                        validation.errors.sci_sector_category_id
+                          ? true
+                          : false
+                      }
                     >
+                      <option value={null}>Select Sector Category</option>
                       {sectorCategoryOptions.map((option) => (
                         <option key={option.value} value={option.value}>
                           {t(`${option.label}`)}
@@ -697,7 +678,9 @@ const SectorInformationModel = () => {
                   </Col>
                   <Row>
                     <Col className="col-md-4 mb-3">
-                      <Label>{t("sci_available_at_region")}</Label>
+                      <Label className="me-1">
+                        {t("sci_available_at_region")}
+                      </Label>
                       <Input
                         name="sci_available_at_region"
                         type="checkbox"
@@ -721,7 +704,9 @@ const SectorInformationModel = () => {
                       ) : null}
                     </Col>
                     <Col className="col-md-4 mb-3">
-                      <Label>{t("sci_available_at_zone")}</Label>
+                      <Label className="me-1">
+                        {t("sci_available_at_zone")}
+                      </Label>
                       <Input
                         name="sci_available_at_zone"
                         type="checkbox"
@@ -745,7 +730,9 @@ const SectorInformationModel = () => {
                       ) : null}
                     </Col>
                     <Col className="col-md-4 mb-3">
-                      <Label>{t("sci_available_at_woreda")}</Label>
+                      <Label className="me-1">
+                        {t("sci_available_at_woreda")}
+                      </Label>
                       <Input
                         name="sci_available_at_woreda"
                         type="checkbox"

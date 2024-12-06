@@ -28,6 +28,8 @@ import {
   useDeleteProject,
   useUpdateProject,
 } from "../../queries/project_query";
+import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
+import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import ProjectModal from "./ProjectModal";
 import { useTranslation } from "react-i18next";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
@@ -36,14 +38,9 @@ import ProjectPayment from "../../pages/Projectpayment";
 import ProjectStakeholder from "../../pages/Projectstakeholder";
 import Projectcontractor from "../../pages/Projectcontractor";
 import Budgetrequest from "../../pages/Budgetrequest";
-import ProjectBudgetSource from "../../pages/Projectbudgetsource";
-import ProjectPerformance from "../../pages/Projectperformance";
-
 import GeoLocation from "../../pages/GeoLocation";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
 
 import {
   Button,
@@ -66,6 +63,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import { createSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const truncateText = (text, maxLength) => {
@@ -94,73 +92,23 @@ const ProjectModel = () => {
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   const { data, isLoading, error, isError, refetch } = useFetchProjects();
+  const { data: projectCategoryData } = useFetchProjectCategorys();
+  const projectCategoryOptions = createSelectOptions(
+    projectCategoryData?.data || [],
+    "pct_id",
+    "pct_name_en"
+  );
+  const { data: sectorInformationData } = useFetchSectorInformations();
+  const sectorInformationOptions = createSelectOptions(
+    sectorInformationData?.data || [],
+    "sci_id",
+    "sci_name_en"
+  );
 
   const addProject = useAddProject();
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
-  const [projectCategoryOptions, setProjectCategoryOptions] = useState([]);
-  const [selectedProjectCategory, setSelectedProjectCategory] = useState("");
-  const [sectorOptions, setSectorOptions] = useState([]);
-  const [selectedSector, setSelectedSector] = useState("");
-  const handleClick = (data) => {
-    setShowCanvas(!showCanvas); // Toggle canvas visibility
-    setProjectMetaData(data);
-  };
-  //START FOREIGN
-  useEffect(() => {
-    const fetchProjectCategory = async () => {
-      try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_BASE_API_URL}project_category/listgrid`
-        );
-        const transformedData = response.data.data.map((item) => ({
-          label: item.pct_name_or.toString(),
-          value: item.pct_id.toString(),
-        }));
-        const optionsWithDefault = [
-          { label: "Select Project Category", value: "" },
-          ...transformedData,
-        ];
-        setProjectCategoryOptions(optionsWithDefault);
-      } catch (error) {
-        console.error("Error fetching category:", error);
-      }
-    };
-    fetchProjectCategory();
-  }, []);
-  const handleProjectCategoryChange = (e) => {
-    setSelectedProjectCategory(e.target.value);
-    validation.setFieldValue("prj_project_category_id", e.target.value);
-  };
 
-  useEffect(() => {
-    const fetchSector = async () => {
-      try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_BASE_API_URL}sector_information/listgrid`
-        );
-        const transformedData = response.data.data.map((item) => ({
-          label: item.sci_name_or.toString(),
-          value: item.sci_id.toString(),
-        }));
-        const optionsWithDefault = [
-          { label: "Select Sector", value: "" },
-          ...transformedData,
-        ];
-        setSectorOptions(optionsWithDefault);
-      } catch (error) {
-        console.error("Error fetching Sector:", error);
-      }
-    };
-    fetchSector();
-  }, []);
-
-  const handleSectorChange = (e) => {
-    setSelectedSector(e.target.value);
-    validation.setFieldValue("prj_sector_id", e.target.value);
-  };
-  //END FOREIGN
-  //START CRUD
   const handleAddProject = async (data) => {
     try {
       await addProject.mutateAsync(data);
@@ -428,6 +376,10 @@ const ProjectModel = () => {
       setModal(true);
     }
   };
+  const handleClick = (data) => {
+    setShowCanvas(!showCanvas); // Toggle canvas visibility
+    setProjectMetaData(data);
+  };
 
   const handleProjectClick = (arg) => {
     const project = arg;
@@ -617,7 +569,7 @@ const ProjectModel = () => {
         filter: "agTextColumnFilter",
         floatingFilter: true,
         enableRowGroup: true,
-        width:300,
+        width: 300,
         valueFormatter: (params) =>
           params.node.footer ? t("Total") : params.value, // Display "Total" for footer
       },
@@ -808,6 +760,10 @@ const ProjectModel = () => {
   const clearFilter = () => {
     gridRef.current.api.setRowData(showSearchResults ? results : data);
   };
+
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
   return (
     <React.Fragment>
       <ProjectModal
@@ -1023,10 +979,17 @@ const ProjectModel = () => {
                       name="prj_project_category_id"
                       type="select"
                       className="form-select"
-                      onChange={handleProjectCategoryChange}
+                      onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={selectedProjectCategory}
+                      value={validation.values.prj_project_category_id || ""}
+                      invalid={
+                        validation.touched.prj_project_category_id &&
+                        validation.errors.prj_project_category_id
+                          ? true
+                          : false
+                      }
                     >
+                      <option value={null}>Select Project Category</option>
                       {projectCategoryOptions.map((option) => (
                         <option key={option.value} value={option.value}>
                           {t(`${option.label}`)}
@@ -1101,11 +1064,18 @@ const ProjectModel = () => {
                       name="prj_sector_id"
                       type="select"
                       className="form-select"
-                      onChange={handleSectorChange}
+                      onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={selectedSector}
+                      value={validation.values.prj_sector_id || ""}
+                      invalid={
+                        validation.touched.prj_sector_id &&
+                        validation.errors.prj_sector_id
+                          ? true
+                          : false
+                      }
                     >
-                      {sectorOptions.map((option) => (
+                      <option value={null}>Select Sector Information</option>
+                      {sectorInformationOptions.map((option) => (
                         <option key={option.value} value={option.value}>
                           {t(`${option.label}`)}
                         </option>

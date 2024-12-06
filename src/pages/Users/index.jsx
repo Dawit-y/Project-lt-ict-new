@@ -28,23 +28,8 @@ import {
   useUpdateUsers,
 } from "../../queries/users_query";
 
-import {
-  getUsers as onGetUsers,
-  addUsers as onAddUsers,
-  updateUsers as onUpdateUsers,
-  deleteUsers as onDeleteUsers,
-} from "../../store/users/actions";
-//  import department
-import {
-  getDepartment as onGetDepartment,
-
-} from "../../store/department/actions";
-import {
-  useFetchSectorInformations
-} from "../../queries/sectorinformation_query";
-import {
-  useFetchDepartments
-} from "../../queries/department_query";
+import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
+import { useFetchDepartments } from "../../queries/department_query";
 //redux
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
@@ -64,11 +49,11 @@ import {
   FormFeedback,
   Label,
   ModalFooter,
-  Badge
-
+  Badge,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
+import { createSelectOptions } from "../../utils/commonMethods";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -77,48 +62,52 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 const statusClasses = {
-  "1": "success", // Green for completed
-  "0": "danger", // Yellow for started
+  1: "success", // Green for completed
+  0: "danger", // Yellow for started
 };
 const statusText = {
-  "1": "Active", // Green for completed
-  "0": "Inactive", // Yellow for started
+  1: "Active", // Green for completed
+  0: "Inactive", // Yellow for started
 };
 const UsersModel = () => {
   //meta title
   document.title = " Users";
 
   const { t } = useTranslation();
-const sector = useFetchSectorInformations();
-const department = useFetchDepartments();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
- const [searchResults, setSearchResults] = useState(null);
+  const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   const { data, isLoading, error, isError, refetch } = useFetchUserss();
+  const { data: sectorInformationData } = useFetchSectorInformations();
+  const sectorInformationOptions = createSelectOptions(
+    sectorInformationData?.data || [],
+    "sci_id",
+    "sci_name_en"
+  );
+  const { data: departmentData } = useFetchDepartments();
+  const departmentOptions = createSelectOptions(
+    departmentData?.data || [],
+    "dep_id",
+    "dep_name_en"
+  );
 
   const addUsers = useAddUsers();
   const updateUsers = useUpdateUsers();
   const deleteUsers = useDeleteUsers();
   const [users, setUsers] = useState(null);
   const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
-  const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
-  const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
 
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
 
-const [departmentOptions, setDepartmentOptions] = useState([]);
-  const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [selectedState, setselectedState] = useState("")
-
+  const [selectedState, setselectedState] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
-
   const [userMetaData, setUserData] = useState({});
   const [showCanvas, setShowCanvas] = useState(false);
   //START CRUD
@@ -165,64 +154,8 @@ const [departmentOptions, setDepartmentOptions] = useState([]);
       setDeleteModal(false);
     }
   };
-  //END CRUD
-    //START FOREIGN CALLS
-  const [sectorOptions, setSectorOptions] = useState([]);
-  const [selectedSector, setSelectedSector] = useState("");
-  useEffect(() => {
-  const fetchSector = async () => {
-    try {
-       // Assuming useFetchSectorInformations returns a promise
-      const transformedData = sector.data.data.map((item) => ({
-        label: item.sci_name_or.toString(),
-        value: item.sci_id,
-      }));
 
-      const optionsWithDefault = [
-        { label: "Select Sector", value: "" }, // Capitalized "Select" and no space after colon
-        ...transformedData,
-      ];
-
-      setSectorOptions(optionsWithDefault);
-    } catch (error) {
-      console.error("Error fetching sector:", error);
-    }
-  };
-
-  fetchSector();
-}, []);
-   const handleSectorChange = (e) => {
-    setSelectedSector(e.target.value);
-    validation.setFieldValue("usr_sector_id", e.target.value);
-  };
-
-  useEffect(() => {
-  const fetchDepartment = async () => {
-    try {
-       // Assuming useFetchDepartmentInformations returns a promise
-      const transformedData = department.data.data.map((item) => ({
-        label: item.dep_name_or.toString(),
-        value: item.dep_id,
-      }));
-
-      const optionsWithDefault = [
-        { label: "Select department", value: "" }, // Capitalized "Select" and no space after colon
-        ...transformedData,
-      ];
-
-      setDepartmentOptions(optionsWithDefault);
-    } catch (error) {
-      console.error("Error fetching department:", error);
-    }
-  };
-
-  fetchDepartment();
-}, []);
-   const handledepartmentChange = (e) => {
-    setSelectedDepartment(e.target.value);
-    validation.setFieldValue("usr_department_id", e.target.value);
-  };
- const handleSearchResults = ({ data, error }) => {
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -257,13 +190,11 @@ const [departmentOptions, setDepartmentOptions] = useState([]);
     },
 
     validationSchema: Yup.object({
-usr_email: Yup.string()
+      usr_email: Yup.string()
         .required(t("usr_email"))
         .test("unique-usr_email", t("Already exists"), (value) => {
           return !data?.data.some(
-            (item) =>
-              item.usr_email == value &&
-              item.usr_id !== users?.usr_id
+            (item) => item.usr_email == value && item.usr_id !== users?.usr_id
           );
         }),
       //usr_email: Yup.string().required(t("usr_email")),
@@ -271,7 +202,7 @@ usr_email: Yup.string()
       usr_full_name: Yup.string().required(t("usr_full_name")),
       usr_phone_number: Yup.string().required(t("usr_phone_number")),
       usr_sector_id: Yup.string().required(t("usr_sector_id")),
-      usr_department_id: Yup.string().required(t("usr_department_id"))
+      usr_department_id: Yup.string().required(t("usr_department_id")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -304,7 +235,7 @@ usr_email: Yup.string()
           is_editable: values.is_editable,
         };
         // update Users
-handleUpdateUsers(updateUsers);
+        handleUpdateUsers(updateUsers);
         validation.resetForm();
       } else if (isDuplicateModalOpen) {
         const duplcateuser = {
@@ -333,10 +264,9 @@ handleUpdateUsers(updateUsers);
         };
         setSelectedDepartment(values.usr_department_id);
         // update Users
-       handleAddUsers(duplcateuser);
+        handleAddUsers(duplcateuser);
         validation.resetForm();
-      }
-       else {
+      } else {
         const newUsers = {
           usr_email: values.usr_email,
           usr_password: values.usr_password,
@@ -356,7 +286,7 @@ handleUpdateUsers(updateUsers);
           usr_notified: Number(values.usr_notified),
           usr_description: values.usr_description,
           usr_status: Number(values.usr_status),
-          usr_department_id: Number(values.usr_department_id)
+          usr_department_id: Number(values.usr_department_id),
         };
 
         handleAddUsers(newUsers);
@@ -410,12 +340,12 @@ handleUpdateUsers(updateUsers);
       usr_notified: users.usr_notified,
       usr_description: users.usr_description,
       usr_status: users.usr_status,
-      usr_department_id: Number(users.usr_department_id),      
+      usr_department_id: Number(users.usr_department_id),
       is_deletable: users.is_deletable,
       is_editable: users.is_editable,
     });
     setSelectedDepartment(users.usr_department_id);
-setSelectedSector(users.usr_sector_id); 
+    setSelectedSector(users.usr_sector_id);
     setIsEdit(true);
 
     toggle();
@@ -480,25 +410,20 @@ setSelectedSector(users.usr_sector_id);
       reader.readAsDataURL(file);
     }
   };
-  const handleSearch = () => {
-    setSearchLoading(true); // Set loading to true when search is initiated// Update filtered data with search results
-    setShowSearchResults(true); // Show search results
-    setSearchLoading(false);
-  };
 
   const columnDefs = useMemo(() => {
     const baseColumns = [
-       {
-    headerName: "Row",
-    valueGetter: "node.rowIndex + 1",
-    width:"70"
-  },
+      {
+        headerName: "Row",
+        valueGetter: "node.rowIndex + 1",
+        width: "70",
+      },
       {
         headerName: t("usr_email"),
         field: "usr_email",
         sortable: true,
         filter: false,
-        width:"200",
+        width: "200",
         cellRenderer: (params) =>
           truncateText(params.data.usr_email, 30) || "-",
       },
@@ -516,13 +441,13 @@ setSelectedSector(users.usr_sector_id);
         field: "usr_phone_number",
         sortable: true,
         filter: false,
-        width:"140",
+        width: "140",
         cellRenderer: (params) =>
           truncateText(params.data.usr_phone_number, 30) || "-",
       },
       {
         headerName: t("usr_sector_id"),
-        width:"200",
+        width: "200",
         field: "sector_name",
         sortable: true,
         filter: false,
@@ -536,17 +461,18 @@ setSelectedSector(users.usr_sector_id);
         filter: false,
         cellRenderer: (params) => {
           // Determine badge class based on status value
-          const badgeClass = statusClasses[params.data.usr_is_active] || "secondary";
+          const badgeClass =
+            statusClasses[params.data.usr_is_active] || "secondary";
           return (
             <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
               {statusText[params.value]}
             </Badge>
           );
-        }
+        },
       },
       {
         headerName: t("view_detail"),
-         width:"140",
+        width: "140",
         sortable: true,
         filter: false,
         cellRenderer: (params) => (
@@ -565,7 +491,7 @@ setSelectedSector(users.usr_sector_id);
         ),
       },
     ];
- if (
+    if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
     ) {
@@ -573,16 +499,14 @@ setSelectedSector(users.usr_sector_id);
         headerName: t("Action"),
         sortable: true,
         filter: false,
-         width:"230",
+        width: "230",
         cellRenderer: (params) => (
           <div className="d-flex gap-3">
             {params.data.is_editable && (
               <Link
                 to="#"
                 className="text-success"
-
                 onClick={() => {
-
                   handleUsersClick(params.data);
                 }}
               >
@@ -618,21 +542,28 @@ setSelectedSector(users.usr_sector_id);
                   handleUsersDuplicateClick(params.data);
                 }}
               >
-                <i className="mdi mdi-content-duplicate font-size-18" id="duplicateTooltip" />
+                <i
+                  className="mdi mdi-content-duplicate font-size-18"
+                  id="duplicateTooltip"
+                />
                 <UncontrolledTooltip placement="top" target="duplicateTooltip">
                   Duplicate
                 </UncontrolledTooltip>
               </Link>
             )}
             {/* End of duplicate project icon */}
-
           </div>
         ),
       });
     }
 
     return baseColumns;
-  }, [handleUsersClick, toggleViewModal, onClickDelete,handleUsersDuplicateClick]);
+  }, [
+    handleUsersClick,
+    toggleViewModal,
+    onClickDelete,
+    handleUsersDuplicateClick,
+  ]);
 
   const project_status = [
     { label: "select Status name", value: "" },
@@ -641,7 +572,6 @@ setSelectedSector(users.usr_sector_id);
   ];
 
   const dropdawntotal = [project_status];
-
 
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
@@ -744,10 +674,15 @@ setSelectedSector(users.usr_sector_id);
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {isDuplicateModalOpen ? t("Duplicate ") + " " + t("users") : <div>{!!isEdit
-                ? t("edit") + " " + t("users")
-                : t("add") + " " + t("users")}</div>}
-
+              {isDuplicateModalOpen ? (
+                t("Duplicate ") + " " + t("users")
+              ) : (
+                <div>
+                  {!!isEdit
+                    ? t("edit") + " " + t("users")
+                    : t("add") + " " + t("users")}
+                </div>
+              )}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -769,14 +704,14 @@ setSelectedSector(users.usr_sector_id);
                       value={validation.values.usr_email || ""}
                       invalid={
                         validation.touched.usr_email &&
-                          validation.errors.usr_email
+                        validation.errors.usr_email
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_email &&
-                      validation.errors.usr_email ? (
+                    validation.errors.usr_email ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_email}
                       </FormFeedback>
@@ -793,14 +728,14 @@ setSelectedSector(users.usr_sector_id);
                       value={validation.values.usr_password || ""}
                       invalid={
                         validation.touched.usr_password &&
-                          validation.errors.usr_password
+                        validation.errors.usr_password
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_password &&
-                      validation.errors.usr_password ? (
+                    validation.errors.usr_password ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_password}
                       </FormFeedback>
@@ -817,14 +752,14 @@ setSelectedSector(users.usr_sector_id);
                       value={validation.values.usr_full_name || ""}
                       invalid={
                         validation.touched.usr_full_name &&
-                          validation.errors.usr_full_name
+                        validation.errors.usr_full_name
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_full_name &&
-                      validation.errors.usr_full_name ? (
+                    validation.errors.usr_full_name ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_full_name}
                       </FormFeedback>
@@ -841,30 +776,37 @@ setSelectedSector(users.usr_sector_id);
                       value={validation.values.usr_phone_number || ""}
                       invalid={
                         validation.touched.usr_phone_number &&
-                          validation.errors.usr_phone_number
+                        validation.errors.usr_phone_number
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_phone_number &&
-                      validation.errors.usr_phone_number ? (
+                    validation.errors.usr_phone_number ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_phone_number}
                       </FormFeedback>
                     ) : null}
                   </Col>
-<Col className="col-md-4 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("usr_sector_id")}</Label>
                     <Input
                       name="usr_sector_id"
                       type="select"
                       className="form-select"
-                      onChange={handleSectorChange}
+                      onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={selectedSector}
+                      value={validation.values.usr_sector_id || ""}
+                      invalid={
+                        validation.touched.usr_sector_id &&
+                        validation.errors.usr_sector_id
+                          ? true
+                          : false
+                      }
                     >
-                      {sectorOptions.map((option) => (
+                      <option value={null}>Select Sector Information</option>
+                      {sectorInformationOptions.map((option) => (
                         <option key={option.value} value={option.value}>
                           {t(`${option.label}`)}
                         </option>
@@ -884,11 +826,17 @@ setSelectedSector(users.usr_sector_id);
                       name="usr_department_id"
                       type="select"
                       className="form-select"
-
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={selectedDepartment || ""}
+                      value={validation.values.usr_department_id || ""}
+                      invalid={
+                        validation.touched.usr_department_id &&
+                        validation.errors.usr_department_id
+                          ? true
+                          : false
+                      }
                     >
+                      <option value={null}>Select Department</option>
                       {departmentOptions.map((option) => (
                         <option key={option.value} value={Number(option.value)}>
                           {t(option.label)}
@@ -896,7 +844,7 @@ setSelectedSector(users.usr_sector_id);
                       ))}
                     </Input>
                     {validation.touched.usr_department_id &&
-                      validation.errors.usr_department_id ? (
+                    validation.errors.usr_department_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_department_id}
                       </FormFeedback>
@@ -914,14 +862,14 @@ setSelectedSector(users.usr_sector_id);
                       value={validation.values.usr_description || ""}
                       invalid={
                         validation.touched.usr_description &&
-                          validation.errors.usr_description
+                        validation.errors.usr_description
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_description &&
-                      validation.errors.usr_description ? (
+                    validation.errors.usr_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_description}
                       </FormFeedback>
@@ -982,7 +930,10 @@ setSelectedSector(users.usr_sector_id);
                               onChange={handleImageChange}
                             />
                           </div>
-                          <div className="avatar-xl" style={{ marginTop: "10px" }}>
+                          <div
+                            className="avatar-xl"
+                            style={{ marginTop: "10px" }}
+                          >
                             <div
                               className="avatar-title bg-light rounded-circle"
                               style={{
@@ -994,7 +945,13 @@ setSelectedSector(users.usr_sector_id);
                             >
                               {/* Show selected image or placeholder */}
                               <img
-                                src={`${import.meta.env.VITE_BASE_API_FILE}public/uploads/userfiles/${validation.usr_picture}` || "https://via.placeholder.com/120"}
+                                src={
+                                  `${
+                                    import.meta.env.VITE_BASE_API_FILE
+                                  }public/uploads/userfiles/${
+                                    validation.usr_picture
+                                  }` || "https://via.placeholder.com/120"
+                                }
                                 id="projectlogo-img"
                                 alt="User Image"
                                 className="img-fluid rounded-circle"
@@ -1008,7 +965,8 @@ setSelectedSector(users.usr_sector_id);
                           </div>
                         </div>
                         {/* Validation feedback */}
-                        {validation.touched.usr_picture && validation.errors.usr_picture ? (
+                        {validation.touched.usr_picture &&
+                        validation.errors.usr_picture ? (
                           <FormFeedback type="invalid" className="d-block mt-2">
                             {validation.errors.usr_picture}
                           </FormFeedback>
@@ -1016,11 +974,10 @@ setSelectedSector(users.usr_sector_id);
                       </div>
                     </div>
                   </Col>
-
                 </Row>
                 <Row>
                   <Col>
-                  <div className="text-end">
+                    <div className="text-end">
                       {addUsers.isPending || updateUsers.isPending ? (
                         <Button
                           color="success"
@@ -1046,7 +1003,11 @@ setSelectedSector(users.usr_sector_id);
                             !validation.dirty
                           }
                         >
-                         {isDuplicateModalOpen ? <div>{t("Save Duplicate")}</div> : <div>{t("Save")}</div>}
+                          {isDuplicateModalOpen ? (
+                            <div>{t("Save Duplicate")}</div>
+                          ) : (
+                            <div>{t("Save")}</div>
+                          )}
                         </Button>
                       )}
                     </div>
@@ -1057,12 +1018,12 @@ setSelectedSector(users.usr_sector_id);
             {isDuplicateModalOpen ? (
               <ModalFooter>
                 <div className="text-center text-warning mb-4">
-                  {t("This entry contains duplicate information. Please review and modify the form to avoid duplicates. If you still wish to proceed, click Save to add this user as a new entry.")}
+                  {t(
+                    "This entry contains duplicate information. Please review and modify the form to avoid duplicates. If you still wish to proceed, click Save to add this user as a new entry."
+                  )}
                 </div>
               </ModalFooter>
             ) : null}
-
-
           </Modal>
         </div>
       </div>
