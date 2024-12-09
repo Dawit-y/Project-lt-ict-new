@@ -9,10 +9,10 @@ import {
 const PROJECT_HANDOVER_QUERY_KEY = ["projecthandover"];
 
 // Fetch project_handover
-export const useFetchProjectHandovers = () => {
+export const useFetchProjectHandovers = (param = {}) => {
   return useQuery({
-    queryKey: PROJECT_HANDOVER_QUERY_KEY,
-    queryFn: () => getProjectHandover(),
+    queryKey: [...PROJECT_HANDOVER_QUERY_KEY,"fetch", param],
+    queryFn: () => getProjectHandover(param),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,
@@ -23,7 +23,7 @@ export const useFetchProjectHandovers = () => {
 //search project_handover
 export const useSearchProjectHandovers = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...PROJECT_HANDOVER_QUERY_KEY, searchParams],
+    queryKey: [...PROJECT_HANDOVER_QUERY_KEY, "search", searchParams],
     queryFn: () => getProjectHandover(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
@@ -40,17 +40,7 @@ export const useAddProjectHandover = () => {
   return useMutation({
     mutationFn: addProjectHandover,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( PROJECT_HANDOVER_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
-      });
+      queryClient.invalidateQueries(PROJECT_HANDOVER_QUERY_KEY);
     },
   });
 };
@@ -61,18 +51,7 @@ export const useUpdateProjectHandover = () => {
   return useMutation({
     mutationFn: updateProjectHandover,
     onSuccess: (updatedProjectHandover) => {
-      queryClient.setQueryData(PROJECT_HANDOVER_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-
-        return {
-          ...oldData,
-          data: oldData.data.map((ProjectHandoverData) =>
-            ProjectHandoverData.prh_id === updatedProjectHandover.data.prh_id
-              ? { ...ProjectHandoverData, ...updatedProjectHandover.data }
-              : ProjectHandoverData
-          ),
-        };
-      });
+      queryClient.invalidateQueries(PROJECT_HANDOVER_QUERY_KEY);
     },
   });
 };
@@ -83,15 +62,7 @@ export const useDeleteProjectHandover = () => {
   return useMutation({
     mutationFn: deleteProjectHandover,
     onSuccess: (deletedData) => {
-      queryClient.setQueryData(PROJECT_HANDOVER_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (ProjectHandoverData) => ProjectHandoverData.prh_id !== parseInt(deletedData.deleted_id)
-          ),
-        };
-      });
+      queryClient.invalidateQueries(PROJECT_HANDOVER_QUERY_KEY);
     },
   });
 };

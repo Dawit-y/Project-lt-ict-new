@@ -9,10 +9,10 @@ import {
 const PROJECT_PERFORMANCE_QUERY_KEY = ["projectperformance"];
 
 // Fetch project_performance
-export const useFetchProjectPerformances = () => {
+export const useFetchProjectPerformances = (param = {}) => {
   return useQuery({
-    queryKey: PROJECT_PERFORMANCE_QUERY_KEY,
-    queryFn: () => getProjectPerformance(),
+    queryKey: [...PROJECT_PERFORMANCE_QUERY_KEY, "fetch", param],
+    queryFn: () => getProjectPerformance(param),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,
@@ -23,7 +23,7 @@ export const useFetchProjectPerformances = () => {
 //search project_performance
 export const useSearchProjectPerformances = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...PROJECT_PERFORMANCE_QUERY_KEY, searchParams],
+    queryKey: [...PROJECT_PERFORMANCE_QUERY_KEY, "search", searchParams],
     queryFn: () => getProjectPerformance(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
@@ -40,17 +40,7 @@ export const useAddProjectPerformance = () => {
   return useMutation({
     mutationFn: addProjectPerformance,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( PROJECT_PERFORMANCE_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
-      });
+      queryClient.invalidateQueries(PROJECT_PERFORMANCE_QUERY_KEY);
     },
   });
 };
@@ -61,18 +51,7 @@ export const useUpdateProjectPerformance = () => {
   return useMutation({
     mutationFn: updateProjectPerformance,
     onSuccess: (updatedProjectPerformance) => {
-      queryClient.setQueryData(PROJECT_PERFORMANCE_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-
-        return {
-          ...oldData,
-          data: oldData.data.map((ProjectPerformanceData) =>
-            ProjectPerformanceData.prp_id === updatedProjectPerformance.data.prp_id
-              ? { ...ProjectPerformanceData, ...updatedProjectPerformance.data }
-              : ProjectPerformanceData
-          ),
-        };
-      });
+      queryClient.invalidateQueries(PROJECT_PERFORMANCE_QUERY_KEY);
     },
   });
 };
@@ -83,15 +62,7 @@ export const useDeleteProjectPerformance = () => {
   return useMutation({
     mutationFn: deleteProjectPerformance,
     onSuccess: (deletedData) => {
-      queryClient.setQueryData(PROJECT_PERFORMANCE_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (ProjectPerformanceData) => ProjectPerformanceData.prp_id !== parseInt(deletedData.deleted_id)
-          ),
-        };
-      });
+      queryClient.invalidateQueries(PROJECT_PERFORMANCE_QUERY_KEY);
     },
   });
 };

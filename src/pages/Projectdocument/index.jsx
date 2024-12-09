@@ -47,6 +47,7 @@ import {
   CardSubtitle,
 } from "reactstrap";
 import { ToastContainer } from "react-toastify";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler"
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -260,7 +261,6 @@ const ProjectDocumentModel = (props) => {
   } = useSelector(projectDocumentProperties);
 
   useEffect(() => {
-    console.log("update_loading in useEffect", update_loading);
     setModal(false);
   }, [update_loading]);
 
@@ -296,7 +296,6 @@ const ProjectDocumentModel = (props) => {
 
   const handleProjectDocumentClick = (arg) => {
     const projectDocument = arg;
-    console.log("handleProjectDocumentClick", projectDocument);
     setProjectDocument({
       prd_id: projectDocument.prd_id,
       prd_file: projectDocument.prd_file,

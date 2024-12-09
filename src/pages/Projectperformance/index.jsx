@@ -59,6 +59,7 @@ const truncateText = (text, maxLength) => {
 const ProjectPerformanceModel = (props) => {
   //  get passed data from tab
   const { passedId } = props;
+  const param = { prp_project_id: passedId };
   //meta title
   document.title = " ProjectPerformance";
   const { t } = useTranslation();
@@ -73,7 +74,7 @@ const ProjectPerformanceModel = (props) => {
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjectPerformances(passedId);
+    useFetchProjectPerformances(param);
 
   const addProjectPerformance = useAddProjectPerformance();
   const updateProjectPerformance = useUpdateProjectPerformance();
@@ -178,7 +179,7 @@ const ProjectPerformanceModel = (props) => {
       if (isEdit) {
         const updateProjectPerformance = {
           prp_id: projectPerformance?.prp_id,
-          prp_project_id: values.prp_project_id,
+          prp_project_id: passedId,
           prp_project_status_id: values.prp_project_status_id,
           prp_record_date_ec: values.prp_record_date_ec,
           prp_record_date_gc: values.prp_record_date_gc,
@@ -197,7 +198,7 @@ const ProjectPerformanceModel = (props) => {
         validation.resetForm();
       } else {
         const newProjectPerformance = {
-          prp_project_id: values.prp_project_id,
+          prp_project_id: passedId,
           prp_project_status_id: values.prp_project_status_id,
           prp_record_date_ec: values.prp_record_date_ec,
           prp_record_date_gc: values.prp_record_date_gc,
@@ -443,6 +444,10 @@ const ProjectPerformanceModel = (props) => {
 
     return baseColumns;
   }, [handleProjectPerformanceClick, toggleViewModal, onClickDelete]);
+
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
 
   return (
     <React.Fragment>

@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
 import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
@@ -121,6 +122,10 @@ const GeoLocation = (props) => {
       </div>
     </div>
   );
+};
+
+GeoLocation.propTypes = {
+  preGlobalFilteredRows: PropTypes.any,
 };
 
 export default GeoLocation;

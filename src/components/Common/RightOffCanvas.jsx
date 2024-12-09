@@ -31,7 +31,7 @@ const RightOffCanvas = ({
       setActiveTab1(tab);
     }
   };
-  
+
   return (
     <React.Fragment>
       <Offcanvas
@@ -53,7 +53,14 @@ const RightOffCanvas = ({
                 {navItems && (
                   <Nav pills className="navtab-bg nav-justified">
                     {navItems.map((navItem, index) => (
-                      <NavItem key={index + 1} className="me-3">
+                      <NavItem
+                        key={index + 1}
+                        className="me-3 mb-3"
+                        style={{
+                          whiteSpace: "nowrap",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
                         <NavLink
                           style={{
                             cursor: "pointer",

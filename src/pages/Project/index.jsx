@@ -33,12 +33,18 @@ import { useFetchSectorInformations } from "../../queries/sectorinformation_quer
 import ProjectModal from "./ProjectModal";
 import { useTranslation } from "react-i18next";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
-import ProjectDocument from "../../pages/Projectdocument/index";
-import ProjectPayment from "../../pages/Projectpayment";
-import ProjectStakeholder from "../../pages/Projectstakeholder";
-import Projectcontractor from "../../pages/Projectcontractor";
-import Budgetrequest from "../../pages/Budgetrequest";
-import GeoLocation from "../../pages/GeoLocation";
+import ProjectDocument from "../Projectdocument";
+import ProjectPayment from "../Projectpayment";
+import ProjectStakeholder from "../Projectstakeholder";
+import Projectcontractor from "../Projectcontractor";
+import Budgetrequest from "../Budgetrequest";
+import GeoLocation from "../GeoLocation";
+import ProjectBudgetExpenditureModel from "../Projectbudgetexpenditure";
+import ProjectEmployeeModel from "../../pages/Projectemployee";
+import ProjectHandoverModel from "../Projecthandover";
+import ProjectPerformanceModel from "../Projectperformance";
+import ProjectSupplimentaryModel from "../Projectsupplimentary";
+import ProjectVariationModel from "../Projectvariation";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 
@@ -66,6 +72,7 @@ import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import { createSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { formatDate } from "../../utils/commonMethods";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -1379,6 +1386,12 @@ const ProjectModel = () => {
             "Contractor",
             "Budget Request",
             "Geo Location",
+            "Budget Expenditures",
+            "Employees",
+            "Handover",
+            "Performance",
+            "Supplementary",
+            "Variations",
           ]}
           components={[
             ProjectDocument,
@@ -1387,6 +1400,12 @@ const ProjectModel = () => {
             Projectcontractor,
             Budgetrequest,
             GeoLocation,
+            ProjectBudgetExpenditureModel,
+            ProjectEmployeeModel,
+            ProjectHandoverModel,
+            ProjectPerformanceModel,
+            ProjectSupplimentaryModel,
+            ProjectVariationModel,
           ]}
         />
       )}

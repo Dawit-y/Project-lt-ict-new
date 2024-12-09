@@ -9,10 +9,10 @@ import {
 const PROJECT_VARIATION_QUERY_KEY = ["projectvariation"];
 
 // Fetch project_variation
-export const useFetchProjectVariations = () => {
+export const useFetchProjectVariations = (param = {}) => {
   return useQuery({
-    queryKey: PROJECT_VARIATION_QUERY_KEY,
-    queryFn: () => getProjectVariation(),
+    queryKey: [...PROJECT_VARIATION_QUERY_KEY, "fetch", param],
+    queryFn: () => getProjectVariation(param),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,
@@ -23,7 +23,7 @@ export const useFetchProjectVariations = () => {
 //search project_variation
 export const useSearchProjectVariations = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...PROJECT_VARIATION_QUERY_KEY, searchParams],
+    queryKey: [...PROJECT_VARIATION_QUERY_KEY, "search", searchParams],
     queryFn: () => getProjectVariation(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
@@ -40,17 +40,7 @@ export const useAddProjectVariation = () => {
   return useMutation({
     mutationFn: addProjectVariation,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( PROJECT_VARIATION_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
-      });
+      queryClient.invalidateQueries(PROJECT_VARIATION_QUERY_KEY);
     },
   });
 };
@@ -61,18 +51,7 @@ export const useUpdateProjectVariation = () => {
   return useMutation({
     mutationFn: updateProjectVariation,
     onSuccess: (updatedProjectVariation) => {
-      queryClient.setQueryData(PROJECT_VARIATION_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-
-        return {
-          ...oldData,
-          data: oldData.data.map((ProjectVariationData) =>
-            ProjectVariationData.bdr_id === updatedProjectVariation.data.bdr_id
-              ? { ...ProjectVariationData, ...updatedProjectVariation.data }
-              : ProjectVariationData
-          ),
-        };
-      });
+      queryClient.invalidateQueries(PROJECT_VARIATION_QUERY_KEY);
     },
   });
 };
@@ -83,15 +62,7 @@ export const useDeleteProjectVariation = () => {
   return useMutation({
     mutationFn: deleteProjectVariation,
     onSuccess: (deletedData) => {
-      queryClient.setQueryData(PROJECT_VARIATION_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (ProjectVariationData) => ProjectVariationData.bdr_id !== parseInt(deletedData.deleted_id)
-          ),
-        };
-      });
+      queryClient.invalidateQueries(PROJECT_VARIATION_QUERY_KEY);
     },
   });
 };

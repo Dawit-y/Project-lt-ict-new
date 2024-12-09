@@ -9,10 +9,10 @@ import {
 const PROJECT_EMPLOYEE_QUERY_KEY = ["projectemployee"];
 
 // Fetch project_employee
-export const useFetchProjectEmployees = () => {
+export const useFetchProjectEmployees = (param = {}) => {
   return useQuery({
-    queryKey: PROJECT_EMPLOYEE_QUERY_KEY,
-    queryFn: () => getProjectEmployee(),
+    queryKey: [...PROJECT_EMPLOYEE_QUERY_KEY, "fetch", param],
+    queryFn: () => getProjectEmployee(param),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,
@@ -23,7 +23,7 @@ export const useFetchProjectEmployees = () => {
 //search project_employee
 export const useSearchProjectEmployees = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...PROJECT_EMPLOYEE_QUERY_KEY, searchParams],
+    queryKey: [...PROJECT_EMPLOYEE_QUERY_KEY, "search", searchParams],
     queryFn: () => getProjectEmployee(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
@@ -40,17 +40,7 @@ export const useAddProjectEmployee = () => {
   return useMutation({
     mutationFn: addProjectEmployee,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( PROJECT_EMPLOYEE_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
-      });
+      queryClient.invalidateQueries(PROJECT_EMPLOYEE_QUERY_KEY);
     },
   });
 };
@@ -61,18 +51,7 @@ export const useUpdateProjectEmployee = () => {
   return useMutation({
     mutationFn: updateProjectEmployee,
     onSuccess: (updatedProjectEmployee) => {
-      queryClient.setQueryData(PROJECT_EMPLOYEE_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-
-        return {
-          ...oldData,
-          data: oldData.data.map((ProjectEmployeeData) =>
-            ProjectEmployeeData.emp_id === updatedProjectEmployee.data.emp_id
-              ? { ...ProjectEmployeeData, ...updatedProjectEmployee.data }
-              : ProjectEmployeeData
-          ),
-        };
-      });
+      queryClient.invalidateQueries(PROJECT_EMPLOYEE_QUERY_KEY);
     },
   });
 };
@@ -83,15 +62,7 @@ export const useDeleteProjectEmployee = () => {
   return useMutation({
     mutationFn: deleteProjectEmployee,
     onSuccess: (deletedData) => {
-      queryClient.setQueryData(PROJECT_EMPLOYEE_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (ProjectEmployeeData) => ProjectEmployeeData.emp_id !== parseInt(deletedData.deleted_id)
-          ),
-        };
-      });
+      queryClient.invalidateQueries(PROJECT_EMPLOYEE_QUERY_KEY);
     },
   });
 };
