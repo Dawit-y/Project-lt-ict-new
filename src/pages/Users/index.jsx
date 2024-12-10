@@ -1027,7 +1027,7 @@ const UsersModel = () => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
+
       {showCanvas && (
         <RightOffCanvas
           handleClick={handleClick}

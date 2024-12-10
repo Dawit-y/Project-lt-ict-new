@@ -44,11 +44,11 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import {useFetchPagess} from "../../queries/pages_query";
+import { useFetchPagess } from "../../queries/pages_query";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -98,7 +98,7 @@ const AccessLogModel = () => {
     };
     fetchPages();
   }, []);
-//START CRUD
+  //START CRUD
   const handleAddAccessLog = async (data) => {
     try {
       await addAccessLog.mutateAsync(data);
@@ -145,40 +145,38 @@ const AccessLogModel = () => {
   //END CRUD
   //START FOREIGN CALLS
 
-  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     acl_ip:(accessLog && accessLog.acl_ip) || "", 
-acl_user_id:(accessLog && accessLog.acl_user_id) || "", 
-acl_role_id:(accessLog && accessLog.acl_role_id) || "", 
-acl_object_name:(accessLog && accessLog.acl_object_name) || "", 
-acl_object_id:(accessLog && accessLog.acl_object_id) || "", 
-acl_remark:(accessLog && accessLog.acl_remark) || "", 
-acl_detail:(accessLog && accessLog.acl_detail) || "", 
-acl_object_action:(accessLog && accessLog.acl_object_action) || "", 
-acl_description:(accessLog && accessLog.acl_description) || "", 
-acl_status:(accessLog && accessLog.acl_status) || "", 
+      acl_ip: (accessLog && accessLog.acl_ip) || "",
+      acl_user_id: (accessLog && accessLog.acl_user_id) || "",
+      acl_role_id: (accessLog && accessLog.acl_role_id) || "",
+      acl_object_name: (accessLog && accessLog.acl_object_name) || "",
+      acl_object_id: (accessLog && accessLog.acl_object_id) || "",
+      acl_remark: (accessLog && accessLog.acl_remark) || "",
+      acl_detail: (accessLog && accessLog.acl_detail) || "",
+      acl_object_action: (accessLog && accessLog.acl_object_action) || "",
+      acl_description: (accessLog && accessLog.acl_description) || "",
+      acl_status: (accessLog && accessLog.acl_status) || "",
 
-is_deletable: (accessLog && accessLog.is_deletable) || 1,
-is_editable: (accessLog && accessLog.is_editable) || 1
+      is_deletable: (accessLog && accessLog.is_deletable) || 1,
+      is_editable: (accessLog && accessLog.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
-      acl_ip: Yup.string().required(t('acl_ip')),
-acl_user_id: Yup.string().required(t('acl_user_id')),
-acl_role_id: Yup.string().required(t('acl_role_id')),
-acl_object_name: Yup.string().required(t('acl_object_name')),
-acl_object_id: Yup.string().required(t('acl_object_id')),
-acl_remark: Yup.string().required(t('acl_remark')),
-acl_detail: Yup.string().required(t('acl_detail')),
-acl_object_action: Yup.string().required(t('acl_object_action')),
-acl_description: Yup.string().required(t('acl_description')),
-acl_status: Yup.string().required(t('acl_status')),
-
+      acl_ip: Yup.string().required(t("acl_ip")),
+      acl_user_id: Yup.string().required(t("acl_user_id")),
+      acl_role_id: Yup.string().required(t("acl_role_id")),
+      acl_object_name: Yup.string().required(t("acl_object_name")),
+      acl_object_id: Yup.string().required(t("acl_object_id")),
+      acl_remark: Yup.string().required(t("acl_remark")),
+      acl_detail: Yup.string().required(t("acl_detail")),
+      acl_object_action: Yup.string().required(t("acl_object_action")),
+      acl_description: Yup.string().required(t("acl_description")),
+      acl_status: Yup.string().required(t("acl_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -186,16 +184,16 @@ acl_status: Yup.string().required(t('acl_status')),
       if (isEdit) {
         const updateAccessLog = {
           acl_id: accessLog ? accessLog.acl_id : 0,
-acl_ip:values.acl_ip, 
-acl_user_id:values.acl_user_id, 
-acl_role_id:values.acl_role_id, 
-acl_object_name:values.acl_object_name, 
-acl_object_id:values.acl_object_id, 
-acl_remark:values.acl_remark, 
-acl_detail:values.acl_detail, 
-acl_object_action:values.acl_object_action, 
-acl_description:values.acl_description, 
-acl_status:values.acl_status, 
+          acl_ip: values.acl_ip,
+          acl_user_id: values.acl_user_id,
+          acl_role_id: values.acl_role_id,
+          acl_object_name: values.acl_object_name,
+          acl_object_id: values.acl_object_id,
+          acl_remark: values.acl_remark,
+          acl_detail: values.acl_detail,
+          acl_object_action: values.acl_object_action,
+          acl_description: values.acl_description,
+          acl_status: values.acl_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -205,17 +203,16 @@ acl_status:values.acl_status,
         validation.resetForm();
       } else {
         const newAccessLog = {
-          acl_ip:values.acl_ip, 
-acl_user_id:values.acl_user_id, 
-acl_role_id:values.acl_role_id, 
-acl_object_name:values.acl_object_name, 
-acl_object_id:values.acl_object_id, 
-acl_remark:values.acl_remark, 
-acl_detail:values.acl_detail, 
-acl_object_action:values.acl_object_action, 
-acl_description:values.acl_description, 
-acl_status:values.acl_status, 
-
+          acl_ip: values.acl_ip,
+          acl_user_id: values.acl_user_id,
+          acl_role_id: values.acl_role_id,
+          acl_object_name: values.acl_object_name,
+          acl_object_id: values.acl_object_id,
+          acl_remark: values.acl_remark,
+          acl_detail: values.acl_detail,
+          acl_object_action: values.acl_object_action,
+          acl_description: values.acl_description,
+          acl_status: values.acl_status,
         };
         // save new AccessLog
         handleAddAccessLog(newAccessLog);
@@ -230,36 +227,36 @@ acl_status:values.acl_status,
   useEffect(() => {
     setAccessLog(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setAccessLog(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setAccessLog(null);
+      setAccessLog(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleAccessLogClick = (arg) => {
+  const handleAccessLogClick = (arg) => {
     const accessLog = arg;
     // console.log("handleAccessLogClick", accessLog);
     setAccessLog({
-      acl_id:accessLog.acl_id, 
-acl_ip:accessLog.acl_ip, 
-acl_user_id:accessLog.acl_user_id, 
-acl_role_id:accessLog.acl_role_id, 
-acl_object_name:accessLog.acl_object_name, 
-acl_object_id:accessLog.acl_object_id, 
-acl_remark:accessLog.acl_remark, 
-acl_detail:accessLog.acl_detail, 
-acl_object_action:accessLog.acl_object_action, 
-acl_description:accessLog.acl_description, 
-acl_status:accessLog.acl_status, 
+      acl_id: accessLog.acl_id,
+      acl_ip: accessLog.acl_ip,
+      acl_user_id: accessLog.acl_user_id,
+      acl_role_id: accessLog.acl_role_id,
+      acl_object_name: accessLog.acl_object_name,
+      acl_object_id: accessLog.acl_object_id,
+      acl_remark: accessLog.acl_remark,
+      acl_detail: accessLog.acl_detail,
+      acl_object_action: accessLog.acl_object_action,
+      acl_description: accessLog.acl_description,
+      acl_status: accessLog.acl_status,
 
       is_deletable: accessLog.is_deletable,
       is_editable: accessLog.is_editable,
@@ -279,8 +276,8 @@ acl_status:accessLog.acl_status,
     setIsEdit(false);
     setAccessLog("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -289,99 +286,93 @@ acl_status:accessLog.acl_status,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'acl_ip',
+        header: "",
+        accessorKey: "acl_ip",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.acl_ip, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'acl_user_id',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.acl_user_id, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.acl_ip, 30) || "-"}
             </span>
           );
         },
       },
-{
-        header: '',
-        accessorKey: 'acl_object_name',
+      {
+        header: "",
+        accessorKey: "acl_user_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.acl_object_name, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.acl_user_id, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'acl_object_id',
+      },
+      {
+        header: "",
+        accessorKey: "acl_object_name",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.acl_object_id, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.acl_object_name, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'acl_remark',
+      },
+      {
+        header: "",
+        accessorKey: "acl_object_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.acl_remark, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.acl_object_id, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'acl_create_time',
+      },
+      {
+        header: "",
+        accessorKey: "acl_remark",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.acl_create_time, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.acl_remark, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'acl_object_action',
+      },
+      {
+        header: "",
+        accessorKey: "acl_create_time",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.acl_create_time, 30) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: "acl_object_action",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.acl_object_action, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
@@ -408,7 +399,7 @@ acl_status:accessLog.acl_status,
         },
       },
     ];
-     if (
+    if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
     ) {
@@ -425,7 +416,7 @@ acl_status:accessLog.acl_status,
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleAccessLogClick(data);
                   }}
                 >
@@ -472,7 +463,7 @@ acl_status:accessLog.acl_status,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteAccessLog}
+        onDeleteClick={handleDeleteAccessLog}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteAccessLog.isPending}
       />
@@ -490,7 +481,8 @@ acl_status:accessLog.acl_status,
               {
                 key: "acl_role_id",
                 options: pagesOptions,
-              }]}
+              },
+            ]}
             checkboxSearchKeys={[]}
             onSearchResult={handleSearchResults}
             setIsSearchLoading={setIsSearchLoading}
@@ -519,7 +511,7 @@ acl_status:accessLog.acl_status,
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("access_log")}
+                      buttonName={t("add") + " " + t("access_log")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -532,7 +524,9 @@ acl_status:accessLog.acl_status,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("access_log")) : (t("add") +" "+t("access_log"))}
+              {!!isEdit
+                ? t("edit") + " " + t("access_log")
+                : t("add") + " " + t("access_log")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -543,247 +537,244 @@ acl_status:accessLog.acl_status,
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('acl_ip')}</Label>
-                      <Input
-                        name='acl_ip'
-                        type='text'
-                        placeholder={t('acl_ip')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.acl_ip || ''}
-                        invalid={
-                          validation.touched.acl_ip &&
-                          validation.errors.acl_ip
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.acl_ip &&
-                      validation.errors.acl_ip ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.acl_ip}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('acl_user_id')}</Label>
-                      <Input
-                        name='acl_user_id'
-                        type='text'
-                        placeholder={t('acl_user_id')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.acl_user_id || ''}
-                        invalid={
-                          validation.touched.acl_user_id &&
-                          validation.errors.acl_user_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.acl_user_id &&
-                      validation.errors.acl_user_id ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.acl_user_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('acl_role_id')}</Label>
-                      <Input
-                        name='acl_role_id'
-                        type='text'
-                        placeholder={t('acl_role_id')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.acl_role_id || ''}
-                        invalid={
-                          validation.touched.acl_role_id &&
-                          validation.errors.acl_role_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.acl_role_id &&
-                      validation.errors.acl_role_id ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.acl_role_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('acl_object_name')}</Label>
-                      <Input
-                        name='acl_object_name'
-                        type='text'
-                        placeholder={t('acl_object_name')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.acl_object_name || ''}
-                        invalid={
-                          validation.touched.acl_object_name &&
-                          validation.errors.acl_object_name
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.acl_object_name &&
-                      validation.errors.acl_object_name ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.acl_object_name}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('acl_object_id')}</Label>
-                      <Input
-                        name='acl_object_id'
-                        type='text'
-                        placeholder={t('acl_object_id')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.acl_object_id || ''}
-                        invalid={
-                          validation.touched.acl_object_id &&
-                          validation.errors.acl_object_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.acl_object_id &&
-                      validation.errors.acl_object_id ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.acl_object_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('acl_remark')}</Label>
-                      <Input
-                        name='acl_remark'
-                        type='text'
-                        placeholder={t('acl_remark')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.acl_remark || ''}
-                        invalid={
-                          validation.touched.acl_remark &&
-                          validation.errors.acl_remark
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.acl_remark &&
-                      validation.errors.acl_remark ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.acl_remark}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('acl_detail')}</Label>
-                      <Input
-                        name='acl_detail'
-                        type='text'
-                        placeholder={t('acl_detail')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.acl_detail || ''}
-                        invalid={
-                          validation.touched.acl_detail &&
-                          validation.errors.acl_detail
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.acl_detail &&
-                      validation.errors.acl_detail ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.acl_detail}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('acl_object_action')}</Label>
-                      <Input
-                        name='acl_object_action'
-                        type='text'
-                        placeholder={t('acl_object_action')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.acl_object_action || ''}
-                        invalid={
-                          validation.touched.acl_object_action &&
-                          validation.errors.acl_object_action
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.acl_object_action &&
-                      validation.errors.acl_object_action ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.acl_object_action}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('acl_description')}</Label>
-                      <Input
-                        name='acl_description'
-                        type='text'
-                        placeholder={t('acl_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.acl_description || ''}
-                        invalid={
-                          validation.touched.acl_description &&
-                          validation.errors.acl_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.acl_description &&
-                      validation.errors.acl_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.acl_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('acl_status')}</Label>
-                      <Input
-                        name='acl_status'
-                        type='text'
-                        placeholder={t('acl_status')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.acl_status || ''}
-                        invalid={
-                          validation.touched.acl_status &&
-                          validation.errors.acl_status
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.acl_status &&
-                      validation.errors.acl_status ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.acl_status}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-                
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("acl_ip")}</Label>
+                    <Input
+                      name="acl_ip"
+                      type="text"
+                      placeholder={t("acl_ip")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.acl_ip || ""}
+                      invalid={
+                        validation.touched.acl_ip && validation.errors.acl_ip
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.acl_ip && validation.errors.acl_ip ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.acl_ip}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("acl_user_id")}</Label>
+                    <Input
+                      name="acl_user_id"
+                      type="text"
+                      placeholder={t("acl_user_id")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.acl_user_id || ""}
+                      invalid={
+                        validation.touched.acl_user_id &&
+                        validation.errors.acl_user_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.acl_user_id &&
+                    validation.errors.acl_user_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.acl_user_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("acl_role_id")}</Label>
+                    <Input
+                      name="acl_role_id"
+                      type="text"
+                      placeholder={t("acl_role_id")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.acl_role_id || ""}
+                      invalid={
+                        validation.touched.acl_role_id &&
+                        validation.errors.acl_role_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.acl_role_id &&
+                    validation.errors.acl_role_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.acl_role_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("acl_object_name")}</Label>
+                    <Input
+                      name="acl_object_name"
+                      type="text"
+                      placeholder={t("acl_object_name")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.acl_object_name || ""}
+                      invalid={
+                        validation.touched.acl_object_name &&
+                        validation.errors.acl_object_name
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.acl_object_name &&
+                    validation.errors.acl_object_name ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.acl_object_name}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("acl_object_id")}</Label>
+                    <Input
+                      name="acl_object_id"
+                      type="text"
+                      placeholder={t("acl_object_id")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.acl_object_id || ""}
+                      invalid={
+                        validation.touched.acl_object_id &&
+                        validation.errors.acl_object_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.acl_object_id &&
+                    validation.errors.acl_object_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.acl_object_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("acl_remark")}</Label>
+                    <Input
+                      name="acl_remark"
+                      type="text"
+                      placeholder={t("acl_remark")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.acl_remark || ""}
+                      invalid={
+                        validation.touched.acl_remark &&
+                        validation.errors.acl_remark
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.acl_remark &&
+                    validation.errors.acl_remark ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.acl_remark}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("acl_detail")}</Label>
+                    <Input
+                      name="acl_detail"
+                      type="text"
+                      placeholder={t("acl_detail")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.acl_detail || ""}
+                      invalid={
+                        validation.touched.acl_detail &&
+                        validation.errors.acl_detail
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.acl_detail &&
+                    validation.errors.acl_detail ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.acl_detail}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("acl_object_action")}</Label>
+                    <Input
+                      name="acl_object_action"
+                      type="text"
+                      placeholder={t("acl_object_action")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.acl_object_action || ""}
+                      invalid={
+                        validation.touched.acl_object_action &&
+                        validation.errors.acl_object_action
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.acl_object_action &&
+                    validation.errors.acl_object_action ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.acl_object_action}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("acl_description")}</Label>
+                    <Input
+                      name="acl_description"
+                      type="text"
+                      placeholder={t("acl_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.acl_description || ""}
+                      invalid={
+                        validation.touched.acl_description &&
+                        validation.errors.acl_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.acl_description &&
+                    validation.errors.acl_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.acl_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("acl_status")}</Label>
+                    <Input
+                      name="acl_status"
+                      type="text"
+                      placeholder={t("acl_status")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.acl_status || ""}
+                      invalid={
+                        validation.touched.acl_status &&
+                        validation.errors.acl_status
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.acl_status &&
+                    validation.errors.acl_status ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.acl_status}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
@@ -824,7 +815,6 @@ acl_status:accessLog.acl_status,
           </Modal>
         </div>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };

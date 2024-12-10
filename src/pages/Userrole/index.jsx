@@ -527,8 +527,6 @@ const UserRoleModel = (props) => {
           </Form>
         </ModalBody>
       </Modal>
-
-      <ToastContainer />
     </React.Fragment>
   );
 };

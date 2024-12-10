@@ -663,7 +663,6 @@ const ProjectPerformanceModel = (props) => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };

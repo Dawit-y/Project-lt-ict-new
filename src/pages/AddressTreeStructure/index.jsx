@@ -114,7 +114,7 @@ const App_tree = () => {
             breadcrumbItem={t("tree")}
           />
           <div className="d-flex vh-100">
-            {/* <ToastContainer /> */}
+            {/*   */}
             <div className="w-30 p-3 bg-white border-end overflow-auto shadow-sm">
               <h4 className="mb-2 text-secondary">Address Structures</h4>
               <hr className="text-dark" />
@@ -146,14 +146,16 @@ const App_tree = () => {
                 </Row>
                 <Row className="mb-2 d-flex align-items-center">
                   <Col>
-                   {selectedNode? <button
-                      onClick={addSubFolder}
-                      className={`btn btn-primary ${loading ? "disabled" : ""}`}
-                    >
-                     Add New Address
-                    </button>:
-                     null
-                    }
+                    {selectedNode ? (
+                      <button
+                        onClick={addSubFolder}
+                        className={`btn btn-primary ${
+                          loading ? "disabled" : ""
+                        }`}
+                      >
+                        Add New Address
+                      </button>
+                    ) : null}
                   </Col>
                   <Col>
                     <button

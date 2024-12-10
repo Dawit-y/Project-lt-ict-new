@@ -1595,7 +1595,7 @@ const ProjectModel = () => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
+
       {showCanvas && (
         <RightOffCanvas
           handleClick={handleClick}

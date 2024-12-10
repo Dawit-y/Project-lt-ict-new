@@ -47,7 +47,7 @@ import {
   CardSubtitle,
 } from "reactstrap";
 import { ToastContainer } from "react-toastify";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler"
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -839,8 +839,6 @@ const ProjectDocumentModel = (props) => {
           </ModalBody>
         </Modal>
       </div>
-
-      <ToastContainer />
     </React.Fragment>
   );
 };

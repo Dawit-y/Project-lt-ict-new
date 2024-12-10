@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useLayoutEffect } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
@@ -222,16 +222,17 @@ const ProjectEmployeeModel = (props) => {
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
 
-  // Fetch ProjectEmployee on component mount
   useEffect(() => {
     setProjectEmployee(data);
   }, [data]);
+
   useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setProjectEmployee(data);
       setIsEdit(false);
     }
   }, [data]);
+
   const toggle = () => {
     if (modal) {
       setModal(false);
@@ -495,7 +496,7 @@ const ProjectEmployeeModel = (props) => {
           return (
             <div className="d-flex gap-3">
               {(cellProps.row.original?.is_editable ||
-                cellProps.row.original?.is_role_editable)  && (
+                cellProps.row.original?.is_role_editable) && (
                 <Link
                   to="#"
                   className="text-success"
@@ -991,7 +992,7 @@ const ProjectEmployeeModel = (props) => {
           </Modal>
         </div>
       </>
-      <ToastContainer />
+      {/*   */}
     </React.Fragment>
   );
 };

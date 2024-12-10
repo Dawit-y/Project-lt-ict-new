@@ -345,7 +345,8 @@ const AddressStructureModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.add_status, 30) || `${cellProps.row.original.add_status}`}
+              {truncateText(cellProps.row.original.add_status, 30) ||
+                `${cellProps.row.original.add_status}`}
             </span>
           );
         },
@@ -725,7 +726,6 @@ const AddressStructureModel = () => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };

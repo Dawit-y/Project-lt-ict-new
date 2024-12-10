@@ -427,7 +427,7 @@ const ProjectVariationModel = (props) => {
           return (
             <div className="d-flex gap-3">
               {(cellProps.row.original?.is_editable ||
-                cellProps.row.original?.is_role_editable)  && (
+                cellProps.row.original?.is_role_editable) && (
                 <Link
                   to="#"
                   className="text-success"
@@ -827,7 +827,6 @@ const ProjectVariationModel = (props) => {
           </Modal>
         </div>
       </>
-      <ToastContainer />
     </React.Fragment>
   );
 };

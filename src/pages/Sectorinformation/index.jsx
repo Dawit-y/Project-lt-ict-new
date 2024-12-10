@@ -821,7 +821,6 @@ const SectorInformationModel = () => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };

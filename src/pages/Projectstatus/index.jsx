@@ -681,7 +681,6 @@ const ProjectStatusModel = () => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };

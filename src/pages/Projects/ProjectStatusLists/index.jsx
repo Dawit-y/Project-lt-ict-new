@@ -804,7 +804,6 @@ const ProjectModel = () => {
           data={projectMetaData}
         />
       )} */}
-      <ToastContainer />
     </React.Fragment>
   );
 };

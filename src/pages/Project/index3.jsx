@@ -19,7 +19,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import '../../App.css';
+import "../../App.css";
 
 import {
   getProject as onGetProject,
@@ -76,7 +76,7 @@ const truncateText = (text, maxLength) => {
 const statusClasses = {
   "Kan Xumurame": "success", // Green for completed
   "Kan Jalqabame": "info", // Yellow for started
-  "Adeemsarra Kan jiru": "warning",      // Add other statuses as needed
+  "Adeemsarra Kan jiru": "warning", // Add other statuses as needed
   "Adda Kan Cite": "danger", // Example status
 };
 
@@ -112,7 +112,6 @@ const ProjectModel = () => {
   const [showCanvas, setShowCanvas] = useState(false);
 
   useEffect(() => {
-
     const fetchProjectStatus = async () => {
       try {
         const response = await axios.post(
@@ -126,7 +125,7 @@ const ProjectModel = () => {
           { label: "Select Project Status", value: "" },
           ...transformedData,
         ];
-              console.log("Fetched options:", optionsWithDefault);
+        console.log("Fetched options:", optionsWithDefault);
         setProjectStatusOptions(optionsWithDefault);
       } catch (error) {
         console.error("Error fetching Status:", error);
@@ -134,7 +133,6 @@ const ProjectModel = () => {
     };
     fetchProjectStatus();
   }, []);
-
 
   const handleProjectStatusChange = (e) => {
     setSelectedProjectStatus(e.target.value);
@@ -197,7 +195,6 @@ const ProjectModel = () => {
     validation.setFieldValue("prj_project_budget_source_id", e.target.value);
   };
 
-
   useEffect(() => {
     const fetchSector = async () => {
       try {
@@ -219,8 +216,8 @@ const ProjectModel = () => {
     };
     fetchSector();
   }, []);
-  
-   const handleSectorChange = (e) => {
+
+  const handleSectorChange = (e) => {
     setSelectedSector(e.target.value);
     validation.setFieldValue("prj_sector_id", e.target.value);
   };
@@ -274,13 +271,20 @@ const ProjectModel = () => {
       prj_name: Yup.string().required(t("prj_name")),
       prj_code: Yup.string().required(t("prj_code")),
 
-      prj_total_estimate_budget: Yup.string().required(t("prj_total_estimate_budget")),
+      prj_total_estimate_budget: Yup.string().required(
+        t("prj_total_estimate_budget")
+      ),
       prj_project_status_id: Yup.string().required(t("prj_project_status_id")),
-      prj_project_category_id: Yup.string().required(t("prj_project_category_id")),
-      prj_project_budget_source_id: Yup.string().required(t("prj_project_budget_source_id")),
-      prj_location_region_id: Yup.string().required(t("prj_location_region_id")),
+      prj_project_category_id: Yup.string().required(
+        t("prj_project_category_id")
+      ),
+      prj_project_budget_source_id: Yup.string().required(
+        t("prj_project_budget_source_id")
+      ),
+      prj_location_region_id: Yup.string().required(
+        t("prj_location_region_id")
+      ),
       prj_location_zone_id: Yup.string().required(t("prj_location_zone_id")),
-
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -337,10 +341,10 @@ const ProjectModel = () => {
           prj_total_estimate_budget: values.prj_total_estimate_budget,
           prj_total_actual_budget: values.prj_total_actual_budget,
           prj_sector_id: values.prj_sector_id,
-           prj_project_status_id: values.prj_project_status_id,
+          prj_project_status_id: values.prj_project_status_id,
           prj_project_category_id: values.prj_project_category_id,
           prj_project_budget_source_id: values.prj_project_budget_source_id,
-        
+
           prj_location_region_id: Number(values.prj_location_region_id),
           prj_location_zone_id: Number(values.prj_location_zone_id),
           prj_location_woreda_id: Number(values.prj_location_woreda_id),
@@ -434,7 +438,7 @@ const ProjectModel = () => {
 
   const handleProjectClick = (arg) => {
     const project = arg;
-     console.log("handleProjectClick", project);
+    console.log("handleProjectClick", project);
     setProject({
       prj_id: project.prj_id,
       prj_name: project.prj_name,
@@ -445,7 +449,9 @@ const ProjectModel = () => {
       prj_sector_id: project.prj_sector_id,
       prj_project_status_id: Number(project.prj_project_status_id),
       prj_project_category_id: Number(project.prj_project_category_id),
-      prj_project_budget_source_id: Number(project.prj_project_budget_source_id),
+      prj_project_budget_source_id: Number(
+        project.prj_project_budget_source_id
+      ),
 
       prj_location_region_id: Number(project.prj_location_region_id),
       prj_location_zone_id: Number(project.prj_location_zone_id),
@@ -505,15 +511,14 @@ const ProjectModel = () => {
 
   const columnDefs = useMemo(() => {
     const baseColumnDefs = [
-   
-   {
-      headerName: t("S.N"),
-      field: "sn",
-      valueGetter: (params) => params.node.rowIndex + 1,
-      sortable: false,
-      filter: false,
-      width: 60,
-     },
+      {
+        headerName: t("S.N"),
+        field: "sn",
+        valueGetter: (params) => params.node.rowIndex + 1,
+        sortable: false,
+        filter: false,
+        width: 60,
+      },
 
       {
         headerName: t("prj_name"),
@@ -551,7 +556,7 @@ const ProjectModel = () => {
           return truncateText(params.data.prj_total_actual_budget, 30) || "-";
         },
       },
-        {
+      {
         headerName: t("prj_project_category_id"),
         field: "prj_project_category_id",
         sortable: true,
@@ -560,16 +565,18 @@ const ProjectModel = () => {
           return truncateText(params.data.prj_project_category_id, 30) || "-";
         },
       },
-        {
+      {
         headerName: t("prj_project_budget_source_id"),
         field: "prj_project_budget_source_id",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.prj_project_budget_source_id, 30) || "-";
+          return (
+            truncateText(params.data.prj_project_budget_source_id, 30) || "-"
+          );
         },
       },
-        {
+      {
         headerName: t("prj_sector_id"),
         field: "prj_sector_id",
         sortable: true,
@@ -578,7 +585,7 @@ const ProjectModel = () => {
           return truncateText(params.data.prj_sector_id, 30) || "-";
         },
       },
-  
+
       {
         headerName: t("prj_location_zone_id"),
         field: "prj_location_zone_id",
@@ -627,7 +634,7 @@ const ProjectModel = () => {
           return truncateText(params.data.prj_owner_woreda_id, 30) || "-";
         },
       },
-      
+
       {
         headerName: t("prj_start_date_plan_et"),
         field: "prj_start_date_plan_et",
@@ -647,7 +654,7 @@ const ProjectModel = () => {
           return truncateText(params.data.prj_start_date_plan_gc, 30) || "-";
         },
       },
-        {
+      {
         headerName: t("prj_end_date_plan_et"),
         field: "prj_end_date_plan_et",
         sortable: true,
@@ -661,7 +668,7 @@ const ProjectModel = () => {
         field: "prj_end_date_plan_gc",
         sortable: true,
         filter: true,
-          hide: true, // This will hide the column
+        hide: true, // This will hide the column
         cellRenderer: (params) => {
           return truncateText(params.data.prj_end_date_plan_gc, 30) || "-";
         },
@@ -680,7 +687,7 @@ const ProjectModel = () => {
         headerName: t("prj_start_date_gc"),
         field: "prj_start_date_gc",
         sortable: true,
-          hide: true, // This will hide the column
+        hide: true, // This will hide the column
         filter: true,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_start_date_gc, 30) || "-";
@@ -701,13 +708,13 @@ const ProjectModel = () => {
         field: "prj_end_date_actual_gc",
         sortable: true,
         filter: true,
-          hide: true, // This will hide the column
+        hide: true, // This will hide the column
         cellRenderer: (params) => {
           return truncateText(params.data.prj_end_date_actual_gc, 30) || "-";
         },
       },
-      
-   {
+
+      {
         headerName: t("prj_project_status_id"),
         field: "prj_project_status_id",
         sortable: true,
@@ -722,7 +729,7 @@ const ProjectModel = () => {
           );
         },
       },
-    
+
       {
         headerName: t("view_detail"),
         sortable: true,
@@ -830,7 +837,6 @@ const ProjectModel = () => {
 
   return (
     <React.Fragment>
-     
       <DeleteModal
         show={deleteModal}
         onDeleteClick={handleDeleteProject}
@@ -915,7 +921,9 @@ const ProjectModel = () => {
               >
                 <Row>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("prj_name")} <span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prj_name")} <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prj_name"
                       type="text"
@@ -939,7 +947,9 @@ const ProjectModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("prj_code")} <span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prj_code")} <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prj_code"
                       type="text"
@@ -963,7 +973,10 @@ const ProjectModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("prj_project_status_id")} <span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prj_project_status_id")}{" "}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prj_project_status_id"
                       type="select"
@@ -986,7 +999,10 @@ const ProjectModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("prj_project_category_id")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prj_project_category_id")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prj_project_category_id"
                       type="select"
@@ -1009,7 +1025,10 @@ const ProjectModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("prj_project_budget_source_id")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prj_project_budget_source_id")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prj_project_budget_source_id"
                       type="select"
@@ -1032,8 +1051,11 @@ const ProjectModel = () => {
                     ) : null}
                   </Col>
 
-                    <Col className="col-md-4 mb-3">
-                    <Label>{t("prj_sector_id")}<span className="text-danger">*</span></Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>
+                      {t("prj_sector_id")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prj_sector_id"
                       type="select"
@@ -1057,7 +1079,10 @@ const ProjectModel = () => {
                   </Col>
 
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("prj_total_estimate_budget")} <span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prj_total_estimate_budget")}{" "}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prj_total_estimate_budget"
                       type="number"
@@ -1152,7 +1177,7 @@ const ProjectModel = () => {
                     </FormGroup>
                   </Col>
 
-                <Col className="col-md-4 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <FormGroup>
                       <Label>{t("prj_end_date_plan_gc")}</Label>
                       <InputGroup>
@@ -1245,8 +1270,8 @@ const ProjectModel = () => {
                       ) : null}
                     </FormGroup>
                   </Col>
-              
-                   <Col className="col-md-4 mb-3" style={{ display: 'none'}}>
+
+                  <Col className="col-md-4 mb-3" style={{ display: "none" }}>
                     <FormGroup>
                       <Label>{t("prj_end_date_actual_et")}</Label>
                       <InputGroup>
@@ -1338,8 +1363,8 @@ const ProjectModel = () => {
                       ) : null}
                     </FormGroup>
                   </Col>
-               
-                   <Col className="col-md-4 mb-3" style={{ display: 'none'}}>
+
+                  <Col className="col-md-4 mb-3" style={{ display: "none" }}>
                     <FormGroup>
                       <Label>{t("prj_end_date_plan_et")}</Label>
                       <InputGroup>
@@ -1436,7 +1461,7 @@ const ProjectModel = () => {
                     ) : null}
                   </Col>
 
-                    <Col className="col-md-12 mb-3">
+                  <Col className="col-md-12 mb-3">
                     <CascadingDropdowns
                       validation={validation}
                       dropdown1name="prj_location_region_id"
@@ -1446,7 +1471,7 @@ const ProjectModel = () => {
                     />
                   </Col>
 
-                   <Col className="col-md-4 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("prj_location_kebele_id")}</Label>
                     <Input
                       name="prj_location_kebele_id"
@@ -1602,7 +1627,6 @@ const ProjectModel = () => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
 
       {showCanvas && (
         <RightOffCanvas
@@ -1619,7 +1643,7 @@ const ProjectModel = () => {
             "Project Contractor",
             "Budget Request",
             "Geo Location",
-            "Budget Source"           
+            "Budget Source",
           ]}
           components={[
             ProjectPerformance,
@@ -1629,7 +1653,7 @@ const ProjectModel = () => {
             Projectcontractor,
             Budgetrequest,
             GeoLocation,
-            ProjectBudgetSource            
+            ProjectBudgetSource,
           ]}
         />
       )}

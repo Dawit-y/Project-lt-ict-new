@@ -17,14 +17,14 @@ import { createSelector } from "reselect";
 import { useTranslation } from "react-i18next";
 
 import { Button, Col, Row, Input } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import PaymentAnalaysis from "./PaymentAnalaysis";
 import {
   useFetchProjectPayments,
-  useSearchProjectPayments
+  useSearchProjectPayments,
 } from "../../queries/projectpayment_query";
 const ProjectPaymentList = () => {
   document.title = "Project Payment List";
@@ -73,7 +73,7 @@ const ProjectPaymentList = () => {
       ? text
       : `${text.substring(0, maxLength)}...`;
   };
-const handleSearchResults = ({ data, error }) => {
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -151,7 +151,7 @@ const handleSearchResults = ({ data, error }) => {
         cellRenderer: (params) => {
           return truncateText(params.data.prp_description, 30) || "-";
         },
-      }
+      },
     ];
     return baseColumnDefs;
   });
@@ -166,7 +166,7 @@ const handleSearchResults = ({ data, error }) => {
           />
           <AdvancedSearch
             searchHook={useSearchProjectPayments}
-            textSearchKeys={["prj_name","prj_code"]}
+            textSearchKeys={["prj_name", "prj_code"]}
             dateSearchKeys={["payment_date"]}
             dropdownSearchKeys={[
               {
@@ -190,7 +190,7 @@ const handleSearchResults = ({ data, error }) => {
             setSearchResults={setSearchResults}
             setShowSearchResult={setShowSearchResult}
           />
-         {isLoading || isSearchLoading ? (
+          {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
             <div
@@ -209,8 +209,7 @@ const handleSearchResults = ({ data, error }) => {
                     style={{ width: "50%", maxWidth: "400px" }}
                   />
                 </Col>
-                <Col sm="12" md="6" className="text-md-end">
-                </Col>
+                <Col sm="12" md="6" className="text-md-end"></Col>
               </Row>
 
               {/* AG Grid */}
@@ -218,9 +217,8 @@ const handleSearchResults = ({ data, error }) => {
                 <AgGridReact
                   ref={gridRef}
                   rowData={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []}
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
                   columnDefs={columnDefs}
                   pagination={true}
                   paginationPageSizeSelector={[10, 20, 30, 40, 50]}
@@ -239,12 +237,9 @@ const handleSearchResults = ({ data, error }) => {
           )}
         </div>
       </div>
-      <PaymentAnalaysis data={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                        } />
-      <ToastContainer />
+      <PaymentAnalaysis
+        data={showSearchResult ? searchResults?.data : data?.data || []}
+      />
     </React.Fragment>
   );
 };

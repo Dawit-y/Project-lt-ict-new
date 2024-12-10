@@ -84,13 +84,10 @@ const RolesModel = ({ onSelectItem }) => {
     },
 
     validationSchema: Yup.object({
-     rol_name: Yup.string()
+      rol_name: Yup.string()
         .required(t("rol_name"))
         .test("unique-role-id", t("Already exists"), (value) => {
-          return !data.some(
-            (item) =>
-              item.rol_name == value
-          );
+          return !data.some((item) => item.rol_name == value);
         }),
 
       //rol_name: Yup.string().required(t("rol_name")),
@@ -510,7 +507,7 @@ const RolesModel = ({ onSelectItem }) => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
+
       {showCanvas && (
         <RightOffCanvas
           handleClick={handleClick}

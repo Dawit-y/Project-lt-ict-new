@@ -71,8 +71,7 @@ const BudgetRequestListModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } =
-    useFetchBudgetRequests();
+  const { data, isLoading, error, isError, refetch } = useFetchBudgetRequests();
   const { data: budgetYearData } = useFetchBudgetYears();
 
   const [transaction, setTransaction] = useState({});
@@ -124,7 +123,7 @@ const BudgetRequestListModel = () => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-        return truncateText(params.data.bdy_name, 30) || "-";
+          return truncateText(params.data.bdy_name, 30) || "-";
         },
       },
       {
@@ -336,12 +335,14 @@ const BudgetRequestListModel = () => {
                   />
                 </div>
               </div>
-              <BudgetRequestAnalysis data={showSearchResult ? searchResults?.data : data?.data || []} />
+              <BudgetRequestAnalysis
+                data={showSearchResult ? searchResults?.data : data?.data || []}
+              />
             </>
           )}
         </div>
       </div>
-      <ToastContainer />
+
       {showCanvas && (
         <RightOffCanvas
           handleClick={handleEyeClick}

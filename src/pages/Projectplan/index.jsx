@@ -807,7 +807,6 @@ const ProjectPlanModel = () => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };

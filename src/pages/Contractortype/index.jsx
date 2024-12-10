@@ -590,7 +590,6 @@ const ContractorTypeModel = () => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };

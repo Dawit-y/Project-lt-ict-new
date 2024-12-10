@@ -153,12 +153,13 @@ const UsersModal = (props) => {
                   <Row>
                     <Col className="md-6">
                       <img
-                        src={`${import.meta.env.VITE_BASE_API_FILE}public/uploads/userfiles/${transaction.usr_picture}`}
+                        src={`${
+                          import.meta.env.VITE_BASE_API_FILE
+                        }public/uploads/userfiles/${transaction.usr_picture}`}
                         alt="User Profile"
                         className="img-thumbnail w-100"
                         style={{ height: "150px", objectFit: "cover" }}
                       />
-
 
                       <Card>
                         <CardBody>
@@ -192,26 +193,51 @@ const UsersModal = (props) => {
                           </div>
                         </CardBody>
                       </Card>
-                      <div className="d-flex justify-content-between align-items-center gap-3 p-3" style={{ backgroundColor: "#ffff2", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)" }}>
+                      <div
+                        className="d-flex justify-content-between align-items-center gap-3 p-3"
+                        style={{
+                          backgroundColor: "#ffff2",
+                          borderRadius: "10px",
+                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                        }}
+                      >
                         <Col>
-                          <Label className="form-label mb-2" style={{ fontSize: "16px", fontWeight: "bold" }}>
+                          <Label
+                            className="form-label mb-2"
+                            style={{ fontSize: "16px", fontWeight: "bold" }}
+                          >
                             Reset New Password
                           </Label>
                           <Button
                             type="button"
                             color="primary"
                             className="px-4 py-2"
-                            style={{ borderRadius: "5px", fontWeight: "bold", fontSize: "16px" }}
+                            style={{
+                              borderRadius: "5px",
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                            }}
                             onClick={() => {
                               tog_backdrop();
                             }}
                           >
-                            <i className="bx bx-refresh" style={{ marginRight: "8px" }}></i> Reset
+                            <i
+                              className="bx bx-refresh"
+                              style={{ marginRight: "8px" }}
+                            ></i>{" "}
+                            Reset
                           </Button>
                         </Col>
 
                         <Col className="d-flex flex-column align-items-center">
-                          <Label className="form-label mb-2" style={{ fontSize: "16px", fontWeight: "bold", color: "#333" }}>
+                          <Label
+                            className="form-label mb-2"
+                            style={{
+                              fontSize: "16px",
+                              fontWeight: "bold",
+                              color: "#333",
+                            }}
+                          >
                             Update User Status
                           </Label>
 
@@ -235,20 +261,19 @@ const UsersModal = (props) => {
                             />
 
                             {/* Display Active/Inactive based on switch state */}
-                            <span style={{
-                              fontSize: "16px",
-                              fontWeight: "bold",
-                              color: switch1 ? "#28a745" : "#d9534f" // Green for Active, Red for Inactive
-                            }}>
+                            <span
+                              style={{
+                                fontSize: "16px",
+                                fontWeight: "bold",
+                                color: switch1 ? "#28a745" : "#d9534f", // Green for Active, Red for Inactive
+                              }}
+                            >
                               {switch1 ? "Active" : "Inactive"}
                             </span>
                           </div>
                         </Col>
-
                       </div>
                     </Col>
-
-
                   </Row>
                 </CardBody>
               </Card>
@@ -284,7 +309,6 @@ const UsersModal = (props) => {
                       <td>{transaction.usr_department_id}</td>
                     </tr>
                     <tr>
-
                       <th scope="row"> {t("usr_is_active")}</th>
                       <td>{transaction.usr_is_active}</td>
                     </tr>
@@ -349,8 +373,9 @@ const UsersModal = (props) => {
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
                   <i
-                    className={`mdi ${passwordShown ? "mdi-eye-off" : "mdi-eye"
-                      } font-size-16`}
+                    className={`mdi ${
+                      passwordShown ? "mdi-eye-off" : "mdi-eye"
+                    } font-size-16`}
                     onClick={togglePasswordVisibility}
                     style={{
                       position: "absolute",
@@ -379,9 +404,8 @@ const UsersModal = (props) => {
             <Button
               type="button"
               color="success"
-              onClick={()=>{
-                
-                handlePasswordChange()
+              onClick={() => {
+                handlePasswordChange();
               }}
               // onClick={handlePasswordChange}
             >
@@ -390,7 +414,6 @@ const UsersModal = (props) => {
           </ModalFooter>
         </Modal>
       </div>
-      <ToastContainer />
     </Modal>
   );
 };

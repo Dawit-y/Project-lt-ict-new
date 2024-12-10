@@ -486,7 +486,7 @@ const DepartmentModel = () => {
           />
           <AdvancedSearch
             searchHook={useSearchDepartments}
-            textSearchKeys={["dep_name_or","dep_name_am", "dep_name_en"]}
+            textSearchKeys={["dep_name_or", "dep_name_am", "dep_name_en"]}
             dropdownSearchKeys={[
               {
                 key: "example",
@@ -832,7 +832,6 @@ const DepartmentModel = () => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };

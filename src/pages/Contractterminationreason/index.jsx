@@ -611,7 +611,6 @@ const ContractTerminationReasonModel = () => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };

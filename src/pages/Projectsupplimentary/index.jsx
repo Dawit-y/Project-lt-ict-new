@@ -835,7 +835,6 @@ const ProjectSupplimentaryModel = (props) => {
           </Modal>
         </div>
       </>
-      <ToastContainer />
     </React.Fragment>
   );
 };
