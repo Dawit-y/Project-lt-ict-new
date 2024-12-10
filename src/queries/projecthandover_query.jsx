@@ -11,7 +11,7 @@ const PROJECT_HANDOVER_QUERY_KEY = ["projecthandover"];
 // Fetch project_handover
 export const useFetchProjectHandovers = (param = {}) => {
   return useQuery({
-    queryKey: [...PROJECT_HANDOVER_QUERY_KEY,"fetch", param],
+    queryKey: [...PROJECT_HANDOVER_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectHandover(param),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
@@ -40,7 +40,24 @@ export const useAddProjectHandover = () => {
   return useMutation({
     mutationFn: addProjectHandover,
     onSuccess: (newDataResponse) => {
-      queryClient.invalidateQueries(PROJECT_HANDOVER_QUERY_KEY);
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_HANDOVER_QUERY_KEY,
+      });
+
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        });
+      });
     },
   });
 };
@@ -50,8 +67,24 @@ export const useUpdateProjectHandover = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateProjectHandover,
-    onSuccess: (updatedProjectHandover) => {
-      queryClient.invalidateQueries(PROJECT_HANDOVER_QUERY_KEY);
+    onSuccess: (updatedData) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_HANDOVER_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((data) =>
+              data.prh_id === updatedData.data.prh_id
+                ? { ...data, ...updatedData.data }
+                : data
+            ),
+          };
+        });
+      });
     },
   });
 };
@@ -61,8 +94,22 @@ export const useDeleteProjectHandover = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteProjectHandover,
-    onSuccess: (deletedData) => {
-      queryClient.invalidateQueries(PROJECT_HANDOVER_QUERY_KEY);
+    onSuccess: (deletedData, variable) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_HANDOVER_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (dept) => dept.prh_id !== parseInt(variable)
+            ),
+          };
+        });
+      });
     },
   });
 };

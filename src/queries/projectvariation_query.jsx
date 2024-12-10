@@ -40,7 +40,24 @@ export const useAddProjectVariation = () => {
   return useMutation({
     mutationFn: addProjectVariation,
     onSuccess: (newDataResponse) => {
-      queryClient.invalidateQueries(PROJECT_VARIATION_QUERY_KEY);
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_VARIATION_QUERY_KEY,
+      });
+
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        });
+      });
     },
   });
 };
@@ -50,8 +67,24 @@ export const useUpdateProjectVariation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateProjectVariation,
-    onSuccess: (updatedProjectVariation) => {
-      queryClient.invalidateQueries(PROJECT_VARIATION_QUERY_KEY);
+    onSuccess: (updatedData) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_VARIATION_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((data) =>
+              data.bdr_id === updatedData.data.bdr_id
+                ? { ...data, ...updatedData.data }
+                : data
+            ),
+          };
+        });
+      });
     },
   });
 };
@@ -61,8 +94,22 @@ export const useDeleteProjectVariation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteProjectVariation,
-    onSuccess: (deletedData) => {
-      queryClient.invalidateQueries(PROJECT_VARIATION_QUERY_KEY);
+    onSuccess: (deletedData, variable) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_VARIATION_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (dept) => dept.bdr_id !== parseInt(variable)
+            ),
+          };
+        });
+      });
     },
   });
 };

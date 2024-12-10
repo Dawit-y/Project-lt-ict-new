@@ -33,14 +33,29 @@ export const useSearchProjectBudgetExpenditures = (searchParams = {}) => {
   });
 };
 
-// Add project_budget_expenditure
 export const useAddProjectBudgetExpenditure = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: addProjectBudgetExpenditure,
     onSuccess: (newDataResponse) => {
-      queryClient.invalidateQueries(PROJECT_BUDGET_EXPENDITURE_QUERY_KEY);
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_BUDGET_EXPENDITURE_QUERY_KEY,
+      });
+
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        });
+      });
     },
   });
 };
@@ -51,7 +66,23 @@ export const useUpdateProjectBudgetExpenditure = () => {
   return useMutation({
     mutationFn: updateProjectBudgetExpenditure,
     onSuccess: (updatedProjectBudgetExpenditure) => {
-      queryClient.invalidateQueries(PROJECT_BUDGET_EXPENDITURE_QUERY_KEY);
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_BUDGET_EXPENDITURE_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((data) =>
+              data.pbe_id === updatedProjectBudgetExpenditure.data.pbe_id
+                ? { ...data, ...updatedProjectBudgetExpenditure.data }
+                : data
+            ),
+          };
+        });
+      });
     },
   });
 };
@@ -61,8 +92,22 @@ export const useDeleteProjectBudgetExpenditure = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteProjectBudgetExpenditure,
-    onSuccess: (deletedData) => {
-      queryClient.invalidateQueries(PROJECT_BUDGET_EXPENDITURE_QUERY_KEY);
+    onSuccess: (deletedData, variable) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_BUDGET_EXPENDITURE_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (dept) => dept.pbe_id !== parseInt(variable)
+            ),
+          };
+        });
+      });
     },
   });
 };

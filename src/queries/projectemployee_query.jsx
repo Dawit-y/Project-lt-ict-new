@@ -40,7 +40,24 @@ export const useAddProjectEmployee = () => {
   return useMutation({
     mutationFn: addProjectEmployee,
     onSuccess: (newDataResponse) => {
-      queryClient.invalidateQueries(PROJECT_EMPLOYEE_QUERY_KEY);
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_EMPLOYEE_QUERY_KEY,
+      });
+
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        });
+      });
     },
   });
 };
@@ -50,8 +67,24 @@ export const useUpdateProjectEmployee = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateProjectEmployee,
-    onSuccess: (updatedProjectEmployee) => {
-      queryClient.invalidateQueries(PROJECT_EMPLOYEE_QUERY_KEY);
+    onSuccess: (updatedData) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_EMPLOYEE_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((data) =>
+              data.emp_id === updatedData.data.emp_id
+                ? { ...data, ...updatedData.data }
+                : data
+            ),
+          };
+        });
+      });
     },
   });
 };
@@ -61,8 +94,22 @@ export const useDeleteProjectEmployee = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteProjectEmployee,
-    onSuccess: (deletedData) => {
-      queryClient.invalidateQueries(PROJECT_EMPLOYEE_QUERY_KEY);
+    onSuccess: (deletedData, variable) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_EMPLOYEE_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (dept) => dept.emp_id !== parseInt(variable)
+            ),
+          };
+        });
+      });
     },
   });
 };

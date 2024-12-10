@@ -438,7 +438,8 @@ const ProjectBudgetExpenditureModel = (props) => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {(cellProps.row.original?.is_editable ||
+                cellProps.row.original?.is_role_editable)  && (
                 <Link
                   to="#"
                   className="text-success"
@@ -454,7 +455,8 @@ const ProjectBudgetExpenditureModel = (props) => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {(cellProps.row.original?.is_deletable ||
+                cellProps.row.original?.is_role_deletable) && (
                 <Link
                   to="#"
                   className="text-danger"
