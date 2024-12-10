@@ -34,14 +34,19 @@ import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
 import ProjectModal from "./ProjectModal";
 import { useTranslation } from "react-i18next";
-
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
-import ProjectDocument from "../../pages/Projectdocument/index";
-import ProjectPayment from "../../pages/Projectpayment";
-import ProjectStakeholder from "../../pages/Projectstakeholder";
-import Projectcontractor from "../../pages/Projectcontractor";
-import Budgetrequest from "../../pages/Budgetrequest";
-import GeoLocation from "../../pages/GeoLocation";
+import ProjectDocument from "../Projectdocument";
+import ProjectPayment from "../Projectpayment";
+import ProjectStakeholder from "../Projectstakeholder";
+import Projectcontractor from "../Projectcontractor";
+import Budgetrequest from "../Budgetrequest";
+import GeoLocation from "../GeoLocation";
+import ProjectBudgetExpenditureModel from "../Projectbudgetexpenditure";
+import ProjectEmployeeModel from "../../pages/Projectemployee";
+import ProjectHandoverModel from "../Projecthandover";
+import ProjectPerformanceModel from "../Projectperformance";
+import ProjectSupplimentaryModel from "../Projectsupplimentary";
+import ProjectVariationModel from "../Projectvariation";
 
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
@@ -1603,22 +1608,20 @@ const ProjectModel = () => {
           canvasWidth={84}
           name={projectMetaData.prj_name}
           id={projectMetaData.prj_id}
-          navItems={[
-            "Documents",
-            "Payments",
-            "Stakeholders",
-            "Contractors",
-            "Budget Requests",
-            "Geo Location",
-          ]}
-          components={[
-            ProjectDocument,
-            ProjectPayment,
-            ProjectStakeholder,
-            Projectcontractor,
-            Budgetrequest,
-            GeoLocation,
-          ]}
+          components={{
+            Documents: ProjectDocument,
+            Payments: ProjectPayment,
+            Stakeholder: ProjectStakeholder,
+            Contractor: Projectcontractor,
+            "Budget Request": Budgetrequest,
+            "Geo Location": GeoLocation,
+            "Budget Expenditures": ProjectBudgetExpenditureModel,
+            Employees: ProjectEmployeeModel,
+            Handover: ProjectHandoverModel,
+            Performance: ProjectPerformanceModel,
+            Supplementary: ProjectSupplimentaryModel,
+            Variations: ProjectVariationModel,
+          }}
         />
       )}
     </React.Fragment>

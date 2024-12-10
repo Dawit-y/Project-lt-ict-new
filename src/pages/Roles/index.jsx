@@ -516,8 +516,7 @@ const RolesModel = ({ onSelectItem }) => {
           data={RoleMetaData}
           id={RoleMetaData.rol_id}
           name={RoleMetaData.rol_name}
-          navItems={["Permission"]}
-          components={[Permission]}
+          components={{ Permission: Permission }}
         />
       )}
     </React.Fragment>

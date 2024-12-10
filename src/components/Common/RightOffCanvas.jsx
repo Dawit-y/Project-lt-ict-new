@@ -15,16 +15,43 @@ import {
 import classnames from "classnames";
 import { isEmpty } from "lodash";
 
+/**
+ * A reusable right-side off-canvas component with dynamic navigation tabs.
+ *
+ * @param {Object} props - The properties passed to the component.
+ * @param {Function} props.handleClick - Function to toggle the off-canvas visibility.
+ * @param {boolean} props.showCanvas - Boolean to determine whether the off-canvas is open.
+ * @param {number} props.canvasWidth - The width of the off-canvas as a percentage of the viewport width (e.g., 84 for 84vw).
+ * @param {string} props.name - The title displayed in the off-canvas header.
+ * @param {string | number} props.id - An identifier passed to each rendered component via the `passedId` prop.
+ * @param {Object} props.components - An object where keys are the navigation item labels, and values are React components to be rendered in corresponding tabs.
+ *
+ * @returns {JSX.Element} The RightOffCanvas component.
+ *
+ * @example
+ * <RightOffCanvas
+ *   handleClick={handleToggle}
+ *   showCanvas={true}
+ *   canvasWidth={80}
+ *   name="Project Overview"
+ *   id={123}
+ *   components={{
+ *     Documents: ProjectDocument,
+ *     Payments: ProjectPayment,
+ *     Stakeholder: ProjectStakeholder,
+ *   }}
+ * />
+ */
+
 const RightOffCanvas = ({
   handleClick,
   showCanvas,
   canvasWidth,
   name,
   id,
-  navItems,
   components,
 }) => {
-  const [activeTab1, setActiveTab1] = useState(1);
+  const [activeTab1, setActiveTab1] = useState(Object.keys(components)[0]); // Default to the first nav item key
 
   const toggle1 = (tab) => {
     if (activeTab1 !== tab) {
@@ -32,6 +59,7 @@ const RightOffCanvas = ({
     }
   };
 
+  const navItems = Object.keys(components);
   return (
     <React.Fragment>
       <Offcanvas
@@ -54,7 +82,7 @@ const RightOffCanvas = ({
                   <Nav pills className="navtab-bg nav-justified">
                     {navItems.map((navItem, index) => (
                       <NavItem
-                        key={index + 1}
+                        key={navItem}
                         className="me-3 mb-3"
                         style={{
                           whiteSpace: "nowrap",
@@ -65,15 +93,15 @@ const RightOffCanvas = ({
                           style={{
                             cursor: "pointer",
                             borderColor:
-                              activeTab1 === index + 1 ? "#007bff" : "#ccc",
+                              activeTab1 === navItem ? "#007bff" : "#ccc",
                           }}
-                          className={`${classnames({
-                            active: activeTab1 === index + 1,
-                            "bg-light": activeTab1 !== index + 1,
+                          className={classnames({
+                            active: activeTab1 === navItem,
+                            "bg-light": activeTab1 !== navItem,
                             "w-25": navItems.length === 1,
-                          })} ms-2 border-start border-2`}
+                          })}
                           onClick={() => {
-                            toggle1(index + 1);
+                            toggle1(navItem);
                           }}
                         >
                           <span className="d-none d-sm-block">{navItem}</span>
@@ -86,9 +114,11 @@ const RightOffCanvas = ({
                   activeTab={activeTab1}
                   className="p-3 text-muted mt-4"
                 >
-                  {components.map((Component, index) => (
-                    <TabPane key={index + 1} tabId={index + 1}>
-                      <Component passedId={id} />
+                  {navItems.map((navItem) => (
+                    <TabPane key={navItem} tabId={navItem}>
+                      {React.createElement(components[navItem], {
+                        passedId: id,
+                      })}
                     </TabPane>
                   ))}
                 </TabContent>
@@ -100,4 +130,5 @@ const RightOffCanvas = ({
     </React.Fragment>
   );
 };
+
 export default RightOffCanvas;

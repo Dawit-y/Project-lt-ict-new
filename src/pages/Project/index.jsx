@@ -1379,34 +1379,20 @@ const ProjectModel = () => {
           canvasWidth={84}
           name={projectMetaData.prj_name}
           id={projectMetaData.prj_id}
-          navItems={[
-            "Documents",
-            "Payments",
-            "Stakeholder",
-            "Contractor",
-            "Budget Request",
-            "Geo Location",
-            "Budget Expenditures",
-            "Employees",
-            "Handover",
-            "Performance",
-            "Supplementary",
-            "Variations",
-          ]}
-          components={[
-            ProjectDocument,
-            ProjectPayment,
-            ProjectStakeholder,
-            Projectcontractor,
-            Budgetrequest,
-            GeoLocation,
-            ProjectBudgetExpenditureModel,
-            ProjectEmployeeModel,
-            ProjectHandoverModel,
-            ProjectPerformanceModel,
-            ProjectSupplimentaryModel,
-            ProjectVariationModel,
-          ]}
+          components={{
+            Documents: ProjectDocument,
+            Payments: ProjectPayment,
+            Stakeholder: ProjectStakeholder,
+            Contractor: Projectcontractor,
+            "Budget Request": Budgetrequest,
+            "Geo Location": GeoLocation,
+            "Budget Expenditures": ProjectBudgetExpenditureModel,
+            Employees: ProjectEmployeeModel,
+            Handover: ProjectHandoverModel,
+            Performance: ProjectPerformanceModel,
+            Supplementary: ProjectSupplimentaryModel,
+            Variations: ProjectVariationModel,
+          }}
         />
       )}
     </React.Fragment>

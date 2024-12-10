@@ -1035,8 +1035,7 @@ const UsersModel = () => {
           canvasWidth={84}
           name={userMetaData.usr_name || "UserRoles"}
           id={userMetaData.usr_id}
-          navItems={[]}
-          components={[UserRoles]}
+          components={{ "User Roles": UserRoles }}
         />
       )}
     </React.Fragment>
