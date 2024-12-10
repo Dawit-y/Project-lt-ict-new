@@ -431,8 +431,8 @@ const ProjectModel = () => {
       is_deletable: project.is_deletable,
       is_editable: project.is_editable,
     });
-    setSelectedProjectCategory(project.prj_project_category_id);
-    setSelectedSector(project.prj_sector_id);
+    //setSelectedProjectCategory(project.prj_project_category_id);
+    //setSelectedSector(project.prj_sector_id);
     setIsEdit(true);
     toggle();
   };
@@ -796,15 +796,7 @@ const ProjectModel = () => {
                 options: projectCategoryOptions,
               },
             ]}
-            checkboxSearchKeys={[
-              {
-                key: "example1",
-                options: [
-                  { value: "Engineering", label: "Example1" },
-                  { value: "Science", label: "Example2" },
-                ],
-              },
-            ]}
+            checkboxSearchKeys={[]}
             Component={CascadingDropdowns}
             component_params={{
               dropdown1name: "prj_location_region_id",
