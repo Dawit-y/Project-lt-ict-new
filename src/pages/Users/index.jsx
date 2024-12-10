@@ -344,8 +344,8 @@ const UsersModel = () => {
       is_deletable: users.is_deletable,
       is_editable: users.is_editable,
     });
-    setSelectedDepartment(users.usr_department_id);
-    setSelectedSector(users.usr_sector_id);
+    //setSelectedDepartment(users.usr_department_id);
+    //setSelectedSector(users.usr_sector_id);
     setIsEdit(true);
 
     toggle();
@@ -604,15 +604,7 @@ const UsersModel = () => {
             searchHook={useSearchUserss}
             textSearchKeys={["usr_email"]}
             dropdownSearchKeys={[]}
-            checkboxSearchKeys={[
-              {
-                key: "example1",
-                options: [
-                  { value: "Engineering", label: "Example1" },
-                  { value: "Science", label: "Example2" },
-                ],
-              },
-            ]}
+            checkboxSearchKeys={[]}
             Component={CascadingDropdownsearch}
             component_params={{
               dropdown1name: "usr_region_id",

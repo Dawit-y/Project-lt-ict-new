@@ -183,7 +183,7 @@ const postJwtRegister = (url, data) => {
 };
 
 // Login Method
-const postJwtLogin = (data) => post('https://pmsor.awashsol.com/api/login', data);
+const postJwtLogin = (data) => post(`${apiUrl}login`, data);
 
 // postForgetPwd
 const postJwtForgetPwd = (data) =>
