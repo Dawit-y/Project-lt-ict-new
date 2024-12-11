@@ -61,13 +61,13 @@ function* onUpdateRoles({ payload: roles, modalCallback }) {
     if (showResult) {
       yield put(updateSearchResults(roles));
     }
-    toast.success(`roles ${roles.rol_id} Is Updated Successfully`, {
+    toast.success(`Role Updated Successfully`, {
       autoClose: 2000,
     });
     if (modalCallback) modalCallback();
   } catch (error) {
     yield put(updateRolesFail(error));
-    toast.error(`roles ${roles.rol_id} Is Update Failed`, {
+    toast.error(`role update failed`, {
       autoClose: 2000,
     });
 

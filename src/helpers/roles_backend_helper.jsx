@@ -42,7 +42,7 @@ export const deleteRoles = (objectName) =>
     console.log("delete object name ",objectName)
     try{
       const response=  // post(`${url.DELETE_ORDER}?rol_id=${order?.rol_id}`);
-      post(DELETE_ROLES`?rol_id=${objectName}`,{});
+      post(DELETE_ROLES+`?rol_id=${objectName}`,{});
       return response;
     }catch(e){
       console.log("problems ",e)
