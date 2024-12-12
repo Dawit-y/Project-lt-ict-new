@@ -205,7 +205,7 @@ const ProjectDocumentModal = (props) => {
                         Unable to preview Document
                       </h6>
                       <a
-                        className="btn btn-primary"
+                        className="btn btn-success"
                         target="_blank"
                         rel="noopener noreferrer"
                         href={`${API_URL}/public/uploads/projectfiles/${transaction?.prd_file_path}`}
@@ -251,6 +251,14 @@ const ProjectDocumentModal = (props) => {
               >
                 Next
               </Button>
+              <a
+                className="btn btn-success"
+                target="_blank"
+                rel="noopener noreferrer"
+                href={`${API_URL}/public/uploads/projectfiles/${transaction?.prd_file_path}`}
+              >
+                <IoMdDownload /> <span className="ms-2">Download</span>
+              </a>
             </div>
           )}
 

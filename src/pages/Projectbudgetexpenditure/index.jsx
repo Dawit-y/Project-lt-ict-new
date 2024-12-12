@@ -56,7 +56,10 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const ProjectBudgetExpenditureModel = () => {
+const ProjectBudgetExpenditureModel = (props) => {
+  const { passedId } = props;
+  const param = { pbe_project_id: passedId };
+
   //meta title
   document.title = " ProjectBudgetExpenditure";
   const { t } = useTranslation();
@@ -72,7 +75,7 @@ const ProjectBudgetExpenditureModel = () => {
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjectBudgetExpenditures();
+    useFetchProjectBudgetExpenditures(param);
 
   const addProjectBudgetExpenditure = useAddProjectBudgetExpenditure();
   const updateProjectBudgetExpenditure = useUpdateProjectBudgetExpenditure();
@@ -435,7 +438,8 @@ const ProjectBudgetExpenditureModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {(cellProps.row.original?.is_editable ||
+                cellProps.row.original?.is_role_editable) && (
                 <Link
                   to="#"
                   className="text-success"
@@ -451,7 +455,8 @@ const ProjectBudgetExpenditureModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {(cellProps.row.original?.is_deletable ||
+                cellProps.row.original?.is_role_deletable) && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -478,6 +483,10 @@ const ProjectBudgetExpenditureModel = () => {
     return baseColumns;
   }, [handleProjectBudgetExpenditureClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <ProjectBudgetExpenditureModal
@@ -491,9 +500,9 @@ const ProjectBudgetExpenditureModel = () => {
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteProjectBudgetExpenditure.isPending}
       />
-      <div className="page-content">
-        <div className="container-fluid">
-          <Breadcrumbs
+      <>
+        <div className="container-fluid1">
+          {/* <Breadcrumbs
             title={t("project_budget_expenditure")}
             breadcrumbItem={t("project_budget_expenditure")}
           />
@@ -524,7 +533,7 @@ const ProjectBudgetExpenditureModel = () => {
             setIsSearchLoading={setIsSearchLoading}
             setSearchResults={setSearchResults}
             setShowSearchResult={setShowSearchResult}
-          />
+          /> */}
           {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
@@ -831,8 +840,7 @@ const ProjectBudgetExpenditureModel = () => {
             </ModalBody>
           </Modal>
         </div>
-      </div>
-      <ToastContainer />
+      </>
     </React.Fragment>
   );
 };

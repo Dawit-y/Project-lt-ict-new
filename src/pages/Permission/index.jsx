@@ -498,28 +498,27 @@ const PermissionModel = (props) => {
         onCloseClick={() => setDeleteModal(false)}
       />
       <div>
-        <div className="container-fluid1">        
+        <div className="container-fluid1">
           {isLoading || searchLoading ? (
             <Spinners setLoading={setLoading} />
-          ) : (           
-               
-                    <TableContainer
-                      columns={columns}
-                      data={showSearchResults ? results : data}
-                      isGlobalFilter={true}
-                      isAddButton={false}
-                      isCustomPageSize={true}
-                      handleUserClick={handlePermissionClicks}
-                      isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("permission")}
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                    />           
+          ) : (
+            <TableContainer
+              columns={columns}
+              data={showSearchResults ? results : data}
+              isGlobalFilter={true}
+              isAddButton={false}
+              isCustomPageSize={true}
+              handleUserClick={handlePermissionClicks}
+              isPagination={true}
+              // SearchPlaceholder="26 records..."
+              SearchPlaceholder={26 + " " + t("Results") + "..."}
+              buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+              buttonName={t("add") + " " + t("permission")}
+              tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+              theadClass="table-light"
+              pagination="pagination"
+              paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+            />
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
@@ -803,8 +802,6 @@ const PermissionModel = (props) => {
           </Modal>
         </div>
       </div>
-
-      <ToastContainer />
     </React.Fragment>
   );
 };

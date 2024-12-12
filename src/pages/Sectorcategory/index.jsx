@@ -549,7 +549,6 @@ const SectorCategoryModel = () => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };

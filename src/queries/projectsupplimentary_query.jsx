@@ -9,10 +9,10 @@ import {
 const PROJECT_SUPPLIMENTARY_QUERY_KEY = ["projectsupplimentary"];
 
 // Fetch project_supplimentary
-export const useFetchProjectSupplimentarys = () => {
+export const useFetchProjectSupplimentarys = (param = {}) => {
   return useQuery({
-    queryKey: PROJECT_SUPPLIMENTARY_QUERY_KEY,
-    queryFn: () => getProjectSupplimentary(),
+    queryKey: [...PROJECT_SUPPLIMENTARY_QUERY_KEY, "fetch", param],
+    queryFn: () => getProjectSupplimentary(param),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,
@@ -23,7 +23,7 @@ export const useFetchProjectSupplimentarys = () => {
 //search project_supplimentary
 export const useSearchProjectSupplimentarys = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...PROJECT_SUPPLIMENTARY_QUERY_KEY, searchParams],
+    queryKey: [...PROJECT_SUPPLIMENTARY_QUERY_KEY, "search", searchParams],
     queryFn: () => getProjectSupplimentary(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
@@ -36,20 +36,26 @@ export const useSearchProjectSupplimentarys = (searchParams = {}) => {
 // Add project_supplimentary
 export const useAddProjectSupplimentary = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: addProjectSupplimentary,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( PROJECT_SUPPLIMENTARY_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_SUPPLIMENTARY_QUERY_KEY,
+      });
+
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        });
       });
     },
   });
@@ -61,17 +67,22 @@ export const useUpdateProjectSupplimentary = () => {
   return useMutation({
     mutationFn: updateProjectSupplimentary,
     onSuccess: (updatedProjectSupplimentary) => {
-      queryClient.setQueryData(PROJECT_SUPPLIMENTARY_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_SUPPLIMENTARY_QUERY_KEY,
+      });
 
-        return {
-          ...oldData,
-          data: oldData.data.map((ProjectSupplimentaryData) =>
-            ProjectSupplimentaryData.prs_id === updatedProjectSupplimentary.data.prs_id
-              ? { ...ProjectSupplimentaryData, ...updatedProjectSupplimentary.data }
-              : ProjectSupplimentaryData
-          ),
-        };
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((data) =>
+              data.prs_id === updatedProjectSupplimentary.data.prs_id
+                ? { ...data, ...updatedProjectSupplimentary.data }
+                : data
+            ),
+          };
+        });
       });
     },
   });
@@ -82,15 +93,21 @@ export const useDeleteProjectSupplimentary = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteProjectSupplimentary,
-    onSuccess: (deletedData) => {
-      queryClient.setQueryData(PROJECT_SUPPLIMENTARY_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (ProjectSupplimentaryData) => ProjectSupplimentaryData.prs_id !== parseInt(deletedData.deleted_id)
-          ),
-        };
+    onSuccess: (deletedData, variable) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_SUPPLIMENTARY_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (dept) => dept.prs_id !== parseInt(variable)
+            ),
+          };
+        });
       });
     },
   });

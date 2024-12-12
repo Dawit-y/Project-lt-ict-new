@@ -98,7 +98,7 @@ const ProjectPaymentModel = (props) => {
     validationSchema: Yup.object({
       // prp_project_id: Yup.string().required(t("prp_project_id")),
       prp_type: Yup.string().required(t("prp_type")),
-     // prp_payment_date_et: Yup.string().required(t("prp_payment_date_et")),
+      // prp_payment_date_et: Yup.string().required(t("prp_payment_date_et")),
       prp_payment_date_gc: Yup.string().required(t("prp_payment_date_gc")),
       prp_payment_amount: Yup.string().required(t("prp_payment_amount")),
       prp_payment_percentage: Yup.string().required(
@@ -257,7 +257,6 @@ const ProjectPaymentModel = (props) => {
 
   const columns = useMemo(() => {
     const baseColumns = [
-     
       {
         header: "",
         accessorKey: "prp_type",
@@ -271,7 +270,7 @@ const ProjectPaymentModel = (props) => {
           );
         },
       },
-  
+
       {
         header: "",
         accessorKey: "prp_payment_date_gc",
@@ -329,7 +328,6 @@ const ProjectPaymentModel = (props) => {
           );
         },
       },
-     
 
       {
         header: t("view_detail"),
@@ -457,22 +455,22 @@ const ProjectPaymentModel = (props) => {
           {isLoading || searchLoading ? (
             <Spinners setLoading={setLoading} />
           ) : (
-                    <TableContainer
-                      columns={columns}
-                      data={showSearchResults ? results : data}
-                      isGlobalFilter={true}
-                      isAddButton={true}
-                      isCustomPageSize={true}
-                      handleUserClick={handleProjectPaymentClicks}
-                      isPagination={true}
-                      SearchPlaceholder={t("Results") + "..."}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("project_payment")}
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                    />
+            <TableContainer
+              columns={columns}
+              data={showSearchResults ? results : data}
+              isGlobalFilter={true}
+              isAddButton={true}
+              isCustomPageSize={true}
+              handleUserClick={handleProjectPaymentClicks}
+              isPagination={true}
+              SearchPlaceholder={t("Results") + "..."}
+              buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+              buttonName={t("add") + " " + t("project_payment")}
+              tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+              theadClass="table-light"
+              pagination="pagination"
+              paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+            />
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
@@ -495,9 +493,11 @@ const ProjectPaymentModel = (props) => {
                 }}
               >
                 <Row>
-                
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("prp_type")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prp_type")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prp_type"
                       type="select"
@@ -525,8 +525,7 @@ const ProjectPaymentModel = (props) => {
                     ) : null}
                   </Col>
 
-                 
-                  <Col className="col-md-6 mb-3" style={{ display: 'none'}}>
+                  <Col className="col-md-6 mb-3" style={{ display: "none" }}>
                     <Label>{t("prp_payment_date_et")}</Label>
                     <Input
                       name="prp_payment_date_et"
@@ -550,10 +549,13 @@ const ProjectPaymentModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-         
-                    <Col className="col-md-3 mb-3">
+
+                  <Col className="col-md-3 mb-3">
                     <FormGroup>
-                      <Label>{t("prp_payment_date_gc")}<span className="text-danger">*</span></Label>
+                      <Label>
+                        {t("prp_payment_date_gc")}
+                        <span className="text-danger">*</span>
+                      </Label>
                       <InputGroup>
                         <Flatpickr
                           id="DataPicker"
@@ -599,7 +601,10 @@ const ProjectPaymentModel = (props) => {
                   </Col>
 
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("prp_payment_amount")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prp_payment_amount")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prp_payment_amount"
                       type="number"
@@ -623,7 +628,7 @@ const ProjectPaymentModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-              
+
                   <Col className="col-md-4 mb-3">
                     <Label>{t("prp_payment_percentage")}</Label>
                     <div className="d-flex align-items-center">
@@ -687,7 +692,7 @@ const ProjectPaymentModel = (props) => {
                     ) : null}
                   </Col>
                   {/* status */}
-                  <Col className="col-md-6 mb-3" style={{ display: 'none'}}>
+                  <Col className="col-md-6 mb-3" style={{ display: "none" }}>
                     <Label>{t("prp_status")}</Label>
                     <Input
                       name="prp_status"
@@ -745,7 +750,6 @@ const ProjectPaymentModel = (props) => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };

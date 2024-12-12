@@ -85,7 +85,7 @@ const UsersProfile = () => {
       toast.success(`Password changed successfully!`, {
         autoClose: 2000,
       });
-      
+
       setModal_backdrop(false); // Close the modal on success
     } catch (error) {
       toast.success(`Error changing password. Please try again.`, {
@@ -106,9 +106,7 @@ const UsersProfile = () => {
           <Row>
             <Col xl="4">
               <Card className="overflow-hidden">
-                <div className="bg-primary-subtle">
-                
-                </div>
+                <div className="bg-primary-subtle"></div>
                 {userProfile && userProfile.user ? (
                   <CardBody className="pt-0">
                     <Row>
@@ -280,10 +278,8 @@ const UsersProfile = () => {
           <Button type="button" color="success" onClick={handlePasswordChange}>
             Edit
           </Button>
-          
         </ModalFooter>
       </Modal>
-      <ToastContainer />
     </React.Fragment>
   );
 };

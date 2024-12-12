@@ -84,13 +84,10 @@ const RolesModel = ({ onSelectItem }) => {
     },
 
     validationSchema: Yup.object({
-     rol_name: Yup.string()
+      rol_name: Yup.string()
         .required(t("rol_name"))
         .test("unique-role-id", t("Already exists"), (value) => {
-          return !data.some(
-            (item) =>
-              item.rol_name == value
-          );
+          return !data.some((item) => item.rol_name == value && item.rol_id !== roles?.rol_id);
         }),
 
       //rol_name: Yup.string().required(t("rol_name")),
@@ -435,7 +432,7 @@ const RolesModel = ({ onSelectItem }) => {
                     <Input
                       name="rol_name"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("rol_name")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.rol_name || ""}
@@ -459,7 +456,7 @@ const RolesModel = ({ onSelectItem }) => {
                     <Input
                       name="rol_description"
                       type="textarea"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("rol_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.rol_description || ""}
@@ -510,7 +507,7 @@ const RolesModel = ({ onSelectItem }) => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
+
       {showCanvas && (
         <RightOffCanvas
           handleClick={handleClick}
@@ -519,8 +516,7 @@ const RolesModel = ({ onSelectItem }) => {
           data={RoleMetaData}
           id={RoleMetaData.rol_id}
           name={RoleMetaData.rol_name}
-          navItems={["Permission"]}
-          components={[Permission]}
+          components={{ Permission: Permission }}
         />
       )}
     </React.Fragment>

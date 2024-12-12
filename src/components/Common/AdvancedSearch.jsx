@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Card, CardBody, Col, Row, Collapse, Label, Input,FormGroup,InputGroup,Button  } from "reactstrap";
+import {
+  Card,
+  CardBody,
+  Col,
+  Row,
+  Collapse,
+  Label,
+  Input,
+  FormGroup,
+  InputGroup,
+  Button,
+} from "reactstrap";
 import Select from "react-select";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
@@ -17,7 +28,7 @@ const AdvancedSearch = ({
   setIsSearchLoading,
   setSearchResults,
   setShowSearchResult,
-  dateSearchKeys
+  dateSearchKeys,
 }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -133,54 +144,60 @@ const AdvancedSearch = ({
                   <Col xxl={10} lg={10}>
                     <Row>
                       {/* Text Inputs */}
-{dateSearchKeys && dateSearchKeys.map((key) => (                          
-  <Col xxl={3} lg={3} key={key}>
-                    <FormGroup>
-                      <InputGroup>
-                        <Flatpickr
-                         id={`${key}Start`}
-                          name={`${key}Start`}
-                          className={`form-control`}
-                          type="text"
-                         /* placeholder={`${t(key)}_start`}*/
-                          placeholder={t(`${key}_start`)}
-                          autoComplete="off"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y-m-d",
-                            dateFormat: "Y-m-d",
-                            enableTime: false,
-                          }}
-                          value={params[key] || ""}
-                          onChange={(e) =>{
-                                  handleSearchKey(`${key}Start`, formatDateHyphen(e[0]));
-                                }
-                                }
-                        />
-                        <Flatpickr
-                         id={`${key}End`}
-                          name={`${key}End`}
-                          className={`form-control`}
-                          type="text"
-                          placeholder={t(`${key}_end`)}
-                          autoComplete="off"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y-m-d",
-                            dateFormat: "Y-m-d",
-                            enableTime: false,
-                          }}
-                          value={params[key] || ""}
-                          onChange={(datee) =>{
-                              console.log("date "+ formatDateHyphen(datee[0]));
-                                  handleSearchKey(`${key}End`, formatDateHyphen(datee[0]));
-                                }
-                                }
-                        />
-                      
-                    </InputGroup>
-                        </FormGroup>
-</Col>
+                      {dateSearchKeys &&
+                        dateSearchKeys.map((key) => (
+                          <Col xxl={3} lg={3} key={key}>
+                            <FormGroup>
+                              <InputGroup>
+                                <Flatpickr
+                                  id={`${key}Start`}
+                                  name={`${key}Start`}
+                                  className={`form-control`}
+                                  type="text"
+                                  /* placeholder={`${t(key)}_start`}*/
+                                  placeholder={t(`${key}_start`)}
+                                  autoComplete="off"
+                                  options={{
+                                    altInput: true,
+                                    altFormat: "Y-m-d",
+                                    dateFormat: "Y-m-d",
+                                    enableTime: false,
+                                  }}
+                                  value={params[key] || ""}
+                                  onChange={(e) => {
+                                    handleSearchKey(
+                                      `${key}Start`,
+                                      formatDateHyphen(e[0])
+                                    );
+                                  }}
+                                />
+                                <Flatpickr
+                                  id={`${key}End`}
+                                  name={`${key}End`}
+                                  className={`form-control`}
+                                  type="text"
+                                  placeholder={t(`${key}_end`)}
+                                  autoComplete="off"
+                                  options={{
+                                    altInput: true,
+                                    altFormat: "Y-m-d",
+                                    dateFormat: "Y-m-d",
+                                    enableTime: false,
+                                  }}
+                                  value={params[key] || ""}
+                                  onChange={(datee) => {
+                                    console.log(
+                                      "date " + formatDateHyphen(datee[0])
+                                    );
+                                    handleSearchKey(
+                                      `${key}End`,
+                                      formatDateHyphen(datee[0])
+                                    );
+                                  }}
+                                />
+                              </InputGroup>
+                            </FormGroup>
+                          </Col>
                         ))}
                       {textSearchKeys &&
                         textSearchKeys.map((key) => (
@@ -193,10 +210,9 @@ const AdvancedSearch = ({
                                 autoComplete="off"
                                 placeholder={t(key)}
                                 value={params[key] || ""}
-                                onChange={(e) =>{                                
-                                  handleSearchKey(key, e.target.value)
-                                }
-                                }
+                                onChange={(e) => {
+                                  handleSearchKey(key, e.target.value);
+                                }}
                               />
                             </div>
                           </Col>

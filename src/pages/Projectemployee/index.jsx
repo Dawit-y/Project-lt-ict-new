@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useLayoutEffect } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
@@ -56,9 +56,12 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const ProjectEmployeeModel = () => {
+const ProjectEmployeeModel = (props) => {
   //meta title
   document.title = " ProjectEmployee";
+  const { passedId } = props;
+  const param = { emp_project_id: passedId };
+
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -71,7 +74,7 @@ const ProjectEmployeeModel = () => {
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjectEmployees();
+    useFetchProjectEmployees(param);
 
   const addProjectEmployee = useAddProjectEmployee();
   const updateProjectEmployee = useUpdateProjectEmployee();
@@ -219,16 +222,17 @@ const ProjectEmployeeModel = () => {
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
 
-  // Fetch ProjectEmployee on component mount
   useEffect(() => {
     setProjectEmployee(data);
   }, [data]);
+
   useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setProjectEmployee(data);
       setIsEdit(false);
     }
   }, [data]);
+
   const toggle = () => {
     if (modal) {
       setModal(false);
@@ -491,7 +495,8 @@ const ProjectEmployeeModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {(cellProps.row.original?.is_editable ||
+                cellProps.row.original?.is_role_editable) && (
                 <Link
                   to="#"
                   className="text-success"
@@ -507,7 +512,8 @@ const ProjectEmployeeModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {(cellProps.row.original?.is_deletable ||
+                cellProps.row.original?.is_role_deletable) && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -534,6 +540,10 @@ const ProjectEmployeeModel = () => {
     return baseColumns;
   }, [handleProjectEmployeeClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <ProjectEmployeeModal
@@ -547,9 +557,9 @@ const ProjectEmployeeModel = () => {
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteProjectEmployee.isPending}
       />
-      <div className="page-content">
-        <div className="container-fluid">
-          <Breadcrumbs
+      <>
+        <div className="container-fluid1">
+          {/* <Breadcrumbs
             title={t("project_employee")}
             breadcrumbItem={t("project_employee")}
           />
@@ -580,7 +590,7 @@ const ProjectEmployeeModel = () => {
             setIsSearchLoading={setIsSearchLoading}
             setSearchResults={setSearchResults}
             setShowSearchResult={setShowSearchResult}
-          />
+          /> */}
           {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
@@ -981,8 +991,8 @@ const ProjectEmployeeModel = () => {
             </ModalBody>
           </Modal>
         </div>
-      </div>
-      <ToastContainer />
+      </>
+      {/*   */}
     </React.Fragment>
   );
 };

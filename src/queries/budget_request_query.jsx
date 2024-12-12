@@ -81,7 +81,7 @@ export const useAddBudgetRequest = () => {
   return useMutation({
     mutationFn: addBudgetRequest,
     onSuccess: (newDataResponse) => {
-      queryClient.invalidateQueries(BUDGET_REQUESTS_QUERY_KEY);
+      queryClient.invalidateQueries({ queryKey: BUDGET_REQUESTS_QUERY_KEY });
     },
   });
 };
@@ -93,9 +93,10 @@ export const useUpdateBudgetRequest = () => {
     mutationFn: updateBudgetRequest,
     onSuccess: (updatedBudgetRequest, variables) => {
       const allQueries = queryClient
-        .getQueriesData(BUDGET_REQUESTS_QUERY_KEY)
+        .getQueriesData({ queryKey: BUDGET_REQUESTS_QUERY_KEY })
         .map(([key, data]) => ({ key, data }));
 
+      console.log("all queries", allQueries);
       allQueries.forEach(({ key }) => {
         queryClient.setQueryData(key, (oldData) => {
           if (!oldData) return;
@@ -139,7 +140,7 @@ export const useDeleteBudgetRequest = () => {
   return useMutation({
     mutationFn: deleteBudgetRequest,
     onSuccess: (deletedData) => {
-      queryClient.invalidateQueries(BUDGET_REQUESTS_QUERY_KEY);
+      queryClient.invalidateQueries({ queryKey: BUDGET_REQUESTS_QUERY_KEY });
     },
   });
 };

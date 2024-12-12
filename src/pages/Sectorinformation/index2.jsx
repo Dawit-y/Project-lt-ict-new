@@ -410,7 +410,8 @@ const SectorInformationModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.sci_status, 30) || `${cellProps.row.original.sci_status}`}
+              {truncateText(cellProps.row.original.sci_status, 30) ||
+                `${cellProps.row.original.sci_status}`}
             </span>
           );
         },
@@ -839,7 +840,6 @@ const SectorInformationModel = () => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };

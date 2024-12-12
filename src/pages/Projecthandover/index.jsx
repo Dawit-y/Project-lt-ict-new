@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useLayoutEffect } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
@@ -56,9 +56,11 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const ProjectHandoverModel = () => {
-  //meta title
+const ProjectHandoverModel = (props) => {
   document.title = " ProjectHandover";
+  const { passedId } = props;
+  const param = { prh_project_id: passedId };
+
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -71,7 +73,7 @@ const ProjectHandoverModel = () => {
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjectHandovers();
+    useFetchProjectHandovers(param);
 
   const addProjectHandover = useAddProjectHandover();
   const updateProjectHandover = useUpdateProjectHandover();
@@ -184,7 +186,6 @@ const ProjectHandoverModel = () => {
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
 
-  // Fetch ProjectHandover on component mount
   useEffect(() => {
     setProjectHandover(data);
   }, [data]);
@@ -343,7 +344,8 @@ const ProjectHandoverModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {(cellProps.row.original?.is_editable ||
+                cellProps.row.original?.is_role_editable) && (
                 <Link
                   to="#"
                   className="text-success"
@@ -359,7 +361,8 @@ const ProjectHandoverModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {(cellProps.row.original?.is_deletable ||
+                cellProps.row.original?.is_role_deletable) && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -386,6 +389,10 @@ const ProjectHandoverModel = () => {
     return baseColumns;
   }, [handleProjectHandoverClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <ProjectHandoverModal
@@ -399,9 +406,9 @@ const ProjectHandoverModel = () => {
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteProjectHandover.isPending}
       />
-      <div className="page-content">
-        <div className="container-fluid">
-          <Breadcrumbs
+      <>
+        <div className="container-fluid1">
+          {/* <Breadcrumbs
             title={t("project_handover")}
             breadcrumbItem={t("project_handover")}
           />
@@ -432,7 +439,7 @@ const ProjectHandoverModel = () => {
             setIsSearchLoading={setIsSearchLoading}
             setSearchResults={setSearchResults}
             setShowSearchResult={setShowSearchResult}
-          />
+          /> */}
           {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
@@ -641,8 +648,7 @@ const ProjectHandoverModel = () => {
             </ModalBody>
           </Modal>
         </div>
-      </div>
-      <ToastContainer />
+      </>
     </React.Fragment>
   );
 };

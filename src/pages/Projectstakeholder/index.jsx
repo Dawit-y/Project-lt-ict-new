@@ -164,7 +164,6 @@ const ProjectStakeholderModel = (props) => {
           psh_description: values.psh_description,
           psh_status: values.psh_status,
           psh_stakeholder_type: values.psh_stakeholder_type,
-
         };
         // save new ProjectStakeholders
         dispatch(onAddProjectStakeholder(newProjectStakeholder));
@@ -284,7 +283,6 @@ const ProjectStakeholderModel = (props) => {
 
   const columns = useMemo(() => {
     const baseColumns = [
-   
       {
         header: "",
         accessorKey: "psh_name",
@@ -479,23 +477,23 @@ const ProjectStakeholderModel = (props) => {
           {isLoading || searchLoading ? (
             <Spinners setLoading={setLoading} />
           ) : (
-                    <TableContainer
-                      columns={columns}
-                      data={showSearchResults ? results : data}
-                      isGlobalFilter={true}
-                      isAddButton={true}
-                      isCustomPageSize={true}
-                      handleUserClick={handleProjectStakeholderClicks}
-                      isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("project_stakeholder")}
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                    />
+            <TableContainer
+              columns={columns}
+              data={showSearchResults ? results : data}
+              isGlobalFilter={true}
+              isAddButton={true}
+              isCustomPageSize={true}
+              handleUserClick={handleProjectStakeholderClicks}
+              isPagination={true}
+              // SearchPlaceholder="26 records..."
+              SearchPlaceholder={26 + " " + t("Results") + "..."}
+              buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+              buttonName={t("add") + " " + t("project_stakeholder")}
+              tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+              theadClass="table-light"
+              pagination="pagination"
+              paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+            />
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
@@ -521,9 +519,11 @@ const ProjectStakeholderModel = (props) => {
                 }}
               >
                 <Row>
-               
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("psh_name")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("psh_name")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="psh_name"
                       type="text"
@@ -547,7 +547,10 @@ const ProjectStakeholderModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("psh_stakeholder_type")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("psh_stakeholder_type")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="psh_stakeholder_type"
                       type="select"
@@ -570,7 +573,10 @@ const ProjectStakeholderModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("psh_representative_name")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("psh_representative_name")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="psh_representative_name"
                       type="text"
@@ -594,7 +600,10 @@ const ProjectStakeholderModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("psh_representative_phone")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("psh_representative_phone")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="psh_representative_phone"
                       type="text"
@@ -665,7 +674,7 @@ const ProjectStakeholderModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3" style={{ display: 'none'}}>
+                  <Col className="col-md-6 mb-3" style={{ display: "none" }}>
                     <Label>{t("psh_status")}</Label>
                     <Input
                       name="psh_status"
@@ -723,7 +732,6 @@ const ProjectStakeholderModel = (props) => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };

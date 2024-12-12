@@ -59,6 +59,7 @@ const truncateText = (text, maxLength) => {
 const ProjectPerformanceModel = (props) => {
   //  get passed data from tab
   const { passedId } = props;
+  const param = { prp_project_id: passedId };
   //meta title
   document.title = " ProjectPerformance";
   const { t } = useTranslation();
@@ -73,7 +74,7 @@ const ProjectPerformanceModel = (props) => {
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjectPerformances(passedId);
+    useFetchProjectPerformances(param);
 
   const addProjectPerformance = useAddProjectPerformance();
   const updateProjectPerformance = useUpdateProjectPerformance();
@@ -168,7 +169,7 @@ const ProjectPerformanceModel = (props) => {
         t("prp_physical_performance")
       ),
       prp_description: Yup.string().required(t("prp_description")),
-      //prp_status: Yup.string().required(t('prp_status')),
+      // prp_status: Yup.string().required(t('prp_status')),
       //prp_created_date: Yup.string().required(t('prp_created_date')),
       //prp_termination_reason_id: Yup.string().required(t('prp_termination_reason_id')),
     }),
@@ -178,14 +179,14 @@ const ProjectPerformanceModel = (props) => {
       if (isEdit) {
         const updateProjectPerformance = {
           prp_id: projectPerformance?.prp_id,
-          prp_project_id: values.prp_project_id,
-          prp_project_status_id: values.prp_project_status_id,
+          prp_project_id: passedId,
+          prp_project_status_id: parseInt(values.prp_project_status_id),
           prp_record_date_ec: values.prp_record_date_ec,
           prp_record_date_gc: values.prp_record_date_gc,
           prp_total_budget_used: values.prp_total_budget_used,
           prp_physical_performance: values.prp_physical_performance,
           prp_description: values.prp_description,
-          prp_status: values.prp_status,
+          prp_status: 0,
           prp_created_date: values.prp_created_date,
           prp_termination_reason_id: values.prp_termination_reason_id,
 
@@ -197,15 +198,15 @@ const ProjectPerformanceModel = (props) => {
         validation.resetForm();
       } else {
         const newProjectPerformance = {
-          prp_project_id: values.prp_project_id,
-          prp_project_status_id: values.prp_project_status_id,
+          prp_project_id: passedId,
+          prp_project_status_id: parseInt(values.prp_project_status_id),
           prp_record_date_ec: values.prp_record_date_ec,
           prp_record_date_gc: values.prp_record_date_gc,
           prp_total_budget_used: values.prp_total_budget_used,
           prp_physical_performance: values.prp_physical_performance,
           prp_description: values.prp_description,
-          prp_status: values.prp_status,
-          prp_created_date: values.prp_created_date,
+          prp_status: 0,
+          prp_created_date: 2024,
           prp_termination_reason_id: values.prp_termination_reason_id,
         };
         // save new ProjectPerformance
@@ -401,7 +402,8 @@ const ProjectPerformanceModel = (props) => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {(cellProps.row.original?.is_editable ||
+                cellProps.row.original?.is_role_editable) && (
                 <Link
                   to="#"
                   className="text-success"
@@ -417,7 +419,8 @@ const ProjectPerformanceModel = (props) => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {(cellProps.row.original?.is_deletable ||
+                cellProps.row.original?.is_role_deletable) && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -443,6 +446,10 @@ const ProjectPerformanceModel = (props) => {
 
     return baseColumns;
   }, [handleProjectPerformanceClick, toggleViewModal, onClickDelete]);
+
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
 
   return (
     <React.Fragment>
@@ -656,7 +663,6 @@ const ProjectPerformanceModel = (props) => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };

@@ -39,7 +39,6 @@ import ProjectStakeholder from "../../pages/Projectstakeholder";
 import Projectcontractor from "../../pages/Projectcontractor";
 import Budgetrequest from "../../pages/Budgetrequest";
 import GeoLocation from "../../pages/GeoLocation";
-import ProjectPlan from "../../pages/Projectplan";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 
@@ -67,6 +66,7 @@ import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import { createSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { formatDate } from "../../utils/commonMethods";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -425,8 +425,8 @@ const ProjectModel = () => {
       is_deletable: project.is_deletable,
       is_editable: project.is_editable,
     });
-    setSelectedProjectCategory(project.prj_project_category_id);
-    setSelectedSector(project.prj_sector_id);
+    //setSelectedProjectCategory(project.prj_project_category_id);
+    //setSelectedSector(project.prj_sector_id);
     setIsEdit(true);
     toggle();
   };
@@ -802,15 +802,7 @@ const ProjectModel = () => {
                 options: projectCategoryOptions,
               },
             ]}
-            checkboxSearchKeys={[
-              {
-                key: "example1",
-                options: [
-                  { value: "Engineering", label: "Example1" },
-                  { value: "Science", label: "Example2" },
-                ],
-              },
-            ]}
+            checkboxSearchKeys={[]}
             Component={CascadingDropdowns}
             component_params={{
               dropdown1name: "prj_location_region_id",
@@ -1375,7 +1367,7 @@ const ProjectModel = () => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
+
       {showCanvas && (
         <RightOffCanvas
           handleClick={handleClick}
@@ -1390,7 +1382,6 @@ const ProjectModel = () => {
             "Contractor",
             "Budget Request",
             "Geo Location",
-            "Project Plan"
           ]}
           components={[
             ProjectDocument,
@@ -1399,7 +1390,6 @@ const ProjectModel = () => {
             Projectcontractor,
             Budgetrequest,
             GeoLocation,
-            ProjectPlan
           ]}
         />
       )}

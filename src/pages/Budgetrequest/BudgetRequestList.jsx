@@ -13,6 +13,12 @@ import ProjectStakeholder from "../../pages/Projectstakeholder";
 import Projectcontractor from "../../pages/Projectcontractor";
 import Budgetrequest from "../../pages/Budgetrequest";
 import GeoLocation from "../../pages/GeoLocation";
+import ProjectBudgetExpenditureModel from "../Projectbudgetexpenditure";
+import ProjectEmployeeModel from "../../pages/Projectemployee";
+import ProjectHandoverModel from "../Projecthandover";
+import ProjectPerformanceModel from "../Projectperformance";
+import ProjectSupplimentaryModel from "../Projectsupplimentary";
+import ProjectVariationModel from "../Projectvariation";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -71,8 +77,7 @@ const BudgetRequestListModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } =
-    useFetchBudgetRequests();
+  const { data, isLoading, error, isError, refetch } = useFetchBudgetRequests();
   const { data: budgetYearData } = useFetchBudgetYears();
 
   const [transaction, setTransaction] = useState({});
@@ -124,7 +129,7 @@ const BudgetRequestListModel = () => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-        return truncateText(params.data.bdy_name, 30) || "-";
+          return truncateText(params.data.bdy_name, 30) || "-";
         },
       },
       {
@@ -336,12 +341,14 @@ const BudgetRequestListModel = () => {
                   />
                 </div>
               </div>
-              <BudgetRequestAnalysis data={showSearchResult ? searchResults?.data : data?.data || []} />
+              <BudgetRequestAnalysis
+                data={showSearchResult ? searchResults?.data : data?.data || []}
+              />
             </>
           )}
         </div>
       </div>
-      <ToastContainer />
+
       {showCanvas && (
         <RightOffCanvas
           handleClick={handleEyeClick}
@@ -349,22 +356,20 @@ const BudgetRequestListModel = () => {
           canvasWidth={84}
           name={"Detail"}
           id={budgetRequestMetaData.bdr_project_id}
-          navItems={[
-            "Documents",
-            "Payments",
-            "Project Stakeholder",
-            "Project Contractor",
-            "Budget Request",
-            "Geo Location",
-          ]}
-          components={[
-            ProjectDocument,
-            ProjectPayment,
-            ProjectStakeholder,
-            Projectcontractor,
-            Budgetrequest,
-            GeoLocation,
-          ]}
+          components={{
+            Documents: ProjectDocument,
+            Payments: ProjectPayment,
+            Stakeholder: ProjectStakeholder,
+            Contractor: Projectcontractor,
+            "Budget Request": Budgetrequest,
+            "Geo Location": GeoLocation,
+            "Budget Expenditures": ProjectBudgetExpenditureModel,
+            Employees: ProjectEmployeeModel,
+            Handover: ProjectHandoverModel,
+            Performance: ProjectPerformanceModel,
+            Supplementary: ProjectSupplimentaryModel,
+            Variations: ProjectVariationModel,
+          }}
         />
       )}
     </React.Fragment>

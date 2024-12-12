@@ -10,7 +10,7 @@ import "ag-grid-community/styles/ag-theme-alpine.css"; // Example theme CSS
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./assets/scss/theme.scss";
 import QueryProvider from "./QueryProvider";
-
+import { ToastContainer } from "react-toastify";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.Fragment>
@@ -19,6 +19,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <App />
       </QueryProvider>
     </Provider>
+    <ToastContainer />
   </React.Fragment>
 );
 

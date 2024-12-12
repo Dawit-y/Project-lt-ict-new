@@ -3,7 +3,7 @@ import logoLightPng from "../../src/assets/images/logo-light.png";
 import logoLightSvg from "../../src/assets/images/logo-light.svg";
 import logoDark from "../../src/assets/images/logo-dark.png";
 // Application Texts
-export const APP_NAME = "PROJECT Managemnt";
+export const APP_NAME = "PROJECT Management";
 export const FOOTER_TEXT = "Design & Develop by LT ICT Solution PLC";
 export const COPYRIGHT_YEAR = new Date().getFullYear();
 
@@ -34,4 +34,5 @@ export const NAVBAR_TEXTS = {
 
 //Login Page Constants
 
-export const LOGIN_TITLE = "Project Managemnt System";
+export const LOGIN_TITLE = "Project Management System";
+export const BUREAU_NAME = "Oromia Region Bureau of Finance";

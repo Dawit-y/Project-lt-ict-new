@@ -151,15 +151,21 @@ const ProjectContractorModel = (props) => {
       is_editable: (projectContractor && projectContractor.is_editable) || 1,
     },
 
-    validationSchema: Yup.object({      
+    validationSchema: Yup.object({
       cni_name: Yup.string().required(t("cni_name")),
       cni_tin_num: Yup.string().required(t("cni_tin_num")),
       cni_vat_num: Yup.string().required(t("cni_vat_num")),
-      cni_total_contract_price: Yup.string().required(t("cni_total_contract_price")),
-     // cni_contract_start_date_et: Yup.string().required( t("cni_contract_start_date_et") ),
-      cni_contract_start_date_gc: Yup.string().required( t("cni_contract_start_date_gc")),
+      cni_total_contract_price: Yup.string().required(
+        t("cni_total_contract_price")
+      ),
+      // cni_contract_start_date_et: Yup.string().required( t("cni_contract_start_date_et") ),
+      cni_contract_start_date_gc: Yup.string().required(
+        t("cni_contract_start_date_gc")
+      ),
       //cni_contract_end_date_et: Yup.string().required(t("cni_contract_end_date_et")),
-      cni_contract_end_date_gc: Yup.string().required(t("cni_contract_end_date_gc")),
+      cni_contract_end_date_gc: Yup.string().required(
+        t("cni_contract_end_date_gc")
+      ),
       cni_contact_person: Yup.string().required(t("cni_contact_person")),
       cni_phone_number: Yup.string().required(t("cni_phone_number")),
       cni_address: Yup.string().required(t("cni_address")),
@@ -167,11 +173,17 @@ const ProjectContractorModel = (props) => {
       //cni_website: Yup.string().required(t("cni_website")),
       // cni_project_id: Yup.string().required(t("cni_project_id")),
       cni_procrument_method: Yup.string().required(t("cni_procrument_method")),
-      cni_bid_invitation_date: Yup.string().required(t("cni_bid_invitation_date")),
+      cni_bid_invitation_date: Yup.string().required(
+        t("cni_bid_invitation_date")
+      ),
       cni_bid_opening_date: Yup.string().required(t("cni_bid_opening_date")),
-      cni_bid_evaluation_date: Yup.string().required( t("cni_bid_evaluation_date")),
+      cni_bid_evaluation_date: Yup.string().required(
+        t("cni_bid_evaluation_date")
+      ),
       cni_bid_award_date: Yup.string().required(t("cni_bid_award_date")),
-      cni_bid_contract_signing_date: Yup.string().required( t("cni_bid_contract_signing_date")),
+      cni_bid_contract_signing_date: Yup.string().required(
+        t("cni_bid_contract_signing_date")
+      ),
       //cni_description: Yup.string().required(t("cni_description")),
       //cni_status: Yup.string().required(t("cni_status")),
     }),
@@ -428,7 +440,7 @@ const ProjectContractorModel = (props) => {
           );
         },
       },
-    
+
       {
         header: "",
         accessorKey: "cni_contract_start_date_gc",
@@ -445,7 +457,7 @@ const ProjectContractorModel = (props) => {
           );
         },
       },
-    
+
       {
         header: "",
         accessorKey: "cni_contract_end_date_gc",
@@ -497,7 +509,8 @@ const ProjectContractorModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cni_address, 30) || `${cellProps.row.original.cni_address}`}
+              {truncateText(cellProps.row.original.cni_address, 30) ||
+                `${cellProps.row.original.cni_address}`}
             </span>
           );
         },
@@ -644,7 +657,6 @@ const ProjectContractorModel = (props) => {
           );
         },
       },
-     
 
       {
         header: t("view_detail"),
@@ -755,23 +767,23 @@ const ProjectContractorModel = (props) => {
           {isLoading || searchLoading ? (
             <Spinners setLoading={setLoading} />
           ) : (
-                    <TableContainer
-                      columns={columns}
-                      data={showSearchResults ? results : data}
-                      isGlobalFilter={true}
-                      isAddButton={true}
-                      isCustomPageSize={true}
-                      handleUserClick={handleProjectContractorClicks}
-                      isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("project_contractor")}
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                    />
+            <TableContainer
+              columns={columns}
+              data={showSearchResults ? results : data}
+              isGlobalFilter={true}
+              isAddButton={true}
+              isCustomPageSize={true}
+              handleUserClick={handleProjectContractorClicks}
+              isPagination={true}
+              // SearchPlaceholder="26 records..."
+              SearchPlaceholder={26 + " " + t("Results") + "..."}
+              buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+              buttonName={t("add") + " " + t("project_contractor")}
+              tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+              theadClass="table-light"
+              pagination="pagination"
+              paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+            />
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
@@ -913,8 +925,8 @@ const ProjectContractorModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                 
-                   <Col className="col-md-4 mb-3">
+
+                  <Col className="col-md-4 mb-3">
                     <FormGroup>
                       <Label>{t("cni_contract_start_date_gc")}</Label>
                       <InputGroup>
@@ -934,7 +946,9 @@ const ProjectContractorModel = (props) => {
                             enableTime: false,
                             defaultDate: new Date(), // Set today's date as default
                           }}
-                          value={validation.values.cni_contract_start_date_gc || ""}
+                          value={
+                            validation.values.cni_contract_start_date_gc || ""
+                          }
                           onChange={(date) => {
                             const formatedDate = formatDate(date[0]);
                             validation.setFieldValue(
@@ -982,7 +996,9 @@ const ProjectContractorModel = (props) => {
                             enableTime: false,
                             defaultDate: new Date(), // Set today's date as default
                           }}
-                          value={validation.values.cni_contract_end_date_gc || ""}
+                          value={
+                            validation.values.cni_contract_end_date_gc || ""
+                          }
                           onChange={(date) => {
                             const formatedDate = formatDate(date[0]);
                             validation.setFieldValue(
@@ -1130,7 +1146,7 @@ const ProjectContractorModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                 
+
                   <Col className="col-md-4 mb-3">
                     <Label>{t("cni_procrument_method")}</Label>
                     <Input
@@ -1155,8 +1171,8 @@ const ProjectContractorModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-               
-                    <Col className="col-md-4 mb-3">
+
+                  <Col className="col-md-4 mb-3">
                     <FormGroup>
                       <Label>{t("cni_bid_invitation_date")}</Label>
                       <InputGroup>
@@ -1176,7 +1192,9 @@ const ProjectContractorModel = (props) => {
                             enableTime: false,
                             defaultDate: new Date(), // Set today's date as default
                           }}
-                          value={validation.values.cni_bid_invitation_date || ""}
+                          value={
+                            validation.values.cni_bid_invitation_date || ""
+                          }
                           onChange={(date) => {
                             const formatedDate = formatDate(date[0]);
                             validation.setFieldValue(
@@ -1204,7 +1222,7 @@ const ProjectContractorModel = (props) => {
                     </FormGroup>
                   </Col>
 
-                      <Col className="col-md-4 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <FormGroup>
                       <Label>{t("cni_bid_opening_date")}</Label>
                       <InputGroup>
@@ -1252,7 +1270,7 @@ const ProjectContractorModel = (props) => {
                     </FormGroup>
                   </Col>
 
-                     <Col className="col-md-4 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <FormGroup>
                       <Label>{t("cni_bid_evaluation_date")}</Label>
                       <InputGroup>
@@ -1272,7 +1290,9 @@ const ProjectContractorModel = (props) => {
                             enableTime: false,
                             defaultDate: new Date(), // Set today's date as default
                           }}
-                          value={validation.values.cni_bid_evaluation_date || ""}
+                          value={
+                            validation.values.cni_bid_evaluation_date || ""
+                          }
                           onChange={(date) => {
                             const formatedDate = formatDate(date[0]);
                             validation.setFieldValue(
@@ -1299,8 +1319,8 @@ const ProjectContractorModel = (props) => {
                       ) : null}
                     </FormGroup>
                   </Col>
-                  
-                    <Col className="col-md-4 mb-3">
+
+                  <Col className="col-md-4 mb-3">
                     <FormGroup>
                       <Label>{t("cni_bid_award_date")}</Label>
                       <InputGroup>
@@ -1348,7 +1368,7 @@ const ProjectContractorModel = (props) => {
                     </FormGroup>
                   </Col>
 
-                    <Col className="col-md-4 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <FormGroup>
                       <Label>{t("cni_bid_contract_signing_date")}</Label>
                       <InputGroup>
@@ -1368,7 +1388,10 @@ const ProjectContractorModel = (props) => {
                             enableTime: false,
                             defaultDate: new Date(), // Set today's date as default
                           }}
-                          value={validation.values.cni_bid_contract_signing_date || ""}
+                          value={
+                            validation.values.cni_bid_contract_signing_date ||
+                            ""
+                          }
                           onChange={(date) => {
                             const formatedDate = formatDate(date[0]);
                             validation.setFieldValue(
@@ -1421,7 +1444,7 @@ const ProjectContractorModel = (props) => {
                     ) : null}
                   </Col>
                   {/* status */}
-                  <Col className="col-md-4 mb-3" style={{ display: 'none'}}>
+                  <Col className="col-md-4 mb-3" style={{ display: "none" }}>
                     <Label>{t("cni_status")}</Label>
                     <Input
                       name="cni_status"
@@ -1481,7 +1504,6 @@ const ProjectContractorModel = (props) => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };

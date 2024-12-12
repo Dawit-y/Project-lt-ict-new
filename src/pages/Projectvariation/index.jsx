@@ -56,9 +56,11 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const ProjectVariationModel = () => {
-  //meta title
+const ProjectVariationModel = (props) => {
   document.title = " ProjectVariation";
+  const { passedId } = props;
+  const param = { bdr_project_id: passedId };
+
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -71,7 +73,7 @@ const ProjectVariationModel = () => {
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjectVariations();
+    useFetchProjectVariations(param);
 
   const addProjectVariation = useAddProjectVariation();
   const updateProjectVariation = useUpdateProjectVariation();
@@ -424,7 +426,8 @@ const ProjectVariationModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {(cellProps.row.original?.is_editable ||
+                cellProps.row.original?.is_role_editable) && (
                 <Link
                   to="#"
                   className="text-success"
@@ -440,7 +443,8 @@ const ProjectVariationModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {(cellProps.row.original?.is_deletable ||
+                cellProps.row.original?.is_role_deletable) && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -467,6 +471,10 @@ const ProjectVariationModel = () => {
     return baseColumns;
   }, [handleProjectVariationClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <ProjectVariationModal
@@ -480,9 +488,9 @@ const ProjectVariationModel = () => {
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteProjectVariation.isPending}
       />
-      <div className="page-content">
-        <div className="container-fluid">
-          <Breadcrumbs
+      <>
+        <div className="container-fluid1">
+          {/* <Breadcrumbs
             title={t("project_variation")}
             breadcrumbItem={t("project_variation")}
           />
@@ -513,7 +521,7 @@ const ProjectVariationModel = () => {
             setIsSearchLoading={setIsSearchLoading}
             setSearchResults={setSearchResults}
             setShowSearchResult={setShowSearchResult}
-          />
+          /> */}
           {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
@@ -818,8 +826,7 @@ const ProjectVariationModel = () => {
             </ModalBody>
           </Modal>
         </div>
-      </div>
-      <ToastContainer />
+      </>
     </React.Fragment>
   );
 };

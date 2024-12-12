@@ -56,9 +56,10 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const ProjectSupplimentaryModel = () => {
-  //meta title
+const ProjectSupplimentaryModel = (props) => {
   document.title = " ProjectSupplimentary";
+  const { passedId } = props;
+  const param = { prs_project_id: passedId };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -71,7 +72,7 @@ const ProjectSupplimentaryModel = () => {
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjectSupplimentarys();
+    useFetchProjectSupplimentarys(param);
 
   const addProjectSupplimentary = useAddProjectSupplimentary();
   const updateProjectSupplimentary = useUpdateProjectSupplimentary();
@@ -433,7 +434,8 @@ const ProjectSupplimentaryModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {(cellProps.row.original?.is_editable ||
+                cellProps.row.original?.is_role_editable) && (
                 <Link
                   to="#"
                   className="text-success"
@@ -449,7 +451,8 @@ const ProjectSupplimentaryModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {(cellProps.row.original?.is_deletable ||
+                cellProps.row.original?.is_role_deletable) && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -476,6 +479,10 @@ const ProjectSupplimentaryModel = () => {
     return baseColumns;
   }, [handleProjectSupplimentaryClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <ProjectSupplimentaryModal
@@ -489,9 +496,9 @@ const ProjectSupplimentaryModel = () => {
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteProjectSupplimentary.isPending}
       />
-      <div className="page-content">
-        <div className="container-fluid">
-          <Breadcrumbs
+      <>
+        <div className="container-fluid1">
+          {/* <Breadcrumbs
             title={t("project_supplimentary")}
             breadcrumbItem={t("project_supplimentary")}
           />
@@ -522,7 +529,7 @@ const ProjectSupplimentaryModel = () => {
             setIsSearchLoading={setIsSearchLoading}
             setSearchResults={setSearchResults}
             setShowSearchResult={setShowSearchResult}
-          />
+          /> */}
           {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
@@ -827,8 +834,7 @@ const ProjectSupplimentaryModel = () => {
             </ModalBody>
           </Modal>
         </div>
-      </div>
-      <ToastContainer />
+      </>
     </React.Fragment>
   );
 };

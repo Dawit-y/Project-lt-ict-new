@@ -31,8 +31,8 @@ import { loginUser, socialLogin } from "../../store/actions";
 // import images
 import profile from "../../assets/images/profile-img.png";
 import logo from "../../assets/images/logo.svg";
-import lightlogo from "../../assets/images/logo-light.svg";
-import { LOGIN_TITLE , FOOTER_TEXT} from "../../constants/constantFile";
+import lightlogo from "../../assets/images/logo-light.png";
+import { LOGIN_TITLE , FOOTER_TEXT,BUREAU_NAME} from "../../constants/constantFile";
 
 const Login = (props) => {
   //meta title
@@ -126,18 +126,18 @@ const Login = (props) => {
               <Card className="overflow-hidden">
                 <div className="bg-primary-subtle">
                   <Row>
-                    <Col xs={7}>
+                  <Col xs={12} className="text-center mt-2">
+                      <img src={lightlogo} alt="" className="img-fluid" />
+                    </Col>
+                    <Col xs={12}>
                       <div className="text-primary p-4">
-                        <h5 className="text-primary">Welcome Back !</h5>
-                        <p>Sign in to continue to {LOGIN_TITLE}.</p>
+                      <h4 className="text-primary text-center">{BUREAU_NAME}</h4>
+                        <h4 className="text-primary text-center">{LOGIN_TITLE}</h4>
                       </div>
-                    </Col>
-                    <Col className="col-5 align-self-end">
-                      <img src={profile} alt="" className="img-fluid" />
-                    </Col>
+                    </Col>                    
                   </Row>
                 </div>
-                <CardBody className="pt-0">
+                <CardBody className="pt-0 mt-2">
                   <div className="auth-logo">
                     <Link to="/" className="auth-logo-light">
                       <div className="avatar-md profile-user-wid mb-4">
@@ -152,16 +152,6 @@ const Login = (props) => {
                       </div>
                     </Link>
                     <Link to="/" className="auth-logo-dark">
-                      <div className="avatar-md profile-user-wid mb-4">
-                        <span className="avatar-title rounded-circle bg-light">
-                          <img
-                            src={logo}
-                            alt=""
-                            className="rounded-circle"
-                            height="34"
-                          />
-                        </span>
-                      </div>
                     </Link>
                   </div>
                   <div className="p-2">

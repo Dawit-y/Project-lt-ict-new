@@ -82,7 +82,7 @@ const UsersModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useFetchUserss();
+  const { data, isLoading, error, isError, refetch } = useState([]);
   const { data: sectorInformationData } = useFetchSectorInformations();
   const sectorInformationOptions = createSelectOptions(
     sectorInformationData?.data || [],
@@ -344,8 +344,8 @@ const UsersModel = () => {
       is_deletable: users.is_deletable,
       is_editable: users.is_editable,
     });
-    setSelectedDepartment(users.usr_department_id);
-    setSelectedSector(users.usr_sector_id);
+    //setSelectedDepartment(users.usr_department_id);
+    //setSelectedSector(users.usr_sector_id);
     setIsEdit(true);
 
     toggle();
@@ -492,8 +492,9 @@ const UsersModel = () => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable
+      /*data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_deletable*/
+      1==1
     ) {
       baseColumns.push({
         headerName: t("Action"),
@@ -604,15 +605,7 @@ const UsersModel = () => {
             searchHook={useSearchUserss}
             textSearchKeys={["usr_email"]}
             dropdownSearchKeys={[]}
-            checkboxSearchKeys={[
-              {
-                key: "example1",
-                options: [
-                  { value: "Engineering", label: "Example1" },
-                  { value: "Science", label: "Example2" },
-                ],
-              },
-            ]}
+            checkboxSearchKeys={[]}
             Component={CascadingDropdownsearch}
             component_params={{
               dropdown1name: "usr_region_id",
@@ -1027,7 +1020,7 @@ const UsersModel = () => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
+
       {showCanvas && (
         <RightOffCanvas
           handleClick={handleClick}
@@ -1035,8 +1028,7 @@ const UsersModel = () => {
           canvasWidth={84}
           name={userMetaData.usr_name || "UserRoles"}
           id={userMetaData.usr_id}
-          navItems={[]}
-          components={[UserRoles]}
+          components={{ "User Roles": UserRoles }}
         />
       )}
     </React.Fragment>
