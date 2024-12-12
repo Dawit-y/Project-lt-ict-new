@@ -8,6 +8,7 @@ const DELETE_BUDGET_SOURCE = "budget_source/deletegrid";
 // get budget_source
 export const getBudgetSource = async (params = {}) => {
   const queryString = new URLSearchParams(params).toString();
+  console.log("query string",queryString);
   const url = queryString ? `${GET_BUDGET_SOURCE}?${queryString}` : GET_BUDGET_SOURCE;
    try {
     const response = await post(url);

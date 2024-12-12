@@ -2,8 +2,11 @@ import React, { useEffect } from 'react';
 import gantt from 'dhtmlx-gantt';
 import 'dhtmlx-gantt/codebase/dhtmlxgantt.css';
 import './gantt.css';
+import { Card } from "reactstrap";
 
-const GanttChart = () => {
+const GanttChart = ({ data} ) => {
+  
+  
   useEffect(() => {
     // Configure date format
     gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
@@ -54,7 +57,7 @@ const GanttChart = () => {
     gantt.attachEvent("onGanttRender", () => {
       // Event for the "Add Task" button in the header
       document.querySelector(".gantt_add_task")?.addEventListener("click", () => {
-        const newId = gantt.addTask({ text: "New Project", start_date: new Date(), duration: 1 });
+        const newId = gantt.addTask({ text: "New Project", start_date: new Date(), duration: 1 ,project_plan_id:data.pld_id});
         gantt.showLightbox(newId);
       });
 
@@ -66,14 +69,14 @@ const GanttChart = () => {
             ? "delete" 
             : e.target.classList.contains("gantt_action_update")
               ? "update"
-              : "add";
+              : "addsub";
           
           if (action === "delete") {
             gantt.deleteTask(id);
           } else if (action === "update") {
             gantt.showLightbox(id);
-          } else if (action === "add") {
-            const newId = gantt.addTask({ text: "New Child Task", start_date: new Date(), duration: 1, parent: id });
+          } else if (action === "addsub") {
+            const newId = gantt.addTask({ text: "New Child Project", start_date: new Date(), duration: 1, parent: id ,project_plan_id:data.pld_id});
             gantt.showLightbox(newId);
           }
         });
@@ -83,7 +86,7 @@ const GanttChart = () => {
     gantt.init("gantt_here");
 
     // Load tasks from the backend (make sure your API endpoint works)
-    gantt.load("https://pms.awashsol.com/api/data", function(data) {
+    gantt.load(`https://pms.awashsol.com/api/data?project_plan_id=${data.pld_id}`, function(data) {
       console.log("Loaded data:", data); // Inspect the structure here
     });
 
@@ -91,7 +94,8 @@ const GanttChart = () => {
     const dp = gantt.createDataProcessor((entity, action, data, id) => {
       let url = "";
       let method = "";
-      console.log("user id", id);
+      
+
       if (action === "update") action = "updated";
       if (action === "delete") action = "deleted";
 
@@ -131,7 +135,14 @@ const GanttChart = () => {
   }, []);
 
   return (
-    <div style={{ width: '100%', height: '100%' }}>
+    <div style={{ width: '100%',paddingTop:"20px", height: '100%' }}>
+      <div>
+        <Card style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+          <h2 style={{ textAlign: 'center' }}>Selected project plan: {data?.pld_name || ""}</h2>
+        </Card>
+
+
+      </div>
       <div id="gantt_here" style={{ width: '100%', height: '600px' }}></div>
     </div>
   );

@@ -17,8 +17,29 @@ export const getProjectPlan = async (params = {}) => {
   }
 };
 
+// add addProjectPlan request
+export const addProjectPlan = async (objectName) => {
+  try {
+    const response = await post(
+      `${apiUrl}` + ADD_PROJECT_PLAN,
+      objectName,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    
+    return response.data;
+  } catch (error) {
+    console.log("error ",error)
+    
+    throw error;
+  }
+};
+
 // add project_plan
-export const addProjectPlan = async (objectName) =>
+export const addProjectPlan_old = async (objectName) =>
   post(`${apiUrl}` + ADD_PROJECT_PLAN, objectName);
 
 // update project_plan
