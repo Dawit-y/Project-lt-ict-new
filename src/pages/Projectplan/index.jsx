@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import { Link ,useLocation} from "react-router-dom";
 import { isEmpty, update } from "lodash";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
@@ -13,6 +13,7 @@ import SearchComponent from "../../components/Common/SearchComponent";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+import ProjectGannt from "../../pages/GanttChart";
 
 import {
   useFetchProjectPlans,
@@ -57,8 +58,19 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectPlanModel = () => {
+
+  const location = useLocation(); 
+  const { projectData } = location.state || {}; 
+  console.log("project data",projectData);
+
+  // Accessing prj_code from the URL (if needed)
+  const prjCode = location.pathname.split('/')[2]; 
+
+
+
   //meta title
-  document.title = " ProjectPlan";
+  document.title = " ProjectPlan" + {prjCode};
+
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -69,12 +81,15 @@ const ProjectPlanModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-
-  const { data, isLoading, error, isError, refetch } = useFetchProjectPlans();
+  const params = { pld_project_id: prjCode };  // Replace with dynamic value if needed
+  
+  const { data, isLoading, error, isError, refetch } = useFetchProjectPlans(params);
+  
 
   const addProjectPlan = useAddProjectPlan();
   const updateProjectPlan = useUpdateProjectPlan();
   const deleteProjectPlan = useDeleteProjectPlan();
+
   //START CRUD
   const handleAddProjectPlan = async (data) => {
     try {
@@ -129,7 +144,7 @@ const ProjectPlanModel = () => {
 
     initialValues: {
       pld_name: (projectPlan && projectPlan.pld_name) || "",
-      pld_project_id: (projectPlan && projectPlan.pld_project_id) || "",
+      pld_project_id: prjCode,
       pld_budget_year_id: (projectPlan && projectPlan.pld_budget_year_id) || "",
       pld_start_date_ec: (projectPlan && projectPlan.pld_start_date_ec) || "",
       pld_start_date_gc: (projectPlan && projectPlan.pld_start_date_gc) || "",
@@ -161,7 +176,7 @@ const ProjectPlanModel = () => {
           pld_id: projectPlan?.pld_id,
           pld_name: values.pld_name,
           pld_project_id: values.pld_project_id,
-          pld_budget_year_id: values.pld_budget_year_id,
+          pld_budget_year_id: Number(values.pld_budget_year_id),
           pld_start_date_ec: values.pld_start_date_ec,
           pld_start_date_gc: values.pld_start_date_gc,
           pld_end_date_ec: values.pld_end_date_ec,
@@ -178,8 +193,8 @@ const ProjectPlanModel = () => {
       } else {
         const newProjectPlan = {
           pld_name: values.pld_name,
-          pld_project_id: values.pld_project_id,
-          pld_budget_year_id: values.pld_budget_year_id,
+          pld_project_id: prjCode,
+          pld_budget_year_id: Number(values.pld_budget_year_id),
           pld_start_date_ec: values.pld_start_date_ec,
           pld_start_date_gc: values.pld_start_date_gc,
           pld_end_date_ec: values.pld_end_date_ec,
@@ -194,6 +209,10 @@ const ProjectPlanModel = () => {
     },
   });
   const [transaction, setTransaction] = useState({});
+  // const [projectPlanselected,setProjectPlanSelected]=useState({});
+  const [projectPlanSelected, setProjectPlanSelected] = useState(null);
+
+
   const toggleViewModal = () => setModal1(!modal1);
 
   // Fetch ProjectPlan on component mount
@@ -222,7 +241,7 @@ const ProjectPlanModel = () => {
       pld_id: projectPlan.pld_id,
       pld_name: projectPlan.pld_name,
       pld_project_id: projectPlan.pld_project_id,
-      pld_budget_year_id: projectPlan.pld_budget_year_id,
+      pld_budget_year_id: Number(projectPlan.pld_budget_year_id),
       pld_start_date_ec: projectPlan.pld_start_date_ec,
       pld_start_date_gc: projectPlan.pld_start_date_gc,
       pld_end_date_ec: projectPlan.pld_end_date_ec,
@@ -254,7 +273,7 @@ const ProjectPlanModel = () => {
     setSearchError(error);
     setShowSearchResult(true);
   };
-  //START UNCHANGED
+  //START UNCHANGED projectPlanSelected
   const columns = useMemo(() => {
     const baseColumns = [
       {
@@ -399,7 +418,68 @@ const ProjectPlanModel = () => {
           );
         },
       },
+      {
+        header: t("view_gannt"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                const data = cellProps.row.original;
+                // toggleViewModal(data);
+                console.log("selected project plan",data)
+                setProjectPlanSelected(cellProps.row.original);
+              }}
+            >
+              {t("view_gannt")}
+            </Button>
+          );
+        },
+      },
     ];
+    const baseColumnSelected = [
+      {
+        header: "",
+        accessorKey: "pld_name",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.pld_name, 30) || "-"}
+            </span>
+          );
+        },
+      },
+      
+      {
+        header: t("view_gannt"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                const data = cellProps.row.original;
+                // toggleViewModal(data);
+                console.log("selected project plan",data)
+                setProjectPlanSelected(cellProps.row.original);
+              }}
+            >
+              {t("view_gannt")}
+            </Button>
+          );
+        },
+      },
+    ];
+
     if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
@@ -452,7 +532,7 @@ const ProjectPlanModel = () => {
       });
     }
 
-    return baseColumns;
+    return projectPlanSelected?baseColumnSelected: baseColumns;
   }, [handleProjectPlanClick, toggleViewModal, onClickDelete]);
 
   return (
@@ -506,34 +586,44 @@ const ProjectPlanModel = () => {
             <Spinners />
           ) : (
             <Row>
-              <Col xs="12">
-                <Card>
-                  <CardBody>
-                    <TableContainer
-                      columns={columns}
-                      data={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      isGlobalFilter={true}
-                      isAddButton={true}
-                      isCustomPageSize={true}
-                      handleUserClick={handleProjectPlanClicks}
-                      isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("project_plan")}
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                    />
-                  </CardBody>
-                </Card>
+              {/* TableContainer for displaying data */}
+              <Col lg={projectPlanSelected?4:12}>
+              <TableContainer
+                columns={columns}
+                data={
+                  showSearchResult
+                    ? searchResults?.data
+                    : data?.data || []
+                }
+                isGlobalFilter={true}
+                isAddButton={true}
+                isCustomPageSize={true}
+                handleUserClick={handleProjectPlanClicks}
+                isPagination={true}
+                SearchPlaceholder={`${26} ${t("Results")}...`}
+                buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                buttonName={`${t("add")} ${t("project_plan")}`}
+                tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                theadClass="table-light"
+                pagination="pagination"
+                paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+              />
               </Col>
+
+              {/* Conditionally render ProjectGantt or an alternative card */}
+              {projectPlanSelected ? (
+                <Col lg={8}>
+                  <ProjectGannt data={projectPlanSelected} />
+                </Col>
+              ) : (
+                <Col lg={projectPlanSelected?0:0}>
+                  <Card>
+                    <p>Gannt chart</p>
+                  </Card>
+                </Col>
+              )}
             </Row>
+
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">

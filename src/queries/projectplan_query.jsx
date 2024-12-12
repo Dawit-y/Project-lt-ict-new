@@ -9,10 +9,11 @@ import {
 const PROJECT_PLAN_QUERY_KEY = ["projectplan"];
 
 // Fetch project_plan
-export const useFetchProjectPlans = () => {
+export const useFetchProjectPlans = (params = {}) => {
+  console.log("params",params)
   return useQuery({
-    queryKey: PROJECT_PLAN_QUERY_KEY,
-    queryFn: () => getProjectPlan(),
+    queryKey: [...PROJECT_PLAN_QUERY_KEY,params],
+    queryFn: () => getProjectPlan(params),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,

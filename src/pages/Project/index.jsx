@@ -33,18 +33,12 @@ import { useFetchSectorInformations } from "../../queries/sectorinformation_quer
 import ProjectModal from "./ProjectModal";
 import { useTranslation } from "react-i18next";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
-import ProjectDocument from "../Projectdocument";
-import ProjectPayment from "../Projectpayment";
-import ProjectStakeholder from "../Projectstakeholder";
-import Projectcontractor from "../Projectcontractor";
-import Budgetrequest from "../Budgetrequest";
-import GeoLocation from "../GeoLocation";
-import ProjectBudgetExpenditureModel from "../Projectbudgetexpenditure";
-import ProjectEmployeeModel from "../../pages/Projectemployee";
-import ProjectHandoverModel from "../Projecthandover";
-import ProjectPerformanceModel from "../Projectperformance";
-import ProjectSupplimentaryModel from "../Projectsupplimentary";
-import ProjectVariationModel from "../Projectvariation";
+import ProjectDocument from "../../pages/Projectdocument/index";
+import ProjectPayment from "../../pages/Projectpayment";
+import ProjectStakeholder from "../../pages/Projectstakeholder";
+import Projectcontractor from "../../pages/Projectcontractor";
+import Budgetrequest from "../../pages/Budgetrequest";
+import GeoLocation from "../../pages/GeoLocation";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 
@@ -617,8 +611,8 @@ const ProjectModel = () => {
           params.node.footer
             ? "" // Suppress in footer
             : params.value
-            ? new Date(params.value).toLocaleDateString()
-            : "Invalid date",
+              ? new Date(params.value).toLocaleDateString()
+              : "Invalid date",
         enableRowGroup: true,
       },
       {
@@ -630,8 +624,8 @@ const ProjectModel = () => {
           params.node.footer
             ? "" // Suppress in footer
             : params.value
-            ? new Date(params.value).toLocaleDateString()
-            : "Invalid date",
+              ? new Date(params.value).toLocaleDateString()
+              : "Invalid date",
         enableRowGroup: true,
       },
       {
@@ -670,50 +664,62 @@ const ProjectModel = () => {
           const { is_editable, is_deletable } = params.data || {};
           return (
             <div className="action-icons">
-              {is_editable && (
-                <Link
-                  to="#"
-                  className="text-success me-2"
-                  onClick={() => handleProjectClick(params.data)}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    {t("edit")}
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-
-              {is_deletable ? (
-                <Link
-                  to="#"
-                  className="text-danger ms-3"
-                  onClick={() => onClickDelete(params.data)}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              ) : (
-                <i
-                  className="mdi mdi-delete-off font-size-18 text-muted ms-3"
-                  id="deletetooltip-disabled"
-                />
-              )}
+            {is_editable && (
               <Link
                 to="#"
-                className="text-secondary ms-2"
-                onClick={() => handleClick(params.data)}
+                className="text-success me-2"
+                onClick={() => handleProjectClick(params.data)}
               >
-                <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
-                <UncontrolledTooltip placement="top" target="viewtooltip">
-                  View
+                <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                <UncontrolledTooltip placement="top" target="edittooltip">
+                  {t("edit")}
                 </UncontrolledTooltip>
               </Link>
-            </div>
+            )}
+
+            {is_deletable ? (
+              <Link
+                to="#"
+                className="text-danger ms-3"
+                onClick={() => onClickDelete(params.data)}
+              >
+                <i
+                  className="mdi mdi-delete font-size-18"
+                  id="deletetooltip"
+                />
+                <UncontrolledTooltip placement="top" target="deletetooltip">
+                  Delete
+                </UncontrolledTooltip>
+              </Link>
+            ) : (
+              <i
+                className="mdi mdi-delete-off font-size-18 text-muted ms-3"
+                id="deletetooltip-disabled"
+              />
+            )}
+            <Link
+              to="#"
+              className="text-secondary ms-2"
+              onClick={() => handleClick(params.data)}
+            >
+              <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
+              <UncontrolledTooltip placement="top" target="viewtooltip">
+                View
+              </UncontrolledTooltip>
+            </Link>
+            <Link
+              to={{
+                pathname: `/project/${params.data.prj_code}/project_plan`, // Route path
+                state: { projectData: params.data }, // Pass data here
+              }}
+              className="text-secondary ms-2"
+            >
+              <i className="mdi mdi-file-document-outline font-size-18" id="viewtooltip" />
+              <UncontrolledTooltip placement="top" target="viewtooltip">
+                Project Plan
+              </UncontrolledTooltip>
+            </Link>
+          </div>
           );
         },
       });
@@ -902,14 +908,14 @@ const ProjectModel = () => {
                       value={validation.values.prj_location_description || ""}
                       invalid={
                         validation.touched.prj_location_description &&
-                        validation.errors.prj_location_description
+                          validation.errors.prj_location_description
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prj_location_description &&
-                    validation.errors.prj_location_description ? (
+                      validation.errors.prj_location_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prj_location_description}
                       </FormFeedback>
@@ -929,14 +935,14 @@ const ProjectModel = () => {
                       value={validation.values.prj_name || ""}
                       invalid={
                         validation.touched.prj_name &&
-                        validation.errors.prj_name
+                          validation.errors.prj_name
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prj_name &&
-                    validation.errors.prj_name ? (
+                      validation.errors.prj_name ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prj_name}
                       </FormFeedback>
@@ -956,14 +962,14 @@ const ProjectModel = () => {
                       value={validation.values.prj_code || ""}
                       invalid={
                         validation.touched.prj_code &&
-                        validation.errors.prj_code
+                          validation.errors.prj_code
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prj_code &&
-                    validation.errors.prj_code ? (
+                      validation.errors.prj_code ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prj_code}
                       </FormFeedback>
@@ -983,7 +989,7 @@ const ProjectModel = () => {
                       value={validation.values.prj_project_category_id || ""}
                       invalid={
                         validation.touched.prj_project_category_id &&
-                        validation.errors.prj_project_category_id
+                          validation.errors.prj_project_category_id
                           ? true
                           : false
                       }
@@ -996,7 +1002,7 @@ const ProjectModel = () => {
                       ))}
                     </Input>
                     {validation.touched.prj_project_category_id &&
-                    validation.errors.prj_project_category_id ? (
+                      validation.errors.prj_project_category_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prj_project_category_id}
                       </FormFeedback>
@@ -1016,14 +1022,14 @@ const ProjectModel = () => {
                       value={validation.values.prj_total_estimate_budget || ""}
                       invalid={
                         validation.touched.prj_total_estimate_budget &&
-                        validation.errors.prj_total_estimate_budget
+                          validation.errors.prj_total_estimate_budget
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prj_total_estimate_budget &&
-                    validation.errors.prj_total_estimate_budget ? (
+                      validation.errors.prj_total_estimate_budget ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prj_total_estimate_budget}
                       </FormFeedback>
@@ -1040,14 +1046,14 @@ const ProjectModel = () => {
                       value={validation.values.prj_total_actual_budget || ""}
                       invalid={
                         validation.touched.prj_total_actual_budget &&
-                        validation.errors.prj_total_actual_budget
+                          validation.errors.prj_total_actual_budget
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prj_total_actual_budget &&
-                    validation.errors.prj_total_actual_budget ? (
+                      validation.errors.prj_total_actual_budget ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prj_total_actual_budget}
                       </FormFeedback>
@@ -1068,7 +1074,7 @@ const ProjectModel = () => {
                       value={validation.values.prj_sector_id || ""}
                       invalid={
                         validation.touched.prj_sector_id &&
-                        validation.errors.prj_sector_id
+                          validation.errors.prj_sector_id
                           ? true
                           : false
                       }
@@ -1081,7 +1087,7 @@ const ProjectModel = () => {
                       ))}
                     </Input>
                     {validation.touched.prj_sector_id &&
-                    validation.errors.prj_sector_id ? (
+                      validation.errors.prj_sector_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prj_sector_id}
                       </FormFeedback>
@@ -1093,12 +1099,11 @@ const ProjectModel = () => {
                       <InputGroup>
                         <Flatpickr
                           id="DataPicker"
-                          className={`form-control ${
-                            validation.touched.prj_start_date_gc &&
-                            validation.errors.prj_start_date_gc
+                          className={`form-control ${validation.touched.prj_start_date_gc &&
+                              validation.errors.prj_start_date_gc
                               ? "is-invalid"
                               : ""
-                          }`}
+                            }`}
                           name="prj_start_date_gc"
                           options={{
                             altInput: true,
@@ -1126,7 +1131,7 @@ const ProjectModel = () => {
                         </Button>
                       </InputGroup>
                       {validation.touched.prj_start_date_gc &&
-                      validation.errors.prj_start_date_gc ? (
+                        validation.errors.prj_start_date_gc ? (
                         <FormFeedback>
                           {validation.errors.prj_start_date_gc}
                         </FormFeedback>
@@ -1144,14 +1149,14 @@ const ProjectModel = () => {
                       value={validation.values.prj_start_date_plan_gc || ""}
                       invalid={
                         validation.touched.prj_start_date_plan_gc &&
-                        validation.errors.prj_start_date_plan_gc
+                          validation.errors.prj_start_date_plan_gc
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prj_start_date_plan_gc &&
-                    validation.errors.prj_start_date_plan_gc ? (
+                      validation.errors.prj_start_date_plan_gc ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prj_start_date_plan_gc}
                       </FormFeedback>
@@ -1163,12 +1168,11 @@ const ProjectModel = () => {
                       <InputGroup>
                         <Flatpickr
                           id="DataPicker"
-                          className={`form-control ${
-                            validation.touched.prj_end_date_actual_gc &&
-                            validation.errors.prj_end_date_actual_gc
+                          className={`form-control ${validation.touched.prj_end_date_actual_gc &&
+                              validation.errors.prj_end_date_actual_gc
                               ? "is-invalid"
                               : ""
-                          }`}
+                            }`}
                           name="prj_end_date_actual_gc"
                           options={{
                             altInput: true,
@@ -1196,7 +1200,7 @@ const ProjectModel = () => {
                         </Button>
                       </InputGroup>
                       {validation.touched.prj_end_date_actual_gc &&
-                      validation.errors.prj_end_date_actual_gc ? (
+                        validation.errors.prj_end_date_actual_gc ? (
                         <FormFeedback>
                           {validation.errors.prj_end_date_actual_gc}
                         </FormFeedback>
@@ -1214,14 +1218,14 @@ const ProjectModel = () => {
                       value={validation.values.prj_end_date_plan_gc || ""}
                       invalid={
                         validation.touched.prj_end_date_plan_gc &&
-                        validation.errors.prj_end_date_plan_gc
+                          validation.errors.prj_end_date_plan_gc
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prj_end_date_plan_gc &&
-                    validation.errors.prj_end_date_plan_gc ? (
+                      validation.errors.prj_end_date_plan_gc ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prj_end_date_plan_gc}
                       </FormFeedback>
@@ -1238,14 +1242,14 @@ const ProjectModel = () => {
                       value={validation.values.prj_urban_ben_number || ""}
                       invalid={
                         validation.touched.prj_urban_ben_number &&
-                        validation.errors.prj_urban_ben_number
+                          validation.errors.prj_urban_ben_number
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prj_urban_ben_number &&
-                    validation.errors.prj_urban_ben_number ? (
+                      validation.errors.prj_urban_ben_number ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prj_urban_ben_number}
                       </FormFeedback>
@@ -1262,14 +1266,14 @@ const ProjectModel = () => {
                       value={validation.values.prj_rural_ben_number || ""}
                       invalid={
                         validation.touched.prj_rural_ben_number &&
-                        validation.errors.prj_rural_ben_number
+                          validation.errors.prj_rural_ben_number
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prj_rural_ben_number &&
-                    validation.errors.prj_rural_ben_number ? (
+                      validation.errors.prj_rural_ben_number ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prj_rural_ben_number}
                       </FormFeedback>
@@ -1286,14 +1290,14 @@ const ProjectModel = () => {
                       value={validation.values.prj_outcome || ""}
                       invalid={
                         validation.touched.prj_outcome &&
-                        validation.errors.prj_outcome
+                          validation.errors.prj_outcome
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prj_outcome &&
-                    validation.errors.prj_outcome ? (
+                      validation.errors.prj_outcome ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prj_outcome}
                       </FormFeedback>
@@ -1310,14 +1314,14 @@ const ProjectModel = () => {
                       value={validation.values.prj_remark || ""}
                       invalid={
                         validation.touched.prj_remark &&
-                        validation.errors.prj_remark
+                          validation.errors.prj_remark
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prj_remark &&
-                    validation.errors.prj_remark ? (
+                      validation.errors.prj_remark ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prj_remark}
                       </FormFeedback>
@@ -1371,20 +1375,22 @@ const ProjectModel = () => {
           canvasWidth={84}
           name={projectMetaData.prj_name}
           id={projectMetaData.prj_id}
-          components={{
-            Documents: ProjectDocument,
-            Payments: ProjectPayment,
-            Stakeholder: ProjectStakeholder,
-            Contractor: Projectcontractor,
-            "Budget Request": Budgetrequest,
-            "Geo Location": GeoLocation,
-            "Budget Expenditures": ProjectBudgetExpenditureModel,
-            Employees: ProjectEmployeeModel,
-            Handover: ProjectHandoverModel,
-            Performance: ProjectPerformanceModel,
-            Supplementary: ProjectSupplimentaryModel,
-            Variations: ProjectVariationModel,
-          }}
+          navItems={[
+            "Documents",
+            "Payments",
+            "Stakeholder",
+            "Contractor",
+            "Budget Request",
+            "Geo Location",
+          ]}
+          components={[
+            ProjectDocument,
+            ProjectPayment,
+            ProjectStakeholder,
+            Projectcontractor,
+            Budgetrequest,
+            GeoLocation,
+          ]}
         />
       )}
     </React.Fragment>
