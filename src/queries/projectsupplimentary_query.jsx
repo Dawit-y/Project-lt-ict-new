@@ -9,7 +9,7 @@ import {
 const PROJECT_SUPPLIMENTARY_QUERY_KEY = ["projectsupplimentary"];
 
 // Fetch project_supplimentary
-export const useFetchProjectSupplimentarys = (param = {}) => {
+export const useFetchProjectSupplimentarys = (param = {}, isActive) => {
   return useQuery({
     queryKey: [...PROJECT_SUPPLIMENTARY_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectSupplimentary(param),
@@ -17,6 +17,7 @@ export const useFetchProjectSupplimentarys = (param = {}) => {
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: isActive,
   });
 };
 

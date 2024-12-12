@@ -9,7 +9,7 @@ import {
 const PROJECT_PERFORMANCE_QUERY_KEY = ["projectperformance"];
 
 // Fetch project_performance
-export const useFetchProjectPerformances = (param = {}) => {
+export const useFetchProjectPerformances = (param = {}, isActive) => {
   return useQuery({
     queryKey: [...PROJECT_PERFORMANCE_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectPerformance(param),
@@ -17,6 +17,7 @@ export const useFetchProjectPerformances = (param = {}) => {
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: isActive,
   });
 };
 

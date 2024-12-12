@@ -9,7 +9,7 @@ import {
 const PROJECT_EMPLOYEE_QUERY_KEY = ["projectemployee"];
 
 // Fetch project_employee
-export const useFetchProjectEmployees = (param = {}) => {
+export const useFetchProjectEmployees = (param = {}, isActive) => {
   return useQuery({
     queryKey: [...PROJECT_EMPLOYEE_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectEmployee(param),
@@ -17,6 +17,7 @@ export const useFetchProjectEmployees = (param = {}) => {
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: isActive,
   });
 };
 

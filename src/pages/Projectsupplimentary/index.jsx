@@ -58,7 +58,7 @@ const truncateText = (text, maxLength) => {
 
 const ProjectSupplimentaryModel = (props) => {
   document.title = " ProjectSupplimentary";
-  const { passedId } = props;
+  const { passedId, isActive } = props;
   const param = { prs_project_id: passedId };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
@@ -72,7 +72,7 @@ const ProjectSupplimentaryModel = (props) => {
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjectSupplimentarys(param);
+    useFetchProjectSupplimentarys(param, isActive);
 
   const addProjectSupplimentary = useAddProjectSupplimentary();
   const updateProjectSupplimentary = useUpdateProjectSupplimentary();
@@ -531,7 +531,7 @@ const ProjectSupplimentaryModel = (props) => {
             setShowSearchResult={setShowSearchResult}
           /> */}
           {isLoading || isSearchLoading ? (
-            <Spinners />
+            <Spinners top={isActive ? "top-70" : ""} />
           ) : (
             <Row>
               <Col xs="12">

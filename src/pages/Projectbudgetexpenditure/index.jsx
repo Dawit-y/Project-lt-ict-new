@@ -57,7 +57,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectBudgetExpenditureModel = (props) => {
-  const { passedId } = props;
+  const { passedId, isActive } = props;
   const param = { pbe_project_id: passedId };
 
   //meta title
@@ -75,7 +75,7 @@ const ProjectBudgetExpenditureModel = (props) => {
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjectBudgetExpenditures(param);
+    useFetchProjectBudgetExpenditures(param, isActive);
 
   const addProjectBudgetExpenditure = useAddProjectBudgetExpenditure();
   const updateProjectBudgetExpenditure = useUpdateProjectBudgetExpenditure();
@@ -535,7 +535,7 @@ const ProjectBudgetExpenditureModel = (props) => {
             setShowSearchResult={setShowSearchResult}
           /> */}
           {isLoading || isSearchLoading ? (
-            <Spinners />
+            <Spinners top={isActive ? "top-70" : ""} />
           ) : (
             <Row>
               <Col xs="12">

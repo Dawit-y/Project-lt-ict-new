@@ -58,7 +58,7 @@ const truncateText = (text, maxLength) => {
 
 const ProjectVariationModel = (props) => {
   document.title = " ProjectVariation";
-  const { passedId } = props;
+  const { passedId, isActive } = props;
   const param = { bdr_project_id: passedId };
 
   const { t } = useTranslation();
@@ -73,7 +73,7 @@ const ProjectVariationModel = (props) => {
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjectVariations(param);
+    useFetchProjectVariations(param, isActive);
 
   const addProjectVariation = useAddProjectVariation();
   const updateProjectVariation = useUpdateProjectVariation();
@@ -523,7 +523,7 @@ const ProjectVariationModel = (props) => {
             setShowSearchResult={setShowSearchResult}
           /> */}
           {isLoading || isSearchLoading ? (
-            <Spinners />
+            <Spinners top={isActive ? "top-70" : ""} />
           ) : (
             <Row>
               <Col xs="12">

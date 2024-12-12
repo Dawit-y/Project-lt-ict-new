@@ -9,7 +9,7 @@ import {
 const PROJECT_HANDOVER_QUERY_KEY = ["projecthandover"];
 
 // Fetch project_handover
-export const useFetchProjectHandovers = (param = {}) => {
+export const useFetchProjectHandovers = (param = {}, isActive) => {
   return useQuery({
     queryKey: [...PROJECT_HANDOVER_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectHandover(param),
@@ -17,6 +17,7 @@ export const useFetchProjectHandovers = (param = {}) => {
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: isActive,
   });
 };
 

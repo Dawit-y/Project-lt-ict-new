@@ -58,7 +58,7 @@ const truncateText = (text, maxLength) => {
 
 const ProjectPerformanceModel = (props) => {
   //  get passed data from tab
-  const { passedId } = props;
+  const { passedId, isActive } = props;
   const param = { prp_project_id: passedId };
   //meta title
   document.title = " ProjectPerformance";
@@ -74,7 +74,7 @@ const ProjectPerformanceModel = (props) => {
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjectPerformances(param);
+    useFetchProjectPerformances(param, isActive);
 
   const addProjectPerformance = useAddProjectPerformance();
   const updateProjectPerformance = useUpdateProjectPerformance();
@@ -467,7 +467,7 @@ const ProjectPerformanceModel = (props) => {
       <div className="page-content1">
         <div className="container-fluid1">
           {isLoading || isSearchLoading ? (
-            <Spinners />
+            <Spinners top={isActive ? "top-70" : ""} />
           ) : (
             <TableContainer
               columns={columns}

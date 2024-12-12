@@ -9,7 +9,7 @@ import {
 const PROJECT_VARIATION_QUERY_KEY = ["projectvariation"];
 
 // Fetch project_variation
-export const useFetchProjectVariations = (param = {}) => {
+export const useFetchProjectVariations = (param = {}, isActive) => {
   return useQuery({
     queryKey: [...PROJECT_VARIATION_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectVariation(param),
@@ -17,6 +17,7 @@ export const useFetchProjectVariations = (param = {}) => {
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: isActive,
   });
 };
 

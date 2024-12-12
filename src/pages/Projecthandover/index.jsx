@@ -58,7 +58,7 @@ const truncateText = (text, maxLength) => {
 
 const ProjectHandoverModel = (props) => {
   document.title = " ProjectHandover";
-  const { passedId } = props;
+  const { passedId, isActive } = props;
   const param = { prh_project_id: passedId };
 
   const { t } = useTranslation();
@@ -72,8 +72,10 @@ const ProjectHandoverModel = (props) => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } =
-    useFetchProjectHandovers(param);
+  const { data, isLoading, error, isError, refetch } = useFetchProjectHandovers(
+    param,
+    isActive
+  );
 
   const addProjectHandover = useAddProjectHandover();
   const updateProjectHandover = useUpdateProjectHandover();
@@ -441,7 +443,7 @@ const ProjectHandoverModel = (props) => {
             setShowSearchResult={setShowSearchResult}
           /> */}
           {isLoading || isSearchLoading ? (
-            <Spinners />
+            <Spinners top={isActive ? "top-70" : ""} />
           ) : (
             <Row>
               <Col xs="12">
