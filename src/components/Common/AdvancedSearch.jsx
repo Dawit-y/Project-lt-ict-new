@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Card,
   CardBody,
@@ -17,6 +17,7 @@ import { useFormik } from "formik";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 import { formatDateHyphen } from "../../utils/commonMethods";
+
 const AdvancedSearch = ({
   searchHook,
   textSearchKeys,
@@ -36,6 +37,9 @@ const AdvancedSearch = ({
   const [params, setParams] = useState({});
   const [searchParams, setSearchParams] = useState({});
   const { refetch } = searchHook(searchParams);
+
+  const flatpickrStartRef = useRef(null);
+  const flatpickrEndRef = useRef(null);
 
   const initialValues = component_params
     ? Object.keys(component_params).reduce((acc, key) => {
@@ -109,6 +113,13 @@ const AdvancedSearch = ({
     setSearchResults(null);
     setShowSearchResult(false);
     validation.resetForm();
+
+    if (flatpickrStartRef.current) {
+      flatpickrStartRef.current.flatpickr.clear();
+    }
+    if (flatpickrEndRef.current) {
+      flatpickrEndRef.current.flatpickr.clear();
+    }
   };
   const isButtonDisabled = () => {
     // Check if params have any valid values
@@ -150,11 +161,11 @@ const AdvancedSearch = ({
                             <FormGroup>
                               <InputGroup>
                                 <Flatpickr
+                                  ref={flatpickrStartRef}
                                   id={`${key}Start`}
                                   name={`${key}Start`}
                                   className={`form-control`}
                                   type="text"
-                                  /* placeholder={`${t(key)}_start`}*/
                                   placeholder={t(`${key}_start`)}
                                   autoComplete="off"
                                   options={{
@@ -163,7 +174,7 @@ const AdvancedSearch = ({
                                     dateFormat: "Y-m-d",
                                     enableTime: false,
                                   }}
-                                  value={params[key] || ""}
+                                  value={params[key] || null}
                                   onChange={(e) => {
                                     handleSearchKey(
                                       `${key}Start`,
@@ -172,6 +183,7 @@ const AdvancedSearch = ({
                                   }}
                                 />
                                 <Flatpickr
+                                  ref={flatpickrEndRef}
                                   id={`${key}End`}
                                   name={`${key}End`}
                                   className={`form-control`}
@@ -184,14 +196,11 @@ const AdvancedSearch = ({
                                     dateFormat: "Y-m-d",
                                     enableTime: false,
                                   }}
-                                  value={params[key] || ""}
-                                  onChange={(datee) => {
-                                    console.log(
-                                      "date " + formatDateHyphen(datee[0])
-                                    );
+                                  value={params[key] || null}
+                                  onChange={(date) => {
                                     handleSearchKey(
                                       `${key}End`,
-                                      formatDateHyphen(datee[0])
+                                      formatDateHyphen(date[0])
                                     );
                                   }}
                                 />

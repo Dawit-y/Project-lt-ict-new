@@ -37,8 +37,9 @@ const ProjectPaymentList = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  //const { data, isLoading, error, isError, refetch } = useFetchProjectPayments();
-  const { data, isLoading, error, isError, refetch } = useState(false);
+  const { data, isLoading, error, isError, refetch } =
+    useFetchProjectPayments();
+  // const { data, isLoading, error, isError, refetch } = useState(false);
 
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
