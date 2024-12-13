@@ -9,21 +9,22 @@ import {
 const PROJECT_QUERY_KEY = ["project"];
 
 // Fetch project
-export const useFetchProjects = () => {
+export const useFetchProjects = (projectParams = {}) => {
   return useQuery({
-    queryKey: PROJECT_QUERY_KEY,
-    queryFn: () => getProject(),
+    queryKey: [...PROJECT_QUERY_KEY, "fetch", projectParams],
+    queryFn: () => getProject(projectParams),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: !!projectParams?.prj_location_region_id,
   });
 };
 
 //search project
 export const useSearchProjects = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...PROJECT_QUERY_KEY, searchParams],
+    queryKey: [...PROJECT_QUERY_KEY, "search", searchParams],
     queryFn: () => getProject(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
@@ -40,7 +41,7 @@ export const useAddProject = () => {
   return useMutation({
     mutationFn: addProject,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( PROJECT_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(PROJECT_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,
@@ -88,7 +89,8 @@ export const useDeleteProject = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (ProjectData) => ProjectData.prj_id !== parseInt(deletedData.deleted_id)
+            (ProjectData) =>
+              ProjectData.prj_id !== parseInt(deletedData.deleted_id)
           ),
         };
       });

@@ -40,7 +40,10 @@ const TreeNode = ({ node, onNodeClick, level = 0 }) => {
 
       {/* Tree node display */}
       <div
-        onClick={() => onNodeClick(node)}
+        onClick={() => {
+          toggleExpand();
+          onNodeClick(node);
+        }}
         onDoubleClick={toggleExpand}
         className={`d-flex align-items-center position-relative p-2 rounded ${
           node.selected ? "bg-light shadow" : "bg-transparent"
@@ -53,7 +56,11 @@ const TreeNode = ({ node, onNodeClick, level = 0 }) => {
       >
         {node.children && node.children.length > 0 ? (
           <span onClick={toggleExpand} className="me-1">
-            {isExpanded ? <FaChevronDown /> : <FaChevronRight />}
+            {isExpanded ? (
+              <FaChevronDown onClick={() => onNodeClick(node)} />
+            ) : (
+              <FaChevronRight onClick={() => onNodeClick(node)} />
+            )}
           </span>
         ) : (
           <span className="me-3"></span>

@@ -8,7 +8,6 @@ const DELETE_PROJECT = "project/deletegrid";
 // get project
 export const getProject = async (params = {}) => {
   const queryString = new URLSearchParams(params).toString();
-  console.log("queryString", queryString);
   const url = queryString ? `${GET_PROJECT}?${queryString}` : GET_PROJECT;
   try {
     const response = await post(url);

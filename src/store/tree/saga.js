@@ -50,7 +50,6 @@ function* fetchProjectsSaga() {
   try {
     const response = yield call(fetchProjects);
     yield put(fetchProjectsSuccess(response.data));
-    toast.success("Success! Your action was successful.");
   } catch (error) {
     yield put(fetchProjectsFailure(error.message));
   }

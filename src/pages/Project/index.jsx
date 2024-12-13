@@ -66,6 +66,7 @@ import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import { createSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { formatDate } from "../../utils/commonMethods";
+import AddressStructureForProject from "./AddressStructureForProject";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -91,8 +92,18 @@ const ProjectModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
+  const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
+  const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
+  const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
 
-  const { data, isLoading, error, isError, refetch } = useFetchProjects();
+  const projectParams = {
+    ...(prjLocationRegionId && { prj_location_region_id: prjLocationRegionId }),
+    ...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
+    ...(prjLocationWoredaId && { prj_location_woreda_id: prjLocationWoredaId }),
+  };
+
+  const { data, isLoading, error, isError, refetch } =
+    useFetchProjects(projectParams);
   const { data: projectCategoryData } = useFetchProjectCategorys();
   const projectCategoryOptions = createSelectOptions(
     projectCategoryData?.data || [],
@@ -377,6 +388,20 @@ const ProjectModel = () => {
       setModal(true);
     }
   };
+
+  const handleNodeSelect = (node) => {
+    if (node.level === "region") {
+      setPrjLocationRegionId(node.id);
+      setPrjLocationZoneId(null); // Clear dependent states
+      setPrjLocationWoredaId(null);
+    } else if (node.level === "zone") {
+      setPrjLocationZoneId(node.id);
+      setPrjLocationWoredaId(null); // Clear dependent state
+    } else if (node.level === "woreda") {
+      setPrjLocationWoredaId(node.id);
+    }
+  };
+
   const handleClick = (data) => {
     setShowCanvas(!showCanvas); // Toggle canvas visibility
     setProjectMetaData(data);
@@ -611,8 +636,8 @@ const ProjectModel = () => {
           params.node.footer
             ? "" // Suppress in footer
             : params.value
-              ? new Date(params.value).toLocaleDateString()
-              : "Invalid date",
+            ? new Date(params.value).toLocaleDateString()
+            : "Invalid date",
         enableRowGroup: true,
       },
       {
@@ -624,8 +649,8 @@ const ProjectModel = () => {
           params.node.footer
             ? "" // Suppress in footer
             : params.value
-              ? new Date(params.value).toLocaleDateString()
-              : "Invalid date",
+            ? new Date(params.value).toLocaleDateString()
+            : "Invalid date",
         enableRowGroup: true,
       },
       {
@@ -664,62 +689,65 @@ const ProjectModel = () => {
           const { is_editable, is_deletable } = params.data || {};
           return (
             <div className="action-icons">
-            {is_editable && (
+              {is_editable && (
+                <Link
+                  to="#"
+                  className="text-success me-2"
+                  onClick={() => handleProjectClick(params.data)}
+                >
+                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                  <UncontrolledTooltip placement="top" target="edittooltip">
+                    {t("edit")}
+                  </UncontrolledTooltip>
+                </Link>
+              )}
+
+              {is_deletable ? (
+                <Link
+                  to="#"
+                  className="text-danger ms-3"
+                  onClick={() => onClickDelete(params.data)}
+                >
+                  <i
+                    className="mdi mdi-delete font-size-18"
+                    id="deletetooltip"
+                  />
+                  <UncontrolledTooltip placement="top" target="deletetooltip">
+                    Delete
+                  </UncontrolledTooltip>
+                </Link>
+              ) : (
+                <i
+                  className="mdi mdi-delete-off font-size-18 text-muted ms-3"
+                  id="deletetooltip-disabled"
+                />
+              )}
               <Link
                 to="#"
-                className="text-success me-2"
-                onClick={() => handleProjectClick(params.data)}
+                className="text-secondary ms-2"
+                onClick={() => handleClick(params.data)}
               >
-                <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                <UncontrolledTooltip placement="top" target="edittooltip">
-                  {t("edit")}
+                <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
+                <UncontrolledTooltip placement="top" target="viewtooltip">
+                  View
                 </UncontrolledTooltip>
               </Link>
-            )}
-
-            {is_deletable ? (
               <Link
-                to="#"
-                className="text-danger ms-3"
-                onClick={() => onClickDelete(params.data)}
+                to={{
+                  pathname: `/project/${params.data.prj_code}/project_plan`, // Route path
+                  state: { projectData: params.data }, // Pass data here
+                }}
+                className="text-secondary ms-2"
               >
                 <i
-                  className="mdi mdi-delete font-size-18"
-                  id="deletetooltip"
+                  className="mdi mdi-file-document-outline font-size-18"
+                  id="viewtooltip"
                 />
-                <UncontrolledTooltip placement="top" target="deletetooltip">
-                  Delete
+                <UncontrolledTooltip placement="top" target="viewtooltip">
+                  Project Plan
                 </UncontrolledTooltip>
               </Link>
-            ) : (
-              <i
-                className="mdi mdi-delete-off font-size-18 text-muted ms-3"
-                id="deletetooltip-disabled"
-              />
-            )}
-            <Link
-              to="#"
-              className="text-secondary ms-2"
-              onClick={() => handleClick(params.data)}
-            >
-              <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
-              <UncontrolledTooltip placement="top" target="viewtooltip">
-                View
-              </UncontrolledTooltip>
-            </Link>
-            <Link
-              to={{
-                pathname: `/project/${params.data.prj_code}/project_plan`, // Route path
-                state: { projectData: params.data }, // Pass data here
-              }}
-              className="text-secondary ms-2"
-            >
-              <i className="mdi mdi-file-document-outline font-size-18" id="viewtooltip" />
-              <UncontrolledTooltip placement="top" target="viewtooltip">
-                Project Plan
-              </UncontrolledTooltip>
-            </Link>
-          </div>
+            </div>
           );
         },
       });
@@ -777,6 +805,7 @@ const ProjectModel = () => {
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
+
   return (
     <React.Fragment>
       <ProjectModal
@@ -793,578 +822,609 @@ const ProjectModel = () => {
       <div className="page-content">
         <div className="container-fluid">
           <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
-          <AdvancedSearch
-            searchHook={useSearchProjects}
-            textSearchKeys={["prj_name", "prj_code"]}
-            dropdownSearchKeys={[
-              {
-                key: "prj_project_category_id",
-                options: projectCategoryOptions,
-              },
-            ]}
-            checkboxSearchKeys={[]}
-            Component={CascadingDropdowns}
-            component_params={{
-              dropdown1name: "prj_location_region_id",
-              dropdown2name: "prj_location_zone_id",
-              dropdown3name: "prj_location_woreda_id",
-            }}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          />
-          {isLoading || isSearchLoading ? (
-            <Spinners top={"top-60"} />
-          ) : (
-            <div
-              className="ag-theme-alpine"
-              style={{ height: "100%", width: "100%" }}
-            >
-              {/* Row for search input and buttons */}
-              <Row className="mb-3">
-                <Col sm="12" md="6">
-                  {/* Search Input for  Filter */}
-                  <Input
-                    type="text"
-                    placeholder={t("Search") + "..."}
-                    onChange={(e) => setQuickFilterText(e.target.value)}
-                    className="mb-2"
-                  />
-                </Col>
-                <Col sm="12" md="6" className="text-md-end">
-                  <Button color="success" onClick={handleProjectClicks}>
-                    {t("Add New Project")}
-                  </Button>
-                </Col>
-              </Row>
-
-              {/* AG Grid */}
-              <div style={{ height: "600px" }}>
-                <AgGridReact
-                  ref={gridRef}
-                  rowData={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
-                  columnDefs={columnDefs}
-                  groupIncludeFooter={true}
-                  groupIncludeTotalFooter={true}
-                  rowSelection="multiple"
-                  enableRangeSelection={true}
-                  enableCharts={true} // Enable charts
-                  chartThemes={chartThemes} // Add custom chart themes
-                  pivotMode={false}
-                  sideBar={sideBar} // Enable and configure sidebar
-                  rowGroupPanelShow="always"
-                  pivotPanelShow="always"
-                  pagination={true}
-                  paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                  paginationPageSize={10}
-                  quickFilterText={quickFilterText}
-                  onSelectionChanged={onSelectionChanged}
-                  rowHeight={30} // Set the row height here
-                  animateRows={true} // Enables row animations
-                  domLayout="autoHeight" // Auto-size the grid to fit content
-                  onGridReady={(params) => {
-                    params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                  }}
-                  localeText={localeText} // Dynamically translated texts
-                />
-              </div>
-            </div>
-          )}
-          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-            <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit
-                ? t("edit") + " " + t("project")
-                : t("add") + " " + t("project")}
-            </ModalHeader>
-            <ModalBody>
-              <Form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  validation.handleSubmit();
-                  return false;
+          <div className="w-100 d-flex gap-2">
+            <AddressStructureForProject onNodeSelect={handleNodeSelect} />
+            <div className="w-100">
+              <AdvancedSearch
+                searchHook={useSearchProjects}
+                textSearchKeys={["prj_name", "prj_code"]}
+                dropdownSearchKeys={[
+                  {
+                    key: "prj_project_category_id",
+                    options: projectCategoryOptions,
+                  },
+                ]}
+                checkboxSearchKeys={[]}
+                Component={CascadingDropdowns}
+                component_params={{
+                  dropdown1name: "prj_location_region_id",
+                  dropdown2name: "prj_location_zone_id",
+                  dropdown3name: "prj_location_woreda_id",
                 }}
-              >
-                <Row>
-                  <Col className="col-md-12 mb-3">
-                    <CascadingDropdowns
-                      validation={validation}
-                      dropdown1name="prj_location_region_id"
-                      dropdown2name="prj_location_zone_id"
-                      dropdown3name="prj_location_woreda_id"
-                      isEdit={isEdit} // Set to true if in edit mode, otherwise false
-                    />
-                  </Col>
-                  <Col className="col-md-12 mb-3">
-                    <Label>{t("prj_location_description")}</Label>
-                    <Input
-                      name="prj_location_description"
-                      type="textarea"
-                      placeholder={t("prj_location_description")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prj_location_description || ""}
-                      invalid={
-                        validation.touched.prj_location_description &&
-                          validation.errors.prj_location_description
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prj_location_description &&
-                      validation.errors.prj_location_description ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prj_location_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("prj_name")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="prj_name"
-                      type="text"
-                      placeholder={t("prj_name")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prj_name || ""}
-                      invalid={
-                        validation.touched.prj_name &&
-                          validation.errors.prj_name
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prj_name &&
-                      validation.errors.prj_name ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prj_name}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("prj_code")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="prj_code"
-                      type="text"
-                      placeholder={t("prj_code")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prj_code || ""}
-                      invalid={
-                        validation.touched.prj_code &&
-                          validation.errors.prj_code
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prj_code &&
-                      validation.errors.prj_code ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prj_code}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("prj_project_category_id")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="prj_project_category_id"
-                      type="select"
-                      className="form-select"
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prj_project_category_id || ""}
-                      invalid={
-                        validation.touched.prj_project_category_id &&
-                          validation.errors.prj_project_category_id
-                          ? true
-                          : false
-                      }
-                    >
-                      <option value={null}>Select Project Category</option>
-                      {projectCategoryOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {t(`${option.label}`)}
-                        </option>
-                      ))}
-                    </Input>
-                    {validation.touched.prj_project_category_id &&
-                      validation.errors.prj_project_category_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prj_project_category_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("prj_total_estimate_budget")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="prj_total_estimate_budget"
-                      type="number"
-                      placeholder={t("prj_total_estimate_budget")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prj_total_estimate_budget || ""}
-                      invalid={
-                        validation.touched.prj_total_estimate_budget &&
-                          validation.errors.prj_total_estimate_budget
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prj_total_estimate_budget &&
-                      validation.errors.prj_total_estimate_budget ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prj_total_estimate_budget}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>{t("prj_total_actual_budget")}</Label>
-                    <Input
-                      name="prj_total_actual_budget"
-                      type="number"
-                      placeholder={t("prj_total_actual_budget")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prj_total_actual_budget || ""}
-                      invalid={
-                        validation.touched.prj_total_actual_budget &&
-                          validation.errors.prj_total_actual_budget
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prj_total_actual_budget &&
-                      validation.errors.prj_total_actual_budget ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prj_total_actual_budget}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                onSearchResult={handleSearchResults}
+                setIsSearchLoading={setIsSearchLoading}
+                setSearchResults={setSearchResults}
+                setShowSearchResult={setShowSearchResult}
+              />
+              {isLoading || isSearchLoading ? (
+                <Spinners top={"top-60"} />
+              ) : (
+                <div
+                  className="ag-theme-alpine"
+                  style={{ height: "100%", width: "100%" }}
+                >
+                  {/* Row for search input and buttons */}
+                  <Row className="mb-3">
+                    <Col sm="12" md="6">
+                      {/* Search Input for  Filter */}
+                      <Input
+                        type="text"
+                        placeholder={t("Search") + "..."}
+                        onChange={(e) => setQuickFilterText(e.target.value)}
+                        className="mb-2"
+                      />
+                    </Col>
+                    <Col sm="12" md="6" className="text-md-end">
+                      <Button color="success" onClick={handleProjectClicks}>
+                        {t("Add New Project")}
+                      </Button>
+                    </Col>
+                  </Row>
 
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("prj_sector_id")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="prj_sector_id"
-                      type="select"
-                      className="form-select"
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prj_sector_id || ""}
-                      invalid={
-                        validation.touched.prj_sector_id &&
-                          validation.errors.prj_sector_id
-                          ? true
-                          : false
+                  {/* AG Grid */}
+                  <div style={{ height: "600px" }}>
+                    <AgGridReact
+                      ref={gridRef}
+                      rowData={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
                       }
-                    >
-                      <option value={null}>Select Sector Information</option>
-                      {sectorInformationOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {t(`${option.label}`)}
-                        </option>
-                      ))}
-                    </Input>
-                    {validation.touched.prj_sector_id &&
-                      validation.errors.prj_sector_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prj_sector_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <FormGroup>
-                      <Label>{t("prj_start_date_gc")}</Label>
-                      <InputGroup>
-                        <Flatpickr
-                          id="DataPicker"
-                          className={`form-control ${validation.touched.prj_start_date_gc &&
-                              validation.errors.prj_start_date_gc
-                              ? "is-invalid"
-                              : ""
-                            }`}
-                          name="prj_start_date_gc"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
-                            enableTime: false,
-                          }}
-                          value={validation.values.prj_start_date_gc || ""}
-                          onChange={(date) => {
-                            const formatedDate = formatDate(date[0]);
-                            validation.setFieldValue(
-                              "prj_start_date_gc",
-                              formatedDate
-                            ); // Set value in Formik
-                          }}
-                          onBlur={validation.handleBlur}
+                      columnDefs={columnDefs}
+                      groupIncludeFooter={true}
+                      groupIncludeTotalFooter={true}
+                      rowSelection="multiple"
+                      enableRangeSelection={true}
+                      enableCharts={true} // Enable charts
+                      chartThemes={chartThemes} // Add custom chart themes
+                      pivotMode={false}
+                      sideBar={sideBar} // Enable and configure sidebar
+                      rowGroupPanelShow="always"
+                      pivotPanelShow="always"
+                      pagination={true}
+                      paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+                      paginationPageSize={10}
+                      quickFilterText={quickFilterText}
+                      onSelectionChanged={onSelectionChanged}
+                      rowHeight={30} // Set the row height here
+                      animateRows={true} // Enables row animations
+                      domLayout="autoHeight" // Auto-size the grid to fit content
+                      onGridReady={(params) => {
+                        params.api.sizeColumnsToFit(); // Size columns to fit the grid width
+                      }}
+                      localeText={localeText} // Dynamically translated texts
+                    />
+                  </div>
+                </div>
+              )}
+              <Modal isOpen={modal} toggle={toggle} className="modal-xl">
+                <ModalHeader toggle={toggle} tag="h4">
+                  {!!isEdit
+                    ? t("edit") + " " + t("project")
+                    : t("add") + " " + t("project")}
+                </ModalHeader>
+                <ModalBody>
+                  <Form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      validation.handleSubmit();
+                      return false;
+                    }}
+                  >
+                    <Row>
+                      <Col className="col-md-12 mb-3">
+                        <CascadingDropdowns
+                          validation={validation}
+                          dropdown1name="prj_location_region_id"
+                          dropdown2name="prj_location_zone_id"
+                          dropdown3name="prj_location_woreda_id"
+                          isEdit={isEdit} // Set to true if in edit mode, otherwise false
                         />
-
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
-                      </InputGroup>
-                      {validation.touched.prj_start_date_gc &&
-                        validation.errors.prj_start_date_gc ? (
-                        <FormFeedback>
-                          {validation.errors.prj_start_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>{t("prj_start_date_plan_gc")}</Label>
-                    <Input
-                      name="prj_start_date_plan_gc"
-                      type="text"
-                      placeholder={t("prj_start_date_plan_gc")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prj_start_date_plan_gc || ""}
-                      invalid={
-                        validation.touched.prj_start_date_plan_gc &&
-                          validation.errors.prj_start_date_plan_gc
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prj_start_date_plan_gc &&
-                      validation.errors.prj_start_date_plan_gc ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prj_start_date_plan_gc}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <FormGroup>
-                      <Label>{t("prj_end_date_actual_gc")}</Label>
-                      <InputGroup>
-                        <Flatpickr
-                          id="DataPicker"
-                          className={`form-control ${validation.touched.prj_end_date_actual_gc &&
-                              validation.errors.prj_end_date_actual_gc
-                              ? "is-invalid"
-                              : ""
-                            }`}
-                          name="prj_end_date_actual_gc"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
-                            enableTime: false,
-                          }}
-                          value={validation.values.prj_end_date_actual_gc || ""}
-                          onChange={(date) => {
-                            const formatedDate = formatDate(date[0]);
-                            validation.setFieldValue(
-                              "prj_end_date_actual_gc",
-                              formatedDate
-                            ); // Set value in Formik
-                          }}
+                      </Col>
+                      <Col className="col-md-12 mb-3">
+                        <Label>{t("prj_location_description")}</Label>
+                        <Input
+                          name="prj_location_description"
+                          type="textarea"
+                          placeholder={t("prj_location_description")}
+                          onChange={validation.handleChange}
                           onBlur={validation.handleBlur}
+                          value={
+                            validation.values.prj_location_description || ""
+                          }
+                          invalid={
+                            validation.touched.prj_location_description &&
+                            validation.errors.prj_location_description
+                              ? true
+                              : false
+                          }
+                          maxLength={20}
                         />
-
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
-                      </InputGroup>
-                      {validation.touched.prj_end_date_actual_gc &&
-                        validation.errors.prj_end_date_actual_gc ? (
-                        <FormFeedback>
-                          {validation.errors.prj_end_date_actual_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>{t("prj_end_date_plan_gc")}</Label>
-                    <Input
-                      name="prj_end_date_plan_gc"
-                      type="text"
-                      placeholder={t("prj_end_date_plan_gc")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prj_end_date_plan_gc || ""}
-                      invalid={
-                        validation.touched.prj_end_date_plan_gc &&
-                          validation.errors.prj_end_date_plan_gc
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prj_end_date_plan_gc &&
-                      validation.errors.prj_end_date_plan_gc ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prj_end_date_plan_gc}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>{t("prj_urban_ben_number")}</Label>
-                    <Input
-                      name="prj_urban_ben_number"
-                      type="number"
-                      placeholder={t("prj_urban_ben_number")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prj_urban_ben_number || ""}
-                      invalid={
-                        validation.touched.prj_urban_ben_number &&
-                          validation.errors.prj_urban_ben_number
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prj_urban_ben_number &&
-                      validation.errors.prj_urban_ben_number ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prj_urban_ben_number}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>{t("prj_rural_ben_number")}</Label>
-                    <Input
-                      name="prj_rural_ben_number"
-                      type="number"
-                      placeholder={t("prj_rural_ben_number")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prj_rural_ben_number || ""}
-                      invalid={
-                        validation.touched.prj_rural_ben_number &&
-                          validation.errors.prj_rural_ben_number
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prj_rural_ben_number &&
-                      validation.errors.prj_rural_ben_number ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prj_rural_ben_number}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prj_outcome")}</Label>
-                    <Input
-                      name="prj_outcome"
-                      type="textarea"
-                      placeholder={t("prj_outcome")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prj_outcome || ""}
-                      invalid={
-                        validation.touched.prj_outcome &&
-                          validation.errors.prj_outcome
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prj_outcome &&
-                      validation.errors.prj_outcome ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prj_outcome}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prj_remark")}</Label>
-                    <Input
-                      name="prj_remark"
-                      type="textarea"
-                      placeholder={t("prj_remark")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prj_remark || ""}
-                      invalid={
-                        validation.touched.prj_remark &&
-                          validation.errors.prj_remark
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prj_remark &&
-                      validation.errors.prj_remark ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prj_remark}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <div className="text-end">
-                      {addProject.isPending || updateProject.isPending ? (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addProject.isPending ||
-                            updateProject.isPending ||
-                            !validation.dirty
+                        {validation.touched.prj_location_description &&
+                        validation.errors.prj_location_description ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.prj_location_description}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
+                      <Col className="col-md-4 mb-3">
+                        <Label>
+                          {t("prj_name")}
+                          <span className="text-danger">*</span>
+                        </Label>
+                        <Input
+                          name="prj_name"
+                          type="text"
+                          placeholder={t("prj_name")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.prj_name || ""}
+                          invalid={
+                            validation.touched.prj_name &&
+                            validation.errors.prj_name
+                              ? true
+                              : false
+                          }
+                          maxLength={20}
+                        />
+                        {validation.touched.prj_name &&
+                        validation.errors.prj_name ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.prj_name}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
+                      <Col className="col-md-4 mb-3">
+                        <Label>
+                          {t("prj_code")}
+                          <span className="text-danger">*</span>
+                        </Label>
+                        <Input
+                          name="prj_code"
+                          type="text"
+                          placeholder={t("prj_code")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.prj_code || ""}
+                          invalid={
+                            validation.touched.prj_code &&
+                            validation.errors.prj_code
+                              ? true
+                              : false
+                          }
+                          maxLength={20}
+                        />
+                        {validation.touched.prj_code &&
+                        validation.errors.prj_code ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.prj_code}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
+                      <Col className="col-md-4 mb-3">
+                        <Label>
+                          {t("prj_project_category_id")}
+                          <span className="text-danger">*</span>
+                        </Label>
+                        <Input
+                          name="prj_project_category_id"
+                          type="select"
+                          className="form-select"
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={
+                            validation.values.prj_project_category_id || ""
+                          }
+                          invalid={
+                            validation.touched.prj_project_category_id &&
+                            validation.errors.prj_project_category_id
+                              ? true
+                              : false
                           }
                         >
-                          <Spinner size={"sm"} color="light" className="me-2" />
-                          {t("Save")}
-                        </Button>
-                      ) : (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addProject.isPending ||
-                            updateProject.isPending ||
-                            !validation.dirty
+                          <option value={null}>Select Project Category</option>
+                          {projectCategoryOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {t(`${option.label}`)}
+                            </option>
+                          ))}
+                        </Input>
+                        {validation.touched.prj_project_category_id &&
+                        validation.errors.prj_project_category_id ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.prj_project_category_id}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
+                      <Col className="col-md-4 mb-3">
+                        <Label>
+                          {t("prj_total_estimate_budget")}
+                          <span className="text-danger">*</span>
+                        </Label>
+                        <Input
+                          name="prj_total_estimate_budget"
+                          type="number"
+                          placeholder={t("prj_total_estimate_budget")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={
+                            validation.values.prj_total_estimate_budget || ""
+                          }
+                          invalid={
+                            validation.touched.prj_total_estimate_budget &&
+                            validation.errors.prj_total_estimate_budget
+                              ? true
+                              : false
+                          }
+                          maxLength={20}
+                        />
+                        {validation.touched.prj_total_estimate_budget &&
+                        validation.errors.prj_total_estimate_budget ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.prj_total_estimate_budget}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
+                      <Col className="col-md-4 mb-3">
+                        <Label>{t("prj_total_actual_budget")}</Label>
+                        <Input
+                          name="prj_total_actual_budget"
+                          type="number"
+                          placeholder={t("prj_total_actual_budget")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={
+                            validation.values.prj_total_actual_budget || ""
+                          }
+                          invalid={
+                            validation.touched.prj_total_actual_budget &&
+                            validation.errors.prj_total_actual_budget
+                              ? true
+                              : false
+                          }
+                          maxLength={20}
+                        />
+                        {validation.touched.prj_total_actual_budget &&
+                        validation.errors.prj_total_actual_budget ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.prj_total_actual_budget}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
+
+                      <Col className="col-md-4 mb-3">
+                        <Label>
+                          {t("prj_sector_id")}
+                          <span className="text-danger">*</span>
+                        </Label>
+                        <Input
+                          name="prj_sector_id"
+                          type="select"
+                          className="form-select"
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.prj_sector_id || ""}
+                          invalid={
+                            validation.touched.prj_sector_id &&
+                            validation.errors.prj_sector_id
+                              ? true
+                              : false
                           }
                         >
-                          {t("Save")}
-                        </Button>
-                      )}
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
-            </ModalBody>
-          </Modal>
+                          <option value={null}>
+                            Select Sector Information
+                          </option>
+                          {sectorInformationOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {t(`${option.label}`)}
+                            </option>
+                          ))}
+                        </Input>
+                        {validation.touched.prj_sector_id &&
+                        validation.errors.prj_sector_id ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.prj_sector_id}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
+                      <Col className="col-md-4 mb-3">
+                        <FormGroup>
+                          <Label>{t("prj_start_date_gc")}</Label>
+                          <InputGroup>
+                            <Flatpickr
+                              id="DataPicker"
+                              className={`form-control ${
+                                validation.touched.prj_start_date_gc &&
+                                validation.errors.prj_start_date_gc
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              name="prj_start_date_gc"
+                              options={{
+                                altInput: true,
+                                altFormat: "Y/m/d",
+                                dateFormat: "Y/m/d",
+                                enableTime: false,
+                              }}
+                              value={validation.values.prj_start_date_gc || ""}
+                              onChange={(date) => {
+                                const formatedDate = formatDate(date[0]);
+                                validation.setFieldValue(
+                                  "prj_start_date_gc",
+                                  formatedDate
+                                ); // Set value in Formik
+                              }}
+                              onBlur={validation.handleBlur}
+                            />
+
+                            <Button
+                              type="button"
+                              className="btn btn-outline-secondary"
+                              disabled
+                            >
+                              <i
+                                className="fa fa-calendar"
+                                aria-hidden="true"
+                              />
+                            </Button>
+                          </InputGroup>
+                          {validation.touched.prj_start_date_gc &&
+                          validation.errors.prj_start_date_gc ? (
+                            <FormFeedback>
+                              {validation.errors.prj_start_date_gc}
+                            </FormFeedback>
+                          ) : null}
+                        </FormGroup>
+                      </Col>
+                      <Col className="col-md-4 mb-3">
+                        <Label>{t("prj_start_date_plan_gc")}</Label>
+                        <Input
+                          name="prj_start_date_plan_gc"
+                          type="text"
+                          placeholder={t("prj_start_date_plan_gc")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.prj_start_date_plan_gc || ""}
+                          invalid={
+                            validation.touched.prj_start_date_plan_gc &&
+                            validation.errors.prj_start_date_plan_gc
+                              ? true
+                              : false
+                          }
+                          maxLength={20}
+                        />
+                        {validation.touched.prj_start_date_plan_gc &&
+                        validation.errors.prj_start_date_plan_gc ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.prj_start_date_plan_gc}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
+                      <Col className="col-md-4 mb-3">
+                        <FormGroup>
+                          <Label>{t("prj_end_date_actual_gc")}</Label>
+                          <InputGroup>
+                            <Flatpickr
+                              id="DataPicker"
+                              className={`form-control ${
+                                validation.touched.prj_end_date_actual_gc &&
+                                validation.errors.prj_end_date_actual_gc
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              name="prj_end_date_actual_gc"
+                              options={{
+                                altInput: true,
+                                altFormat: "Y/m/d",
+                                dateFormat: "Y/m/d",
+                                enableTime: false,
+                              }}
+                              value={
+                                validation.values.prj_end_date_actual_gc || ""
+                              }
+                              onChange={(date) => {
+                                const formatedDate = formatDate(date[0]);
+                                validation.setFieldValue(
+                                  "prj_end_date_actual_gc",
+                                  formatedDate
+                                ); // Set value in Formik
+                              }}
+                              onBlur={validation.handleBlur}
+                            />
+
+                            <Button
+                              type="button"
+                              className="btn btn-outline-secondary"
+                              disabled
+                            >
+                              <i
+                                className="fa fa-calendar"
+                                aria-hidden="true"
+                              />
+                            </Button>
+                          </InputGroup>
+                          {validation.touched.prj_end_date_actual_gc &&
+                          validation.errors.prj_end_date_actual_gc ? (
+                            <FormFeedback>
+                              {validation.errors.prj_end_date_actual_gc}
+                            </FormFeedback>
+                          ) : null}
+                        </FormGroup>
+                      </Col>
+                      <Col className="col-md-4 mb-3">
+                        <Label>{t("prj_end_date_plan_gc")}</Label>
+                        <Input
+                          name="prj_end_date_plan_gc"
+                          type="text"
+                          placeholder={t("prj_end_date_plan_gc")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.prj_end_date_plan_gc || ""}
+                          invalid={
+                            validation.touched.prj_end_date_plan_gc &&
+                            validation.errors.prj_end_date_plan_gc
+                              ? true
+                              : false
+                          }
+                          maxLength={20}
+                        />
+                        {validation.touched.prj_end_date_plan_gc &&
+                        validation.errors.prj_end_date_plan_gc ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.prj_end_date_plan_gc}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
+                      <Col className="col-md-4 mb-3">
+                        <Label>{t("prj_urban_ben_number")}</Label>
+                        <Input
+                          name="prj_urban_ben_number"
+                          type="number"
+                          placeholder={t("prj_urban_ben_number")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.prj_urban_ben_number || ""}
+                          invalid={
+                            validation.touched.prj_urban_ben_number &&
+                            validation.errors.prj_urban_ben_number
+                              ? true
+                              : false
+                          }
+                          maxLength={20}
+                        />
+                        {validation.touched.prj_urban_ben_number &&
+                        validation.errors.prj_urban_ben_number ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.prj_urban_ben_number}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
+                      <Col className="col-md-4 mb-3">
+                        <Label>{t("prj_rural_ben_number")}</Label>
+                        <Input
+                          name="prj_rural_ben_number"
+                          type="number"
+                          placeholder={t("prj_rural_ben_number")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.prj_rural_ben_number || ""}
+                          invalid={
+                            validation.touched.prj_rural_ben_number &&
+                            validation.errors.prj_rural_ben_number
+                              ? true
+                              : false
+                          }
+                          maxLength={20}
+                        />
+                        {validation.touched.prj_rural_ben_number &&
+                        validation.errors.prj_rural_ben_number ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.prj_rural_ben_number}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
+                      <Col className="col-md-6 mb-3">
+                        <Label>{t("prj_outcome")}</Label>
+                        <Input
+                          name="prj_outcome"
+                          type="textarea"
+                          placeholder={t("prj_outcome")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.prj_outcome || ""}
+                          invalid={
+                            validation.touched.prj_outcome &&
+                            validation.errors.prj_outcome
+                              ? true
+                              : false
+                          }
+                          maxLength={20}
+                        />
+                        {validation.touched.prj_outcome &&
+                        validation.errors.prj_outcome ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.prj_outcome}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
+                      <Col className="col-md-6 mb-3">
+                        <Label>{t("prj_remark")}</Label>
+                        <Input
+                          name="prj_remark"
+                          type="textarea"
+                          placeholder={t("prj_remark")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.prj_remark || ""}
+                          invalid={
+                            validation.touched.prj_remark &&
+                            validation.errors.prj_remark
+                              ? true
+                              : false
+                          }
+                          maxLength={20}
+                        />
+                        {validation.touched.prj_remark &&
+                        validation.errors.prj_remark ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.prj_remark}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <div className="text-end">
+                          {addProject.isPending || updateProject.isPending ? (
+                            <Button
+                              color="success"
+                              type="submit"
+                              className="save-user"
+                              disabled={
+                                addProject.isPending ||
+                                updateProject.isPending ||
+                                !validation.dirty
+                              }
+                            >
+                              <Spinner
+                                size={"sm"}
+                                color="light"
+                                className="me-2"
+                              />
+                              {t("Save")}
+                            </Button>
+                          ) : (
+                            <Button
+                              color="success"
+                              type="submit"
+                              className="save-user"
+                              disabled={
+                                addProject.isPending ||
+                                updateProject.isPending ||
+                                !validation.dirty
+                              }
+                            >
+                              {t("Save")}
+                            </Button>
+                          )}
+                        </div>
+                      </Col>
+                    </Row>
+                  </Form>
+                </ModalBody>
+              </Modal>
+            </div>
+          </div>
         </div>
       </div>
 
