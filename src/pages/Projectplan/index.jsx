@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
-import { Link ,useLocation} from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { isEmpty, update } from "lodash";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
@@ -58,18 +58,15 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectPlanModel = () => {
-
-  const location = useLocation(); 
-  const { projectData } = location.state || {}; 
-  console.log("project data",projectData);
+  const location = useLocation();
+  const { projectData } = location.state || {};
+  console.log("project data", projectData);
 
   // Accessing prj_code from the URL (if needed)
-  const prjCode = location.pathname.split('/')[2]; 
-
-
+  const prjCode = location.pathname.split("/")[2];
 
   //meta title
-  document.title = " ProjectPlan" + {prjCode};
+  document.title = " ProjectPlan" + { prjCode };
 
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
@@ -81,10 +78,10 @@ const ProjectPlanModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const params = { pld_project_id: prjCode };  // Replace with dynamic value if needed
-  
-  const { data, isLoading, error, isError, refetch } = useFetchProjectPlans(params);
-  
+  const params = { pld_project_id: prjCode }; // Replace with dynamic value if needed
+
+  const { data, isLoading, error, isError, refetch } =
+    useFetchProjectPlans(params);
 
   const addProjectPlan = useAddProjectPlan();
   const updateProjectPlan = useUpdateProjectPlan();
@@ -211,7 +208,6 @@ const ProjectPlanModel = () => {
   const [transaction, setTransaction] = useState({});
   // const [projectPlanselected,setProjectPlanSelected]=useState({});
   const [projectPlanSelected, setProjectPlanSelected] = useState(null);
-
 
   const toggleViewModal = () => setModal1(!modal1);
 
@@ -431,7 +427,7 @@ const ProjectPlanModel = () => {
               onClick={() => {
                 const data = cellProps.row.original;
                 // toggleViewModal(data);
-                console.log("selected project plan",data)
+                console.log("selected project plan", data);
                 setProjectPlanSelected(cellProps.row.original);
               }}
             >
@@ -455,7 +451,7 @@ const ProjectPlanModel = () => {
           );
         },
       },
-      
+
       {
         header: t("view_gannt"),
         enableColumnFilter: false,
@@ -469,7 +465,7 @@ const ProjectPlanModel = () => {
               onClick={() => {
                 const data = cellProps.row.original;
                 // toggleViewModal(data);
-                console.log("selected project plan",data)
+                console.log("selected project plan", data);
                 setProjectPlanSelected(cellProps.row.original);
               }}
             >
@@ -532,8 +528,12 @@ const ProjectPlanModel = () => {
       });
     }
 
-    return projectPlanSelected?baseColumnSelected: baseColumns;
+    return projectPlanSelected ? baseColumnSelected : baseColumns;
   }, [handleProjectPlanClick, toggleViewModal, onClickDelete]);
+
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
 
   return (
     <React.Fragment>
@@ -587,27 +587,25 @@ const ProjectPlanModel = () => {
           ) : (
             <Row>
               {/* TableContainer for displaying data */}
-              <Col lg={projectPlanSelected?4:12}>
-              <TableContainer
-                columns={columns}
-                data={
-                  showSearchResult
-                    ? searchResults?.data
-                    : data?.data || []
-                }
-                isGlobalFilter={true}
-                isAddButton={true}
-                isCustomPageSize={true}
-                handleUserClick={handleProjectPlanClicks}
-                isPagination={true}
-                SearchPlaceholder={`${26} ${t("Results")}...`}
-                buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                buttonName={`${t("add")} ${t("project_plan")}`}
-                tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                theadClass="table-light"
-                pagination="pagination"
-                paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-              />
+              <Col lg={projectPlanSelected ? 4 : 12}>
+                <TableContainer
+                  columns={columns}
+                  data={
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
+                  isGlobalFilter={true}
+                  isAddButton={true}
+                  isCustomPageSize={true}
+                  handleUserClick={handleProjectPlanClicks}
+                  isPagination={true}
+                  SearchPlaceholder={`${26} ${t("Results")}...`}
+                  buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                  buttonName={`${t("add")} ${t("project_plan")}`}
+                  tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                  theadClass="table-light"
+                  pagination="pagination"
+                  paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                />
               </Col>
 
               {/* Conditionally render ProjectGantt or an alternative card */}
@@ -616,14 +614,13 @@ const ProjectPlanModel = () => {
                   <ProjectGannt data={projectPlanSelected} />
                 </Col>
               ) : (
-                <Col lg={projectPlanSelected?0:0}>
+                <Col lg={projectPlanSelected ? 0 : 0}>
                   <Card>
                     <p>Gannt chart</p>
                   </Card>
                 </Col>
               )}
             </Row>
-
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">

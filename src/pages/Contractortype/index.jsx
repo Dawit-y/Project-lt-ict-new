@@ -376,6 +376,10 @@ const ContractorTypeModel = () => {
     return baseColumns;
   }, [handleContractorTypeClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <ContractorTypeModal

@@ -12,24 +12,12 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 
 import {
-  getBudgetRequest as onGetBudgetRequest,
-  addBudgetRequest as onAddBudgetRequest,
-  updateBudgetRequest as onUpdateBudgetRequest,
-  deleteBudgetRequest as onDeleteBudgetRequest,
-} from "../../store/budgetrequest/actions";
-import { getBudgetYear } from "../../store/budgetyear/actions";
-
-import {
   useFetchBudgetRequests,
   useAddBudgetRequest,
   useUpdateBudgetRequest,
   useDeleteBudgetRequest,
 } from "../../queries/budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
-
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
 import BudgetRequestModal from "./BudgetRequestModal";
 import { useTranslation } from "react-i18next";
 
@@ -55,6 +43,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 import { formatDate } from "../../utils/commonMethods";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler"
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -86,7 +75,8 @@ const BudgetRequestModel = (props) => {
   const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
   const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
 
-  const { data, isLoading } = useFetchBudgetRequests(params);
+  const { data, isLoading, isError, error, refetch } =
+    useFetchBudgetRequests(params);
   const { data: budgetYearData } = useFetchBudgetYears();
 
   const addBudgetRequest = useAddBudgetRequest();
@@ -440,6 +430,10 @@ const BudgetRequestModel = (props) => {
 
     return baseColumns;
   }, [handleBudgetRequestClick, toggleViewModal, onClickDelete]);
+
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
 
   return (
     <React.Fragment>

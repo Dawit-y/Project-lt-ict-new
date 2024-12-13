@@ -389,6 +389,10 @@ const BudgetSourceModel = () => {
     return baseColumns;
   }, [handleBudgetSourceClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <BudgetSourceModal

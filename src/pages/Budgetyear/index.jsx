@@ -355,6 +355,10 @@ const BudgetYearModel = () => {
     return baseColumns;
   }, [handleBudgetYearClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <BudgetYearModal

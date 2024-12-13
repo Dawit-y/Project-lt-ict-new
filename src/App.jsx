@@ -26,6 +26,7 @@ import Spinners from "./components/Common/Spinner";
 import VerticalLayout from "./components/VerticalLayout/";
 import HorizontalLayout from "./components/HorizontalLayout/";
 import NonAuthLayout from "./components/NonAuthLayout";
+import ErrorBoundary from "./components/Common/ErrorBoundary";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -86,13 +87,21 @@ const App = (props) => {
             element={
               <NonAuthLayout>
                 <SessionTimeoutProvider>
-                  <Suspense fallback={<Spinners />}>{route.component}</Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<Spinners />}>
+                      {route.component}
+                    </Suspense>
+                  </ErrorBoundary>
                 </SessionTimeoutProvider>
               </NonAuthLayout>
             }
             key={idx}
             exact={true}
-            errorElement={<ErrorElement />}
+            errorElement={
+              <NonAuthLayout>
+                <ErrorElement />
+              </NonAuthLayout>
+            }
           />
         ))}
 
@@ -103,16 +112,22 @@ const App = (props) => {
               <Authmiddleware>
                 <SessionTimeoutProvider>
                   <Layout>
-                    <Suspense fallback={<Spinners />}>
-                      {route.component}
-                    </Suspense>
+                    <ErrorBoundary>
+                      <Suspense fallback={<Spinners />}>
+                        {route.component}
+                      </Suspense>
+                    </ErrorBoundary>
                   </Layout>
                 </SessionTimeoutProvider>
               </Authmiddleware>
             }
             key={idx}
             exact={true}
-            errorElement={<ErrorElement />}
+            errorElement={
+              <Layout>
+                <ErrorElement />
+              </Layout>
+            }
           />
         ))}
         <Route path="*" element={<NotFound />} />

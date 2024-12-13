@@ -393,6 +393,10 @@ const ProjectCategoryModel = () => {
     return baseColumns;
   }, [handleProjectCategoryClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <ProjectCategoryModal

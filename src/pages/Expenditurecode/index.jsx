@@ -362,6 +362,10 @@ const ExpenditureCodeModel = () => {
     return baseColumns;
   }, [handleExpenditureCodeClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <ExpenditureCodeModal

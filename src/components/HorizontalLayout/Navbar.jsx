@@ -10,7 +10,6 @@ import { withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 
 const Navbar = (props) => {
-  
   const [sidedata, setSidedata] = useState([]);
 
   // Cache key for storing sidedata in localStorage
@@ -28,14 +27,17 @@ const Navbar = (props) => {
           setSidedata(JSON.parse(cachedData));
         } else {
           // Fetch data from API if not cached
-          const storedUser = JSON.parse(localStorage.getItem('authUser'));
+          const storedUser = JSON.parse(localStorage.getItem("authUser"));
           const response = await fetch(
             `${import.meta.env.VITE_BASE_API_URL}menus`,
             {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                Authorization: storedUser.authorization.type+' '+storedUser.authorization.token
+                Authorization:
+                  storedUser.authorization.type +
+                  " " +
+                  storedUser.authorization.token,
               },
               body: JSON.stringify({}),
             }
@@ -155,7 +157,7 @@ const Navbar = (props) => {
             >
               <ul className="navbar-nav">
                 {sidedata.map((menu, index) => (
-                  <li className="nav-item dropdown">
+                  <li key={index} className="nav-item dropdown">
                     <div className="nav-link  arrow-none">
                       <i className={`${menu.icon} me-2`}></i>
                       {props.t(menu.title)} {props.menuOpen}
@@ -165,7 +167,11 @@ const Navbar = (props) => {
                       className={classname("dropdown-menu", { show: users })}
                     >
                       {menu.submenu.map((submenu, index) => (
-                        <Link to={submenu.path} className="dropdown-item">
+                        <Link
+                          key={index}
+                          to={submenu.path}
+                          className="dropdown-item"
+                        >
                           {props.t(submenu.name)}
                         </Link>
                       ))}

@@ -82,7 +82,7 @@ const UsersModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useState([]);
+  const { data, isLoading, error, isError, refetch } = useFetchUserss();
   const { data: sectorInformationData } = useFetchSectorInformations();
   const sectorInformationOptions = createSelectOptions(
     sectorInformationData?.data || [],
@@ -494,7 +494,7 @@ const UsersModel = () => {
     if (
       /*data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable*/
-      1==1
+      1 == 1
     ) {
       baseColumns.push({
         headerName: t("Action"),
@@ -586,6 +586,10 @@ const UsersModel = () => {
       gridRef.current.api.setRowData(selectedRows);
     }
   };
+
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
   return (
     <React.Fragment>
       <UsersModal

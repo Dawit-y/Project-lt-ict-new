@@ -419,6 +419,10 @@ const ProjectStatusModel = () => {
     return baseColumns;
   }, [handleProjectStatusClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <ProjectStatusModal
