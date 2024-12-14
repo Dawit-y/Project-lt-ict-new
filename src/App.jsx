@@ -54,29 +54,42 @@ const App = (props) => {
     }
   }, [isOnline]);
 
+
   const LayoutProperties = createSelector(
     (state) => state.Layout,
     (layout) => ({
       layoutType: layout.layoutType,
     })
   );
+ 
 
-  const { layoutType } = useSelector(LayoutProperties);
+const { layoutType } = useSelector(LayoutProperties);
+  
 
-  function getLayout(layoutType) {
-    let layoutCls = VerticalLayout;
+function getLayout(layoutType) {
+
+  // Check if layoutType exists in localStorage
+  const storedLayoutType = localStorage.getItem('layoutType');
+  let layoutCls = VerticalLayout;
+
+  if (storedLayoutType) {
+    layoutCls = storedLayoutType === 'horizontal' ? HorizontalLayout : VerticalLayout;
+  } else {
     switch (layoutType) {
-      case "horizontal":
+      case 'horizontal':
         layoutCls = HorizontalLayout;
         break;
       default:
         layoutCls = VerticalLayout;
         break;
     }
-    return layoutCls;
   }
 
-  const Layout = getLayout(layoutType);
+  return layoutCls;
+}
+
+const Layout = getLayout(layoutType);
+
 
   const router = createBrowserRouter(
     createRoutesFromElements(
