@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Collapse } from "reactstrap";
 import { FaChevronDown, FaChevronRight } from "react-icons/fa";
 import { HiOutlineFolder } from "react-icons/hi";
@@ -6,7 +6,15 @@ import { HiOutlineFolder } from "react-icons/hi";
 const TreeNode = ({ node, onNodeClick, level = 0 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => setIsExpanded(!isExpanded);
+  const nodeRef = useRef();
 
+  const handleClick = () => {
+    document.querySelectorAll(".tree-node").forEach((el) => {
+      el.classList.remove("bg-info-subtle");
+    });
+    nodeRef.current.classList.add("bg-info-subtle");
+    onNodeClick(node);
+  };
   return (
     <div
       className="position-relative ms-3 py-1"
@@ -40,14 +48,14 @@ const TreeNode = ({ node, onNodeClick, level = 0 }) => {
 
       {/* Tree node display */}
       <div
+        ref={nodeRef}
         onClick={() => {
           toggleExpand();
           onNodeClick(node);
+          handleClick();
         }}
         onDoubleClick={toggleExpand}
-        className={`d-flex align-items-center position-relative p-2 rounded ${
-          node.selected ? "bg-light shadow" : "bg-transparent"
-        }`}
+        className={`tree-node d-flex align-items-center position-relative p-2 rounded`}
         style={{
           cursor: "pointer",
           transition: "background-color 0.2s ease-out, box-shadow 0.3s",

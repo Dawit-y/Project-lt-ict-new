@@ -23,13 +23,15 @@ const AdvancedSearch = ({
   textSearchKeys,
   dropdownSearchKeys,
   checkboxSearchKeys,
+  dateSearchKeys,
   Component,
   component_params = {},
+  additionalParams,
+  setAdditionalParams,
   onSearchResult,
   setIsSearchLoading,
   setSearchResults,
   setShowSearchResult,
-  dateSearchKeys,
 }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -81,6 +83,7 @@ const AdvancedSearch = ({
 
     const combinedParams = {
       ...params,
+      ...(additionalParams && additionalParams),
       ...transformedValues,
     };
 
@@ -120,6 +123,9 @@ const AdvancedSearch = ({
     if (flatpickrEndRef.current) {
       flatpickrEndRef.current.flatpickr.clear();
     }
+    if (setAdditionalParams) {
+      setAdditionalParams({});
+    }
   };
   const isButtonDisabled = () => {
     // Check if params have any valid values
@@ -138,12 +144,20 @@ const AdvancedSearch = ({
       return value != null && value !== "";
     };
 
-    return !(hasParamsValue || hasComponentValue());
+    const hasAdditionalParamsValue = () => {
+      const firstKey = Object.keys(additionalParams)[0];
+      if (!firstKey) return false;
+      const value = additionalParams[firstKey];
+      return value != null && value !== "";
+    };
+
+    return !(
+      hasParamsValue ||
+      hasComponentValue() ||
+      hasAdditionalParamsValue()
+    );
   };
-  const [selectedDate, setSelectedDate] = useState(null);
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-  };
+
   return (
     <React.Fragment>
       <Row>

@@ -9,15 +9,15 @@ import {
 const PROJECT_QUERY_KEY = ["project"];
 
 // Fetch project
-export const useFetchProjects = (projectParams = {}) => {
+export const useFetchProjects = () => {
   return useQuery({
-    queryKey: [...PROJECT_QUERY_KEY, "fetch", projectParams],
-    queryFn: () => getProject(projectParams),
+    queryKey: PROJECT_QUERY_KEY,
+    queryFn: () => getProject(),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: !!projectParams?.prj_location_region_id,
+    enabled: false,
   });
 };
 

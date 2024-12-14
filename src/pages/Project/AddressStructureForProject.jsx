@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { post } from "../../helpers/api_Lists";
 import { useQuery } from "@tanstack/react-query";
 import TreeNode from "../AddressTreeStructure/TreeNode";
@@ -58,28 +58,34 @@ const buildTree = (data) => {
   return result;
 };
 
-const AddressStructureForProject = ({ onNodeSelect }) => {
-  const [selectedNodeId, setSelectedNodeId] = useState(null);
+const AddressStructureForProject = ({ onNodeSelect, setIsAddressLoading }) => {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["address_structure"],
     queryFn: getAddress,
   });
 
+  useEffect(() => {
+    setIsAddressLoading(isLoading);
+  }, [isLoading, setIsAddressLoading]);
+
   if (isLoading) {
-    return <div>Loading address structure...</div>;
+    return (
+      <div className="w-20 h-100 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm">
+        <h4 className="mb-2 text-secondary">Address Structures</h4>
+        <hr className="text-dark" />
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   if (isError) {
-    return <div>Error fetching address structure: {error.message}</div>;
+    return <div>Error fetching address structure</div>;
   }
 
   const treeData = buildTree(data?.data);
 
   return (
-    <div
-      className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
-      style={{ flexBasis: "30%", maxWidth: "30%" }}
-    >
+    <div className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm">
       <h4 className="mb-2 text-secondary">Address Structures</h4>
       <hr className="text-dark" />
       {treeData.length > 0 ? (

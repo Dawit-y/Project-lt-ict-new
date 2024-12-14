@@ -92,18 +92,14 @@ const ProjectModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
+
+  const [projectParams, setProjectParams] = useState({});
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
+  const [isAddressLoading, setIsAddressLoading] = useState(false)
 
-  const projectParams = {
-    ...(prjLocationRegionId && { prj_location_region_id: prjLocationRegionId }),
-    ...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
-    ...(prjLocationWoredaId && { prj_location_woreda_id: prjLocationWoredaId }),
-  };
-
-  const { data, isLoading, error, isError, refetch } =
-    useFetchProjects(projectParams);
+  const { data, isLoading, error, isError, refetch } = useFetchProjects();
   const { data: projectCategoryData } = useFetchProjectCategorys();
   const projectCategoryOptions = createSelectOptions(
     projectCategoryData?.data || [],
@@ -374,12 +370,26 @@ const ProjectModel = () => {
   useEffect(() => {
     setProject(data);
   }, [data]);
+
   useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setProject(data);
       setIsEdit(false);
     }
   }, [data]);
+
+  useEffect(() => {
+    setProjectParams({
+      ...(prjLocationRegionId && {
+        prj_location_region_id: prjLocationRegionId,
+      }),
+      ...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
+      ...(prjLocationWoredaId && {
+        prj_location_woreda_id: prjLocationWoredaId,
+      }),
+    });
+  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
+
   const toggle = () => {
     if (modal) {
       setModal(false);
@@ -820,10 +830,10 @@ const ProjectModel = () => {
         isLoading={deleteProject.isPending}
       />
       <div className="page-content">
-        <div className="container-fluid">
+        <div>
           <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
           <div className="w-100 d-flex gap-2">
-            <AddressStructureForProject onNodeSelect={handleNodeSelect} />
+            <AddressStructureForProject onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />
             <div className="w-100">
               <AdvancedSearch
                 searchHook={useSearchProjects}
@@ -841,12 +851,14 @@ const ProjectModel = () => {
                   dropdown2name: "prj_location_zone_id",
                   dropdown3name: "prj_location_woreda_id",
                 }}
+                additionalParams={projectParams}
+                setAdditionalParams={setProjectParams}
                 onSearchResult={handleSearchResults}
                 setIsSearchLoading={setIsSearchLoading}
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
               />
-              {isLoading || isSearchLoading ? (
+              {isLoading || isSearchLoading || isAddressLoading ? (
                 <Spinners top={"top-60"} />
               ) : (
                 <div
