@@ -8,14 +8,14 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-# RUN npm install --legacy-peer-deps
+ RUN npm install --legacy-peer-deps
 
 # Copy the rest of the source code
 COPY . .
 
  
 # Build the application
-#RUN npm run build
+RUN npm run build
 
 # Stage 2: Serve the React application with Nginx
 FROM nginx:alpine
@@ -24,7 +24,7 @@ FROM nginx:alpine
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy the build output from the build stage
-COPY --from=build /dist /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html
 
 # Copy custom Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
