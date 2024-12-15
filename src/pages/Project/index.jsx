@@ -97,7 +97,7 @@ const ProjectModel = () => {
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
-  const [isAddressLoading, setIsAddressLoading] = useState(false)
+  const [isAddressLoading, setIsAddressLoading] = useState(false);
 
   const { data, isLoading, error, isError, refetch } = useFetchProjects();
   const { data: projectCategoryData } = useFetchProjectCategorys();
@@ -409,6 +409,9 @@ const ProjectModel = () => {
       setPrjLocationWoredaId(null); // Clear dependent state
     } else if (node.level === "woreda") {
       setPrjLocationWoredaId(node.id);
+    }
+    if (showSearchResult) {
+      setShowSearchResult(false);
     }
   };
 
@@ -833,7 +836,10 @@ const ProjectModel = () => {
         <div>
           <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
           <div className="w-100 d-flex gap-2">
-            <AddressStructureForProject onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />
+            <AddressStructureForProject
+              onNodeSelect={handleNodeSelect}
+              setIsAddressLoading={setIsAddressLoading}
+            />
             <div className="w-100">
               <AdvancedSearch
                 searchHook={useSearchProjects}

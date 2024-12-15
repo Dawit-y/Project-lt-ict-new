@@ -266,7 +266,7 @@ const AdvancedSearch = ({
                 </Row>
               </Col>
               <Col xxl={3} lg={3}>
-                <Col xxl={12} lg={12}>
+                <Row xxl={12} lg={12}>
                   <div className="position-relative h-100 hstack gap-3 pull-right">
                     <button
                       type="button"
@@ -303,7 +303,7 @@ const AdvancedSearch = ({
                       </a>
                     )}
                   </div>
-                </Col>
+                </Row>
               </Col>
               <Collapse isOpen={isOpen} id="collapseExample">
                 <div>

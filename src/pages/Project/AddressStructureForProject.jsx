@@ -70,7 +70,10 @@ const AddressStructureForProject = ({ onNodeSelect, setIsAddressLoading }) => {
 
   if (isLoading) {
     return (
-      <div className="w-20 h-100 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm">
+      <div
+        style={{ height: "400px" }}
+        className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
+      >
         <h4 className="mb-2 text-secondary">Address Structures</h4>
         <hr className="text-dark" />
         <p>Loading...</p>
