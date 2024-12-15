@@ -14,7 +14,7 @@ COPY package*.json ./
 COPY . .
 
 # Copy the .env file
-COPY dev-frontend.env /dist/.env
+COPY  /home/testthree/pms_files/dev-frontend.env .env
 
 # Build the application
 #RUN npm run build
