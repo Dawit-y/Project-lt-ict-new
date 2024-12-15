@@ -16,7 +16,7 @@ import {
   useSearchProjects,
 } from "../../queries/project_query";
 import Spinners from "../../components/Common/Spinner";
-
+import AddressStructureForProject from "../Project/AddressStructureForProject";
 const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 
 const ProjectsLocation = () => {
@@ -31,8 +31,12 @@ const ProjectsLocation = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
   const [projectCategoryOptions, setProjectCategoryOptions] = useState([]);
-
-  const { data, isLoading, error, isError } = useFetchProjects();
+  const [projectParams, setProjectParams] = useState({});
+  const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
+  const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
+  const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
+  const [isAddressLoading, setIsAddressLoading] = useState(false);
+ const { data, isLoading, error, isError, refetch } = useState("");
   const { t } = useTranslation();
 
   const parseGeoLocation = (geoLocation) => {
@@ -75,14 +79,39 @@ const ProjectsLocation = () => {
     };
     fetchProjectCategory();
   }, []);
-
+useEffect(() => {
+    setProjectParams({
+      ...(prjLocationRegionId && {
+        prj_location_region_id: prjLocationRegionId,
+      }),
+      ...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
+      ...(prjLocationWoredaId && {
+        prj_location_woreda_id: prjLocationWoredaId,
+      }),
+    });
+  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
+   const handleNodeSelect = (node) => {
+    if (node.level === "region") {
+      setPrjLocationRegionId(node.id);
+      setPrjLocationZoneId(null); // Clear dependent states
+      setPrjLocationWoredaId(null);
+    } else if (node.level === "zone") {
+      setPrjLocationZoneId(node.id);
+      setPrjLocationWoredaId(null); // Clear dependent state
+    } else if (node.level === "woreda") {
+      setPrjLocationWoredaId(node.id);
+    }
+  };
   return (
     <div className="page-content">
-      <div className="container-fluid" style={{ position: "relative" }}>
+      <div className="" style={{ position: "relative" }}>
         <Breadcrumb
           title={t("projects_location")}
           breadcrumbItem={t("projects_location")}
         />
+        <div className="w-100 d-flex gap-2">
+            <AddressStructureForProject onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />
+            <div className="w-100">
         <AdvancedSearch
           searchHook={useSearchProjects}
           textSearchKeys={["prj_name", "prj_code"]}
@@ -92,12 +121,8 @@ const ProjectsLocation = () => {
               options: projectCategoryOptions,
             },
           ]}
-          Component={CascadingDropdowns}
-          component_params={{
-            dropdown1name: "prj_location_region_id",
-            dropdown2name: "prj_location_zone_id",
-            dropdown3name: "prj_location_woreda_id",
-          }}
+           additionalParams={projectParams}
+            setAdditionalParams={setProjectParams}
           onSearchResult={handleSearchResults}
           setIsSearchLoading={setIsSearchLoading}
           setSearchResults={setSearchResults}
@@ -162,6 +187,8 @@ const ProjectsLocation = () => {
           </div>
         )}
       </div>
+    </div>
+    </div>
     </div>
   );
 };

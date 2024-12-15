@@ -135,8 +135,8 @@ const PaymentAnalysis = ({ data }) => {
 
   return (
     <React.Fragment>
-      <Row className="justify-content-center mb-5">
-        <Col xl="10" lg="9" md="12">
+      <Row className="justify-content-center mb-5 mt-2">
+        <Col xl="12" lg="12" md="12">
           <Card>
             <CardBody>
               <div className="float-end">

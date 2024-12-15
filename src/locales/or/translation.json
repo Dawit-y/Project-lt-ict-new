@@ -834,5 +834,9 @@
     "pivotMode": "Modii Pivot",
     "pivotColumnGroupTotals": "Waliigala Gabatee fi Pivot",
     "pivotColumnGroupFilterTotals": "Waliigala Gabatee fi Haaxxa'aa",
-    "export": "alergii"
+    "export": "alergii",
+    "menu_lookup":"Yomeessa",
+"menu_project":"Pirojektii",
+"menu_project_detail":"Odeeffannoo Pirojektii",
+"menu_user_admin":"User Admin"
 }

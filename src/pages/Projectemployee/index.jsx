@@ -26,7 +26,8 @@ import { useTranslation } from "react-i18next";
 
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
-
+import "flatpickr/dist/themes/material_blue.css";
+import Flatpickr from "react-flatpickr";
 import {
   Button,
   Col,
@@ -43,12 +44,13 @@ import {
   CardBody,
   FormGroup,
   Badge,
+  InputGroup
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-
+import { formatDate } from "../../utils/commonMethods";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -164,14 +166,14 @@ const ProjectEmployeeModel = (props) => {
       emp_email: Yup.string().required(t("emp_email")),
       emp_phone_num: Yup.string().required(t("emp_phone_num")),
       emp_role: Yup.string().required(t("emp_role")),
-      emp_project_id: Yup.string().required(t("emp_project_id")),
-      emp_start_date_ec: Yup.string().required(t("emp_start_date_ec")),
+      //emp_project_id: Yup.string().required(t("emp_project_id")),
+      //emp_start_date_ec: Yup.string().required(t("emp_start_date_ec")),
       emp_start_date_gc: Yup.string().required(t("emp_start_date_gc")),
-      emp_end_date_ec: Yup.string().required(t("emp_end_date_ec")),
-      emp_end_date_gc: Yup.string().required(t("emp_end_date_gc")),
-      emp_address: Yup.string().required(t("emp_address")),
-      emp_description: Yup.string().required(t("emp_description")),
-      emp_current_status: Yup.string().required(t("emp_current_status")),
+     // emp_end_date_ec: Yup.string().required(t("emp_end_date_ec")),
+      //emp_end_date_gc: Yup.string().required(t("emp_end_date_gc")),
+      //emp_address: Yup.string().required(t("emp_address")),
+      //emp_description: Yup.string().required(t("emp_description")),
+      //emp_current_status: Yup.string().required(t("emp_current_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -184,7 +186,7 @@ const ProjectEmployeeModel = (props) => {
           emp_email: values.emp_email,
           emp_phone_num: values.emp_phone_num,
           emp_role: values.emp_role,
-          emp_project_id: values.emp_project_id,
+          //emp_project_id: values.emp_project_id,
           emp_start_date_ec: values.emp_start_date_ec,
           emp_start_date_gc: values.emp_start_date_gc,
           emp_end_date_ec: values.emp_end_date_ec,
@@ -206,7 +208,7 @@ const ProjectEmployeeModel = (props) => {
           emp_email: values.emp_email,
           emp_phone_num: values.emp_phone_num,
           emp_role: values.emp_role,
-          emp_project_id: values.emp_project_id,
+          emp_project_id: passedId,
           emp_start_date_ec: values.emp_start_date_ec,
           emp_start_date_gc: values.emp_start_date_gc,
           emp_end_date_ec: values.emp_end_date_ec,
@@ -357,33 +359,6 @@ const ProjectEmployeeModel = (props) => {
       },
       {
         header: "",
-        accessorKey: "emp_project_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_project_id, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "emp_start_date_ec",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_start_date_ec, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
         accessorKey: "emp_start_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
@@ -392,19 +367,6 @@ const ProjectEmployeeModel = (props) => {
             <span>
               {truncateText(cellProps.row.original.emp_start_date_gc, 30) ||
                 "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "emp_end_date_ec",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_end_date_ec, 30) || "-"}
             </span>
           );
         },
@@ -435,34 +397,6 @@ const ProjectEmployeeModel = (props) => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "emp_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "emp_current_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_current_status, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -761,131 +695,101 @@ const ProjectEmployeeModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("emp_project_id")}</Label>
-                    <Input
-                      name="emp_project_id"
-                      type="text"
-                      placeholder={t("emp_project_id")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.emp_project_id || ""}
-                      invalid={
-                        validation.touched.emp_project_id &&
-                        validation.errors.emp_project_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.emp_project_id &&
-                    validation.errors.emp_project_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.emp_project_id}
-                      </FormFeedback>
-                    ) : null}
+                 <Col className="col-md-6 mb-3">
+                    <FormGroup>
+                      <Label>{t("emp_start_date_gc")}</Label>
+                      <InputGroup>
+                        <Flatpickr
+                          id="DataPicker"
+                          className={`form-control ${validation.touched.emp_start_date_gc &&
+                              validation.errors.emp_start_date_gc
+                              ? "is-invalid"
+                              : ""
+                            }`}
+                          name="emp_start_date_gc"
+                          options={{
+                            altInput: true,
+                            altFormat: "Y/m/d",
+                            dateFormat: "Y/m/d",
+                            enableTime: false,
+                          }}
+                          value={validation.values.emp_start_date_gc || ""}
+                          onChange={(date) => {
+                            const formatedDate = formatDate(date[0]);
+                            validation.setFieldValue(
+                              "emp_start_date_gc",
+                              formatedDate
+                            ); // Set value in Formik
+                          }}
+                          onBlur={validation.handleBlur}
+                        />
+
+                        <Button
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          disabled
+                        >
+                          <i className="fa fa-calendar" aria-hidden="true" />
+                        </Button>
+                      </InputGroup>
+                      {validation.touched.emp_start_date_gc &&
+                        validation.errors.emp_start_date_gc ? (
+                        <FormFeedback>
+                          {validation.errors.emp_start_date_gc}
+                        </FormFeedback>
+                      ) : null}
+                    </FormGroup>
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("emp_start_date_ec")}</Label>
-                    <Input
-                      name="emp_start_date_ec"
-                      type="text"
-                      placeholder={t("emp_start_date_ec")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.emp_start_date_ec || ""}
-                      invalid={
-                        validation.touched.emp_start_date_ec &&
-                        validation.errors.emp_start_date_ec
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.emp_start_date_ec &&
-                    validation.errors.emp_start_date_ec ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.emp_start_date_ec}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("emp_start_date_gc")}</Label>
-                    <Input
-                      name="emp_start_date_gc"
-                      type="text"
-                      placeholder={t("emp_start_date_gc")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.emp_start_date_gc || ""}
-                      invalid={
-                        validation.touched.emp_start_date_gc &&
-                        validation.errors.emp_start_date_gc
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.emp_start_date_gc &&
-                    validation.errors.emp_start_date_gc ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.emp_start_date_gc}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("emp_end_date_ec")}</Label>
-                    <Input
-                      name="emp_end_date_ec"
-                      type="text"
-                      placeholder={t("emp_end_date_ec")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.emp_end_date_ec || ""}
-                      invalid={
-                        validation.touched.emp_end_date_ec &&
-                        validation.errors.emp_end_date_ec
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.emp_end_date_ec &&
-                    validation.errors.emp_end_date_ec ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.emp_end_date_ec}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("emp_end_date_gc")}</Label>
-                    <Input
-                      name="emp_end_date_gc"
-                      type="text"
-                      placeholder={t("emp_end_date_gc")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.emp_end_date_gc || ""}
-                      invalid={
-                        validation.touched.emp_end_date_gc &&
-                        validation.errors.emp_end_date_gc
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.emp_end_date_gc &&
-                    validation.errors.emp_end_date_gc ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.emp_end_date_gc}
-                      </FormFeedback>
-                    ) : null}
+                    <FormGroup>
+                      <Label>{t("emp_end_date_gc")}</Label>
+                      <InputGroup>
+                        <Flatpickr
+                          id="DataPicker"
+                          className={`form-control ${validation.touched.emp_end_date_gc &&
+                              validation.errors.emp_end_date_gc
+                              ? "is-invalid"
+                              : ""
+                            }`}
+                          name="emp_end_date_gc"
+                          options={{
+                            altInput: true,
+                            altFormat: "Y/m/d",
+                            dateFormat: "Y/m/d",
+                            enableTime: false,
+                          }}
+                          value={validation.values.emp_end_date_gc || ""}
+                          onChange={(date) => {
+                            const formatedDate = formatDate(date[0]);
+                            validation.setFieldValue(
+                              "emp_end_date_gc",
+                              formatedDate
+                            ); // Set value in Formik
+                          }}
+                          onBlur={validation.handleBlur}
+                        />
+
+                        <Button
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          disabled
+                        >
+                          <i className="fa fa-calendar" aria-hidden="true" />
+                        </Button>
+                      </InputGroup>
+                      {validation.touched.emp_end_date_gc &&
+                        validation.errors.emp_end_date_gc ? (
+                        <FormFeedback>
+                          {validation.errors.emp_end_date_gc}
+                        </FormFeedback>
+                      ) : null}
+                    </FormGroup>
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("emp_address")}</Label>
                     <Input
                       name="emp_address"
-                      type="text"
+                      type="textarea"
                       placeholder={t("emp_address")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -909,7 +813,7 @@ const ProjectEmployeeModel = (props) => {
                     <Label>{t("emp_description")}</Label>
                     <Input
                       name="emp_description"
-                      type="text"
+                      type="textarea"
                       placeholder={t("emp_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -926,30 +830,6 @@ const ProjectEmployeeModel = (props) => {
                     validation.errors.emp_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.emp_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("emp_current_status")}</Label>
-                    <Input
-                      name="emp_current_status"
-                      type="text"
-                      placeholder={t("emp_current_status")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.emp_current_status || ""}
-                      invalid={
-                        validation.touched.emp_current_status &&
-                        validation.errors.emp_current_status
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.emp_current_status &&
-                    validation.errors.emp_current_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.emp_current_status}
                       </FormFeedback>
                     ) : null}
                   </Col>

@@ -57,15 +57,12 @@ const ProjectStatusModal = (props) => {
                     <p className="mb-2">
             {t('prs_description')}: <span className="text-primary">{transaction.prs_description}</span>
           </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prs_status')}: <span className="text-primary">{transaction.prs_status}</span>
-          </p>
-          </tr><tr>
+          </tr>
+         {/* <tr>
                     <p className="mb-2">
             {t('prs_spare_column')}: <span className="text-primary">{transaction.prs_spare_column}</span>
           </p>
-          </tr>
+          </tr>*/}
 
           {transaction.is_deletable === 1 && (
             <p className="text-danger">data is deletable</p>

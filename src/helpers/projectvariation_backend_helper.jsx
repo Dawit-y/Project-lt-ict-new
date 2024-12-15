@@ -23,8 +23,8 @@ export const addProjectVariation = async (objectName) =>
 
 // update project_variation
 export const updateProjectVariation = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROJECT_VARIATION +`?bdr_id=${objectName?.bdr_id}`, objectName);
+post(`${apiUrl}`+UPDATE_PROJECT_VARIATION +`?prv_id=${objectName?.prv_id}`, objectName);
 
 // delete  project_variation
 export const deleteProjectVariation = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROJECT_VARIATION+`?bdr_id=${objectName}`);
+  post(`${apiUrl}`+DELETE_PROJECT_VARIATION+`?prv_id=${objectName}`);

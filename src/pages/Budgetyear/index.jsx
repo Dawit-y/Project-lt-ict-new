@@ -146,7 +146,7 @@ const BudgetYearModel = () => {
               item.bdy_name == value && item.bdy_id !== budgetYear?.bdy_id
           );
         }),
-      bdy_code: Yup.string().required(t("bdy_code")),
+      //bdy_code: Yup.string().required(t("bdy_code")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -354,11 +354,9 @@ const BudgetYearModel = () => {
 
     return baseColumns;
   }, [handleBudgetYearClick, toggleViewModal, onClickDelete]);
-
-  if (isError) {
+ if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
   return (
     <React.Fragment>
       <BudgetYearModal
@@ -407,8 +405,7 @@ const BudgetYearModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleBudgetYearClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={ t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("budget_year")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -437,12 +434,19 @@ const BudgetYearModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("bdy_name")}</Label>
+                    <Label>{t("bdy_name")}<span className="text-danger">*</span></Label>
                     <Input
                       name="bdy_name"
                       type="text"
                       placeholder={t("bdy_name")}
-                      onChange={validation.handleChange}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Allow only integers (numeric values)
+                        if (/^\d*$/.test(value)) {
+                          validation.handleChange(e);
+                        }
+                      }}
+
                       onBlur={validation.handleBlur}
                       value={validation.values.bdy_name || ""}
                       invalid={
@@ -451,7 +455,7 @@ const BudgetYearModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={4}
                     />
                     {validation.touched.bdy_name &&
                     validation.errors.bdy_name ? (
@@ -499,7 +503,7 @@ const BudgetYearModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.bdy_description &&
                     validation.errors.bdy_description ? (

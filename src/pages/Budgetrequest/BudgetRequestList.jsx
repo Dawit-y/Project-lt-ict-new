@@ -57,7 +57,7 @@ const statusClasses = {
   Rejected: "danger",
   Requested: "secondary",
 };
-
+import AddressStructureForProject from "../Project/AddressStructureForProject";
 const BudgetRequestListModel = () => {
   //  get passed data from tab
 
@@ -77,11 +77,18 @@ const BudgetRequestListModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useFetchBudgetRequests();
+  const { data, isLoading, error, isError, refetch } = useState(null);
   const { data: budgetYearData } = useFetchBudgetYears();
 
-  const [transaction, setTransaction] = useState({});
+const [projectParams, setProjectParams] = useState({});
+  const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
+  const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
+  const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
+  const [isAddressLoading, setIsAddressLoading] = useState(false);
 
+
+  const [transaction, setTransaction] = useState({});
+  
   const budgetYearMap = useMemo(() => {
     return (
       budgetYearData?.data?.reduce((acc, year) => {
@@ -273,7 +280,32 @@ const BudgetRequestListModel = () => {
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
+  useEffect(() => {
+    setProjectParams({
+      ...(prjLocationRegionId && {
+        prj_location_region_id: prjLocationRegionId,
+      }),
+      ...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
+      ...(prjLocationWoredaId && {
+        prj_location_woreda_id: prjLocationWoredaId,
+      }),
+    });
+  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
+const handleNodeSelect = (node) => {
+    if (node.level === "region") {
+      setPrjLocationRegionId(node.id);
+      setPrjLocationZoneId(null); // Clear dependent states
+      setPrjLocationWoredaId(null);
+    } else if (node.level === "zone") {
+      setPrjLocationZoneId(node.id);
+      setPrjLocationWoredaId(null); // Clear dependent state
+    } else if (node.level === "woreda") {
+      setPrjLocationWoredaId(node.id);
+    }
+     if (showSearchResult) {
+      setShowSearchResult(false);
+    }
+  };
   return (
     <React.Fragment>
       <BudgetRequestListModal
@@ -283,13 +315,17 @@ const BudgetRequestListModel = () => {
         budgetYearMap={budgetYearMap}
       />
       <div className="page-content">
-        <div className="container-fluid">
+        <div className="">
           <Breadcrumbs
             title={t("budget_request")}
             breadcrumbItem={t("budget_request")}
           />
+          <div className="w-100 d-flex gap-2">
+            <AddressStructureForProject onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />
+            <div className="w-100">
           <AdvancedSearch
             searchHook={useSearchBudgetRequests}
+            dateSearchKeys={["budget_request_date"]}
             textSearchKeys={["prj_name", "prj_code"]}
             dropdownSearchKeys={[
               {
@@ -297,6 +333,8 @@ const BudgetRequestListModel = () => {
                 options: budgetYearOptions,
               },
             ]}
+            additionalParams={projectParams}
+                setAdditionalParams={setProjectParams}
             onSearchResult={handleSearchResults}
             setIsSearchLoading={setIsSearchLoading}
             setSearchResults={setSearchResults}
@@ -340,15 +378,17 @@ const BudgetRequestListModel = () => {
                     animateRows={true}
                   />
                 </div>
-              </div>
-              <BudgetRequestAnalysis
+                <BudgetRequestAnalysis
                 data={showSearchResult ? searchResults?.data : data?.data || []}
               />
+              </div>
+              
             </>
           )}
         </div>
       </div>
-
+</div>
+</div>
       {showCanvas && (
         <RightOffCanvas
           handleClick={handleEyeClick}

@@ -45,10 +45,6 @@ const BudgetYearModal = (props) => {
                     <p className="mb-2">
             {t('bdy_description')}: <span className="text-primary">{transaction.bdy_description}</span>
           </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bdy_status')}: <span className="text-primary">{transaction.bdy_status}</span>
-          </p>
           </tr>
 
           {transaction.is_deletable === 1 && (

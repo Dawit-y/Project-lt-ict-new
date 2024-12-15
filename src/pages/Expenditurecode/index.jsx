@@ -361,11 +361,9 @@ const ExpenditureCodeModel = () => {
 
     return baseColumns;
   }, [handleExpenditureCodeClick, toggleViewModal, onClickDelete]);
-
-  if (isError) {
+ if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
   return (
     <React.Fragment>
       <ExpenditureCodeModal
@@ -414,8 +412,7 @@ const ExpenditureCodeModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleExpenditureCodeClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("expenditure_code")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -444,7 +441,7 @@ const ExpenditureCodeModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pec_name")}</Label>
+                    <Label>{t("pec_name")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pec_name"
                       type="text"
@@ -458,7 +455,7 @@ const ExpenditureCodeModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.pec_name &&
                     validation.errors.pec_name ? (
@@ -506,7 +503,7 @@ const ExpenditureCodeModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={425}
                     />
                     {validation.touched.pec_description &&
                     validation.errors.pec_description ? (

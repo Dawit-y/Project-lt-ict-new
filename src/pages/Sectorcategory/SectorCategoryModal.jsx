@@ -41,17 +41,10 @@ const SectorCategoryModal = (props) => {
                     <p className="mb-2">
             {t('psc_code')}: <span className="text-primary">{transaction.psc_code}</span>
           </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('psc_sector_id')}: <span className="text-primary">{transaction.psc_sector_id}</span>
-          </p>
-          </tr><tr>
+          </tr>
+          <tr>
                     <p className="mb-2">
             {t('psc_description')}: <span className="text-primary">{transaction.psc_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('psc_status')}: <span className="text-primary">{transaction.psc_status}</span>
           </p>
           </tr>
 

@@ -153,7 +153,7 @@ const ProjectCategoryModel = () => {
         }),
       pct_name_am: Yup.string().required(t("pct_name_am")),
       pct_name_en: Yup.string().required(t("pct_name_en")),
-      pct_code: Yup.string().required(t("pct_code")),
+      //pct_code: Yup.string().required(t("pct_code")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -392,11 +392,9 @@ const ProjectCategoryModel = () => {
 
     return baseColumns;
   }, [handleProjectCategoryClick, toggleViewModal, onClickDelete]);
-
-  if (isError) {
+ if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
   return (
     <React.Fragment>
       <ProjectCategoryModal
@@ -445,8 +443,7 @@ const ProjectCategoryModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleProjectCategoryClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("project_category")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -475,7 +472,7 @@ const ProjectCategoryModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pct_name_or")}</Label>
+                    <Label>{t("pct_name_or")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pct_name_or"
                       type="text"
@@ -489,7 +486,7 @@ const ProjectCategoryModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.pct_name_or &&
                     validation.errors.pct_name_or ? (
@@ -499,7 +496,7 @@ const ProjectCategoryModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pct_name_am")}</Label>
+                    <Label>{t("pct_name_am")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pct_name_am"
                       type="text"
@@ -513,7 +510,7 @@ const ProjectCategoryModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.pct_name_am &&
                     validation.errors.pct_name_am ? (
@@ -523,7 +520,7 @@ const ProjectCategoryModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pct_name_en")}</Label>
+                    <Label>{t("pct_name_en")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pct_name_en"
                       type="text"
@@ -537,7 +534,7 @@ const ProjectCategoryModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.pct_name_en &&
                     validation.errors.pct_name_en ? (
@@ -585,7 +582,7 @@ const ProjectCategoryModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={425}
                     />
                     {validation.touched.pct_description &&
                     validation.errors.pct_description ? (

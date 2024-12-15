@@ -156,8 +156,8 @@ const ProjectStatusModel = () => {
         }),
       prs_status_name_am: Yup.string().required(t("prs_status_name_am")),
       prs_status_name_en: Yup.string().required(t("prs_status_name_en")),
-      prs_color_code: Yup.string().required(t("prs_color_code")),
-      prs_order_number: Yup.string().required(t("prs_order_number")),
+      //prs_color_code: Yup.string().required(t("prs_color_code")),
+      //prs_order_number: Yup.string().required(t("prs_order_number")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -172,7 +172,7 @@ const ProjectStatusModel = () => {
           prs_order_number: values.prs_order_number,
           prs_description: values.prs_description,
           prs_status: values.prs_status,
-          prs_spare_column: values.prs_spare_column,
+          //prs_spare_column: values.prs_spare_column,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -189,7 +189,7 @@ const ProjectStatusModel = () => {
           prs_order_number: values.prs_order_number,
           prs_description: values.prs_description,
           prs_status: values.prs_status,
-          prs_spare_column: values.prs_spare_column,
+          //prs_spare_column: values.prs_spare_column,
         };
         // save new ProjectStatus
         handleAddProjectStatus(newProjectStatus);
@@ -418,11 +418,9 @@ const ProjectStatusModel = () => {
 
     return baseColumns;
   }, [handleProjectStatusClick, toggleViewModal, onClickDelete]);
-
-  if (isError) {
+ if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
   return (
     <React.Fragment>
       <ProjectStatusModal
@@ -471,8 +469,7 @@ const ProjectStatusModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleProjectStatusClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("project_status")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -501,7 +498,7 @@ const ProjectStatusModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prs_status_name_or")}</Label>
+                    <Label>{t("prs_status_name_or")}<span className="text-danger">*</span></Label>
                     <Input
                       name="prs_status_name_or"
                       type="text"
@@ -515,7 +512,7 @@ const ProjectStatusModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.prs_status_name_or &&
                     validation.errors.prs_status_name_or ? (
@@ -525,7 +522,7 @@ const ProjectStatusModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prs_status_name_am")}</Label>
+                    <Label>{t("prs_status_name_am")}<span className="text-danger">*</span></Label>
                     <Input
                       name="prs_status_name_am"
                       type="text"
@@ -539,7 +536,7 @@ const ProjectStatusModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.prs_status_name_am &&
                     validation.errors.prs_status_name_am ? (
@@ -549,7 +546,7 @@ const ProjectStatusModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prs_status_name_en")}</Label>
+                    <Label>{t("prs_status_name_en")}<span className="text-danger">*</span></Label>
                     <Input
                       name="prs_status_name_en"
                       type="text"
@@ -563,7 +560,7 @@ const ProjectStatusModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.prs_status_name_en &&
                     validation.errors.prs_status_name_en ? (
@@ -602,7 +599,13 @@ const ProjectStatusModel = () => {
                       name="prs_order_number"
                       type="text"
                       placeholder={t("prs_order_number")}
-                      onChange={validation.handleChange}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Allow only integers (numeric values)
+                        if (/^\d*$/.test(value)) {
+                          validation.handleChange(e);
+                        }
+                      }}
                       onBlur={validation.handleBlur}
                       value={validation.values.prs_order_number || ""}
                       invalid={
@@ -635,7 +638,7 @@ const ProjectStatusModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={425}
                     />
                     {validation.touched.prs_description &&
                     validation.errors.prs_description ? (

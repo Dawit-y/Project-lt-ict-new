@@ -43,12 +43,15 @@ import {
   CardBody,
   FormGroup,
   Badge,
+  InputGroup
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-
+import "flatpickr/dist/themes/material_blue.css";
+import Flatpickr from "react-flatpickr";
+import { formatDate } from "../../utils/commonMethods";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -59,7 +62,7 @@ const truncateText = (text, maxLength) => {
 const ProjectVariationModel = (props) => {
   document.title = " ProjectVariation";
   const { passedId, isActive } = props;
-  const param = { bdr_project_id: passedId };
+  const param = { prv_project_id: passedId };
 
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
@@ -107,9 +110,9 @@ const ProjectVariationModel = (props) => {
     toggle();
   };
   const handleDeleteProjectVariation = async () => {
-    if (projectVariation && projectVariation.bdr_id) {
+    if (projectVariation && projectVariation.prv_id) {
       try {
-        const id = projectVariation.bdr_id;
+        const id = projectVariation.prv_id;
         await deleteProjectVariation.mutateAsync(id);
         toast.success(`Data deleted successfully`, {
           autoClose: 2000,
@@ -131,54 +134,54 @@ const ProjectVariationModel = (props) => {
     enableReinitialize: true,
 
     initialValues: {
-      bdr_requested_amount:
-        (projectVariation && projectVariation.bdr_requested_amount) || "",
-      bdr_released_amount:
-        (projectVariation && projectVariation.bdr_released_amount) || "",
-      bdr_project_id:
-        (projectVariation && projectVariation.bdr_project_id) || "",
-      bdr_requested_date_ec:
-        (projectVariation && projectVariation.bdr_requested_date_ec) || "",
-      bdr_requested_date_gc:
-        (projectVariation && projectVariation.bdr_requested_date_gc) || "",
-      bdr_released_date_ec:
-        (projectVariation && projectVariation.bdr_released_date_ec) || "",
-      bdr_released_date_gc:
-        (projectVariation && projectVariation.bdr_released_date_gc) || "",
-      bdr_description:
-        (projectVariation && projectVariation.bdr_description) || "",
-      bdr_status: (projectVariation && projectVariation.bdr_status) || "",
+      prv_requested_amount:
+        (projectVariation && projectVariation.prv_requested_amount) || "",
+      prv_released_amount:
+        (projectVariation && projectVariation.prv_released_amount) || "",
+      prv_project_id:
+        (projectVariation && projectVariation.prv_project_id) || "",
+      prv_requested_date_ec:
+        (projectVariation && projectVariation.prv_requested_date_ec) || "",
+      prv_requested_date_gc:
+        (projectVariation && projectVariation.prv_requested_date_gc) || "",
+      prv_released_date_ec:
+        (projectVariation && projectVariation.prv_released_date_ec) || "",
+      prv_released_date_gc:
+        (projectVariation && projectVariation.prv_released_date_gc) || "",
+      prv_description:
+        (projectVariation && projectVariation.prv_description) || "",
+      prv_status: (projectVariation && projectVariation.prv_status) || "",
 
       is_deletable: (projectVariation && projectVariation.is_deletable) || 1,
       is_editable: (projectVariation && projectVariation.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
-      bdr_requested_amount: Yup.string().required(t("bdr_requested_amount")),
-      bdr_released_amount: Yup.string().required(t("bdr_released_amount")),
-      bdr_project_id: Yup.string().required(t("bdr_project_id")),
-      bdr_requested_date_ec: Yup.string().required(t("bdr_requested_date_ec")),
-      bdr_requested_date_gc: Yup.string().required(t("bdr_requested_date_gc")),
-      bdr_released_date_ec: Yup.string().required(t("bdr_released_date_ec")),
-      bdr_released_date_gc: Yup.string().required(t("bdr_released_date_gc")),
-      bdr_description: Yup.string().required(t("bdr_description")),
-      bdr_status: Yup.string().required(t("bdr_status")),
+      prv_requested_amount: Yup.string().required(t("prv_requested_amount")),
+      //prv_released_amount: Yup.string().required(t("prv_released_amount")),
+     // prv_project_id: Yup.string().required(t("prv_project_id")),
+      //prv_requested_date_ec: Yup.string().required(t("prv_requested_date_ec")),
+      prv_requested_date_gc: Yup.string().required(t("prv_requested_date_gc")),
+     // prv_released_date_ec: Yup.string().required(t("prv_released_date_ec")),
+      //prv_released_date_gc: Yup.string().required(t("prv_released_date_gc")),
+      //prv_description: Yup.string().required(t("prv_description")),
+      //prv_status: Yup.string().required(t("prv_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateProjectVariation = {
-          bdr_id: projectVariation ? projectVariation.bdr_id : 0,
-          bdr_requested_amount: values.bdr_requested_amount,
-          bdr_released_amount: values.bdr_released_amount,
-          bdr_project_id: values.bdr_project_id,
-          bdr_requested_date_ec: values.bdr_requested_date_ec,
-          bdr_requested_date_gc: values.bdr_requested_date_gc,
-          bdr_released_date_ec: values.bdr_released_date_ec,
-          bdr_released_date_gc: values.bdr_released_date_gc,
-          bdr_description: values.bdr_description,
-          bdr_status: values.bdr_status,
+          prv_id: projectVariation ? projectVariation.prv_id : 0,
+          prv_requested_amount: values.prv_requested_amount,
+          prv_released_amount: values.prv_released_amount,
+          //prv_project_id: values.prv_project_id,
+          prv_requested_date_ec: values.prv_requested_date_ec,
+          prv_requested_date_gc: values.prv_requested_date_gc,
+          prv_released_date_ec: values.prv_released_date_ec,
+          prv_released_date_gc: values.prv_released_date_gc,
+          prv_description: values.prv_description,
+          prv_status: values.prv_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -188,15 +191,15 @@ const ProjectVariationModel = (props) => {
         validation.resetForm();
       } else {
         const newProjectVariation = {
-          bdr_requested_amount: values.bdr_requested_amount,
-          bdr_released_amount: values.bdr_released_amount,
-          bdr_project_id: values.bdr_project_id,
-          bdr_requested_date_ec: values.bdr_requested_date_ec,
-          bdr_requested_date_gc: values.bdr_requested_date_gc,
-          bdr_released_date_ec: values.bdr_released_date_ec,
-          bdr_released_date_gc: values.bdr_released_date_gc,
-          bdr_description: values.bdr_description,
-          bdr_status: values.bdr_status,
+          prv_requested_amount: values.prv_requested_amount,
+          prv_released_amount: values.prv_released_amount,
+          prv_project_id: passedId,
+          prv_requested_date_ec: values.prv_requested_date_ec,
+          prv_requested_date_gc: values.prv_requested_date_gc,
+          prv_released_date_ec: values.prv_released_date_ec,
+          prv_released_date_gc: values.prv_released_date_gc,
+          prv_description: values.prv_description,
+          prv_status: values.prv_status,
         };
         // save new ProjectVariation
         handleAddProjectVariation(newProjectVariation);
@@ -230,16 +233,16 @@ const ProjectVariationModel = (props) => {
     const projectVariation = arg;
     // console.log("handleProjectVariationClick", projectVariation);
     setProjectVariation({
-      bdr_id: projectVariation.bdr_id,
-      bdr_requested_amount: projectVariation.bdr_requested_amount,
-      bdr_released_amount: projectVariation.bdr_released_amount,
-      bdr_project_id: projectVariation.bdr_project_id,
-      bdr_requested_date_ec: projectVariation.bdr_requested_date_ec,
-      bdr_requested_date_gc: projectVariation.bdr_requested_date_gc,
-      bdr_released_date_ec: projectVariation.bdr_released_date_ec,
-      bdr_released_date_gc: projectVariation.bdr_released_date_gc,
-      bdr_description: projectVariation.bdr_description,
-      bdr_status: projectVariation.bdr_status,
+      prv_id: projectVariation.prv_id,
+      prv_requested_amount: projectVariation.prv_requested_amount,
+      prv_released_amount: projectVariation.prv_released_amount,
+      prv_project_id: projectVariation.prv_project_id,
+      prv_requested_date_ec: projectVariation.prv_requested_date_ec,
+      prv_requested_date_gc: projectVariation.prv_requested_date_gc,
+      prv_released_date_ec: projectVariation.prv_released_date_ec,
+      prv_released_date_gc: projectVariation.prv_released_date_gc,
+      prv_description: projectVariation.prv_description,
+      prv_status: projectVariation.prv_status,
 
       is_deletable: projectVariation.is_deletable,
       is_editable: projectVariation.is_editable,
@@ -270,13 +273,13 @@ const ProjectVariationModel = (props) => {
     const baseColumns = [
       {
         header: "",
-        accessorKey: "bdr_requested_amount",
+        accessorKey: "prv_requested_amount",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdr_requested_amount, 30) ||
+              {truncateText(cellProps.row.original.prv_requested_amount, 30) ||
                 "-"}
             </span>
           );
@@ -284,13 +287,13 @@ const ProjectVariationModel = (props) => {
       },
       {
         header: "",
-        accessorKey: "bdr_released_amount",
+        accessorKey: "prv_released_amount",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdr_released_amount, 30) ||
+              {truncateText(cellProps.row.original.prv_released_amount, 30) ||
                 "-"}
             </span>
           );
@@ -298,26 +301,13 @@ const ProjectVariationModel = (props) => {
       },
       {
         header: "",
-        accessorKey: "bdr_project_id",
+        accessorKey: "prv_requested_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdr_project_id, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "bdr_requested_date_ec",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bdr_requested_date_ec, 30) ||
+              {truncateText(cellProps.row.original.prv_requested_date_gc, 30) ||
                 "-"}
             </span>
           );
@@ -325,13 +315,13 @@ const ProjectVariationModel = (props) => {
       },
       {
         header: "",
-        accessorKey: "bdr_requested_date_gc",
+        accessorKey: "prv_released_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdr_requested_date_gc, 30) ||
+              {truncateText(cellProps.row.original.prv_released_date_gc, 30) ||
                 "-"}
             </span>
           );
@@ -339,54 +329,13 @@ const ProjectVariationModel = (props) => {
       },
       {
         header: "",
-        accessorKey: "bdr_released_date_ec",
+        accessorKey: "prv_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdr_released_date_ec, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "bdr_released_date_gc",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bdr_released_date_gc, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "bdr_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bdr_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "bdr_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bdr_status, 30) || "-"}
+              {truncateText(cellProps.row.original.prv_description, 30) || "-"}
             </span>
           );
         },
@@ -571,218 +520,164 @@ const ProjectVariationModel = (props) => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("bdr_requested_amount")}</Label>
+                    <Label>{t("prv_requested_amount")}</Label>
                     <Input
-                      name="bdr_requested_amount"
-                      type="text"
-                      placeholder={t("bdr_requested_amount")}
+                      name="prv_requested_amount"
+                      type="number"
+                      placeholder={t("prv_requested_amount")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.bdr_requested_amount || ""}
+                      value={validation.values.prv_requested_amount || ""}
                       invalid={
-                        validation.touched.bdr_requested_amount &&
-                        validation.errors.bdr_requested_amount
+                        validation.touched.prv_requested_amount &&
+                        validation.errors.prv_requested_amount
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
-                    {validation.touched.bdr_requested_amount &&
-                    validation.errors.bdr_requested_amount ? (
+                    {validation.touched.prv_requested_amount &&
+                    validation.errors.prv_requested_amount ? (
                       <FormFeedback type="invalid">
-                        {validation.errors.bdr_requested_amount}
+                        {validation.errors.prv_requested_amount}
                       </FormFeedback>
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("bdr_released_amount")}</Label>
+                    <Label>{t("prv_released_amount")}</Label>
                     <Input
-                      name="bdr_released_amount"
-                      type="text"
-                      placeholder={t("bdr_released_amount")}
+                      name="prv_released_amount"
+                      type="number"
+                      placeholder={t("prv_released_amount")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.bdr_released_amount || ""}
+                      value={validation.values.prv_released_amount || ""}
                       invalid={
-                        validation.touched.bdr_released_amount &&
-                        validation.errors.bdr_released_amount
+                        validation.touched.prv_released_amount &&
+                        validation.errors.prv_released_amount
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
-                    {validation.touched.bdr_released_amount &&
-                    validation.errors.bdr_released_amount ? (
+                    {validation.touched.prv_released_amount &&
+                    validation.errors.prv_released_amount ? (
                       <FormFeedback type="invalid">
-                        {validation.errors.bdr_released_amount}
+                        {validation.errors.prv_released_amount}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("bdr_project_id")}</Label>
-                    <Input
-                      name="bdr_project_id"
-                      type="text"
-                      placeholder={t("bdr_project_id")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bdr_project_id || ""}
-                      invalid={
-                        validation.touched.bdr_project_id &&
-                        validation.errors.bdr_project_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.bdr_project_id &&
-                    validation.errors.bdr_project_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bdr_project_id}
-                      </FormFeedback>
-                    ) : null}
+                 <Col className="col-md-6 mb-3">
+                    <FormGroup>
+                      <Label>{t("prv_requested_date_gc")}</Label>
+                      <InputGroup>
+                        <Flatpickr
+                          id="DataPicker"
+                          className={`form-control ${validation.touched.prv_requested_date_gc &&
+                              validation.errors.prv_requested_date_gc
+                              ? "is-invalid"
+                              : ""
+                            }`}
+                          name="prv_requested_date_gc"
+                          options={{
+                            altInput: true,
+                            altFormat: "Y/m/d",
+                            dateFormat: "Y/m/d",
+                            enableTime: false,
+                          }}
+                          value={validation.values.prv_requested_date_gc || ""}
+                          onChange={(date) => {
+                            const formatedDate = formatDate(date[0]);
+                            validation.setFieldValue(
+                              "prv_requested_date_gc",
+                              formatedDate
+                            ); // Set value in Formik
+                          }}
+                          onBlur={validation.handleBlur}
+                        />
+
+                        <Button
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          disabled
+                        >
+                          <i className="fa fa-calendar" aria-hidden="true" />
+                        </Button>
+                      </InputGroup>
+                      {validation.touched.prv_requested_date_gc &&
+                        validation.errors.prv_requested_date_gc ? (
+                        <FormFeedback>
+                          {validation.errors.prv_requested_date_gc}
+                        </FormFeedback>
+                      ) : null}
+                    </FormGroup>
+                  </Col>
+                   <Col className="col-md-6 mb-3">
+                    <FormGroup>
+                      <Label>{t("prv_released_date_gc")}</Label>
+                      <InputGroup>
+                        <Flatpickr
+                          id="DataPicker"
+                          className={`form-control ${validation.touched.prv_released_date_gc &&
+                              validation.errors.prv_released_date_gc
+                              ? "is-invalid"
+                              : ""
+                            }`}
+                          name="prv_released_date_gc"
+                          options={{
+                            altInput: true,
+                            altFormat: "Y/m/d",
+                            dateFormat: "Y/m/d",
+                            enableTime: false,
+                          }}
+                          value={validation.values.prv_released_date_gc || ""}
+                          onChange={(date) => {
+                            const formatedDate = formatDate(date[0]);
+                            validation.setFieldValue(
+                              "prv_released_date_gc",
+                              formatedDate
+                            ); // Set value in Formik
+                          }}
+                          onBlur={validation.handleBlur}
+                        />
+
+                        <Button
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          disabled
+                        >
+                          <i className="fa fa-calendar" aria-hidden="true" />
+                        </Button>
+                      </InputGroup>
+                      {validation.touched.prv_released_date_gc &&
+                        validation.errors.prv_released_date_gc ? (
+                        <FormFeedback>
+                          {validation.errors.prv_released_date_gc}
+                        </FormFeedback>
+                      ) : null}
+                    </FormGroup>
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("bdr_requested_date_ec")}</Label>
+                    <Label>{t("prv_description")}</Label>
                     <Input
-                      name="bdr_requested_date_ec"
-                      type="text"
-                      placeholder={t("bdr_requested_date_ec")}
+                      name="prv_description"
+                      type="textarea"
+                      placeholder={t("prv_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.bdr_requested_date_ec || ""}
+                      value={validation.values.prv_description || ""}
                       invalid={
-                        validation.touched.bdr_requested_date_ec &&
-                        validation.errors.bdr_requested_date_ec
+                        validation.touched.prv_description &&
+                        validation.errors.prv_description
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
-                    {validation.touched.bdr_requested_date_ec &&
-                    validation.errors.bdr_requested_date_ec ? (
+                    {validation.touched.prv_description &&
+                    validation.errors.prv_description ? (
                       <FormFeedback type="invalid">
-                        {validation.errors.bdr_requested_date_ec}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("bdr_requested_date_gc")}</Label>
-                    <Input
-                      name="bdr_requested_date_gc"
-                      type="text"
-                      placeholder={t("bdr_requested_date_gc")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bdr_requested_date_gc || ""}
-                      invalid={
-                        validation.touched.bdr_requested_date_gc &&
-                        validation.errors.bdr_requested_date_gc
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.bdr_requested_date_gc &&
-                    validation.errors.bdr_requested_date_gc ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bdr_requested_date_gc}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("bdr_released_date_ec")}</Label>
-                    <Input
-                      name="bdr_released_date_ec"
-                      type="text"
-                      placeholder={t("bdr_released_date_ec")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bdr_released_date_ec || ""}
-                      invalid={
-                        validation.touched.bdr_released_date_ec &&
-                        validation.errors.bdr_released_date_ec
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.bdr_released_date_ec &&
-                    validation.errors.bdr_released_date_ec ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bdr_released_date_ec}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("bdr_released_date_gc")}</Label>
-                    <Input
-                      name="bdr_released_date_gc"
-                      type="text"
-                      placeholder={t("bdr_released_date_gc")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bdr_released_date_gc || ""}
-                      invalid={
-                        validation.touched.bdr_released_date_gc &&
-                        validation.errors.bdr_released_date_gc
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.bdr_released_date_gc &&
-                    validation.errors.bdr_released_date_gc ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bdr_released_date_gc}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("bdr_description")}</Label>
-                    <Input
-                      name="bdr_description"
-                      type="text"
-                      placeholder={t("bdr_description")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bdr_description || ""}
-                      invalid={
-                        validation.touched.bdr_description &&
-                        validation.errors.bdr_description
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.bdr_description &&
-                    validation.errors.bdr_description ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bdr_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("bdr_status")}</Label>
-                    <Input
-                      name="bdr_status"
-                      type="text"
-                      placeholder={t("bdr_status")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bdr_status || ""}
-                      invalid={
-                        validation.touched.bdr_status &&
-                        validation.errors.bdr_status
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.bdr_status &&
-                    validation.errors.bdr_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bdr_status}
+                        {validation.errors.prv_description}
                       </FormFeedback>
                     ) : null}
                   </Col>

@@ -96,7 +96,7 @@ const SectorInformationModel = () => {
   const handleUpdateSectorInformation = async (data) => {
     try {
       await updateSectorInformation.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(`Data updated successfully`, {
         autoClose: 2000,
       });
     } catch (error) {
@@ -165,13 +165,11 @@ const SectorInformationModel = () => {
         }),
       sci_name_am: Yup.string().required(t("sci_name_am")),
       sci_name_en: Yup.string().required(t("sci_name_en")),
-      sci_code: Yup.string().required(t("sci_code")),
-      sci_sector_category_id: Yup.string().required(
-        t("sci_sector_category_id")
-      ),
-      sci_available_at_region: Yup.boolean(),
-      sci_available_at_zone: Yup.boolean(),
-      sci_available_at_woreda: Yup.boolean(),
+      //sci_code: Yup.string().required(t("sci_code")),
+      //sci_sector_category_id: Yup.string().required(t("sci_sector_category_id")),
+      //sci_available_at_region: Yup.boolean(),
+      //sci_available_at_zone: Yup.boolean(),
+      //sci_available_at_woreda: Yup.boolean(),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -183,13 +181,12 @@ const SectorInformationModel = () => {
           sci_name_am: values.sci_name_am,
           sci_name_en: values.sci_name_en,
           sci_code: values.sci_code,
-          sci_sector_category_id: values.sci_sector_category_id,
+           sci_sector_category_id: values.sci_sector_category_id,
           sci_available_at_region: values.sci_available_at_region ? 1 : 0,
           sci_available_at_zone: values.sci_available_at_zone ? 1 : 0,
           sci_available_at_woreda: values.sci_available_at_woreda ? 1 : 0,
           sci_description: values.sci_description,
           sci_status: values.sci_status,
-
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -256,7 +253,7 @@ const SectorInformationModel = () => {
       is_deletable: sectorInformation.is_deletable,
       is_editable: sectorInformation.is_editable,
     });
-    setSelectedSectorCategory(sectorInformation.sci_sector_category_id);
+    //setSelectedSectorCategory(sectorInformation.sci_sector_category_id);
     setIsEdit(true);
     toggle();
   };
@@ -335,13 +332,13 @@ const SectorInformationModel = () => {
       },
       {
         header: "",
-        accessorKey: "sector_category_name",
+        accessorKey: "sci_sector_category_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.sector_category_name, 30) ||
+              {truncateText(cellProps.row.original.sci_sector_category_id, 30) ||
                 "-"}
             </span>
           );
@@ -355,10 +352,8 @@ const SectorInformationModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
-                cellProps.row.original.sci_available_at_region,
-                30
-              ) || "-"}
+            {cellProps.row.original.sci_available_at_region == 1 ? "Yes" : "No"}
+
             </span>
           );
         },
@@ -371,8 +366,8 @@ const SectorInformationModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.sci_available_at_zone, 30) ||
-                "-"}
+            {cellProps.row.original.sci_available_at_zone == 1 ? "Yes" : "No"}
+
             </span>
           );
         },
@@ -385,10 +380,7 @@ const SectorInformationModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
-                cellProps.row.original.sci_available_at_woreda,
-                30
-              ) || "-"}
+              {cellProps.row.original.sci_available_at_woreda == 1 ? "Yes" : "No"}
             </span>
           );
         },
@@ -521,8 +513,7 @@ const SectorInformationModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleSectorInformationClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={ t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("sector_information")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -551,7 +542,7 @@ const SectorInformationModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("sci_name_or")}</Label>
+                    <Label>{t("sci_name_or")}<span className="text-danger">*</span></Label>
                     <Input
                       name="sci_name_or"
                       type="text"
@@ -565,7 +556,7 @@ const SectorInformationModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.sci_name_or &&
                     validation.errors.sci_name_or ? (
@@ -575,7 +566,7 @@ const SectorInformationModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("sci_name_am")}</Label>
+                    <Label>{t("sci_name_am")}<span className="text-danger">*</span></Label>
                     <Input
                       name="sci_name_am"
                       type="text"
@@ -589,7 +580,7 @@ const SectorInformationModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.sci_name_am &&
                     validation.errors.sci_name_am ? (
@@ -599,7 +590,7 @@ const SectorInformationModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("sci_name_en")}</Label>
+                    <Label>{t("sci_name_en")}<span className="text-danger">*</span></Label>
                     <Input
                       name="sci_name_en"
                       type="text"
@@ -613,7 +604,7 @@ const SectorInformationModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.sci_name_en &&
                     validation.errors.sci_name_en ? (
@@ -771,7 +762,7 @@ const SectorInformationModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={425}
                     />
                     {validation.touched.sci_description &&
                     validation.errors.sci_description ? (

@@ -1,54 +1,92 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState,useRef } from "react";
+import axios from "axios";
+import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
+import { isEmpty, update } from "lodash";
+import "bootstrap/dist/css/bootstrap.min.css";
+import TableContainer from "../../components/Common/TableContainer";
+import * as Yup from "yup";
+import { useFormik } from "formik";
+import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
+import SearchComponent from "../../components/Common/SearchComponent";
 //import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
-
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-// import { getProject as onGetProject } from "../../store/project/actions";
-import { getProjectPayment as onGetProjectPayment } from "../../store/projectpayment/actions";
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
+import Breadcrumbs from "../../components/Common/Breadcrumb";
+import DeleteModal from "../../components/Common/DeleteModal";
+
+import {
+  useFetchProjectBudgetSources,
+  useSearchProjectBudgetSources,
+  useAddProjectBudgetSource,
+  useDeleteProjectBudgetSource,
+  useUpdateProjectBudgetSource,
+} from "../../queries/projectbudgetsource_query";
+import ProjectBudgetSourceModal from "./ProjectBudgetSourceModal";
 import { useTranslation } from "react-i18next";
 
-import { Button, Col, Row, Input } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
+import { useSelector, useDispatch } from "react-redux";
+import { createSelector } from "reselect";
+
+import {
+  Button,
+  Col,
+  Row,
+  UncontrolledTooltip,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  Form,
+  Input,
+  FormFeedback,
+  Label,
+  Card,
+  CardBody,
+  FormGroup,
+  Badge,
+} from "reactstrap";
+import { ToastContainer,toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import PaymentAnalaysis from "./PaymentAnalaysis";
-import {
-  useFetchProjectPayments,
-  useSearchProjectPayments,
-} from "../../queries/projectpayment_query";
 import AddressStructureForProject from "../Project/AddressStructureForProject";
-const ProjectPaymentList = () => {
-  document.title = "Project Payment List";
+const truncateText = (text, maxLength) => {
+  if (typeof text !== "string") {
+    return text;
+  }
+  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+};
 
+const ProjectBudgetSourceList = () => {
+  //meta title
+  document.title = " ProjectBudgetSource";
   const { t } = useTranslation();
-  //   const [project, setProject] = useState(null);
-  const [projectPayment, setProjectPayment] = useState(null);
+  const [modal, setModal] = useState(false);
+  const [modal1, setModal1] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [projectBudgetSource, setProjectBudgetSource] = useState(null);
+
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-    const [projectParams, setProjectParams] = useState({});
+   const [projectParams, setProjectParams] = useState({});
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
-  const { data, isLoading, error, isError, refetch } =
-    useState("");
-  // const { data, isLoading, error, isError, refetch } = useState(false);
-
+  const { data, isLoading, error, isError, refetch } =  useState("");
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
+
+
+
 
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
@@ -66,19 +104,9 @@ const ProjectPaymentList = () => {
   const clearFilter = () => {
     gridRef.current.api.setRowData(showSearchResults ? results : data);
   };
+  //START FOREIGN CALLS
 
-  useEffect(() => {
-    setProjectPayment(data);
-  }, [data]);
 
-  const truncateText = (text, maxLength) => {
-    if (typeof text !== "string") {
-      return text;
-    }
-    return text.length <= maxLength
-      ? text
-      : `${text.substring(0, maxLength)}...`;
-  };
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
@@ -110,7 +138,7 @@ const ProjectPaymentList = () => {
       setShowSearchResult(false);
     }
   };
-  const columnDefs = useMemo(() => {
+const columnDefs = useMemo(() => {
     const baseColumnDefs = [
       {
         headerName: t("S.N"),
@@ -139,70 +167,53 @@ const ProjectPaymentList = () => {
         },
       },
       {
-        headerName: t("prp_type"),
-        field: "prp_type",
+        headerName: t("bsr_name"),
+        field: "bsr_name",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.prp_type, 30) || "-";
+          return truncateText(params.data.bsr_name, 30) || "-";
         },
       },
       {
-        headerName: t("prp_payment_date_gc"),
-        field: "prp_payment_date_gc",
+        headerName: t("bsr_budget_source_id"),
+        field: "bsr_budget_source_id",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.prp_payment_date_gc, 30) || "-";
+          return truncateText(params.data.bsr_budget_source_id, 30) || "-";
         },
       },
       {
-        headerName: t("prp_payment_amount"),
-        field: "prp_payment_amount",
+        headerName: t("bsr_amount"),
+        field: "bsr_amount",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.prp_payment_amount, 30) || "-";
+          return truncateText(params.data.bsr_amount, 30) || "-";
         },
-      },
-
-      {
-        headerName: t("prp_payment_percentage"),
-        field: "prp_payment_percentage",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prp_payment_percentage, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prp_description"),
-        field: "prp_description",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prp_description, 30) || "-";
-        },
-      },
+      }
     ];
     return baseColumnDefs;
   });
-  // console.log("here is the data" + JSON.stringify(data[0]));
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
   return (
     <React.Fragment>
       <div className="page-content">
         <div>
           <Breadcrumbs
             title={t("project")}
-            breadcrumbItem={t("Project Payment List")}
+            breadcrumbItem={t("project_budget_source_list")}
           />
           <div className="w-100 d-flex gap-2">
             <AddressStructureForProject onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />
             <div className="w-100">
           <AdvancedSearch
-            searchHook={useSearchProjectPayments}
+            searchHook={useSearchProjectBudgetSources}
             textSearchKeys={["prj_name", "prj_code"]}
-            dateSearchKeys={["payment_date"]}
+            dateSearchKeys={[]}
             dropdownSearchKeys={[
               {
                 key: "prp_type",
@@ -264,9 +275,6 @@ const ProjectPaymentList = () => {
                   }}
                 />
               </div>
-              <PaymentAnalaysis
-        data={showSearchResult ? searchResults?.data : data?.data || []}
-      />
             </div>
           )}
         </div>
@@ -277,4 +285,4 @@ const ProjectPaymentList = () => {
     </React.Fragment>
   );
 };
-export default ProjectPaymentList;
+export default ProjectBudgetSourceList;

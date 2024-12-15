@@ -69,10 +69,6 @@ const SectorInformationModal = (props) => {
                     <p className="mb-2">
             {t('sci_description')}: <span className="text-primary">{transaction.sci_description}</span>
           </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('sci_status')}: <span className="text-primary">{transaction.sci_status}</span>
-          </p>
           </tr>
 
           {transaction.is_deletable === 1 && (

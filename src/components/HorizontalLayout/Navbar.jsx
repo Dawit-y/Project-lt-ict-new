@@ -51,7 +51,7 @@ const Navbar = (props) => {
             if (!acc[parent_menu]) {
               acc[parent_menu] = {
                 title:
-                  parent_menu.charAt(0).toUpperCase() + parent_menu.slice(1),
+                  parent_menu,
                 icon: link_icon,
                 submenu: [],
               };

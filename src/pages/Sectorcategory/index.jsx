@@ -149,7 +149,7 @@ const SectorCategoryModel = () => {
           );
         }),
 
-      psc_code: Yup.string().required(t("psc_code")),
+      //psc_code: Yup.string().required(t("psc_code")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -358,7 +358,9 @@ const SectorCategoryModel = () => {
 
     return baseColumns;
   }, [handleSectorCategoryClick, toggleViewModal, onClickDelete]);
-
+ if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
   return (
     <React.Fragment>
       <SectorCategoryModal
@@ -407,8 +409,7 @@ const SectorCategoryModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleSectorCategoryClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("sector_category")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -437,7 +438,7 @@ const SectorCategoryModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("psc_name")}</Label>
+                    <Label>{t("psc_name")}<span className="text-danger">*</span></Label>
                     <Input
                       name="psc_name"
                       type="text"
@@ -451,7 +452,7 @@ const SectorCategoryModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.psc_name &&
                     validation.errors.psc_name ? (
@@ -499,7 +500,7 @@ const SectorCategoryModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={425}
                     />
                     {validation.touched.psc_description &&
                     validation.errors.psc_description ? (

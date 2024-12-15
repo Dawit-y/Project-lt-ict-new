@@ -9,21 +9,22 @@ import {
 const PROJECT_BUDGET_SOURCE_QUERY_KEY = ["projectbudgetsource"];
 
 // Fetch project_budget_source
-export const useFetchProjectBudgetSources = () => {
+export const useFetchProjectBudgetSources = (param = {}, isActive) => {
   return useQuery({
-    queryKey: PROJECT_BUDGET_SOURCE_QUERY_KEY,
-    queryFn: () => getProjectBudgetSource(),
+    queryKey: [...PROJECT_BUDGET_SOURCE_QUERY_KEY, "fetch", param],
+    queryFn: () => getProjectBudgetSource(param),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+     enabled: isActive,
   });
 };
 
 //search project_budget_source
 export const useSearchProjectBudgetSources = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...PROJECT_BUDGET_SOURCE_QUERY_KEY, searchParams],
+    queryKey: [...PROJECT_BUDGET_SOURCE_QUERY_KEY, "search",searchParams],
     queryFn: () => getProjectBudgetSource(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
@@ -40,16 +41,23 @@ export const useAddProjectBudgetSource = () => {
   return useMutation({
     mutationFn: addProjectBudgetSource,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( PROJECT_BUDGET_SOURCE_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
+    const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_BUDGET_SOURCE_QUERY_KEY,
+      });
+
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        });
       });
     },
   });
@@ -61,17 +69,22 @@ export const useUpdateProjectBudgetSource = () => {
   return useMutation({
     mutationFn: updateProjectBudgetSource,
     onSuccess: (updatedProjectBudgetSource) => {
-      queryClient.setQueryData(PROJECT_BUDGET_SOURCE_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_BUDGET_SOURCE_QUERY_KEY,
+      });
 
-        return {
-          ...oldData,
-          data: oldData.data.map((ProjectBudgetSourceData) =>
-            ProjectBudgetSourceData.bsr_id === updatedProjectBudgetSource.data.bsr_id
-              ? { ...ProjectBudgetSourceData, ...updatedProjectBudgetSource.data }
-              : ProjectBudgetSourceData
-          ),
-        };
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((data) =>
+              data.bsr_id === updatedProjectBudgetSource.data.bsr_id
+                ? { ...data, ...updatedProjectBudgetSource.data }
+                : data
+            ),
+          };
+        });
       });
     },
   });
@@ -82,15 +95,21 @@ export const useDeleteProjectBudgetSource = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteProjectBudgetSource,
-    onSuccess: (deletedData) => {
-      queryClient.setQueryData(PROJECT_BUDGET_SOURCE_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (ProjectBudgetSourceData) => ProjectBudgetSourceData.bsr_id !== parseInt(deletedData.deleted_id)
-          ),
-        };
+    onSuccess: (deletedData, variable) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_BUDGET_SOURCE_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (projectBSource) => projectBSource.bsr_id !== parseInt(variable)
+            ),
+          };
+        });
       });
     },
   });

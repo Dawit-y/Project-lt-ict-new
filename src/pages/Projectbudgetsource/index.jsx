@@ -21,6 +21,7 @@ import {
   useDeleteProjectBudgetSource,
   useUpdateProjectBudgetSource,
 } from "../../queries/projectbudgetsource_query";
+import { useFetchBudgetSources } from "../../queries/budgetsource_query";
 import ProjectBudgetSourceModal from "./ProjectBudgetSourceModal";
 import { useTranslation } from "react-i18next";
 
@@ -48,7 +49,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-
+import { createSelectOptions } from "../../utils/commonMethods";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -56,9 +57,11 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const ProjectBudgetSourceModel = () => {
+const ProjectBudgetSourceModel = (props) => {
   //meta title
   document.title = " ProjectBudgetSource";
+  const { passedId, isActive } = props;
+  const param = { bsr_project_id: passedId };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -71,7 +74,13 @@ const ProjectBudgetSourceModel = () => {
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjectBudgetSources();
+    useFetchProjectBudgetSources(param, isActive);
+ const { data: budgetSourceData } = useFetchBudgetSources();
+  const budgetSourceOptions = createSelectOptions(
+    budgetSourceData?.data || [],
+    "pbs_id",
+    "pbs_name_or"
+  );
 
   const addProjectBudgetSource = useAddProjectBudgetSource();
   const updateProjectBudgetSource = useUpdateProjectBudgetSource();
@@ -149,12 +158,12 @@ const ProjectBudgetSourceModel = () => {
 
     validationSchema: Yup.object({
       bsr_name: Yup.string().required(t("bsr_name")),
-      bsr_project_id: Yup.string().required(t("bsr_project_id")),
+      //bsr_project_id: Yup.string().required(t("bsr_project_id")),
       bsr_budget_source_id: Yup.string().required(t("bsr_budget_source_id")),
       bsr_amount: Yup.string().required(t("bsr_amount")),
-      bsr_status: Yup.string().required(t("bsr_status")),
-      bsr_description: Yup.string().required(t("bsr_description")),
-      bsr_created_date: Yup.string().required(t("bsr_created_date")),
+      //bsr_status: Yup.string().required(t("bsr_status")),
+      //bsr_description: Yup.string().required(t("bsr_description")),
+      //bsr_created_date: Yup.string().required(t("bsr_created_date")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -163,7 +172,7 @@ const ProjectBudgetSourceModel = () => {
         const updateProjectBudgetSource = {
           bsr_id: projectBudgetSource?.bsr_id,
           bsr_name: values.bsr_name,
-          bsr_project_id: values.bsr_project_id,
+         // bsr_project_id: values.bsr_project_id,
           bsr_budget_source_id: values.bsr_budget_source_id,
           bsr_amount: values.bsr_amount,
           bsr_status: values.bsr_status,
@@ -179,7 +188,7 @@ const ProjectBudgetSourceModel = () => {
       } else {
         const newProjectBudgetSource = {
           bsr_name: values.bsr_name,
-          bsr_project_id: values.bsr_project_id,
+          bsr_project_id: passedId,
           bsr_budget_source_id: values.bsr_budget_source_id,
           bsr_amount: values.bsr_amount,
           bsr_status: values.bsr_status,
@@ -403,8 +412,8 @@ const ProjectBudgetSourceModel = () => {
       />
       <div className="page-content1">
         <div className="container-fluid1">
-          {isLoading || isSearchLoading ? (
-            <Spinners />
+        {isLoading || isSearchLoading ? (
+            <Spinners top={isActive ? "top-70" : ""} />
           ) : (
             <TableContainer
               columns={columns}
@@ -463,30 +472,42 @@ const ProjectBudgetSourceModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
+
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("bsr_budget_source_id")}</Label>
-                    <Input
-                      name="bsr_budget_source_id"
-                      type="text"
-                      placeholder={t("bsr_budget_source_id")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bsr_budget_source_id || ""}
-                      invalid={
-                        validation.touched.bsr_budget_source_id &&
-                        validation.errors.bsr_budget_source_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.bsr_budget_source_id &&
-                    validation.errors.bsr_budget_source_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bsr_budget_source_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                        <Label>
+                          {t("bsr_budget_source_id")}
+                          <span className="text-danger">*</span>
+                        </Label>
+                        <Input
+                          name="bsr_budget_source_id"
+                          type="select"
+                          className="form-select"
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={
+                            validation.values.bsr_budget_source_id || ""
+                          }
+                          invalid={
+                            validation.touched.bsr_budget_source_id &&
+                            validation.errors.bsr_budget_source_id
+                              ? true
+                              : false
+                          }
+                        >
+                          <option value={null}>Select Budget Source</option>
+                          {budgetSourceOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {t(`${option.label}`)}
+                            </option>
+                          ))}
+                        </Input>
+                        {validation.touched.bsr_budget_source_id &&
+                        validation.errors.bsr_budget_source_id ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.bsr_budget_source_id}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("bsr_amount")}</Label>
                     <Input

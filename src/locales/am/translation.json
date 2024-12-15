@@ -839,7 +839,11 @@
     
     "noPin": "ምንም አቆይ",
     "pinLeft": "ግራ አስቀምጥ",
-    "pinRight": "ቀኝ አስቀምጥ"
+    "pinRight": "ቀኝ አስቀምጥ",
+    "menu_lookup":"ማስተካከያ",
+"menu_project":"ፕሮጀክት ዝርዝር",
+"menu_project_detail":"ፕሮጀክት",
+"menu_user_admin":"ተጠቃሚ"
 
 
 }

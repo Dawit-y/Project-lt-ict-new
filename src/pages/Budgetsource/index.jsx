@@ -150,7 +150,7 @@ const BudgetSourceModel = () => {
         }),
       pbs_name_am: Yup.string().required(t("pbs_name_am")),
       pbs_name_en: Yup.string().required(t("pbs_name_en")),
-      pbs_code: Yup.string().required(t("pbs_code")),
+      //pbs_code: Yup.string().required(t("pbs_code")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -388,11 +388,9 @@ const BudgetSourceModel = () => {
 
     return baseColumns;
   }, [handleBudgetSourceClick, toggleViewModal, onClickDelete]);
-
-  if (isError) {
+ if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
   return (
     <React.Fragment>
       <BudgetSourceModal
@@ -442,7 +440,7 @@ const BudgetSourceModel = () => {
                       handleUserClick={handleBudgetSourceClicks}
                       isPagination={true}
                       // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={ t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("budget_source")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -471,7 +469,7 @@ const BudgetSourceModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pbs_name_or")}</Label>
+                    <Label>{t("pbs_name_or")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pbs_name_or"
                       type="text"
@@ -485,7 +483,7 @@ const BudgetSourceModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.pbs_name_or &&
                     validation.errors.pbs_name_or ? (
@@ -495,7 +493,7 @@ const BudgetSourceModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pbs_name_am")}</Label>
+                    <Label>{t("pbs_name_am")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pbs_name_am"
                       type="text"
@@ -509,7 +507,7 @@ const BudgetSourceModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.pbs_name_am &&
                     validation.errors.pbs_name_am ? (
@@ -519,7 +517,7 @@ const BudgetSourceModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pbs_name_en")}</Label>
+                    <Label>{t("pbs_name_en")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pbs_name_en"
                       type="text"
@@ -533,7 +531,7 @@ const BudgetSourceModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.pbs_name_en &&
                     validation.errors.pbs_name_en ? (

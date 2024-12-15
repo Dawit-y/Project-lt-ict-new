@@ -1,55 +1,105 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState,useRef } from "react";
+import axios from "axios";
+import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
+import { isEmpty, update } from "lodash";
+import "bootstrap/dist/css/bootstrap.min.css";
+import TableContainer from "../../components/Common/TableContainer";
+import * as Yup from "yup";
+import { useFormik } from "formik";
+import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
+import SearchComponent from "../../components/Common/SearchComponent";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-
+import DeleteModal from "../../components/Common/DeleteModal";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-
-// import { getProject as onGetProject } from "../../store/project/actions";
-import { getProjectPayment as onGetProjectPayment } from "../../store/projectpayment/actions";
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
+import {
+  useFetchProjectPerformances,
+  useSearchProjectPerformances,
+  useAddProjectPerformance,
+  useDeleteProjectPerformance,
+  useUpdateProjectPerformance,
+} from "../../queries/projectperformance_query";
+import AddressStructureForProject from "../Project/AddressStructureForProject";
+import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
+import ProjectPerformanceModal from "./ProjectPerformanceModal";
 import { useTranslation } from "react-i18next";
 
-import { Button, Col, Row, Input } from "reactstrap";
+import { useSelector, useDispatch } from "react-redux";
+import { createSelector } from "reselect";
+
+import {
+  Button,
+  Col,
+  Row,
+  UncontrolledTooltip,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  Form,
+  Input,
+  FormFeedback,
+  Label,
+  Card,
+  CardBody,
+  FormGroup,
+  Badge,
+  InputGroup
+} from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import PaymentAnalaysis from "./PaymentAnalaysis";
-import {
-  useFetchProjectPayments,
-  useSearchProjectPayments,
-} from "../../queries/projectpayment_query";
-import AddressStructureForProject from "../Project/AddressStructureForProject";
-const ProjectPaymentList = () => {
-  document.title = "Project Payment List";
+import { createSelectOptions } from "../../utils/commonMethods";
+import "flatpickr/dist/themes/material_blue.css";
+import Flatpickr from "react-flatpickr";
+import { formatDate } from "../../utils/commonMethods";
+const truncateText = (text, maxLength) => {
+  if (typeof text !== "string") {
+    return text;
+  }
+  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+};
 
+const ProjectPerformanceList= (props) => {
+  const { data: projectStatusData } = useFetchProjectStatuss();
+  const projectStatusOptions = createSelectOptions(
+    projectStatusData?.data || [],
+    "prs_id",
+    "prs_status_name_or"
+  );
+  //  get passed data from tab
+  const { passedId, isActive } = props;
+  const param = { prp_project_id: passedId };
+  //meta title
+  document.title = " ProjectPerformance";
   const { t } = useTranslation();
-  //   const [project, setProject] = useState(null);
-  const [projectPayment, setProjectPayment] = useState(null);
+  const [modal, setModal] = useState(false);
+  const [modal1, setModal1] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [projectPerformance, setProjectPerformance] = useState(null);
+
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-    const [projectParams, setProjectParams] = useState({});
+   const [projectParams, setProjectParams] = useState({});
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const { data, isLoading, error, isError, refetch } =
-    useState("");
-  // const { data, isLoading, error, isError, refetch } = useState(false);
-
-  const [quickFilterText, setQuickFilterText] = useState("");
+    useState({});
+  const [transaction, setTransaction] = useState({});
+  const toggleViewModal = () => setModal1(!modal1);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [quickFilterText, setQuickFilterText] = useState("");
   const gridRef = useRef(null);
-
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
@@ -66,18 +116,28 @@ const ProjectPaymentList = () => {
   const clearFilter = () => {
     gridRef.current.api.setRowData(showSearchResults ? results : data);
   };
+  // Fetch ProjectPerformance on component mount
 
-  useEffect(() => {
-    setProjectPayment(data);
-  }, [data]);
-
-  const truncateText = (text, maxLength) => {
-    if (typeof text !== "string") {
-      return text;
+  const toggle = () => {
+    if (modal) {
+      setModal(false);
+      setProjectPerformance(null);
+    } else {
+      setModal(true);
     }
-    return text.length <= maxLength
-      ? text
-      : `${text.substring(0, maxLength)}...`;
+  };
+
+  //delete projects
+  const [deleteModal, setDeleteModal] = useState(false);
+  const onClickDelete = (projectPerformance) => {
+    setProjectPerformance(projectPerformance);
+    setDeleteModal(true);
+  };
+
+  const handleProjectPerformanceClicks = () => {
+    setIsEdit(false);
+    setProjectPerformance("");
+    toggle();
   };
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
@@ -110,6 +170,7 @@ const ProjectPaymentList = () => {
       setShowSearchResult(false);
     }
   };
+  //START UNCHANGED
   const columnDefs = useMemo(() => {
     const baseColumnDefs = [
       {
@@ -139,40 +200,40 @@ const ProjectPaymentList = () => {
         },
       },
       {
-        headerName: t("prp_type"),
-        field: "prp_type",
+        headerName: t("prp_project_status_id"),
+        field: "prp_project_status_id",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.prp_type, 30) || "-";
+          return truncateText(params.data.prp_project_status_id, 30) || "-";
         },
       },
       {
-        headerName: t("prp_payment_date_gc"),
-        field: "prp_payment_date_gc",
+        headerName: t("prp_record_date_gc"),
+        field: "prp_record_date_gc",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.prp_payment_date_gc, 30) || "-";
+          return truncateText(params.data.prp_record_date_gc, 30) || "-";
         },
       },
       {
-        headerName: t("prp_payment_amount"),
-        field: "prp_payment_amount",
+        headerName: t("prp_total_budget_used"),
+        field: "prp_total_budget_used",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.prp_payment_amount, 30) || "-";
+          return truncateText(params.data.prp_total_budget_used, 30) || "-";
         },
       },
 
       {
-        headerName: t("prp_payment_percentage"),
-        field: "prp_payment_percentage",
+        headerName: t("prp_physical_performance"),
+        field: "prp_physical_performance",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.prp_payment_percentage, 30) || "-";
+          return truncateText(params.data.prp_physical_performance, 30) || "-";
         },
       },
       {
@@ -187,32 +248,30 @@ const ProjectPaymentList = () => {
     ];
     return baseColumnDefs;
   });
-  // console.log("here is the data" + JSON.stringify(data[0]));
-  return (
+
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+ return (
     <React.Fragment>
       <div className="page-content">
         <div>
           <Breadcrumbs
             title={t("project")}
-            breadcrumbItem={t("Project Payment List")}
+            breadcrumbItem={t("project_performance_list")}
           />
           <div className="w-100 d-flex gap-2">
             <AddressStructureForProject onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />
             <div className="w-100">
           <AdvancedSearch
-            searchHook={useSearchProjectPayments}
+            searchHook={useSearchProjectPerformances}
             textSearchKeys={["prj_name", "prj_code"]}
-            dateSearchKeys={["payment_date"]}
+            dateSearchKeys={["performance_date"]}
             dropdownSearchKeys={[
               {
-                key: "prp_type",
-                options: [
-                  { value: "Advance", label: "Advance" },
-                  { value: "Interim", label: "Interim" },
-                  { value: "Final", label: "Final" },
-                ],
-              },
-            ]}
+                    key: "prp_project_status_id",
+                    options: projectStatusOptions,
+                  }]}
             checkboxSearchKeys={[]}
             additionalParams={projectParams}
             setAdditionalParams={setProjectParams}
@@ -264,9 +323,6 @@ const ProjectPaymentList = () => {
                   }}
                 />
               </div>
-              <PaymentAnalaysis
-        data={showSearchResult ? searchResults?.data : data?.data || []}
-      />
             </div>
           )}
         </div>
@@ -277,4 +333,5 @@ const ProjectPaymentList = () => {
     </React.Fragment>
   );
 };
-export default ProjectPaymentList;
+
+export default ProjectPerformanceList;

@@ -65,10 +65,6 @@ const DepartmentModal = (props) => {
                     <p className="mb-2">
             {t('dep_description')}: <span className="text-primary">{transaction.dep_description}</span>
           </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('dep_status')}: <span className="text-primary">{transaction.dep_status}</span>
-          </p>
           </tr>
 
           {transaction.is_deletable === 1 && (

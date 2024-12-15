@@ -41,17 +41,10 @@ const ExpenditureCodeModal = (props) => {
                     <p className="mb-2">
             {t('pec_code')}: <span className="text-primary">{transaction.pec_code}</span>
           </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pec_status')}: <span className="text-primary">{transaction.pec_status}</span>
-          </p>
-          </tr><tr>
+          </tr>
+          <tr>
                     <p className="mb-2">
             {t('pec_description')}: <span className="text-primary">{transaction.pec_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pec_created_date')}: <span className="text-primary">{transaction.pec_created_date}</span>
           </p>
           </tr>
 

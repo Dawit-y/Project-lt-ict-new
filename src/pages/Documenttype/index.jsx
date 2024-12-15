@@ -151,7 +151,7 @@ const DocumentTypeModel = () => {
         }),
       pdt_doc_name_am: Yup.string().required(t("pdt_doc_name_am")),
       pdt_doc_name_en: Yup.string().required(t("pdt_doc_name_en")),
-      pdt_code: Yup.string().required(t("pdt_code")),
+      //pdt_code: Yup.string().required(t("pdt_code")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -389,7 +389,9 @@ const DocumentTypeModel = () => {
 
     return baseColumns;
   }, [handleDocumentTypeClick, toggleViewModal, onClickDelete]);
-
+ if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
   return (
     <React.Fragment>
       <DocumentTypeModal
@@ -438,8 +440,7 @@ const DocumentTypeModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleDocumentTypeClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={ t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("document_type")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -468,7 +469,7 @@ const DocumentTypeModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pdt_doc_name_or")}</Label>
+                    <Label>{t("pdt_doc_name_or")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pdt_doc_name_or"
                       type="text"
@@ -482,7 +483,7 @@ const DocumentTypeModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.pdt_doc_name_or &&
                     validation.errors.pdt_doc_name_or ? (
@@ -492,7 +493,7 @@ const DocumentTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pdt_doc_name_am")}</Label>
+                    <Label>{t("pdt_doc_name_am")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pdt_doc_name_am"
                       type="text"
@@ -506,7 +507,7 @@ const DocumentTypeModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.pdt_doc_name_am &&
                     validation.errors.pdt_doc_name_am ? (
@@ -516,7 +517,7 @@ const DocumentTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pdt_doc_name_en")}</Label>
+                    <Label>{t("pdt_doc_name_en")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pdt_doc_name_en"
                       type="text"
@@ -530,7 +531,7 @@ const DocumentTypeModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.pdt_doc_name_en &&
                     validation.errors.pdt_doc_name_en ? (
@@ -578,7 +579,7 @@ const DocumentTypeModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={425}
                     />
                     {validation.touched.pdt_description &&
                     validation.errors.pdt_description ? (

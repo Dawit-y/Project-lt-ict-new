@@ -79,7 +79,7 @@ export const useUpdateProjectVariation = () => {
           return {
             ...oldData,
             data: oldData.data.map((data) =>
-              data.bdr_id === updatedData.data.bdr_id
+              data.prv_id === updatedData.data.prv_id
                 ? { ...data, ...updatedData.data }
                 : data
             ),
@@ -106,7 +106,7 @@ export const useDeleteProjectVariation = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.bdr_id !== parseInt(variable)
+              (dept) => dept.prv_id !== parseInt(variable)
             ),
           };
         });

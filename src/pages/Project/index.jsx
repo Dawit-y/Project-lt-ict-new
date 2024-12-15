@@ -39,6 +39,12 @@ import ProjectStakeholder from "../../pages/Projectstakeholder";
 import Projectcontractor from "../../pages/Projectcontractor";
 import Budgetrequest from "../../pages/Budgetrequest";
 import GeoLocation from "../../pages/GeoLocation";
+import ProjectBudgetExpenditureModel from "../Projectbudgetexpenditure";
+import ProjectEmployeeModel from "../../pages/Projectemployee";
+import ProjectHandoverModel from "../Projecthandover";
+import ProjectPerformanceModel from "../Projectperformance";
+import ProjectSupplimentaryModel from "../Projectsupplimentary";
+import ProjectVariationModel from "../Projectvariation";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 
@@ -689,8 +695,7 @@ const ProjectModel = () => {
 
     // Add actions column based on privileges
     if (
-      data?.previledge?.is_role_editable ||
-      data?.previledge?.is_role_deletable
+      1==1
     ) {
       baseColumnDefs.push({
         headerName: t("actions"),
@@ -851,12 +856,12 @@ const ProjectModel = () => {
                   },
                 ]}
                 checkboxSearchKeys={[]}
-                Component={CascadingDropdowns}
-                component_params={{
-                  dropdown1name: "prj_location_region_id",
-                  dropdown2name: "prj_location_zone_id",
-                  dropdown3name: "prj_location_woreda_id",
-                }}
+              /*   Component={CascadingDropdowns}
+            component_params={{
+              dropdown1name: "prj_location_region_id",
+              dropdown2name: "prj_location_zone_id",
+              dropdown3name: "prj_location_woreda_id",
+            }}*/
                 additionalParams={projectParams}
                 setAdditionalParams={setProjectParams}
                 onSearchResult={handleSearchResults}
@@ -906,7 +911,7 @@ const ProjectModel = () => {
                       enableCharts={true} // Enable charts
                       chartThemes={chartThemes} // Add custom chart themes
                       pivotMode={false}
-                      sideBar={sideBar} // Enable and configure sidebar
+                      sideBar={null} // Enable and configure sidebar
                       rowGroupPanelShow="always"
                       pivotPanelShow="always"
                       pagination={true}
@@ -1461,14 +1466,20 @@ const ProjectModel = () => {
             "Budget Request",
             "Geo Location",
           ]}
-          components={[
-            ProjectDocument,
-            ProjectPayment,
-            ProjectStakeholder,
-            Projectcontractor,
-            Budgetrequest,
-            GeoLocation,
-          ]}
+          components={{
+            Documents: ProjectDocument,
+            Payments: ProjectPayment,
+            Stakeholder: ProjectStakeholder,
+            Contractor: Projectcontractor,
+            "Budget Request": Budgetrequest,
+            "Geo Location": GeoLocation,
+            "Budget Expenditures": ProjectBudgetExpenditureModel,
+            Employees: ProjectEmployeeModel,
+            Handover: ProjectHandoverModel,
+            Performance: ProjectPerformanceModel,
+            Supplementary: ProjectSupplimentaryModel,
+            Variations: ProjectVariationModel,
+          }}
         />
       )}
     </React.Fragment>

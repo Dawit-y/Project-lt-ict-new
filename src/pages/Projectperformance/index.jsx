@@ -21,6 +21,7 @@ import {
   useDeleteProjectPerformance,
   useUpdateProjectPerformance,
 } from "../../queries/projectperformance_query";
+import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 import ProjectPerformanceModal from "./ProjectPerformanceModal";
 import { useTranslation } from "react-i18next";
 
@@ -43,12 +44,16 @@ import {
   CardBody,
   FormGroup,
   Badge,
+  InputGroup
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-
+import { createSelectOptions } from "../../utils/commonMethods";
+import "flatpickr/dist/themes/material_blue.css";
+import Flatpickr from "react-flatpickr";
+import { formatDate } from "../../utils/commonMethods";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -57,6 +62,12 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectPerformanceModel = (props) => {
+  const { data: projectCategoryData } = useFetchProjectStatuss();
+  const projectStatusOptions = createSelectOptions(
+    projectCategoryData?.data || [],
+    "prs_id",
+    "prs_status_name_or"
+  );
   //  get passed data from tab
   const { passedId, isActive } = props;
   const param = { prp_project_id: passedId };
@@ -168,7 +179,7 @@ const ProjectPerformanceModel = (props) => {
       prp_physical_performance: Yup.string().required(
         t("prp_physical_performance")
       ),
-      prp_description: Yup.string().required(t("prp_description")),
+      //prp_description: Yup.string().required(t("prp_description")),
       // prp_status: Yup.string().required(t('prp_status')),
       //prp_created_date: Yup.string().required(t('prp_created_date')),
       //prp_termination_reason_id: Yup.string().required(t('prp_termination_reason_id')),
@@ -179,7 +190,7 @@ const ProjectPerformanceModel = (props) => {
       if (isEdit) {
         const updateProjectPerformance = {
           prp_id: projectPerformance?.prp_id,
-          prp_project_id: passedId,
+          //prp_project_id: passedId,
           prp_project_status_id: parseInt(values.prp_project_status_id),
           prp_record_date_ec: values.prp_record_date_ec,
           prp_record_date_gc: values.prp_record_date_gc,
@@ -352,23 +363,6 @@ const ProjectPerformanceModel = (props) => {
         },
       },
       {
-        header: "",
-        accessorKey: "prp_termination_reason_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.prp_termination_reason_id,
-                30
-              ) || "-"}
-            </span>
-          );
-        },
-      },
-
-      {
         header: t("view_detail"),
         enableColumnFilter: false,
         enableSorting: true,
@@ -502,53 +496,83 @@ const ProjectPerformanceModel = (props) => {
                 }}
               >
                 <Row>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prp_project_status_id")}</Label>
+                <Col className="col-md-6 mb-3">
+                    <Label>
+                      {t("prp_project_status_id")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prp_project_status_id"
-                      type="text"
-                      placeholder={t("prp_project_status_id")}
+                      type="select"
+                      className="form-select"
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.prp_project_status_id || ""}
                       invalid={
                         validation.touched.prp_project_status_id &&
-                        validation.errors.prp_project_status_id
+                          validation.errors.prp_project_status_id
                           ? true
                           : false
                       }
-                      maxLength={20}
-                    />
+                    >
+                      <option value={null}>Select Project Category</option>
+                      {projectStatusOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {t(`${option.label}`)}
+                        </option>
+                      ))}
+                    </Input>
                     {validation.touched.prp_project_status_id &&
-                    validation.errors.prp_project_status_id ? (
+                      validation.errors.prp_project_status_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_project_status_id}
                       </FormFeedback>
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prp_record_date_gc")}</Label>
-                    <Input
-                      name="prp_record_date_gc"
-                      type="text"
-                      placeholder={t("prp_record_date_gc")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_record_date_gc || ""}
-                      invalid={
-                        validation.touched.prp_record_date_gc &&
-                        validation.errors.prp_record_date_gc
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prp_record_date_gc &&
-                    validation.errors.prp_record_date_gc ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_record_date_gc}
-                      </FormFeedback>
-                    ) : null}
+                    <FormGroup>
+                      <Label>{t("prp_record_date_gc")}</Label>
+                      <InputGroup>
+                        <Flatpickr
+                          id="DataPicker"
+                          className={`form-control ${validation.touched.prp_record_date_gc &&
+                              validation.errors.prp_record_date_gc
+                              ? "is-invalid"
+                              : ""
+                            }`}
+                          name="prp_record_date_gc"
+                          options={{
+                            altInput: true,
+                            altFormat: "Y/m/d",
+                            dateFormat: "Y/m/d",
+                            enableTime: false,
+                          }}
+                          value={validation.values.prp_record_date_gc || ""}
+                          onChange={(date) => {
+                            const formatedDate = formatDate(date[0]);
+                            validation.setFieldValue(
+                              "prp_record_date_gc",
+                              formatedDate
+                            ); // Set value in Formik
+                          }}
+                          onBlur={validation.handleBlur}
+                        />
+
+                        <Button
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          disabled
+                        >
+                          <i className="fa fa-calendar" aria-hidden="true" />
+                        </Button>
+                      </InputGroup>
+                      {validation.touched.prp_record_date_gc &&
+                        validation.errors.prp_record_date_gc ? (
+                        <FormFeedback>
+                          {validation.errors.prp_record_date_gc}
+                        </FormFeedback>
+                      ) : null}
+                    </FormGroup>
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("prp_total_budget_used")}</Label>

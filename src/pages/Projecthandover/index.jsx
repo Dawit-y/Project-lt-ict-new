@@ -43,12 +43,15 @@ import {
   CardBody,
   FormGroup,
   Badge,
+  InputGroup
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-
+import "flatpickr/dist/themes/material_blue.css";
+import Flatpickr from "react-flatpickr";
+import { formatDate } from "../../utils/commonMethods";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -71,7 +74,7 @@ const ProjectHandoverModel = (props) => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-
+  
   const { data, isLoading, error, isError, refetch } = useFetchProjectHandovers(
     param,
     isActive
@@ -147,11 +150,11 @@ const ProjectHandoverModel = (props) => {
     },
 
     validationSchema: Yup.object({
-      prh_project_id: Yup.string().required(t("prh_project_id")),
-      prh_handover_date_ec: Yup.string().required(t("prh_handover_date_ec")),
+      //prh_project_id: Yup.string().required(t("prh_project_id")),
+     // prh_handover_date_ec: Yup.string().required(t("prh_handover_date_ec")),
       prh_handover_date_gc: Yup.string().required(t("prh_handover_date_gc")),
-      prh_description: Yup.string().required(t("prh_description")),
-      prh_status: Yup.string().required(t("prh_status")),
+      //prh_description: Yup.string().required(t("prh_description")),
+      //prh_status: Yup.string().required(t("prh_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -159,7 +162,7 @@ const ProjectHandoverModel = (props) => {
       if (isEdit) {
         const updateProjectHandover = {
           prh_id: projectHandover?.prh_id,
-          prh_project_id: values.prh_project_id,
+         // prh_project_id: values.prh_project_id,
           prh_handover_date_ec: values.prh_handover_date_ec,
           prh_handover_date_gc: values.prh_handover_date_gc,
           prh_description: values.prh_description,
@@ -173,7 +176,7 @@ const ProjectHandoverModel = (props) => {
         validation.resetForm();
       } else {
         const newProjectHandover = {
-          prh_project_id: values.prh_project_id,
+          prh_project_id: passedId,
           prh_handover_date_ec: values.prh_handover_date_ec,
           prh_handover_date_gc: values.prh_handover_date_gc,
           prh_description: values.prh_description,
@@ -246,33 +249,6 @@ const ProjectHandoverModel = (props) => {
     const baseColumns = [
       {
         header: "",
-        accessorKey: "prh_project_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prh_project_id, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "prh_handover_date_ec",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prh_handover_date_ec, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
         accessorKey: "prh_handover_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
@@ -298,20 +274,6 @@ const ProjectHandoverModel = (props) => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "prh_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prh_status, 30) || "-"}
-            </span>
-          );
-        },
-      },
-
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -490,83 +452,56 @@ const ProjectHandoverModel = (props) => {
                 }}
               >
                 <Row>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prh_project_id")}</Label>
-                    <Input
-                      name="prh_project_id"
-                      type="text"
-                      placeholder={t("prh_project_id")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prh_project_id || ""}
-                      invalid={
-                        validation.touched.prh_project_id &&
-                        validation.errors.prh_project_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prh_project_id &&
-                    validation.errors.prh_project_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prh_project_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prh_handover_date_ec")}</Label>
-                    <Input
-                      name="prh_handover_date_ec"
-                      type="text"
-                      placeholder={t("prh_handover_date_ec")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prh_handover_date_ec || ""}
-                      invalid={
-                        validation.touched.prh_handover_date_ec &&
-                        validation.errors.prh_handover_date_ec
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prh_handover_date_ec &&
-                    validation.errors.prh_handover_date_ec ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prh_handover_date_ec}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prh_handover_date_gc")}</Label>
-                    <Input
-                      name="prh_handover_date_gc"
-                      type="text"
-                      placeholder={t("prh_handover_date_gc")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prh_handover_date_gc || ""}
-                      invalid={
-                        validation.touched.prh_handover_date_gc &&
-                        validation.errors.prh_handover_date_gc
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prh_handover_date_gc &&
-                    validation.errors.prh_handover_date_gc ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prh_handover_date_gc}
-                      </FormFeedback>
-                    ) : null}
+                <Col className="col-md-6 mb-3">
+                    <FormGroup>
+                      <Label>{t("prh_handover_date_gc")}</Label>
+                      <InputGroup>
+                        <Flatpickr
+                          id="DataPicker"
+                          className={`form-control ${validation.touched.prh_handover_date_gc &&
+                              validation.errors.prh_handover_date_gc
+                              ? "is-invalid"
+                              : ""
+                            }`}
+                          name="prh_handover_date_gc"
+                          options={{
+                            altInput: true,
+                            altFormat: "Y/m/d",
+                            dateFormat: "Y/m/d",
+                            enableTime: false,
+                          }}
+                          value={validation.values.prh_handover_date_gc || ""}
+                          onChange={(date) => {
+                            const formatedDate = formatDate(date[0]);
+                            validation.setFieldValue(
+                              "prh_handover_date_gc",
+                              formatedDate
+                            ); // Set value in Formik
+                          }}
+                          onBlur={validation.handleBlur}
+                        />
+
+                        <Button
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          disabled
+                        >
+                          <i className="fa fa-calendar" aria-hidden="true" />
+                        </Button>
+                      </InputGroup>
+                      {validation.touched.prh_handover_date_gc &&
+                        validation.errors.prh_handover_date_gc ? (
+                        <FormFeedback>
+                          {validation.errors.prh_handover_date_gc}
+                        </FormFeedback>
+                      ) : null}
+                    </FormGroup>
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("prh_description")}</Label>
                     <Input
                       name="prh_description"
-                      type="text"
+                      type="textarea"
                       placeholder={t("prh_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -583,30 +518,6 @@ const ProjectHandoverModel = (props) => {
                     validation.errors.prh_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prh_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prh_status")}</Label>
-                    <Input
-                      name="prh_status"
-                      type="text"
-                      placeholder={t("prh_status")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prh_status || ""}
-                      invalid={
-                        validation.touched.prh_status &&
-                        validation.errors.prh_status
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prh_status &&
-                    validation.errors.prh_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prh_status}
                       </FormFeedback>
                     ) : null}
                   </Col>

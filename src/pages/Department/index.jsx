@@ -146,19 +146,19 @@ const DepartmentModel = () => {
               item.dep_name_en == value && item.dep_id !== department?.dep_id
           );
         }),
-      dep_code: Yup.string()
+   /*   dep_code: Yup.string()
         .required(t("dep_code"))
         .test("unique-code", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.dep_code == value && item.dep_id !== department?.dep_id
           );
-        }),
-      dep_available_at_region: Yup.boolean(),
-      dep_available_at_zone: Yup.boolean(),
-      dep_available_at_woreda: Yup.boolean(),
-      dep_description: Yup.string().required(t("dep_description")),
-      dep_status: Yup.string().required(t("dep_status")),
+        }),*/
+      //dep_available_at_region: Yup.boolean(),
+      //dep_available_at_zone: Yup.boolean(),
+      //dep_available_at_woreda: Yup.boolean(),
+      //dep_description: Yup.string().required(t("dep_description")),
+      //dep_status: Yup.string().required(t("dep_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -464,7 +464,9 @@ const DepartmentModel = () => {
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
+ if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
   return (
     <React.Fragment>
       <DepartmentModal
@@ -560,11 +562,11 @@ const DepartmentModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("dep_name_or")}</Label>
+                    <Label>{t("dep_name_or")}<span className="text-danger">*</span></Label>
                     <Input
                       name="dep_name_or"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("dep_name_or")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.dep_name_or || ""}
@@ -574,7 +576,7 @@ const DepartmentModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.dep_name_or &&
                     validation.errors.dep_name_or ? (
@@ -584,11 +586,11 @@ const DepartmentModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("dep_name_am")}</Label>
+                    <Label>{t("dep_name_am")}<span className="text-danger">*</span></Label>
                     <Input
                       name="dep_name_am"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("dep_name_am")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.dep_name_am || ""}
@@ -598,7 +600,7 @@ const DepartmentModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.dep_name_am &&
                     validation.errors.dep_name_am ? (
@@ -608,11 +610,11 @@ const DepartmentModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("dep_name_en")}</Label>
+                    <Label>{t("dep_name_en")}<span className="text-danger">*</span></Label>
                     <Input
                       name="dep_name_en"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("dep_name_en")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.dep_name_en || ""}
@@ -622,7 +624,7 @@ const DepartmentModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.dep_name_en &&
                     validation.errors.dep_name_en ? (
@@ -636,7 +638,7 @@ const DepartmentModel = () => {
                     <Input
                       name="dep_code"
                       type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      placeholder={t("dep_code")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.dep_code || ""}
@@ -664,7 +666,7 @@ const DepartmentModel = () => {
                         id="dep_available_at_region"
                         name="dep_available_at_region"
                         type="checkbox"
-                        placeholder={t("insert_status_name_amharic")}
+                        placeholder={t("dep_available_at_region")}
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
                         checked={validation.values.dep_available_at_region}
@@ -674,7 +676,6 @@ const DepartmentModel = () => {
                             ? true
                             : false
                         }
-                        maxLength={20}
                       />
                       {validation.touched.dep_available_at_region &&
                       validation.errors.dep_available_at_region ? (
@@ -691,7 +692,7 @@ const DepartmentModel = () => {
                         id="dep_available_at_zone"
                         name="dep_available_at_zone"
                         type="checkbox"
-                        placeholder={t("insert_status_name_amharic")}
+                        placeholder={t("dep_available_at_zone")}
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
                         checked={validation.values.dep_available_at_zone}
@@ -701,7 +702,6 @@ const DepartmentModel = () => {
                             ? true
                             : false
                         }
-                        maxLength={20}
                       />
                       {validation.touched.dep_available_at_zone &&
                       validation.errors.dep_available_at_zone ? (
@@ -718,7 +718,7 @@ const DepartmentModel = () => {
                         id="dep_available_at_woreda"
                         name="dep_available_at_woreda"
                         type="checkbox"
-                        placeholder={t("insert_status_name_amharic")}
+                        placeholder={t("dep_available_at_woreda")}
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
                         checked={validation.values.dep_available_at_woreda}
@@ -728,7 +728,6 @@ const DepartmentModel = () => {
                             ? true
                             : false
                         }
-                        maxLength={20}
                       />
                       {validation.touched.dep_available_at_woreda &&
                       validation.errors.dep_available_at_woreda ? (
@@ -742,8 +741,9 @@ const DepartmentModel = () => {
                     <Label>{t("dep_description")}</Label>
                     <Input
                       name="dep_description"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      type="textarea"
+                      rows={2}
+                      placeholder={t("dep_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.dep_description || ""}
@@ -753,7 +753,7 @@ const DepartmentModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={425}
                     />
                     {validation.touched.dep_description &&
                     validation.errors.dep_description ? (
@@ -762,36 +762,7 @@ const DepartmentModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("dep_status")}</Label>
-                    <Input
-                      name="dep_status"
-                      type="select"
-                      className="form-select"
-                      onChange={(e) => {
-                        validation.setFieldValue(
-                          "dep_status",
-                          Number(e.target.value)
-                        );
-                      }}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.dep_status}
-                      invalid={
-                        validation.touched.dep_status &&
-                        Boolean(validation.errors.dep_status)
-                      }
-                    >
-                      <option value={null}>Select status</option>
-                      <option value={1}>{t("Active")}</option>
-                      <option value={0}>{t("Inactive")}</option>
-                    </Input>
-                    {validation.touched.url_status &&
-                    validation.errors.url_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.url_status}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                 {/**/}
                 </Row>
                 <Row>
                   <Col>

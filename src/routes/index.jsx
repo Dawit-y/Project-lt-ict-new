@@ -73,6 +73,13 @@ import ProjectBudgetExpenditure from '../pages/Projectbudgetexpenditure/index';
 import ProjectEmployee from '../pages/Projectemployee/index';
 import ProjectHandover from '../pages/Projecthandover/index';
 import ProjectPerformance from '../pages/Projectperformance/index';
+import ProjectPerformanceList from '../pages/Projectperformance/ProjectperformanceList';
+import ProjectHandoverList from '../pages/Projecthandover/ProjectHandoverList';
+import ProjectBudgetExpenditureList from '../pages/Projectbudgetexpenditure/ProjectBudgetExpenditureList';
+import ProjectBudgetSourceList from '../pages/Projectbudgetsource/ProjectBudgetSourceList';
+import ProjectVariationList from '../pages/Projectvariation/ProjectVariationList';
+import ProjectSupplimentaryList from '../pages/Projectsupplimentary/ProjectSupplimentaryList';
+
 import ProjectPlan from '../pages/Projectplan/index';
 import ProjectSupplimentary from '../pages/Projectsupplimentary/index';
 import ProjectVariation from '../pages/Projectvariation/index';
@@ -83,6 +90,13 @@ const authProtectedRoutes = [
    {path: '/project_employee', component: <ProjectEmployee/> },
   {path: '/project_handover', component: <ProjectHandover/> },
   {path: '/project_performance', component: <ProjectPerformance/> },
+  {path: '/project_performance_list', component: <ProjectPerformanceList/> },
+  {path: '/project_handover_list', component: <ProjectHandoverList/> },
+  {path: '/project_budget_expenditure_list', component: <ProjectBudgetExpenditureList/> },
+  {path: '/project_budget_source_list', component: <ProjectBudgetSourceList/> },
+  {path: '/project_variation_list', component: <ProjectVariationList/> },
+  {path: '/project_supplimentary_list', component: <ProjectSupplimentaryList/> },
+  
 //  {path: '/project_plan', component: <ProjectPlan/> },
   {
     path: '/project/:prj_code/project_plan',

@@ -53,10 +53,6 @@ const BudgetSourceModal = (props) => {
                     <p className="mb-2">
             {t('pbs_description')}: <span className="text-primary">{transaction.pbs_description}</span>
           </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pbs_status')}: <span className="text-primary">{transaction.pbs_status}</span>
-          </p>
           </tr>
 
           {transaction.is_deletable === 1 && (

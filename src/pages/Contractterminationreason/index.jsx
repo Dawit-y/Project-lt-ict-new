@@ -394,11 +394,9 @@ const ContractTerminationReasonModel = () => {
 
     return baseColumns;
   }, [handleContractTerminationReasonClick, toggleViewModal, onClickDelete]);
-
-  if (isError) {
+ if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
   return (
     <React.Fragment>
       <ContractTerminationReasonModal
@@ -448,7 +446,7 @@ const ContractTerminationReasonModel = () => {
                       handleUserClick={handleContractTerminationReasonClicks}
                       isPagination={true}
                       // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={ t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={
                         t("add") + " " + t("contract_termination_reason")
@@ -479,7 +477,7 @@ const ContractTerminationReasonModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("ctr_reason_name_or")}</Label>
+                    <Label>{t("ctr_reason_name_or")}<span className="text-danger">*</span></Label>
                     <Input
                       name="ctr_reason_name_or"
                       type="text"
@@ -493,7 +491,7 @@ const ContractTerminationReasonModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.ctr_reason_name_or &&
                     validation.errors.ctr_reason_name_or ? (
@@ -503,7 +501,7 @@ const ContractTerminationReasonModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("ctr_reason_name_am")}</Label>
+                    <Label>{t("ctr_reason_name_am")}<span className="text-danger">*</span></Label>
                     <Input
                       name="ctr_reason_name_am"
                       type="text"
@@ -517,7 +515,7 @@ const ContractTerminationReasonModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.ctr_reason_name_am &&
                     validation.errors.ctr_reason_name_am ? (
@@ -527,7 +525,7 @@ const ContractTerminationReasonModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("ctr_reason_name_en")}</Label>
+                    <Label>{t("ctr_reason_name_en")}<span className="text-danger">*</span></Label>
                     <Input
                       name="ctr_reason_name_en"
                       type="text"
@@ -541,7 +539,7 @@ const ContractTerminationReasonModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.ctr_reason_name_en &&
                     validation.errors.ctr_reason_name_en ? (
@@ -565,7 +563,7 @@ const ContractTerminationReasonModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={425}
                     />
                     {validation.touched.ctr_description &&
                     validation.errors.ctr_description ? (

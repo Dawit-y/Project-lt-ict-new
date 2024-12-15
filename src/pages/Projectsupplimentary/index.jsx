@@ -43,6 +43,7 @@ import {
   CardBody,
   FormGroup,
   Badge,
+  InputGroup
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -55,7 +56,9 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-
+import "flatpickr/dist/themes/material_blue.css";
+import Flatpickr from "react-flatpickr";
+import { formatDate } from "../../utils/commonMethods";
 const ProjectSupplimentaryModel = (props) => {
   document.title = " ProjectSupplimentary";
   const { passedId, isActive } = props;
@@ -163,14 +166,14 @@ const ProjectSupplimentaryModel = (props) => {
 
     validationSchema: Yup.object({
       prs_requested_amount: Yup.string().required(t("prs_requested_amount")),
-      prs_released_amount: Yup.string().required(t("prs_released_amount")),
-      prs_project_id: Yup.string().required(t("prs_project_id")),
-      prs_requested_date_ec: Yup.string().required(t("prs_requested_date_ec")),
+      //prs_released_amount: Yup.string().required(t("prs_released_amount")),
+      //prs_project_id: Yup.string().required(t("prs_project_id")),
+      //prs_requested_date_ec: Yup.string().required(t("prs_requested_date_ec")),
       prs_requested_date_gc: Yup.string().required(t("prs_requested_date_gc")),
-      prs_released_date_ec: Yup.string().required(t("prs_released_date_ec")),
-      prs_released_date_gc: Yup.string().required(t("prs_released_date_gc")),
-      prs_description: Yup.string().required(t("prs_description")),
-      prs_status: Yup.string().required(t("prs_status")),
+      //prs_released_date_ec: Yup.string().required(t("prs_released_date_ec")),
+      //prs_released_date_gc: Yup.string().required(t("prs_released_date_gc")),
+      //prs_description: Yup.string().required(t("prs_description")),
+      //prs_status: Yup.string().required(t("prs_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -180,7 +183,7 @@ const ProjectSupplimentaryModel = (props) => {
           prs_id: projectSupplimentary?.prs_id,
           prs_requested_amount: values.prs_requested_amount,
           prs_released_amount: values.prs_released_amount,
-          prs_project_id: values.prs_project_id,
+         // prs_project_id: values.prs_project_id,
           prs_requested_date_ec: values.prs_requested_date_ec,
           prs_requested_date_gc: values.prs_requested_date_gc,
           prs_released_date_ec: values.prs_released_date_ec,
@@ -198,7 +201,7 @@ const ProjectSupplimentaryModel = (props) => {
         const newProjectSupplimentary = {
           prs_requested_amount: values.prs_requested_amount,
           prs_released_amount: values.prs_released_amount,
-          prs_project_id: values.prs_project_id,
+          prs_project_id: passedId,
           prs_requested_date_ec: values.prs_requested_date_ec,
           prs_requested_date_gc: values.prs_requested_date_gc,
           prs_released_date_ec: values.prs_released_date_ec,
@@ -306,33 +309,6 @@ const ProjectSupplimentaryModel = (props) => {
       },
       {
         header: "",
-        accessorKey: "prs_project_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prs_project_id, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "prs_requested_date_ec",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prs_requested_date_ec, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
         accessorKey: "prs_requested_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
@@ -340,20 +316,6 @@ const ProjectSupplimentaryModel = (props) => {
           return (
             <span>
               {truncateText(cellProps.row.original.prs_requested_date_gc, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "prs_released_date_ec",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prs_released_date_ec, 30) ||
                 "-"}
             </span>
           );
@@ -386,20 +348,6 @@ const ProjectSupplimentaryModel = (props) => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "prs_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prs_status, 30) || "-"}
-            </span>
-          );
-        },
-      },
-
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -582,7 +530,7 @@ const ProjectSupplimentaryModel = (props) => {
                     <Label>{t("prs_requested_amount")}</Label>
                     <Input
                       name="prs_requested_amount"
-                      type="text"
+                      type="number"
                       placeholder={t("prs_requested_amount")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -606,7 +554,7 @@ const ProjectSupplimentaryModel = (props) => {
                     <Label>{t("prs_released_amount")}</Label>
                     <Input
                       name="prs_released_amount"
-                      type="text"
+                      type="number"
                       placeholder={t("prs_released_amount")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -626,131 +574,101 @@ const ProjectSupplimentaryModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prs_project_id")}</Label>
-                    <Input
-                      name="prs_project_id"
-                      type="text"
-                      placeholder={t("prs_project_id")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prs_project_id || ""}
-                      invalid={
-                        validation.touched.prs_project_id &&
-                        validation.errors.prs_project_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prs_project_id &&
-                    validation.errors.prs_project_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prs_project_id}
-                      </FormFeedback>
-                    ) : null}
+                 <Col className="col-md-6 mb-3">
+                    <FormGroup>
+                      <Label>{t("prs_requested_date_gc")}</Label>
+                      <InputGroup>
+                        <Flatpickr
+                          id="DataPicker"
+                          className={`form-control ${validation.touched.prs_requested_date_gc &&
+                              validation.errors.prs_requested_date_gc
+                              ? "is-invalid"
+                              : ""
+                            }`}
+                          name="prs_requested_date_gc"
+                          options={{
+                            altInput: true,
+                            altFormat: "Y/m/d",
+                            dateFormat: "Y/m/d",
+                            enableTime: false,
+                          }}
+                          value={validation.values.prs_requested_date_gc || ""}
+                          onChange={(date) => {
+                            const formatedDate = formatDate(date[0]);
+                            validation.setFieldValue(
+                              "prs_requested_date_gc",
+                              formatedDate
+                            ); // Set value in Formik
+                          }}
+                          onBlur={validation.handleBlur}
+                        />
+
+                        <Button
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          disabled
+                        >
+                          <i className="fa fa-calendar" aria-hidden="true" />
+                        </Button>
+                      </InputGroup>
+                      {validation.touched.prs_requested_date_gc &&
+                        validation.errors.prs_requested_date_gc ? (
+                        <FormFeedback>
+                          {validation.errors.prs_requested_date_gc}
+                        </FormFeedback>
+                      ) : null}
+                    </FormGroup>
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prs_requested_date_ec")}</Label>
-                    <Input
-                      name="prs_requested_date_ec"
-                      type="text"
-                      placeholder={t("prs_requested_date_ec")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prs_requested_date_ec || ""}
-                      invalid={
-                        validation.touched.prs_requested_date_ec &&
-                        validation.errors.prs_requested_date_ec
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prs_requested_date_ec &&
-                    validation.errors.prs_requested_date_ec ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prs_requested_date_ec}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prs_requested_date_gc")}</Label>
-                    <Input
-                      name="prs_requested_date_gc"
-                      type="text"
-                      placeholder={t("prs_requested_date_gc")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prs_requested_date_gc || ""}
-                      invalid={
-                        validation.touched.prs_requested_date_gc &&
-                        validation.errors.prs_requested_date_gc
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prs_requested_date_gc &&
-                    validation.errors.prs_requested_date_gc ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prs_requested_date_gc}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prs_released_date_ec")}</Label>
-                    <Input
-                      name="prs_released_date_ec"
-                      type="text"
-                      placeholder={t("prs_released_date_ec")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prs_released_date_ec || ""}
-                      invalid={
-                        validation.touched.prs_released_date_ec &&
-                        validation.errors.prs_released_date_ec
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prs_released_date_ec &&
-                    validation.errors.prs_released_date_ec ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prs_released_date_ec}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prs_released_date_gc")}</Label>
-                    <Input
-                      name="prs_released_date_gc"
-                      type="text"
-                      placeholder={t("prs_released_date_gc")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prs_released_date_gc || ""}
-                      invalid={
-                        validation.touched.prs_released_date_gc &&
-                        validation.errors.prs_released_date_gc
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prs_released_date_gc &&
-                    validation.errors.prs_released_date_gc ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prs_released_date_gc}
-                      </FormFeedback>
-                    ) : null}
+                    <FormGroup>
+                      <Label>{t("prs_released_date_gc")}</Label>
+                      <InputGroup>
+                        <Flatpickr
+                          id="DataPicker"
+                          className={`form-control ${validation.touched.prs_released_date_gc &&
+                              validation.errors.prs_released_date_gc
+                              ? "is-invalid"
+                              : ""
+                            }`}
+                          name="prs_released_date_gc"
+                          options={{
+                            altInput: true,
+                            altFormat: "Y/m/d",
+                            dateFormat: "Y/m/d",
+                            enableTime: false,
+                          }}
+                          value={validation.values.prs_released_date_gc || ""}
+                          onChange={(date) => {
+                            const formatedDate = formatDate(date[0]);
+                            validation.setFieldValue(
+                              "prs_released_date_gc",
+                              formatedDate
+                            ); // Set value in Formik
+                          }}
+                          onBlur={validation.handleBlur}
+                        />
+
+                        <Button
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          disabled
+                        >
+                          <i className="fa fa-calendar" aria-hidden="true" />
+                        </Button>
+                      </InputGroup>
+                      {validation.touched.prs_released_date_gc &&
+                        validation.errors.prs_released_date_gc ? (
+                        <FormFeedback>
+                          {validation.errors.prs_released_date_gc}
+                        </FormFeedback>
+                      ) : null}
+                    </FormGroup>
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("prs_description")}</Label>
                     <Input
                       name="prs_description"
-                      type="text"
+                      type="textarea"
                       placeholder={t("prs_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -767,30 +685,6 @@ const ProjectSupplimentaryModel = (props) => {
                     validation.errors.prs_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prs_status")}</Label>
-                    <Input
-                      name="prs_status"
-                      type="text"
-                      placeholder={t("prs_status")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prs_status || ""}
-                      invalid={
-                        validation.touched.prs_status &&
-                        validation.errors.prs_status
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prs_status &&
-                    validation.errors.prs_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prs_status}
                       </FormFeedback>
                     ) : null}
                   </Col>
