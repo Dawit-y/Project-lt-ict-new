@@ -73,7 +73,7 @@ import ProjectBudgetExpenditure from '../pages/Projectbudgetexpenditure/index';
 import ProjectEmployee from '../pages/Projectemployee/index';
 import ProjectHandover from '../pages/Projecthandover/index';
 import ProjectPerformance from '../pages/Projectperformance/index';
-import ProjectPerformanceList from '../pages/Projectperformance/ProjectperformanceList';
+import ProjectPerformanceList from '../pages/Projectperformance/ProjectPerformanceList';
 import ProjectHandoverList from '../pages/Projecthandover/ProjectHandoverList';
 import ProjectBudgetExpenditureList from '../pages/Projectbudgetexpenditure/ProjectBudgetExpenditureList';
 import ProjectBudgetSourceList from '../pages/Projectbudgetsource/ProjectBudgetSourceList';
