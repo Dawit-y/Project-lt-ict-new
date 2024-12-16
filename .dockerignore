@@ -5,4 +5,3 @@ dist
 .gitignore
 Dockerfile*
 README.md
-*.env
