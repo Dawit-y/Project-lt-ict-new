@@ -79,7 +79,17 @@ import ProjectBudgetExpenditureList from '../pages/Projectbudgetexpenditure/Proj
 import ProjectBudgetSourceList from '../pages/Projectbudgetsource/ProjectBudgetSourceList';
 import ProjectVariationList from '../pages/Projectvariation/ProjectVariationList';
 import ProjectSupplimentaryList from '../pages/Projectsupplimentary/ProjectSupplimentaryList';
+import ProjectEmployeeList from '../pages/Projectemployee/ProjectEmployeeList';
 
+import ProjectStakeholderList from '../pages/Projectstakeholder/ProjectStakeholderList';
+import ProjectContractorList from '../pages/Projectcontractor/ProjectContractorList';
+import ProjectBudgetPlanList from '../pages/Projectbudgetplan/ProjectBudgetPlanList';
+
+//import ProjectStakeholder from '../pages/Projectstakeholder/index';
+//import ProjectContractor from '../pages/Projectontractor/index';
+import ProjectBudgetPlan from '../pages/Projectbudgetplan/index';
+
+import BudgetMonth from '../pages/Budgetmonth/index';
 import ProjectPlan from '../pages/Projectplan/index';
 import ProjectSupplimentary from '../pages/Projectsupplimentary/index';
 import ProjectVariation from '../pages/Projectvariation/index';
@@ -96,7 +106,17 @@ const authProtectedRoutes = [
   {path: '/project_budget_source_list', component: <ProjectBudgetSourceList/> },
   {path: '/project_variation_list', component: <ProjectVariationList/> },
   {path: '/project_supplimentary_list', component: <ProjectSupplimentaryList/> },
-  
+  {path: '/project_employee_list', component: <ProjectEmployeeList/> },
+
+  {path: '/project_stakeholder_list', component: <ProjectStakeholderList/> },
+  {path: '/project_contractor_list', component: <ProjectContractorList/> },
+  {path: '/project_budget_plan_list', component: <ProjectBudgetPlanList/> },
+
+  //{path: '/project_stakeholder', component: <ProjectStakeholder/> },
+  //{path: '/project_contractor', component: <ProjectContractor/> },
+  {path: '/project_budget_plan', component: <ProjectBudgetPlan/> },
+  {path: '/budget_month', component: <BudgetMonth/> },
+
 //  {path: '/project_plan', component: <ProjectPlan/> },
   {
     path: '/project/:prj_code/project_plan',

@@ -67,7 +67,7 @@ const GeoLocation = (props) => {
   };
 
   return (
-    <div className="container-fluid" style={{ position: "relative" }}>
+    <div style={{ position: "relative" }}>
       <APIProvider apiKey={API_KEY}>
         <Map
           style={{ height: "100vh" }}

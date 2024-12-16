@@ -9,22 +9,23 @@ import {
 const PROJECT_PLAN_QUERY_KEY = ["projectplan"];
 
 // Fetch project_plan
-export const useFetchProjectPlans = (params = {}) => {
+export const useFetchProjectPlans = (param = {}, isActive) => {
   console.log("params",params)
   return useQuery({
-    queryKey: [...PROJECT_PLAN_QUERY_KEY,params],
+     queryKey: [...PROJECT_PLAN_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectPlan(params),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: isActive,
   });
 };
 
 //search project_plan
 export const useSearchProjectPlans = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...PROJECT_PLAN_QUERY_KEY, searchParams],
+    queryKey: [...PROJECT_PLAN_QUERY_KEY, "search", searchParams],
     queryFn: () => getProjectPlan(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
@@ -41,16 +42,23 @@ export const useAddProjectPlan = () => {
   return useMutation({
     mutationFn: addProjectPlan,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( PROJECT_PLAN_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_PLAN_QUERY_KEY,
+      });
+
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        });
       });
     },
   });
@@ -61,18 +69,23 @@ export const useUpdateProjectPlan = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateProjectPlan,
-    onSuccess: (updatedProjectPlan) => {
-      queryClient.setQueryData(PROJECT_PLAN_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
+    onSuccess: (updatedData) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_PLAN_QUERY_KEY,
+      });
 
-        return {
-          ...oldData,
-          data: oldData.data.map((ProjectPlanData) =>
-            ProjectPlanData.pld_id === updatedProjectPlan.data.pld_id
-              ? { ...ProjectPlanData, ...updatedProjectPlan.data }
-              : ProjectPlanData
-          ),
-        };
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((data) =>
+              data.pld_id === updatedData.data.pld_id
+                ? { ...data, ...updatedData.data }
+                : data
+            ),
+          };
+        });
       });
     },
   });
@@ -83,15 +96,21 @@ export const useDeleteProjectPlan = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteProjectPlan,
-    onSuccess: (deletedData) => {
-      queryClient.setQueryData(PROJECT_PLAN_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (ProjectPlanData) => ProjectPlanData.pld_id !== parseInt(deletedData.deleted_id)
-          ),
-        };
+    onSuccess: (deletedData, variable) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_PLAN_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (dept) => dept.pld_id !== parseInt(variable)
+            ),
+          };
+        });
       });
     },
   });

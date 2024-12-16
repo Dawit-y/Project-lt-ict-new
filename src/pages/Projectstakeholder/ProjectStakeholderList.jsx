@@ -21,14 +21,13 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 
 import {
-  useFetchProjectBudgetSources,
-  useSearchProjectBudgetSources,
-  useAddProjectBudgetSource,
-  useDeleteProjectBudgetSource,
-  useUpdateProjectBudgetSource,
-} from "../../queries/projectbudgetsource_query";
-import { useFetchBudgetSources } from "../../queries/budgetsource_query";
-import ProjectBudgetSourceModal from "./ProjectBudgetSourceModal";
+  useFetchProjectStakeholders,
+  useSearchProjectStakeholders,
+  useAddProjectStakeholder,
+  useDeleteProjectStakeholder,
+  useUpdateProjectStakeholder,
+} from "../../queries/projectstakeholder_query";
+import ProjectStakeholderModal from "./ProjectStakeholderModal";
 import { useTranslation } from "react-i18next";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -55,7 +54,6 @@ import { ToastContainer,toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import { createSelectOptions } from "../../utils/commonMethods";
 import AddressStructureForProject from "../Project/AddressStructureForProject";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -64,14 +62,14 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const ProjectBudgetSourceList = () => {
+const ProjectStakeholderList = () => {
   //meta title
-  document.title = " ProjectBudgetSource";
+  document.title = " ProjectStakeholder";
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [projectBudgetSource, setProjectBudgetSource] = useState(null);
+  const [projectStakeholder, setProjectStakeholder] = useState(null);
 
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -87,12 +85,7 @@ const ProjectBudgetSourceList = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
 
- const { data: budgetSourceData } = useFetchBudgetSources();
-  const budgetSourceOptions = createSelectOptions(
-    budgetSourceData?.data || [],
-    "pbs_id",
-    "pbs_name_or"
-  );
+
 
 
   // When selection changes, update selectedRows
@@ -141,67 +134,126 @@ const ProjectBudgetSourceList = () => {
     } else if (node.level === "woreda") {
       setPrjLocationWoredaId(node.id);
     }
-    if (showSearchResult) {
-      setShowSearchResult(false);
-    }
   };
-const columnDefs = useMemo(() => {
-    const baseColumnDefs = [
+
+  //START UNCHANGED
+  const columns = useMemo(() => {
+    const baseColumns = [
       {
-        headerName: t("S.N"),
-        field: "sn",
-        valueGetter: (params) => params.node.rowIndex + 1,
-        sortable: false,
-        filter: false,
-        width: 60,
-      },
-      {
-        headerName: t("prj_name"),
-        field: "prj_name",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_name, 30) || "-";
+        header: '',
+        accessorKey: 'psh_project_id',
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.psh_project_id, 30) ||
+                '-'}
+            </span>
+          );
         },
-      },
-      {
-        headerName: t("prj_code"),
-        field: "prj_code",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_code, 30) || "-";
+      }, 
+{
+        header: '',
+        accessorKey: 'psh_name',
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.psh_name, 30) ||
+                '-'}
+            </span>
+          );
         },
-      },
-      {
-        headerName: t("bsr_name"),
-        field: "bsr_name",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.bsr_name, 30) || "-";
+      }, 
+{
+        header: '',
+        accessorKey: 'psh_stakeholder_type',
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.psh_stakeholder_type, 30) ||
+                '-'}
+            </span>
+          );
         },
-      },
-      {
-        headerName: t("bsr_budget_source_id"),
-        field: "bsr_budget_source_id",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.bsr_budget_source_id, 30) || "-";
+      }, 
+{
+        header: '',
+        accessorKey: 'psh_representative_name',
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.psh_representative_name, 30) ||
+                '-'}
+            </span>
+          );
         },
-      },
-      {
-        headerName: t("bsr_amount"),
-        field: "bsr_amount",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.bsr_amount, 30) || "-";
+      }, 
+{
+        header: '',
+        accessorKey: 'psh_representative_phone',
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.psh_representative_phone, 30) ||
+                '-'}
+            </span>
+          );
         },
-      }
+      }, 
+{
+        header: '',
+        accessorKey: 'psh_role',
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.psh_role, 30) ||
+                '-'}
+            </span>
+          );
+        },
+      }, 
+{
+        header: '',
+        accessorKey: 'psh_description',
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.psh_description, 30) ||
+                '-'}
+            </span>
+          );
+        },
+      }, 
+{
+        header: '',
+        accessorKey: 'psh_status',
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.psh_status, 30) ||
+                '-'}
+            </span>
+          );
+        },
+      }, 
+
     ];
-    return baseColumnDefs;
+    return baseColumns;
   });
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -212,23 +264,32 @@ const columnDefs = useMemo(() => {
         <div>
           <Breadcrumbs
             title={t("project")}
-            breadcrumbItem={t("project_budget_source_list")}
+            breadcrumbItem={t("Project Payment List")}
           />
           <div className="w-100 d-flex gap-2">
             <AddressStructureForProject onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />
             <div className="w-100">
           <AdvancedSearch
-            searchHook={useSearchProjectBudgetSources}
+            searchHook={useSearchProjectStakeholders}
             textSearchKeys={["prj_name", "prj_code"]}
-            dateSearchKeys={[]}
+            dateSearchKeys={["payment_date"]}
             dropdownSearchKeys={[
               {
-                    key: "bsr_budget_source_id",
-                    options: budgetSourceOptions,
-                  },
+                key: "prp_type",
+                options: [
+                  { value: "Advance", label: "Advance" },
+                  { value: "Interim", label: "Interim" },
+                  { value: "Final", label: "Final" },
+                ],
+              },
             ]}
-
             checkboxSearchKeys={[]}
+            Component={CascadingDropdowns}
+            component_params={{
+              dropdown1name: "prj_location_region_id",
+              dropdown2name: "prj_location_zone_id",
+              dropdown3name: "prj_location_woreda_id",
+            }}
             additionalParams={projectParams}
             setAdditionalParams={setProjectParams}
             onSearchResult={handleSearchResults}
@@ -289,4 +350,4 @@ const columnDefs = useMemo(() => {
     </React.Fragment>
   );
 };
-export default ProjectBudgetSourceList;
+export default ProjectStakeholderList;
