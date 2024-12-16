@@ -3,13 +3,7 @@ import Dropzone from "react-dropzone";
 import { Link } from "react-router-dom";
 import { Col, Row, Form, Card, CardBody, CardSubtitle } from "reactstrap";
 
-const FileUploadField = ({
-  validation,
-  fileKey,
-  filePathKey,
-  fileSizeKey,
-  fileExtesionKey,
-}) => {
+const FileUploadField = ({ validation }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
 
   function formatBytes(bytes, decimals = 2) {
@@ -37,10 +31,13 @@ const FileUploadField = ({
       const fileSizeInBytes = file.size;
       const fileSizeInKB = (fileSizeInBytes / 1024).toFixed(2);
 
-      validation.setFieldValue(fileKey, file);
-      validation.setFieldValue(filePathKey, file.name);
-      validation.setFieldValue(fileExtesionKey, file.name.split(".").pop());
-      validation.setFieldValue(fileSizeKey, `${fileSizeInKB} KB`);
+      validation.setFieldValue("prd_file", file);
+      validation.setFieldValue("prd_file_path", file.name);
+      validation.setFieldValue(
+        "prd_file_extension",
+        file.name.split(".").pop()
+      );
+      validation.setFieldValue("prd_size", `${fileSizeInKB} KB`);
     }
   };
   return (
@@ -90,7 +87,7 @@ const FileUploadField = ({
                     const syntheticEvent = {
                       target: {
                         files: validFiles,
-                        name: fileKey,
+                        name: "prd_file",
                       },
                     };
                     handleFileChange(syntheticEvent);
@@ -103,7 +100,7 @@ const FileUploadField = ({
                       className="dz-message needsclick mt-2"
                       {...getRootProps()}
                     >
-                      <input {...getInputProps({ name: fileKey })} />
+                      <input {...getInputProps({ name: "prd_file" })} />
                       <div className="mb-3">
                         <i className="display-4 text-muted bx bxs-cloud-upload" />
                       </div>

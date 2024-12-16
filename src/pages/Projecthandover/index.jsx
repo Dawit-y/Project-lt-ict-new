@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo, useState, useLayoutEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -21,11 +20,9 @@ import {
   useDeleteProjectHandover,
   useUpdateProjectHandover,
 } from "../../queries/projecthandover_query";
+import { useAddProjectDocument } from "../../queries/projectdocument_query";
 import ProjectHandoverModal from "./ProjectHandoverModal";
 import { useTranslation } from "react-i18next";
-
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
 
 import {
   Button,
@@ -43,7 +40,7 @@ import {
   CardBody,
   FormGroup,
   Badge,
-  InputGroup
+  InputGroup,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -52,6 +49,8 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 import { formatDate } from "../../utils/commonMethods";
+import FileUploadField from "../../components/Common/FileUploadField";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -74,7 +73,7 @@ const ProjectHandoverModel = (props) => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  
+
   const { data, isLoading, error, isError, refetch } = useFetchProjectHandovers(
     param,
     isActive
@@ -83,10 +82,17 @@ const ProjectHandoverModel = (props) => {
   const addProjectHandover = useAddProjectHandover();
   const updateProjectHandover = useUpdateProjectHandover();
   const deleteProjectHandover = useDeleteProjectHandover();
+  const addProjectDocument = useAddProjectDocument();
   //START CRUD
-  const handleAddProjectHandover = async (data) => {
+  const handleAddProjectHandover = async (
+    newProjectHandover,
+    handoverDocumentData
+  ) => {
     try {
-      await addProjectHandover.mutateAsync(data);
+      const response = await addProjectHandover.mutateAsync(newProjectHandover);
+      const handoverId = response?.data?.prh_id;
+      handoverDocumentData["prd_owner_id"] = handoverId;
+      await addProjectDocument.mutateAsync(handoverDocumentData);
       toast.success(`Data added successfully`, {
         autoClose: 2000,
       });
@@ -111,6 +117,7 @@ const ProjectHandoverModel = (props) => {
     }
     toggle();
   };
+
   const handleDeleteProjectHandover = async () => {
     if (projectHandover && projectHandover.prh_id) {
       try {
@@ -132,13 +139,12 @@ const ProjectHandoverModel = (props) => {
 
   // validation
   const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
-
     initialValues: {
       prh_project_id: (projectHandover && projectHandover.prh_project_id) || "",
       prh_handover_date_ec:
-        (projectHandover && projectHandover.prh_handover_date_ec) || "",
+        (projectHandover && projectHandover.prh_handover_date_ec) ||
+        "2017/04/07",
       prh_handover_date_gc:
         (projectHandover && projectHandover.prh_handover_date_gc) || "",
       prh_description:
@@ -151,7 +157,7 @@ const ProjectHandoverModel = (props) => {
 
     validationSchema: Yup.object({
       //prh_project_id: Yup.string().required(t("prh_project_id")),
-     // prh_handover_date_ec: Yup.string().required(t("prh_handover_date_ec")),
+      // prh_handover_date_ec: Yup.string().required(t("prh_handover_date_ec")),
       prh_handover_date_gc: Yup.string().required(t("prh_handover_date_gc")),
       //prh_description: Yup.string().required(t("prh_description")),
       //prh_status: Yup.string().required(t("prh_status")),
@@ -162,12 +168,11 @@ const ProjectHandoverModel = (props) => {
       if (isEdit) {
         const updateProjectHandover = {
           prh_id: projectHandover?.prh_id,
-         // prh_project_id: values.prh_project_id,
+          // prh_project_id: values.prh_project_id,
           prh_handover_date_ec: values.prh_handover_date_ec,
           prh_handover_date_gc: values.prh_handover_date_gc,
           prh_description: values.prh_description,
           prh_status: values.prh_status,
-
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -182,8 +187,19 @@ const ProjectHandoverModel = (props) => {
           prh_description: values.prh_description,
           prh_status: values.prh_status,
         };
+        const handoverDocumentData = {
+          prd_owner_type_id: 1,
+          prd_project_id: passedId,
+          prd_document_type_id: 1,
+          prd_name: 1,
+          prd_file: values.prd_file,
+          prd_file_path: values.prd_file_path,
+          prd_size: values.prd_size,
+          prd_file_extension: values.prd_file_extension,
+        };
+
         // save new ProjectHandover
-        handleAddProjectHandover(newProjectHandover);
+        handleAddProjectHandover(newProjectHandover, handoverDocumentData);
         validation.resetForm();
       }
     },
@@ -219,7 +235,6 @@ const ProjectHandoverModel = (props) => {
       prh_handover_date_gc: projectHandover.prh_handover_date_gc,
       prh_description: projectHandover.prh_description,
       prh_status: projectHandover.prh_status,
-
       is_deletable: projectHandover.is_deletable,
       is_editable: projectHandover.is_editable,
     });
@@ -452,17 +467,18 @@ const ProjectHandoverModel = (props) => {
                 }}
               >
                 <Row>
-                <Col className="col-md-6 mb-3">
+                  <Col className="col-md-6 mb-3">
                     <FormGroup>
                       <Label>{t("prh_handover_date_gc")}</Label>
                       <InputGroup>
                         <Flatpickr
                           id="DataPicker"
-                          className={`form-control ${validation.touched.prh_handover_date_gc &&
-                              validation.errors.prh_handover_date_gc
+                          className={`form-control ${
+                            validation.touched.prh_handover_date_gc &&
+                            validation.errors.prh_handover_date_gc
                               ? "is-invalid"
                               : ""
-                            }`}
+                          }`}
                           name="prh_handover_date_gc"
                           options={{
                             altInput: true,
@@ -490,7 +506,7 @@ const ProjectHandoverModel = (props) => {
                         </Button>
                       </InputGroup>
                       {validation.touched.prh_handover_date_gc &&
-                        validation.errors.prh_handover_date_gc ? (
+                      validation.errors.prh_handover_date_gc ? (
                         <FormFeedback>
                           {validation.errors.prh_handover_date_gc}
                         </FormFeedback>
@@ -522,11 +538,13 @@ const ProjectHandoverModel = (props) => {
                     ) : null}
                   </Col>
                 </Row>
+                <FileUploadField validation={validation} />
                 <Row>
                   <Col>
                     <div className="text-end">
                       {addProjectHandover.isPending ||
-                      updateProjectHandover.isPending ? (
+                      updateProjectHandover.isPending ||
+                      addProjectDocument.isPending ? (
                         <Button
                           color="success"
                           type="submit"
@@ -534,6 +552,7 @@ const ProjectHandoverModel = (props) => {
                           disabled={
                             addProjectHandover.isPending ||
                             updateProjectHandover.isPending ||
+                            addProjectDocument.isPending ||
                             !validation.dirty
                           }
                         >
@@ -548,6 +567,7 @@ const ProjectHandoverModel = (props) => {
                           disabled={
                             addProjectHandover.isPending ||
                             updateProjectHandover.isPending ||
+                            addProjectDocument.isPending ||
                             !validation.dirty
                           }
                         >

@@ -19,6 +19,12 @@ import {
   updateProjectDocument as onUpdateProjectDocument,
   deleteProjectDocument as onDeleteProjectDocument,
 } from "../../store/projectdocument/actions";
+import {
+  useFetchProjectDocuments,
+  useAddProjectDocument,
+  useUpdateProjectDocument,
+  useDeleteProjectDocument,
+} from "../../queries/projectdocument_query";
 
 //redux
 import { useSelector, useDispatch } from "react-redux";
@@ -54,11 +60,9 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectDocumentModel = (props) => {
-  // get passed data from the right of canva
-  const { passedId } = props;
-
-  //meta title
   document.title = " ProjectDocument";
+  const { passedId, isActive } = props;
+  const param = { project_id: passedId };
 
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
@@ -69,17 +73,67 @@ const ProjectDocumentModel = (props) => {
   const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
   const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
 
+  const { data, isLoading, isError, error, refetch } = useFetchProjectDocuments(
+    param,
+    isActive
+  );
+  const addProjectDocument = useAddProjectDocument();
+  const updateProjectDocument = useUpdateProjectDocument();
+  const deleteProjectDocument = useDeleteProjectDocument();
+
   const { data: documentTypeData } = useFetchDocumentTypes();
   const documentTypeOptions = createSelectOptions(
     documentTypeData?.data || [],
     "pdt_id",
     "pdt_doc_name_en"
   );
+
+  const handleAddProjectDocument = async (data) => {
+    try {
+      await addProjectDocument.mutateAsync(data);
+      toast.success(`Data added successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error("Failed to add data", {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+
+  const handleUpdateProjectDocument = async (data) => {
+    try {
+      await updateProjectDocument.mutateAsync(data);
+      toast.success(`data updated successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error(`Failed to update Data`, {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+  const handleDeleteProjectDocument = async () => {
+    if (projectDocument && projectDocument.prd_id) {
+      try {
+        const id = projectDocument.prd_id;
+        await deleteProjectDocument.mutateAsync(id);
+        toast.success(`Data deleted successfully`, {
+          autoClose: 2000,
+        });
+      } catch (error) {
+        toast.error(`Failed to delete Data`, {
+          autoClose: 2000,
+        });
+      }
+      setDeleteModal(false);
+    }
+  };
   // validation
   const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
-
     initialValues: {
       prd_project_id: passedId,
       prd_file: null,
@@ -129,12 +183,11 @@ const ProjectDocumentModel = (props) => {
           prd_description: values.prd_description,
           prd_status: values.prd_status,
           prd_document_type_id: values.prd_document_type_id,
-
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
         // update ProjectDocument
-        dispatch(onUpdateProjectDocument(updateProjectDocument));
+        handleUpdateProjectDocument(updateProjectDocument);
         validation.resetForm();
       } else {
         const newProjectDocument = {
@@ -150,50 +203,14 @@ const ProjectDocumentModel = (props) => {
           prd_document_type_id: values.prd_document_type_id,
         };
         // save new ProjectDocuments
-        dispatch(onAddProjectDocument(newProjectDocument));
-
+        handleAddProjectDocument(newProjectDocument);
         validation.resetForm();
       }
     },
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-  const dispatch = useDispatch();
-  // Fetch ProjectDocument on component mount
-  useEffect(() => {
-    dispatch(onGetProjectDocument(passedId));
-  }, [dispatch]);
 
-  const projectDocumentProperties = createSelector(
-    (state) => state.ProjectDocumentR, // this is geting from  reducer
-    (ProjectDocumentReducer) => ({
-      // this is from Project.reducer
-      projectDocument: ProjectDocumentReducer.projectDocument,
-      loading: ProjectDocumentReducer.loading,
-      update_loading: ProjectDocumentReducer.update_loading,
-    })
-  );
-
-  const {
-    projectDocument: { data, previledge },
-    loading,
-    update_loading,
-  } = useSelector(projectDocumentProperties);
-
-  useEffect(() => {
-    setModal(false);
-  }, [update_loading]);
-
-  const selectSearchProperties = createSelector(
-    (state) => state.search,
-    (search) => ({
-      results: search.results,
-    })
-  );
-
-  const { results } = useSelector(selectSearchProperties);
-
-  const [isLoading, setLoading] = useState(loading);
   useEffect(() => {
     setProjectDocument(data);
   }, [data]);
@@ -233,7 +250,6 @@ const ProjectDocumentModel = (props) => {
     });
 
     setIsEdit(true);
-
     toggle();
   };
 
@@ -245,25 +261,10 @@ const ProjectDocumentModel = (props) => {
     setDeleteModal(true);
   };
 
-  const handleDeleteProjectDocument = () => {
-    if (projectDocument && projectDocument.prd_id) {
-      dispatch(onDeleteProjectDocument(projectDocument.prd_id));
-      setDeleteModal(false);
-    }
-  };
   const handleProjectDocumentClicks = () => {
     setIsEdit(false);
     setProjectDocument("");
     toggle();
-  };
-  const handleSearch = () => {
-    setSearchLoading(true); // Set loading to true when search is initiated// Update filtered data with search results
-    setShowSearchResults(true); // Show search results
-    setSearchLoading(false);
-  };
-
-  const handleClearSearch = () => {
-    setShowSearchResults(false);
   };
 
   const bytesToMB = (bytes) => {
@@ -375,7 +376,10 @@ const ProjectDocumentModel = (props) => {
         },
       },
     ];
-    if (previledge?.is_role_editable && previledge?.is_role_deletable) {
+    if (
+      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_deletable
+    ) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -384,7 +388,8 @@ const ProjectDocumentModel = (props) => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {(cellProps.row.original?.is_editable ||
+                cellProps.row.original?.is_role_editable) && (
                 <Link
                   to="#"
                   className="text-success"
@@ -400,7 +405,8 @@ const ProjectDocumentModel = (props) => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {(cellProps.row.original?.is_deletable ||
+                cellProps.row.original?.is_role_deletable) && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -427,13 +433,9 @@ const ProjectDocumentModel = (props) => {
     return baseColumns;
   }, [handleProjectDocumentClick, toggleViewModal, onClickDelete]);
 
-  const project_status = [
-    { label: "select Status name", value: "" },
-    { label: "Active", value: 1 },
-    { label: "Inactive", value: 0 },
-  ];
-
-  const dropdawntotal = [project_status];
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
 
   return (
     <React.Fragment>
@@ -446,6 +448,7 @@ const ProjectDocumentModel = (props) => {
         show={deleteModal}
         onDeleteClick={handleDeleteProjectDocument}
         onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteProjectDocument.isPending}
       />
 
       <div className="container-fluid1">
@@ -460,11 +463,11 @@ const ProjectDocumentModel = (props) => {
             breadcrumbItem={t("project_document")}
           /> */}
         {isLoading || searchLoading ? (
-          <Spinners setLoading={setLoading} />
+          <Spinners />
         ) : (
           <TableContainer
             columns={columns}
-            data={showSearchResults ? results : data}
+            data={showSearchResults ? results : data?.data}
             isGlobalFilter={true}
             isAddButton={true}
             isCustomPageSize={true}
@@ -491,12 +494,6 @@ const ProjectDocumentModel = (props) => {
               onSubmit={(e) => {
                 e.preventDefault();
                 validation.handleSubmit();
-                const modalCallback = () => setModal(false);
-                if (isEdit) {
-                  onUpdateProjectDocument(validation.values, modalCallback);
-                } else {
-                  onAddProjectDocument(validation.values, modalCallback);
-                }
                 return false;
               }}
             >
@@ -618,26 +615,23 @@ const ProjectDocumentModel = (props) => {
                 </Col>
 
                 {/* PDF File Picker */}
-
-                <FileUploadField
-                  validation={validation}
-                  fileKey={"prd_file"}
-                  filePathKey={"prd_file_path"}
-                  fileExtesionKey={"prd_file_extension"}
-                  fileSizeKey={"prd_size"}
-                />
-
+                <FileUploadField validation={validation} />
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {update_loading ? (
+                      {addProjectDocument.isPending ||
+                      updateProjectDocument.isPending ? (
                         <Button
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addProjectDocument.isPending ||
+                            updateProjectDocument.isPending ||
+                            !validation.dirty
+                          }
                         >
-                          <Spinner size={"sm"} color="#fff" />
+                          <Spinner size={"sm"} color="light" className="me-2" />
                           {t("Save")}
                         </Button>
                       ) : (
@@ -645,7 +639,11 @@ const ProjectDocumentModel = (props) => {
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addProjectDocument.isPending ||
+                            updateProjectDocument.isPending ||
+                            !validation.dirty
+                          }
                         >
                           {t("Save")}
                         </Button>
