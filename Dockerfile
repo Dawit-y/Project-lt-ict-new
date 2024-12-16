@@ -10,7 +10,9 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install --legacy-peer-deps
 
-
+#FIX THIS
+COPY .env /app/.env
+ 
 # Copy the rest of the source code
 COPY . .
 
