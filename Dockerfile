@@ -33,7 +33,7 @@ COPY --from=build /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 1234
-EXPOSE 1234
+EXPOSE 1111
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
