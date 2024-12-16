@@ -8,8 +8,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
-//import components
+
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import Dropzone from "react-dropzone";
@@ -40,14 +39,12 @@ import {
   Input,
   FormFeedback,
   Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
-  CardSubtitle,
 } from "reactstrap";
 import { ToastContainer } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import FileUploadField from "../../components/Common/FileUploadField";
+import { useFetchDocumentTypes } from "../../queries/documenttype_query";
+import { createSelectOptions } from "../../utils/commonMethods";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -64,9 +61,6 @@ const ProjectDocumentModel = (props) => {
   document.title = " ProjectDocument";
 
   const { t } = useTranslation();
-  // add new file
-  const [file, setFile] = useState(null);
-
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -74,85 +68,13 @@ const ProjectDocumentModel = (props) => {
   const [projectDocument, setProjectDocument] = useState(null);
   const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
   const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
-  //START FOREIGN CALLS
-  const [documentTypeOptions, setDocumentTypeOptions] = useState([]);
-  const [selectedDocumentType, setSelectedDocumentType] = useState("");
 
-  const [selectedFiles, setSelectedFiles] = useState([]);
-
-  /**
-   * Handles accepted files from the Dropzone
-   */
-  function handleAcceptedFiles(files) {
-    const updatedFiles = files.map((file) =>
-      Object.assign(file, {
-        preview: URL.createObjectURL(file),
-        formattedSize: formatBytes(file.size),
-      })
-    );
-    setSelectedFiles(updatedFiles);
-  }
-
-  /**
-   * Formats file sizes into readable format
-   */
-  function formatBytes(bytes, decimals = 2) {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-  }
-
-  // Handle file input change
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-
-    const file = e.target.files[0];
-    if (file) {
-      setFile(file);
-      // Get the file size in bytes
-      const fileSizeInBytes = file.size;
-
-      // Convert the size to KB or MB (here, it’s converted to KB)
-      const fileSizeInKB = (fileSizeInBytes / 1024).toFixed(2); // Convert to KB
-
-      //Update form values with the file path, extension, and size
-      validation.setFieldValue("prd_file_path", file.name);
-      validation.setFieldValue(
-        "prd_file_extension",
-        file.name.split(".").pop()
-      );
-      validation.setFieldValue("prd_size", `${fileSizeInKB} KB`); // Set the size in KB
-    }
-  };
-
-  useEffect(() => {
-    const fetchDocumentType = async () => {
-      try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_BASE_API_URL}document_type/listgrid`
-        );
-        const transformedData = response.data.data.map((item) => ({
-          label: item.pdt_doc_name_or.toString(),
-          value: item.pdt_id.toString(),
-        }));
-        const optionsWithDefault = [
-          { label: "Select Document type", value: "" },
-          ...transformedData,
-        ];
-        setDocumentTypeOptions(optionsWithDefault);
-      } catch (error) {
-        console.error("Error fetching Document Type:", error);
-      }
-    };
-    fetchDocumentType();
-  }, []);
-  const handleDocumentTypeChange = (e) => {
-    setSelectedDocumentType(e.target.value);
-    validation.setFieldValue("prd_document_type_id", e.target.value);
-  };
+  const { data: documentTypeData } = useFetchDocumentTypes();
+  const documentTypeOptions = createSelectOptions(
+    documentTypeData?.data || [],
+    "pdt_id",
+    "pdt_doc_name_en"
+  );
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
@@ -160,7 +82,7 @@ const ProjectDocumentModel = (props) => {
 
     initialValues: {
       prd_project_id: passedId,
-      prd_file: file,
+      prd_file: null,
       prd_name: (projectDocument && projectDocument.prd_name) || "",
       prd_document_type_id:
         (projectDocument && projectDocument.prd_document_type_id) || "",
@@ -231,8 +153,6 @@ const ProjectDocumentModel = (props) => {
         dispatch(onAddProjectDocument(newProjectDocument));
 
         validation.resetForm();
-        // Reset the form
-        setFile(null);
       }
     },
   });
@@ -592,10 +512,17 @@ const ProjectDocumentModel = (props) => {
                     id="prd_document_type_id"
                     type="select"
                     className="form-select"
-                    onChange={handleDocumentTypeChange}
+                    onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
-                    value={selectedDocumentType}
+                    value={validation.values.prd_document_type_id || ""}
+                    invalid={
+                      validation.touched.prd_document_type_id &&
+                      validation.errors.prd_document_type_id
+                        ? true
+                        : false
+                    }
                   >
+                    <option value={null}>Select Document Type</option>
                     {documentTypeOptions.map((option) => (
                       <option key={option.value} value={option.value}>
                         {t(`${option.label}`)}
@@ -692,121 +619,13 @@ const ProjectDocumentModel = (props) => {
 
                 {/* PDF File Picker */}
 
-                <Row>
-                  <Col className="col-12">
-                    <Card>
-                      <CardBody>
-                        <CardSubtitle className="mb-3">
-                          Attach or upload your PDF file here!
-                        </CardSubtitle>
-                        <Form>
-                          <Dropzone
-                            accept={{ "application/pdf": [] }} // Only allow PDF files
-                            onDrop={(acceptedFiles, rejectedFiles) => {
-                              const maxSize = 5 * 1024 * 1024; // 5 MB limit
-
-                              // Filter out files larger than the max size
-                              const validFiles = acceptedFiles.filter(
-                                (file) => file.size <= maxSize
-                              );
-                              const oversizedFiles = acceptedFiles.filter(
-                                (file) => file.size > maxSize
-                              );
-
-                              // Handle oversized files
-                              if (oversizedFiles.length > 0) {
-                                const oversizedFileNames = oversizedFiles
-                                  .map((file) => file.name)
-                                  .join(", ");
-                                alert(
-                                  `The following files exceed the 5 MB size limit and were rejected: ${oversizedFileNames}`
-                                );
-                              }
-
-                              // Handle rejected files (non-PDFs)
-                              if (rejectedFiles.length > 0) {
-                                const invalidFiles = rejectedFiles
-                                  .map((file) => file.file.name)
-                                  .join(", ");
-                                alert(
-                                  `These files are not PDFs and were rejected: ${invalidFiles}`
-                                );
-                              }
-
-                              // Proceed only with valid files that are PDFs and within size limit
-                              if (validFiles.length > 0) {
-                                handleAcceptedFiles(validFiles);
-
-                                // Create a synthetic event for handleFileChange
-                                const syntheticEvent = {
-                                  target: {
-                                    files: validFiles,
-                                    name: "prd_file", // Pass the name of the file input
-                                  },
-                                };
-
-                                handleFileChange(syntheticEvent); // Call handleFileChange with the synthetic event
-                              }
-                            }}
-                          >
-                            {({ getRootProps, getInputProps }) => (
-                              <div className="dropzone">
-                                <div
-                                  className="dz-message needsclick mt-2"
-                                  {...getRootProps()}
-                                >
-                                  <input
-                                    {...getInputProps({ name: "prd_file" })}
-                                  />
-                                  <div className="mb-3">
-                                    <i className="display-4 text-muted bx bxs-cloud-upload" />
-                                  </div>
-                                  <h4>
-                                    Drop PDF files here or click to upload (Max
-                                    size: 5 MB).
-                                  </h4>
-                                </div>
-                              </div>
-                            )}
-                          </Dropzone>
-                          <div
-                            className="dropzone-previews mt-3"
-                            id="file-previews"
-                          >
-                            {selectedFiles.map((f, i) => (
-                              <Card
-                                className="mt-1 mb-0 shadow-none border dz-processing dz-image-preview dz-success dz-complete"
-                                key={i + "-file"}
-                              >
-                                <div className="p-2">
-                                  <Row className="align-items-center">
-                                    <Col className="col-auto">
-                                      <i
-                                        className="bx bxs-file-pdf text-danger"
-                                        style={{ fontSize: "80px" }}
-                                      />
-                                    </Col>
-                                    <Col>
-                                      <Link
-                                        to="#"
-                                        className="text-muted font-weight-bold"
-                                      >
-                                        {f.name}
-                                      </Link>
-                                      <p className="mb-0">
-                                        <strong>{f.formattedSize}</strong>
-                                      </p>
-                                    </Col>
-                                  </Row>
-                                </div>
-                              </Card>
-                            ))}
-                          </div>
-                        </Form>
-                      </CardBody>
-                    </Card>
-                  </Col>
-                </Row>
+                <FileUploadField
+                  validation={validation}
+                  fileKey={"prd_file"}
+                  filePathKey={"prd_file_path"}
+                  fileExtesionKey={"prd_file_extension"}
+                  fileSizeKey={"prd_size"}
+                />
 
                 <Row>
                   <Col>
