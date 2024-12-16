@@ -3,6 +3,7 @@ import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
+import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -14,20 +15,18 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 
 import {
-  getProjectContractor as onGetProjectContractor,
-  addProjectContractor as onAddProjectContractor,
-  updateProjectContractor as onUpdateProjectContractor,
-  deleteProjectContractor as onDeleteProjectContractor,
-} from "../../store/projectcontractor/actions";
-
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
+  useFetchProjectContractors,
+  useSearchProjectContractors,
+  useAddProjectContractor,
+  useDeleteProjectContractor,
+  useUpdateProjectContractor,
+} from "../../queries/projectcontractor_query";
+import { useFetchContractorTypes } from "../../queries/contractortype_query";
 import ProjectContractorModal from "./ProjectContractorModal";
 import { useTranslation } from "react-i18next";
-import "flatpickr/dist/themes/material_blue.css";
-import Flatpickr from "react-flatpickr";
-import { formatDate } from "../../utils/commonMethods";
+
+import { useSelector, useDispatch } from "react-redux";
+import { createSelector } from "reselect";
 
 import {
   Button,
@@ -44,11 +43,17 @@ import {
   Card,
   CardBody,
   FormGroup,
-  InputGroup,
   Badge,
+  InputGroup
 } from "reactstrap";
-import { ToastContainer } from "react-toastify";
-
+import "flatpickr/dist/themes/material_blue.css";
+import Flatpickr from "react-flatpickr";
+import { ToastContainer,toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { createSelectOptions } from "../../utils/commonMethods";
+import { formatDate } from "../../utils/commonMethods";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -57,102 +62,119 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectContractorModel = (props) => {
-  //  get passed data from tab
-  const { passedId } = props;
   //meta title
   document.title = " ProjectContractor";
-
+  const { passedId, isActive } = props;
+  const param = { cni_project_id: passedId };
   const { t } = useTranslation();
-
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-
   const [projectContractor, setProjectContractor] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
-  const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
-  //START FOREIGN CALLS
-  const [contractorTypeOptions, setContractorTypeOptions] = useState([]);
-  const [selectedContractorType, setSelectedContractorType] = useState("");
 
-  useEffect(() => {
-    const fetchContractorType = async () => {
-      try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_BASE_API_URL}contractor_type/listgrid`
-        );
-        const transformedData = response.data.data.map((item) => ({
-          label: item.cnt_type_name_or.toString(),
-          value: item.cnt_id.toString(),
-        }));
-        const optionsWithDefault = [
-          { label: "select Contractor Type", value: "" },
-          ...transformedData,
-        ];
-        setContractorTypeOptions(optionsWithDefault);
-      } catch (error) {
-        console.error("Error fetching contractor:", error);
-      }
-    };
-    fetchContractorType();
-  }, []);
-  const handleContractorTypeChange = (e) => {
-    setSelectedContractorType(e.target.value);
-    validation.setFieldValue("cni_contractor_type_id", e.target.value);
+  const [searchResults, setSearchResults] = useState(null);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [searcherror, setSearchError] = useState(null);
+  const [showSearchResult, setShowSearchResult] = useState(false);
+
+  const { data, isLoading, error, isError, refetch } = useFetchProjectContractors(param,
+    isActive);
+
+  const addProjectContractor = useAddProjectContractor();
+  const updateProjectContractor = useUpdateProjectContractor();
+  const deleteProjectContractor = useDeleteProjectContractor();
+
+   const { data: contractorTypeData } = useFetchContractorTypes();
+  const contractorTypeOptions = createSelectOptions(
+    contractorTypeData?.data || [],
+    "cnt_id",
+    "cnt_type_name_or"
+  );
+
+//START CRUD
+  const handleAddProjectContractor = async (data) => {
+    try {
+      await addProjectContractor.mutateAsync(data);
+      toast.success(`Data added successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error("Failed to add data", {
+        autoClose: 2000,
+      });
+    }
+    toggle();
   };
+
+  const handleUpdateProjectContractor = async (data) => {
+    try {
+      await updateProjectContractor.mutateAsync(data);
+      toast.success(`data updated successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error(`Failed to update Data`, {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+  const handleDeleteProjectContractor = async () => {
+    if (projectContractor && projectContractor.cni_id) {
+      try {
+        const id = projectContractor.cni_id;
+        await deleteProjectContractor.mutateAsync(id);
+        toast.success(`Data deleted successfully`, {
+          autoClose: 2000,
+        });
+      } catch (error) {
+        toast.error(`Failed to delete Data`, {
+          autoClose: 2000,
+        });
+      }
+      setDeleteModal(false);
+    }
+  };
+  //END CRUD
+  //START FOREIGN CALLS
+
+  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-      cni_name: (projectContractor && projectContractor.cni_name) || "",
-      cni_tin_num: (projectContractor && projectContractor.cni_tin_num) || "",
-      cni_vat_num: (projectContractor && projectContractor.cni_vat_num) || "",
-      cni_total_contract_price:
-        (projectContractor && projectContractor.cni_total_contract_price) || "",
-      cni_contract_start_date_et:
-        (projectContractor && projectContractor.cni_contract_start_date_et) ||
-        "",
-      cni_contract_start_date_gc:
-        (projectContractor && projectContractor.cni_contract_start_date_gc) ||
-        "",
-      cni_contract_end_date_et:
-        (projectContractor && projectContractor.cni_contract_end_date_et) || "",
-      cni_contract_end_date_gc:
-        (projectContractor && projectContractor.cni_contract_end_date_gc) || "",
-      cni_contact_person:
-        (projectContractor && projectContractor.cni_contact_person) || "",
-      cni_phone_number:
-        (projectContractor && projectContractor.cni_phone_number) || "",
-      cni_address: (projectContractor && projectContractor.cni_address) || "",
-      cni_email: (projectContractor && projectContractor.cni_email) || "",
-      cni_website: (projectContractor && projectContractor.cni_website) || "",
-      cni_project_id: passedId,
-      cni_procrument_method:
-        (projectContractor && projectContractor.cni_procrument_method) || "",
-      cni_bid_invitation_date:
-        (projectContractor && projectContractor.cni_bid_invitation_date) || "",
-      cni_bid_opening_date:
-        (projectContractor && projectContractor.cni_bid_opening_date) || "",
-      cni_bid_evaluation_date:
-        (projectContractor && projectContractor.cni_bid_evaluation_date) || "",
-      cni_bid_award_date:
-        (projectContractor && projectContractor.cni_bid_award_date) || "",
-      cni_bid_contract_signing_date:
-        (projectContractor &&
-          projectContractor.cni_bid_contract_signing_date) ||
-        "",
-      cni_description:
-        (projectContractor && projectContractor.cni_description) || "",
-      cni_status: (projectContractor && projectContractor.cni_status) || "",
+     cni_name:(projectContractor && projectContractor.cni_name) || "", 
+cni_tin_num:(projectContractor && projectContractor.cni_tin_num) || "", 
+cni_contractor_type_id:(projectContractor && projectContractor.cni_contractor_type_id) || "", 
+cni_vat_num:(projectContractor && projectContractor.cni_vat_num) || "", 
+cni_total_contract_price:(projectContractor && projectContractor.cni_total_contract_price) || "", 
+cni_contract_start_date_et:(projectContractor && projectContractor.cni_contract_start_date_et) || "", 
+cni_contract_start_date_gc:(projectContractor && projectContractor.cni_contract_start_date_gc) || "", 
+cni_contract_end_date_et:(projectContractor && projectContractor.cni_contract_end_date_et) || "", 
+cni_contract_end_date_gc:(projectContractor && projectContractor.cni_contract_end_date_gc) || "", 
+cni_contact_person:(projectContractor && projectContractor.cni_contact_person) || "", 
+cni_phone_number:(projectContractor && projectContractor.cni_phone_number) || "", 
+cni_address:(projectContractor && projectContractor.cni_address) || "", 
+cni_email:(projectContractor && projectContractor.cni_email) || "", 
+cni_website:(projectContractor && projectContractor.cni_website) || "", 
+cni_project_id:(projectContractor && projectContractor.cni_project_id) || "", 
+cni_procrument_method:(projectContractor && projectContractor.cni_procrument_method) || "", 
+cni_bid_invitation_date:(projectContractor && projectContractor.cni_bid_invitation_date) || "", 
+cni_bid_opening_date:(projectContractor && projectContractor.cni_bid_opening_date) || "", 
+cni_bid_evaluation_date:(projectContractor && projectContractor.cni_bid_evaluation_date) || "", 
+cni_bid_award_date:(projectContractor && projectContractor.cni_bid_award_date) || "", 
+cni_bid_contract_signing_date:(projectContractor && projectContractor.cni_bid_contract_signing_date) || "", 
+cni_description:(projectContractor && projectContractor.cni_description) || "", 
+cni_status:(projectContractor && projectContractor.cni_status) || "", 
 
-      is_deletable: (projectContractor && projectContractor.is_deletable) || 1,
-      is_editable: (projectContractor && projectContractor.is_editable) || 1,
+is_deletable: (projectContractor && projectContractor.is_deletable) || 1,
+is_editable: (projectContractor && projectContractor.is_editable) || 1
     },
 
     validationSchema: Yup.object({
-      cni_name: Yup.string().required(t("cni_name")),
+     cni_name: Yup.string().required(t("cni_name")),
       cni_tin_num: Yup.string().required(t("cni_tin_num")),
       cni_vat_num: Yup.string().required(t("cni_vat_num")),
       cni_total_contract_price: Yup.string().required(
@@ -183,476 +205,308 @@ const ProjectContractorModel = (props) => {
       cni_bid_award_date: Yup.string().required(t("cni_bid_award_date")),
       cni_bid_contract_signing_date: Yup.string().required(
         t("cni_bid_contract_signing_date")
-      ),
-      //cni_description: Yup.string().required(t("cni_description")),
-      //cni_status: Yup.string().required(t("cni_status")),
+      )
+
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateProjectContractor = {
-          cni_id: projectContractor ? projectContractor.cni_id : 0,
-          cni_name: values.cni_name,
-          cni_tin_num: values.cni_tin_num,
-          cni_vat_num: values.cni_vat_num,
-          cni_total_contract_price: values.cni_total_contract_price,
-          cni_contract_start_date_et: values.cni_contract_start_date_et,
-          cni_contract_start_date_gc: values.cni_contract_start_date_gc,
-          cni_contract_end_date_et: values.cni_contract_end_date_et,
-          cni_contract_end_date_gc: values.cni_contract_end_date_gc,
-          cni_contact_person: values.cni_contact_person,
-          cni_phone_number: values.cni_phone_number,
-          cni_address: values.cni_address,
-          cni_contractor_type_id: values.cni_contractor_type_id,
-          cni_email: values.cni_email,
-          cni_website: values.cni_website,
-          cni_project_id: values.cni_project_id,
-          cni_procrument_method: values.cni_procrument_method,
-          cni_bid_invitation_date: values.cni_bid_invitation_date,
-          cni_bid_opening_date: values.cni_bid_opening_date,
-          cni_bid_evaluation_date: values.cni_bid_evaluation_date,
-          cni_bid_award_date: values.cni_bid_award_date,
-          cni_bid_contract_signing_date: values.cni_bid_contract_signing_date,
-          cni_description: values.cni_description,
-          cni_status: values.cni_status,
+          //cni_id: projectContractor ? projectContractor.cni_id : 0,
+          cni_id:projectContractor.cni_id, 
+cni_name:values.cni_name, 
+cni_tin_num:values.cni_tin_num, 
+cni_contractor_type_id:values.cni_contractor_type_id, 
+cni_vat_num:values.cni_vat_num, 
+cni_total_contract_price:values.cni_total_contract_price, 
+cni_contract_start_date_et:values.cni_contract_start_date_et, 
+cni_contract_start_date_gc:values.cni_contract_start_date_gc, 
+cni_contract_end_date_et:values.cni_contract_end_date_et, 
+cni_contract_end_date_gc:values.cni_contract_end_date_gc, 
+cni_contact_person:values.cni_contact_person, 
+cni_phone_number:values.cni_phone_number, 
+cni_address:values.cni_address, 
+cni_email:values.cni_email, 
+cni_website:values.cni_website, 
+//cni_project_id:values.cni_project_id, 
+cni_procrument_method:values.cni_procrument_method, 
+cni_bid_invitation_date:values.cni_bid_invitation_date, 
+cni_bid_opening_date:values.cni_bid_opening_date, 
+cni_bid_evaluation_date:values.cni_bid_evaluation_date, 
+cni_bid_award_date:values.cni_bid_award_date, 
+cni_bid_contract_signing_date:values.cni_bid_contract_signing_date, 
+cni_description:values.cni_description, 
+cni_status:values.cni_status, 
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
         // update ProjectContractor
-        dispatch(onUpdateProjectContractor(updateProjectContractor));
+        handleUpdateProjectContractor(updateProjectContractor);
         validation.resetForm();
       } else {
         const newProjectContractor = {
-          cni_name: values.cni_name,
-          cni_tin_num: values.cni_tin_num,
-          cni_vat_num: values.cni_vat_num,
-          cni_total_contract_price: values.cni_total_contract_price,
-          cni_contract_start_date_et: values.cni_contract_start_date_et,
-          cni_contract_start_date_gc: values.cni_contract_start_date_gc,
-          cni_contract_end_date_et: values.cni_contract_end_date_et,
-          cni_contract_end_date_gc: values.cni_contract_end_date_gc,
-          cni_contact_person: values.cni_contact_person,
-          cni_phone_number: values.cni_phone_number,
-          cni_address: values.cni_address,
-          cni_contractor_type_id: values.cni_contractor_type_id,
+          cni_name:values.cni_name, 
+cni_tin_num:values.cni_tin_num, 
+cni_contractor_type_id:values.cni_contractor_type_id, 
+cni_vat_num:values.cni_vat_num, 
+cni_total_contract_price:values.cni_total_contract_price, 
+cni_contract_start_date_et:values.cni_contract_start_date_et, 
+cni_contract_start_date_gc:values.cni_contract_start_date_gc, 
+cni_contract_end_date_et:values.cni_contract_end_date_et, 
+cni_contract_end_date_gc:values.cni_contract_end_date_gc, 
+cni_contact_person:values.cni_contact_person, 
+cni_phone_number:values.cni_phone_number, 
+cni_address:values.cni_address, 
+cni_email:values.cni_email, 
+cni_website:values.cni_website, 
+cni_project_id:passedId, 
+cni_procrument_method:values.cni_procrument_method, 
+cni_bid_invitation_date:values.cni_bid_invitation_date, 
+cni_bid_opening_date:values.cni_bid_opening_date, 
+cni_bid_evaluation_date:values.cni_bid_evaluation_date, 
+cni_bid_award_date:values.cni_bid_award_date, 
+cni_bid_contract_signing_date:values.cni_bid_contract_signing_date, 
+cni_description:values.cni_description, 
+cni_status:values.cni_status, 
 
-          cni_email: values.cni_email,
-          cni_website: values.cni_website,
-          cni_project_id: values.cni_project_id,
-          cni_procrument_method: values.cni_procrument_method,
-          cni_bid_invitation_date: values.cni_bid_invitation_date,
-          cni_bid_opening_date: values.cni_bid_opening_date,
-          cni_bid_evaluation_date: values.cni_bid_evaluation_date,
-          cni_bid_award_date: values.cni_bid_award_date,
-          cni_bid_contract_signing_date: values.cni_bid_contract_signing_date,
-          cni_description: values.cni_description,
-          cni_status: values.cni_status,
         };
-        // save new ProjectContractors
-        dispatch(onAddProjectContractor(newProjectContractor));
+        // save new ProjectContractor
+        handleAddProjectContractor(newProjectContractor);
         validation.resetForm();
       }
     },
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-  const dispatch = useDispatch();
+
   // Fetch ProjectContractor on component mount
-  useEffect(() => {
-    dispatch(onGetProjectContractor(passedId));
-  }, [dispatch]);
-
-  const projectContractorProperties = createSelector(
-    (state) => state.ProjectContractorR, // this is geting from  reducer
-    (ProjectContractorReducer) => ({
-      // this is from Project.reducer
-      projectContractor: ProjectContractorReducer.projectContractor,
-      loading: ProjectContractorReducer.loading,
-      update_loading: ProjectContractorReducer.update_loading,
-    })
-  );
-
-  const {
-    projectContractor: { data, previledge },
-    loading,
-    update_loading,
-  } = useSelector(projectContractorProperties);
-
-  useEffect(() => {
-    console.log("update_loading in useEffect", update_loading);
-    setModal(false);
-  }, [update_loading]);
-
-  const selectSearchProperties = createSelector(
-    (state) => state.search,
-    (search) => ({
-      results: search.results,
-    })
-  );
-
-  const { results } = useSelector(selectSearchProperties);
-
-  const [isLoading, setLoading] = useState(loading);
   useEffect(() => {
     setProjectContractor(data);
   }, [data]);
-
-  useEffect(() => {
+useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setProjectContractor(data);
       setIsEdit(false);
     }
   }, [data]);
-
-  const toggle = () => {
+const toggle = () => {
     if (modal) {
       setModal(false);
-      setProjectContractor(null);
+       setProjectContractor(null);
     } else {
       setModal(true);
     }
   };
 
-  const handleProjectContractorClick = (arg) => {
+   const handleProjectContractorClick = (arg) => {
     const projectContractor = arg;
     // console.log("handleProjectContractorClick", projectContractor);
     setProjectContractor({
-      cni_id: projectContractor.cni_id,
-      cni_name: projectContractor.cni_name,
-      cni_tin_num: projectContractor.cni_tin_num,
-      cni_vat_num: projectContractor.cni_vat_num,
-      cni_total_contract_price: projectContractor.cni_total_contract_price,
-      cni_contract_start_date_et: projectContractor.cni_contract_start_date_et,
-      cni_contract_start_date_gc: projectContractor.cni_contract_start_date_gc,
-      cni_contract_end_date_et: projectContractor.cni_contract_end_date_et,
-      cni_contract_end_date_gc: projectContractor.cni_contract_end_date_gc,
-      cni_contact_person: projectContractor.cni_contact_person,
-      cni_phone_number: projectContractor.cni_phone_number,
-      cni_address: projectContractor.cni_address,
-      cni_contractor_type_id: projectContractor.cni_contractor_type_id,
-      cni_email: projectContractor.cni_email,
-      cni_website: projectContractor.cni_website,
-      cni_project_id: projectContractor.cni_project_id,
-      cni_procrument_method: projectContractor.cni_procrument_method,
-      cni_bid_invitation_date: projectContractor.cni_bid_invitation_date,
-      cni_bid_opening_date: projectContractor.cni_bid_opening_date,
-      cni_bid_evaluation_date: projectContractor.cni_bid_evaluation_date,
-      cni_bid_award_date: projectContractor.cni_bid_award_date,
-      cni_bid_contract_signing_date:
-        projectContractor.cni_bid_contract_signing_date,
-      cni_description: projectContractor.cni_description,
-      cni_status: projectContractor.cni_status,
+      cni_id:projectContractor.cni_id, 
+cni_name:projectContractor.cni_name, 
+cni_tin_num:projectContractor.cni_tin_num, 
+cni_contractor_type_id:projectContractor.cni_contractor_type_id, 
+cni_vat_num:projectContractor.cni_vat_num, 
+cni_total_contract_price:projectContractor.cni_total_contract_price, 
+cni_contract_start_date_et:projectContractor.cni_contract_start_date_et, 
+cni_contract_start_date_gc:projectContractor.cni_contract_start_date_gc, 
+cni_contract_end_date_et:projectContractor.cni_contract_end_date_et, 
+cni_contract_end_date_gc:projectContractor.cni_contract_end_date_gc, 
+cni_contact_person:projectContractor.cni_contact_person, 
+cni_phone_number:projectContractor.cni_phone_number, 
+cni_address:projectContractor.cni_address, 
+cni_email:projectContractor.cni_email, 
+cni_website:projectContractor.cni_website, 
+cni_project_id:projectContractor.cni_project_id, 
+cni_procrument_method:projectContractor.cni_procrument_method, 
+cni_bid_invitation_date:projectContractor.cni_bid_invitation_date, 
+cni_bid_opening_date:projectContractor.cni_bid_opening_date, 
+cni_bid_evaluation_date:projectContractor.cni_bid_evaluation_date, 
+cni_bid_award_date:projectContractor.cni_bid_award_date, 
+cni_bid_contract_signing_date:projectContractor.cni_bid_contract_signing_date, 
+cni_description:projectContractor.cni_description, 
+cni_status:projectContractor.cni_status, 
 
       is_deletable: projectContractor.is_deletable,
       is_editable: projectContractor.is_editable,
     });
-
     setIsEdit(true);
-
     toggle();
   };
 
   //delete projects
   const [deleteModal, setDeleteModal] = useState(false);
-
   const onClickDelete = (projectContractor) => {
     setProjectContractor(projectContractor);
     setDeleteModal(true);
   };
 
-  const handleDeleteProjectContractor = () => {
-    if (projectContractor && projectContractor.cni_id) {
-      dispatch(onDeleteProjectContractor(projectContractor.cni_id));
-      setDeleteModal(false);
-    }
-  };
   const handleProjectContractorClicks = () => {
     setIsEdit(false);
     setProjectContractor("");
     toggle();
+  }
+;  const handleSearchResults = ({ data, error }) => {
+    setSearchResults(data);
+    setSearchError(error);
+    setShowSearchResult(true);
   };
-  const handleSearch = () => {
-    setSearchLoading(true); // Set loading to true when search is initiated// Update filtered data with search results
-    setShowSearchResults(true); // Show search results
-    setSearchLoading(false);
-  };
-
-  const handleClearSearch = () => {
-    setShowSearchResults(false);
-  };
-
+  //START UNCHANGED
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: "",
-        accessorKey: "cni_name",
+        header: '',
+        accessorKey: 'cni_name',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cni_name, 30) || "-"}
+              {truncateText(cellProps.row.original.cni_name, 30) ||
+                '-'}
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "cni_tin_num",
+      }, 
+{
+        header: '',
+        accessorKey: 'cni_tin_num',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cni_tin_num, 30) || "-"}
+              {truncateText(cellProps.row.original.cni_tin_num, 30) ||
+                '-'}
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "cni_vat_num",
+      }, 
+{
+        header: '',
+        accessorKey: 'contractor_name',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cni_vat_num, 30) || "-"}
+              {truncateText(cellProps.row.original.cni_contractor_type_id, 30) ||
+                '-'}
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "cni_total_contract_price",
+      }, 
+{
+        header: '',
+        accessorKey: 'cni_vat_num',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
-                cellProps.row.original.cni_total_contract_price,
-                30
-              ) || "-"}
+              {truncateText(cellProps.row.original.cni_vat_num, 30) ||
+                '-'}
             </span>
           );
         },
-      },
+      }, 
+{
+        header: '',
+        accessorKey: 'cni_total_contract_price',
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.cni_total_contract_price, 30) ||
+                '-'}
+            </span>
+          );
+        },
+      }, 
 
-      {
-        header: "",
-        accessorKey: "cni_contract_start_date_gc",
+{
+        header: '',
+        accessorKey: 'cni_contract_start_date_gc',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
-                cellProps.row.original.cni_contract_start_date_gc,
-                30
-              ) || "-"}
+              {truncateText(cellProps.row.original.cni_contract_start_date_gc, 30) ||
+                '-'}
             </span>
           );
         },
-      },
-
-      {
-        header: "",
-        accessorKey: "cni_contract_end_date_gc",
+      }, 
+{
+        header: '',
+        accessorKey: 'cni_contract_end_date_gc',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
-                cellProps.row.original.cni_contract_end_date_gc,
-                30
-              ) || "-"}
+              {truncateText(cellProps.row.original.cni_contract_end_date_gc, 30) ||
+                '-'}
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "cni_contact_person",
+      }, 
+{
+        header: '',
+        accessorKey: 'cni_contact_person',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.cni_contact_person, 30) ||
-                "-"}
+                '-'}
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "cni_phone_number",
+      }, 
+{
+        header: '',
+        accessorKey: 'cni_phone_number',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cni_phone_number, 30) || "-"}
+              {truncateText(cellProps.row.original.cni_phone_number, 30) ||
+                '-'}
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "cni_address",
+      }, 
+{
+        header: '',
+        accessorKey: 'cni_address',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.cni_address, 30) ||
-                `${cellProps.row.original.cni_address}`}
+                '-'}
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "cni_email",
+      }, 
+{
+        header: '',
+        accessorKey: 'cni_email',
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cni_email, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "cni_website",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.cni_website, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "cni_project_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.cni_project_id, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "cni_procrument_method",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.cni_procrument_method, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "cni_bid_invitation_date",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.cni_bid_invitation_date,
-                30
-              ) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "cni_bid_opening_date",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.cni_bid_opening_date, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "cni_bid_evaluation_date",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.cni_bid_evaluation_date,
-                30
-              ) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "cni_bid_award_date",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.cni_bid_award_date, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "cni_bid_contract_signing_date",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.cni_bid_contract_signing_date,
-                30
-              ) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "cni_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.cni_description, 30) || "-"}
+              {truncateText(cellProps.row.original.cni_email, 30) ||
+                '-'}
             </span>
           );
         },
@@ -680,7 +534,10 @@ const ProjectContractorModel = (props) => {
         },
       },
     ];
-    if (previledge?.is_role_editable && previledge?.is_role_deletable) {
+     if (
+      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_deletable
+    ) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -694,7 +551,7 @@ const ProjectContractorModel = (props) => {
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;
+                    const data = cellProps.row.original;                    
                     handleProjectContractorClick(data);
                   }}
                 >
@@ -732,14 +589,6 @@ const ProjectContractorModel = (props) => {
     return baseColumns;
   }, [handleProjectContractorClick, toggleViewModal, onClickDelete]);
 
-  const project_status = [
-    { label: "select Status name", value: "" },
-    { label: "Active", value: 1 },
-    { label: "Inactive", value: 0 },
-  ];
-
-  const dropdawntotal = [project_status];
-
   return (
     <React.Fragment>
       <ProjectContractorModal
@@ -754,22 +603,16 @@ const ProjectContractorModel = (props) => {
       />
       <div className={passedId ? "" : "page-content"}>
         <div className="container-fluid1">
-          {/* <Breadcrumbs
-            title={t("project_contractor")}
-            breadcrumbItem={t("project_contractor")}
-          /> */}
-          {passedId ? null : (
             <Breadcrumbs
               title={t("project_contractor")}
               breadcrumbItem={t("project_contractor")}
             />
-          )}
-          {isLoading || searchLoading ? (
-            <Spinners setLoading={setLoading} />
+         {isLoading || isSearchLoading ? (
+            <Spinners top={isActive ? "top-70" : ""} />
           ) : (
             <TableContainer
               columns={columns}
-              data={showSearchResults ? results : data}
+               data={showSearchResult ? searchResults?.data : data?.data || []}
               isGlobalFilter={true}
               isAddButton={true}
               isCustomPageSize={true}
@@ -793,15 +636,9 @@ const ProjectContractorModel = (props) => {
             </ModalHeader>
             <ModalBody>
               <Form
-                onSubmit={(e) => {
+                 onSubmit={(e) => {
                   e.preventDefault();
                   validation.handleSubmit();
-                  const modalCallback = () => setModal(false);
-                  if (isEdit) {
-                    onUpdateProjectContractor(validation.values, modalCallback);
-                  } else {
-                    onAddProjectContractor(validation.values, modalCallback);
-                  }
                   return false;
                 }}
               >
@@ -860,9 +697,9 @@ const ProjectContractorModel = (props) => {
                       name="cni_contractor_type_id"
                       type="select"
                       className="form-select"
-                      onChange={handleContractorTypeChange}
+                      onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={selectedContractorType}
+                      value={validation.values.cni_contractor_type_id || ""}
                     >
                       {contractorTypeOptions.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -1475,15 +1312,20 @@ const ProjectContractorModel = (props) => {
                 </Row>
                 <Row>
                   <Col>
-                    <div className="text-end">
-                      {update_loading ? (
+                  <div className="text-end">
+                      {addProjectContractor.isPending ||
+                      updateProjectContractor.isPending ? (
                         <Button
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addProjectContractor.isPending ||
+                            updateProjectContractor.isPending ||
+                            !validation.dirty
+                          }
                         >
-                          <Spinner size={"sm"} color="#fff" />
+                          <Spinner size={"sm"} color="light" className="me-2" />
                           {t("Save")}
                         </Button>
                       ) : (
@@ -1491,7 +1333,11 @@ const ProjectContractorModel = (props) => {
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addProjectContractor.isPending ||
+                            updateProjectContractor.isPending ||
+                            !validation.dirty
+                          }
                         >
                           {t("Save")}
                         </Button>

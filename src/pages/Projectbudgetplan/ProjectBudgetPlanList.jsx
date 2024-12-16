@@ -21,14 +21,13 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 
 import {
-  useFetchProjectBudgetSources,
-  useSearchProjectBudgetSources,
-  useAddProjectBudgetSource,
-  useDeleteProjectBudgetSource,
-  useUpdateProjectBudgetSource,
-} from "../../queries/projectbudgetsource_query";
-import { useFetchBudgetSources } from "../../queries/budgetsource_query";
-import ProjectBudgetSourceModal from "./ProjectBudgetSourceModal";
+  useFetchProjectBudgetPlans,
+  useSearchProjectBudgetPlans,
+  useAddProjectBudgetPlan,
+  useDeleteProjectBudgetPlan,
+  useUpdateProjectBudgetPlan,
+} from "../../queries/projectbudgetplan_query";
+import ProjectBudgetPlanModal from "./ProjectBudgetPlanModal";
 import { useTranslation } from "react-i18next";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -55,7 +54,6 @@ import { ToastContainer,toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import { createSelectOptions } from "../../utils/commonMethods";
 import AddressStructureForProject from "../Project/AddressStructureForProject";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -64,14 +62,14 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const ProjectBudgetSourceList = () => {
+const ProjectBudgetPlanList = () => {
   //meta title
-  document.title = " ProjectBudgetSource";
+  document.title = " ProjectBudgetPlan";
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [projectBudgetSource, setProjectBudgetSource] = useState(null);
+  const [projectBudgetPlan, setProjectBudgetPlan] = useState(null);
 
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -87,12 +85,7 @@ const ProjectBudgetSourceList = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
 
- const { data: budgetSourceData } = useFetchBudgetSources();
-  const budgetSourceOptions = createSelectOptions(
-    budgetSourceData?.data || [],
-    "pbs_id",
-    "pbs_name_or"
-  );
+
 
 
   // When selection changes, update selectedRows
@@ -141,10 +134,8 @@ const ProjectBudgetSourceList = () => {
     } else if (node.level === "woreda") {
       setPrjLocationWoredaId(node.id);
     }
-    if (showSearchResult) {
-      setShowSearchResult(false);
-    }
   };
+
 const columnDefs = useMemo(() => {
     const baseColumnDefs = [
       {
@@ -153,7 +144,7 @@ const columnDefs = useMemo(() => {
         valueGetter: (params) => params.node.rowIndex + 1,
         sortable: false,
         filter: false,
-        width: 60,
+        width: 70,
       },
       {
         headerName: t("prj_name"),
@@ -174,33 +165,51 @@ const columnDefs = useMemo(() => {
         },
       },
       {
-        headerName: t("bsr_name"),
-        field: "bsr_name",
+        headerName: t("cni_name"),
+        field: "cni_name",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.bsr_name, 30) || "-";
+          return truncateText(params.data.cni_name, 30) || "-";
         },
       },
       {
-        headerName: t("bsr_budget_source_id"),
-        field: "bsr_budget_source_id",
+        headerName: t("bpl_budget_year_id"),
+        field: "bpl_budget_year_id",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.bsr_budget_source_id, 30) || "-";
+          return truncateText(params.data.bpl_budget_year_id, 30) || "-";
         },
       },
       {
-        headerName: t("bsr_amount"),
-        field: "bsr_amount",
+        headerName: t("bpl_budget_code_id"),
+        field: "bpl_budget_code_id",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.bsr_amount, 30) || "-";
+          return truncateText(params.data.bpl_budget_code_id, 30) || "-";
+        },
+      },
+      {
+        headerName: t("bpl_amount"),
+        field: "bpl_amount",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.bpl_amount, 30) || "-";
+        },
+      },
+      {
+        headerName: t("bpl_description"),
+        field: "bpl_description",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.bpl_description, 30) || "-";
         },
       }
-    ];
+      ];
     return baseColumnDefs;
   });
   if (isError) {
@@ -212,22 +221,15 @@ const columnDefs = useMemo(() => {
         <div>
           <Breadcrumbs
             title={t("project")}
-            breadcrumbItem={t("project_budget_source_list")}
+            breadcrumbItem={t("Project Payment List")}
           />
           <div className="w-100 d-flex gap-2">
             <AddressStructureForProject onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />
             <div className="w-100">
           <AdvancedSearch
-            searchHook={useSearchProjectBudgetSources}
+            searchHook={useSearchProjectBudgetPlans}
             textSearchKeys={["prj_name", "prj_code"]}
-            dateSearchKeys={[]}
-            dropdownSearchKeys={[
-              {
-                    key: "bsr_budget_source_id",
-                    options: budgetSourceOptions,
-                  },
-            ]}
-
+            dropdownSearchKeys={[]}
             checkboxSearchKeys={[]}
             additionalParams={projectParams}
             setAdditionalParams={setProjectParams}
@@ -289,4 +291,4 @@ const columnDefs = useMemo(() => {
     </React.Fragment>
   );
 };
-export default ProjectBudgetSourceList;
+export default ProjectBudgetPlanList;

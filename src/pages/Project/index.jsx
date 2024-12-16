@@ -47,7 +47,7 @@ import ProjectSupplimentaryModel from "../Projectsupplimentary";
 import ProjectVariationModel from "../Projectvariation";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
-
+import ProjectBudgetPlan from '../../pages/Projectbudgetplan/index';
 import {
   Button,
   Col,
@@ -612,8 +612,8 @@ const ProjectModel = () => {
         headerName: t("prj_name"),
         sortable: true,
         filter: "agTextColumnFilter",
-        floatingFilter: true,
-        enableRowGroup: true,
+        /*floatingFilter: true,
+        enableRowGroup: true,*/
         width: 300,
         valueFormatter: (params) =>
           params.node.footer ? t("Total") : params.value, // Display "Total" for footer
@@ -912,7 +912,7 @@ const ProjectModel = () => {
                       chartThemes={chartThemes} // Add custom chart themes
                       pivotMode={false}
                       sideBar={null} // Enable and configure sidebar
-                      rowGroupPanelShow="always"
+                      rowGroupPanelShow="never"
                       pivotPanelShow="always"
                       pagination={true}
                       paginationPageSizeSelector={[10, 20, 30, 40, 50]}
@@ -1479,6 +1479,8 @@ const ProjectModel = () => {
             Performance: ProjectPerformanceModel,
             Supplementary: ProjectSupplimentaryModel,
             Variations: ProjectVariationModel,
+            BudgetPlan:ProjectBudgetPlan
+
           }}
         />
       )}

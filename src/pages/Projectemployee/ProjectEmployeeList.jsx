@@ -85,9 +85,6 @@ const ProjectEmployeeList = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
 
-
-
-
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
@@ -134,197 +131,107 @@ const ProjectEmployeeList = () => {
     } else if (node.level === "woreda") {
       setPrjLocationWoredaId(node.id);
     }
+    if (showSearchResult) {
+      setShowSearchResult(false);
+    }
   };
 
-  //START UNCHANGED
-  const columns = useMemo(() => {
-    const baseColumns = [
+ const columnDefs = useMemo(() => {
+    const baseColumnDefs = [
       {
-        header: '',
-        accessorKey: 'emp_id_no',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_id_no, 30) ||
-                '-'}
-            </span>
-          );
+        headerName: t("S.N"),
+        field: "sn",
+        valueGetter: (params) => params.node.rowIndex + 1,
+        sortable: false,
+        filter: false,
+        width: 70,
+      },
+      {
+        headerName: t("prj_name"),
+        field: "prj_name",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_name, 30) || "-";
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'emp_full_name',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_full_name, 30) ||
-                '-'}
-            </span>
-          );
+      },
+      {
+        headerName: t("prj_code"),
+        field: "prj_code",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_code, 30) || "-";
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'emp_email',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_email, 30) ||
-                '-'}
-            </span>
-          );
+      },
+      {
+        headerName: t("emp_id_no"),
+        field: "emp_id_no",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.emp_id_no, 30) || "-";
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'emp_phone_num',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_phone_num, 30) ||
-                '-'}
-            </span>
-          );
+      },
+      {
+        headerName: t("emp_full_name"),
+        field: "emp_full_name",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.emp_full_name, 30) || "-";
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'emp_role',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_role, 30) ||
-                '-'}
-            </span>
-          );
+      },
+      {
+        headerName: t("emp_email"),
+        field: "emp_email",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.emp_email, 30) || "-";
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'emp_project_id',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_project_id, 30) ||
-                '-'}
-            </span>
-          );
+      },
+      {
+        headerName: t("emp_phone_num"),
+        field: "emp_phone_num",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.emp_phone_num, 30) || "-";
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'emp_start_date_ec',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_start_date_ec, 30) ||
-                '-'}
-            </span>
-          );
+      },
+      {
+        headerName: t("emp_role"),
+        field: "emp_role",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.emp_role, 30) || "-";
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'emp_start_date_gc',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_start_date_gc, 30) ||
-                '-'}
-            </span>
-          );
+      },
+      {
+        headerName: t("emp_start_date_gc"),
+        field: "emp_start_date_gc",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.emp_start_date_gc, 30) || "-";
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'emp_end_date_ec',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_end_date_ec, 30) ||
-                '-'}
-            </span>
-          );
+      },
+      {
+        headerName: t("emp_end_date_ec"),
+        field: "emp_end_date_ec",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.emp_end_date_ec, 30) || "-";
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'emp_end_date_gc',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_end_date_gc, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'emp_address',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_address, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'emp_description',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_description, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'emp_current_status',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_current_status, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-
+      }
     ];
-    return baseColumns;
+    return baseColumnDefs;
   });
+
+
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
@@ -334,32 +241,17 @@ const ProjectEmployeeList = () => {
         <div>
           <Breadcrumbs
             title={t("project")}
-            breadcrumbItem={t("Project Payment List")}
+            breadcrumbItem={t("project_employee_list")}
           />
           <div className="w-100 d-flex gap-2">
             <AddressStructureForProject onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />
             <div className="w-100">
           <AdvancedSearch
             searchHook={useSearchProjectEmployees}
-            textSearchKeys={["prj_name", "prj_code"]}
-            dateSearchKeys={["payment_date"]}
-            dropdownSearchKeys={[
-              {
-                key: "prp_type",
-                options: [
-                  { value: "Advance", label: "Advance" },
-                  { value: "Interim", label: "Interim" },
-                  { value: "Final", label: "Final" },
-                ],
-              },
-            ]}
+            textSearchKeys={["prj_name", "prj_code","emp_phone_num","emp_email"]}
+            dateSearchKeys={["employee_date"]}
+            dropdownSearchKeys={[]}
             checkboxSearchKeys={[]}
-            Component={CascadingDropdowns}
-            component_params={{
-              dropdown1name: "prj_location_region_id",
-              dropdown2name: "prj_location_zone_id",
-              dropdown3name: "prj_location_woreda_id",
-            }}
             additionalParams={projectParams}
             setAdditionalParams={setProjectParams}
             onSearchResult={handleSearchResults}
