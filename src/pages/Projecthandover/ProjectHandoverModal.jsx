@@ -1,23 +1,53 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
-  Button,
   Modal,
   ModalBody,
-  ModalFooter,
   ModalHeader,
-  Table,
-} from "reactstrap"
+} from "reactstrap";
+
+import {
+  TabWrapper,
+  PDFPreview,
+  DetailsView,
+} from "../../components/Common/DetailViewWrapper";
+import { useSearchProjectDocuments } from "../../queries/projectdocument_query";
+import Spinners from "../../components/Common/Spinner";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+  width: "100%",
+  marginTop: "30px",
 };
 
 const ProjectHandoverModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction } = props;
+  const handoverId = transaction?.prh_id;
+  const param = { prd_owner_type_id: 1, prd_owner_id: handoverId };
+
+  const { data, isLoading } = useSearchProjectDocuments(
+    handoverId ? param : null
+  );
+
+  const tabs = [
+    {
+      id: "details",
+      label: "Details",
+      content: <DetailsView details={transaction} />,
+    },
+    {
+      id: "pdf",
+      label: "PDF Viewer",
+      content: isLoading ? (
+        <Spinners />
+      ) : (
+        <PDFPreview
+          filePath={data?.data[0]?.prd_file_path}
+          fileSize={data?.data[0]?.prd_size}
+        />
+      ),
+    },
+  ];
 
   return (
     <Modal
@@ -33,41 +63,8 @@ const ProjectHandoverModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('prh_project_id')}: <span className="text-primary">{transaction.prh_project_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prh_handover_date_ec')}: <span className="text-primary">{transaction.prh_handover_date_ec}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prh_handover_date_gc')}: <span className="text-primary">{transaction.prh_handover_date_gc}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prh_description')}: <span className="text-primary">{transaction.prh_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prh_status')}: <span className="text-primary">{transaction.prh_status}</span>
-          </p>
-          </tr>
-
-          {transaction.is_deletable === 1 && (
-            <p className="text-danger">data is deletable</p>
-          )}
-          
-          {transaction.is_editable === 1 && (
-            <p className="text-success">Editable</p>
-          )}
+          {isLoading ? <Spinners /> : <TabWrapper tabs={tabs} />}
         </ModalBody>
-        <ModalFooter>
-          <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
-          </Button>
-        </ModalFooter>
       </div>
     </Modal>
   );

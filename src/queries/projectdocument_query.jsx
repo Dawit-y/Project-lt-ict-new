@@ -8,7 +8,7 @@ import {
 
 const PROJECT_DOCUMENT_QUERY_KEY = ["project_document"];
 
-// Fetch project_employee
+// Fetch project_documents
 export const useFetchProjectDocuments = (param = {}, isActive) => {
   return useQuery({
     queryKey: [...PROJECT_DOCUMENT_QUERY_KEY, "fetch", param],
@@ -21,20 +21,20 @@ export const useFetchProjectDocuments = (param = {}, isActive) => {
   });
 };
 
-//search project_employee
-export const useSearchProjectDocuments = (searchParams = {}) => {
+//search project_documents
+export const useSearchProjectDocuments = (searchParams) => {
   return useQuery({
-    queryKey: [...PROJECT_DOCUMENT_QUERY_KEY, "search", searchParams],
+    queryKey: searchParams ? ["projectDocuments", searchParams] : undefined,
     queryFn: () => getProjectDocument(searchParams),
+    enabled: !!searchParams,
     staleTime: 1000 * 60 * 2,
-    gcTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: searchParams.length > 0,
   });
 };
 
-// Add project_employee
+// Add project_documents
 export const useAddProjectDocument = () => {
   const queryClient = useQueryClient();
 
