@@ -42,9 +42,7 @@ import {
   Badge,
   InputGroup,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
@@ -134,10 +132,7 @@ const ProjectHandoverModel = (props) => {
       setDeleteModal(false);
     }
   };
-  //END CRUD
-  //START FOREIGN CALLS
 
-  // validation
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -150,9 +145,11 @@ const ProjectHandoverModel = (props) => {
       prh_description:
         (projectHandover && projectHandover.prh_description) || "",
       prh_status: (projectHandover && projectHandover.prh_status) || "",
-
       is_deletable: (projectHandover && projectHandover.is_deletable) || 1,
       is_editable: (projectHandover && projectHandover.is_editable) || 1,
+      prd_name: (projectHandover && projectHandover.prd_name) || "",
+      prd_document_type_id:
+        (projectHandover && projectHandover.prd_document_type_id) || "",
     },
 
     validationSchema: Yup.object({
@@ -161,6 +158,9 @@ const ProjectHandoverModel = (props) => {
       prh_handover_date_gc: Yup.string().required(t("prh_handover_date_gc")),
       //prh_description: Yup.string().required(t("prh_description")),
       //prh_status: Yup.string().required(t("prh_status")),
+      prd_document_type_id: Yup.string().required(t("prd_document_type_id")),
+      prd_name: Yup.string().required(t("prd_name")),
+      prd_file: Yup.string().required(t("prd_file")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -190,8 +190,8 @@ const ProjectHandoverModel = (props) => {
         const handoverDocumentData = {
           prd_owner_type_id: 1,
           prd_project_id: passedId,
-          prd_document_type_id: 1,
-          prd_name: 1,
+          prd_document_type_id: values.prd_document_type_id,
+          prd_name: values.prd_name,
           prd_file: values.prd_file,
           prd_file_path: values.prd_file_path,
           prd_size: values.prd_size,
@@ -208,11 +208,11 @@ const ProjectHandoverModel = (props) => {
   const toggleViewModal = () => setModal1(!modal1);
 
   useEffect(() => {
-    setProjectHandover(data);
+    setProjectHandover(data?.data);
   }, [data]);
   useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
-      setProjectHandover(data);
+      setProjectHandover(data?.data);
       setIsEdit(false);
     }
   }, [data]);

@@ -11,27 +11,14 @@ import Spinners from "../../components/Common/Spinner";
 
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-import Dropzone from "react-dropzone";
-
-import {
-  getProjectDocument as onGetProjectDocument,
-  addProjectDocument as onAddProjectDocument,
-  updateProjectDocument as onUpdateProjectDocument,
-  deleteProjectDocument as onDeleteProjectDocument,
-} from "../../store/projectdocument/actions";
 import {
   useFetchProjectDocuments,
   useAddProjectDocument,
   useUpdateProjectDocument,
   useDeleteProjectDocument,
 } from "../../queries/projectdocument_query";
-
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
 import ProjectDocumentModal from "./ProjectDocumentModal";
 import { useTranslation } from "react-i18next";
-import "../../App.css";
 
 import {
   Button,
@@ -46,11 +33,8 @@ import {
   FormFeedback,
   Label,
 } from "reactstrap";
-import { ToastContainer } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import FileUploadField from "../../components/Common/FileUploadField";
-import { useFetchDocumentTypes } from "../../queries/documenttype_query";
-import { createSelectOptions } from "../../utils/commonMethods";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -80,13 +64,6 @@ const ProjectDocumentModel = (props) => {
   const addProjectDocument = useAddProjectDocument();
   const updateProjectDocument = useUpdateProjectDocument();
   const deleteProjectDocument = useDeleteProjectDocument();
-
-  const { data: documentTypeData } = useFetchDocumentTypes();
-  const documentTypeOptions = createSelectOptions(
-    documentTypeData?.data || [],
-    "pdt_id",
-    "pdt_doc_name_en"
-  );
 
   const handleAddProjectDocument = async (data) => {
     try {
@@ -156,7 +133,7 @@ const ProjectDocumentModel = (props) => {
     },
 
     validationSchema: Yup.object({
-      // prd_file:Yup.string().required(t('prd_file')),
+      prd_file: Yup.string().required(t("prd_file")),
       prd_document_type_id: Yup.string().required(t("prd_document_type_id")),
       prd_name: Yup.string().required(t("prd_name")),
       // prd_file_path: Yup.string().required(t("prd_file_path")),
@@ -436,7 +413,6 @@ const ProjectDocumentModel = (props) => {
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
   return (
     <React.Fragment>
       <ProjectDocumentModal
@@ -498,68 +474,8 @@ const ProjectDocumentModel = (props) => {
               }}
             >
               <Row>
-                {/* Document Type (Unchanged) */}
-                <Col className="col-md-4 mb-3">
-                  <Label>
-                    {t("prd_document_type_id")}{" "}
-                    <span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    name="prd_document_type_id"
-                    id="prd_document_type_id"
-                    type="select"
-                    className="form-select"
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.prd_document_type_id || ""}
-                    invalid={
-                      validation.touched.prd_document_type_id &&
-                      validation.errors.prd_document_type_id
-                        ? true
-                        : false
-                    }
-                  >
-                    <option value={null}>Select Document Type</option>
-                    {documentTypeOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {t(`${option.label}`)}
-                      </option>
-                    ))}
-                  </Input>
-                  {validation.touched.prd_document_type_id &&
-                  validation.errors.prd_document_type_id ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.prd_document_type_id}
-                    </FormFeedback>
-                  ) : null}
-                </Col>
-
-                {/* Name */}
-                <Col className="col-md-4 mb-3">
-                  <Label>
-                    {t("prd_name")} <span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    name="prd_name"
-                    type="text"
-                    placeholder={t("prd_name")}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.prd_name || ""}
-                    invalid={
-                      validation.touched.prd_name && validation.errors.prd_name
-                        ? true
-                        : false
-                    }
-                    maxLength={20}
-                  />
-                  {validation.touched.prd_name && validation.errors.prd_name ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.prd_name}
-                    </FormFeedback>
-                  ) : null}
-                </Col>
-                {/* document status */}
+                {/* PDF File Picker */}
+                <FileUploadField validation={validation} />
 
                 <Col className="col-md-6 mb-3" style={{ display: "none" }}>
                   <Label>{t("prd_status")}</Label>
@@ -588,11 +504,11 @@ const ProjectDocumentModel = (props) => {
                   ) : null}
                 </Col>
 
-                <Col className="col-md-4 mb-3">
+                <Col className="col-md-12 mb-3">
                   <Label>{t("prd_description")}</Label>
                   <Input
                     name="prd_description"
-                    type="text"
+                    type="textarea"
                     rows={3}
                     placeholder={t("prd_description")}
                     onChange={validation.handleChange}
@@ -614,8 +530,6 @@ const ProjectDocumentModel = (props) => {
                   ) : null}
                 </Col>
 
-                {/* PDF File Picker */}
-                <FileUploadField validation={validation} />
                 <Row>
                   <Col>
                     <div className="text-end">
