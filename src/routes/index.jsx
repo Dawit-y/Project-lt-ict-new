@@ -66,64 +66,76 @@ import ProjectOverview from "../pages/Project/ProjectOverview";
 import ProjectsLocation from "../pages/ProjectsLocation";
 
 import Gantty from "../pages/GanttChart/index";
-import StatisticalReport from "../pages/StatistaicalReport";
+import StatisticalReport from "../pages/StatisticalReport";
 //Newly added
-import ExpenditureCode from '../pages/Expenditurecode/index';
-import ProjectBudgetExpenditure from '../pages/Projectbudgetexpenditure/index';
-import ProjectEmployee from '../pages/Projectemployee/index';
-import ProjectHandover from '../pages/Projecthandover/index';
-import ProjectPerformance from '../pages/Projectperformance/index';
-import ProjectPerformanceList from '../pages/Projectperformance/ProjectPerformanceList';
-import ProjectHandoverList from '../pages/Projecthandover/ProjectHandoverList';
-import ProjectBudgetExpenditureList from '../pages/Projectbudgetexpenditure/ProjectBudgetExpenditureList';
-import ProjectBudgetSourceList from '../pages/Projectbudgetsource/ProjectBudgetSourceList';
-import ProjectVariationList from '../pages/Projectvariation/ProjectVariationList';
-import ProjectSupplimentaryList from '../pages/Projectsupplimentary/ProjectSupplimentaryList';
-import ProjectEmployeeList from '../pages/Projectemployee/ProjectEmployeeList';
+import ExpenditureCode from "../pages/Expenditurecode/index";
+import ProjectBudgetExpenditure from "../pages/Projectbudgetexpenditure/index";
+import ProjectEmployee from "../pages/Projectemployee/index";
+import ProjectHandover from "../pages/Projecthandover/index";
+import ProjectPerformance from "../pages/Projectperformance/index";
+import ProjectPerformanceList from "../pages/Projectperformance/ProjectPerformanceList";
+import ProjectHandoverList from "../pages/Projecthandover/ProjectHandoverList";
+import ProjectBudgetExpenditureList from "../pages/Projectbudgetexpenditure/ProjectBudgetExpenditureList";
+import ProjectBudgetSourceList from "../pages/Projectbudgetsource/ProjectBudgetSourceList";
+import ProjectVariationList from "../pages/Projectvariation/ProjectVariationList";
+import ProjectSupplimentaryList from "../pages/Projectsupplimentary/ProjectSupplimentaryList";
+import ProjectEmployeeList from "../pages/Projectemployee/ProjectEmployeeList";
 
-import ProjectStakeholderList from '../pages/Projectstakeholder/ProjectStakeholderList';
-import ProjectContractorList from '../pages/Projectcontractor/ProjectContractorList';
-import ProjectBudgetPlanList from '../pages/Projectbudgetplan/ProjectBudgetPlanList';
+import ProjectStakeholderList from "../pages/Projectstakeholder/ProjectStakeholderList";
+import ProjectContractorList from "../pages/Projectcontractor/ProjectContractorList";
+import ProjectBudgetPlanList from "../pages/Projectbudgetplan/ProjectBudgetPlanList";
 
 //import ProjectStakeholder from '../pages/Projectstakeholder/index';
 //import ProjectContractor from '../pages/Projectontractor/index';
-import ProjectBudgetPlan from '../pages/Projectbudgetplan/index';
+import ProjectBudgetPlan from "../pages/Projectbudgetplan/index";
 
-import BudgetMonth from '../pages/Budgetmonth/index';
-import ProjectPlan from '../pages/Projectplan/index';
-import ProjectSupplimentary from '../pages/Projectsupplimentary/index';
-import ProjectVariation from '../pages/Projectvariation/index';
+import BudgetMonth from "../pages/Budgetmonth/index";
+import ProjectPlan from "../pages/Projectplan/index";
+import ProjectSupplimentary from "../pages/Projectsupplimentary/index";
+import ProjectVariation from "../pages/Projectvariation/index";
 
 const authProtectedRoutes = [
-  {path: '/expenditure_code', component: <ExpenditureCode/> },
-  {path: '/project_budget_expenditure', component: <ProjectBudgetExpenditure/> },
-   {path: '/project_employee', component: <ProjectEmployee/> },
-  {path: '/project_handover', component: <ProjectHandover/> },
-  {path: '/project_performance', component: <ProjectPerformance/> },
-  {path: '/project_performance_list', component: <ProjectPerformanceList/> },
-  {path: '/project_handover_list', component: <ProjectHandoverList/> },
-  {path: '/project_budget_expenditure_list', component: <ProjectBudgetExpenditureList/> },
-  {path: '/project_budget_source_list', component: <ProjectBudgetSourceList/> },
-  {path: '/project_variation_list', component: <ProjectVariationList/> },
-  {path: '/project_supplimentary_list', component: <ProjectSupplimentaryList/> },
-  {path: '/project_employee_list', component: <ProjectEmployeeList/> },
+  { path: "/expenditure_code", component: <ExpenditureCode /> },
+  {
+    path: "/project_budget_expenditure",
+    component: <ProjectBudgetExpenditure />,
+  },
+  { path: "/project_employee", component: <ProjectEmployee /> },
+  { path: "/project_handover", component: <ProjectHandover /> },
+  { path: "/project_performance", component: <ProjectPerformance /> },
+  { path: "/project_performance_list", component: <ProjectPerformanceList /> },
+  { path: "/project_handover_list", component: <ProjectHandoverList /> },
+  {
+    path: "/project_budget_expenditure_list",
+    component: <ProjectBudgetExpenditureList />,
+  },
+  {
+    path: "/project_budget_source_list",
+    component: <ProjectBudgetSourceList />,
+  },
+  { path: "/project_variation_list", component: <ProjectVariationList /> },
+  {
+    path: "/project_supplimentary_list",
+    component: <ProjectSupplimentaryList />,
+  },
+  { path: "/project_employee_list", component: <ProjectEmployeeList /> },
 
-  {path: '/project_stakeholder_list', component: <ProjectStakeholderList/> },
-  {path: '/project_contractor_list', component: <ProjectContractorList/> },
-  {path: '/project_budget_plan_list', component: <ProjectBudgetPlanList/> },
+  { path: "/project_stakeholder_list", component: <ProjectStakeholderList /> },
+  { path: "/project_contractor_list", component: <ProjectContractorList /> },
+  { path: "/project_budget_plan_list", component: <ProjectBudgetPlanList /> },
 
   //{path: '/project_stakeholder', component: <ProjectStakeholder/> },
   //{path: '/project_contractor', component: <ProjectContractor/> },
-  {path: '/project_budget_plan', component: <ProjectBudgetPlan/> },
-  {path: '/budget_month', component: <BudgetMonth/> },
+  { path: "/project_budget_plan", component: <ProjectBudgetPlan /> },
+  { path: "/budget_month", component: <BudgetMonth /> },
 
-//  {path: '/project_plan', component: <ProjectPlan/> },
+  //  {path: '/project_plan', component: <ProjectPlan/> },
   {
-    path: '/project/:prj_code/project_plan',
+    path: "/project/:prj_code/project_plan",
     component: <ProjectPlan />,
   },
-  {path: '/project_supplimentary', component: <ProjectSupplimentary/> },
- {path: '/project_variation', component: <ProjectVariation/> },
+  { path: "/project_supplimentary", component: <ProjectSupplimentary /> },
+  { path: "/project_variation", component: <ProjectVariation /> },
   { path: "/dash", components: <Dashboardcard /> },
   { path: "/dashboard", component: <Dashboard /> },
   //File Manager
@@ -170,7 +182,7 @@ const authProtectedRoutes = [
   { path: "/project_payment_list", component: <ProjectPaymentList /> },
   { path: "/project_overview", component: <ProjectOverview /> },
   { path: "/projects_location", component: <ProjectsLocation /> },
-  { path: "/statistaical_report", component: <StatisticalReport /> },
+  { path: "/statistical_report", component: <StatisticalReport /> },
 
   //   // this route should be at the end of all other routes
   //   // eslint-disable-next-line react/display-name
