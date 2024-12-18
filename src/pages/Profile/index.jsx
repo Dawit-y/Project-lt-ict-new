@@ -36,7 +36,7 @@ import { toast } from "react-toastify";
 const UsersProfile = () => {
   document.title = "Profile | PMS";
 
-  const storedUser = localStorage.getItem("authUser");
+  const storedUser = sessionStorage.getItem("authUser");
   const Users = storedUser ? JSON.parse(storedUser) : null; // Handle null case
   const [userProfile, setUserProfile] = useState(Users); // Set state directly to Users
 

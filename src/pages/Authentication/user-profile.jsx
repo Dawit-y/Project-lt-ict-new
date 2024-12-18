@@ -55,8 +55,8 @@ const UserProfile = (props) => {
   } = useSelector(ProfileProperties);
 
   useEffect(() => {
-    if (localStorage.getItem("authUser")) {
-      const obj = JSON.parse(localStorage.getItem("authUser"));
+    if (sessionStorage.getItem("authUser")) {
+      const obj = JSON.parse(sessionStorage.getItem("authUser"));
       if (import.meta.env.VITE_APP_DEFAULTAUTH === "firebase") {
         setname(obj.displayName);
         setemail(obj.email);

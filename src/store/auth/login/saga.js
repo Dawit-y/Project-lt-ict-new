@@ -21,28 +21,31 @@ function* loginUser({ payload: { user, history } }) {
         email: user.email,
         password: user.password,
       });
-      if(response.status=='success'){
-
-
-      console.log("login response111",response);      
-      localStorage.setItem("authUser", JSON.stringify(response));      
-      yield put(loginSuccess(response));
-    }else{
-       const errorMessage = error.response && error.response.data ? error.response.data.message : "Login failed, please try again.";
-    yield put(apiError(errorMessage));
-    }
+      if (response.status == "success") {
+        sessionStorage.setItem("authUser", JSON.stringify(response));
+        yield put(loginSuccess(response));
+      } else {
+        const errorMessage =
+          error.response && error.response.data
+            ? error.response.data.message
+            : "Login failed, please try again.";
+        yield put(apiError(errorMessage));
+      }
     } else if (import.meta.env.VITE_APP_DEFAULTAUTH === "fake") {
       const response = yield call(postFakeLogin, {
         email: user.email,
         password: user.password,
       });
-      localStorage.setItem("authUser", JSON.stringify(response));
-     
+      sessionStorage.setItem("authUser", JSON.stringify(response));
+
       yield put(loginSuccess(response));
     }
     history("/dashboard");
   } catch (error) {
-    const errorMessage = error.response && error.response.data ? error.response.data.message : "Login failed, please try again.";
+    const errorMessage =
+      error.response && error.response.data
+        ? error.response.data.message
+        : "Login failed, please try again.";
     yield put(apiError(errorMessage));
   }
 }
@@ -71,7 +74,7 @@ function* socialLogin({ payload: { type, history } }) {
       // } else {
       //   history("/login");
       // }
-      // localStorage.setItem("authUser", JSON.stringify(response));
+      // sessionStorage.setItem("authUser", JSON.stringify(response));
       // yield put(loginSuccess(response));
       // if (response) history("/dashboard");
     }

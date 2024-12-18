@@ -26,7 +26,7 @@ const ProfileMenu = (props) => {
   // Declare a new state variable, which we'll call "menu"
   const [menu, setMenu] = useState(false);
 
-  const storedUser = localStorage.getItem("authUser");
+  const storedUser = sessionStorage.getItem("authUser");
   const User = storedUser ? JSON.parse(storedUser) : null; // Handle null case
   const [userProfile, setUserProfile] = useState(User); // Set state directly to Users
 

@@ -27,7 +27,7 @@ const Navbar = (props) => {
           setSidedata(JSON.parse(cachedData));
         } else {
           // Fetch data from API if not cached
-          const storedUser = JSON.parse(localStorage.getItem("authUser"));
+          const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
           const response = await fetch(
             `${import.meta.env.VITE_BASE_API_URL}menus`,
             {

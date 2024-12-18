@@ -8,7 +8,7 @@ const axiosApi = axios.create({
 
 axiosApi.interceptors.request.use(
   (config) => {
-    const storedUser = JSON.parse(localStorage.getItem("authUser"));
+    const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
     if (storedUser && storedUser.authorization) {
       config.headers["Authorization"] =
         storedUser.authorization.type + " " + storedUser.authorization.token;
