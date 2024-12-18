@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Container,
   Row,
   Col,
   FormGroup,
@@ -39,10 +38,11 @@ const StatisticalReport = () => {
       url: "https://pmsor.awashsol.com/api/project/listgrid",
     },
   ]);
-  const [searchResults, setSearchResults] = useState(null);
+  const [searchResults, setSearchResults] = useState([]);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
+  const [showSearchResult, setShowSearchResult] = useState(true);
+
   const [projectParams, setProjectParams] = useState({});
   const [locationParams, setLocationParams] = useState({});
   const [LocationRegionId, setLocationRegionId] = useState(null);
@@ -97,10 +97,10 @@ const StatisticalReport = () => {
     // Update localized state
     setLocalizedRenderersUI(localizedRenderers);
     setLocalizedAggregatorTemplates(localizedAggregatorTemplates);
-
     // Reset pivot state when language changes
     setPivotState({});
   }, [t, i18n.language]); // Re-run when language changes
+
   const fetchData = async (endpoint) => {
     setLoading(true);
     try {
@@ -174,12 +174,13 @@ const StatisticalReport = () => {
 
   const handleSearchResults = ({ data, error }) => {
     setLoading(true);
-    setData(showSearchResult ? searchResults?.data : data?.data || []);
-    //setSearchResults(data);
+    // setData(data?.data || []);
+    setSearchResults(data?.data);
     setPivotState({});
     //setSelectedEndpoint(endpoint);
     setShowPivot(true);
     //setSearchError(error);
+    setSearchError(error);
     setShowSearchResult(true);
     setLoading(false);
   };
@@ -187,7 +188,6 @@ const StatisticalReport = () => {
   // Update projectParams dynamically based on selected endpoint and location params
   useEffect(() => {
     const updatedParams = {};
-
     if (LocationRegionId && locationParams.region) {
       updatedParams[locationParams.region] = LocationRegionId;
     }
@@ -197,7 +197,6 @@ const StatisticalReport = () => {
     if (LocationWoredaId && locationParams.woreda) {
       updatedParams[locationParams.woreda] = LocationWoredaId;
     }
-
     setProjectParams(updatedParams);
   }, [LocationRegionId, LocationZoneId, LocationWoredaId, locationParams]);
 
@@ -223,7 +222,7 @@ const StatisticalReport = () => {
   useEffect(() => {
     if (selectedEndpoint && endpointConfigs[selectedEndpoint]) {
       const config = endpointConfigs[selectedEndpoint];
-      setLocationParams(config.locationParams || {}); // Use endpoint's location params
+      setLocationParams(config.locationParams || {});
     } else {
       setLocationParams({}); // Clear if no location params
     }
@@ -235,7 +234,6 @@ const StatisticalReport = () => {
     setShowPivot(false);
   }, [selectedEndpoint]);
 
-  console.log("dataaaaaaaa", data);
 
   return (
     <div className="page-content">
@@ -276,9 +274,7 @@ const StatisticalReport = () => {
                     value={selectedEndpoint.name}
                     onChange={handleSelectionChange}
                   >
-                    <option value="" disabled>
-                      {t("Select To Get The Report")}
-                    </option>
+                    <option value="">{t("Select To Get The Report")}</option>
                     {endpoints.map((endpoint, index) => (
                       <option key={index} value={endpoint.name}>
                         {t(endpoint.name)}
@@ -289,35 +285,38 @@ const StatisticalReport = () => {
               </Col>
             </Row>
             <Col xs="12">
-              {loading ? (
+              {loading || isSearchLoading ? (
                 <div className="d-flex justify-content-center">
                   <Spinner color="primary" />
                 </div>
               ) : (
                 <>
-                  {!loading && showPivot && data?.length > 0 && (
-                    <Card>
-                      <CardBody>
-                        <div className="overflow-x-auto">
-                          <PivotTableUI
-                            key={selectedEndpoint || "default"}
-                            data={data}
-                            onChange={(state) => setPivotState(state)}
-                            renderers={localizedRenderersUI}
-                            aggregators={localizedAggregatorTemplates}
-                            aggregatorName={
-                              Object.keys(localizedAggregatorTemplates)[0]
-                            }
-                            {...pivotState}
-                          />
-                        </div>
-                      </CardBody>
-                    </Card>
-                  )}
-                  {(!data || data.length === 0) && (
+                  {!loading &&
+                    showPivot &&
+                    searchResults.length > 0 &&
+                    showSearchResult && (
+                      <Card>
+                        <CardBody>
+                          <div className="overflow-x-auto">
+                            <PivotTableUI
+                              key={selectedEndpoint || "default"}
+                              data={searchResults}
+                              onChange={(state) => setPivotState(state)}
+                              renderers={localizedRenderersUI}
+                              aggregators={localizedAggregatorTemplates}
+                              aggregatorName={
+                                Object.keys(localizedAggregatorTemplates)[0]
+                              }
+                              {...pivotState}
+                            />
+                          </div>
+                        </CardBody>
+                      </Card>
+                    )}
+                  {searchResults && searchResults.length === 0 && (
                     <p>
                       {t(
-                        "No data available for the selected endpoint please select related Address Structure."
+                        "No data available for the selected endpoint please select related Address Structure and click Search button."
                       )}
                     </p>
                   )}

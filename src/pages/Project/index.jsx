@@ -47,7 +47,7 @@ import ProjectSupplimentaryModel from "../Projectsupplimentary";
 import ProjectVariationModel from "../Projectvariation";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
-import ProjectBudgetPlan from '../../pages/Projectbudgetplan/index';
+import ProjectBudgetPlan from "../../pages/Projectbudgetplan/index";
 import {
   Button,
   Col,
@@ -694,9 +694,7 @@ const ProjectModel = () => {
     ];
 
     // Add actions column based on privileges
-    if (
-      1==1
-    ) {
+    if (1 == 1) {
       baseColumnDefs.push({
         headerName: t("actions"),
         field: "actions",
@@ -856,7 +854,7 @@ const ProjectModel = () => {
                   },
                 ]}
                 checkboxSearchKeys={[]}
-              /*   Component={CascadingDropdowns}
+                /*   Component={CascadingDropdowns}
             component_params={{
               dropdown1name: "prj_location_region_id",
               dropdown2name: "prj_location_zone_id",
@@ -870,7 +868,12 @@ const ProjectModel = () => {
                 setShowSearchResult={setShowSearchResult}
               />
               {isLoading || isSearchLoading || isAddressLoading ? (
-                <Spinners top={"top-60"} />
+                <div
+                  style={{ minHeight: "350px" }}
+                  className="d-flex justify-content-center align-items-center"
+                >
+                  <Spinner color="primary" />
+                </div>
               ) : (
                 <div
                   className="ag-theme-alpine"
@@ -1479,7 +1482,7 @@ const ProjectModel = () => {
             Performance: ProjectPerformanceModel,
             Supplementary: ProjectSupplimentaryModel,
             Variations: ProjectVariationModel,
-            BudgetPlan:ProjectBudgetPlan
+            BudgetPlan: ProjectBudgetPlan,
           }}
         />
       )}

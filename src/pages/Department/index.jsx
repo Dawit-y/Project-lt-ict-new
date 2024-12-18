@@ -146,7 +146,7 @@ const DepartmentModel = () => {
               item.dep_name_en == value && item.dep_id !== department?.dep_id
           );
         }),
-   /*   dep_code: Yup.string()
+      /*   dep_code: Yup.string()
         .required(t("dep_code"))
         .test("unique-code", t("Already exists"), (value) => {
           return !data?.data.some(
@@ -464,9 +464,7 @@ const DepartmentModel = () => {
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
- if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
-  }
+
   return (
     <React.Fragment>
       <DepartmentModal
@@ -562,7 +560,10 @@ const DepartmentModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("dep_name_or")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("dep_name_or")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="dep_name_or"
                       type="text"
@@ -586,7 +587,10 @@ const DepartmentModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("dep_name_am")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("dep_name_am")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="dep_name_am"
                       type="text"
@@ -610,7 +614,10 @@ const DepartmentModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("dep_name_en")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("dep_name_en")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="dep_name_en"
                       type="text"
@@ -762,7 +769,7 @@ const DepartmentModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                 {/**/}
+                  {/**/}
                 </Row>
                 <Row>
                   <Col>

@@ -113,7 +113,7 @@ const AdvancedSearch = ({
   const handleClear = () => {
     setParams({});
     setSearchParams({});
-    setSearchResults(null);
+    setSearchResults([]);
     setShowSearchResult(false);
     validation.resetForm();
 

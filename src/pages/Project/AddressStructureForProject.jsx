@@ -29,7 +29,7 @@ const buildTree = (data) => {
   });
 
   data.forEach((item) => {
-    if (item.rootId === null || item.rootId ==0) {
+    if (item.rootId === null || item.rootId == 0) {
       result.push(map[item.id]);
     } else {
       if (map[item.rootId]) {
@@ -71,7 +71,7 @@ const AddressStructureForProject = ({ onNodeSelect, setIsAddressLoading }) => {
   if (isLoading) {
     return (
       <div
-        style={{ height: "400px" }}
+        style={{ minHeight: "450px" }}
         className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
       >
         <h4 className="mb-2 text-secondary">Address Structures</h4>
@@ -88,7 +88,10 @@ const AddressStructureForProject = ({ onNodeSelect, setIsAddressLoading }) => {
   const treeData = buildTree(data?.data);
 
   return (
-    <div className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm">
+    <div
+      className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
+      style={{ minHeight: "450px" }}
+    >
       <h4 className="mb-2 text-secondary">Address Structures</h4>
       <hr className="text-dark" />
 
