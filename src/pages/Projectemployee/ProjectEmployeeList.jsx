@@ -1,6 +1,4 @@
 import React, { useEffect, useMemo, useState,useRef } from "react";
-import axios from "axios";
-import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -9,30 +7,19 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
-//import components
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-
 import {
-  useFetchProjectEmployees,
-  useSearchProjectEmployees,
-  useAddProjectEmployee,
-  useDeleteProjectEmployee,
-  useUpdateProjectEmployee,
+  useSearchProjectEmployees
 } from "../../queries/projectemployee_query";
 import ProjectEmployeeModal from "./ProjectEmployeeModal";
 import { useTranslation } from "react-i18next";
-
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
-
 import {
   Button,
   Col,
@@ -61,7 +48,6 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-
 const ProjectEmployeeList = () => {
   //meta title
   document.title = " ProjectEmployee";
@@ -70,7 +56,6 @@ const ProjectEmployeeList = () => {
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [projectEmployee, setProjectEmployee] = useState(null);
-
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
@@ -84,7 +69,6 @@ const ProjectEmployeeList = () => {
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
-
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
@@ -102,8 +86,6 @@ const ProjectEmployeeList = () => {
     gridRef.current.api.setRowData(showSearchResults ? results : data);
   };
   //START FOREIGN CALLS
-
-
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
@@ -135,7 +117,6 @@ const ProjectEmployeeList = () => {
       setShowSearchResult(false);
     }
   };
-
  const columnDefs = useMemo(() => {
     const baseColumnDefs = [
       {
@@ -230,8 +211,6 @@ const ProjectEmployeeList = () => {
     ];
     return baseColumnDefs;
   });
-
-
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
@@ -266,7 +245,6 @@ const ProjectEmployeeList = () => {
               className="ag-theme-alpine"
               style={{ height: "100%", width: "100%" }}
             >
-              {/* Row for search input and buttons */}
               <Row className="mb-3">
                 <Col sm="12" md="6">
                   {/* Search Input for  Filter */}
@@ -308,7 +286,6 @@ const ProjectEmployeeList = () => {
       </div>    
       </div>
       </div>
-
     </React.Fragment>
   );
 };

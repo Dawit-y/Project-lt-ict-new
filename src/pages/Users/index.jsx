@@ -262,7 +262,7 @@ const UsersModel = () => {
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
-        setSelectedDepartment(values.usr_department_id);
+       // setSelectedDepartment(values.usr_department_id);
         // update Users
         handleAddUsers(duplcateuser);
         validation.resetForm();

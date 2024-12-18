@@ -183,12 +183,12 @@ const columnDefs = useMemo(() => {
         },
       },
       {
-        headerName: t("bsr_budget_source_id"),
-        field: "bsr_budget_source_id",
+        headerName: t("pbs_name_or"),
+        field: "pbs_name_or",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.bsr_budget_source_id, 30) || "-";
+          return truncateText(params.data.pbs_name_or, 30) || "-";
         },
       },
       {

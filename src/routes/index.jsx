@@ -131,7 +131,7 @@ const authProtectedRoutes = [
 
   //  {path: '/project_plan', component: <ProjectPlan/> },
   {
-    path: "/project/:prj_code/project_plan",
+    path: "/project/:passedId/project_plan",
     component: <ProjectPlan />,
   },
   { path: "/project_supplimentary", component: <ProjectSupplimentary /> },

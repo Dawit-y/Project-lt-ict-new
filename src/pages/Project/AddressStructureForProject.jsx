@@ -29,7 +29,7 @@ const buildTree = (data) => {
   });
 
   data.forEach((item) => {
-    if (item.rootId === null) {
+    if (item.rootId === null || item.rootId ==0) {
       result.push(map[item.id]);
     } else {
       if (map[item.rootId]) {
@@ -91,6 +91,7 @@ const AddressStructureForProject = ({ onNodeSelect, setIsAddressLoading }) => {
     <div className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm">
       <h4 className="mb-2 text-secondary">Address Structures</h4>
       <hr className="text-dark" />
+
       {treeData.length > 0 ? (
         treeData.map((node) => (
           <TreeNode key={node.id} node={node} onNodeClick={onNodeSelect} />

@@ -752,7 +752,7 @@ const ProjectModel = () => {
               </Link>
               <Link
                 to={{
-                  pathname: `/project/${params.data.prj_code}/project_plan`, // Route path
+                  pathname: `/project/${params.data.prj_id}/project_plan`, // Route path
                   state: { projectData: params.data }, // Pass data here
                 }}
                 className="text-secondary ms-2"
@@ -1480,7 +1480,6 @@ const ProjectModel = () => {
             Supplementary: ProjectSupplimentaryModel,
             Variations: ProjectVariationModel,
             BudgetPlan:ProjectBudgetPlan
-
           }}
         />
       )}

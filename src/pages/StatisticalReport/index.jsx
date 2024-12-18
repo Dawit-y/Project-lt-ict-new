@@ -162,7 +162,7 @@ const StatisticalReport = () => {
     const selectedValue = event.target.value;
     setSelectedEndpoint(selectedValue);
     setPivotState({});
-    setShowPivot(true);
+    setShowPivot(false);
 
     const config = endpointConfigs[selectedValue];
     if (config) {

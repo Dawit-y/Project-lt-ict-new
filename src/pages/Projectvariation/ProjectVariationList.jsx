@@ -215,7 +215,7 @@ const columnDefs = useMemo(() => {
         <div>
           <Breadcrumbs
             title={t("project")}
-            breadcrumbItem={t("Project Payment List")}
+            breadcrumbItem={t("project_variation_list")}
           />
           <div className="w-100 d-flex gap-2">
             <AddressStructureForProject onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />

@@ -21,10 +21,16 @@ function* loginUser({ payload: { user, history } }) {
         email: user.email,
         password: user.password,
       });
-      console.log("login response",response);      
-      localStorage.setItem("authUser", JSON.stringify(response));
-      
+      if(response.status=='success'){
+
+
+      console.log("login response111",response);      
+      localStorage.setItem("authUser", JSON.stringify(response));      
       yield put(loginSuccess(response));
+    }else{
+       const errorMessage = error.response && error.response.data ? error.response.data.message : "Login failed, please try again.";
+    yield put(apiError(errorMessage));
+    }
     } else if (import.meta.env.VITE_APP_DEFAULTAUTH === "fake") {
       const response = yield call(postFakeLogin, {
         email: user.email,

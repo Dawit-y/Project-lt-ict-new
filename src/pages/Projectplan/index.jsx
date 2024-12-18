@@ -44,30 +44,37 @@ import {
   CardBody,
   FormGroup,
   Badge,
+  InputGroup
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-
+import { createSelectOptions } from "../../utils/commonMethods";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-
-const ProjectPlanModel = () => {
+import "flatpickr/dist/themes/material_blue.css";
+import Flatpickr from "react-flatpickr";
+import { formatDate } from "../../utils/commonMethods";
+import { useFetchBudgetYears } from "../../queries/budgetyear_query";
+const ProjectPlanModel = (props) => {
   const location = useLocation();
-  const { projectData } = location.state || {};
-  console.log("project data", projectData);
+  const { passedId, isActive } = props;
+  const param = { pdl_project_id: passedId };
+
+/*const { passedId: passedId } = useParams();
+  const param = { pld_project_id: passedId };
+const isActive=true;*/
 
   // Accessing prj_code from the URL (if needed)
-  const prjCode = location.pathname.split("/")[2];
+  //const prjCode = location.pathname.split("/")[2];
 
   //meta title
-  document.title = " ProjectPlan" + { prjCode };
-
+  //document.title = " ProjectPlan" + { prjCode };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -78,10 +85,16 @@ const ProjectPlanModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const params = { pld_project_id: prjCode }; // Replace with dynamic value if needed
+  //const params = { pld_project_id: passedId }; // Replace with dynamic value if needed
 
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjectPlans(params);
+    useFetchProjectPlans( param, isActive);
+  const { data: budgetYearData } = useFetchBudgetYears();
+  const budgetYearOptions = createSelectOptions(
+    budgetYearData?.data || [],
+    "bdy_id",
+    "bdy_name"
+  );
 
   const addProjectPlan = useAddProjectPlan();
   const updateProjectPlan = useUpdateProjectPlan();
@@ -141,7 +154,7 @@ const ProjectPlanModel = () => {
 
     initialValues: {
       pld_name: (projectPlan && projectPlan.pld_name) || "",
-      pld_project_id: prjCode,
+      pld_project_id: (projectPlan && projectPlan.pld_id) || "",
       pld_budget_year_id: (projectPlan && projectPlan.pld_budget_year_id) || "",
       pld_start_date_ec: (projectPlan && projectPlan.pld_start_date_ec) || "",
       pld_start_date_gc: (projectPlan && projectPlan.pld_start_date_gc) || "",
@@ -156,14 +169,14 @@ const ProjectPlanModel = () => {
 
     validationSchema: Yup.object({
       pld_name: Yup.string().required(t("pld_name")),
-      pld_project_id: Yup.string().required(t("pld_project_id")),
+      //pld_project_id: Yup.string().required(t("pld_project_id")),
       pld_budget_year_id: Yup.string().required(t("pld_budget_year_id")),
-      pld_start_date_ec: Yup.string().required(t("pld_start_date_ec")),
+      //pld_start_date_ec: Yup.string().required(t("pld_start_date_ec")),
       pld_start_date_gc: Yup.string().required(t("pld_start_date_gc")),
-      pld_end_date_ec: Yup.string().required(t("pld_end_date_ec")),
+     // pld_end_date_ec: Yup.string().required(t("pld_end_date_ec")),
       pld_end_date_gc: Yup.string().required(t("pld_end_date_gc")),
-      pld_description: Yup.string().required(t("pld_description")),
-      pld_status: Yup.string().required(t("pld_status")),
+      //pld_description: Yup.string().required(t("pld_description")),
+      //pld_status: Yup.string().required(t("pld_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -172,7 +185,7 @@ const ProjectPlanModel = () => {
         const updateProjectPlan = {
           pld_id: projectPlan?.pld_id,
           pld_name: values.pld_name,
-          pld_project_id: values.pld_project_id,
+          //pld_project_id: values.pld_project_id,
           pld_budget_year_id: Number(values.pld_budget_year_id),
           pld_start_date_ec: values.pld_start_date_ec,
           pld_start_date_gc: values.pld_start_date_gc,
@@ -190,7 +203,7 @@ const ProjectPlanModel = () => {
       } else {
         const newProjectPlan = {
           pld_name: values.pld_name,
-          pld_project_id: prjCode,
+          pld_project_id: passedId,
           pld_budget_year_id: Number(values.pld_budget_year_id),
           pld_start_date_ec: values.pld_start_date_ec,
           pld_start_date_gc: values.pld_start_date_gc,
@@ -231,13 +244,14 @@ const ProjectPlanModel = () => {
   };
 
   const handleProjectPlanClick = (arg) => {
+    alert('here');
     const projectPlan = arg;
     // console.log("handleProjectPlanClick", projectPlan);
     setProjectPlan({
       pld_id: projectPlan.pld_id,
       pld_name: projectPlan.pld_name,
       pld_project_id: projectPlan.pld_project_id,
-      pld_budget_year_id: Number(projectPlan.pld_budget_year_id),
+      pld_budget_year_id: projectPlan.pld_budget_year_id,
       pld_start_date_ec: projectPlan.pld_start_date_ec,
       pld_start_date_gc: projectPlan.pld_start_date_gc,
       pld_end_date_ec: projectPlan.pld_end_date_ec,
@@ -284,20 +298,7 @@ const ProjectPlanModel = () => {
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "pld_project_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pld_project_id, 30) || "-"}
-            </span>
-          );
-        },
-      },
+      },    
       {
         header: "",
         accessorKey: "pld_budget_year_id",
@@ -306,21 +307,7 @@ const ProjectPlanModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pld_budget_year_id, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "pld_start_date_ec",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pld_start_date_ec, 30) ||
+              {truncateText(cellProps.row.original.bdy_name, 30) ||
                 "-"}
             </span>
           );
@@ -342,19 +329,6 @@ const ProjectPlanModel = () => {
       },
       {
         header: "",
-        accessorKey: "pld_end_date_ec",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pld_end_date_ec, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
         accessorKey: "pld_end_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
@@ -366,33 +340,6 @@ const ProjectPlanModel = () => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "pld_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pld_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "pld_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pld_status, 30) || "-"}
-            </span>
-          );
-        },
-      },
-
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -424,9 +371,10 @@ const ProjectPlanModel = () => {
               type="button"
               color="primary"
               className="btn-sm"
-              onClick={() => {
+              onClick={() => {                
                 const data = cellProps.row.original;
-                // toggleViewModal(data);
+                //toggleViewModal(data);
+                
                 console.log("selected project plan", data);
                 setProjectPlanSelected(cellProps.row.original);
               }}
@@ -435,7 +383,7 @@ const ProjectPlanModel = () => {
             </Button>
           );
         },
-      },
+      }
     ];
     const baseColumnSelected = [
       {
@@ -450,35 +398,11 @@ const ProjectPlanModel = () => {
             </span>
           );
         },
-      },
-
-      {
-        header: t("view_gannt"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                // toggleViewModal(data);
-                console.log("selected project plan", data);
-                setProjectPlanSelected(cellProps.row.original);
-              }}
-            >
-              {t("view_gannt")}
-            </Button>
-          );
-        },
-      },
+      }    
     ];
 
     if (
-      data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable
+      1==1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -494,6 +418,7 @@ const ProjectPlanModel = () => {
                   className="text-success"
                   onClick={() => {
                     const data = cellProps.row.original;
+                    console.log("uuuuu "+data);
                     handleProjectPlanClick(data);
                   }}
                 >
@@ -528,7 +453,7 @@ const ProjectPlanModel = () => {
       });
     }
 
-    return projectPlanSelected ? baseColumnSelected : baseColumns;
+    return baseColumns;
   }, [handleProjectPlanClick, toggleViewModal, onClickDelete]);
 
   if (isError) {
@@ -549,12 +474,8 @@ const ProjectPlanModel = () => {
         isLoading={deleteProjectPlan.isPending}
       />
       <div className="page-content">
-        <div className="container-fluid">
-          <Breadcrumbs
-            title={t("project_plan")}
-            breadcrumbItem={t("project_plan")}
-          />
-          <AdvancedSearch
+        <div className="container-fluid1">
+         {/* <AdvancedSearch
             searchHook={useSearchProjectPlans}
             textSearchKeys={["dep_name_am", "dep_name_en", "dep_name_or"]}
             dropdownSearchKeys={[
@@ -581,13 +502,13 @@ const ProjectPlanModel = () => {
             setIsSearchLoading={setIsSearchLoading}
             setSearchResults={setSearchResults}
             setShowSearchResult={setShowSearchResult}
-          />
+          />*/}
           {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
             <Row>
               {/* TableContainer for displaying data */}
-              <Col lg={projectPlanSelected ? 4 : 12}>
+              <Col lg={12}>
                 <TableContainer
                   columns={columns}
                   data={
@@ -610,7 +531,7 @@ const ProjectPlanModel = () => {
 
               {/* Conditionally render ProjectGantt or an alternative card */}
               {projectPlanSelected ? (
-                <Col lg={8}>
+                <Col lg={12}>
                   <ProjectGannt data={projectPlanSelected} />
                 </Col>
               ) : (
@@ -662,154 +583,143 @@ const ProjectPlanModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pld_project_id")}</Label>
-                    <Input
-                      name="pld_project_id"
-                      type="text"
-                      placeholder={t("pld_project_id")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pld_project_id || ""}
-                      invalid={
-                        validation.touched.pld_project_id &&
-                        validation.errors.pld_project_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pld_project_id &&
-                    validation.errors.pld_project_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pld_project_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pld_budget_year_id")}</Label>
-                    <Input
-                      name="pld_budget_year_id"
-                      type="text"
-                      placeholder={t("pld_budget_year_id")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pld_budget_year_id || ""}
-                      invalid={
-                        validation.touched.pld_budget_year_id &&
-                        validation.errors.pld_budget_year_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pld_budget_year_id &&
-                    validation.errors.pld_budget_year_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pld_budget_year_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pld_start_date_ec")}</Label>
-                    <Input
-                      name="pld_start_date_ec"
-                      type="text"
-                      placeholder={t("pld_start_date_ec")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pld_start_date_ec || ""}
-                      invalid={
-                        validation.touched.pld_start_date_ec &&
-                        validation.errors.pld_start_date_ec
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pld_start_date_ec &&
-                    validation.errors.pld_start_date_ec ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pld_start_date_ec}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pld_start_date_gc")}</Label>
-                    <Input
-                      name="pld_start_date_gc"
-                      type="text"
-                      placeholder={t("pld_start_date_gc")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pld_start_date_gc || ""}
-                      invalid={
-                        validation.touched.pld_start_date_gc &&
-                        validation.errors.pld_start_date_gc
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pld_start_date_gc &&
-                    validation.errors.pld_start_date_gc ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pld_start_date_gc}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pld_end_date_ec")}</Label>
-                    <Input
-                      name="pld_end_date_ec"
-                      type="text"
-                      placeholder={t("pld_end_date_ec")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pld_end_date_ec || ""}
-                      invalid={
-                        validation.touched.pld_end_date_ec &&
-                        validation.errors.pld_end_date_ec
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pld_end_date_ec &&
-                    validation.errors.pld_end_date_ec ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pld_end_date_ec}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pld_end_date_gc")}</Label>
-                    <Input
-                      name="pld_end_date_gc"
-                      type="text"
-                      placeholder={t("pld_end_date_gc")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pld_end_date_gc || ""}
-                      invalid={
-                        validation.touched.pld_end_date_gc &&
-                        validation.errors.pld_end_date_gc
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pld_end_date_gc &&
-                    validation.errors.pld_end_date_gc ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pld_end_date_gc}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                        <Label>
+                          {t("pld_budget_year_id")}
+                          <span className="text-danger">*</span>
+                        </Label>
+                        <Input
+                          name="pld_budget_year_id"
+                          type="select"
+                          className="form-select"
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={
+                            validation.values.pld_budget_year_id || ""
+                          }
+                          invalid={
+                            validation.touched.pld_budget_year_id &&
+                            validation.errors.pld_budget_year_id
+                              ? true
+                              : false
+                          }
+                        >
+                          <option value={null}>Select Project Category</option>
+                          {budgetYearOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {t(`${option.label}`)}
+                            </option>
+                          ))}
+                        </Input>
+                        {validation.touched.pld_budget_year_id &&
+                        validation.errors.pld_budget_year_id ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.pld_budget_year_id}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
+                <Col className="col-md-6 mb-3">
+                        <FormGroup>
+                          <Label>{t("pld_start_date_gc")}</Label>
+                          <InputGroup>
+                            <Flatpickr
+                              id="DataPicker"
+                              className={`form-control ${
+                                validation.touched.pld_start_date_gc &&
+                                validation.errors.pld_start_date_gc
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              name="pld_start_date_gc"
+                              options={{
+                                altInput: true,
+                                altFormat: "Y/m/d",
+                                dateFormat: "Y/m/d",
+                                enableTime: false,
+                              }}
+                              value={validation.values.pld_start_date_gc || ""}
+                              onChange={(date) => {
+                                const formatedDate = formatDate(date[0]);
+                                validation.setFieldValue(
+                                  "pld_start_date_gc",
+                                  formatedDate
+                                ); // Set value in Formik
+                              }}
+                              onBlur={validation.handleBlur}
+                            />
+
+                            <Button
+                              type="button"
+                              className="btn btn-outline-secondary"
+                              disabled
+                            >
+                              <i
+                                className="fa fa-calendar"
+                                aria-hidden="true"
+                              />
+                            </Button>
+                          </InputGroup>
+                          {validation.touched.pld_start_date_gc &&
+                          validation.errors.pld_start_date_gc ? (
+                            <FormFeedback>
+                              {validation.errors.pld_start_date_gc}
+                            </FormFeedback>
+                          ) : null}
+                        </FormGroup>
+                      </Col>
+                      <Col className="col-md-6 mb-3">
+                        <FormGroup>
+                          <Label>{t("pld_end_date_gc")}</Label>
+                          <InputGroup>
+                            <Flatpickr
+                              id="DataPicker"
+                              className={`form-control ${
+                                validation.touched.pld_end_date_gc &&
+                                validation.errors.pld_end_date_gc
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              name="pld_end_date_gc"
+                              options={{
+                                altInput: true,
+                                altFormat: "Y/m/d",
+                                dateFormat: "Y/m/d",
+                                enableTime: false,
+                              }}
+                              value={validation.values.pld_end_date_gc || ""}
+                              onChange={(date) => {
+                                const formatedDate = formatDate(date[0]);
+                                validation.setFieldValue(
+                                  "pld_end_date_gc",
+                                  formatedDate
+                                ); // Set value in Formik
+                              }}
+                              onBlur={validation.handleBlur}
+                            />
+
+                            <Button
+                              type="button"
+                              className="btn btn-outline-secondary"
+                              disabled
+                            >
+                              <i
+                                className="fa fa-calendar"
+                                aria-hidden="true"
+                              />
+                            </Button>
+                          </InputGroup>
+                          {validation.touched.pld_end_date_gc &&
+                          validation.errors.pld_end_date_gc ? (
+                            <FormFeedback>
+                              {validation.errors.pld_end_date_gc}
+                            </FormFeedback>
+                          ) : null}
+                        </FormGroup>
+                      </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("pld_description")}</Label>
                     <Input
                       name="pld_description"
-                      type="text"
+                      type="textarea"
                       placeholder={t("pld_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -826,30 +736,6 @@ const ProjectPlanModel = () => {
                     validation.errors.pld_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pld_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pld_status")}</Label>
-                    <Input
-                      name="pld_status"
-                      type="text"
-                      placeholder={t("pld_status")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pld_status || ""}
-                      invalid={
-                        validation.touched.pld_status &&
-                        validation.errors.pld_status
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pld_status &&
-                    validation.errors.pld_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pld_status}
                       </FormFeedback>
                     ) : null}
                   </Col>

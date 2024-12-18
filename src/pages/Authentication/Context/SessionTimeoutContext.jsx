@@ -25,7 +25,7 @@ export const SessionTimeoutProvider = ({ children }) => {
 
   // Start the inactivity timer (2 minutes)
   const startInactivityTimer = () => {
-    inactivityTimeout = setTimeout(handleSessionExpiration, 6000000); // 2 minutes
+    inactivityTimeout = setTimeout(handleSessionExpiration, 1200000); // 10 minutes
   };
 
   // Reset timer on user activity

@@ -4,7 +4,7 @@ import logoLightSvg from "../../src/assets/images/logo-light.svg";
 import logoDark from "../../src/assets/images/logo-dark.png";
 // Application Texts
 export const APP_NAME = "PROJECT Management";
-export const FOOTER_TEXT = "Design & Develop by LT ICT Solution PLC";
+export const FOOTER_TEXT = "Design & Develop by OTech Engineering and  LT ICT Solution PLC";
 export const COPYRIGHT_YEAR = new Date().getFullYear();
 
 // Logo files
