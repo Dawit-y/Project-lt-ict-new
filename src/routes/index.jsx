@@ -19,7 +19,7 @@ const Register = lazy(() => import("../pages/Authentication/Register"));
 const ForgetPwd = lazy(() => import("../pages/Authentication/ForgetPassword"));
 
 const AddressStructure = lazy(() =>
-  import("../pages/AddressTreeStructure/index")
+  import("../pages/AddressTreeStructure/index.jsx")
 );
 const ViewProjectPage = lazy(() =>
   import("../pages/Projects/ProjectStatusLists/ViewProjectPage")
