@@ -83,9 +83,6 @@ const ProjectContractorList = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
 
-
-
-
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
@@ -150,7 +147,7 @@ const columnDefs = useMemo(() => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.prj_name, 30) || "-";
+          return truncateText(params.data.prj_name, 35) || "-";
         },
       },
       {
@@ -158,8 +155,9 @@ const columnDefs = useMemo(() => {
         field: "prj_code",
         sortable: true,
         filter: true,
+        hide:true,
         cellRenderer: (params) => {
-          return truncateText(params.data.prj_code, 30) || "-";
+          return truncateText(params.data.prj_code, 35) || "-";
         },
       },
       {
@@ -168,25 +166,26 @@ const columnDefs = useMemo(() => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.cni_name, 30) || "-";
+          return truncateText(params.data.cni_name, 35) || "-";
         },
       },
+     
       {
+        headerName: t("cni_contractor_type"),
+        field: "cni_contractor_type",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.cni_contractor_type, 35) || "-";
+        },
+      },
+       {
         headerName: t("cni_tin_num"),
         field: "cni_tin_num",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.cni_tin_num, 30) || "-";
-        },
-      },
-      {
-        headerName: t("contractor_name"),
-        field: "contractor_name",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.contractor_name, 30) || "-";
+          return truncateText(params.data.cni_tin_num, 35) || "-";
         },
       },
       {
@@ -195,7 +194,7 @@ const columnDefs = useMemo(() => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.cni_vat_num, 30) || "-";
+          return truncateText(params.data.cni_vat_num, 35) || "-";
         },
       },
       {
@@ -204,35 +203,47 @@ const columnDefs = useMemo(() => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.cni_total_contract_price, 30) || "-";
+          return truncateText(params.data.cni_total_contract_price, 35) || "-";
         },
       },
-      {
-        headerName: t("cni_contract_start_date_et"),
-        field: "cni_contract_start_date_et",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.cni_contract_start_date_et, 30) || "-";
-        },
-      },
+     
       {
         headerName: t("cni_contract_start_date_gc"),
         field: "cni_contract_start_date_gc",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.cni_contract_start_date_gc, 30) || "-";
+          return truncateText(params.data.cni_contract_start_date_gc, 35) || "-";
+        },
+      },
+
+        {
+        headerName: t("cni_contract_end_date_gc"),
+        field: "cni_contract_end_date_gc",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.cni_contract_end_date_gc, 35) || "-";
         },
       },
 
       {
-        headerName: t("cni_contract_end_date_et"),
-        field: "cni_contract_end_date_et",
+        headerName: t("cni_contact_person"),
+        field: "cni_contact_person",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.cni_contract_end_date_et, 30) || "-";
+          return truncateText(params.data.cni_contact_person, 35) || "-";
+        },
+      },
+
+       {
+        headerName: t("cni_phone_number"),
+        field: "cni_phone_number",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.cni_phone_number, 35) || "-";
         },
       }
     ];

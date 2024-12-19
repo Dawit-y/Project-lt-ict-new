@@ -166,13 +166,55 @@ const columnDefs = useMemo(() => {
           return truncateText(params.data.prj_code, 30) || "-";
         },
       },
-      {
-        headerName: t("pbe_budget_code_id"),
-        field: "pbe_budget_code_id",
+        {
+        headerName: t("pbe_reason"),
+        field: "pbe_reason",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.pbe_budget_code_id, 30) || "-";
+          return truncateText(params.data.pbe_reason, 30) || "-";
+        },
+      },
+      
+      {
+        headerName: t("pbe_budget_code"),
+        field: "pbe_budget_code",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.pbe_budget_code, 30) || "-";
+        },
+      },
+       
+
+      {
+        headerName: t("pbe_budget_year"),
+        field: "pbe_budget_year",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.pbe_budget_year, 30) || "-";
+        },
+      }
+      ,
+
+      {
+        headerName: t("pbe_budget_month"),
+        field: "pbe_budget_month",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.pbe_budget_month, 30) || "-";
+        },
+      },
+
+      {
+        headerName: t("pbe_used_date_gc"),
+        field: "pbe_used_date_gc",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.pbe_used_date_gc, 30) || "-";
         },
       },
       {
@@ -182,25 +224,6 @@ const columnDefs = useMemo(() => {
         filter: true,
         cellRenderer: (params) => {
           return truncateText(params.data.ppe_amount, 30) || "-";
-        },
-      },
-      {
-        headerName: t("pbe_budget_code_id"),
-        field: "pbe_budget_code_id",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.pbe_budget_code_id, 30) || "-";
-        },
-      },
-
-      {
-        headerName: t("pbe_used_date_ec"),
-        field: "pbe_used_date_ec",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.pbe_used_date_ec, 30) || "-";
         },
       }
     ];

@@ -85,9 +85,6 @@ const ProjectBudgetPlanList = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
 
-
-
-
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
@@ -152,7 +149,7 @@ const columnDefs = useMemo(() => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.prj_name, 30) || "-";
+          return truncateText(params.data.prj_name, 35) || "-";
         },
       },
       {
@@ -161,34 +158,26 @@ const columnDefs = useMemo(() => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.prj_code, 30) || "-";
+          return truncateText(params.data.prj_code, 35) || "-";
         },
       },
+     
       {
-        headerName: t("cni_name"),
-        field: "cni_name",
+        headerName: t("bpl_budget_year"),
+        field: "bpl_budget_year",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.cni_name, 30) || "-";
+          return truncateText(params.data.bpl_budget_year, 35) || "-";
         },
       },
       {
-        headerName: t("bpl_budget_year_id"),
-        field: "bpl_budget_year_id",
+        headerName: t("bpl_budget_code"),
+        field: "bpl_budget_code",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.bpl_budget_year_id, 30) || "-";
-        },
-      },
-      {
-        headerName: t("bpl_budget_code_id"),
-        field: "bpl_budget_code_id",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.bpl_budget_code_id, 30) || "-";
+          return truncateText(params.data.bpl_budget_code, 35) || "-";
         },
       },
       {

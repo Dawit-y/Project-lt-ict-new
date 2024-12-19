@@ -53,14 +53,6 @@ const ProjectBudgetPlanModal = (props) => {
                     <p className="mb-2">
             {t('bpl_description')}: <span className="text-primary">{transaction.bpl_description}</span>
           </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bpl_status')}: <span className="text-primary">{transaction.bpl_status}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bpl_created_date')}: <span className="text-primary">{transaction.bpl_created_date}</span>
-          </p>
           </tr>
 
           {transaction.is_deletable === 1 && (

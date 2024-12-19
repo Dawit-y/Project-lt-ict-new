@@ -447,8 +447,8 @@ const UserRoleModel = (props) => {
                 <Label>{t("url_description")}</Label>
                 <Input
                   name="url_description"
-                  type="text"
-                  placeholder={t("insert_status_name_amharic")}
+                  type="textarea"
+                  placeholder={t("url_description")}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
                   value={validation.values.url_description || ""}

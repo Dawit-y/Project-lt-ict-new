@@ -729,6 +729,9 @@
 "pbe_created_date":"Created Date",
 "pbe_create_time":"Create Time",
 "pbe_update_time":"Update Time",
+"pbe_budget_year":"Budget Year",
+"pbe_budget_month":"Budget Month",
+"pbe_budget_code":"Budget Code",
 "project_employee":"Project Employee",
 "emp_id":"Id",
 "emp_id_no":"Id No",
@@ -811,5 +814,15 @@
 "bpl_created_by":"Created By",
 "bpl_created_date":"Created Date",
 "bpl_create_time":"Create Time",
-"bpl_update_time":"Update Time"
+"bpl_update_time":"Update Time",
+"address_tree_Search":"Regional Structure",
+
+"project_stat":"Project Information",
+"employee_stat":"Employee",
+"budget_plan_stat":"Budget Plan",
+"budget_expenditure_stat":"Budget Expenditure",
+"budget_source_stat":"Budget Source",
+"budget_contractor_stat":"Contractor",
+"project_payment_stat":"Payment",
+"select_stat":"Select Report Type"
 }

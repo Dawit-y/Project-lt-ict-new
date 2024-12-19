@@ -260,16 +260,16 @@ const ProjectModel = () => {
       //prj_owner_kebele_id: Yup.string().required(t('prj_owner_kebele_id')),
       //prj_owner_description: Yup.string().required(t('prj_owner_description')),
       //prj_start_date_et: Yup.string().required(t('prj_start_date_et')),
-      prj_start_date_gc: Yup.string().required(t("prj_start_date_gc")),
+     // prj_start_date_gc: Yup.string().required(t("prj_start_date_gc")),
       //prj_start_date_plan_et: Yup.string().required(t('prj_start_date_plan_et')),
-      prj_start_date_plan_gc: Yup.string().required(
-        t("prj_start_date_plan_gc")
-      ),
+     // prj_start_date_plan_gc: Yup.string().required(
+       // t("prj_start_date_plan_gc")
+     // ),
       //prj_end_date_actual_et: Yup.string().required(t('prj_end_date_actual_et')),
       prj_end_date_actual_gc: Yup.string().required(
         t("prj_end_date_actual_gc")
       ),
-      prj_end_date_plan_gc: Yup.string().required(t("prj_end_date_plan_gc")),
+      //prj_end_date_plan_gc: Yup.string().required(t("prj_end_date_plan_gc")),
       //prj_end_date_plan_et: Yup.string().required(t('prj_end_date_plan_et')),
       //prj_outcome: Yup.string().required(t('prj_outcome')),
       //prj_deleted: Yup.string().required(t('prj_deleted')),
@@ -1212,30 +1212,7 @@ const ProjectModel = () => {
                           ) : null}
                         </FormGroup>
                       </Col>
-                      <Col className="col-md-4 mb-3">
-                        <Label>{t("prj_start_date_plan_gc")}</Label>
-                        <Input
-                          name="prj_start_date_plan_gc"
-                          type="text"
-                          placeholder={t("prj_start_date_plan_gc")}
-                          onChange={validation.handleChange}
-                          onBlur={validation.handleBlur}
-                          value={validation.values.prj_start_date_plan_gc || ""}
-                          invalid={
-                            validation.touched.prj_start_date_plan_gc &&
-                            validation.errors.prj_start_date_plan_gc
-                              ? true
-                              : false
-                          }
-                          maxLength={20}
-                        />
-                        {validation.touched.prj_start_date_plan_gc &&
-                        validation.errors.prj_start_date_plan_gc ? (
-                          <FormFeedback type="invalid">
-                            {validation.errors.prj_start_date_plan_gc}
-                          </FormFeedback>
-                        ) : null}
-                      </Col>
+                      
                       <Col className="col-md-4 mb-3">
                         <FormGroup>
                           <Label>{t("prj_end_date_actual_gc")}</Label>
@@ -1288,30 +1265,6 @@ const ProjectModel = () => {
                         </FormGroup>
                       </Col>
                       <Col className="col-md-4 mb-3">
-                        <Label>{t("prj_end_date_plan_gc")}</Label>
-                        <Input
-                          name="prj_end_date_plan_gc"
-                          type="text"
-                          placeholder={t("prj_end_date_plan_gc")}
-                          onChange={validation.handleChange}
-                          onBlur={validation.handleBlur}
-                          value={validation.values.prj_end_date_plan_gc || ""}
-                          invalid={
-                            validation.touched.prj_end_date_plan_gc &&
-                            validation.errors.prj_end_date_plan_gc
-                              ? true
-                              : false
-                          }
-                          maxLength={20}
-                        />
-                        {validation.touched.prj_end_date_plan_gc &&
-                        validation.errors.prj_end_date_plan_gc ? (
-                          <FormFeedback type="invalid">
-                            {validation.errors.prj_end_date_plan_gc}
-                          </FormFeedback>
-                        ) : null}
-                      </Col>
-                      <Col className="col-md-4 mb-3">
                         <Label>{t("prj_urban_ben_number")}</Label>
                         <Input
                           name="prj_urban_ben_number"
@@ -1359,7 +1312,7 @@ const ProjectModel = () => {
                           </FormFeedback>
                         ) : null}
                       </Col>
-                      <Col className="col-md-6 mb-3">
+                      <Col className="col-md-8 mb-3">
                         <Label>{t("prj_outcome")}</Label>
                         <Input
                           name="prj_outcome"

@@ -24,39 +24,41 @@ const PlotlyRenderers = createPlotlyRenderers(Plot);
 import { useSearchDepartments } from "../../queries/department_query";
 import { useSearchUserss } from "../../queries/users_query";
 import { useSearchProjects } from "../../queries/project_query";
-
+import { useSearchStatisticalReport } from "../../queries/statisticalreport_query";
+import './statistical.css';
 const StatisticalReport = () => {
   const { t, i18n } = useTranslation();
   const [endpoints, setEndpoints] = useState([
-    { name: "users", url: "https://pmsor.awashsol.com/api/users/listgrid" },
-    {
-      name: "department",
-      url: "https://pmsor.awashsol.com/api/department/listgrid",
-    },
-    {
-      name: "Projects",
-      url: "https://pmsor.awashsol.com/api/project/listgrid",
-    },
+    {name: "project_stat" ,url:"uuuu"},
+    {name: "employee_stat",url:"uuuu"},
+    {name: "budget_plan_stat",url:"uuuu"},
+    {name: "budget_expenditure_stat",url:"uuuu"},
+{name: "budget_source_stat",url:"uuuu"},
+{name: "budget_contractor_stat",url:"uuuu"},
+{name: "project_payment_stat",url:"uuuu"}
   ]);
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(true);
-
+  const [reportType, setReportType] = useState({});
   const [projectParams, setProjectParams] = useState({});
   const [locationParams, setLocationParams] = useState({});
+  const [ReportTypeId, setReportTypeId] = useState(null);
   const [LocationRegionId, setLocationRegionId] = useState(null);
   const [LocationZoneId, setLocationZoneId] = useState(null);
   const [LocationWoredaId, setLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
-  //const { data, isLoading, error, isError, refetch } =  useState("");
+  const [searchHook, setSearchHook] = useState(null);
+  const [textSearchKeys, setTextSearchKeys] = useState([]);
+  const [dateSearchKeys, setDateSearchKeys] = useState([]);
 
-  const [searchHook, setSearchHook] = useState(() => useSearchProjects); // Default hook
+ /* const [searchHook, setSearchHook] = useState(() => useSearchProjects); // Default hook
   const [textSearchKeys, setTextSearchKeys] = useState([
     "prj_name",
     "prj_code",
   ]);
-  const [dateSearchKeys, setDateSearchKeys] = useState(["prj_date"]);
+  const [dateSearchKeys, setDateSearchKeys] = useState(["prj_date"]);*/
 
   const [selectedEndpoint, setSelectedEndpoint] = useState("");
   const [data, setData] = useState([]);
@@ -101,7 +103,7 @@ const StatisticalReport = () => {
     setPivotState({});
   }, [t, i18n.language]); // Re-run when language changes
 
-  const fetchData = async (endpoint) => {
+ /* const fetchData = async (endpoint) => {
     setLoading(true);
     try {
       const response = await fetch(endpoint.url, {
@@ -121,40 +123,100 @@ const StatisticalReport = () => {
   };
   useEffect(() => {
     if (selectedEndpoint) fetchData(selectedEndpoint);
-  }, [selectedEndpoint]);
+  }, [selectedEndpoint]);*/
 
   // Map for endpoints and their respective configurations
   const endpointConfigs = {
-    users: {
-      hook: useSearchUserss,
-      textKeys: ["usr_phone_number", "usr_full_name", "sector_name"],
-      dateKeys: [],
-      locationParams: {
-        region: "usr_region_id",
-        zone: "usr_zone_id",
-        woreda: "usr_woreda_id",
-      },
-    },
-    department: {
-      hook: useSearchDepartments,
-      textKeys: ["dep_name_en", "dep_code"],
-      dateKeys: [],
-      locationParams: {
-        region: "dep_available_at_region",
-        zone: "dep_available_at_zone",
-        woreda: "dep_available_at_woreda",
-      },
-    },
-    Projects: {
-      hook: useSearchProjects,
-      textKeys: ["prj_name", "prj_code"],
-      dateKeys: ["prj_date"],
+     project_stat: {
+      //textKeys: ["prj_name", "prj_code"],
+      //dateKeys: ["prj_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+      reportTypeIndex:1
     },
+    employee_stat: {
+      textKeys: ["prj_name", "prj_code"],
+      //dateKeys: ["prj_date"],
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      reportTypeIndex:2
+    },
+     budget_plan_stat: {
+      textKeys: ["prj_name", "prj_code"],
+      //dateKeys: ["prj_date"],
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      reportTypeIndex:3
+    },
+     budget_expenditure_stat: {
+      textKeys: ["prj_name", "prj_code"],
+      //dateKeys: ["prj_date"],
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      reportTypeIndex:4
+    },
+     budget_source_stat: {
+      textKeys: ["prj_name", "prj_code"],
+      //dateKeys: ["prj_date"],
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      reportTypeIndex:5
+    },
+    budget_contractor_stat: {
+      textKeys: ["prj_name", "prj_code"],
+      //dateKeys: ["prj_date"],
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      reportTypeIndex:6
+    },
+    project_payment_stat: {
+      //textKeys: ["prj_name", "prj_code"],
+      dateKeys: ["payment_date"],
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      reportTypeIndex:7
+    }
+   /* users: {
+      textKeys: ["usr_phone_number", "usr_full_name", "sector_name"],
+      dateKeys: [],
+      locationParams: {
+        region: "usr_region_id",
+        zone: "usr_zone_id",
+        woreda: "usr_woreda_id"       
+      },
+       reportTypeIndex:1
+    },
+    department: {
+      textKeys: ["dep_name_en", "dep_code"],
+      dateKeys: [],
+      locationParams: {
+        region: "dep_available_at_region",
+        zone: "dep_available_at_zone",
+        woreda: "dep_available_at_woreda"        
+      },
+      reportTypeIndex:2
+    }   */
   };
 
   // Handle dropdown selection
@@ -169,6 +231,7 @@ const StatisticalReport = () => {
       setSearchHook(() => config.hook);
       setTextSearchKeys(config.textKeys);
       setDateSearchKeys(config.dateKeys);
+      setReportTypeId(config.reportTypeIndex);
     }
   };
 
@@ -197,8 +260,12 @@ const StatisticalReport = () => {
     if (LocationWoredaId && locationParams.woreda) {
       updatedParams[locationParams.woreda] = LocationWoredaId;
     }
+    if (ReportTypeId) {
+      updatedParams["report_type"] = ReportTypeId;
+    }
+    
     setProjectParams(updatedParams);
-  }, [LocationRegionId, LocationZoneId, LocationWoredaId, locationParams]);
+  }, [LocationRegionId, LocationZoneId, LocationWoredaId,ReportTypeId, locationParams]);
 
   // Handle node selection dynamically based on selected endpoint's location keys
   const handleNodeSelect = (node) => {
@@ -248,8 +315,33 @@ const StatisticalReport = () => {
             setIsAddressLoading={setIsAddressLoading}
           />
           <div className="w-100">
-            <AdvancedSearch
-              searchHook={searchHook}
+          <Row>
+              <Col xs="2" sm="2" lg="2">
+              <Card className="job-filter">
+        <CardBody>
+              <FormGroup>
+                  <Input
+                    type="select"
+                    name="endpoint"
+                    id="api-endpoints"
+                    value={selectedEndpoint.name}
+                    onChange={handleSelectionChange}
+                    className="mb-1"
+                  >
+                    <option value="">{t("select_stat")}</option>
+                    {endpoints.map((endpoint, index) => (
+                      <option key={index} value={endpoint.name}>
+                        {t(endpoint.name)}
+                      </option>
+                    ))}
+                  </Input>
+                </FormGroup>
+                 </CardBody>
+      </Card>
+              </Col>
+              <Col xs="10" sm="10" lg="10">
+              <AdvancedSearch
+              searchHook={useSearchStatisticalReport}
               textSearchKeys={textSearchKeys}
               dateSearchKeys={dateSearchKeys}
               dropdownSearchKeys={[]}
@@ -261,29 +353,9 @@ const StatisticalReport = () => {
               setSearchResults={setSearchResults}
               setShowSearchResult={setShowSearchResult}
             />
-            <Row className="mb-4">
-              <Col xs="12" sm="6" lg="4">
-                <FormGroup>
-                  <Label for="api-endpoints">
-                    {t("Get Statistical Report")}
-                  </Label>
-                  <Input
-                    type="select"
-                    name="endpoint"
-                    id="api-endpoints"
-                    value={selectedEndpoint.name}
-                    onChange={handleSelectionChange}
-                  >
-                    <option value="">{t("Select To Get The Report")}</option>
-                    {endpoints.map((endpoint, index) => (
-                      <option key={index} value={endpoint.name}>
-                        {t(endpoint.name)}
-                      </option>
-                    ))}
-                  </Input>
-                </FormGroup>
+
               </Col>
-            </Row>
+</Row>
             <Col xs="12">
               {loading || isSearchLoading ? (
                 <div className="d-flex justify-content-center">

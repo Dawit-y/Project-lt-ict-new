@@ -13,6 +13,7 @@ import SearchComponent from "../../components/Common/SearchComponent";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+import { formatDate } from "../../utils/commonMethods";
 
 import {
   useFetchProjectBudgetExpenditures,
@@ -23,6 +24,11 @@ import {
 } from "../../queries/projectbudgetexpenditure_query";
 import ProjectBudgetExpenditureModal from "./ProjectBudgetExpenditureModal";
 import { useTranslation } from "react-i18next";
+
+import { useFetchExpenditureCodes } from "../../queries/expenditurecode_query";
+import { useFetchBudgetYears } from "../../queries/budgetyear_query";
+import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
+import { createSelectOptions } from "../../utils/commonMethods";
 
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
@@ -43,11 +49,14 @@ import {
   CardBody,
   FormGroup,
   Badge,
+    InputGroup,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import "flatpickr/dist/themes/material_blue.css";
+import Flatpickr from "react-flatpickr";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -74,8 +83,28 @@ const ProjectBudgetExpenditureModel = (props) => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } =
-    useFetchProjectBudgetExpenditures(param, isActive);
+  const { data, isLoading, error, isError, refetch } =useFetchProjectBudgetExpenditures(param, isActive);
+ 
+  const { data: expenditureCodeData } = useFetchExpenditureCodes();
+  const expenditureCodeOptions = createSelectOptions(
+    expenditureCodeData?.data || [],
+    "pec_id",
+    "pec_name"
+  );
+
+const { data: budgetMonthData } = useFetchBudgetMonths();
+  const budgetMonthOptions = createSelectOptions(
+    budgetMonthData?.data || [],
+    "bdm_id",
+    "bdm_month"
+  );
+
+  const { data: budgetYearData } = useFetchBudgetYears();
+  const budgetYearOptions = createSelectOptions(
+    budgetYearData?.data || [],
+    "bdy_id",
+    "bdy_name"
+  );
 
   const addProjectBudgetExpenditure = useAddProjectBudgetExpenditure();
   const updateProjectBudgetExpenditure = useUpdateProjectBudgetExpenditure();
@@ -133,15 +162,19 @@ const ProjectBudgetExpenditureModel = (props) => {
     enableReinitialize: true,
 
     initialValues: {
-      pbe_reason:
+       pbe_project_id: passedId,
+       pbe_reason:
         (projectBudgetExpenditure && projectBudgetExpenditure.pbe_reason) || "",
-      pbe_project_id:
-        (projectBudgetExpenditure && projectBudgetExpenditure.pbe_project_id) ||
-        "",
       pbe_budget_code_id:
-        (projectBudgetExpenditure &&
-          projectBudgetExpenditure.pbe_budget_code_id) ||
-        "",
+        (projectBudgetExpenditure && projectBudgetExpenditure.pbe_budget_code_id) ||"",
+
+   pbe_budget_year_id:
+        (projectBudgetExpenditure && projectBudgetExpenditure.pbe_budget_year_id) ||"",
+
+           pbe_budget_month_id:
+        (projectBudgetExpenditure && projectBudgetExpenditure.pbe_budget_month_id) ||"",
+
+
       pbe_used_date_ec:
         (projectBudgetExpenditure &&
           projectBudgetExpenditure.pbe_used_date_ec) ||
@@ -172,14 +205,11 @@ const ProjectBudgetExpenditureModel = (props) => {
 
     validationSchema: Yup.object({
       pbe_reason: Yup.string().required(t("pbe_reason")),
-      pbe_project_id: Yup.string().required(t("pbe_project_id")),
       pbe_budget_code_id: Yup.string().required(t("pbe_budget_code_id")),
-      pbe_used_date_ec: Yup.string().required(t("pbe_used_date_ec")),
+      pbe_budget_year_id: Yup.string().required(t("pbe_budget_year_id")),
+      pbe_budget_month_id: Yup.string().required(t("pbe_budget_month_id")),
       pbe_used_date_gc: Yup.string().required(t("pbe_used_date_gc")),
       ppe_amount: Yup.string().required(t("ppe_amount")),
-      pbe_status: Yup.string().required(t("pbe_status")),
-      pbe_description: Yup.string().required(t("pbe_description")),
-      pbe_created_date: Yup.string().required(t("pbe_created_date")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -190,6 +220,8 @@ const ProjectBudgetExpenditureModel = (props) => {
           pbe_reason: values.pbe_reason,
           pbe_project_id: values.pbe_project_id,
           pbe_budget_code_id: values.pbe_budget_code_id,
+          pbe_budget_year_id: values.pbe_budget_year_id,
+          pbe_budget_month_id: values.pbe_budget_month_id,
           pbe_used_date_ec: values.pbe_used_date_ec,
           pbe_used_date_gc: values.pbe_used_date_gc,
           ppe_amount: values.ppe_amount,
@@ -208,6 +240,8 @@ const ProjectBudgetExpenditureModel = (props) => {
           pbe_reason: values.pbe_reason,
           pbe_project_id: values.pbe_project_id,
           pbe_budget_code_id: values.pbe_budget_code_id,
+          pbe_budget_year_id: values.pbe_budget_year_id,
+          pbe_budget_month_id: values.pbe_budget_month_id,
           pbe_used_date_ec: values.pbe_used_date_ec,
           pbe_used_date_gc: values.pbe_used_date_gc,
           ppe_amount: values.ppe_amount,
@@ -251,6 +285,9 @@ const ProjectBudgetExpenditureModel = (props) => {
       pbe_reason: projectBudgetExpenditure.pbe_reason,
       pbe_project_id: projectBudgetExpenditure.pbe_project_id,
       pbe_budget_code_id: projectBudgetExpenditure.pbe_budget_code_id,
+      pbe_budget_year_id: projectBudgetExpenditure.pbe_budget_year_id,
+      pbe_budget_month_id: projectBudgetExpenditure.pbe_budget_month_id,
+
       pbe_used_date_ec: projectBudgetExpenditure.pbe_used_date_ec,
       pbe_used_date_gc: projectBudgetExpenditure.pbe_used_date_gc,
       ppe_amount: projectBudgetExpenditure.ppe_amount,
@@ -298,46 +335,52 @@ const ProjectBudgetExpenditureModel = (props) => {
           );
         },
       },
+     
       {
         header: "",
-        accessorKey: "pbe_project_id",
+        accessorKey: "pbe_budget_code",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pbe_project_id, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "pbe_budget_code_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pbe_budget_code_id, 30) ||
+              {truncateText(cellProps.row.original.pbe_budget_code, 30) ||
                 "-"}
             </span>
           );
         },
       },
-      {
+
+        {
         header: "",
-        accessorKey: "pbe_used_date_ec",
+        accessorKey: "pbe_budget_year",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pbe_used_date_ec, 30) || "-"}
+              {truncateText(cellProps.row.original.pbe_budget_year, 30) ||
+                "-"}
             </span>
           );
         },
       },
+
+        {
+        header: "",
+        accessorKey: "pbe_budget_month",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.pbe_budget_month, 30) ||
+                "-"}
+            </span>
+          );
+        },
+      },
+      
       {
         header: "",
         accessorKey: "pbe_used_date_gc",
@@ -364,19 +407,7 @@ const ProjectBudgetExpenditureModel = (props) => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "pbe_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pbe_status, 30) || "-"}
-            </span>
-          );
-        },
-      },
+    
       {
         header: "",
         accessorKey: "pbe_description",
@@ -390,19 +421,7 @@ const ProjectBudgetExpenditureModel = (props) => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "pbe_created_date",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pbe_created_date, 30) || "-"}
-            </span>
-          );
-        },
-      },
+     
 
       {
         header: t("view_detail"),
@@ -502,38 +521,7 @@ const ProjectBudgetExpenditureModel = (props) => {
       />
       <>
         <div className="container-fluid1">
-          {/* <Breadcrumbs
-            title={t("project_budget_expenditure")}
-            breadcrumbItem={t("project_budget_expenditure")}
-          />
-          <AdvancedSearch
-            searchHook={useSearchProjectBudgetExpenditures}
-            textSearchKeys={["dep_name_am", "dep_name_en", "dep_name_or"]}
-            dropdownSearchKeys={[
-              {
-                key: "example",
-                options: [
-                  { value: "Freelance", label: "Example1" },
-                  { value: "Full Time", label: "Example2" },
-                  { value: "Part Time", label: "Example3" },
-                  { value: "Internship", label: "Example4" },
-                ],
-              },
-            ]}
-            checkboxSearchKeys={[
-              {
-                key: "example1",
-                options: [
-                  { value: "Engineering", label: "Example1" },
-                  { value: "Science", label: "Example2" },
-                ],
-              },
-            ]}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          /> */}
+     
           {isLoading || isSearchLoading ? (
             <Spinners top={isActive ? "top-70" : ""} />
           ) : (
@@ -553,8 +541,7 @@ const ProjectBudgetExpenditureModel = (props) => {
                       isCustomPageSize={true}
                       handleUserClick={handleProjectBudgetExpenditureClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={ t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={
                         t("add") + " " + t("project_budget_expenditure")
@@ -585,7 +572,7 @@ const ProjectBudgetExpenditureModel = (props) => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pbe_reason")}</Label>
+                    <Label>{t("pbe_reason")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pbe_reason"
                       type="text"
@@ -599,7 +586,7 @@ const ProjectBudgetExpenditureModel = (props) => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={100}
                     />
                     {validation.touched.pbe_reason &&
                     validation.errors.pbe_reason ? (
@@ -608,107 +595,169 @@ const ProjectBudgetExpenditureModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
+                  
+                     <Col className="col-md-6 mb-3">
+                  <Label>
+                    {t("pbe_budget_code_id")}{" "}
+                    <span className="text-danger">*</span>
+                  </Label>
+                  <Input
+                    name="pbe_budget_code_id"
+                    id="pbe_budget_code_id"
+                    type="select"
+                    className="form-select"
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.pbe_budget_code_id || ""}
+                    invalid={
+                      validation.touched.pbe_budget_code_id &&
+                      validation.errors.pbe_budget_code_id
+                        ? true
+                        : false
+                    }
+                  >
+                    <option value={null}>Select Expenditure Code</option>
+                    {expenditureCodeOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {t(`${option.label}`)}
+                      </option>
+                    ))}
+                  </Input>
+                  {validation.touched.pbe_budget_code_id &&
+                  validation.errors.pbe_budget_code_id ? (
+                    <FormFeedback type="invalid">
+                      {validation.errors.pbe_budget_code_id}
+                    </FormFeedback>
+                  ) : null}
+                </Col>
+
+                <Col className="col-md-6 mb-3">
+                  <Label>
+                    {t("pbe_budget_year_id")}{" "}
+                    <span className="text-danger">*</span>
+                  </Label>
+                  <Input
+                    name="pbe_budget_year_id"
+                    id="pbe_budget_year_id"
+                    type="select"
+                    className="form-select"
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.pbe_budget_year_id || ""}
+                    invalid={
+                      validation.touched.pbe_budget_year_id &&
+                      validation.errors.pbe_budget_year_id
+                        ? true
+                        : false
+                    }
+                  >
+                    <option value={null}>Select Year</option>
+                    {budgetYearOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {t(`${option.label}`)}
+                      </option>
+                    ))}
+                  </Input>
+                  {validation.touched.pbe_budget_year_id &&
+                  validation.errors.pbe_budget_year_id ? (
+                    <FormFeedback type="invalid">
+                      {validation.errors.pbe_budget_year_id}
+                    </FormFeedback>
+                  ) : null}
+                </Col>
+
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pbe_project_id")}</Label>
-                    <Input
-                      name="pbe_project_id"
-                      type="text"
-                      placeholder={t("pbe_project_id")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pbe_project_id || ""}
-                      invalid={
-                        validation.touched.pbe_project_id &&
-                        validation.errors.pbe_project_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pbe_project_id &&
-                    validation.errors.pbe_project_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pbe_project_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                  <Label>
+                    {t("pbe_budget_month_id")}{" "}
+                    <span className="text-danger">*</span>
+                  </Label>
+                  <Input
+                    name="pbe_budget_month_id"
+                    id="pbe_budget_month_id"
+                    type="select"
+                    className="form-select"
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.pbe_budget_month_id || ""}
+                    invalid={
+                      validation.touched.pbe_budget_month_id &&
+                      validation.errors.pbe_budget_month_id
+                        ? true
+                        : false
+                    }
+                  >
+                    <option value={null}>Select Month</option>
+                    {budgetMonthOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {t(`${option.label}`)}
+                      </option>
+                    ))}
+                  </Input>
+                  {validation.touched.pbe_budget_month_id &&
+                  validation.errors.pbe_budget_month_id ? (
+                    <FormFeedback type="invalid">
+                      {validation.errors.pbe_budget_month_id}
+                    </FormFeedback>
+                  ) : null}
+                </Col>
+                 <Col className="col-md-6 mb-3">
+                        <FormGroup>
+                          <Label>{t("pbe_used_date_gc")}<span className="text-danger">*</span></Label>
+                          <InputGroup>
+                            <Flatpickr
+                              id="DataPicker"
+                              className={`form-control ${
+                                validation.touched.pbe_used_date_gc &&
+                                validation.errors.pbe_used_date_gc
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              name="pbe_used_date_gc"
+                              options={{
+                                altInput: true,
+                                altFormat: "Y/m/d",
+                                dateFormat: "Y/m/d",
+                                enableTime: false,
+                              }}
+                              value={
+                                validation.values.pbe_used_date_gc || ""
+                              }
+                              onChange={(date) => {
+                                const formatedDate = formatDate(date[0]);
+                                validation.setFieldValue(
+                                  "pbe_used_date_gc",
+                                  formatedDate
+                                ); // Set value in Formik
+                              }}
+                              onBlur={validation.handleBlur}
+                            />
+
+                            <Button
+                              type="button"
+                              className="btn btn-outline-secondary"
+                              disabled
+                            >
+                              <i
+                                className="fa fa-calendar"
+                                aria-hidden="true"
+                              />
+                            </Button>
+                          </InputGroup>
+                          {validation.touched.pbe_used_date_gc &&
+                          validation.errors.pbe_used_date_gc ? (
+                            <FormFeedback>
+                              {validation.errors.pbe_used_date_gc}
+                            </FormFeedback>
+                          ) : null}
+                        </FormGroup>
+                      </Col>
+                  
+                 
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pbe_budget_code_id")}</Label>
-                    <Input
-                      name="pbe_budget_code_id"
-                      type="text"
-                      placeholder={t("pbe_budget_code_id")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pbe_budget_code_id || ""}
-                      invalid={
-                        validation.touched.pbe_budget_code_id &&
-                        validation.errors.pbe_budget_code_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pbe_budget_code_id &&
-                    validation.errors.pbe_budget_code_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pbe_budget_code_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pbe_used_date_ec")}</Label>
-                    <Input
-                      name="pbe_used_date_ec"
-                      type="text"
-                      placeholder={t("pbe_used_date_ec")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pbe_used_date_ec || ""}
-                      invalid={
-                        validation.touched.pbe_used_date_ec &&
-                        validation.errors.pbe_used_date_ec
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pbe_used_date_ec &&
-                    validation.errors.pbe_used_date_ec ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pbe_used_date_ec}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pbe_used_date_gc")}</Label>
-                    <Input
-                      name="pbe_used_date_gc"
-                      type="text"
-                      placeholder={t("pbe_used_date_gc")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pbe_used_date_gc || ""}
-                      invalid={
-                        validation.touched.pbe_used_date_gc &&
-                        validation.errors.pbe_used_date_gc
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pbe_used_date_gc &&
-                    validation.errors.pbe_used_date_gc ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pbe_used_date_gc}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("ppe_amount")}</Label>
+                    <Label>{t("ppe_amount")}<span className="text-danger">*</span></Label>
                     <Input
                       name="ppe_amount"
-                      type="text"
+                      type="number"
                       placeholder={t("ppe_amount")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -728,35 +777,13 @@ const ProjectBudgetExpenditureModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pbe_status")}</Label>
-                    <Input
-                      name="pbe_status"
-                      type="text"
-                      placeholder={t("pbe_status")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pbe_status || ""}
-                      invalid={
-                        validation.touched.pbe_status &&
-                        validation.errors.pbe_status
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pbe_status &&
-                    validation.errors.pbe_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pbe_status}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                  
                   <Col className="col-md-6 mb-3">
                     <Label>{t("pbe_description")}</Label>
                     <Input
                       name="pbe_description"
-                      type="text"
+                      type="textarea"
+                      rows={2}
                       placeholder={t("pbe_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -767,7 +794,7 @@ const ProjectBudgetExpenditureModel = (props) => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={425}
                     />
                     {validation.touched.pbe_description &&
                     validation.errors.pbe_description ? (
@@ -776,30 +803,7 @@ const ProjectBudgetExpenditureModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pbe_created_date")}</Label>
-                    <Input
-                      name="pbe_created_date"
-                      type="text"
-                      placeholder={t("pbe_created_date")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pbe_created_date || ""}
-                      invalid={
-                        validation.touched.pbe_created_date &&
-                        validation.errors.pbe_created_date
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pbe_created_date &&
-                    validation.errors.pbe_created_date ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pbe_created_date}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                  
                 </Row>
                 <Row>
                   <Col>

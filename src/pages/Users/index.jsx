@@ -285,8 +285,11 @@ const UsersModel = () => {
           usr_remember_token: values.usr_remember_token,
           usr_notified: Number(values.usr_notified),
           usr_description: values.usr_description,
-          usr_status: Number(values.usr_status),
+          //usr_status: Number(values.usr_status),
+          usr_status: 1,
           usr_department_id: Number(values.usr_department_id),
+          is_deletable:1,
+      is_editable:1,
         };
 
         handleAddUsers(newUsers);
@@ -454,7 +457,7 @@ const UsersModel = () => {
         cellRenderer: (params) =>
           truncateText(params.data.sector_name, 30) || "-",
       },
-      {
+   /*   {
         headerName: t("usr_is_active"),
         field: "usr_is_active",
         sortable: true,
@@ -469,7 +472,7 @@ const UsersModel = () => {
             </Badge>
           );
         },
-      },
+      },*/
       {
         headerName: t("view_detail"),
         width: "140",
