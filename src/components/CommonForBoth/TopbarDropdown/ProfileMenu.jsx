@@ -55,7 +55,7 @@ const ProfileMenu = (props) => {
           id="page-header-user-dropdown"
           tag="button"
         >
-          {userProfile.user.usr_picture.length > 1 ? (
+          {/*{userProfile.user.usr_picture.length > 1 ? (
             <img
               className="rounded-circle"
               src={userProfile.user.usr_picture}
@@ -76,7 +76,7 @@ const ProfileMenu = (props) => {
             >
               {userInitial}
             </Badge>
-          )}
+          )}*/}
           <span className="d-none d-xl-inline-block ms-2">
             {truncateText(userProfile.user.usr_full_name, 6) ||
               userProfile.user.usr_email}

@@ -14,7 +14,7 @@ export const useFetchUserss = () => {
     queryKey: USERS_QUERY_KEY,
     queryFn: () => getUsers(),
     staleTime: 0,
-    meta: { persist: true },
+    meta: { persist: false },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
