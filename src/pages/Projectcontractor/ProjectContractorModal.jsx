@@ -43,7 +43,7 @@ const ProjectContractorModal = (props) => {
           </p>
           </tr><tr>
                     <p className="mb-2">
-            {t('cni_contractor_type_id')}: <span className="text-primary">{transaction.cni_contractor_type_id}</span>
+            {t('cni_contractor_type')}: <span className="text-primary">{transaction.cni_contractor_type}</span>
           </p>
           </tr><tr>
                     <p className="mb-2">
@@ -55,15 +55,7 @@ const ProjectContractorModal = (props) => {
           </p>
           </tr><tr>
                     <p className="mb-2">
-            {t('cni_contract_start_date_et')}: <span className="text-primary">{transaction.cni_contract_start_date_et}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
             {t('cni_contract_start_date_gc')}: <span className="text-primary">{transaction.cni_contract_start_date_gc}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('cni_contract_end_date_et')}: <span className="text-primary">{transaction.cni_contract_end_date_et}</span>
           </p>
           </tr><tr>
                     <p className="mb-2">
@@ -88,10 +80,6 @@ const ProjectContractorModal = (props) => {
           </tr><tr>
                     <p className="mb-2">
             {t('cni_website')}: <span className="text-primary">{transaction.cni_website}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('cni_project_id')}: <span className="text-primary">{transaction.cni_project_id}</span>
           </p>
           </tr><tr>
                     <p className="mb-2">
@@ -120,10 +108,6 @@ const ProjectContractorModal = (props) => {
           </tr><tr>
                     <p className="mb-2">
             {t('cni_description')}: <span className="text-primary">{transaction.cni_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('cni_status')}: <span className="text-primary">{transaction.cni_status}</span>
           </p>
           </tr>
 

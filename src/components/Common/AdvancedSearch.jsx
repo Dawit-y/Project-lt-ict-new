@@ -32,6 +32,7 @@ const AdvancedSearch = ({
   setIsSearchLoading,
   setSearchResults,
   setShowSearchResult,
+  reportType
 }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -166,12 +167,12 @@ const AdvancedSearch = ({
         <CardBody>
           <form action="#">
             <Row className="g-3">
-              <Col xxl={9} lg={9}>
+              <Col xxl={10} lg={10}>
                 <Row>
                   {/* Text Inputs */}
                   {dateSearchKeys &&
                     dateSearchKeys.map((key) => (
-                      <Col xxl={3} lg={3} key={key}>
+                      <Col xxl={4} lg={4} key={key}>
                         <FormGroup>
                           <InputGroup>
                             <Flatpickr
@@ -222,10 +223,11 @@ const AdvancedSearch = ({
                         </FormGroup>
                       </Col>
                     ))}
+                    
                   {textSearchKeys &&
                     textSearchKeys.map((key) => (
                       <Col xxl={2} lg={2} key={key}>
-                        <div className="position-relative mb-2">
+                        <div className="position-relative mb-1">
                           <Input
                             type="text"
                             id={key}
@@ -240,12 +242,11 @@ const AdvancedSearch = ({
                         </div>
                       </Col>
                     ))}
-
                   {/* Dropdown Inputs */}
                   {dropdownSearchKeys &&
                     dropdownSearchKeys.map(({ key, options }) => (
                       <Col xxl={3} lg={3} key={key}>
-                        <div className="position-relative mb-2">
+                        <div className="position-relative mb-1">
                           <Select
                             className="select2"
                             id={key}
@@ -265,12 +266,12 @@ const AdvancedSearch = ({
                     ))}
                 </Row>
               </Col>
-              <Col xxl={3} lg={3}>
+              <Col xxl={2} lg={2}>
                 <Row xxl={12} lg={12}>
                   <div className="position-relative h-100 hstack gap-3 pull-right">
                     <button
                       type="button"
-                      className="btn btn-primary h-100 w-100"
+                      className="btn btn-primary h-100 w-100 p-2"
                       onClick={handleSearch}
                       disabled={isButtonDisabled()}
                     >
@@ -278,7 +279,7 @@ const AdvancedSearch = ({
                     </button>
                     <button
                       type="button"
-                      className="btn btn-outline-danger align-middle h-100 w-100"
+                      className="btn btn-outline-danger align-middle h-100 w-100 p-2"
                       onClick={handleClear}
                     >
                       <svg
@@ -297,7 +298,7 @@ const AdvancedSearch = ({
                     {(checkboxSearchKeys?.length > 0 || Component) && (
                       <a
                         onClick={toggle}
-                        className="btn btn-secondary h-100 w-100"
+                        className="btn btn-secondary h-100 w-100 p-2"
                       >
                         <i className="bx bx-filter-alt align-middle"></i>{" "}
                       </a>

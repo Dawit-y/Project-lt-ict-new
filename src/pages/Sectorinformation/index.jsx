@@ -67,8 +67,7 @@ const SectorInformationModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } =
-    useFetchSectorInformations();
+  const { data, isLoading, error, isError, refetch } =useFetchSectorInformations();
   const { data: sectorCategoryData } = useFetchSectorCategorys();
   const sectorCategoryOptions = createSelectOptions(
     sectorCategoryData?.data || [],

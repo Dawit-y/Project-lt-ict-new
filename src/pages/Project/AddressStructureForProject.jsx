@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { post } from "../../helpers/api_Lists";
 import { useQuery } from "@tanstack/react-query";
 import TreeNode from "../AddressTreeStructure/TreeNode";
-
+import { useTranslation } from "react-i18next";
 const url = "address_structure/listgrid";
 
 const getAddress = async () => {
@@ -59,6 +59,7 @@ const buildTree = (data) => {
 };
 
 const AddressStructureForProject = ({ onNodeSelect, setIsAddressLoading }) => {
+  const { t } = useTranslation();
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["address_structure"],
     queryFn: getAddress,
@@ -74,7 +75,7 @@ const AddressStructureForProject = ({ onNodeSelect, setIsAddressLoading }) => {
         style={{ minHeight: "450px" }}
         className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
       >
-        <h4 className="mb-2 text-secondary">Address Structures</h4>
+        <h4 className="mb-2 text-secondary">{t("address_tree_Search")}</h4>
         <hr className="text-dark" />
         <p>Loading...</p>
       </div>
@@ -92,7 +93,7 @@ const AddressStructureForProject = ({ onNodeSelect, setIsAddressLoading }) => {
       className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
       style={{ minHeight: "450px" }}
     >
-      <h4 className="mb-2 text-secondary">Address Structures</h4>
+      <h4 className="mb-2 text-secondary">{t("address_tree_Search")}</h4>
       <hr className="text-dark" />
 
       {treeData.length > 0 ? (

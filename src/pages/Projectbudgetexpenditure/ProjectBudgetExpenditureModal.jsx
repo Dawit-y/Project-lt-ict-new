@@ -37,19 +37,23 @@ const ProjectBudgetExpenditureModal = (props) => {
                     <p className="mb-2">
             {t('pbe_reason')}: <span className="text-primary">{transaction.pbe_reason}</span>
           </p>
-          </tr><tr>
+          </tr>
+          <tr>
                     <p className="mb-2">
-            {t('pbe_project_id')}: <span className="text-primary">{transaction.pbe_project_id}</span>
+            {t('pbe_budget_code')}: <span className="text-primary">{transaction.pbe_budget_code}</span>
           </p>
-          </tr><tr>
+          </tr>
+            <tr>
                     <p className="mb-2">
-            {t('pbe_budget_code_id')}: <span className="text-primary">{transaction.pbe_budget_code_id}</span>
+            {t('pbe_budget_year')}: <span className="text-primary">{transaction.pbe_budget_year}</span>
           </p>
-          </tr><tr>
+          </tr>
+            <tr>
                     <p className="mb-2">
-            {t('pbe_used_date_ec')}: <span className="text-primary">{transaction.pbe_used_date_ec}</span>
+            {t('pbe_budget_month')}: <span className="text-primary">{transaction.pbe_budget_month}</span>
           </p>
-          </tr><tr>
+          </tr>
+          <tr>
                     <p className="mb-2">
             {t('pbe_used_date_gc')}: <span className="text-primary">{transaction.pbe_used_date_gc}</span>
           </p>
@@ -59,15 +63,7 @@ const ProjectBudgetExpenditureModal = (props) => {
           </p>
           </tr><tr>
                     <p className="mb-2">
-            {t('pbe_status')}: <span className="text-primary">{transaction.pbe_status}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
             {t('pbe_description')}: <span className="text-primary">{transaction.pbe_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pbe_created_date')}: <span className="text-primary">{transaction.pbe_created_date}</span>
           </p>
           </tr>
 
