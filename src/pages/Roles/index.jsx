@@ -1,26 +1,23 @@
 import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
+import { isEmpty } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
+import { toast } from "react-toastify";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 
 import {
-  getRoles as onGetRoles,
-  addRoles as onAddRoles,
-  updateRoles as onUpdateRoles,
-  deleteRoles as onDeleteRoles,
-} from "../../store/roles/actions";
-
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
+  useFetchRoles,
+  useAddRoles,
+  useUpdateRoles,
+  useDeleteRoles,
+} from "../../queries/roles_query";
 import RolesModal from "./RolesModal";
 import { useTranslation } from "react-i18next";
 
@@ -38,12 +35,10 @@ import {
   Label,
   Card,
   CardBody,
-  FormGroup,
-  Badge,
 } from "reactstrap";
-import { ToastContainer } from "react-toastify";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import Permission from "../../pages/Permission";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -52,7 +47,7 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const RolesModel = ({ onSelectItem }) => {
+const RolesModel = () => {
   //meta title
   document.title = " Roles";
 
@@ -65,9 +60,55 @@ const RolesModel = ({ onSelectItem }) => {
   const [showCanvas, setShowCanvas] = useState(false);
 
   const [roles, setRoles] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
-  const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
-  //START FOREIGN CALLS
+  const { data, isLoading, error, isError, refetch } = useFetchRoles();
+  const addRoles = useAddRoles();
+  const updateRoles = useUpdateRoles();
+  const deleteRoles = useDeleteRoles();
+
+  const handleAddRoles = async (data) => {
+    try {
+      await addRoles.mutateAsync(data);
+      toast.success(`Data added successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error("Failed to add data", {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+
+  const handleUpdateRoles = async (data) => {
+    try {
+      await updateRoles.mutateAsync(data);
+      toast.success(`data updated successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error(`Failed to update Data`, {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+  const handleDeleteRoles = async () => {
+    if (roles && roles.rol_id) {
+      try {
+        const id = roles.rol_id;
+        console.log("role id", id);
+        await deleteRoles.mutateAsync(id);
+        toast.success(`Data deleted successfully`, {
+          autoClose: 2000,
+        });
+      } catch (error) {
+        toast.error(`Failed to delete Data`, {
+          autoClose: 2000,
+        });
+      }
+      setDeleteModal(false);
+    }
+  };
 
   // validation
   const validation = useFormik({
@@ -87,7 +128,9 @@ const RolesModel = ({ onSelectItem }) => {
       rol_name: Yup.string()
         .required(t("rol_name"))
         .test("unique-role-id", t("Already exists"), (value) => {
-          return !data.some((item) => item.rol_name == value && item.rol_id !== roles?.rol_id);
+          return !data?.data.some(
+            (item) => item.rol_name == value && item.rol_id !== roles?.rol_id
+          );
         }),
 
       //rol_name: Yup.string().required(t("rol_name")),
@@ -101,12 +144,11 @@ const RolesModel = ({ onSelectItem }) => {
           rol_name: values.rol_name,
           rol_description: values.rol_description,
           rol_status: values.rol_status,
-
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
         // update Roles
-        dispatch(onUpdateRoles(updateRoles));
+        handleUpdateRoles(updateRoles);
         validation.resetForm();
       } else {
         const newRoles = {
@@ -115,56 +157,21 @@ const RolesModel = ({ onSelectItem }) => {
           rol_status: values.rol_status,
         };
         // save new Roless
-        dispatch(onAddRoles(newRoles));
+        handleAddRoles(newRoles);
         validation.resetForm();
       }
     },
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-  const dispatch = useDispatch();
-  // Fetch Roles on component mount
-  useEffect(() => {
-    dispatch(onGetRoles());
-  }, [dispatch]);
-
-  const rolesProperties = createSelector(
-    (state) => state.RolesR, // this is geting from  reducer
-    (RolesReducer) => ({
-      // this is from Project.reducer
-      roles: RolesReducer.roles,
-      loading: RolesReducer.loading,
-      update_loading: RolesReducer.update_loading,
-    })
-  );
-
-  const {
-    roles: { data, previledge },
-    loading,
-    update_loading,
-  } = useSelector(rolesProperties);
 
   useEffect(() => {
-    setModal(false);
-  }, [update_loading]);
-
-  const selectSearchProperties = createSelector(
-    (state) => state.search,
-    (search) => ({
-      results: search.results,
-    })
-  );
-
-  const { results } = useSelector(selectSearchProperties);
-
-  const [isLoading, setLoading] = useState(loading);
-  useEffect(() => {
-    setRoles(data);
+    setRoles(data?.data);
   }, [data]);
 
   useEffect(() => {
-    if (!isEmpty(data) && !!isEdit) {
-      setRoles(data);
+    if (!isEmpty(data?.data) && !!isEdit) {
+      setRoles(data?.data);
       setIsEdit(false);
     }
   }, [data]);
@@ -180,14 +187,11 @@ const RolesModel = ({ onSelectItem }) => {
 
   const handleRolesClick = (arg) => {
     const roles = arg;
-    // console.log("handleRolesClick", roles);
-
     setRoles({
       rol_id: roles.rol_id,
       rol_name: roles.rol_name,
       rol_description: roles.rol_description,
       rol_status: roles.rol_status,
-
       is_deletable: roles.is_deletable,
       is_editable: roles.is_editable,
     });
@@ -210,25 +214,10 @@ const RolesModel = ({ onSelectItem }) => {
     setDeleteModal(true);
   };
 
-  const handleDeleteRoles = () => {
-    if (roles && roles.rol_id) {
-      dispatch(onDeleteRoles(roles.rol_id));
-      setDeleteModal(false);
-    }
-  };
   const handleRolesClicks = () => {
     setIsEdit(false);
     setRoles("");
     toggle();
-  };
-  const handleSearch = () => {
-    setSearchLoading(true); // Set loading to true when search is initiated// Update filtered data with search results
-    setShowSearchResults(true); // Show search results
-    setSearchLoading(false);
-  };
-
-  const handleClearSearch = () => {
-    setShowSearchResults(false);
   };
 
   const columns = useMemo(() => {
@@ -271,9 +260,9 @@ const RolesModel = ({ onSelectItem }) => {
               className="btn-sm"
               onClick={() => {
                 const data = cellProps.row.original;
-                onSelectItem(data);
-                // toggleViewModal(data);
-                // setTransaction(cellProps.row.original);
+                // onSelectItem(data);
+                setTransaction(data);
+                toggleViewModal(data);
               }}
             >
               {t("view_detail")}
@@ -282,7 +271,10 @@ const RolesModel = ({ onSelectItem }) => {
         },
       },
     ];
-    if (previledge?.is_role_editable && previledge?.is_role_deletable) {
+    if (
+      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_deletable
+    ) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -291,7 +283,8 @@ const RolesModel = ({ onSelectItem }) => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {(cellProps.row.original?.is_editable ||
+                cellProps.row.original?.is_role_editable) && (
                 <Link
                   to="#"
                   className="text-success"
@@ -307,7 +300,8 @@ const RolesModel = ({ onSelectItem }) => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {(cellProps.row.original?.is_deletable ||
+                cellProps.row.original?.is_role_deletable) && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -332,11 +326,8 @@ const RolesModel = ({ onSelectItem }) => {
                   className="text-secondary"
                   onClick={() => {
                     const roledata = cellProps.row.original;
-                    // console.log("handleProjectClick before edit", ProjectData);
                     handleClick(roledata);
-                    // console.log("update search result table dtata",)
                   }}
-                  //  onClick={handleClick}
                 >
                   <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
 
@@ -354,14 +345,9 @@ const RolesModel = ({ onSelectItem }) => {
     return baseColumns;
   }, [handleRolesClick, toggleViewModal, onClickDelete]);
 
-  const project_status = [
-    { label: "select Status name", value: "" },
-    { label: "Active", value: 1 },
-    { label: "Inactive", value: 0 },
-  ];
-
-  const dropdawntotal = [project_status];
-
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
   return (
     <React.Fragment>
       <RolesModal
@@ -373,12 +359,13 @@ const RolesModel = ({ onSelectItem }) => {
         show={deleteModal}
         onDeleteClick={handleDeleteRoles}
         onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteRoles.isPending}
       />
       <div className="page-content">
         <div className="container-fluid">
           <Breadcrumbs title={t("roles")} breadcrumbItem={t("roles")} />
-          {isLoading || searchLoading ? (
-            <Spinners setLoading={setLoading} />
+          {isLoading ? (
+            <Spinners />
           ) : (
             <Row>
               <Col xs="12">
@@ -386,7 +373,7 @@ const RolesModel = ({ onSelectItem }) => {
                   <CardBody>
                     <TableContainer
                       columns={columns}
-                      data={showSearchResults ? results : data}
+                      data={data?.data || []}
                       isGlobalFilter={true}
                       isAddButton={true}
                       isCustomPageSize={true}
@@ -417,12 +404,6 @@ const RolesModel = ({ onSelectItem }) => {
                 onSubmit={(e) => {
                   e.preventDefault();
                   validation.handleSubmit();
-                  const modalCallback = () => setModal(false);
-                  if (isEdit) {
-                    onUpdateRoles(validation.values, modalCallback);
-                  } else {
-                    onAddRoles(validation.values, modalCallback);
-                  }
                   return false;
                 }}
               >
@@ -466,7 +447,7 @@ const RolesModel = ({ onSelectItem }) => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={50}
                     />
                     {validation.touched.rol_description &&
                     validation.errors.rol_description ? (
@@ -479,14 +460,18 @@ const RolesModel = ({ onSelectItem }) => {
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {update_loading ? (
+                      {addRoles.isPending || updateRoles.isPending ? (
                         <Button
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addRoles.isPending ||
+                            updateRoles.isPending ||
+                            !validation.dirty
+                          }
                         >
-                          <Spinner size={"sm"} color="primary" />
+                          <Spinner size={"sm"} color="light" className="me-2" />
                           {t("Save")}
                         </Button>
                       ) : (
@@ -494,7 +479,11 @@ const RolesModel = ({ onSelectItem }) => {
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addRoles.isPending ||
+                            updateRoles.isPending ||
+                            !validation.dirty
+                          }
                         >
                           {t("Save")}
                         </Button>

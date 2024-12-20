@@ -172,6 +172,7 @@ const UsersModel = () => {
       usr_phone_number: (users && users.usr_phone_number) || "",
       usr_role_id: (users && users.usr_role_id) || "",
       usr_region_id: (users && users.usr_region_id) || "",
+      usr_zone_id: (users && users.usr_zone_id) || "",
       usr_woreda_id: (users && users.usr_woreda_id) || "",
       usr_kebele_id: (users && users.usr_kebele_id) || "",
       usr_sector_id: (users && users.usr_sector_id) || "",
@@ -209,8 +210,8 @@ const UsersModel = () => {
     onSubmit: (values) => {
       if (isEdit) {
         const updateUsers = {
-          usr_id: users ? users.usr_id : 0,
-          // usr_id:users.usr_id,
+          // usr_id: users ? users.usr_id : 0,
+          usr_id:users?.usr_id,
           usr_email: values.usr_email,
           usr_password: values.usr_password,
           usr_full_name: values.usr_full_name,
@@ -262,7 +263,7 @@ const UsersModel = () => {
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
-       // setSelectedDepartment(values.usr_department_id);
+        // setSelectedDepartment(values.usr_department_id);
         // update Users
         handleAddUsers(duplcateuser);
         validation.resetForm();
@@ -288,8 +289,8 @@ const UsersModel = () => {
           //usr_status: Number(values.usr_status),
           usr_status: 1,
           usr_department_id: Number(values.usr_department_id),
-          is_deletable:1,
-      is_editable:1,
+          is_deletable: values.is_deletable,
+          is_editable: values.is_editable,
         };
 
         handleAddUsers(newUsers);
@@ -332,6 +333,7 @@ const UsersModel = () => {
       usr_phone_number: users.usr_phone_number,
       usr_role_id: Number(users.usr_role_id),
       usr_region_id: Number(users.usr_region_id),
+      usr_zone_id: Number(users.usr_zone_id),
       usr_woreda_id: Number(users.usr_woreda_id),
       usr_kebele_id: Number(users.usr_kebele_id),
       usr_sector_id: Number(users.usr_sector_id),
@@ -457,7 +459,7 @@ const UsersModel = () => {
         cellRenderer: (params) =>
           truncateText(params.data.sector_name, 30) || "-",
       },
-   /*   {
+      /*   {
         headerName: t("usr_is_active"),
         field: "usr_is_active",
         sortable: true,
@@ -569,14 +571,6 @@ const UsersModel = () => {
     handleUsersDuplicateClick,
   ]);
 
-  const project_status = [
-    { label: "select Status name", value: "" },
-    { label: "Active", value: 1 },
-    { label: "Inactive", value: 0 },
-  ];
-
-  const dropdawntotal = [project_status];
-
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
@@ -650,7 +644,7 @@ const UsersModel = () => {
               </Row>
 
               {/* AG Grid */}
-              <div style={{ height: "600px" }}>
+              <div style={{ minHeight: "600px" }}>
                 <AgGridReact
                   ref={gridRef}
                   rowData={

@@ -4,12 +4,9 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { before, isEmpty, update } from "lodash";
 import "bootstrap/dist/css/bootstrap.min.css";
-import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
-import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
@@ -260,11 +257,11 @@ const ProjectModel = () => {
       //prj_owner_kebele_id: Yup.string().required(t('prj_owner_kebele_id')),
       //prj_owner_description: Yup.string().required(t('prj_owner_description')),
       //prj_start_date_et: Yup.string().required(t('prj_start_date_et')),
-     // prj_start_date_gc: Yup.string().required(t("prj_start_date_gc")),
+      // prj_start_date_gc: Yup.string().required(t("prj_start_date_gc")),
       //prj_start_date_plan_et: Yup.string().required(t('prj_start_date_plan_et')),
-     // prj_start_date_plan_gc: Yup.string().required(
-       // t("prj_start_date_plan_gc")
-     // ),
+      // prj_start_date_plan_gc: Yup.string().required(
+      // t("prj_start_date_plan_gc")
+      // ),
       //prj_end_date_actual_et: Yup.string().required(t('prj_end_date_actual_et')),
       prj_end_date_actual_gc: Yup.string().required(
         t("prj_end_date_actual_gc")
@@ -1212,7 +1209,7 @@ const ProjectModel = () => {
                           ) : null}
                         </FormGroup>
                       </Col>
-                      
+
                       <Col className="col-md-4 mb-3">
                         <FormGroup>
                           <Label>{t("prj_end_date_actual_gc")}</Label>
@@ -1414,14 +1411,6 @@ const ProjectModel = () => {
           canvasWidth={84}
           name={projectMetaData.prj_name}
           id={projectMetaData.prj_id}
-          navItems={[
-            "Documents",
-            "Payments",
-            "Stakeholder",
-            "Contractor",
-            "Budget Request",
-            "Geo Location",
-          ]}
           components={{
             Documents: ProjectDocument,
             Payments: ProjectPayment,

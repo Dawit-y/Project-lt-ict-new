@@ -8,7 +8,7 @@ const CascadingDropdowns1 = ({
   dropdown1name,
   dropdown2name,
   dropdown3name,
-  isEdit
+  isEdit,
 }) => {
   const [zones, setZones] = useState([]);
   const [woredas, setWoredas] = useState([]);
@@ -75,6 +75,7 @@ const CascadingDropdowns1 = ({
     validation.handleChange(e); // Continue handling validation changes
   };
 
+
   return (
     <>
       {/* Region Dropdown */}
@@ -136,11 +137,13 @@ const CascadingDropdowns1 = ({
               </option>
             ))
           )} */}
-           <option value="" disabled={!isEdit}>
+          <option value="" disabled={!isEdit}>
             {isEdit
-              ? (validation.values[dropdown2name]
-                  ? zones.find(zone => zone.id === validation.values[dropdown2name])?.id
-                  : t("select_zone"))
+              ? validation.values[dropdown2name]
+                ? zones.find(
+                    (zone) => zone.id === validation.values[dropdown2name]
+                  )?.id
+                : t("select_zone")
               : t("select_zone")}
           </option>
           {loadingZones ? (
@@ -187,11 +190,13 @@ const CascadingDropdowns1 = ({
               </option>
             ))
           )} */}
-           <option value="" disabled={!isEdit}>
+          <option value="" disabled={!isEdit}>
             {isEdit
-              ? (validation.values[dropdown3name]
-                  ? woredas.find(woreda => woreda.id === validation.values[dropdown3name])?.name
-                  : t("select_woreda"))
+              ? validation.values[dropdown3name]
+                ? woredas.find(
+                    (woreda) => woreda.id === validation.values[dropdown3name]
+                  )?.name
+                : t("select_woreda")
               : t("select_woreda")}
           </option>
           {loadingWoredas ? (
