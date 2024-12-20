@@ -1,4 +1,5 @@
-import { post} from "./api_Lists";
+import { post } from "./api_Lists";
+import axios from "axios";
 
 const apiUrl = import.meta.env.VITE_BASE_API_URL;
 const GET_USERS = "users/listgrid";
@@ -9,7 +10,7 @@ const DELETE_USERS = "users/deletegrid";
 export const getUsers = async (params = {}) => {
   const queryString = new URLSearchParams(params).toString();
   const url = queryString ? `${GET_USERS}?${queryString}` : GET_USERS;
-   try {
+  try {
     const response = await post(url);
     return response;
   } catch (error) {
@@ -18,13 +19,27 @@ export const getUsers = async (params = {}) => {
 };
 
 // add users
-export const addUsers = async (objectName) =>
-  post(`${apiUrl}` + ADD_USERS, objectName);
+export const addUsers = async (objectName) => {
+  try {
+    const response = await axios.post(`${apiUrl}` + ADD_USERS, objectName, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Failed to update grid:", error);
+    throw error;
+  }
+};
 
 // update users
 export const updateUsers = (objectName) =>
-post(`${apiUrl}`+UPDATE_USERS +`?usr_id=${objectName?.usr_id}`, objectName);
+  post(
+    `${apiUrl}` + UPDATE_USERS + `?usr_id=${objectName?.usr_id}`,
+    objectName
+  );
 
 // delete  users
 export const deleteUsers = (objectName) =>
-  post(`${apiUrl}`+DELETE_USERS+`?usr_id=${objectName}`);
+  post(`${apiUrl}` + DELETE_USERS + `?usr_id=${objectName}`);

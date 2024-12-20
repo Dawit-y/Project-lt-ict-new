@@ -35,6 +35,7 @@ import {
 } from "reactstrap";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import FileUploadField from "../../components/Common/FileUploadField";
+import { toast } from "react-toastify";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {

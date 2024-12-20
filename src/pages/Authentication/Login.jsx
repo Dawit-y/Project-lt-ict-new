@@ -23,22 +23,29 @@ import {
   FormFeedback,
   Label,
   Spinner,
+  InputGroup,
+  InputGroupText,
 } from "reactstrap";
-
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 // actions
 import { loginUser, socialLogin } from "../../store/actions";
-
-// import images
-import profile from "../../assets/images/profile-img.png";
-import logo from "../../assets/images/logo.svg";
 import lightlogo from "../../assets/images/logo-light.png";
-import { LOGIN_TITLE , FOOTER_TEXT,BUREAU_NAME} from "../../constants/constantFile";
+import {
+  LOGIN_TITLE,
+  FOOTER_TEXT,
+  BUREAU_NAME,
+} from "../../constants/constantFile";
 
 const Login = (props) => {
   //meta title
   document.title = "Login - PMS";
   const dispatch = useDispatch();
   const [passwordStrength, setPasswordStrength] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevState) => !prevState);
+  };
 
   const validation = useFormik({
     enableReinitialize: true,
@@ -61,8 +68,8 @@ const Login = (props) => {
     }),
     onSubmit: async (values) => {
       try {
-        // console.log("login page ...");        
-         dispatch(loginUser(values, props.router.navigate));
+        // console.log("login page ...");
+        dispatch(loginUser(values, props.router.navigate));
       } catch (error) {
         // console.log("error message ", error);
         // If login fails, catch the error and display it
@@ -126,15 +133,19 @@ const Login = (props) => {
               <Card className="overflow-hidden">
                 <div className="bg-primary-subtle">
                   <Row>
-                  <Col xs={12} className="text-center mt-2">
+                    <Col xs={12} className="text-center mt-2">
                       <img src={lightlogo} alt="" className="img-fluid" />
                     </Col>
                     <Col xs={12}>
                       <div className="text-primary p-4">
-                      <h4 className="text-primary text-center">{BUREAU_NAME}</h4>
-                        <h4 className="text-primary text-center">{LOGIN_TITLE}</h4>
+                        <h4 className="text-primary text-center">
+                          {BUREAU_NAME}
+                        </h4>
+                        <h4 className="text-primary text-center">
+                          {LOGIN_TITLE}
+                        </h4>
                       </div>
-                    </Col>                    
+                    </Col>
                   </Row>
                 </div>
                 <CardBody className="pt-0 mt-2">
@@ -151,8 +162,7 @@ const Login = (props) => {
                         </span>
                       </div>
                     </Link>
-                    <Link to="/" className="auth-logo-dark">
-                    </Link>
+                    <Link to="/" className="auth-logo-dark"></Link>
                   </div>
                   <div className="p-2">
                     <Form
@@ -167,6 +177,7 @@ const Login = (props) => {
 
                       <div className="mb-3">
                         <Label className="form-label">Email</Label>
+
                         <Input
                           name="email"
                           className="form-control"
@@ -181,6 +192,7 @@ const Login = (props) => {
                               : false
                           }
                         />
+
                         {validation.touched.email && validation.errors.email ? (
                           <FormFeedback type="invalid">
                             {validation.errors.email}
@@ -190,37 +202,40 @@ const Login = (props) => {
 
                       <div className="mb-3">
                         <Label className="form-label">Password</Label>
-                        <Input
-                          name="password"
-                          autoComplete="off"
-                          value={validation.values.password || ""}
-                          type="password"
-                          placeholder="Enter Password"
-                          onChange={(e) => {
-                            validation.handleChange(e);
-                            setPasswordStrength(
-                              getPasswordStrength(e.target.value)
-                            ); // Update strength
-                          }}
-                          onBlur={validation.handleBlur}
-                          invalid={
-                            validation.touched.password &&
-                            validation.errors.password
-                              ? true
-                              : false
-                          }
-                        />
-                        {validation.touched.password &&
-                        validation.errors.password ? (
-                          <FormFeedback type="invalid">
-                            {validation.errors.password}
-                          </FormFeedback>
-                        ) : null}
-
-                        {/* Password Strength Message */}
-                        {validation.values.password && (
-                          <p>Password Strength: {passwordStrength}</p>
-                        )}
+                        <InputGroup>
+                          <Input
+                            name="password"
+                            autoComplete="off"
+                            value={validation.values.password || ""}
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter Password"
+                            onChange={(e) => {
+                              validation.handleChange(e);
+                              setPasswordStrength(
+                                getPasswordStrength(e.target.value)
+                              ); // Update strength
+                            }}
+                            onBlur={validation.handleBlur}
+                            invalid={
+                              validation.touched.password &&
+                              validation.errors.password
+                                ? true
+                                : false
+                            }
+                          />
+                          <InputGroupText
+                            onClick={togglePasswordVisibility}
+                            style={{ cursor: "pointer" }}
+                          >
+                            {showPassword ? <FaEyeSlash /> : <FaEye />}
+                          </InputGroupText>
+                          {validation.touched.password &&
+                          validation.errors.password ? (
+                            <FormFeedback type="invalid">
+                              {validation.errors.password}
+                            </FormFeedback>
+                          ) : null}
+                        </InputGroup>
                       </div>
 
                       <div className="form-check">
@@ -263,7 +278,9 @@ const Login = (props) => {
                 </CardBody>
               </Card>
               <div className="mt-5 text-center">
-                <p>© {new Date().getFullYear()}  {FOOTER_TEXT}</p>
+                <p>
+                  © {new Date().getFullYear()} {FOOTER_TEXT}
+                </p>
               </div>
             </Col>
           </Row>

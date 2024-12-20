@@ -40,7 +40,7 @@ export const useAddUsers = () => {
   return useMutation({
     mutationFn: addUsers,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( USERS_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(USERS_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,
@@ -82,13 +82,13 @@ export const useDeleteUsers = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteUsers,
-    onSuccess: (deletedData) => {
+    onSuccess: (deletedData, variable) => {
       queryClient.setQueryData(USERS_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         return {
           ...oldData,
           data: oldData.data.filter(
-            (UsersData) => UsersData.usr_id !== parseInt(deletedData.deleted_id)
+            (UsersData) => UsersData.usr_id !== parseInt(variable)
           ),
         };
       });

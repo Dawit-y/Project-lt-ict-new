@@ -30,9 +30,6 @@ import {
 
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import { useFetchDepartments } from "../../queries/department_query";
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
 import UsersModal from "./UsersModal";
 import { useTranslation } from "react-i18next";
 
@@ -50,10 +47,14 @@ import {
   Label,
   ModalFooter,
   Badge,
+  InputGroup,
+  InputGroupText,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import { createSelectOptions } from "../../utils/commonMethods";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import ImageUploader from "../../components/Common/ImageUploader";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -89,6 +90,14 @@ const UsersModel = () => {
     "sci_id",
     "sci_name_en"
   );
+  const sectorInformationMap = useMemo(() => {
+    return (
+      sectorInformationData?.data?.reduce((acc, sector) => {
+        acc[sector.sci_id] = sector.sci_name_en;
+        return acc;
+      }, {}) || {}
+    );
+  }, [sectorInformationData]);
   const { data: departmentData } = useFetchDepartments();
   const departmentOptions = createSelectOptions(
     departmentData?.data || [],
@@ -106,10 +115,13 @@ const UsersModel = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
 
-  const [selectedState, setselectedState] = useState("");
-  const [selectedImage, setSelectedImage] = useState(null);
   const [userMetaData, setUserData] = useState({});
   const [showCanvas, setShowCanvas] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevState) => !prevState);
+  };
   //START CRUD
   const handleAddUsers = async (data) => {
     try {
@@ -174,7 +186,6 @@ const UsersModel = () => {
       usr_region_id: (users && users.usr_region_id) || "",
       usr_zone_id: (users && users.usr_zone_id) || "",
       usr_woreda_id: (users && users.usr_woreda_id) || "",
-      usr_kebele_id: (users && users.usr_kebele_id) || "",
       usr_sector_id: (users && users.usr_sector_id) || "",
       usr_is_active: (users && users.usr_is_active) || "",
       usr_picture: (users && users.usr_picture) || "",
@@ -193,17 +204,37 @@ const UsersModel = () => {
     validationSchema: Yup.object({
       usr_email: Yup.string()
         .required(t("usr_email"))
+        .email(t("Invalid email format"))
         .test("unique-usr_email", t("Already exists"), (value) => {
           return !data?.data.some(
-            (item) => item.usr_email == value && item.usr_id !== users?.usr_id
+            (item) => item.usr_email === value && item.usr_id !== users?.usr_id
           );
         }),
-      //usr_email: Yup.string().required(t("usr_email")),
-      usr_password: Yup.string().required(t("usr_password")),
+      usr_password: Yup.string()
+        .required(t("usr_password"))
+        .min(8, t("Password must be at least 8 characters"))
+        .matches(
+          /[a-z]/,
+          t("Password must contain at least one lowercase letter")
+        )
+        .matches(
+          /[A-Z]/,
+          t("Password must contain at least one uppercase letter")
+        )
+        .matches(/\d/, t("Password must contain at least one number"))
+        .matches(
+          /[@$!%*?&#]/,
+          t("Password must contain at least one special character")
+        ),
       usr_full_name: Yup.string().required(t("usr_full_name")),
-      usr_phone_number: Yup.string().required(t("usr_phone_number")),
+      usr_phone_number: Yup.string()
+        .required(t("usr_phone_number"))
+        .matches(/^\d{0,12}$/, t("Phone number must have 12 digits or less")),
       usr_sector_id: Yup.string().required(t("usr_sector_id")),
       usr_department_id: Yup.string().required(t("usr_department_id")),
+      usr_region_id: Yup.number().required(t("usr_region_id")),
+      usr_zone_id: Yup.number().required(t("usr_zone_id")),
+      usr_woreda_id: Yup.number().required(t("usr_woreda_id")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -211,7 +242,7 @@ const UsersModel = () => {
       if (isEdit) {
         const updateUsers = {
           // usr_id: users ? users.usr_id : 0,
-          usr_id:users?.usr_id,
+          usr_id: users?.usr_id,
           usr_email: values.usr_email,
           usr_password: values.usr_password,
           usr_full_name: values.usr_full_name,
@@ -220,7 +251,6 @@ const UsersModel = () => {
           usr_region_id: Number(values.usr_region_id),
           usr_woreda_id: Number(values.usr_woreda_id),
           usr_zone_id: Number(values.usr_zone_id),
-          usr_kebele_id: Number(values.usr_kebele_id),
           usr_sector_id: Number(values.usr_sector_id),
           usr_is_active: Number(values.usr_is_active),
           usr_picture: values.usr_picture,
@@ -248,7 +278,6 @@ const UsersModel = () => {
           usr_region_id: Number(values.usr_region_id),
           usr_zone_id: Number(values.usr_zone_id),
           usr_woreda_id: Number(values.usr_woreda_id),
-          usr_kebele_id: Number(values.usr_kebele_id),
           usr_sector_id: Number(values.usr_sector_id),
           usr_is_active: Number(values.usr_is_active),
           usr_picture: values.usr_picture,
@@ -277,7 +306,6 @@ const UsersModel = () => {
           usr_region_id: Number(values.usr_region_id),
           usr_zone_id: Number(values.usr_zone_id),
           usr_woreda_id: Number(values.usr_woreda_id),
-          usr_kebele_id: Number(values.usr_kebele_id),
           usr_sector_id: Number(values.usr_sector_id),
           usr_is_active: Number(values.usr_is_active),
           usr_picture: values.usr_picture,
@@ -300,7 +328,6 @@ const UsersModel = () => {
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     setUsers(data);
@@ -335,7 +362,6 @@ const UsersModel = () => {
       usr_region_id: Number(users.usr_region_id),
       usr_zone_id: Number(users.usr_zone_id),
       usr_woreda_id: Number(users.usr_woreda_id),
-      usr_kebele_id: Number(users.usr_kebele_id),
       usr_sector_id: Number(users.usr_sector_id),
       usr_is_active: users.usr_is_active,
       usr_picture: users.usr_picture,
@@ -366,7 +392,6 @@ const UsersModel = () => {
       usr_role_id: Number(users.usr_role_id),
       usr_region_id: Number(users.usr_region_id),
       usr_woreda_id: Number(users.usr_woreda_id),
-      usr_kebele_id: Number(users.usr_kebele_id),
       usr_sector_id: Number(users.usr_sector_id),
       usr_is_active: users.usr_is_active,
       usr_picture: users.usr_picture,
@@ -403,17 +428,6 @@ const UsersModel = () => {
     setIsEdit(false);
     setUsers("");
     toggle();
-  };
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSelectedImage(reader.result); // Set the image preview
-        validation.setFieldValue("usr_picture", file); // Assuming usr_picture is the field in validation
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   const columnDefs = useMemo(() => {
@@ -457,7 +471,7 @@ const UsersModel = () => {
         sortable: true,
         filter: false,
         cellRenderer: (params) =>
-          truncateText(params.data.sector_name, 30) || "-",
+          sectorInformationMap[params.data.usr_sector_id],
       },
       /*   {
         headerName: t("usr_is_active"),
@@ -508,7 +522,7 @@ const UsersModel = () => {
         width: "230",
         cellRenderer: (params) => (
           <div className="d-flex gap-3">
-            {params.data.is_editable && (
+            {(params.data?.is_editable || params.data?.is_role_editable) && (
               <Link
                 to="#"
                 className="text-success"
@@ -522,9 +536,24 @@ const UsersModel = () => {
                 </UncontrolledTooltip>
               </Link>
             )}
+            {(params.data?.is_deletable || params.data?.is_role_deletable) && (
+              <Link
+                to="#"
+                className="text-danger"
+                onClick={() => {
+                  const data = params.data;
+                  onClickDelete(data);
+                }}
+              >
+                <i className="mdi mdi-delete font-size-18" id="deletetooltip" />
+                <UncontrolledTooltip placement="top" target="deletetooltip">
+                  Delete
+                </UncontrolledTooltip>
+              </Link>
+            )}
 
             {/* add view project  */}
-            {params.data.is_editable ? (
+            {params.data?.is_editable || params.data?.is_role_editable ? (
               <Link
                 to="#"
                 className="text-secondary ms-2"
@@ -540,7 +569,7 @@ const UsersModel = () => {
             )}
             {/* added duplicat  */}
             {/* Add duplicate project icon */}
-            {params.data.is_editable && (
+            {(params.data?.is_editable || params.data?.is_role_editable) && (
               <Link
                 to="#"
                 className="text-primary"
@@ -598,6 +627,7 @@ const UsersModel = () => {
         show={deleteModal}
         onDeleteClick={handleDeleteUsers}
         onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteUsers.isPending}
       />
       <div className="page-content">
         <div className="container-fluid">
@@ -688,7 +718,9 @@ const UsersModel = () => {
               >
                 <Row>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("usr_email")}</Label>
+                    <Label>
+                      {t("usr_email")} <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="usr_email"
                       type="text"
@@ -712,31 +744,44 @@ const UsersModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("usr_password")}</Label>
-                    <Input
-                      name="usr_password"
-                      type="text"
-                      placeholder={t("usr_password")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.usr_password || ""}
-                      invalid={
-                        validation.touched.usr_password &&
-                        validation.errors.usr_password
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.usr_password &&
-                    validation.errors.usr_password ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.usr_password}
-                      </FormFeedback>
-                    ) : null}
+                    <Label>
+                      {t("usr_password")} <span className="text-danger">*</span>
+                    </Label>
+                    <InputGroup>
+                      <Input
+                        name="usr_password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder={t("usr_password")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.usr_password || ""}
+                        invalid={
+                          validation.touched.usr_password &&
+                          validation.errors.usr_password
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      <InputGroupText
+                        onClick={togglePasswordVisibility}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                      </InputGroupText>
+                      {validation.touched.usr_password &&
+                      validation.errors.usr_password ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.usr_password}
+                        </FormFeedback>
+                      ) : null}
+                    </InputGroup>
                   </Col>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("usr_full_name")}</Label>
+                    <Label>
+                      {t("usr_full_name")}{" "}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="usr_full_name"
                       type="text"
@@ -750,7 +795,7 @@ const UsersModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={30}
                     />
                     {validation.touched.usr_full_name &&
                     validation.errors.usr_full_name ? (
@@ -760,10 +805,13 @@ const UsersModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("usr_phone_number")}</Label>
+                    <Label>
+                      {t("usr_phone_number")}{" "}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="usr_phone_number"
-                      type="number"
+                      type="text"
                       placeholder={t("usr_phone_number")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -774,7 +822,7 @@ const UsersModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={13}
                     />
                     {validation.touched.usr_phone_number &&
                     validation.errors.usr_phone_number ? (
@@ -784,7 +832,10 @@ const UsersModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("usr_sector_id")}</Label>
+                    <Label>
+                      {t("usr_sector_id")}{" "}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="usr_sector_id"
                       type="select"
@@ -815,7 +866,10 @@ const UsersModel = () => {
                   </Col>
 
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("usr_department_id")}</Label>
+                    <Label>
+                      {t("usr_department_id")}{" "}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="usr_department_id"
                       type="select"
@@ -850,6 +904,7 @@ const UsersModel = () => {
                     <Input
                       name="usr_description"
                       type="textarea"
+                      rows={9}
                       placeholder={t("usr_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -869,105 +924,17 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-4 mb-3">
+                  <Col className="col-md-8 mb-3">
                     <CascadingDropdowns
                       validation={validation}
                       dropdown1name="usr_region_id"
                       dropdown2name="usr_zone_id"
                       dropdown3name="usr_woreda_id"
-                      isEdit={isEdit} // Set to true if in edit mode, otherwise false
+                      isEdit={isEdit}
+                      required={true}
                     />
                   </Col>
-
-                  <Col
-                    className="col-md-8 mb-3"
-                    style={{
-                      backgroundColor: "#f8f9fa",
-                      color: "#333",
-                      borderRadius: "8px",
-                      padding: "20px",
-                      boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-                    }}
-                  >
-                    <div className="mb-3">
-                      <Label
-                        className="form-label"
-                        style={{ fontWeight: "bold", fontSize: "16px" }}
-                      >
-                        Upload User Image
-                      </Label>
-                      <div className="text-center">
-                        <div className="position-relative d-inline-block">
-                          <div className="position-absolute bottom-0 end-0">
-                            <Label
-                              htmlFor="project-image-input"
-                              className="mb-0"
-                              id="projectImageInput"
-                            >
-                              <div className="avatar-xs">
-                                <div className="avatar-title bg-primary border rounded-circle text-white cursor-pointer shadow-sm font-size-16">
-                                  <i className="bx bxs-image-add"></i>
-                                </div>
-                              </div>
-                            </Label>
-                            <UncontrolledTooltip
-                              placement="right"
-                              target="projectImageInput"
-                            >
-                              Select Image
-                            </UncontrolledTooltip>
-                            <input
-                              className="form-control d-none"
-                              id="project-image-input"
-                              type="file"
-                              accept="image/png, image/gif, image/jpeg"
-                              onChange={handleImageChange}
-                            />
-                          </div>
-                          <div
-                            className="avatar-xl"
-                            style={{ marginTop: "10px" }}
-                          >
-                            <div
-                              className="avatar-title bg-light rounded-circle"
-                              style={{
-                                overflow: "hidden",
-                                width: "120px",
-                                height: "120px",
-                                border: "2px solid #ddd",
-                              }}
-                            >
-                              {/* Show selected image or placeholder */}
-                              <img
-                                src={
-                                  `${
-                                    import.meta.env.VITE_BASE_API_FILE
-                                  }public/uploads/userfiles/${
-                                    validation.usr_picture
-                                  }` || "https://via.placeholder.com/120"
-                                }
-                                id="projectlogo-img"
-                                alt="User Image"
-                                className="img-fluid rounded-circle"
-                                style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover",
-                                }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        {/* Validation feedback */}
-                        {validation.touched.usr_picture &&
-                        validation.errors.usr_picture ? (
-                          <FormFeedback type="invalid" className="d-block mt-2">
-                            {validation.errors.usr_picture}
-                          </FormFeedback>
-                        ) : null}
-                      </div>
-                    </div>
-                  </Col>
+                  <ImageUploader validation={validation} />
                 </Row>
                 <Row>
                   <Col>

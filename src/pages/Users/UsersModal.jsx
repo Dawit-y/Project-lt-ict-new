@@ -33,6 +33,7 @@ import { ToastContainer } from "react-toastify";
 //redux
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import avatar from "../../assets/images/users/defaultAvatar.png";
 
 const modalStyle = {
   width: "100%",
@@ -155,10 +156,19 @@ const UsersModal = (props) => {
                       <img
                         src={`${
                           import.meta.env.VITE_BASE_API_FILE
-                        }public/uploads/userfiles/${transaction.usr_picture}`}
+                        }/public/uploads/userfiles/${transaction.usr_picture}`}
                         alt="User Profile"
-                        className="img-thumbnail w-100"
-                        style={{ height: "150px", objectFit: "cover" }}
+                        className="img-thumbnail"
+                        style={{
+                          width: "100%",
+                          height: "auto",
+                          maxWidth: "150px",
+                          maxHeight: "150px",
+                          objectFit: "cover",
+                        }}
+                        onError={(e) => {
+                          e.target.src = avatar;
+                        }}
                       />
 
                       <Card>
@@ -296,8 +306,8 @@ const UsersModal = (props) => {
                       <td>{transaction.usr_zone_id}</td>
                     </tr>
                     <tr>
-                      <th scope="row"> {t("usr_kebele_id")}</th>
-                      <td>{transaction.usr_kebele_id}</td>
+                      <th scope="row"> {t("usr_woreda_id")}</th>
+                      <td>{transaction.usr_woreda_id}</td>
                     </tr>
 
                     <tr>

@@ -87,7 +87,7 @@ const CascadingDropdowns1 = ({
             <Input
               type="select"
               name={dropdown1name}
-              id={dropdown1name}
+              id={`${dropdown1name}_search`}
               value={validation.values[dropdown1name]} // Bind to Formik's state
               onChange={handleRegionChange}
               onBlur={validation.handleBlur}
@@ -119,7 +119,7 @@ const CascadingDropdowns1 = ({
             <Input
               type="select"
               name={dropdown2name}
-              id={dropdown2name}
+              id={`${dropdown2name}_search`}
               value={validation.values[dropdown2name]}
               onChange={validation.handleChange}
               onBlur={validation.handleBlur}
@@ -173,7 +173,7 @@ const CascadingDropdowns1 = ({
             <Input
               type="select"
               name={dropdown3name}
-              id={dropdown3name}
+              id={`${dropdown3name}_search`}
               value={validation.values[dropdown3name]}
               onChange={validation.handleChange}
               onBlur={validation.handleBlur}
