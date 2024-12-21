@@ -397,6 +397,7 @@ const BudgetSourceModel = () => {
         isOpen={modal1}
         toggle={toggleViewModal}
         transaction={transaction}
+        pageTitle={transaction.pbs_name_or}
       />
       <DeleteModal
         show={deleteModal}

@@ -67,6 +67,7 @@ import ProjectsLocation from "../pages/ProjectsLocation";
 
 import Gantty from "../pages/GanttChart/index";
 import StatisticalReport from "../pages/StatisticalReport";
+import Report from "../pages/Report/index";
 //Newly added
 import ExpenditureCode from "../pages/Expenditurecode/index";
 import ProjectBudgetExpenditure from "../pages/Projectbudgetexpenditure/index";
@@ -183,7 +184,7 @@ const authProtectedRoutes = [
   { path: "/project_overview", component: <ProjectOverview /> },
   { path: "/projects_location", component: <ProjectsLocation /> },
   { path: "/statistical_report", component: <StatisticalReport /> },
-
+{ path: "/report", component: <Report /> },
   //   // this route should be at the end of all other routes
   //   // eslint-disable-next-line react/display-name
   { path: "/", exact: true, component: <Navigate to="/dashboard" /> },

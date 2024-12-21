@@ -17,8 +17,7 @@ const modalStyle = {
 
 const BudgetSourceModal = (props) => {
   const { t } = useTranslation();
-  const { isOpen, toggle, transaction } = props;
-
+  const { isOpen, toggle, transaction,pageTitle } = props;
   return (
     <Modal
       isOpen={isOpen}
@@ -31,37 +30,19 @@ const BudgetSourceModal = (props) => {
       style={modalStyle}
     >
       <div className="modal-xl">
-        <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
+        <ModalHeader toggle={toggle}>{t("View Details")} : {pageTitle}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('pbs_name_or')}: <span className="text-primary">{transaction.pbs_name_or}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pbs_name_am')}: <span className="text-primary">{transaction.pbs_name_am}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pbs_name_en')}: <span className="text-primary">{transaction.pbs_name_en}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pbs_code')}: <span className="text-primary">{transaction.pbs_code}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pbs_description')}: <span className="text-primary">{transaction.pbs_description}</span>
-          </p>
+        <tr><td><p className="mb-2">
+            {t('pbs_name_or')}: </p></td><td><span className="text-primary">{transaction.pbs_name_or}</span></td>
+          </tr><tr><td><p className="mb-2">
+            {t('pbs_name_am')}: </p></td><td><span className="text-primary">{transaction.pbs_name_am}</span></td>        
+          </tr><tr><td><p className="mb-2">
+            {t('pbs_name_en')}: </p></td><td><span className="text-primary">{transaction.pbs_name_en}</span></td>         
+          </tr><tr><td><p className="mb-2">
+            {t('pbs_code')}: </p></td><td><span className="text-primary">{transaction.pbs_code}</span></td>        
+          </tr><tr><td><p className="mb-2">
+            {t('pbs_description')}: </p></td><td><span className="text-primary">{transaction.pbs_description}</span></td>        
           </tr>
-
-          {transaction.is_deletable === 1 && (
-            <p className="text-danger">data is deletable</p>
-          )}
-          
-          {transaction.is_editable === 1 && (
-            <p className="text-success">Editable</p>
-          )}
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>

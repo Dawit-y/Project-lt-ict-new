@@ -14,11 +14,9 @@ const modalStyle = {
   width: '100%',
   height: '100%',
 };
-
 const BudgetMonthModal = (props) => {
-  const { t } = useTranslation();
-  const { isOpen, toggle, transaction } = props;
-
+const { t } = useTranslation();
+const { isOpen, toggle, transaction } = props;
   return (
     <Modal
       isOpen={isOpen}
@@ -34,38 +32,25 @@ const BudgetMonthModal = (props) => {
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
         <tr>
-                    <p className="mb-2">
-            {t('bdm_month')}: <span className="text-primary">{transaction.bdm_month}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bdm_name_or')}: <span className="text-primary">{transaction.bdm_name_or}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bdm_name_am')}: <span className="text-primary">{transaction.bdm_name_am}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bdm_name_en')}: <span className="text-primary">{transaction.bdm_name_en}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bdm_code')}: <span className="text-primary">{transaction.bdm_code}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bdm_description')}: <span className="text-primary">{transaction.bdm_description}</span>
-          </p>
-          </tr>
-
-          {transaction.is_deletable === 1 && (
-            <p className="text-danger">data is deletable</p>
-          )}
-          
-          {transaction.is_editable === 1 && (
-            <p className="text-success">Editable</p>
-          )}
+        <td><p className="mb-2">{t('bdm_month')}:</p></td>
+        <td><span className="text-primary">{transaction.bdm_month}</span></td>
+        </tr>
+        <tr>
+        <td><p className="mb-2">{t('bdm_name_or')}</p></td>
+        <td><span className="text-primary">{transaction.bdm_name_or}</span></td>
+        </tr>
+        <tr><td><p className="mb-2">{t('bdm_name_am')}:</p></td>
+        <td><span className="text-primary">{transaction.bdm_name_am}</span></td>
+        </tr>
+        <tr><td><p className="mb-2">{t('bdm_name_en')}:</p></td>
+        <td><span className="text-primary">{transaction.bdm_name_en}</span></td>    
+        </tr>
+        <tr><td><p className="mb-2">{t('bdm_code')}:</p></td>
+        <td><span className="text-primary">{transaction.bdm_code}</span></td>
+        </tr>
+        <tr><td><p className="mb-2">{t('bdm_description')}:</p></td>
+        <td><span className="text-primary">{transaction.bdm_description}</span></td>
+        </tr>
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
