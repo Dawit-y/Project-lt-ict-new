@@ -77,7 +77,9 @@ export const DetailsView = ({ details }) => {
       <tbody>
         {Object.entries(details).map(([key, value]) => (
           <tr key={key}>
-            <td> {t(`${key}`)}:</td>
+            <td>
+              <strong>{t(`${key}`)}:</strong>
+            </td>
             <td>
               <span className="text-primary">{value}</span>
             </td>

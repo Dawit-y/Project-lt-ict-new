@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useTransition } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -7,13 +7,14 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
-  Table,
-} from "reactstrap"
+} from "reactstrap";
+import { DetailsView } from "../../components/Common/DetailViewWrapper";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+  width: "100%",
+  // height: '100%',
 };
+
 
 const PermissionModal = (props) => {
   const { t } = useTranslation();
@@ -33,63 +34,11 @@ const PermissionModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('pem_page_id')}: <span className="text-primary">{transaction.pem_page_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pem_role_id')}: <span className="text-primary">{transaction.pem_role_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pem_enabled')}: <span className="text-primary">{transaction.pem_enabled}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pem_edit')}: <span className="text-primary">{transaction.pem_edit}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pem_insert')}: <span className="text-primary">{transaction.pem_insert}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pem_view')}: <span className="text-primary">{transaction.pem_view}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pem_delete')}: <span className="text-primary">{transaction.pem_delete}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pem_show')}: <span className="text-primary">{transaction.pem_show}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pem_search')}: <span className="text-primary">{transaction.pem_search}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pem_description')}: <span className="text-primary">{transaction.pem_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pem_status')}: <span className="text-primary">{transaction.pem_status}</span>
-          </p>
-          </tr>
-
-          {transaction.is_deletable === 1 && (
-            <p className="text-danger">data is deletable</p>
-          )}
-          
-          {transaction.is_editable === 1 && (
-            <p className="text-success">Editable</p>
-          )}
+          <DetailsView details={transaction} />
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

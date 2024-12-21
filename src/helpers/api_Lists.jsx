@@ -25,7 +25,7 @@ axiosApi.interceptors.response.use(
     return response;
   },
   (error) => {
-    Promise.reject(error);
+    return Promise.reject(error);
   }
 );
 

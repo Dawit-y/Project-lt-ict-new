@@ -10,20 +10,12 @@ import Spinners from "../../components/Common/Spinner";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-//  import role page index
-
 import {
-  getPermission as onGetPermission,
-  addPermission as onAddPermission,
-  updatePermission as onUpdatePermission,
-  deletePermission as onDeletePermission,
-} from "../../store/permission/actions";
-
-import { getPages } from "../../store/pages/actions";
-
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
+  useFetchPermissions,
+  useAddPermission,
+  useUpdatePermission,
+  useDeletePermission,
+} from "../../queries/permission_query";
 import PermissionModal from "./PermissionModal";
 import { useTranslation } from "react-i18next";
 
@@ -39,12 +31,9 @@ import {
   Input,
   FormFeedback,
   Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
 } from "reactstrap";
-import { ToastContainer } from "react-toastify";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { toast } from "react-toastify";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -54,26 +43,71 @@ const truncateText = (text, maxLength) => {
 };
 
 const PermissionModel = (props) => {
-  // get data from tab page
-  const { passedId } = props;
-  //meta title
+  const { passedId, isActive } = props;
+  const param = { pem_role_id: passedId };
   document.title = " Permission";
 
   const { t } = useTranslation();
-
-  //  add new
   const [selectedItem, setSelectedItem] = useState(null);
-  // console.log("selected item",selectedItem.passedId)
-  // const [pageId, setPageId] = useState(null);
 
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-
   const [permission, setPermission] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
-  const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
-  //START FOREIGN CALLS
+
+  const { data, isLoading, error, isError, refetch } = useFetchPermissions(
+    param,
+    isActive
+  );
+
+  const addPermission = useAddPermission();
+  const updatePermission = useUpdatePermission();
+  const deletePermission = useDeletePermission();
+
+  const handleAddPermission = async (newPermission, handoverDocumentData) => {
+    try {
+      await addPermission.mutateAsync(newPermission);
+      toast.success(`Data added successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error("Failed to add data", {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+
+  const handleUpdatePermission = async (data) => {
+    try {
+      await updatePermission.mutateAsync(data);
+      toast.success(`data updated successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error(`Failed to update Data`, {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+
+  const handleDeletePermission = async () => {
+    if (permission && permission.pem_id) {
+      try {
+        const id = permission.pem_id;
+        await deletePermission.mutateAsync(id);
+        toast.success(`Data deleted successfully`, {
+          autoClose: 2000,
+        });
+      } catch (error) {
+        toast.error(`Failed to delete Data`, {
+          autoClose: 2000,
+        });
+      }
+      setDeleteModal(false);
+    }
+  };
 
   // validation
   const validation = useFormik({
@@ -139,7 +173,7 @@ const PermissionModel = (props) => {
           is_editable: values.is_editable,
         };
         // update Permission
-        dispatch(onUpdatePermission(updatePermission));
+        handleUpdatePermission(updatePermission);
         validation.resetForm();
       } else {
         const newPermission = {
@@ -157,69 +191,13 @@ const PermissionModel = (props) => {
           pem_status: values.pem_status,
         };
         // save new Permissions
-        dispatch(onAddPermission(newPermission));
+        handleAddPermission(newPermission);
         validation.resetForm();
       }
     },
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-  const dispatch = useDispatch();
-  // Fetch Permission on component mount
-  useEffect(() => {
-    dispatch(onGetPermission(passedId));
-    dispatch(getPages());
-  }, [dispatch]);
-
-  const permissionProperties = createSelector(
-    (state) => state.PermissionR, // this is geting from  reducer
-    (PermissionReducer) => ({
-      // this is from Project.reducer
-      permission: PermissionReducer.permission,
-      loading: PermissionReducer.loading,
-      update_loading: PermissionReducer.update_loading,
-    })
-  );
-
-  const {
-    permission: { data, previledge },
-    loading,
-    update_loading,
-  } = useSelector(permissionProperties);
-
-  const pagesProperties = createSelector(
-    (state) => state.PagesR, // this is geting from  reducer
-    (PagesReducer) => ({
-      // this is from Project.reducer
-      pages: PagesReducer.pages,
-      loading: PagesReducer.loading,
-      update_loading: PagesReducer.update_loading,
-    })
-  );
-
-  const {
-    pages: { data: pagesData, previledge: pagesPreviledge },
-    loading: pagesLoading,
-    update_loading: pagesUpdateLoading,
-  } = useSelector(pagesProperties);
-
-  useEffect(() => {
-    setModal(false);
-  }, [update_loading]);
-
-  const selectSearchProperties = createSelector(
-    (state) => state.search,
-    (search) => ({
-      results: search.results,
-    })
-  );
-
-  const { results } = useSelector(selectSearchProperties);
-
-  const [isLoading, setLoading] = useState(loading);
-  useEffect(() => {
-    setPermission(data);
-  }, [data]);
 
   useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
@@ -273,25 +251,15 @@ const PermissionModel = (props) => {
     setDeleteModal(true);
   };
 
-  const handleDeletePermission = () => {
-    if (permission && permission.pem_id) {
-      dispatch(onDeletePermission(permission.pem_id));
-      setDeleteModal(false);
-    }
-  };
   const handlePermissionClicks = () => {
     setIsEdit(false);
     setPermission("");
     toggle();
   };
   const handleSearch = () => {
-    setSearchLoading(true); // Set loading to true when search is initiated// Update filtered data with search results
-    setShowSearchResults(true); // Show search results
+    setSearchLoading(true);
+    setShowSearchResults(true);
     setSearchLoading(false);
-  };
-
-  const handleClearSearch = () => {
-    setShowSearchResults(false);
   };
 
   const optionsMap = useMemo(() => {
@@ -300,6 +268,31 @@ const PermissionModel = (props) => {
       2: "No",
     };
   }, []);
+  const statusMap = useMemo(() => {
+    return {
+      1: "Active",
+      0: "Inactive",
+    };
+  }, []);
+
+  const handleDetails = (details) => {
+    setTransaction({
+      pag_name: details.pag_name,
+      pem_role_id: details.pem_role_id,
+      pem_enabled: optionsMap[details.pem_enabled],
+      pem_edit: optionsMap[details.pem_edit],
+      pem_insert: optionsMap[details.pem_insert],
+      pem_view: optionsMap[details.pem_view],
+      pem_delete: optionsMap[details.pem_delete],
+      pem_show: optionsMap[details.pem_show],
+      pem_search: optionsMap[details.pem_search],
+      pem_description: details.pem_description,
+      pem_status: statusMap[details.pem_status],
+      is_deletable: details.is_deletable,
+      is_editable: details.is_editable,
+    });
+  };
+
   const columns = useMemo(() => {
     const baseColumns = [
       {
@@ -415,7 +408,7 @@ const PermissionModel = (props) => {
               onClick={() => {
                 const data = cellProps.row.original;
                 toggleViewModal(data);
-                setTransaction(cellProps.row.original);
+                handleDetails(cellProps.row.original);
               }}
             >
               {t("view_detail")}
@@ -424,7 +417,10 @@ const PermissionModel = (props) => {
         },
       },
     ];
-    if (previledge?.is_role_editable && previledge?.is_role_deletable) {
+    if (
+      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_deletable
+    ) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -477,13 +473,9 @@ const PermissionModel = (props) => {
     return baseColumns;
   }, [handlePermissionClick, toggleViewModal, onClickDelete]);
 
-  const project_status = [
-    { label: "select Status name", value: "" },
-    { label: "Active", value: 1 },
-    { label: "Inactive", value: 0 },
-  ];
-
-  const dropdawntotal = [project_status];
+  if (isError) {
+    <FetchErrorHandler error={error} refetch={refetch} />;
+  }
 
   return (
     <React.Fragment>
@@ -496,15 +488,16 @@ const PermissionModel = (props) => {
         show={deleteModal}
         onDeleteClick={handleDeletePermission}
         onCloseClick={() => setDeleteModal(false)}
+        isLoading={deletePermission.isPending}
       />
       <div>
         <div className="container-fluid1">
-          {isLoading || searchLoading ? (
-            <Spinners setLoading={setLoading} />
+          {isLoading ? (
+            <Spinners />
           ) : (
             <TableContainer
               columns={columns}
-              data={showSearchResults ? results : data}
+              data={data?.data || []}
               isGlobalFilter={true}
               isAddButton={false}
               isCustomPageSize={true}
@@ -533,12 +526,6 @@ const PermissionModel = (props) => {
                 onSubmit={(e) => {
                   e.preventDefault();
                   validation.handleSubmit();
-                  // const modalCallback = () => setModal(false);
-                  if (isEdit) {
-                    onUpdatePermission(validation.values);
-                  } else {
-                    onAddPermission(validation.values);
-                  }
                   return false;
                 }}
               >
@@ -774,14 +761,18 @@ const PermissionModel = (props) => {
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {update_loading ? (
+                      {addPermission.isPending || updatePermission.isPending ? (
                         <Button
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addPermission.isPending ||
+                            updatePermission.isPending ||
+                            !validation.dirty
+                          }
                         >
-                          <Spinner size={"sm"} color="#fff" />
+                          <Spinner size={"sm"} color="#fff" className="me-2" />
                           {t("Save")}
                         </Button>
                       ) : (
@@ -789,7 +780,11 @@ const PermissionModel = (props) => {
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addPermission.isPending ||
+                            updatePermission.isPending ||
+                            !validation.dirty
+                          }
                         >
                           {t("Save")}
                         </Button>

@@ -1,4 +1,4 @@
-import React, { useTransition, useState } from "react";
+import React, { useTransition, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import Switch from "react-switch";
@@ -20,36 +20,51 @@ import {
   Input,
 } from "reactstrap";
 
-import {
-  getUsers as onGetUsers,
-  addUsers as onAddUsers,
-  updateUsers as onUpdateUsers,
-  deleteUsers as onDeleteUsers,
-} from "../../store/users/actions";
-// Import Images
-import profile1 from "/src/assets/images/profile-img.png";
-import { formatDistanceToNow, parseISO } from "date-fns";
-import { ToastContainer } from "react-toastify";
-//redux
-import { useSelector, useDispatch } from "react-redux";
+import { useUpdateUsers } from "../../queries/users_query";
 import { toast } from "react-toastify";
 import avatar from "../../assets/images/users/defaultAvatar.png";
 
 const modalStyle = {
   width: "100%",
-  height: "100%",
+  // height: "100%",
+};
+
+const statusMap = {
+  0: false,
+  1: true,
 };
 
 const UsersModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction } = props;
-  const [switch1, setSwitch1] = useState(true);
-  const dispatch = useDispatch();
+  const status = transaction.usr_status === 0 ? false : true;
+  const [switch1, setSwitch1] = useState(status);
+  useEffect(() => {
+    setSwitch1(transaction.usr_status === 0 ? false : true);
+  }, [transaction.usr_status]);
 
   const [modal_backdrop, setModal_backdrop] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
   const [passwordShown, setPasswordShown] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const updateUsers = useUpdateUsers();
+  const handleUpdateUsers = async (data) => {
+    try {
+      await updateUsers.mutateAsync(data);
+      setSwitch1(true);
+      toast.success(`data updated successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      setSwitch1(false);
+      toast.error(`Failed to update Data`, {
+        autoClose: 2000,
+      });
+    }
+  };
 
   const tog_backdrop = () => {
     setModal_backdrop(!modal_backdrop);
@@ -57,6 +72,28 @@ const UsersModal = (props) => {
 
   const togglePasswordVisibility = () => {
     setPasswordShown(!passwordShown);
+  };
+
+  const resetForm = () => {
+    setNewPassword("");
+    setPasswordStrength("");
+    setMessage("");
+    setPasswordShown(false);
+    setIsSubmitting(false);
+  };
+
+  const checkPasswordStrength = (password) => {
+    if (password.length < 8) return "Too short";
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar)
+      return "Strong";
+    if (hasUpperCase && hasLowerCase && (hasNumber || hasSpecialChar))
+      return "Moderate";
+    return "Weak";
   };
 
   const handlePasswordChange = async () => {
@@ -71,25 +108,36 @@ const UsersModal = (props) => {
     };
 
     try {
+      setIsSubmitting(true);
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_API_URL}user/change_password`,
         data
       );
       console.log(response);
-      setMessage("Password changed successfully!");
+      setMessage("");
       toast.success(`Password changed successfully!`, {
         autoClose: 2000,
       });
-
-      setModal_backdrop(false); // Close the modal on success
+      resetForm();
+      setModal_backdrop(false);
     } catch (error) {
-      toast.success(`Error changing password. Please try again.`, {
+      toast.error(`Error changing password. Please try again.`, {
         autoClose: 2000,
       });
       setMessage("Error changing password. Please try again.");
-      console.error("Error changing password:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const handlePasswordInput = (e) => {
+    const password = e.target.value;
+    setNewPassword(password);
+    const strength = checkPasswordStrength(password);
+    setPasswordStrength(strength);
+    setMessage(strength === "Weak" ? "Password is too weak." : "");
+  };
+
   const OffSymbol = () => {
     return (
       <div
@@ -125,7 +173,6 @@ const UsersModal = (props) => {
           paddingRight: 2,
         }}
       >
-        {" "}
         On
       </div>
     );
@@ -259,13 +306,15 @@ const UsersModal = (props) => {
                               onColor="#626ed4"
                               offColor="#d9534f"
                               onChange={() => {
-                                setSwitch1(!switch1);
-                                console.log("default", transaction.usr_id);
+                                console.log("current", switch1);
+                                const updatedStatus = !switch1 ? 1 : 0;
+                                console.log("updated", updatedStatus);
                                 const update_user = {
                                   usr_id: transaction.usr_id,
-                                  usr_description: "this is for demo",
+                                  usr_email: transaction.usr_email,
+                                  usr_status: updatedStatus,
                                 };
-                                dispatch(onUpdateUsers(update_user));
+                                handleUpdateUsers(update_user);
                               }}
                               checked={switch1}
                             />
@@ -380,7 +429,7 @@ const UsersModal = (props) => {
                     autoComplete="off"
                     placeholder="Enter Your New Password"
                     value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
+                    onChange={handlePasswordInput}
                   />
                   <i
                     className={`mdi ${
@@ -398,13 +447,27 @@ const UsersModal = (props) => {
                   ></i>
                 </Col>
               </Row>
-              {message && <p>{message}</p>}
+              {passwordStrength && (
+                <p
+                  style={{
+                    color:
+                      passwordStrength === "Strong"
+                        ? "green"
+                        : passwordStrength === "Moderate"
+                        ? "orange"
+                        : "red",
+                  }}
+                >
+                  Password Strength: {passwordStrength}
+                </p>
+              )}
+              {message && <p style={{ color: "red" }}>{message}</p>}
             </Form>
           </ModalBody>
           <ModalFooter>
             <Button
               type="button"
-              color="light"
+              color="secondary"
               onClick={() => {
                 setModal_backdrop(false);
               }}
@@ -414,10 +477,8 @@ const UsersModal = (props) => {
             <Button
               type="button"
               color="success"
-              onClick={() => {
-                handlePasswordChange();
-              }}
-              // onClick={handlePasswordChange}
+              onClick={handlePasswordChange}
+              disabled={passwordStrength === "Weak" || !newPassword}
             >
               Edit
             </Button>
