@@ -4,29 +4,26 @@ import { Row, Col, Collapse } from "reactstrap";
 import { Link } from "react-router-dom";
 import withRouter from "../Common/withRouter";
 import classname from "classnames";
-//i18n
+// i18n
 import { withTranslation } from "react-i18next";
 
 import { connect } from "react-redux";
+import { sassFalse } from "sass";
 
 const Navbar = (props) => {
   const [sidedata, setSidedata] = useState([]);
+  const [activeMenuIndex, setActiveMenuIndex] = useState(null); // Track active menu
 
-  // Cache key for storing sidedata in localStorage
   const SIDEDATA_CACHE_KEY = "sidedata_cache";
 
-  // Fetch sidedata from API
   useEffect(() => {
     const fetchSidedata = async () => {
       try {
-        // Check if cached sidedata exists in localStorage
         const cachedData = localStorage.getItem(SIDEDATA_CACHE_KEY);
 
         if (cachedData) {
-          // If cache exists, parse and set it in state
           setSidedata(JSON.parse(cachedData));
         } else {
-          // Fetch data from API if not cached
           const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
           const response = await fetch(
             `${import.meta.env.VITE_BASE_API_URL}menus`,
@@ -50,8 +47,7 @@ const Navbar = (props) => {
             const { parent_menu, link_name, link_url, link_icon } = curr;
             if (!acc[parent_menu]) {
               acc[parent_menu] = {
-                title:
-                  parent_menu,
+                title: parent_menu,
                 icon: link_icon,
                 submenu: [],
               };
@@ -80,67 +76,15 @@ const Navbar = (props) => {
     };
 
     fetchSidedata();
-  }, []); // Empty dependency array ensures it runs once on mount
+  }, []);
 
-  const [users, setusers] = useState(false);
-
-  useEffect(() => {
-    var matchingMenuItem = null;
-    var ul = document.getElementById("navigation");
-    var items = ul.getElementsByTagName("a");
-    removeActivation(items);
-    for (var i = 0; i < items.length; ++i) {
-      if (window.location.pathname === items[i].pathname) {
-        matchingMenuItem = items[i];
-        break;
-      }
-    }
-    if (matchingMenuItem) {
-      activateParentDropdown(matchingMenuItem);
-    }
-  });
-
-  const removeActivation = (items) => {
-    for (var i = 0; i < items.length; ++i) {
-      var item = items[i];
-      const parent = items[i].parentElement;
-      if (item && item.classList.contains("active")) {
-        item.classList.remove("active");
-      }
-      if (parent) {
-        if (parent.classList.contains("active")) {
-          parent.classList.remove("active");
-        }
-      }
-    }
+  const handleMenuClick = (index) => {
+    setActiveMenuIndex(index === activeMenuIndex ? null : index); // Toggle active menu
   };
 
-  function activateParentDropdown(item) {
-    item.classList.add("active");
-    const parent = item.parentElement;
-    if (parent) {
-      parent.classList.add("active"); // li
-      const parent2 = parent.parentElement;
-      parent2.classList.add("active"); // li
-      const parent3 = parent2.parentElement;
-      if (parent3) {
-        parent3.classList.add("active"); // li
-        const parent4 = parent3.parentElement;
-        if (parent4) {
-          parent4.classList.add("active"); // li
-          const parent5 = parent4.parentElement;
-          if (parent5) {
-            parent5.classList.add("active"); // li
-            const parent6 = parent5.parentElement;
-            if (parent6) {
-              parent6.classList.add("active"); // li
-            }
-          }
-        }
-      }
-    }
-    return false;
-  }
+  const handleSubmenuClick = () => {
+    setActiveMenuIndex(null); // Collapse all submenus
+  };
 
   return (
     <React.Fragment>
@@ -158,19 +102,25 @@ const Navbar = (props) => {
               <ul className="navbar-nav">
                 {sidedata.map((menu, index) => (
                   <li key={index} className="nav-item dropdown">
-                    <div className="nav-link  arrow-none">
+                    <div
+                      className="nav-link arrow-none"
+                      onClick={() => handleMenuClick(index)} // Toggle submenu
+                    >
                       <i className={`${menu.icon} me-2`}></i>
-                      {props.t(menu.title)} {props.menuOpen}
+                      {props.t(menu.title)}
                       <div className="arrow-down"></div>
                     </div>
                     <div
-                      className={classname("dropdown-menu", { show: users })}
+                      className={classname("dropdown-menu", {
+                        show: activeMenuIndex === index,
+                      })}
                     >
-                      {menu.submenu.map((submenu, index) => (
+                      {menu.submenu.map((submenu, subIndex) => (
                         <Link
-                          key={index}
+                          key={subIndex}
                           to={submenu.path}
                           className="dropdown-item"
+                          onClick={handleSubmenuClick} // Collapse all on click
                         >
                           {props.t(submenu.name)}
                         </Link>
