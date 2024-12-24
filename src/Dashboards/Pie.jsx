@@ -73,7 +73,7 @@ const Pie = ({ chartData, dataColors }) => {
     color: PieEChartColors,
     series: [
       {
-        name: "Total sales",
+        name: "---",
         type: "pie",
         radius: "55%",
         center: ["50%", "60%"],

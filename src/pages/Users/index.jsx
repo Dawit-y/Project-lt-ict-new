@@ -233,8 +233,8 @@ const UsersModel = () => {
       usr_sector_id: Yup.string().required(t("usr_sector_id")),
       usr_department_id: Yup.string().required(t("usr_department_id")),
       usr_region_id: Yup.number().required(t("usr_region_id")),
-      usr_zone_id: Yup.number().required(t("usr_zone_id")),
-      usr_woreda_id: Yup.number().required(t("usr_woreda_id")),
+      //usr_zone_id: Yup.number().required(t("usr_zone_id")),
+      //usr_woreda_id: Yup.number().required(t("usr_woreda_id")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -536,22 +536,6 @@ const UsersModel = () => {
                 </UncontrolledTooltip>
               </Link>
             )}
-            {(params.data?.is_deletable || params.data?.is_role_deletable) && (
-              <Link
-                to="#"
-                className="text-danger"
-                onClick={() => {
-                  const data = params.data;
-                  onClickDelete(data);
-                }}
-              >
-                <i className="mdi mdi-delete font-size-18" id="deletetooltip" />
-                <UncontrolledTooltip placement="top" target="deletetooltip">
-                  Delete
-                </UncontrolledTooltip>
-              </Link>
-            )}
-
             {/* add view project  */}
             {params.data?.is_editable || params.data?.is_role_editable ? (
               <Link
@@ -734,7 +718,7 @@ const UsersModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={30}
                     />
                     {validation.touched.usr_email &&
                     validation.errors.usr_email ? (
@@ -822,7 +806,7 @@ const UsersModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={13}
+                      maxLength={12}
                     />
                     {validation.touched.usr_phone_number &&
                     validation.errors.usr_phone_number ? (

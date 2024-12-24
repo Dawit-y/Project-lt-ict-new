@@ -13,7 +13,7 @@ const DashboardComponent = ({ dashboardType, objectName, columnList,tableData })
   //const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState([]);
   
-  const commonHeight = 200; 
+  const commonHeight = 300; 
  
   const columns = useMemo(() => {
     return [
@@ -106,7 +106,10 @@ const DashboardComponent = ({ dashboardType, objectName, columnList,tableData })
               <div className="d-flex">
                 <div className="flex-grow-1">
                   <p className="text-muted fw-medium">{t(objectName)}</p>
-                  <h4 className="mb-0">{tableData[0].count_result}</h4>
+                  <h4 style={{ fontSize: '35px' }} className="mb-0">{tableData[0].count_result.toLocaleString('en-US', { 
+        minimumFractionDigits: 2, 
+        maximumFractionDigits: 2 
+      })}</h4>
                 </div>
                 <div className="avatar-sm rounded-circle bg-primary align-self-center mini-stat-icon">
                   <span className="avatar-title rounded-circle bg-primary">
@@ -126,7 +129,6 @@ const DashboardComponent = ({ dashboardType, objectName, columnList,tableData })
       <React.Fragment>
         <Col xs="12">
           <Card className="mini-stats-wid">
-
             <CardBody style={{ height: commonHeight }}> 
             <p className="text-muted fw-medium">{t(objectName)}</p>
               <Pie chartData={tableData} dataColors='["--bs-primary","--bs-warning", "--bs-danger","--bs-info", "--bs-success"]' />

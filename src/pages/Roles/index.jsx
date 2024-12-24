@@ -272,7 +272,7 @@ const RolesModel = () => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_editable ||
       data?.previledge?.is_role_deletable
     ) {
       baseColumns.push({

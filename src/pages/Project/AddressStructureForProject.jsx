@@ -90,7 +90,7 @@ const AddressStructureForProject = ({ onNodeSelect, setIsAddressLoading }) => {
 
   return (
     <div
-      className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
+      className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm col-md-2"
       style={{ minHeight: "450px" }}
     >
       <h4 className="mb-2 text-secondary">{t("address_tree_Search")}</h4>
