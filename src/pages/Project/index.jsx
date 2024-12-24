@@ -71,11 +71,20 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { formatDate } from "../../utils/commonMethods";
 import AddressStructureForProject from "./AddressStructureForProject";
 
-const truncateText = (text, maxLength) => {
-  if (typeof text !== "string") {
-    return text;
-  }
-  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+const tabMapping = {
+  1: { label: "Documents", component: ProjectDocument },
+  2: { label: "Contractors", component: Projectcontractor },
+  3: { label: "Payments", component: ProjectPayment },
+  4: { label: "Stakeholders", component: ProjectStakeholder },
+  5: { label: "Budget Request", component: Budgetrequest },
+  6: { label: "Geo Location", component: GeoLocation },
+  7: { label: "Budget Expenditures", component: ProjectBudgetExpenditureModel },
+  8: { label: "Employees", component: ProjectEmployeeModel },
+  9: { label: "Handover", component: ProjectHandoverModel },
+  10: { label: "Performance", component: ProjectPerformanceModel },
+  11: { label: "Supplementary", component: ProjectSupplimentaryModel },
+  12: { label: "Variations", component: ProjectVariationModel },
+  13: { label: "Budget Plan", component: ProjectBudgetPlan },
 };
 
 const ProjectModel = () => {
@@ -163,8 +172,15 @@ const ProjectModel = () => {
       setDeleteModal(false);
     }
   };
-  //END CRUD
-  //START FOREIGN CALLS
+
+  const allowedTabs = searchResults?.allowedTabs || [];
+  const dynamicComponents = allowedTabs.reduce((acc, tabIndex) => {
+    const tab = tabMapping[tabIndex];
+    if (tab) {
+      acc[tab.label] = tab.component;
+    }
+    return acc;
+  }, {});
 
   // validation
   const validation = useFormik({
@@ -735,16 +751,19 @@ const ProjectModel = () => {
                   id="deletetooltip-disabled"
                 />
               )}
-              <Link
-                to="#"
-                className="text-secondary ms-2"
-                onClick={() => handleClick(params.data)}
-              >
-                <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
-                <UncontrolledTooltip placement="top" target="viewtooltip">
-                  View
-                </UncontrolledTooltip>
-              </Link>
+              {Object.keys(dynamicComponents).length > 0 && (
+                <Link
+                  to="#"
+                  className="text-secondary ms-2"
+                  onClick={() => handleClick(params.data)}
+                >
+                  <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
+                  <UncontrolledTooltip placement="top" target="viewtooltip">
+                    View
+                  </UncontrolledTooltip>
+                </Link>
+              )}
+
               <Link
                 to={{
                   pathname: `/project/${params.data.prj_id}/project_plan`, // Route path
@@ -1411,21 +1430,7 @@ const ProjectModel = () => {
           canvasWidth={84}
           name={projectMetaData.prj_name}
           id={projectMetaData.prj_id}
-          components={{
-            Documents: ProjectDocument,
-            Payments: ProjectPayment,
-            Stakeholder: ProjectStakeholder,
-            Contractor: Projectcontractor,
-            "Budget Request": Budgetrequest,
-            "Geo Location": GeoLocation,
-            "Budget Expenditures": ProjectBudgetExpenditureModel,
-            Employees: ProjectEmployeeModel,
-            Handover: ProjectHandoverModel,
-            Performance: ProjectPerformanceModel,
-            Supplementary: ProjectSupplimentaryModel,
-            Variations: ProjectVariationModel,
-            BudgetPlan: ProjectBudgetPlan,
-          }}
+          components={dynamicComponents}
         />
       )}
     </React.Fragment>

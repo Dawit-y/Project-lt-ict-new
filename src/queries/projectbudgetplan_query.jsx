@@ -9,21 +9,22 @@ import {
 const PROJECT_BUDGET_PLAN_QUERY_KEY = ["projectbudgetplan"];
 
 // Fetch project_budget_plan
-export const useFetchProjectBudgetPlans = () => {
+export const useFetchProjectBudgetPlans = (param = {}, isActive) => {
   return useQuery({
-    queryKey: PROJECT_BUDGET_PLAN_QUERY_KEY,
-    queryFn: () => getProjectBudgetPlan(),
+    queryKey: [...PROJECT_BUDGET_PLAN_QUERY_KEY, "fetch", param],
+    queryFn: () => getProjectBudgetPlan(param),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: isActive,
   });
 };
 
 //search project_budget_plan
 export const useSearchProjectBudgetPlans = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...PROJECT_BUDGET_PLAN_QUERY_KEY, searchParams],
+    queryKey: [...PROJECT_BUDGET_PLAN_QUERY_KEY, "search", searchParams],
     queryFn: () => getProjectBudgetPlan(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
@@ -40,7 +41,7 @@ export const useAddProjectBudgetPlan = () => {
   return useMutation({
     mutationFn: addProjectBudgetPlan,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( PROJECT_BUDGET_PLAN_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(PROJECT_BUDGET_PLAN_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,
@@ -67,7 +68,8 @@ export const useUpdateProjectBudgetPlan = () => {
         return {
           ...oldData,
           data: oldData.data.map((ProjectBudgetPlanData) =>
-            ProjectBudgetPlanData.bpl_id === updatedProjectBudgetPlan.data.bpl_id
+            ProjectBudgetPlanData.bpl_id ===
+            updatedProjectBudgetPlan.data.bpl_id
               ? { ...ProjectBudgetPlanData, ...updatedProjectBudgetPlan.data }
               : ProjectBudgetPlanData
           ),
@@ -88,7 +90,8 @@ export const useDeleteProjectBudgetPlan = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (ProjectBudgetPlanData) => ProjectBudgetPlanData.bpl_id !== parseInt(deletedData.deleted_id)
+            (ProjectBudgetPlanData) =>
+              ProjectBudgetPlanData.bpl_id !== parseInt(deletedData.deleted_id)
           ),
         };
       });
