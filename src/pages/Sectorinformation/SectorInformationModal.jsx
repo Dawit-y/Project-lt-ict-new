@@ -70,14 +70,6 @@ const SectorInformationModal = (props) => {
             {t('sci_description')}: <span className="text-primary">{transaction.sci_description}</span>
           </p>
           </tr>
-
-          {transaction.is_deletable === 1 && (
-            <p className="text-danger">data is deletable</p>
-          )}
-          
-          {transaction.is_editable === 1 && (
-            <p className="text-success">Editable</p>
-          )}
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>

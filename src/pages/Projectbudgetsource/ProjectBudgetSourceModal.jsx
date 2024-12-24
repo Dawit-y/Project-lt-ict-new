@@ -62,14 +62,6 @@ const ProjectBudgetSourceModal = (props) => {
             {t('bsr_created_date')}: <span className="text-primary">{transaction.bsr_created_date}</span>
           </p>
           </tr>
-
-          {transaction.is_deletable === 1 && (
-            <p className="text-danger">data is deletable</p>
-          )}
-          
-          {transaction.is_editable === 1 && (
-            <p className="text-success">Editable</p>
-          )}
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>

@@ -102,7 +102,6 @@ const CascadingDropdowns1 = ({
       <FormGroup>
         <Label for={dropdown2name}>
           {t("dep_available_at_zone")}{" "}
-          {required && <span className="text-danger">*</span>}
         </Label>
         <Input
           type="select"
@@ -140,7 +139,6 @@ const CascadingDropdowns1 = ({
       <FormGroup>
         <Label for={dropdown3name}>
           {t("dep_available_at_woreda")}{" "}
-          {required && <span className="text-danger">*</span>}
         </Label>
         <Input
           type="select"

@@ -27,6 +27,7 @@ import {
 } from "../../queries/project_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
+import { useFetchDepartments } from "../../queries/department_query";
 import ProjectModal from "./ProjectModal";
 import { useTranslation } from "react-i18next";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
@@ -116,6 +117,12 @@ const ProjectModel = () => {
     "sci_name_en"
   );
 
+  const { data: departmentData } = useFetchDepartments();
+  const departmentOptions = createSelectOptions(
+    departmentData?.data || [],
+    "dep_id",
+    "dep_name_en"
+  );
   const addProject = useAddProject();
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
@@ -191,10 +198,10 @@ const ProjectModel = () => {
       prj_location_kebele_id: (project && project.prj_location_kebele_id) || "",
       prj_location_description:
         (project && project.prj_location_description) || "",
-      prj_owner_region_id: (project && project.prj_owner_region_id) || "",
-      prj_owner_zone_id: (project && project.prj_owner_zone_id) || "",
+      //prj_owner_region_id: (project && project.prj_owner_region_id) || "",
+      /*prj_owner_zone_id: (project && project.prj_owner_zone_id) || "",
       prj_owner_woreda_id: (project && project.prj_owner_woreda_id) || "",
-      prj_owner_kebele_id: (project && project.prj_owner_kebele_id) || "",
+      prj_owner_kebele_id: (project && project.prj_owner_kebele_id) || "",*/
       prj_owner_description: (project && project.prj_owner_description) || "",
       prj_start_date_et: (project && project.prj_start_date_et) || "",
       prj_start_date_gc: (project && project.prj_start_date_gc) || "",
@@ -211,7 +218,7 @@ const ProjectModel = () => {
       prj_owner_id: (project && project.prj_owner_id) || "",
       prj_urban_ben_number: (project && project.prj_urban_ben_number) || "",
       prj_rural_ben_number: (project && project.prj_rural_ben_number) || "",
-
+      prj_department_id: (project && project.prj_department_id) || "",
       is_deletable: (project && project.is_deletable) || 1,
       is_editable: (project && project.is_editable) || 1,
     },
@@ -247,6 +254,9 @@ const ProjectModel = () => {
       prj_location_region_id: Yup.string().required(
         t("prj_location_region_id")
       ),
+       prj_department_id: Yup.string().required(
+        t("prj_department_id")
+      ),      
       //prj_location_zone_id: Yup.string().required(t('prj_location_zone_id')),
       //prj_location_woreda_id: Yup.string().required(t('prj_location_woreda_id')),
       //prj_location_kebele_id: Yup.string().required(t('prj_location_kebele_id')),
@@ -316,7 +326,7 @@ const ProjectModel = () => {
           prj_owner_id: values.prj_owner_id,
           prj_urban_ben_number: values.prj_urban_ben_number,
           prj_rural_ben_number: values.prj_rural_ben_number,
-
+          prj_department_id:Number(values.prj_department_id),
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -359,7 +369,11 @@ const ProjectModel = () => {
           prj_owner_id: values.prj_owner_id,
           prj_urban_ben_number: values.prj_urban_ben_number,
           prj_rural_ben_number: values.prj_rural_ben_number,
+          prj_department_id:Number(values.prj_department_id)
         };
+      /* if (gridRef.current && gridRef.current.api) {
+  gridRef.current.api.setRowData(newProject); 
+}*/
         // save new Project
         handleAddProject(newProject);
         validation.resetForm();
@@ -462,6 +476,7 @@ const ProjectModel = () => {
       prj_owner_id: project.prj_owner_id,
       prj_urban_ben_number: project.prj_urban_ben_number,
       prj_rural_ben_number: project.prj_rural_ben_number,
+      prj_department_id: project.prj_department_id,
 
       is_deletable: project.is_deletable,
       is_editable: project.is_editable,
@@ -673,7 +688,7 @@ const ProjectModel = () => {
         headerName: t("view_details"),
         sortable: false,
         filter: false,
-        width: 120,
+        width: 100,
         cellRenderer: (params) => {
           if (params.node.footer) {
             return ""; // Suppress button for footer
@@ -681,15 +696,14 @@ const ProjectModel = () => {
           const { prj_id } = params.data || {};
           return (
             <Link to={`/Project/${prj_id}`}>
-              <Button type="button" color="primary" className="btn-sm mb-1">
-                {t("view_details")}
+              <Button type="button" className="btn-sm mb-1 default">
+                <i className="fa fa-eye"></i>
               </Button>
             </Link>
           );
         },
       },
     ];
-
     // Add actions column based on privileges
     if (1 == 1) {
       baseColumnDefs.push({
@@ -714,35 +728,14 @@ const ProjectModel = () => {
                   </UncontrolledTooltip>
                 </Link>
               )}
-
-              {is_deletable ? (
-                <Link
-                  to="#"
-                  className="text-danger ms-3"
-                  onClick={() => onClickDelete(params.data)}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              ) : (
-                <i
-                  className="mdi mdi-delete-off font-size-18 text-muted ms-3"
-                  id="deletetooltip-disabled"
-                />
-              )}
               <Link
                 to="#"
                 className="text-secondary ms-2"
                 onClick={() => handleClick(params.data)}
               >
-                <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
+                <i className="mdi mdi-cog font-size-18" id="viewtooltip" />
                 <UncontrolledTooltip placement="top" target="viewtooltip">
-                  View
+                  Project Detail
                 </UncontrolledTooltip>
               </Link>
               <Link
@@ -1075,6 +1068,9 @@ const ProjectModel = () => {
                           <span className="text-danger">*</span>
                         </Label>
                         <Input
+                          minLength="3"
+                          maxLength="12"
+                          min="1"
                           name="prj_total_estimate_budget"
                           type="number"
                           placeholder={t("prj_total_estimate_budget")}
@@ -1157,6 +1153,41 @@ const ProjectModel = () => {
                         validation.errors.prj_sector_id ? (
                           <FormFeedback type="invalid">
                             {validation.errors.prj_sector_id}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
+                      <Col className="col-md-4 mb-3">
+                        <Label>
+                          {t("prj_department_id")}
+                          <span className="text-danger">*</span>
+                        </Label>
+                        <Input
+                          name="prj_department_id"
+                          type="select"
+                          className="form-select"
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.prj_department_id || ""}
+                          invalid={
+                            validation.touched.prj_department_id &&
+                            validation.errors.prj_department_id
+                              ? true
+                              : false
+                          }
+                        >
+                          <option value={null}>
+                            Select Department
+                          </option>
+                          {departmentOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {t(`${option.label}`)}
+                            </option>
+                          ))}
+                        </Input>
+                        {validation.touched.prj_department_id &&
+                        validation.errors.prj_department_id ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.prj_department_id}
                           </FormFeedback>
                         ) : null}
                       </Col>
@@ -1261,7 +1292,7 @@ const ProjectModel = () => {
                           ) : null}
                         </FormGroup>
                       </Col>
-                      <Col className="col-md-4 mb-3">
+                      <Col className="col-md-6 mb-3">
                         <Label>{t("prj_urban_ben_number")}</Label>
                         <Input
                           name="prj_urban_ben_number"
@@ -1285,7 +1316,7 @@ const ProjectModel = () => {
                           </FormFeedback>
                         ) : null}
                       </Col>
-                      <Col className="col-md-4 mb-3">
+                      <Col className="col-md-6 mb-3">
                         <Label>{t("prj_rural_ben_number")}</Label>
                         <Input
                           name="prj_rural_ben_number"
@@ -1309,7 +1340,7 @@ const ProjectModel = () => {
                           </FormFeedback>
                         ) : null}
                       </Col>
-                      <Col className="col-md-8 mb-3">
+                      <Col className="col-md-6 mb-3">
                         <Label>{t("prj_outcome")}</Label>
                         <Input
                           name="prj_outcome"

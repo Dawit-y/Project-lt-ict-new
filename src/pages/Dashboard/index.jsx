@@ -59,12 +59,15 @@ return (
               key={index}
               className={component.class_name} // 3 columns, 4 units each (12 / 3 = 4)
             >
+            {component?.data ? (
               <DashboardComponent
                 dashboardType={component.dashboard_type}
                 objectName={component.name}
                 columnList={component.column_list}
                 tableData={component.data}
-              />
+              />):(
+              <div>Loading data...</div>
+              )}
             </div>
           ))}
         </div>

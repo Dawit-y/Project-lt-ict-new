@@ -14,11 +14,9 @@ const modalStyle = {
   width: '100%',
   height: '100%',
 };
-
 const ContractorTypeModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction } = props;
-
   return (
     <Modal
       isOpen={isOpen}
@@ -50,14 +48,6 @@ const ContractorTypeModal = (props) => {
             {t('cnt_description')}: <span className="text-primary">{transaction.cnt_description}</span>
           </p>
           </tr>
-
-          {transaction.is_deletable === 1 && (
-            <p className="text-danger">data is deletable</p>
-          )}
-          
-          {transaction.is_editable === 1 && (
-            <p className="text-success">Editable</p>
-          )}
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
