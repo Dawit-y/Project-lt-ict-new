@@ -15,7 +15,6 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "ag-grid-enterprise";
 import "../../App.css";
 
 import {
@@ -91,7 +90,7 @@ const tabMapping = {
 const ProjectModel = () => {
   //meta title
   document.title = " Project";
-  const [projectMetaData, setProjectMetaData] = useState({});
+  const [projectMetaData, setProjectMetaData] = useState([]);
   const [showCanvas, setShowCanvas] = useState(false);
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
@@ -196,7 +195,10 @@ const ProjectModel = () => {
 
     initialValues: {
       prj_name: (project && project.prj_name) || "",
+      prj_name_am: (project && project.prj_name_am) || "",
+      prj_name_en: (project && project.prj_name_en) || "",
       prj_code: (project && project.prj_code) || "",
+
       prj_project_status_id: (project && project.prj_project_status_id) || "",
       prj_project_category_id:
         (project && project.prj_project_category_id) || "",
@@ -247,6 +249,20 @@ const ProjectModel = () => {
             (item) => item.prj_name == value && item.prj_id !== project?.prj_id
           );
         }),
+        prj_name_am: Yup.string()
+        .required(t("prj_name_am"))
+        .test("unique-prj_name_am", t("Already exists"), (value) => {
+          return !data?.data.some(
+            (item) => item.prj_name_am == value && item.prj_id !== project?.prj_id
+          );
+        }),
+        prj_name_en: Yup.string()
+        .required(t("prj_name_en"))
+        .test("unique-prj_name_en", t("Already exists"), (value) => {
+          return !data?.data.some(
+            (item) => item.prj_name_en == value && item.prj_id !== project?.prj_id
+          );
+        }),
       prj_code: Yup.string()
         .required(t("prj_code"))
         .test("unique-prj_code", t("Already exists"), (value) => {
@@ -259,16 +275,25 @@ const ProjectModel = () => {
         t("prj_project_category_id")
       ),
       //prj_project_budget_source_id: Yup.string().required(t('prj_project_budget_source_id')),
-      prj_total_estimate_budget: Yup.string().required(
+      prj_total_estimate_budget: Yup.number().required(
         t("prj_total_estimate_budget")
-      ),
-      prj_total_actual_budget: Yup.string().required(
+      ).min(1000, t('prj_project_amount_range'))
+    .max(100000000000, t('prj_project_amount_range')),
+
+     /* prj_total_actual_budget: Yup.number().required(
         t("prj_total_actual_budget")
-      ),
+      ).min(1000, t('prj_project_amount_range'))
+    .max(100000000000, t('prj_project_amount_range')),*/
       //prj_geo_location: Yup.string().required(t('prj_geo_location')),
       prj_sector_id: Yup.string().required(t("prj_sector_id")),
       prj_location_region_id: Yup.string().required(
         t("prj_location_region_id")
+      ),
+       prj_location_zone_id: Yup.string().required(
+        t("prj_location_zone_id")
+      ),
+        prj_location_woreda_id: Yup.string().required(
+        t("prj_location_woreda_id")
       ),
       prj_department_id: Yup.string().required(t("prj_department_id")),
       //prj_location_zone_id: Yup.string().required(t('prj_location_zone_id')),
@@ -290,6 +315,7 @@ const ProjectModel = () => {
       prj_end_date_actual_gc: Yup.string().required(
         t("prj_end_date_actual_gc")
       ),
+
       //prj_end_date_plan_gc: Yup.string().required(t("prj_end_date_plan_gc")),
       //prj_end_date_plan_et: Yup.string().required(t('prj_end_date_plan_et')),
       //prj_outcome: Yup.string().required(t('prj_outcome')),
@@ -307,6 +333,8 @@ const ProjectModel = () => {
         const updateProject = {
           prj_id: project.prj_id,
           prj_name: values.prj_name,
+          prj_name_am: values.prj_name_am,
+          prj_name_en: values.prj_name_en,
           prj_code: values.prj_code,
           prj_project_status_id: values.prj_project_status_id,
           prj_project_category_id: values.prj_project_category_id,
@@ -350,6 +378,8 @@ const ProjectModel = () => {
       } else {
         const newProject = {
           prj_name: values.prj_name,
+          prj_name_am: values.prj_name_am,
+          prj_name_en: values.prj_name_en,
           prj_code: values.prj_code,
           prj_project_status_id: values.prj_project_status_id,
           prj_project_category_id: values.prj_project_category_id,
@@ -457,6 +487,8 @@ const ProjectModel = () => {
     setProject({
       prj_id: project.prj_id,
       prj_name: project.prj_name,
+      prj_name_am: project.prj_name_am,
+      prj_name_en: project.prj_name_en,
       prj_code: project.prj_code,
       prj_project_status_id: project.prj_project_status_id,
       prj_project_category_id: project.prj_project_category_id,
@@ -542,7 +574,6 @@ const ProjectModel = () => {
     columns: t("columns"),
     filters: t("filters"),
     values: t("values"),
-    rowGroup: t("rowGroup"),
     pageSize: t("pageSize"),
     sortAscending: t("sortAscending"),
     sortDescending: t("sortDescending"),
@@ -550,7 +581,6 @@ const ProjectModel = () => {
     noPin: t("noPin"),
     pinLeft: t("pinLeft"),
     pinRight: t("pinRight"),
-    dragHereToSetRowGroups: t("dragHereToSetRowGroups"),
     // For Number Filter & Text Filter
     filterOoo: t("filterOoo"),
     equals: t("equals"),
@@ -569,7 +599,6 @@ const ProjectModel = () => {
     pinColumn: t("pinColumn"),
     before: t("before"),
     after: t("after"),
-    valueAggregation: t("valueAggregation"),
     autosizeThiscolumn: t("autosizeThiscolumn"),
     autosizeAllColumns: t("autosizeAllColumns"),
     groupBy: t("groupBy"),
@@ -583,46 +612,14 @@ const ProjectModel = () => {
     paste: t("paste"),
     ctrlV: t("ctrlV"),
     export: t("export"),
-
-    // Enterprise Menu Aggregation and Status Bar
-    sum: t("sum"),
-    min: t("min"),
-    max: t("max"),
     none: t("none"),
     count: t("count"),
     average: t("average"),
     filteredRows: t("filteredRows"),
     selectedRows: t("selectedRows"),
     totalRows: t("totalRows"),
-    totalAndFilteredRows: t("totalAndFilteredRows"),
-
-    // Charts
-    pivotChartTitle: t("pivotChartTitle"),
-    rangeChartTitle: t("rangeChartTitle"),
-    columnChart: t("columnChart"),
-    groupedColumn: t("groupedColumn"),
-    stackedColumn: t("stackedColumn"),
-    barChart: t("barChart"),
-    pieChart: t("pieChart"),
-    doughnutChart: t("doughnutChart"),
-    line: t("line"),
-    areaChart: t("areaChart"),
-    stackedArea: t("stackedArea"),
-
-    // Pivot Mode
-    pivotMode: t("pivotMode"),
-    pivotColumnGroupTotals: t("pivotColumnGroupTotals"),
-    pivotColumnGroupFilterTotals: t("pivotColumnGroupFilterTotals"),
-
-    // Miscellaneous
-    ariaHidden: t("ariaHidden"),
-    ariaVisible: t("ariaVisible"),
-    ariaChecked: t("ariaChecked"),
-    ariaUnchecked: t("ariaUnchecked"),
-    ariaIndeterminate: t("ariaIndeterminate"),
-    // Add more keys based on your requirements or AG Grid's localization documentation
-  };
-
+    totalAndFilteredRows: t("totalAndFilteredRows")
+  }
   const columnDefs = useMemo(() => {
     const baseColumnDefs = [
       {
@@ -638,8 +635,7 @@ const ProjectModel = () => {
         headerName: t("prj_name"),
         sortable: true,
         filter: "agTextColumnFilter",
-        /*floatingFilter: true,
-        enableRowGroup: true,*/
+        /*floatingFilter: true,*/
         width: 300,
         valueFormatter: (params) =>
           params.node.footer ? t("Total") : params.value, // Display "Total" for footer
@@ -647,8 +643,6 @@ const ProjectModel = () => {
       {
         field: "prj_total_estimate_budget",
         headerName: t("prj_total_estimate_budget"),
-        enableValue: true,
-        aggFunc: t("sum"), // Use sum to aggregate
         valueFormatter: (params) => {
           if (params.node.footer) {
             return params.value
@@ -661,8 +655,6 @@ const ProjectModel = () => {
       {
         field: "prj_total_actual_budget",
         headerName: t("prj_total_actual_budget"),
-        enableValue: true,
-        aggFunc: t("sum"), // Use sum to aggregate
         valueFormatter: (params) => {
           if (params.node.footer) {
             return params.value
@@ -682,8 +674,7 @@ const ProjectModel = () => {
             ? "" // Suppress in footer
             : params.value
             ? new Date(params.value).toLocaleDateString()
-            : "Invalid date",
-        enableRowGroup: true,
+            : "Invalid date"
       },
       {
         field: "prj_end_date_actual_gc",
@@ -696,7 +687,6 @@ const ProjectModel = () => {
             : params.value
             ? new Date(params.value).toLocaleDateString()
             : "Invalid date",
-        enableRowGroup: true,
       },
       {
         headerName: t("view_details"),
@@ -914,17 +904,7 @@ const ProjectModel = () => {
                           ? searchResults?.data
                           : data?.data || []
                       }
-                      columnDefs={columnDefs}
-                      groupIncludeFooter={true}
-                      groupIncludeTotalFooter={true}
-                      rowSelection="multiple"
-                      enableRangeSelection={true}
-                      enableCharts={true} // Enable charts
-                      chartThemes={chartThemes} // Add custom chart themes
-                      pivotMode={false}
-                      sideBar={null} // Enable and configure sidebar
-                      rowGroupPanelShow="never"
-                      pivotPanelShow="always"
+                      columnDefs={columnDefs}                  
                       pagination={true}
                       paginationPageSizeSelector={[10, 20, 30, 40, 50]}
                       paginationPageSize={10}
@@ -1009,12 +989,66 @@ const ProjectModel = () => {
                               ? true
                               : false
                           }
-                          maxLength={20}
+                          maxLength={200}
                         />
                         {validation.touched.prj_name &&
                         validation.errors.prj_name ? (
                           <FormFeedback type="invalid">
                             {validation.errors.prj_name}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
+                      <Col className="col-md-4 mb-3">
+                        <Label>
+                          {t("prj_name_am")}
+                          <span className="text-danger">*</span>
+                        </Label>
+                        <Input
+                          name="prj_name_am"
+                          type="text"
+                          placeholder={t("prj_name_am")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.prj_name_am || ""}
+                          invalid={
+                            validation.touched.prj_name_am &&
+                            validation.errors.prj_name_am
+                              ? true
+                              : false
+                          }
+                          maxLength={200}
+                        />
+                        {validation.touched.prj_name_am &&
+                        validation.errors.prj_name_am ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.prj_name_am}
+                          </FormFeedback>
+                        ) : null}
+                      </Col>
+                      <Col className="col-md-4 mb-3">
+                        <Label>
+                          {t("prj_name_en")}
+                          <span className="text-danger">*</span>
+                        </Label>
+                        <Input
+                          name="prj_name_en"
+                          type="text"
+                          placeholder={t("prj_name_en")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.prj_name_en || ""}
+                          invalid={
+                            validation.touched.prj_name_en &&
+                            validation.errors.prj_name_en
+                              ? true
+                              : false
+                          }
+                          maxLength={200}
+                        />
+                        {validation.touched.prj_name_en &&
+                        validation.errors.prj_name_en ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.prj_name_en}
                           </FormFeedback>
                         ) : null}
                       </Col>
@@ -1066,7 +1100,7 @@ const ProjectModel = () => {
                               : false
                           }
                         >
-                          <option value={null}>Select Project Category</option>
+                          <option value={null}>{t('prj_select_category')}</option>
                           {projectCategoryOptions.map((option) => (
                             <option key={option.value} value={option.value}>
                               {t(`${option.label}`)}
@@ -1158,7 +1192,7 @@ const ProjectModel = () => {
                           }
                         >
                           <option value={null}>
-                            Select Sector Information
+                            {t('prj_select_Sector')}
                           </option>
                           {sectorInformationOptions.map((option) => (
                             <option key={option.value} value={option.value}>
@@ -1192,7 +1226,7 @@ const ProjectModel = () => {
                               : false
                           }
                         >
-                          <option value={null}>Select Department</option>
+                          <option value={null}>{t('prj_select_department')}</option>
                           {departmentOptions.map((option) => (
                             <option key={option.value} value={option.value}>
                               {t(`${option.label}`)}

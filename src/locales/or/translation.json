@@ -921,6 +921,18 @@
 "project_payment_stat":"Kaffaltii",
 "select_stat":"Gosa Gabaasaa Filadhu",
 "exportToExcel":"Export To Excel",
-"statistical_report":"Gabaasa Istaatistiksii"
-
+"statistical_report":"Gabaasa Istaatistiksii",
+"dash_project_by_sector":"Baay`ina Pirojeektii Seekteraan",
+"dash_project_payment":"Kaffaltii Pirojeektii",
+"dash_project_count":"Baay`ina Waliigalaa Pirojeektii",
+"count_result":"Baay`ina",
+"dash_project_by_address":"Baay`ina Pirojeektii Teessoodhaan",
+"dash_users_count":"Baay`ina Waliigalaa Fayyadamtoota Sistemaa",
+"dash_released_budget":"Baajata Waliigalaa",
+"prj_select_category":"Damee Pirojektii Filadhu",
+"prj_select_Sector":"Seektara Filadhu",
+"prj_select_department":"Kutaa Hojii Filadhu",
+"prj_project_amount_range":"Gatiin 1000 hanga 100,000,000,000 ta`u qabaa",
+"prj_name_en":"Maqaa Piroojektii Afaan Ingilizii",
+"prj_name_am":"Maqaa Piroojektii Afaan Amaariffaan"
 }

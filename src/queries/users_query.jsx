@@ -4,6 +4,8 @@ import {
   updateUsers,
   addUsers,
   deleteUsers,
+  changeUserStatus,
+  changePassword
 } from "../helpers/users_backend_helper";
 
 const USERS_QUERY_KEY = ["users"];
@@ -36,7 +38,6 @@ export const useSearchUserss = (searchParams = {}) => {
 // Add users
 export const useAddUsers = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: addUsers,
     onSuccess: (newDataResponse) => {
@@ -60,6 +61,48 @@ export const useUpdateUsers = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateUsers,
+    onSuccess: (updatedUsers) => {
+      queryClient.setQueryData(USERS_QUERY_KEY, (oldData) => {
+        if (!oldData) return;
+
+        return {
+          ...oldData,
+          data: oldData.data.map((UsersData) =>
+            UsersData.usr_id === updatedUsers.data.usr_id
+              ? { ...UsersData, ...updatedUsers.data }
+              : UsersData
+          ),
+        };
+      });
+    },
+  });
+};
+
+export const useChangeUserStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: changeUserStatus,
+    onSuccess: (updatedUsers) => {
+      queryClient.setQueryData(USERS_QUERY_KEY, (oldData) => {
+        if (!oldData) return;
+
+        return {
+          ...oldData,
+          data: oldData.data.map((UsersData) =>
+            UsersData.usr_id === updatedUsers.data.usr_id
+              ? { ...UsersData, ...updatedUsers.data }
+              : UsersData
+          ),
+        };
+      });
+    },
+  });
+};
+
+export const useChangePassword = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: changePassword,
     onSuccess: (updatedUsers) => {
       queryClient.setQueryData(USERS_QUERY_KEY, (oldData) => {
         if (!oldData) return;

@@ -4322,19 +4322,6 @@ adler-32@~1.3.0:
   resolved "https://registry.yarnpkg.com/adler-32/-/adler-32-1.3.1.tgz#1dbf0b36dda0012189a32b3679061932df1821e2"
   integrity sha512-ynZ4w/nUUv5rrsR8UUGoe1VC9hZj6V5hU9Qw1HlMDJGEJw5S7TfTErWTjMys6M7vr0YWcPqs3qAr4ss0nDfP+A==
 
-ag-charts-community@10.3.3:
-  version "10.3.3"
-  resolved "https://registry.yarnpkg.com/ag-charts-community/-/ag-charts-community-10.3.3.tgz#b5a4f638c1d47e9facd59816e3bd177ed84aff08"
-  integrity sha512-LUlbVS+4sX1UHqZNuE9m3LISr7D4FEO/Y88fwit1fYPTk2l1ZJG/82gFnm5bQ+iG4QgNIwRa2TWm7w2MLnyJlA==
-  dependencies:
-    ag-charts-locale "10.3.3"
-    ag-charts-types "10.3.3"
-
-ag-charts-locale@10.3.3:
-  version "10.3.3"
-  resolved "https://registry.yarnpkg.com/ag-charts-locale/-/ag-charts-locale-10.3.3.tgz#f3612df3dd235a3d455e61fdf30ab8e3237c33c7"
-  integrity sha512-+ZAQYhkFHbdEwLYP1jZeF44X/8wwSH6SNiTykEIIk6EUuP6mm45X2YfQ0bvyekTkEJlLvFspvRQ+C6mspwLx4w==
-
 ag-charts-types@10.3.3:
   version "10.3.3"
   resolved "https://registry.yarnpkg.com/ag-charts-types/-/ag-charts-types-10.3.3.tgz#042c747f1247af827c29ccfdd0890d7b9adcaae9"
@@ -4346,14 +4333,6 @@ ag-grid-community@32.3.3, ag-grid-community@^32.3.3:
   integrity sha512-KhSJ3B6mwRFA4cLjNjOZkDndJBh8o83794ZHl4Q7xP9MJf43oCN9qoZ8pyBanohgpVfLcP0scYYCr9xIlzjdiA==
   dependencies:
     ag-charts-types "10.3.3"
-
-ag-grid-enterprise@^32.3.3:
-  version "32.3.3"
-  resolved "https://registry.yarnpkg.com/ag-grid-enterprise/-/ag-grid-enterprise-32.3.3.tgz#57e7a02b2f0e70a8e2eccd413f04537aa634e2a9"
-  integrity sha512-Seb3ha74qiTUXznL/Xzu948jsEfrYx/ndkds2l0LrQBRUK1gV6O8IkHfTTfvoWZQf+Za6RNgOjiy9GdxO0YDfQ==
-  dependencies:
-    ag-charts-community "10.3.3"
-    ag-grid-community "32.3.3"
 
 ag-grid-react@^32.2.0:
   version "32.3.3"

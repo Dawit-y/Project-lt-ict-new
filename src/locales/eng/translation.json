@@ -836,5 +836,11 @@
 "count_result":"Count",
 "dash_project_by_address":"Project Count by Address",
 "dash_users_count":"Total System Users",
-"dash_released_budget":"Total Released Budget"
+"dash_released_budget":"Total Released Budget",
+"prj_select_category":"Select Project Category",
+"prj_select_Sector":"Select Sector",
+"prj_select_department":"Select Department",
+"prj_project_amount_range":"Amount should be greater than 1000 and less than 100,000,000,000",
+"prj_name_en":"Project Name in English",
+"prj_name_am":"Project Name in Amharic"
 }
