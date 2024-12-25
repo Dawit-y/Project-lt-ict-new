@@ -46,14 +46,11 @@
 // };
 // export default Pie;
 
-
 import React from "react";
 import ReactEcharts from "echarts-for-react";
 import getChartColorsArray from "../components/Common/ChartsDynamicColor";
-
 const Pie = ({ chartData, dataColors }) => {
   const PieEChartColors = getChartColorsArray(dataColors);
-  
   const options = {
     toolbox: {
       show: false,
@@ -62,14 +59,14 @@ const Pie = ({ chartData, dataColors }) => {
       trigger: "item",
       formatter: "{a} <br/>{b} : {c} ({d}%)",
     },
-    legend: {
+   /* legend: {
       orient: "vertical",
       left: "left",
-      data: ["Laptop", "Tablet", "Mobile", "Others", "Desktop"],
+      data: chartData,
       textStyle: {
         color: ["#8791af"],
       },
-    },
+    },*/
     color: PieEChartColors,
     series: [
       {
@@ -79,7 +76,7 @@ const Pie = ({ chartData, dataColors }) => {
         center: ["50%", "60%"],
         data: chartData,
         itemStyle: {
-          emphasis: {
+          itemStyle: {
             shadowBlur: 10,
             shadowOffsetX: 0,
             shadowColor: "rgba(0, 0, 0, 0.5)",
@@ -88,13 +85,11 @@ const Pie = ({ chartData, dataColors }) => {
       },
     ],
   };
-
   return (
     <React.Fragment>
       {/* Adjust height to 200px */}
-      <ReactEcharts style={{ height: "150px" }} option={options} />
+      <ReactEcharts style={{ height: "250px" }} option={options} />
     </React.Fragment>
   );
 };
-
 export default Pie;

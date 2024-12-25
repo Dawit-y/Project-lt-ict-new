@@ -6,6 +6,8 @@ const GET_USERS = "users/listgrid";
 const ADD_USERS = "users/insertgrid";
 const UPDATE_USERS = "users/updategrid";
 const DELETE_USERS = "users/deletegrid";
+const UPDATE_USER_STATUS = "users/changeuserstatus";
+const CHANGE_PASSWORD = "user/change_password";
 // get users
 export const getUsers = async (params = {}) => {
   const queryString = new URLSearchParams(params).toString();
@@ -40,6 +42,18 @@ export const updateUsers = (objectName) =>
     objectName
   );
 
+// change password
+export const changeUserStatus = (objectName) =>
+  post(
+    `${apiUrl}` + UPDATE_USER_STATUS + `?usr_id=${objectName?.usr_id}`,
+    objectName
+  );
+// change password
+export const changePassword = (objectName) =>
+  post(
+    `${apiUrl}` + CHANGE_PASSWORD + `?usr_id=${objectName?.user_id}`,
+    objectName
+  );
 // delete  users
 export const deleteUsers = (objectName) =>
   post(`${apiUrl}` + DELETE_USERS + `?usr_id=${objectName}`);

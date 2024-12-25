@@ -20,7 +20,7 @@ import {
   Input,
 } from "reactstrap";
 
-import { useUpdateUsers } from "../../queries/users_query";
+import { useUpdateUsers,useChangeUserStatus,useChangePassword } from "../../queries/users_query";
 import { toast } from "react-toastify";
 import avatar from "../../assets/images/users/defaultAvatar.png";
 
@@ -49,11 +49,13 @@ const UsersModal = (props) => {
   const [passwordShown, setPasswordShown] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const updateUsers = useUpdateUsers();
-  const handleUpdateUsers = async (data) => {
+  const changeUserStatus = useChangeUserStatus();
+   const changeUserPassword = useChangePassword();
+  
+  const handleChangeUserStatus = async (data) => {
     try {
-      await updateUsers.mutateAsync(data);
+      await changeUserStatus.mutateAsync(data);
       setSwitch1(true);
       toast.success(`data updated successfully`, {
         autoClose: 2000,
@@ -95,19 +97,29 @@ const UsersModal = (props) => {
       return "Moderate";
     return "Weak";
   };
-
   const handlePasswordChange = async () => {
     if (!newPassword) {
       setMessage("Please enter a valid password.");
       return;
     }
-
     const data = {
       user_id: transaction.usr_id, // Assuming usr_id exists
       password: newPassword,
     };
-
+    console.log(data);
     try {
+      await changeUserPassword.mutateAsync(data);
+      //setSwitch1(true);
+      toast.success(`password changed successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      //setSwitch1(false);
+      toast.error(`Failed to change password`, {
+        autoClose: 2000,
+      });
+    }
+    /*try {
       setIsSubmitting(true);
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_API_URL}user/change_password`,
@@ -127,7 +139,7 @@ const UsersModal = (props) => {
       setMessage("Error changing password. Please try again.");
     } finally {
       setIsSubmitting(false);
-    }
+    }*/
   };
 
   const handlePasswordInput = (e) => {
@@ -243,7 +255,7 @@ const UsersModal = (props) => {
                                 </tr>
                                 <tr>
                                   <th scope="row">Profile Created :</th>
-                                  <td>{transaction.usr_last_logged_in}</td>
+                                  <td>{transaction.usr_create_time}</td>
                                 </tr>
                               </tbody>
                             </Table>
@@ -314,7 +326,7 @@ const UsersModal = (props) => {
                                   usr_email: transaction.usr_email,
                                   usr_status: updatedStatus,
                                 };
-                                handleUpdateUsers(update_user);
+                                handleChangeUserStatus(update_user);
                               }}
                               checked={switch1}
                             />
@@ -341,47 +353,36 @@ const UsersModal = (props) => {
             <Col className="md-6">
               <div className="text-muted mt-4">
                 <Table className="table-nowrap mb-0">
-                  <tbody>
-                    <tr>
-                      <th scope="row">{t("usr_role_id")} </th>
-                      <td> {transaction.usr_role_id}</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">{t("usr_region_id")}</th>
-                      <td>{transaction.usr_region_id}</td>
-                    </tr>
+                  <tbody>                   
                     <tr>
                       <th scope="row">{t("usr_zone_id")}</th>
-                      <td>{transaction.usr_zone_id}</td>
+                      <td>{transaction.zone_name}</td>
                     </tr>
                     <tr>
                       <th scope="row"> {t("usr_woreda_id")}</th>
-                      <td>{transaction.usr_woreda_id}</td>
+                      <td>{transaction.usr_woreda_id === 0 ? "--" : transaction.usr_woreda_id}</td>
                     </tr>
 
                     <tr>
                       <th scope="row"> {t("usr_sector_id")}</th>
-                      <td>{transaction.usr_sector_id}</td>
+                      <td>{transaction.sector_name}</td>
                     </tr>
                     <tr>
                       <th scope="row"> {t("usr_department_id")}</th>
-                      <td>{transaction.usr_department_id}</td>
+                      <td>{transaction.dep_name}</td>
                     </tr>
                     <tr>
                       <th scope="row"> {t("usr_is_active")}</th>
-                      <td>{transaction.usr_is_active}</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">Is Deleteable :</th>
-                      <td className="text-danger">
-                        {transaction.is_deletable === 1 && "Data is deletable"}
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">Is Editable :</th>
-                      <td className="text-success">
-                        {transaction.is_editable === 1 && "Editable"}
-                      </td>
+                      <td><span
+                              style={{
+                                fontSize: "16px",
+                                fontWeight: "bold",
+                                color: switch1 ? "#d9534f" : "#28a745", // Green for Active, Red for Inactive
+                              }}
+                            >
+                              {transaction.usr_is_active ? "Active" : "Inactive"}
+                            </span>
+                            </td>
                     </tr>
                   </tbody>
                 </Table>
