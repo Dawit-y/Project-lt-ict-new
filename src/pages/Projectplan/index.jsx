@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { isEmpty, update } from "lodash";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
@@ -9,9 +8,6 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
-//import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import ProjectGannt from "../../pages/GanttChart";
 
@@ -24,10 +20,6 @@ import {
 } from "../../queries/projectplan_query";
 import ProjectPlanModal from "./ProjectPlanModal";
 import { useTranslation } from "react-i18next";
-
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
 import {
   Button,
   Col,
@@ -44,13 +36,14 @@ import {
   CardBody,
   FormGroup,
   Badge,
-  InputGroup
+  InputGroup,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { createSelectOptions } from "../../utils/commonMethods";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -62,19 +55,9 @@ import Flatpickr from "react-flatpickr";
 import { formatDate } from "../../utils/commonMethods";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 const ProjectPlanModel = (props) => {
-  const location = useLocation();
-  const { passedId, isActive } = props;
-  const param = { pdl_project_id: passedId };
+  const { id } = useParams();
+  const param = { pld_project_id: id };
 
-/*const { passedId: passedId } = useParams();
-  const param = { pld_project_id: passedId };
-const isActive=true;*/
-
-  // Accessing prj_code from the URL (if needed)
-  //const prjCode = location.pathname.split("/")[2];
-
-  //meta title
-  //document.title = " ProjectPlan" + { prjCode };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -85,10 +68,9 @@ const isActive=true;*/
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  //const params = { pld_project_id: passedId }; // Replace with dynamic value if needed
 
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjectPlans( param, isActive);
+    useFetchProjectPlans(param);
   const { data: budgetYearData } = useFetchBudgetYears();
   const budgetYearOptions = createSelectOptions(
     budgetYearData?.data || [],
@@ -173,7 +155,7 @@ const isActive=true;*/
       pld_budget_year_id: Yup.string().required(t("pld_budget_year_id")),
       //pld_start_date_ec: Yup.string().required(t("pld_start_date_ec")),
       pld_start_date_gc: Yup.string().required(t("pld_start_date_gc")),
-     // pld_end_date_ec: Yup.string().required(t("pld_end_date_ec")),
+      // pld_end_date_ec: Yup.string().required(t("pld_end_date_ec")),
       pld_end_date_gc: Yup.string().required(t("pld_end_date_gc")),
       //pld_description: Yup.string().required(t("pld_description")),
       //pld_status: Yup.string().required(t("pld_status")),
@@ -244,9 +226,7 @@ const isActive=true;*/
   };
 
   const handleProjectPlanClick = (arg) => {
-    alert('here');
     const projectPlan = arg;
-    // console.log("handleProjectPlanClick", projectPlan);
     setProjectPlan({
       pld_id: projectPlan.pld_id,
       pld_name: projectPlan.pld_name,
@@ -298,7 +278,7 @@ const isActive=true;*/
             </span>
           );
         },
-      },    
+      },
       {
         header: "",
         accessorKey: "pld_budget_year_id",
@@ -307,8 +287,7 @@ const isActive=true;*/
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdy_name, 30) ||
-                "-"}
+              {truncateText(cellProps.row.original.bdy_name, 30) || "-"}
             </span>
           );
         },
@@ -371,10 +350,10 @@ const isActive=true;*/
               type="button"
               color="primary"
               className="btn-sm"
-              onClick={() => {                
+              onClick={() => {
                 const data = cellProps.row.original;
                 //toggleViewModal(data);
-                
+
                 console.log("selected project plan", data);
                 setProjectPlanSelected(cellProps.row.original);
               }}
@@ -383,7 +362,7 @@ const isActive=true;*/
             </Button>
           );
         },
-      }
+      },
     ];
     const baseColumnSelected = [
       {
@@ -398,12 +377,10 @@ const isActive=true;*/
             </span>
           );
         },
-      }    
+      },
     ];
 
-    if (
-      1==1
-    ) {
+    if (1 == 1) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -418,7 +395,7 @@ const isActive=true;*/
                   className="text-success"
                   onClick={() => {
                     const data = cellProps.row.original;
-                    console.log("uuuuu "+data);
+                    console.log("uuuuu " + data);
                     handleProjectPlanClick(data);
                   }}
                 >
@@ -475,7 +452,7 @@ const isActive=true;*/
       />
       <div className="page-content">
         <div className="container-fluid1">
-         {/* <AdvancedSearch
+          {/* <AdvancedSearch
             searchHook={useSearchProjectPlans}
             textSearchKeys={["dep_name_am", "dep_name_en", "dep_name_or"]}
             dropdownSearchKeys={[
@@ -583,138 +560,130 @@ const isActive=true;*/
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                        <Label>
-                          {t("pld_budget_year_id")}
-                          <span className="text-danger">*</span>
-                        </Label>
-                        <Input
-                          name="pld_budget_year_id"
-                          type="select"
-                          className="form-select"
-                          onChange={validation.handleChange}
+                    <Label>
+                      {t("pld_budget_year_id")}
+                      <span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      name="pld_budget_year_id"
+                      type="select"
+                      className="form-select"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pld_budget_year_id || ""}
+                      invalid={
+                        validation.touched.pld_budget_year_id &&
+                        validation.errors.pld_budget_year_id
+                          ? true
+                          : false
+                      }
+                    >
+                      <option value={null}>Select Project Category</option>
+                      {budgetYearOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {t(`${option.label}`)}
+                        </option>
+                      ))}
+                    </Input>
+                    {validation.touched.pld_budget_year_id &&
+                    validation.errors.pld_budget_year_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pld_budget_year_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <FormGroup>
+                      <Label>{t("pld_start_date_gc")}</Label>
+                      <InputGroup>
+                        <Flatpickr
+                          id="DataPicker"
+                          className={`form-control ${
+                            validation.touched.pld_start_date_gc &&
+                            validation.errors.pld_start_date_gc
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                          name="pld_start_date_gc"
+                          options={{
+                            altInput: true,
+                            altFormat: "Y/m/d",
+                            dateFormat: "Y/m/d",
+                            enableTime: false,
+                          }}
+                          value={validation.values.pld_start_date_gc || ""}
+                          onChange={(date) => {
+                            const formatedDate = formatDate(date[0]);
+                            validation.setFieldValue(
+                              "pld_start_date_gc",
+                              formatedDate
+                            ); // Set value in Formik
+                          }}
                           onBlur={validation.handleBlur}
-                          value={
-                            validation.values.pld_budget_year_id || ""
-                          }
-                          invalid={
-                            validation.touched.pld_budget_year_id &&
-                            validation.errors.pld_budget_year_id
-                              ? true
-                              : false
-                          }
+                        />
+
+                        <Button
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          disabled
                         >
-                          <option value={null}>Select Project Category</option>
-                          {budgetYearOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {t(`${option.label}`)}
-                            </option>
-                          ))}
-                        </Input>
-                        {validation.touched.pld_budget_year_id &&
-                        validation.errors.pld_budget_year_id ? (
-                          <FormFeedback type="invalid">
-                            {validation.errors.pld_budget_year_id}
-                          </FormFeedback>
-                        ) : null}
-                      </Col>
-                <Col className="col-md-6 mb-3">
-                        <FormGroup>
-                          <Label>{t("pld_start_date_gc")}</Label>
-                          <InputGroup>
-                            <Flatpickr
-                              id="DataPicker"
-                              className={`form-control ${
-                                validation.touched.pld_start_date_gc &&
-                                validation.errors.pld_start_date_gc
-                                  ? "is-invalid"
-                                  : ""
-                              }`}
-                              name="pld_start_date_gc"
-                              options={{
-                                altInput: true,
-                                altFormat: "Y/m/d",
-                                dateFormat: "Y/m/d",
-                                enableTime: false,
-                              }}
-                              value={validation.values.pld_start_date_gc || ""}
-                              onChange={(date) => {
-                                const formatedDate = formatDate(date[0]);
-                                validation.setFieldValue(
-                                  "pld_start_date_gc",
-                                  formatedDate
-                                ); // Set value in Formik
-                              }}
-                              onBlur={validation.handleBlur}
-                            />
+                          <i className="fa fa-calendar" aria-hidden="true" />
+                        </Button>
+                      </InputGroup>
+                      {validation.touched.pld_start_date_gc &&
+                      validation.errors.pld_start_date_gc ? (
+                        <FormFeedback>
+                          {validation.errors.pld_start_date_gc}
+                        </FormFeedback>
+                      ) : null}
+                    </FormGroup>
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <FormGroup>
+                      <Label>{t("pld_end_date_gc")}</Label>
+                      <InputGroup>
+                        <Flatpickr
+                          id="DataPicker"
+                          className={`form-control ${
+                            validation.touched.pld_end_date_gc &&
+                            validation.errors.pld_end_date_gc
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                          name="pld_end_date_gc"
+                          options={{
+                            altInput: true,
+                            altFormat: "Y/m/d",
+                            dateFormat: "Y/m/d",
+                            enableTime: false,
+                          }}
+                          value={validation.values.pld_end_date_gc || ""}
+                          onChange={(date) => {
+                            const formatedDate = formatDate(date[0]);
+                            validation.setFieldValue(
+                              "pld_end_date_gc",
+                              formatedDate
+                            ); // Set value in Formik
+                          }}
+                          onBlur={validation.handleBlur}
+                        />
 
-                            <Button
-                              type="button"
-                              className="btn btn-outline-secondary"
-                              disabled
-                            >
-                              <i
-                                className="fa fa-calendar"
-                                aria-hidden="true"
-                              />
-                            </Button>
-                          </InputGroup>
-                          {validation.touched.pld_start_date_gc &&
-                          validation.errors.pld_start_date_gc ? (
-                            <FormFeedback>
-                              {validation.errors.pld_start_date_gc}
-                            </FormFeedback>
-                          ) : null}
-                        </FormGroup>
-                      </Col>
-                      <Col className="col-md-6 mb-3">
-                        <FormGroup>
-                          <Label>{t("pld_end_date_gc")}</Label>
-                          <InputGroup>
-                            <Flatpickr
-                              id="DataPicker"
-                              className={`form-control ${
-                                validation.touched.pld_end_date_gc &&
-                                validation.errors.pld_end_date_gc
-                                  ? "is-invalid"
-                                  : ""
-                              }`}
-                              name="pld_end_date_gc"
-                              options={{
-                                altInput: true,
-                                altFormat: "Y/m/d",
-                                dateFormat: "Y/m/d",
-                                enableTime: false,
-                              }}
-                              value={validation.values.pld_end_date_gc || ""}
-                              onChange={(date) => {
-                                const formatedDate = formatDate(date[0]);
-                                validation.setFieldValue(
-                                  "pld_end_date_gc",
-                                  formatedDate
-                                ); // Set value in Formik
-                              }}
-                              onBlur={validation.handleBlur}
-                            />
-
-                            <Button
-                              type="button"
-                              className="btn btn-outline-secondary"
-                              disabled
-                            >
-                              <i
-                                className="fa fa-calendar"
-                                aria-hidden="true"
-                              />
-                            </Button>
-                          </InputGroup>
-                          {validation.touched.pld_end_date_gc &&
-                          validation.errors.pld_end_date_gc ? (
-                            <FormFeedback>
-                              {validation.errors.pld_end_date_gc}
-                            </FormFeedback>
-                          ) : null}
-                        </FormGroup>
-                      </Col>
+                        <Button
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          disabled
+                        >
+                          <i className="fa fa-calendar" aria-hidden="true" />
+                        </Button>
+                      </InputGroup>
+                      {validation.touched.pld_end_date_gc &&
+                      validation.errors.pld_end_date_gc ? (
+                        <FormFeedback>
+                          {validation.errors.pld_end_date_gc}
+                        </FormFeedback>
+                      ) : null}
+                    </FormGroup>
+                  </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("pld_description")}</Label>
                     <Input

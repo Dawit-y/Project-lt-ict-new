@@ -131,10 +131,7 @@ const authProtectedRoutes = [
   { path: "/budget_month", component: <BudgetMonth /> },
 
   //  {path: '/project_plan', component: <ProjectPlan/> },
-  {
-    path: "/project/:passedId/project_plan",
-    component: <ProjectPlan />,
-  },
+
   { path: "/project_supplimentary", component: <ProjectSupplimentary /> },
   { path: "/project_variation", component: <ProjectVariation /> },
   { path: "/dash", components: <Dashboardcard /> },
@@ -169,8 +166,12 @@ const authProtectedRoutes = [
   { path: "/project_stakeholder", component: <ProjectStakeholder /> },
   { path: "/stakeholder_type", component: <StakeholderType /> },
   { path: "/document_type", component: <DocumentType /> },
-  { path: "/project", component: <Project /> },
+  { path: "/Project", component: <Project /> },
   { path: "/Project/:id", component: <ProjectOverview /> },
+  {
+    path: "/Project/:id/project_plan",
+    component: <ProjectPlan />,
+  },
   { path: "/project_category", component: <ProjectCategory /> },
   { path: "/project_contractor", component: <ProjectContractor /> },
   { path: "/project_document", component: <ProjectDocument /> },

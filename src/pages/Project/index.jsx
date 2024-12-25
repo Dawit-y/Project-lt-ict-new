@@ -742,7 +742,7 @@ const ProjectModel = () => {
                   </UncontrolledTooltip>
                 </Link>
               )}
-              
+
               {Object.keys(dynamicComponents).length > 0 && (
                 <Link
                   to="#"
@@ -758,8 +758,7 @@ const ProjectModel = () => {
 
               <Link
                 to={{
-                  pathname: `/project/${params.data.prj_id}/project_plan`, // Route path
-                  state: { projectData: params.data }, // Pass data here
+                  pathname: `/Project/${params.data.prj_id}/project_plan`,
                 }}
                 className="text-secondary ms-2"
               >
