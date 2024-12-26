@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getProject,
+  fetchProject,
   updateProject,
   addProject,
   deleteProject,
@@ -18,6 +19,18 @@ export const useFetchProjects = () => {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     enabled: false,
+  });
+};
+
+// Fetch single project
+export const useFetchProject = (id) => {
+  return useQuery({
+    queryKey: [...PROJECT_QUERY_KEY, "detail", id],
+    queryFn: () => fetchProject(id),
+    staleTime: 1000 * 60 * 5,
+    meta: { persist: true },
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 };
 

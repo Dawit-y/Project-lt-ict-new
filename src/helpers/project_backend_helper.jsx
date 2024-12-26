@@ -13,7 +13,16 @@ export const getProject = async (params = {}) => {
     const response = await post(url);
     return response;
   } catch (error) {
-    console.log("Error in fetching data:", error);
+    throw error;
+  }
+};
+
+export const fetchProject = async (prj_id) => {
+  try {
+    const response = await get(`/project/${prj_id}`);
+    return response;
+  } catch (error) {
+    throw error;
   }
 };
 

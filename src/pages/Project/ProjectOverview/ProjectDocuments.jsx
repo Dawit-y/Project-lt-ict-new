@@ -1,43 +1,19 @@
-import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { Card, CardBody, CardTitle, Table } from "reactstrap";
 import { Link } from "react-router-dom";
-import { map } from "lodash";
-
-import { getProjectDocument as onGetProjectDocument } from "../../../store/projectdocument/actions";
-
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
+import { map, isEmpty } from "lodash";
 
 const bytesToMB = (bytes) => (bytes / (1024 * 1024)).toFixed(2);
 
-const ProjectDocuments = ({ projectId }) => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(onGetProjectDocument(projectId));
-  }, [dispatch]);
+const API_URL = import.meta.env.VITE_BASE_API_FILE;
 
-  const projectDocumentProperties = createSelector(
-    (state) => state.ProjectDocumentR, // this is geting from  reducer
-    (ProjectDocumentReducer) => ({
-      // this is from Project.reducer
-      projectDocument: ProjectDocumentReducer.projectDocument,
-      loading: ProjectDocumentReducer.loading,
-      update_loading: ProjectDocumentReducer.update_loading,
-    })
-  );
-
-  const {
-    projectDocument: { data, previledge },
-    loading,
-    update_loading,
-  } = useSelector(projectDocumentProperties);
+const ProjectDocuments = ({ data }) => {
   return (
     <Card>
       <CardBody>
         <CardTitle className="mb-4">Project Documents</CardTitle>
-        <div className="table-responsive">
+        <div className="table-responsive" style={{ minHeight: "200px" }}>
+          {isEmpty(data) && <p>No Documents found for this project.</p>}
           <Table className="table-nowrap align-middle table-hover mb-0">
             <tbody>
               {map(data, (file, i) => (
@@ -63,9 +39,14 @@ const ProjectDocuments = ({ projectId }) => {
                   </td>
                   <td>
                     <div className="text-center">
-                      <Link to={file.link} className="text-dark">
+                      <a
+                        href={`${API_URL}/public/uploads/projectfiles/${file.prd_file_path}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-dark"
+                      >
                         <i className="bx bx-download h3 m-0" />
-                      </Link>
+                      </a>
                     </div>
                   </td>
                 </tr>

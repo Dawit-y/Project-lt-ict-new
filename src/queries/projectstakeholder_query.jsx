@@ -9,10 +9,10 @@ import {
 const PROJECT_STAKEHOLDER_QUERY_KEY = ["projectstakeholder"];
 
 // Fetch project_stakeholder
-export const useFetchProjectStakeholders = () => {
+export const useFetchProjectStakeholders = (param = {}) => {
   return useQuery({
-    queryKey: PROJECT_STAKEHOLDER_QUERY_KEY,
-    queryFn: () => getProjectStakeholder(),
+    queryKey: [...PROJECT_STAKEHOLDER_QUERY_KEY, "fetch", param],
+    queryFn: () => getProjectStakeholder(param),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,

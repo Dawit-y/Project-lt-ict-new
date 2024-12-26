@@ -1,42 +1,15 @@
-import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { Card, CardBody, CardTitle, Table } from "reactstrap";
 import { Link } from "react-router-dom";
 import { map, isEmpty } from "lodash";
-import { getProjectStakeholder as onGetProjectStakeholder } from "../../../store/projectstakeholder/actions";
 
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
-const ProjectStakeholders = ({ projectId }) => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(onGetProjectStakeholder(projectId));
-  }, [dispatch]);
-
-  const projectStakeholderProperties = createSelector(
-    (state) => state.ProjectStakeholderR, // this is geting from  reducer
-    (ProjectStakeholderReducer) => ({
-      // this is from Project.reducer
-      projectStakeholder: ProjectStakeholderReducer.projectStakeholder,
-      loading: ProjectStakeholderReducer.loading,
-      update_loading: ProjectStakeholderReducer.update_loading,
-    })
-  );
-
-  const {
-    projectStakeholder: { data, previledge },
-    loading,
-    update_loading,
-  } = useSelector(projectStakeholderProperties);
-
+const ProjectStakeholders = ({ data }) => {
   return (
     <Card>
       <CardBody>
         <CardTitle className="mb-4">Stakeholders</CardTitle>
 
-        <div className="table-responsive">
+        <div className="table-responsive" style={{ minHeight: "200px" }}>
           {isEmpty(data) && <p>No stakeholders found for this project.</p>}
           <Table className="table align-middle table-nowrap">
             {data.map((item, key) => (
