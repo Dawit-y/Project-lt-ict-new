@@ -9,6 +9,8 @@ import { components } from "react-select";
 import UsersProfile from "../pages/Profile";
 import ProjectPaymentList from "../pages/Projectpayment/ProjectPaymentList";
 
+const ProjectProvider = lazy(() => import("../context/ProjectContext.jsx"));
+
 const Calendar = lazy(() => import("../pages/Calendar/index"));
 const ProjectLists = lazy(() =>
   import("../pages/Projects/ProjectStatusLists/index")

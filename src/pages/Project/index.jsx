@@ -70,6 +70,7 @@ import { createSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { formatDate } from "../../utils/commonMethods";
 import AddressStructureForProject from "./AddressStructureForProject";
+import { useProjectContext } from "../../context/ProjectContext";
 
 const tabMapping = {
   1: { label: "Documents", component: ProjectDocument },
@@ -100,15 +101,22 @@ const ProjectModel = () => {
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
+  const {
+    searchResults,
+    setSearchResults,
+    isSearchLoading,
+    setIsSearchLoading,
+    searchError,
+    setSearchError,
+    showSearchResult,
+    setShowSearchResult,
+    projectParams,
+    setProjectParams,
+    setPrjLocationRegionId,
+    setPrjLocationZoneId,
+    setPrjLocationWoredaId,
+  } = useProjectContext();
 
-  const [projectParams, setProjectParams] = useState({});
-  const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
-  const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
-  const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
 
   const { data, isLoading, error, isError, refetch } = useFetchProjects();
@@ -439,18 +447,6 @@ const ProjectModel = () => {
     }
   }, [data]);
 
-  useEffect(() => {
-    setProjectParams({
-      ...(prjLocationRegionId && {
-        prj_location_region_id: prjLocationRegionId,
-      }),
-      ...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
-      ...(prjLocationWoredaId && {
-        prj_location_woreda_id: prjLocationWoredaId,
-      }),
-    });
-  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
-
   const toggle = () => {
     if (modal) {
       setModal(false);
@@ -700,7 +696,7 @@ const ProjectModel = () => {
           const { prj_id } = params.data || {};
           return (
             <Link to={`/Project/${prj_id}`}>
-              <Button type="button" className="btn-sm mb-1 default">
+              <Button type="button" className="btn-sm mb-1 default" outline>
                 <i className="fa fa-eye"></i>
               </Button>
             </Link>
@@ -736,7 +732,7 @@ const ProjectModel = () => {
               {Object.keys(dynamicComponents).length > 0 && (
                 <Link
                   to="#"
-                  className="text-secondary ms-2"
+                  className="text-secondary me-2"
                   onClick={() => handleClick(params.data)}
                 >
                   <i className="mdi mdi-cog font-size-18" id="viewtooltip" />
@@ -749,13 +745,13 @@ const ProjectModel = () => {
               <Link
                 to={`/Project/${params.data.prj_id}/project_plan`}
                 state={{ projectId: params.data.prj_id }}
-                className="text-secondary ms-2"
+                className="text-secondary me-2"
               >
                 <i
                   className="mdi mdi-file-document-outline font-size-18"
-                  id="viewtooltip"
+                  id="plantooltip"
                 />
-                <UncontrolledTooltip placement="top" target="viewtooltip">
+                <UncontrolledTooltip placement="top" target="plantooltip">
                   Project Plan
                 </UncontrolledTooltip>
               </Link>
