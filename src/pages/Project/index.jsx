@@ -249,18 +249,20 @@ const ProjectModel = () => {
             (item) => item.prj_name == value && item.prj_id !== project?.prj_id
           );
         }),
-        prj_name_am: Yup.string()
+      prj_name_am: Yup.string()
         .required(t("prj_name_am"))
         .test("unique-prj_name_am", t("Already exists"), (value) => {
           return !data?.data.some(
-            (item) => item.prj_name_am == value && item.prj_id !== project?.prj_id
+            (item) =>
+              item.prj_name_am == value && item.prj_id !== project?.prj_id
           );
         }),
-        prj_name_en: Yup.string()
+      prj_name_en: Yup.string()
         .required(t("prj_name_en"))
         .test("unique-prj_name_en", t("Already exists"), (value) => {
           return !data?.data.some(
-            (item) => item.prj_name_en == value && item.prj_id !== project?.prj_id
+            (item) =>
+              item.prj_name_en == value && item.prj_id !== project?.prj_id
           );
         }),
       prj_code: Yup.string()
@@ -275,12 +277,12 @@ const ProjectModel = () => {
         t("prj_project_category_id")
       ),
       //prj_project_budget_source_id: Yup.string().required(t('prj_project_budget_source_id')),
-      prj_total_estimate_budget: Yup.number().required(
-        t("prj_total_estimate_budget")
-      ).min(1000, t('prj_project_amount_range'))
-    .max(100000000000, t('prj_project_amount_range')),
+      prj_total_estimate_budget: Yup.number()
+        .required(t("prj_total_estimate_budget"))
+        .min(1000, t("prj_project_amount_range"))
+        .max(100000000000, t("prj_project_amount_range")),
 
-     /* prj_total_actual_budget: Yup.number().required(
+      /* prj_total_actual_budget: Yup.number().required(
         t("prj_total_actual_budget")
       ).min(1000, t('prj_project_amount_range'))
     .max(100000000000, t('prj_project_amount_range')),*/
@@ -289,10 +291,8 @@ const ProjectModel = () => {
       prj_location_region_id: Yup.string().required(
         t("prj_location_region_id")
       ),
-       prj_location_zone_id: Yup.string().required(
-        t("prj_location_zone_id")
-      ),
-        prj_location_woreda_id: Yup.string().required(
+      prj_location_zone_id: Yup.string().required(t("prj_location_zone_id")),
+      prj_location_woreda_id: Yup.string().required(
         t("prj_location_woreda_id")
       ),
       prj_department_id: Yup.string().required(t("prj_department_id")),
@@ -618,8 +618,8 @@ const ProjectModel = () => {
     filteredRows: t("filteredRows"),
     selectedRows: t("selectedRows"),
     totalRows: t("totalRows"),
-    totalAndFilteredRows: t("totalAndFilteredRows")
-  }
+    totalAndFilteredRows: t("totalAndFilteredRows"),
+  };
   const columnDefs = useMemo(() => {
     const baseColumnDefs = [
       {
@@ -674,7 +674,7 @@ const ProjectModel = () => {
             ? "" // Suppress in footer
             : params.value
             ? new Date(params.value).toLocaleDateString()
-            : "Invalid date"
+            : "Invalid date",
       },
       {
         field: "prj_end_date_actual_gc",
@@ -747,9 +747,8 @@ const ProjectModel = () => {
               )}
 
               <Link
-                to={{
-                  pathname: `/Project/${params.data.prj_id}/project_plan`,
-                }}
+                to={`/Project/${params.data.prj_id}/project_plan`}
+                state={{ projectId: params.data.prj_id }}
                 className="text-secondary ms-2"
               >
                 <i
@@ -903,7 +902,7 @@ const ProjectModel = () => {
                           ? searchResults?.data
                           : data?.data || []
                       }
-                      columnDefs={columnDefs}                  
+                      columnDefs={columnDefs}
                       pagination={true}
                       paginationPageSizeSelector={[10, 20, 30, 40, 50]}
                       paginationPageSize={10}
@@ -1099,7 +1098,9 @@ const ProjectModel = () => {
                               : false
                           }
                         >
-                          <option value={null}>{t('prj_select_category')}</option>
+                          <option value={null}>
+                            {t("prj_select_category")}
+                          </option>
                           {projectCategoryOptions.map((option) => (
                             <option key={option.value} value={option.value}>
                               {t(`${option.label}`)}
@@ -1190,9 +1191,7 @@ const ProjectModel = () => {
                               : false
                           }
                         >
-                          <option value={null}>
-                            {t('prj_select_Sector')}
-                          </option>
+                          <option value={null}>{t("prj_select_Sector")}</option>
                           {sectorInformationOptions.map((option) => (
                             <option key={option.value} value={option.value}>
                               {t(`${option.label}`)}
@@ -1225,7 +1224,9 @@ const ProjectModel = () => {
                               : false
                           }
                         >
-                          <option value={null}>{t('prj_select_department')}</option>
+                          <option value={null}>
+                            {t("prj_select_department")}
+                          </option>
                           {departmentOptions.map((option) => (
                             <option key={option.value} value={option.value}>
                               {t(`${option.label}`)}

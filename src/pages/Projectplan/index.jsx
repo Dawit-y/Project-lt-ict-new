@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -38,11 +37,12 @@ import {
   Badge,
   InputGroup,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import { createSelectOptions } from "../../utils/commonMethods";
+import { createSelectOptions, formatDate } from "../../utils/commonMethods";
+import "flatpickr/dist/themes/material_blue.css";
+import Flatpickr from "react-flatpickr";
+import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -50,12 +50,10 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-import "flatpickr/dist/themes/material_blue.css";
-import Flatpickr from "react-flatpickr";
-import { formatDate } from "../../utils/commonMethods";
-import { useFetchBudgetYears } from "../../queries/budgetyear_query";
-const ProjectPlanModel = (props) => {
-  const { id } = useParams();
+
+const ProjectPlanModel = () => {
+  const location = useLocation();
+  const id = Number(location.pathname.split("/")[2]);
   const param = { pld_project_id: id };
 
   const { t } = useTranslation();
@@ -126,14 +124,9 @@ const ProjectPlanModel = (props) => {
       setDeleteModal(false);
     }
   };
-  //END CRUD
-  //START FOREIGN CALLS
 
-  // validation
   const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
-
     initialValues: {
       pld_name: (projectPlan && projectPlan.pld_name) || "",
       pld_project_id: (projectPlan && projectPlan.pld_id) || "",
@@ -144,7 +137,6 @@ const ProjectPlanModel = (props) => {
       pld_end_date_gc: (projectPlan && projectPlan.pld_end_date_gc) || "",
       pld_description: (projectPlan && projectPlan.pld_description) || "",
       pld_status: (projectPlan && projectPlan.pld_status) || "",
-
       is_deletable: (projectPlan && projectPlan.is_deletable) || 1,
       is_editable: (projectPlan && projectPlan.is_editable) || 1,
     },
@@ -167,7 +159,7 @@ const ProjectPlanModel = (props) => {
         const updateProjectPlan = {
           pld_id: projectPlan?.pld_id,
           pld_name: values.pld_name,
-          //pld_project_id: values.pld_project_id,
+          pld_project_id: values.pld_project_id,
           pld_budget_year_id: Number(values.pld_budget_year_id),
           pld_start_date_ec: values.pld_start_date_ec,
           pld_start_date_gc: values.pld_start_date_gc,
@@ -175,7 +167,6 @@ const ProjectPlanModel = (props) => {
           pld_end_date_gc: values.pld_end_date_gc,
           pld_description: values.pld_description,
           pld_status: values.pld_status,
-
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -185,7 +176,7 @@ const ProjectPlanModel = (props) => {
       } else {
         const newProjectPlan = {
           pld_name: values.pld_name,
-          pld_project_id: passedId,
+          pld_project_id: id,
           pld_budget_year_id: Number(values.pld_budget_year_id),
           pld_start_date_ec: values.pld_start_date_ec,
           pld_start_date_gc: values.pld_start_date_gc,
@@ -201,7 +192,6 @@ const ProjectPlanModel = (props) => {
     },
   });
   const [transaction, setTransaction] = useState({});
-  // const [projectPlanselected,setProjectPlanSelected]=useState({});
   const [projectPlanSelected, setProjectPlanSelected] = useState(null);
 
   const toggleViewModal = () => setModal1(!modal1);
@@ -210,12 +200,14 @@ const ProjectPlanModel = (props) => {
   useEffect(() => {
     setProjectPlan(data);
   }, [data]);
+
   useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setProjectPlan(data);
       setIsEdit(false);
     }
   }, [data]);
+
   const toggle = () => {
     if (modal) {
       setModal(false);
@@ -238,7 +230,6 @@ const ProjectPlanModel = (props) => {
       pld_end_date_gc: projectPlan.pld_end_date_gc,
       pld_description: projectPlan.pld_description,
       pld_status: projectPlan.pld_status,
-
       is_deletable: projectPlan.is_deletable,
       is_editable: projectPlan.is_editable,
     });
@@ -258,11 +249,13 @@ const ProjectPlanModel = (props) => {
     setProjectPlan("");
     toggle();
   };
+
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
   };
+
   //START UNCHANGED projectPlanSelected
   const columns = useMemo(() => {
     const baseColumns = [
@@ -364,23 +357,26 @@ const ProjectPlanModel = (props) => {
         },
       },
     ];
-    const baseColumnSelected = [
-      {
-        header: "",
-        accessorKey: "pld_name",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pld_name, 30) || "-"}
-            </span>
-          );
-        },
-      },
-    ];
+    // const baseColumnSelected = [
+    //   {
+    //     header: "",
+    //     accessorKey: "pld_name",
+    //     enableColumnFilter: false,
+    //     enableSorting: true,
+    //     cell: (cellProps) => {
+    //       return (
+    //         <span>
+    //           {truncateText(cellProps.row.original.pld_name, 30) || "-"}
+    //         </span>
+    //       );
+    //     },
+    //   },
+    // ];
 
-    if (1 == 1) {
+    if (
+      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_deletable
+    ) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -389,13 +385,13 @@ const ProjectPlanModel = (props) => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {(cellProps.row.original?.is_editable ||
+                cellProps.row.original?.is_role_editable) && (
                 <Link
                   to="#"
                   className="text-success"
                   onClick={() => {
                     const data = cellProps.row.original;
-                    console.log("uuuuu " + data);
                     handleProjectPlanClick(data);
                   }}
                 >
@@ -406,7 +402,8 @@ const ProjectPlanModel = (props) => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {(cellProps.row.original?.is_deletable ||
+                cellProps.row.original?.is_role_deletable) && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -451,35 +448,7 @@ const ProjectPlanModel = (props) => {
         isLoading={deleteProjectPlan.isPending}
       />
       <div className="page-content">
-        <div className="container-fluid1">
-          {/* <AdvancedSearch
-            searchHook={useSearchProjectPlans}
-            textSearchKeys={["dep_name_am", "dep_name_en", "dep_name_or"]}
-            dropdownSearchKeys={[
-              {
-                key: "example",
-                options: [
-                  { value: "Freelance", label: "Example1" },
-                  { value: "Full Time", label: "Example2" },
-                  { value: "Part Time", label: "Example3" },
-                  { value: "Internship", label: "Example4" },
-                ],
-              },
-            ]}
-            checkboxSearchKeys={[
-              {
-                key: "example1",
-                options: [
-                  { value: "Engineering", label: "Example1" },
-                  { value: "Science", label: "Example2" },
-                ],
-              },
-            ]}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          />*/}
+        <div className="container-fluid">
           {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (

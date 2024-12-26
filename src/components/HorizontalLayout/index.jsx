@@ -40,22 +40,8 @@ const Layout = (props) => {
     layoutModeType,
     layoutWidth,
     isPreloader,
-    showRightSidebar
+    showRightSidebar,
   } = useSelector(selectLayoutProperties);
-
-  /*
-  document title
-  */
-
-  const pathName = useLocation();
-
-  useEffect(() => {
-    const title = pathName.pathname;
-    let currentage = title.charAt(1).toUpperCase() + title.slice(2);
-
-    document.title =
-      currentage + " | PMS";
-  }, [pathName.pathname]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
