@@ -222,9 +222,9 @@
 
   "department": "Department",
   "dep_id": "Id",
-  "dep_name_or": "Name Department in Afan Oromo",
-  "dep_name_am": "Name Department in Amharic",
-  "dep_name_en": "Name Department in English",
+  "dep_name_or": "Department Name in Afan Oromo",
+  "dep_name_am": "Department Name in Amharic",
+  "dep_name_en": "Department Name in English",
   "dep_code": "Code",
   "dep_available_at_region": "Available At Region",
   "dep_available_at_zone": "Available At Zone",

@@ -729,7 +729,7 @@ const ProjectPaymentModel = (props) => {
                           className="save-user"
                           disabled={update_loading || !validation.dirty}
                         >
-                          <Spinner size={"sm"} color="#fff" />
+                          <Spinner size={"sm"} color="success" />
                           {t("Save")}
                         </Button>
                       ) : (
