@@ -118,11 +118,15 @@ const ProjectStakeholderModel = (props) => {
       is_deletable:
         (projectStakeholder && projectStakeholder.is_deletable) || 1,
       is_editable: (projectStakeholder && projectStakeholder.is_editable) || 1,
+      psh_stakeholder_type: (projectStakeholder && projectStakeholder.psh_stakeholder_type) || "",
+      
     },
 
     validationSchema: Yup.object({
       // psh_project_id: Yup.string().required(t("psh_project_id")),
       psh_name: Yup.string().required(t("psh_name")),
+      //psh_stakeholder_type: Yup.string().required(t("psh_stakeholder_type")),
+      
       psh_representative_name: Yup.string().required(
         t("psh_representative_name")
       ),

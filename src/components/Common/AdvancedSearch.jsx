@@ -109,7 +109,7 @@ const AdvancedSearch = ({
     if (Object.keys(searchParams).length > 0) {
       fetchData();
     }
-  }, [searchParams]);
+  }, [searchParams,t]);
 
   const handleClear = () => {
     setParams({});

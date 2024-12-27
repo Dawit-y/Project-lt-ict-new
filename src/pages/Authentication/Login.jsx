@@ -70,6 +70,9 @@ const Login = (props) => {
       try {
         // console.log("login page ...");
         dispatch(loginUser(values, props.router.navigate));
+        localStorage.setItem("I18N_LANGUAGE", "en");
+        localStorage.setItem("i18nextLng", "en");
+        
       } catch (error) {
         // console.log("error message ", error);
         // If login fails, catch the error and display it

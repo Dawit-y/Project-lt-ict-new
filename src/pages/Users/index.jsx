@@ -972,7 +972,6 @@ const UsersModel = () => {
           </Modal>
         </div>
       </div>
-
       {showCanvas && (
         <RightOffCanvas
           handleClick={handleClick}
@@ -989,5 +988,4 @@ const UsersModel = () => {
 UsersModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,
 };
-
 export default UsersModel;
