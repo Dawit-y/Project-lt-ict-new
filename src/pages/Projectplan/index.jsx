@@ -17,6 +17,7 @@ import {
   useDeleteProjectPlan,
   useUpdateProjectPlan,
 } from "../../queries/projectplan_query";
+import { useFetchProject } from "../../queries/project_query";
 import ProjectPlanModal from "./ProjectPlanModal";
 import { useTranslation } from "react-i18next";
 import {
@@ -43,6 +44,7 @@ import { createSelectOptions, formatDate } from "../../utils/commonMethods";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
+import ProjectDetailColapse from "../Project/ProjectDetailColapse";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -60,6 +62,7 @@ const ProjectPlanModel = () => {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [projectPlan, setProjectPlan] = useState(null);
 
   const [searchResults, setSearchResults] = useState(null);
@@ -75,6 +78,7 @@ const ProjectPlanModel = () => {
     "bdy_id",
     "bdy_name"
   );
+  const project = useFetchProject(id);
 
   const addProjectPlan = useAddProjectPlan();
   const updateProjectPlan = useUpdateProjectPlan();
@@ -449,10 +453,14 @@ const ProjectPlanModel = () => {
       />
       <div className="page-content">
         <div className="container-fluid">
-          {isLoading || isSearchLoading ? (
+          {isLoading || isSearchLoading || project.isLoading ? (
             <Spinners />
           ) : (
             <Row>
+              <ProjectDetailColapse
+                data={project?.data?.data || []}
+                isExpanded={isExpanded}
+              />
               {/* TableContainer for displaying data */}
               <Col lg={12}>
                 <TableContainer

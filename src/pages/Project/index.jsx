@@ -956,7 +956,7 @@ const ProjectModel = () => {
                               ? true
                               : false
                           }
-                          maxLength={20}
+                          maxLength={200}
                         />
                         {validation.touched.prj_location_description &&
                         validation.errors.prj_location_description ? (
@@ -1352,7 +1352,6 @@ const ProjectModel = () => {
                               ? true
                               : false
                           }
-                          maxLength={20}
                         />
                         {validation.touched.prj_urban_ben_number &&
                         validation.errors.prj_urban_ben_number ? (
@@ -1376,7 +1375,6 @@ const ProjectModel = () => {
                               ? true
                               : false
                           }
-                          maxLength={20}
                         />
                         {validation.touched.prj_rural_ben_number &&
                         validation.errors.prj_rural_ben_number ? (
@@ -1400,7 +1398,7 @@ const ProjectModel = () => {
                               ? true
                               : false
                           }
-                          maxLength={20}
+                          maxLength={200}
                         />
                         {validation.touched.prj_outcome &&
                         validation.errors.prj_outcome ? (
@@ -1424,7 +1422,7 @@ const ProjectModel = () => {
                               ? true
                               : false
                           }
-                          maxLength={20}
+                          maxLength={200}
                         />
                         {validation.touched.prj_remark &&
                         validation.errors.prj_remark ? (
