@@ -58,8 +58,6 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 const ProjectEmployeeModel = (props) => {
-  //meta title
-  document.title = " ProjectEmployee";
   const { passedId, isActive } = props;
   const param = { emp_project_id: passedId };
 

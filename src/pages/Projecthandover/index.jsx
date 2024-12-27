@@ -8,11 +8,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
-//import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-
 import {
   useFetchProjectHandovers,
   useSearchProjectHandovers,
@@ -57,7 +53,6 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectHandoverModel = (props) => {
-  document.title = " ProjectHandover";
   const { passedId, isActive } = props;
   const param = { prh_project_id: passedId };
 

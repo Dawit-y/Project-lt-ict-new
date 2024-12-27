@@ -1,5 +1,10 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
-import axios from "axios";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+  useCallback,
+} from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { before, isEmpty, update } from "lodash";
@@ -57,10 +62,7 @@ import {
   Input,
   FormFeedback,
   Label,
-  Card,
-  CardBody,
   FormGroup,
-  Badge,
   InputGroup,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
@@ -89,7 +91,6 @@ const tabMapping = {
 };
 
 const ProjectModel = () => {
-  //meta title
   document.title = " Project";
   const [projectMetaData, setProjectMetaData] = useState([]);
   const [showCanvas, setShowCanvas] = useState(false);
@@ -198,15 +199,12 @@ const ProjectModel = () => {
 
   // validation
   const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
-
     initialValues: {
       prj_name: (project && project.prj_name) || "",
       prj_name_am: (project && project.prj_name_am) || "",
       prj_name_en: (project && project.prj_name_en) || "",
       prj_code: (project && project.prj_code) || "",
-
       prj_project_status_id: (project && project.prj_project_status_id) || "",
       prj_project_category_id:
         (project && project.prj_project_category_id) || "",
@@ -456,21 +454,30 @@ const ProjectModel = () => {
     }
   };
 
-  const handleNodeSelect = (node) => {
-    if (node.level === "region") {
-      setPrjLocationRegionId(node.id);
-      setPrjLocationZoneId(null); // Clear dependent states
-      setPrjLocationWoredaId(null);
-    } else if (node.level === "zone") {
-      setPrjLocationZoneId(node.id);
-      setPrjLocationWoredaId(null); // Clear dependent state
-    } else if (node.level === "woreda") {
-      setPrjLocationWoredaId(node.id);
-    }
-    if (showSearchResult) {
-      setShowSearchResult(false);
-    }
-  };
+  const handleNodeSelect = useCallback(
+    (node) => {
+      if (node.level === "region") {
+        setPrjLocationRegionId(node.id);
+        setPrjLocationZoneId(null); // Clear dependent states
+        setPrjLocationWoredaId(null);
+      } else if (node.level === "zone") {
+        setPrjLocationZoneId(node.id);
+        setPrjLocationWoredaId(null); // Clear dependent state
+      } else if (node.level === "woreda") {
+        setPrjLocationWoredaId(node.id);
+      }
+      if (showSearchResult) {
+        setShowSearchResult(false);
+      }
+    },
+    [
+      setPrjLocationRegionId,
+      setPrjLocationZoneId,
+      setPrjLocationWoredaId,
+      showSearchResult,
+      setShowSearchResult,
+    ]
+  );
 
   const handleClick = (data) => {
     setShowCanvas(!showCanvas); // Toggle canvas visibility

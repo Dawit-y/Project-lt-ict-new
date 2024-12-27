@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -9,23 +8,16 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
-//import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 
 import {
   useFetchProjectVariations,
-  useSearchProjectVariations,
   useAddProjectVariation,
   useDeleteProjectVariation,
   useUpdateProjectVariation,
 } from "../../queries/projectvariation_query";
 import ProjectVariationModal from "./ProjectVariationModal";
 import { useTranslation } from "react-i18next";
-
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
 
 import {
   Button,
@@ -45,9 +37,8 @@ import {
   Badge,
   InputGroup
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
@@ -60,7 +51,6 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectVariationModel = (props) => {
-  document.title = " ProjectVariation";
   const { passedId, isActive } = props;
   const param = { prv_project_id: passedId };
 

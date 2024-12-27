@@ -3,14 +3,13 @@ import { Navigate } from "react-router-dom";
 
 import Dashboard from "../pages/Dashboard/index";
 import Login from "../pages/Authentication/Login";
-// add Unauthorized page
 import Unauthorized from "../components/Common/NotFound";
-import { components } from "react-select";
 import UsersProfile from "../pages/Profile";
-import ProjectPaymentList from "../pages/Projectpayment/ProjectPaymentList";
+import ProjectProvider from "../context/ProjectContext";
 
-const ProjectProvider = lazy(() => import("../context/ProjectContext.jsx"));
-
+const ProjectPaymentList = lazy(() =>
+  import("../pages/Projectpayment/ProjectPaymentList")
+);
 const Calendar = lazy(() => import("../pages/Calendar/index"));
 const ProjectLists = lazy(() =>
   import("../pages/Projects/ProjectStatusLists/index")
@@ -64,38 +63,60 @@ const CascadingDropdowns = lazy(() =>
 );
 const Dashboardcard = lazy(() => import("../Dashboards/Pie"));
 const Notifications = lazy(() => import("../pages/notifications"));
-import ProjectOverview from "../pages/Project/ProjectOverview";
-import ProjectsLocation from "../pages/ProjectsLocation";
 
-import Gantty from "../pages/GanttChart/index";
-import StatisticalReport from "../pages/StatisticalReport";
-import Report from "../pages/Report/index";
-//Newly added
-import ExpenditureCode from "../pages/Expenditurecode/index";
-import ProjectBudgetExpenditure from "../pages/Projectbudgetexpenditure/index";
-import ProjectEmployee from "../pages/Projectemployee/index";
-import ProjectHandover from "../pages/Projecthandover/index";
-import ProjectPerformance from "../pages/Projectperformance/index";
-import ProjectPerformanceList from "../pages/Projectperformance/ProjectPerformanceList";
-import ProjectHandoverList from "../pages/Projecthandover/ProjectHandoverList";
-import ProjectBudgetExpenditureList from "../pages/Projectbudgetexpenditure/ProjectBudgetExpenditureList";
-import ProjectBudgetSourceList from "../pages/Projectbudgetsource/ProjectBudgetSourceList";
-import ProjectVariationList from "../pages/Projectvariation/ProjectVariationList";
-import ProjectSupplimentaryList from "../pages/Projectsupplimentary/ProjectSupplimentaryList";
-import ProjectEmployeeList from "../pages/Projectemployee/ProjectEmployeeList";
-
-import ProjectStakeholderList from "../pages/Projectstakeholder/ProjectStakeholderList";
-import ProjectContractorList from "../pages/Projectcontractor/ProjectContractorList";
-import ProjectBudgetPlanList from "../pages/Projectbudgetplan/ProjectBudgetPlanList";
-
-//import ProjectStakeholder from '../pages/Projectstakeholder/index';
-//import ProjectContractor from '../pages/Projectontractor/index';
-import ProjectBudgetPlan from "../pages/Projectbudgetplan/index";
-
-import BudgetMonth from "../pages/Budgetmonth/index";
-import ProjectPlan from "../pages/Projectplan/index";
-import ProjectSupplimentary from "../pages/Projectsupplimentary/index";
-import ProjectVariation from "../pages/Projectvariation/index";
+const ProjectOverview = lazy(() => import("../pages/Project/ProjectOverview"));
+const ProjectsLocation = lazy(() => import("../pages/ProjectsLocation"));
+const Gantty = lazy(() => import("../pages/GanttChart/index"));
+const StatisticalReport = lazy(() => import("../pages/StatisticalReport"));
+const Report = lazy(() => import("../pages/Report/index"));
+const ExpenditureCode = lazy(() => import("../pages/Expenditurecode/index"));
+const ProjectBudgetExpenditure = lazy(() =>
+  import("../pages/Projectbudgetexpenditure/index")
+);
+const ProjectEmployee = lazy(() => import("../pages/Projectemployee/index"));
+const ProjectHandover = lazy(() => import("../pages/Projecthandover/index"));
+const ProjectPerformance = lazy(() =>
+  import("../pages/Projectperformance/index")
+);
+const ProjectPerformanceList = lazy(() =>
+  import("../pages/Projectperformance/ProjectPerformanceList")
+);
+const ProjectHandoverList = lazy(() =>
+  import("../pages/Projecthandover/ProjectHandoverList")
+);
+const ProjectBudgetExpenditureList = lazy(() =>
+  import("../pages/Projectbudgetexpenditure/ProjectBudgetExpenditureList")
+);
+const ProjectBudgetSourceList = lazy(() =>
+  import("../pages/Projectbudgetsource/ProjectBudgetSourceList")
+);
+const ProjectVariationList = lazy(() =>
+  import("../pages/Projectvariation/ProjectVariationList")
+);
+const ProjectSupplimentaryList = lazy(() =>
+  import("../pages/Projectsupplimentary/ProjectSupplimentaryList")
+);
+const ProjectEmployeeList = lazy(() =>
+  import("../pages/Projectemployee/ProjectEmployeeList")
+);
+const ProjectStakeholderList = lazy(() =>
+  import("../pages/Projectstakeholder/ProjectStakeholderList")
+);
+const ProjectContractorList = lazy(() =>
+  import("../pages/Projectcontractor/ProjectContractorList")
+);
+const ProjectBudgetPlanList = lazy(() =>
+  import("../pages/Projectbudgetplan/ProjectBudgetPlanList")
+);
+const ProjectBudgetPlan = lazy(() =>
+  import("../pages/Projectbudgetplan/index")
+);
+const BudgetMonth = lazy(() => import("../pages/Budgetmonth/index"));
+const ProjectPlan = lazy(() => import("../pages/Projectplan/index"));
+const ProjectSupplimentary = lazy(() =>
+  import("../pages/Projectsupplimentary/index")
+);
+const ProjectVariation = lazy(() => import("../pages/Projectvariation/index"));
 
 const authProtectedRoutes = [
   { path: "/expenditure_code", component: <ExpenditureCode /> },
@@ -126,19 +147,12 @@ const authProtectedRoutes = [
   { path: "/project_stakeholder_list", component: <ProjectStakeholderList /> },
   { path: "/project_contractor_list", component: <ProjectContractorList /> },
   { path: "/project_budget_plan_list", component: <ProjectBudgetPlanList /> },
-
-  //{path: '/project_stakeholder', component: <ProjectStakeholder/> },
-  //{path: '/project_contractor', component: <ProjectContractor/> },
   { path: "/project_budget_plan", component: <ProjectBudgetPlan /> },
   { path: "/budget_month", component: <BudgetMonth /> },
-
-  //  {path: '/project_plan', component: <ProjectPlan/> },
-
   { path: "/project_supplimentary", component: <ProjectSupplimentary /> },
   { path: "/project_variation", component: <ProjectVariation /> },
   { path: "/dash", components: <Dashboardcard /> },
   { path: "/dashboard", component: <Dashboard /> },
-  //File Manager
   { path: "/Project-Tree", component: <ProjectsTreeView /> },
   { path: "/address_structure", component: <AddressStructure /> },
   { path: "/department", component: <Department /> },
@@ -152,13 +166,9 @@ const authProtectedRoutes = [
   { path: "/contractor_type", component: <ContractorType /> },
   { path: "/document_type", component: <DocumentType /> },
   { path: "/access_log", component: <AccessLog /> },
-
-  // //calendar
   { path: "/calendar", component: <Calendar /> },
-
   { path: "/projects-status", component: <ProjectLists /> },
   { path: "/view-project", component: <ViewProjectPage /> },
-
   { path: "/project_status", component: <ProjectStatus /> },
   { path: "/sector_category", component: <SectorCategory /> },
   { path: "/users", component: <Users /> },
@@ -168,11 +178,29 @@ const authProtectedRoutes = [
   { path: "/project_stakeholder", component: <ProjectStakeholder /> },
   { path: "/stakeholder_type", component: <StakeholderType /> },
   { path: "/document_type", component: <DocumentType /> },
-  { path: "/Project", component: <Project /> },
-  { path: "/Project/:id", component: <ProjectOverview /> },
+  {
+    path: "/Project",
+    component: (
+      <ProjectProvider>
+        <Project />
+      </ProjectProvider>
+    ),
+  },
+  {
+    path: "/Project/:id",
+    component: (
+      <ProjectProvider>
+        <ProjectOverview />
+      </ProjectProvider>
+    ),
+  },
   {
     path: "/Project/:id/project_plan",
-    component: <ProjectPlan />,
+    component: (
+      <ProjectProvider>
+        <ProjectPlan />
+      </ProjectProvider>
+    ),
   },
   { path: "/project_category", component: <ProjectCategory /> },
   { path: "/project_contractor", component: <ProjectContractor /> },
@@ -184,7 +212,6 @@ const authProtectedRoutes = [
   { path: "/notifications", component: <Notifications /> },
   { path: "/profile", component: <UsersProfile /> },
   { path: "/project_payment_list", component: <ProjectPaymentList /> },
-  { path: "/project_overview", component: <ProjectOverview /> },
   { path: "/projects_location", component: <ProjectsLocation /> },
   { path: "/statistical_report", component: <StatisticalReport /> },
   { path: "/report", component: <Report /> },
@@ -202,5 +229,4 @@ const publicRoutes = [
   { path: "/Unauthorized", components: <Unauthorized /> },
 ];
 
-// export { authProtectedRoutes, publicRoutes };
 export { authProtectedRoutes, publicRoutes };

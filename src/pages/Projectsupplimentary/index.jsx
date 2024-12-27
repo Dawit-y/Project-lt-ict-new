@@ -43,7 +43,7 @@ import {
   CardBody,
   FormGroup,
   Badge,
-  InputGroup
+  InputGroup,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -59,8 +59,8 @@ const truncateText = (text, maxLength) => {
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 import { formatDate } from "../../utils/commonMethods";
+
 const ProjectSupplimentaryModel = (props) => {
-  document.title = " ProjectSupplimentary";
   const { passedId, isActive } = props;
   const param = { prs_project_id: passedId };
   const { t } = useTranslation();
@@ -183,7 +183,7 @@ const ProjectSupplimentaryModel = (props) => {
           prs_id: projectSupplimentary?.prs_id,
           prs_requested_amount: values.prs_requested_amount,
           prs_released_amount: values.prs_released_amount,
-         // prs_project_id: values.prs_project_id,
+          // prs_project_id: values.prs_project_id,
           prs_requested_date_ec: values.prs_requested_date_ec,
           prs_requested_date_gc: values.prs_requested_date_gc,
           prs_released_date_ec: values.prs_released_date_ec,
@@ -574,17 +574,18 @@ const ProjectSupplimentaryModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                 <Col className="col-md-6 mb-3">
+                  <Col className="col-md-6 mb-3">
                     <FormGroup>
                       <Label>{t("prs_requested_date_gc")}</Label>
                       <InputGroup>
                         <Flatpickr
                           id="DataPicker"
-                          className={`form-control ${validation.touched.prs_requested_date_gc &&
-                              validation.errors.prs_requested_date_gc
+                          className={`form-control ${
+                            validation.touched.prs_requested_date_gc &&
+                            validation.errors.prs_requested_date_gc
                               ? "is-invalid"
                               : ""
-                            }`}
+                          }`}
                           name="prs_requested_date_gc"
                           options={{
                             altInput: true,
@@ -612,7 +613,7 @@ const ProjectSupplimentaryModel = (props) => {
                         </Button>
                       </InputGroup>
                       {validation.touched.prs_requested_date_gc &&
-                        validation.errors.prs_requested_date_gc ? (
+                      validation.errors.prs_requested_date_gc ? (
                         <FormFeedback>
                           {validation.errors.prs_requested_date_gc}
                         </FormFeedback>
@@ -625,11 +626,12 @@ const ProjectSupplimentaryModel = (props) => {
                       <InputGroup>
                         <Flatpickr
                           id="DataPicker"
-                          className={`form-control ${validation.touched.prs_released_date_gc &&
-                              validation.errors.prs_released_date_gc
+                          className={`form-control ${
+                            validation.touched.prs_released_date_gc &&
+                            validation.errors.prs_released_date_gc
                               ? "is-invalid"
                               : ""
-                            }`}
+                          }`}
                           name="prs_released_date_gc"
                           options={{
                             altInput: true,
@@ -657,7 +659,7 @@ const ProjectSupplimentaryModel = (props) => {
                         </Button>
                       </InputGroup>
                       {validation.touched.prs_released_date_gc &&
-                        validation.errors.prs_released_date_gc ? (
+                      validation.errors.prs_released_date_gc ? (
                         <FormFeedback>
                           {validation.errors.prs_released_date_gc}
                         </FormFeedback>

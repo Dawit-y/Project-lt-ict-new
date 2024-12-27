@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -9,11 +8,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
-//import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-
 import {
   useFetchProjectPerformances,
   useSearchProjectPerformances,
@@ -24,10 +19,6 @@ import {
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 import ProjectPerformanceModal from "./ProjectPerformanceModal";
 import { useTranslation } from "react-i18next";
-
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
 import {
   Button,
   Col,
@@ -44,11 +35,10 @@ import {
   CardBody,
   FormGroup,
   Badge,
-  InputGroup
+  InputGroup,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { createSelectOptions } from "../../utils/commonMethods";
 import "flatpickr/dist/themes/material_blue.css";
@@ -62,17 +52,8 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectPerformanceModel = (props) => {
-  const { data: projectCategoryData } = useFetchProjectStatuss();
-  const projectStatusOptions = createSelectOptions(
-    projectCategoryData?.data || [],
-    "prs_id",
-    "prs_status_name_or"
-  );
-  //  get passed data from tab
   const { passedId, isActive } = props;
   const param = { prp_project_id: passedId };
-  //meta title
-  document.title = " ProjectPerformance";
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -86,6 +67,12 @@ const ProjectPerformanceModel = (props) => {
 
   const { data, isLoading, error, isError, refetch } =
     useFetchProjectPerformances(param, isActive);
+  const { data: projectCategoryData } = useFetchProjectStatuss();
+  const projectStatusOptions = createSelectOptions(
+    projectCategoryData?.data || [],
+    "prs_id",
+    "prs_status_name_or"
+  );
 
   const addProjectPerformance = useAddProjectPerformance();
   const updateProjectPerformance = useUpdateProjectPerformance();
@@ -496,7 +483,7 @@ const ProjectPerformanceModel = (props) => {
                 }}
               >
                 <Row>
-                <Col className="col-md-6 mb-3">
+                  <Col className="col-md-6 mb-3">
                     <Label>
                       {t("prp_project_status_id")}
                       <span className="text-danger">*</span>
@@ -510,7 +497,7 @@ const ProjectPerformanceModel = (props) => {
                       value={validation.values.prp_project_status_id || ""}
                       invalid={
                         validation.touched.prp_project_status_id &&
-                          validation.errors.prp_project_status_id
+                        validation.errors.prp_project_status_id
                           ? true
                           : false
                       }
@@ -523,7 +510,7 @@ const ProjectPerformanceModel = (props) => {
                       ))}
                     </Input>
                     {validation.touched.prp_project_status_id &&
-                      validation.errors.prp_project_status_id ? (
+                    validation.errors.prp_project_status_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_project_status_id}
                       </FormFeedback>
@@ -535,11 +522,12 @@ const ProjectPerformanceModel = (props) => {
                       <InputGroup>
                         <Flatpickr
                           id="DataPicker"
-                          className={`form-control ${validation.touched.prp_record_date_gc &&
-                              validation.errors.prp_record_date_gc
+                          className={`form-control ${
+                            validation.touched.prp_record_date_gc &&
+                            validation.errors.prp_record_date_gc
                               ? "is-invalid"
                               : ""
-                            }`}
+                          }`}
                           name="prp_record_date_gc"
                           options={{
                             altInput: true,
@@ -567,7 +555,7 @@ const ProjectPerformanceModel = (props) => {
                         </Button>
                       </InputGroup>
                       {validation.touched.prp_record_date_gc &&
-                        validation.errors.prp_record_date_gc ? (
+                      validation.errors.prp_record_date_gc ? (
                         <FormFeedback>
                           {validation.errors.prp_record_date_gc}
                         </FormFeedback>

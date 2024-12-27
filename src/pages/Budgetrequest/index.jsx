@@ -59,12 +59,8 @@ const statusClasses = {
 };
 
 const BudgetRequestModel = (props) => {
-  //  get passed data from tab
   const { passedId } = props;
   const params = { project_id: passedId };
-  //meta title
-  document.title = " BudgetRequest";
-
   const { t } = useTranslation();
 
   const [modal, setModal] = useState(false);

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, memo } from "react";
 import { Collapse } from "reactstrap";
 import { FaChevronDown, FaChevronRight } from "react-icons/fa";
 import { HiOutlineFolder } from "react-icons/hi";
@@ -15,6 +15,7 @@ const TreeNode = ({ node, onNodeClick, level = 0 }) => {
     nodeRef.current.classList.add("bg-info-subtle");
     onNodeClick(node);
   };
+  
   return (
     <div
       className="position-relative ms-3 py-1"
@@ -93,4 +94,4 @@ const TreeNode = ({ node, onNodeClick, level = 0 }) => {
   );
 };
 
-export default TreeNode;
+export default memo(TreeNode);

@@ -44,11 +44,11 @@ import {
   CardBody,
   FormGroup,
   Badge,
-  InputGroup
+  InputGroup,
 } from "reactstrap";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -62,8 +62,6 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectContractorModel = (props) => {
-  //meta title
-  document.title = " ProjectContractor";
   const { passedId, isActive } = props;
   const param = { cni_project_id: passedId };
   const { t } = useTranslation();
@@ -79,21 +77,21 @@ const ProjectContractorModel = (props) => {
 
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useFetchProjectContractors(param,
-    isActive);
+  const { data, isLoading, error, isError, refetch } =
+    useFetchProjectContractors(param, isActive);
 
   const addProjectContractor = useAddProjectContractor();
   const updateProjectContractor = useUpdateProjectContractor();
   const deleteProjectContractor = useDeleteProjectContractor();
 
-   const { data: contractorTypeData } = useFetchContractorTypes();
+  const { data: contractorTypeData } = useFetchContractorTypes();
   const contractorTypeOptions = createSelectOptions(
     contractorTypeData?.data || [],
     "cnt_id",
     "cnt_type_name_or"
   );
 
-//START CRUD
+  //START CRUD
   const handleAddProjectContractor = async (data) => {
     try {
       await addProjectContractor.mutateAsync(data);
@@ -140,48 +138,72 @@ const ProjectContractorModel = (props) => {
   //END CRUD
   //START FOREIGN CALLS
 
-  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     cni_name:(projectContractor && projectContractor.cni_name) || "", 
-cni_tin_num:(projectContractor && projectContractor.cni_tin_num) || "", 
-cni_contractor_type_id:(projectContractor && projectContractor.cni_contractor_type_id) || "", 
-cni_vat_num:(projectContractor && projectContractor.cni_vat_num) || "", 
-cni_total_contract_price:(projectContractor && projectContractor.cni_total_contract_price) || "", 
-cni_contract_start_date_et:(projectContractor && projectContractor.cni_contract_start_date_et) || "", 
-cni_contract_start_date_gc:(projectContractor && projectContractor.cni_contract_start_date_gc) || "", 
-cni_contract_end_date_et:(projectContractor && projectContractor.cni_contract_end_date_et) || "", 
-cni_contract_end_date_gc:(projectContractor && projectContractor.cni_contract_end_date_gc) || "", 
-cni_contact_person:(projectContractor && projectContractor.cni_contact_person) || "", 
-cni_phone_number:(projectContractor && projectContractor.cni_phone_number) || "", 
-cni_address:(projectContractor && projectContractor.cni_address) || "", 
-cni_email:(projectContractor && projectContractor.cni_email) || "", 
-cni_website:(projectContractor && projectContractor.cni_website) || "", 
-cni_project_id:passedId, 
-cni_procrument_method:(projectContractor && projectContractor.cni_procrument_method) || "", 
-cni_bid_invitation_date:(projectContractor && projectContractor.cni_bid_invitation_date) || "", 
-cni_bid_opening_date:(projectContractor && projectContractor.cni_bid_opening_date) || "", 
-cni_bid_evaluation_date:(projectContractor && projectContractor.cni_bid_evaluation_date) || "", 
-cni_bid_award_date:(projectContractor && projectContractor.cni_bid_award_date) || "", 
-cni_bid_contract_signing_date:(projectContractor && projectContractor.cni_bid_contract_signing_date) || "", 
-cni_description:(projectContractor && projectContractor.cni_description) || "", 
-cni_status:(projectContractor && projectContractor.cni_status) || "", 
+      cni_name: (projectContractor && projectContractor.cni_name) || "",
+      cni_tin_num: (projectContractor && projectContractor.cni_tin_num) || "",
+      cni_contractor_type_id:
+        (projectContractor && projectContractor.cni_contractor_type_id) || "",
+      cni_vat_num: (projectContractor && projectContractor.cni_vat_num) || "",
+      cni_total_contract_price:
+        (projectContractor && projectContractor.cni_total_contract_price) || "",
+      cni_contract_start_date_et:
+        (projectContractor && projectContractor.cni_contract_start_date_et) ||
+        "",
+      cni_contract_start_date_gc:
+        (projectContractor && projectContractor.cni_contract_start_date_gc) ||
+        "",
+      cni_contract_end_date_et:
+        (projectContractor && projectContractor.cni_contract_end_date_et) || "",
+      cni_contract_end_date_gc:
+        (projectContractor && projectContractor.cni_contract_end_date_gc) || "",
+      cni_contact_person:
+        (projectContractor && projectContractor.cni_contact_person) || "",
+      cni_phone_number:
+        (projectContractor && projectContractor.cni_phone_number) || "",
+      cni_address: (projectContractor && projectContractor.cni_address) || "",
+      cni_email: (projectContractor && projectContractor.cni_email) || "",
+      cni_website: (projectContractor && projectContractor.cni_website) || "",
+      cni_project_id: passedId,
+      cni_procrument_method:
+        (projectContractor && projectContractor.cni_procrument_method) || "",
+      cni_bid_invitation_date:
+        (projectContractor && projectContractor.cni_bid_invitation_date) || "",
+      cni_bid_opening_date:
+        (projectContractor && projectContractor.cni_bid_opening_date) || "",
+      cni_bid_evaluation_date:
+        (projectContractor && projectContractor.cni_bid_evaluation_date) || "",
+      cni_bid_award_date:
+        (projectContractor && projectContractor.cni_bid_award_date) || "",
+      cni_bid_contract_signing_date:
+        (projectContractor &&
+          projectContractor.cni_bid_contract_signing_date) ||
+        "",
+      cni_description:
+        (projectContractor && projectContractor.cni_description) || "",
+      cni_status: (projectContractor && projectContractor.cni_status) || "",
 
-is_deletable: (projectContractor && projectContractor.is_deletable) || 1,
-is_editable: (projectContractor && projectContractor.is_editable) || 1
+      is_deletable: (projectContractor && projectContractor.is_deletable) || 1,
+      is_editable: (projectContractor && projectContractor.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
       cni_name: Yup.string().required(t("cni_name")),
       cni_tin_num: Yup.string().required(t("cni_tin_num")),
       cni_vat_num: Yup.string().required(t("cni_vat_num")),
-      cni_total_contract_price: Yup.string().required(t("cni_total_contract_price")),
-      cni_contract_start_date_gc: Yup.string().required( t("cni_contract_start_date_gc")),
-      cni_contract_end_date_gc: Yup.string().required(t("cni_contract_end_date_gc") ),
+      cni_total_contract_price: Yup.string().required(
+        t("cni_total_contract_price")
+      ),
+      cni_contract_start_date_gc: Yup.string().required(
+        t("cni_contract_start_date_gc")
+      ),
+      cni_contract_end_date_gc: Yup.string().required(
+        t("cni_contract_end_date_gc")
+      ),
       cni_contact_person: Yup.string().required(t("cni_contact_person")),
       cni_phone_number: Yup.string().required(t("cni_phone_number")),
       //cni_address: Yup.string().required(t("cni_address")),
@@ -191,37 +213,36 @@ is_editable: (projectContractor && projectContractor.is_editable) || 1
       //cni_bid_evaluation_date: Yup.string().required( t("cni_bid_evaluation_date")),
       //cni_bid_award_date: Yup.string().required(t("cni_bid_award_date")),
       //cni_bid_contract_signing_date: Yup.string().required(t("cni_bid_contract_signing_date"))
-
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateProjectContractor = {
-          cni_id:projectContractor.cni_id, 
-          cni_name:values.cni_name, 
-          cni_tin_num:values.cni_tin_num, 
-          cni_contractor_type_id:values.cni_contractor_type_id, 
-          cni_vat_num:values.cni_vat_num, 
-          cni_total_contract_price:values.cni_total_contract_price, 
-          cni_contract_start_date_et:values.cni_contract_start_date_et, 
-          cni_contract_start_date_gc:values.cni_contract_start_date_gc, 
-          cni_contract_end_date_et:values.cni_contract_end_date_et, 
-          cni_contract_end_date_gc:values.cni_contract_end_date_gc, 
-          cni_contact_person:values.cni_contact_person, 
-          cni_phone_number:values.cni_phone_number, 
-          cni_address:values.cni_address, 
-          cni_email:values.cni_email, 
-          cni_website:values.cni_website, 
-          cni_project_id:passedId,  
-          cni_procrument_method:values.cni_procrument_method, 
-          cni_bid_invitation_date:values.cni_bid_invitation_date, 
-          cni_bid_opening_date:values.cni_bid_opening_date, 
-          cni_bid_evaluation_date:values.cni_bid_evaluation_date, 
-          cni_bid_award_date:values.cni_bid_award_date, 
-          cni_bid_contract_signing_date:values.cni_bid_contract_signing_date, 
-          cni_description:values.cni_description, 
-          cni_status:values.cni_status, 
+          cni_id: projectContractor.cni_id,
+          cni_name: values.cni_name,
+          cni_tin_num: values.cni_tin_num,
+          cni_contractor_type_id: values.cni_contractor_type_id,
+          cni_vat_num: values.cni_vat_num,
+          cni_total_contract_price: values.cni_total_contract_price,
+          cni_contract_start_date_et: values.cni_contract_start_date_et,
+          cni_contract_start_date_gc: values.cni_contract_start_date_gc,
+          cni_contract_end_date_et: values.cni_contract_end_date_et,
+          cni_contract_end_date_gc: values.cni_contract_end_date_gc,
+          cni_contact_person: values.cni_contact_person,
+          cni_phone_number: values.cni_phone_number,
+          cni_address: values.cni_address,
+          cni_email: values.cni_email,
+          cni_website: values.cni_website,
+          cni_project_id: passedId,
+          cni_procrument_method: values.cni_procrument_method,
+          cni_bid_invitation_date: values.cni_bid_invitation_date,
+          cni_bid_opening_date: values.cni_bid_opening_date,
+          cni_bid_evaluation_date: values.cni_bid_evaluation_date,
+          cni_bid_award_date: values.cni_bid_award_date,
+          cni_bid_contract_signing_date: values.cni_bid_contract_signing_date,
+          cni_description: values.cni_description,
+          cni_status: values.cni_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -231,30 +252,29 @@ is_editable: (projectContractor && projectContractor.is_editable) || 1
         validation.resetForm();
       } else {
         const newProjectContractor = {
-          cni_name:values.cni_name, 
-          cni_tin_num:values.cni_tin_num, 
-          cni_contractor_type_id:values.cni_contractor_type_id, 
-          cni_vat_num:values.cni_vat_num, 
-          cni_total_contract_price:values.cni_total_contract_price, 
-          cni_contract_start_date_et:values.cni_contract_start_date_et, 
-          cni_contract_start_date_gc:values.cni_contract_start_date_gc, 
-          cni_contract_end_date_et:values.cni_contract_end_date_et, 
-          cni_contract_end_date_gc:values.cni_contract_end_date_gc, 
-          cni_contact_person:values.cni_contact_person, 
-          cni_phone_number:values.cni_phone_number, 
-          cni_address:values.cni_address, 
-          cni_email:values.cni_email, 
-          cni_website:values.cni_website, 
-          cni_project_id:passedId, 
-          cni_procrument_method:values.cni_procrument_method, 
-          cni_bid_invitation_date:values.cni_bid_invitation_date, 
-          cni_bid_opening_date:values.cni_bid_opening_date, 
-          cni_bid_evaluation_date:values.cni_bid_evaluation_date, 
-          cni_bid_award_date:values.cni_bid_award_date, 
-          cni_bid_contract_signing_date:values.cni_bid_contract_signing_date, 
-          cni_description:values.cni_description, 
-          cni_status:values.cni_status, 
-
+          cni_name: values.cni_name,
+          cni_tin_num: values.cni_tin_num,
+          cni_contractor_type_id: values.cni_contractor_type_id,
+          cni_vat_num: values.cni_vat_num,
+          cni_total_contract_price: values.cni_total_contract_price,
+          cni_contract_start_date_et: values.cni_contract_start_date_et,
+          cni_contract_start_date_gc: values.cni_contract_start_date_gc,
+          cni_contract_end_date_et: values.cni_contract_end_date_et,
+          cni_contract_end_date_gc: values.cni_contract_end_date_gc,
+          cni_contact_person: values.cni_contact_person,
+          cni_phone_number: values.cni_phone_number,
+          cni_address: values.cni_address,
+          cni_email: values.cni_email,
+          cni_website: values.cni_website,
+          cni_project_id: passedId,
+          cni_procrument_method: values.cni_procrument_method,
+          cni_bid_invitation_date: values.cni_bid_invitation_date,
+          cni_bid_opening_date: values.cni_bid_opening_date,
+          cni_bid_evaluation_date: values.cni_bid_evaluation_date,
+          cni_bid_award_date: values.cni_bid_award_date,
+          cni_bid_contract_signing_date: values.cni_bid_contract_signing_date,
+          cni_description: values.cni_description,
+          cni_status: values.cni_status,
         };
         // save new ProjectContractor
         handleAddProjectContractor(newProjectContractor);
@@ -269,49 +289,50 @@ is_editable: (projectContractor && projectContractor.is_editable) || 1
   useEffect(() => {
     setProjectContractor(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setProjectContractor(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setProjectContractor(null);
+      setProjectContractor(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleProjectContractorClick = (arg) => {
+  const handleProjectContractorClick = (arg) => {
     const projectContractor = arg;
     // console.log("handleProjectContractorClick", projectContractor);
     setProjectContractor({
-      cni_id:projectContractor.cni_id, 
-      cni_name:projectContractor.cni_name, 
-      cni_tin_num:projectContractor.cni_tin_num, 
-      cni_contractor_type_id:projectContractor.cni_contractor_type_id, 
-      cni_vat_num:projectContractor.cni_vat_num, 
-      cni_total_contract_price:projectContractor.cni_total_contract_price, 
-      cni_contract_start_date_et:projectContractor.cni_contract_start_date_et, 
-      cni_contract_start_date_gc:projectContractor.cni_contract_start_date_gc, 
-      cni_contract_end_date_et:projectContractor.cni_contract_end_date_et, 
-      cni_contract_end_date_gc:projectContractor.cni_contract_end_date_gc, 
-      cni_contact_person:projectContractor.cni_contact_person, 
-      cni_phone_number:projectContractor.cni_phone_number, 
-      cni_address:projectContractor.cni_address, 
-      cni_email:projectContractor.cni_email, 
-      cni_website:projectContractor.cni_website, 
-      cni_project_id:projectContractor.cni_project_id, 
-      cni_procrument_method:projectContractor.cni_procrument_method, 
-      cni_bid_invitation_date:projectContractor.cni_bid_invitation_date, 
-      cni_bid_opening_date:projectContractor.cni_bid_opening_date, 
-      cni_bid_evaluation_date:projectContractor.cni_bid_evaluation_date, 
-      cni_bid_award_date:projectContractor.cni_bid_award_date, 
-      cni_bid_contract_signing_date:projectContractor.cni_bid_contract_signing_date, 
-      cni_description:projectContractor.cni_description, 
-      cni_status:projectContractor.cni_status, 
+      cni_id: projectContractor.cni_id,
+      cni_name: projectContractor.cni_name,
+      cni_tin_num: projectContractor.cni_tin_num,
+      cni_contractor_type_id: projectContractor.cni_contractor_type_id,
+      cni_vat_num: projectContractor.cni_vat_num,
+      cni_total_contract_price: projectContractor.cni_total_contract_price,
+      cni_contract_start_date_et: projectContractor.cni_contract_start_date_et,
+      cni_contract_start_date_gc: projectContractor.cni_contract_start_date_gc,
+      cni_contract_end_date_et: projectContractor.cni_contract_end_date_et,
+      cni_contract_end_date_gc: projectContractor.cni_contract_end_date_gc,
+      cni_contact_person: projectContractor.cni_contact_person,
+      cni_phone_number: projectContractor.cni_phone_number,
+      cni_address: projectContractor.cni_address,
+      cni_email: projectContractor.cni_email,
+      cni_website: projectContractor.cni_website,
+      cni_project_id: projectContractor.cni_project_id,
+      cni_procrument_method: projectContractor.cni_procrument_method,
+      cni_bid_invitation_date: projectContractor.cni_bid_invitation_date,
+      cni_bid_opening_date: projectContractor.cni_bid_opening_date,
+      cni_bid_evaluation_date: projectContractor.cni_bid_evaluation_date,
+      cni_bid_award_date: projectContractor.cni_bid_award_date,
+      cni_bid_contract_signing_date:
+        projectContractor.cni_bid_contract_signing_date,
+      cni_description: projectContractor.cni_description,
+      cni_status: projectContractor.cni_status,
 
       is_deletable: projectContractor.is_deletable,
       is_editable: projectContractor.is_editable,
@@ -331,8 +352,8 @@ const toggle = () => {
     setIsEdit(false);
     setProjectContractor("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -341,120 +362,124 @@ const toggle = () => {
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'cni_name',
+        header: "",
+        accessorKey: "cni_name",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cni_name, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.cni_name, 30) || "-"}
             </span>
           );
         },
-      }, 
+      },
 
-    {
-        header: '',
-        accessorKey: 'cni_contractor_type_id',
+      {
+        header: "",
+        accessorKey: "cni_contractor_type_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cni_contractor_type_id, 30) ||
-                '-'}
+              {truncateText(
+                cellProps.row.original.cni_contractor_type_id,
+                30
+              ) || "-"}
             </span>
           );
         },
-      }, 
-     {
-        header: '',
-        accessorKey: 'cni_tin_num',
+      },
+      {
+        header: "",
+        accessorKey: "cni_tin_num",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cni_tin_num, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.cni_tin_num, 30) || "-"}
             </span>
           );
         },
-      }, 
-    {
-        header: '',
-        accessorKey: 'cni_total_contract_price',
+      },
+      {
+        header: "",
+        accessorKey: "cni_total_contract_price",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cni_total_contract_price, 30) ||
-                '-'}
+              {truncateText(
+                cellProps.row.original.cni_total_contract_price,
+                30
+              ) || "-"}
             </span>
           );
         },
-      }, 
+      },
 
-     {
-        header: '',
-        accessorKey: 'cni_contract_start_date_gc',
+      {
+        header: "",
+        accessorKey: "cni_contract_start_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cni_contract_start_date_gc, 30) ||
-                '-'}
+              {truncateText(
+                cellProps.row.original.cni_contract_start_date_gc,
+                30
+              ) || "-"}
             </span>
           );
         },
-      }, 
-     {
-        header: '',
-        accessorKey: 'cni_contract_end_date_gc',
+      },
+      {
+        header: "",
+        accessorKey: "cni_contract_end_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cni_contract_end_date_gc, 30) ||
-                '-'}
+              {truncateText(
+                cellProps.row.original.cni_contract_end_date_gc,
+                30
+              ) || "-"}
             </span>
           );
         },
-      }, 
-    {
-        header: '',
-        accessorKey: 'cni_contact_person',
+      },
+      {
+        header: "",
+        accessorKey: "cni_contact_person",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.cni_contact_person, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'cni_phone_number',
+      },
+      {
+        header: "",
+        accessorKey: "cni_phone_number",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.cni_phone_number, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.cni_phone_number, 30) || "-"}
             </span>
           );
         },
-      }, 
-
+      },
 
       {
         header: t("view_detail"),
@@ -478,7 +503,7 @@ const toggle = () => {
         },
       },
     ];
-     if (
+    if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
     ) {
@@ -495,7 +520,7 @@ const toggle = () => {
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleProjectContractorClick(data);
                   }}
                 >
@@ -547,12 +572,12 @@ const toggle = () => {
       />
       <div className={passedId ? "" : "page-content"}>
         <div className="container-fluid1">
-         {isLoading || isSearchLoading ? (
+          {isLoading || isSearchLoading ? (
             <Spinners top={isActive ? "top-70" : ""} />
           ) : (
             <TableContainer
               columns={columns}
-               data={showSearchResult ? searchResults?.data : data?.data || []}
+              data={showSearchResult ? searchResults?.data : data?.data || []}
               isGlobalFilter={true}
               isAddButton={true}
               isCustomPageSize={true}
@@ -575,7 +600,7 @@ const toggle = () => {
             </ModalHeader>
             <ModalBody>
               <Form
-                 onSubmit={(e) => {
+                onSubmit={(e) => {
                   e.preventDefault();
                   validation.handleSubmit();
                   return false;
@@ -583,7 +608,10 @@ const toggle = () => {
               >
                 <Row>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("cni_name")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("cni_name")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="cni_name"
                       type="text"
@@ -607,7 +635,10 @@ const toggle = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("cni_tin_num")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("cni_tin_num")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="cni_tin_num"
                       type="text"
@@ -631,43 +662,46 @@ const toggle = () => {
                     ) : null}
                   </Col>
 
-                   <Col className="col-md-4 mb-3">
-                  <Label>
-                    {t("cni_contractor_type_id")}{" "}
-                    <span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    name="cni_contractor_type_id"
-                    id="cni_contractor_type_id"
-                    type="select"
-                    className="form-select"
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.cni_contractor_type_id || ""}
-                    invalid={
-                      validation.touched.cni_contractor_type_id &&
-                      validation.errors.cni_contractor_type_id
-                        ? true
-                        : false
-                    }
-                  >
-                    <option value={null}>Select Contractor Type</option>
-                    {contractorTypeOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {t(`${option.label}`)}
-                      </option>
-                    ))}
-                  </Input>
-                  {validation.touched.cni_contractor_type_id &&
-                  validation.errors.cni_contractor_type_id ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.cni_contractor_type_id}
-                    </FormFeedback>
-                  ) : null}
-                </Col>
+                  <Col className="col-md-4 mb-3">
+                    <Label>
+                      {t("cni_contractor_type_id")}{" "}
+                      <span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      name="cni_contractor_type_id"
+                      id="cni_contractor_type_id"
+                      type="select"
+                      className="form-select"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.cni_contractor_type_id || ""}
+                      invalid={
+                        validation.touched.cni_contractor_type_id &&
+                        validation.errors.cni_contractor_type_id
+                          ? true
+                          : false
+                      }
+                    >
+                      <option value={null}>Select Contractor Type</option>
+                      {contractorTypeOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {t(`${option.label}`)}
+                        </option>
+                      ))}
+                    </Input>
+                    {validation.touched.cni_contractor_type_id &&
+                    validation.errors.cni_contractor_type_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.cni_contractor_type_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
 
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("cni_vat_num")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("cni_vat_num")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="cni_vat_num"
                       type="text"
@@ -691,7 +725,10 @@ const toggle = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("cni_total_contract_price")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("cni_total_contract_price")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="cni_total_contract_price"
                       type="text"
@@ -715,10 +752,12 @@ const toggle = () => {
                     ) : null}
                   </Col>
 
-
                   <Col className="col-md-4 mb-3">
                     <FormGroup>
-                      <Label>{t("cni_contract_start_date_gc")}<span className="text-danger">*</span></Label>
+                      <Label>
+                        {t("cni_contract_start_date_gc")}
+                        <span className="text-danger">*</span>
+                      </Label>
                       <InputGroup>
                         <Flatpickr
                           id="DataPicker"
@@ -817,7 +856,10 @@ const toggle = () => {
                   </Col>
 
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("cni_contact_person")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("cni_contact_person")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="cni_contact_person"
                       type="text"
@@ -841,7 +883,10 @@ const toggle = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("cni_phone_number")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("cni_phone_number")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="cni_phone_number"
                       type="text"
@@ -939,7 +984,10 @@ const toggle = () => {
                   </Col>
 
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("cni_procrument_method")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("cni_procrument_method")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="cni_procrument_method"
                       type="text"
@@ -963,281 +1011,299 @@ const toggle = () => {
                     ) : null}
                   </Col>
 
-                {/* Expand/Collapse Button */}
-                <button
-                  type="button"
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  style={{
-                    margin: "10px 0",
-                    backgroundColor: "#f8f9fa",
-                    color: "#333",
-                    border: "1px solid #ddd",
-                    borderRadius: "5px",
-                    padding: "5px 10px",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "5px",
-                    width: "fit-content", // Adjusts width to content
-                  }}
-                >
-                  <span style={{ fontSize: "0.9rem" }}>
-                    {isExpanded ? "▼" : "▶"} {isExpanded ? "Collapse" : "Expand"}
-                  </span>
-                </button>
+                  {/* Expand/Collapse Button */}
+                  <button
+                    type="button"
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    style={{
+                      margin: "10px 0",
+                      backgroundColor: "#f8f9fa",
+                      color: "#333",
+                      border: "1px solid #ddd",
+                      borderRadius: "5px",
+                      padding: "5px 10px",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "5px",
+                      width: "fit-content", // Adjusts width to content
+                    }}
+                  >
+                    <span style={{ fontSize: "0.9rem" }}>
+                      {isExpanded ? "▼" : "▶"}{" "}
+                      {isExpanded ? "Collapse" : "Expand"}
+                    </span>
+                  </button>
 
                   {/* Expandable Fields */}
                   {isExpanded && (
                     <>
-                  <Col className="col-md-4 mb-3">
-                    <FormGroup>
-                      <Label>{t("cni_bid_invitation_date")}</Label>
-                      <InputGroup>
-                        <Flatpickr
-                          id="DataPicker"
-                          className={`form-control ${
-                            validation.touched.cni_bid_invitation_date &&
-                            validation.errors.cni_bid_invitation_date
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          name="cni_bid_invitation_date"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
-                            enableTime: false,
-                            defaultDate: new Date(), // Set today's date as default
-                          }}
-                          value={
-                            validation.values.cni_bid_invitation_date || ""
-                          }
-                          onChange={(date) => {
-                            const formatedDate = formatDate(date[0]);
-                            validation.setFieldValue(
-                              "cni_bid_invitation_date",
-                              formatedDate
-                            ); // Set value in Formik
-                          }}
-                          onBlur={validation.handleBlur}
-                        />
+                      <Col className="col-md-4 mb-3">
+                        <FormGroup>
+                          <Label>{t("cni_bid_invitation_date")}</Label>
+                          <InputGroup>
+                            <Flatpickr
+                              id="DataPicker"
+                              className={`form-control ${
+                                validation.touched.cni_bid_invitation_date &&
+                                validation.errors.cni_bid_invitation_date
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              name="cni_bid_invitation_date"
+                              options={{
+                                altInput: true,
+                                altFormat: "Y/m/d",
+                                dateFormat: "Y/m/d",
+                                enableTime: false,
+                                defaultDate: new Date(), // Set today's date as default
+                              }}
+                              value={
+                                validation.values.cni_bid_invitation_date || ""
+                              }
+                              onChange={(date) => {
+                                const formatedDate = formatDate(date[0]);
+                                validation.setFieldValue(
+                                  "cni_bid_invitation_date",
+                                  formatedDate
+                                ); // Set value in Formik
+                              }}
+                              onBlur={validation.handleBlur}
+                            />
 
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
-                      </InputGroup>
-                      {validation.touched.cni_bid_invitation_date &&
-                      validation.errors.cni_bid_invitation_date ? (
-                        <FormFeedback>
-                          {validation.errors.cni_bid_invitation_date}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
-                  </Col>
-                  
-                  <Col className="col-md-4 mb-3">
-                    <FormGroup>
-                      <Label>{t("cni_bid_opening_date")}</Label>
-                      <InputGroup>
-                        <Flatpickr
-                          id="DataPicker"
-                          className={`form-control ${
-                            validation.touched.cni_bid_opening_date &&
-                            validation.errors.cni_bid_opening_date
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          name="cni_bid_opening_date"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
-                            enableTime: false,
-                            defaultDate: new Date(), // Set today's date as default
-                          }}
-                          value={validation.values.cni_bid_opening_date || ""}
-                          onChange={(date) => {
-                            const formatedDate = formatDate(date[0]);
-                            validation.setFieldValue(
-                              "cni_bid_opening_date",
-                              formatedDate
-                            ); // Set value in Formik
-                          }}
-                          onBlur={validation.handleBlur}
-                        />
+                            <Button
+                              type="button"
+                              className="btn btn-outline-secondary"
+                              disabled
+                            >
+                              <i
+                                className="fa fa-calendar"
+                                aria-hidden="true"
+                              />
+                            </Button>
+                          </InputGroup>
+                          {validation.touched.cni_bid_invitation_date &&
+                          validation.errors.cni_bid_invitation_date ? (
+                            <FormFeedback>
+                              {validation.errors.cni_bid_invitation_date}
+                            </FormFeedback>
+                          ) : null}
+                        </FormGroup>
+                      </Col>
 
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
-                      </InputGroup>
-                      {validation.touched.cni_bid_opening_date &&
-                      validation.errors.cni_bid_opening_date ? (
-                        <FormFeedback>
-                          {validation.errors.cni_bid_opening_date}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
-                  </Col>
+                      <Col className="col-md-4 mb-3">
+                        <FormGroup>
+                          <Label>{t("cni_bid_opening_date")}</Label>
+                          <InputGroup>
+                            <Flatpickr
+                              id="DataPicker"
+                              className={`form-control ${
+                                validation.touched.cni_bid_opening_date &&
+                                validation.errors.cni_bid_opening_date
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              name="cni_bid_opening_date"
+                              options={{
+                                altInput: true,
+                                altFormat: "Y/m/d",
+                                dateFormat: "Y/m/d",
+                                enableTime: false,
+                                defaultDate: new Date(), // Set today's date as default
+                              }}
+                              value={
+                                validation.values.cni_bid_opening_date || ""
+                              }
+                              onChange={(date) => {
+                                const formatedDate = formatDate(date[0]);
+                                validation.setFieldValue(
+                                  "cni_bid_opening_date",
+                                  formatedDate
+                                ); // Set value in Formik
+                              }}
+                              onBlur={validation.handleBlur}
+                            />
 
-                  <Col className="col-md-4 mb-3">
-                    <FormGroup>
-                      <Label>{t("cni_bid_evaluation_date")}</Label>
-                      <InputGroup>
-                        <Flatpickr
-                          id="DataPicker"
-                          className={`form-control ${
-                            validation.touched.cni_bid_evaluation_date &&
-                            validation.errors.cni_bid_evaluation_date
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          name="cni_bid_evaluation_date"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
-                            enableTime: false,
-                            defaultDate: new Date(), // Set today's date as default
-                          }}
-                          value={
-                            validation.values.cni_bid_evaluation_date || ""
-                          }
-                          onChange={(date) => {
-                            const formatedDate = formatDate(date[0]);
-                            validation.setFieldValue(
-                              "cni_bid_evaluation_date",
-                              formatedDate
-                            ); // Set value in Formik
-                          }}
-                          onBlur={validation.handleBlur}
-                        />
+                            <Button
+                              type="button"
+                              className="btn btn-outline-secondary"
+                              disabled
+                            >
+                              <i
+                                className="fa fa-calendar"
+                                aria-hidden="true"
+                              />
+                            </Button>
+                          </InputGroup>
+                          {validation.touched.cni_bid_opening_date &&
+                          validation.errors.cni_bid_opening_date ? (
+                            <FormFeedback>
+                              {validation.errors.cni_bid_opening_date}
+                            </FormFeedback>
+                          ) : null}
+                        </FormGroup>
+                      </Col>
 
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
-                      </InputGroup>
-                      {validation.touched.cni_bid_evaluation_date &&
-                      validation.errors.cni_bid_evaluation_date ? (
-                        <FormFeedback>
-                          {validation.errors.cni_bid_evaluation_date}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
-                  </Col>
+                      <Col className="col-md-4 mb-3">
+                        <FormGroup>
+                          <Label>{t("cni_bid_evaluation_date")}</Label>
+                          <InputGroup>
+                            <Flatpickr
+                              id="DataPicker"
+                              className={`form-control ${
+                                validation.touched.cni_bid_evaluation_date &&
+                                validation.errors.cni_bid_evaluation_date
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              name="cni_bid_evaluation_date"
+                              options={{
+                                altInput: true,
+                                altFormat: "Y/m/d",
+                                dateFormat: "Y/m/d",
+                                enableTime: false,
+                                defaultDate: new Date(), // Set today's date as default
+                              }}
+                              value={
+                                validation.values.cni_bid_evaluation_date || ""
+                              }
+                              onChange={(date) => {
+                                const formatedDate = formatDate(date[0]);
+                                validation.setFieldValue(
+                                  "cni_bid_evaluation_date",
+                                  formatedDate
+                                ); // Set value in Formik
+                              }}
+                              onBlur={validation.handleBlur}
+                            />
 
-                  <Col className="col-md-4 mb-3">
-                    <FormGroup>
-                      <Label>{t("cni_bid_award_date")}</Label>
-                      <InputGroup>
-                        <Flatpickr
-                          id="DataPicker"
-                          className={`form-control ${
-                            validation.touched.cni_bid_award_date &&
-                            validation.errors.cni_bid_award_date
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          name="cni_bid_award_date"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
-                            enableTime: false,
-                            defaultDate: new Date(), // Set today's date as default
-                          }}
-                          value={validation.values.cni_bid_award_date || ""}
-                          onChange={(date) => {
-                            const formatedDate = formatDate(date[0]);
-                            validation.setFieldValue(
-                              "cni_bid_award_date",
-                              formatedDate
-                            ); // Set value in Formik
-                          }}
-                          onBlur={validation.handleBlur}
-                        />
+                            <Button
+                              type="button"
+                              className="btn btn-outline-secondary"
+                              disabled
+                            >
+                              <i
+                                className="fa fa-calendar"
+                                aria-hidden="true"
+                              />
+                            </Button>
+                          </InputGroup>
+                          {validation.touched.cni_bid_evaluation_date &&
+                          validation.errors.cni_bid_evaluation_date ? (
+                            <FormFeedback>
+                              {validation.errors.cni_bid_evaluation_date}
+                            </FormFeedback>
+                          ) : null}
+                        </FormGroup>
+                      </Col>
 
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
-                      </InputGroup>
-                      {validation.touched.cni_bid_award_date &&
-                      validation.errors.cni_bid_award_date ? (
-                        <FormFeedback>
-                          {validation.errors.cni_bid_award_date}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
-                  </Col>
+                      <Col className="col-md-4 mb-3">
+                        <FormGroup>
+                          <Label>{t("cni_bid_award_date")}</Label>
+                          <InputGroup>
+                            <Flatpickr
+                              id="DataPicker"
+                              className={`form-control ${
+                                validation.touched.cni_bid_award_date &&
+                                validation.errors.cni_bid_award_date
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              name="cni_bid_award_date"
+                              options={{
+                                altInput: true,
+                                altFormat: "Y/m/d",
+                                dateFormat: "Y/m/d",
+                                enableTime: false,
+                                defaultDate: new Date(), // Set today's date as default
+                              }}
+                              value={validation.values.cni_bid_award_date || ""}
+                              onChange={(date) => {
+                                const formatedDate = formatDate(date[0]);
+                                validation.setFieldValue(
+                                  "cni_bid_award_date",
+                                  formatedDate
+                                ); // Set value in Formik
+                              }}
+                              onBlur={validation.handleBlur}
+                            />
 
-                  <Col className="col-md-4 mb-3">
-                    <FormGroup>
-                      <Label>{t("cni_bid_contract_signing_date")}</Label>
-                      <InputGroup>
-                        <Flatpickr
-                          id="DataPicker"
-                          className={`form-control ${
-                            validation.touched.cni_bid_contract_signing_date &&
-                            validation.errors.cni_bid_contract_signing_date
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          name="cni_bid_contract_signing_date"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
-                            enableTime: false,
-                            defaultDate: new Date(), // Set today's date as default
-                          }}
-                          value={
-                            validation.values.cni_bid_contract_signing_date ||
-                            ""
-                          }
-                          onChange={(date) => {
-                            const formatedDate = formatDate(date[0]);
-                            validation.setFieldValue(
-                              "cni_bid_contract_signing_date",
-                              formatedDate
-                            ); // Set value in Formik
-                          }}
-                          onBlur={validation.handleBlur}
-                        />
+                            <Button
+                              type="button"
+                              className="btn btn-outline-secondary"
+                              disabled
+                            >
+                              <i
+                                className="fa fa-calendar"
+                                aria-hidden="true"
+                              />
+                            </Button>
+                          </InputGroup>
+                          {validation.touched.cni_bid_award_date &&
+                          validation.errors.cni_bid_award_date ? (
+                            <FormFeedback>
+                              {validation.errors.cni_bid_award_date}
+                            </FormFeedback>
+                          ) : null}
+                        </FormGroup>
+                      </Col>
 
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
-                      </InputGroup>
-                      {validation.touched.cni_bid_contract_signing_date &&
-                      validation.errors.cni_bid_contract_signing_date ? (
-                        <FormFeedback>
-                          {validation.errors.cni_bid_contract_signing_date}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
-                  </Col>
+                      <Col className="col-md-4 mb-3">
+                        <FormGroup>
+                          <Label>{t("cni_bid_contract_signing_date")}</Label>
+                          <InputGroup>
+                            <Flatpickr
+                              id="DataPicker"
+                              className={`form-control ${
+                                validation.touched
+                                  .cni_bid_contract_signing_date &&
+                                validation.errors.cni_bid_contract_signing_date
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              name="cni_bid_contract_signing_date"
+                              options={{
+                                altInput: true,
+                                altFormat: "Y/m/d",
+                                dateFormat: "Y/m/d",
+                                enableTime: false,
+                                defaultDate: new Date(), // Set today's date as default
+                              }}
+                              value={
+                                validation.values
+                                  .cni_bid_contract_signing_date || ""
+                              }
+                              onChange={(date) => {
+                                const formatedDate = formatDate(date[0]);
+                                validation.setFieldValue(
+                                  "cni_bid_contract_signing_date",
+                                  formatedDate
+                                ); // Set value in Formik
+                              }}
+                              onBlur={validation.handleBlur}
+                            />
 
-                  </>
+                            <Button
+                              type="button"
+                              className="btn btn-outline-secondary"
+                              disabled
+                            >
+                              <i
+                                className="fa fa-calendar"
+                                aria-hidden="true"
+                              />
+                            </Button>
+                          </InputGroup>
+                          {validation.touched.cni_bid_contract_signing_date &&
+                          validation.errors.cni_bid_contract_signing_date ? (
+                            <FormFeedback>
+                              {validation.errors.cni_bid_contract_signing_date}
+                            </FormFeedback>
+                          ) : null}
+                        </FormGroup>
+                      </Col>
+                    </>
                   )}
                   <Col className="col-md-4 mb-3">
                     <Label>{t("cni_description")}</Label>
@@ -1296,7 +1362,7 @@ const toggle = () => {
                 </Row>
                 <Row>
                   <Col>
-                  <div className="text-end">
+                    <div className="text-end">
                       {addProjectContractor.isPending ||
                       updateProjectContractor.isPending ? (
                         <Button

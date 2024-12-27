@@ -56,11 +56,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectPaymentModel = (props) => {
-  //  get passed data from tab
   const { passedId } = props;
-  //meta title
-  document.title = " ProjectPayment";
-
   const { t } = useTranslation();
 
   const [modal, setModal] = useState(false);

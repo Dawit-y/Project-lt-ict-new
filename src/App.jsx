@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, useMemo, lazy } from "react";
 
 import {
   createBrowserRouter,
@@ -12,13 +12,9 @@ import { connect } from "react-redux";
 import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
 
-// Import Routes all
 import { authProtectedRoutes, publicRoutes } from "./routes/index";
-
-// Import all middleware
 import Authmiddleware from "./routes/route";
 
-// layouts Format
 import ErrorElement from "./components/Common/ErrorElement";
 import { SessionTimeoutProvider } from "./pages/Authentication/Context/SessionTimeoutContext";
 import NotFound from "./components/Common/NotFound";
@@ -27,11 +23,31 @@ import VerticalLayout from "./components/VerticalLayout/";
 import HorizontalLayout from "./components/HorizontalLayout/";
 import NonAuthLayout from "./components/NonAuthLayout";
 import ErrorBoundary from "./components/Common/ErrorBoundary";
-import ProjectProvider from "./context/ProjectContext";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NetworkAlert from "./components/Common/NetworkAlert";
+
+function getLayout(layoutType) {
+  // Check if layoutType exists in localStorage
+  const storedLayoutType = localStorage.getItem("layoutType");
+  let layoutCls = VerticalLayout;
+
+  if (storedLayoutType) {
+    layoutCls =
+      storedLayoutType === "horizontal" ? HorizontalLayout : VerticalLayout;
+  } else {
+    switch (layoutType) {
+      case "horizontal":
+        layoutCls = HorizontalLayout;
+        break;
+      default:
+        layoutCls = VerticalLayout;
+        break;
+    }
+  }
+  return layoutCls;
+}
 
 const App = (props) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -61,33 +77,8 @@ const App = (props) => {
       layoutType: layout.layoutType,
     })
   );
-
   const { layoutType } = useSelector(LayoutProperties);
-
-  function getLayout(layoutType) {
-    // Check if layoutType exists in localStorage
-    const storedLayoutType = localStorage.getItem("layoutType");
-    let layoutCls = VerticalLayout;
-
-    if (storedLayoutType) {
-      layoutCls =
-        storedLayoutType === "horizontal" ? HorizontalLayout : VerticalLayout;
-    } else {
-      switch (layoutType) {
-        case "horizontal":
-          layoutCls = HorizontalLayout;
-          break;
-        default:
-          layoutCls = VerticalLayout;
-          break;
-      }
-    }
-
-    return layoutCls;
-  }
-
-  const Layout = getLayout(layoutType);
-
+  const Layout = useMemo(() => getLayout(layoutType), [layoutType]);
   const router = createBrowserRouter(
     createRoutesFromElements(
       <>
@@ -123,11 +114,9 @@ const App = (props) => {
                 <SessionTimeoutProvider>
                   <Layout>
                     <ErrorBoundary>
-                      <ProjectProvider>
-                        <Suspense fallback={<Spinners />}>
-                          {route.component}
-                        </Suspense>
-                      </ProjectProvider>
+                      <Suspense fallback={<Spinners />}>
+                        {route.component}
+                      </Suspense>
                     </ErrorBoundary>
                   </Layout>
                 </SessionTimeoutProvider>

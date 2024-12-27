@@ -51,8 +51,6 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectBudgetPlanModel = (props) => {
-  //meta title
-  document.title = " ProjectBudgetPlan";
   const { passedId, isActive } = props;
   const param = { bpl_project_id: passedId };
   const { t } = useTranslation();

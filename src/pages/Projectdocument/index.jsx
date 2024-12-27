@@ -45,7 +45,6 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectDocumentModel = (props) => {
-  document.title = " ProjectDocument";
   const { passedId, isActive } = props;
   const param = { project_id: passedId };
 

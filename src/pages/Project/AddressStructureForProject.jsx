@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { post } from "../../helpers/api_Lists";
 import { useQuery } from "@tanstack/react-query";
 import TreeNode from "../AddressTreeStructure/TreeNode";
@@ -107,4 +107,4 @@ const AddressStructureForProject = ({ onNodeSelect, setIsAddressLoading }) => {
   );
 };
 
-export default AddressStructureForProject;
+export default memo(AddressStructureForProject);
