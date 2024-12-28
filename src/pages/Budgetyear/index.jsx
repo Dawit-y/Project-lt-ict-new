@@ -132,20 +132,20 @@ const BudgetYearModel = () => {
       bdy_code: (budgetYear && budgetYear.bdy_code) || "",
       bdy_description: (budgetYear && budgetYear.bdy_description) || "",
       bdy_status: (budgetYear && budgetYear.bdy_status) || "",
-
       is_deletable: (budgetYear && budgetYear.is_deletable) || 1,
       is_editable: (budgetYear && budgetYear.is_editable) || 1,
     },
-
     validationSchema: Yup.object({
-      bdy_name: Yup.string()
+      bdy_name: Yup.number()
         .required(t("bdy_name"))
         .test("unique-bdy_name", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.bdy_name == value && item.bdy_id !== budgetYear?.bdy_id
           );
-        }),
+        }).min(2017, t("budget_year_range"))
+        .max(2040, t("budget_year_range"))
+        .integer("integer_only"),
       //bdy_code: Yup.string().required(t("bdy_code")),
     }),
     validateOnBlur: true,
@@ -437,7 +437,7 @@ const BudgetYearModel = () => {
                     <Label>{t("bdy_name")}<span className="text-danger">*</span></Label>
                     <Input
                       name="bdy_name"
-                      type="text"
+                      type="number"
                       placeholder={t("bdy_name")}
                       onChange={(e) => {
                         const value = e.target.value;
@@ -479,7 +479,7 @@ const BudgetYearModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={10}
                     />
                     {validation.touched.bdy_code &&
                     validation.errors.bdy_code ? (
@@ -503,7 +503,7 @@ const BudgetYearModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={100}
+                      maxLength={425}
                     />
                     {validation.touched.bdy_description &&
                     validation.errors.bdy_description ? (

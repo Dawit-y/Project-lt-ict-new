@@ -842,5 +842,15 @@
 "prj_select_department":"Select Department",
 "prj_project_amount_range":"Amount should be greater than 1000 and less than 100,000,000,000",
 "prj_name_en":"Project Name in English",
-"prj_name_am":"Project Name in Amharic"
+"prj_name_am":"Project Name in Amharic",
+"budget_year_range":"Budget year should be between 2017 and 2040",
+"budget_month_range":"Budget month should be between 1 and 12",
+"integer_only":"It should be number only",
+"add_success":"Data added successfully",
+"update_success":"Data updated successfully",
+"delete_success":"Data deleted successfully",
+"add_failure":"Data adding failed",
+"update_failure":"Data updating failed",
+"delete_failure":"Data deleting failed",
+"must_be_alphanumeric":"Must contain at least one letter and only alphanumeric characters are allowed"
 }
