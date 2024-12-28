@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import axios from "axios";
-
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
@@ -9,20 +7,16 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-
 import {
-  getProjectStakeholder as onGetProjectStakeholder,
-  addProjectStakeholder as onAddProjectStakeholder,
-  updateProjectStakeholder as onUpdateProjectStakeholder,
-  deleteProjectStakeholder as onDeleteProjectStakeholder,
-} from "../../store/projectstakeholder/actions";
+  useFetchProjectStakeholders,
+  useAddProjectStakeholder,
+  useDeleteProjectStakeholder,
+  useUpdateProjectStakeholder,
+} from "../../queries/projectstakeholder_query";
 
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
+import { useFetchStakeholderTypes } from "../../queries/stakeholdertype_query";
 import ProjectStakeholderModal from "./ProjectStakeholderModal";
 import { useTranslation } from "react-i18next";
 
@@ -38,12 +32,9 @@ import {
   Input,
   FormFeedback,
   Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
 } from "reactstrap";
-import { ToastContainer } from "react-toastify";
+import { createSelectOptions } from "../../utils/commonMethods";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -53,50 +44,74 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectStakeholderModel = (props) => {
-  //  get passed data from tab
-  const { passedId } = props;
+  const { passedId, isActive } = props;
+  const param = { project_id: passedId };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-
   const [projectStakeholder, setProjectStakeholder] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
-  const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
-  //START FOREIGN CALLS
-  const [stakeholderTypeOptions, setStakeholderTypeOptions] = useState([]);
-  const [selectedStakeholderType, setSelectedStakeholderType] = useState("");
 
-  useEffect(() => {
-    const fetchStakeholderType = async () => {
-      try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_BASE_API_URL}stakeholder_type/listgrid`
-        );
-        const transformedData = response.data.data.map((item) => ({
-          label: item.sht_type_name_or.toString(),
-          value: item.sht_id.toString(),
-        }));
-        const optionsWithDefault = [
-          { label: "Select Stakeholder Type", value: "" },
-          ...transformedData,
-        ];
-        setStakeholderTypeOptions(optionsWithDefault);
-      } catch (error) {
-        console.error("Error fetching budget years:", error);
-      }
-    };
-    fetchStakeholderType();
-  }, []);
-  const handleStakeholderTypeChange = (e) => {
-    setSelectedStakeholderType(e.target.value);
-    validation.setFieldValue("psh_stakeholder_type", e.target.value);
+  const { data, isLoading, error, isError, refetch } =
+    useFetchProjectStakeholders(param, isActive);
+  const { data: stakeholderTypeData } = useFetchStakeholderTypes();
+  const stakeholderTypeOptions = createSelectOptions(
+    stakeholderTypeData?.data || [],
+    "sht_id",
+    "sht_type_name_en"
+  );
+
+  const addProjectStakeholder = useAddProjectStakeholder();
+  const updateProjectStakeholder = useUpdateProjectStakeholder();
+  const deleteProjectStakeholder = useDeleteProjectStakeholder();
+  //START CRUD
+  const handleAddProjectStakeholder = async (data) => {
+    try {
+      await addProjectStakeholder.mutateAsync(data);
+      toast.success(`Data added successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error("Failed to add data", {
+        autoClose: 2000,
+      });
+    }
+    toggle();
   };
+
+  const handleUpdateProjectStakeholder = async (data) => {
+    try {
+      await updateProjectStakeholder.mutateAsync(data);
+      toast.success(`data updated successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error(`Failed to update Data`, {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+  const handleDeleteProjectStakeholder = async () => {
+    if (projectStakeholder && projectStakeholder.emp_id) {
+      try {
+        const id = projectStakeholder.emp_id;
+        await deleteProjectStakeholder.mutateAsync(id);
+        toast.success(`Data deleted successfully`, {
+          autoClose: 2000,
+        });
+      } catch (error) {
+        toast.error(`Failed to delete Data`, {
+          autoClose: 2000,
+        });
+      }
+      setDeleteModal(false);
+    }
+  };
+
   // validation
   const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
-
     initialValues: {
       psh_project_id: passedId,
       psh_name: (projectStakeholder && projectStakeholder.psh_name) || "",
@@ -151,8 +166,7 @@ const ProjectStakeholderModel = (props) => {
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
-        // update ProjectStakeholder
-        dispatch(onUpdateProjectStakeholder(updateProjectStakeholder));
+        handleUpdateProjectStakeholder(updateProjectStakeholder);
         validation.resetForm();
       } else {
         const newProjectStakeholder = {
@@ -165,51 +179,14 @@ const ProjectStakeholderModel = (props) => {
           psh_status: values.psh_status,
           psh_stakeholder_type: values.psh_stakeholder_type,
         };
-        // save new ProjectStakeholders
-        dispatch(onAddProjectStakeholder(newProjectStakeholder));
+        handleAddProjectStakeholder(newProjectStakeholder);
         validation.resetForm();
       }
     },
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-  const dispatch = useDispatch();
-  // Fetch ProjectStakeholder on component mount
-  useEffect(() => {
-    dispatch(onGetProjectStakeholder(passedId));
-  }, [dispatch]);
 
-  const projectStakeholderProperties = createSelector(
-    (state) => state.ProjectStakeholderR, // this is geting from  reducer
-    (ProjectStakeholderReducer) => ({
-      // this is from Project.reducer
-      projectStakeholder: ProjectStakeholderReducer.projectStakeholder,
-      loading: ProjectStakeholderReducer.loading,
-      update_loading: ProjectStakeholderReducer.update_loading,
-    })
-  );
-
-  const {
-    projectStakeholder: { data, previledge },
-    loading,
-    update_loading,
-  } = useSelector(projectStakeholderProperties);
-
-  useEffect(() => {
-    console.log("update_loading in useEffect", update_loading);
-    setModal(false);
-  }, [update_loading]);
-
-  const selectSearchProperties = createSelector(
-    (state) => state.search,
-    (search) => ({
-      results: search.results,
-    })
-  );
-
-  const { results } = useSelector(selectSearchProperties);
-
-  const [isLoading, setLoading] = useState(loading);
   useEffect(() => {
     setProjectStakeholder(data);
   }, [data]);
@@ -232,7 +209,6 @@ const ProjectStakeholderModel = (props) => {
 
   const handleProjectStakeholderClick = (arg) => {
     const projectStakeholder = arg;
-    // console.log("handleProjectStakeholderClick", projectStakeholder);
     setProjectStakeholder({
       psh_id: projectStakeholder.psh_id,
       psh_project_id: projectStakeholder.psh_project_id,
@@ -246,9 +222,7 @@ const ProjectStakeholderModel = (props) => {
       is_deletable: projectStakeholder.is_deletable,
       is_editable: projectStakeholder.is_editable,
     });
-
     setIsEdit(true);
-
     toggle();
   };
 
@@ -260,25 +234,10 @@ const ProjectStakeholderModel = (props) => {
     setDeleteModal(true);
   };
 
-  const handleDeleteProjectStakeholder = () => {
-    if (projectStakeholder && projectStakeholder.psh_id) {
-      dispatch(onDeleteProjectStakeholder(projectStakeholder.psh_id));
-      setDeleteModal(false);
-    }
-  };
   const handleProjectStakeholderClicks = () => {
     setIsEdit(false);
     setProjectStakeholder("");
     toggle();
-  };
-  const handleSearch = () => {
-    setSearchLoading(true); // Set loading to true when search is initiated// Update filtered data with search results
-    setShowSearchResults(true); // Show search results
-    setSearchLoading(false);
-  };
-
-  const handleClearSearch = () => {
-    setShowSearchResults(false);
   };
 
   const columns = useMemo(() => {
@@ -354,19 +313,6 @@ const ProjectStakeholderModel = (props) => {
           );
         },
       },
-      /*{
-        header: "",
-        accessorKey: "psh_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.psh_status, 30) || "-"}
-            </span>
-          );
-        },
-      },*/
 
       {
         header: t("view_detail"),
@@ -390,7 +336,10 @@ const ProjectStakeholderModel = (props) => {
         },
       },
     ];
-    if (previledge?.is_role_editable && previledge?.is_role_deletable) {
+    if (
+      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_deletable
+    ) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -442,13 +391,9 @@ const ProjectStakeholderModel = (props) => {
     return baseColumns;
   }, [handleProjectStakeholderClick, toggleViewModal, onClickDelete]);
 
-  const project_status = [
-    { label: "select Status name", value: "" },
-    { label: "Active", value: 1 },
-    { label: "Inactive", value: 0 },
-  ];
-
-  const dropdawntotal = [project_status];
+  if (isError) {
+    <FetchErrorHandler error={error} refetch={refetch} />;
+  }
 
   return (
     <React.Fragment>
@@ -461,31 +406,27 @@ const ProjectStakeholderModel = (props) => {
         show={deleteModal}
         onDeleteClick={handleDeleteProjectStakeholder}
         onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteProjectStakeholder.isPending}
       />
       <div className={passedId ? "" : "page-content"}>
         <div className="container-fluid1">
-          {/* <Breadcrumbs
-            title={t("project_stakeholder")}
-            breadcrumbItem={t("project_stakeholder")}
-          /> */}
           {passedId ? null : (
             <Breadcrumbs
               title={t("project_stakeholder")}
               breadcrumbItem={t("project_stakeholder")}
             />
           )}
-          {isLoading || searchLoading ? (
-            <Spinners setLoading={setLoading} />
+          {isLoading ? (
+            <Spinners />
           ) : (
             <TableContainer
               columns={columns}
-              data={showSearchResults ? results : data}
+              data={data?.data || []}
               isGlobalFilter={true}
               isAddButton={true}
               isCustomPageSize={true}
               handleUserClick={handleProjectStakeholderClicks}
               isPagination={true}
-              // SearchPlaceholder="26 records..."
               SearchPlaceholder={26 + " " + t("Results") + "..."}
               buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
               buttonName={t("add") + " " + t("project_stakeholder")}
@@ -506,15 +447,6 @@ const ProjectStakeholderModel = (props) => {
                 onSubmit={(e) => {
                   e.preventDefault();
                   validation.handleSubmit();
-                  const modalCallback = () => setModal(false);
-                  if (isEdit) {
-                    onUpdateProjectStakeholder(
-                      validation.values,
-                      modalCallback
-                    );
-                  } else {
-                    onAddProjectStakeholder(validation.values, modalCallback);
-                  }
                   return false;
                 }}
               >
@@ -555,10 +487,17 @@ const ProjectStakeholderModel = (props) => {
                       name="psh_stakeholder_type"
                       type="select"
                       className="form-select"
-                      onChange={handleStakeholderTypeChange}
+                      onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={selectedStakeholderType}
+                      value={validation.values.psh_stakeholder_type || ""}
+                      invalid={
+                        validation.touched.psh_stakeholder_type &&
+                        validation.errors.psh_stakeholder_type
+                          ? true
+                          : false
+                      }
                     >
+                      <option value="">Select Stakeholder Type</option>
                       {stakeholderTypeOptions.map((option) => (
                         <option key={option.value} value={option.value}>
                           {t(`${option.label}`)}
@@ -704,12 +643,13 @@ const ProjectStakeholderModel = (props) => {
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {update_loading ? (
+                      {addProjectStakeholder.isPending ||
+                      updateProjectStakeholder.isPending ? (
                         <Button
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled
                         >
                           <Spinner size={"sm"} color="#fff" />
                           {t("Save")}
@@ -719,7 +659,6 @@ const ProjectStakeholderModel = (props) => {
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
                         >
                           {t("Save")}
                         </Button>

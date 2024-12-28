@@ -3,7 +3,8 @@ import { post } from "../../helpers/api_Lists";
 import { useQuery } from "@tanstack/react-query";
 import TreeNode from "../AddressTreeStructure/TreeNode";
 import { useTranslation } from "react-i18next";
-const url = "address_structure/listgrid";
+
+const url = "address_structure/listaddress";
 
 const getAddress = async () => {
   try {
@@ -21,22 +22,16 @@ const buildTree = (data) => {
     return [];
   }
 
-  const map = {};
-  const result = [];
-
-  data.forEach((item) => {
-    map[item.id] = { ...item, children: [] };
-  });
-
-  data.forEach((item) => {
-    if (item.rootId === null || item.rootId == 0) {
-      result.push(map[item.id]);
-    } else {
-      if (map[item.rootId]) {
-        map[item.rootId].children.push(map[item.id]);
-      }
-    }
-  });
+  const oromia = [
+    {
+      id: 1,
+      name: "Oromia",
+      rootId: null,
+      level: "region",
+      children: [],
+    },
+  ];
+  oromia[0].children = [...data];
 
   const assignLevels = (node) => {
     if (node.children.length === 0) {
@@ -54,8 +49,8 @@ const buildTree = (data) => {
       node.children.forEach(assignLevels);
     }
   };
-  result.forEach(assignLevels);
-  return result;
+  oromia.forEach(assignLevels);
+  return oromia;
 };
 
 const AddressStructureForProject = ({ onNodeSelect, setIsAddressLoading }) => {
