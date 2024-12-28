@@ -78,25 +78,26 @@ const BudgetMonthModel = () => {
   const handleAddBudgetMonth = async (data) => {
     try {
       await addBudgetMonth.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+      toast.success(t('add_success'), {
         autoClose: 2000,
       });
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.error(t('add_failure'), {
         autoClose: 2000,
       });
+       validation.resetForm();
     }
     toggle();
   };
-
   const handleUpdateBudgetMonth = async (data) => {
     try {
       await updateBudgetMonth.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t('update_success'), {
         autoClose: 2000,
       });
+       validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -107,11 +108,11 @@ const BudgetMonthModel = () => {
       try {
         const id = budgetMonth.bdm_id;
         await deleteBudgetMonth.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+        toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+        toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -119,14 +120,10 @@ const BudgetMonthModel = () => {
     }
   };
   //END CRUD
-  //START FOREIGN CALLS
-
-  
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
-
     initialValues: {
      bdm_month:(budgetMonth && budgetMonth.bdm_month) || "", 
       bdm_name_or:(budgetMonth && budgetMonth.bdm_name_or) || "", 
@@ -134,17 +131,24 @@ const BudgetMonthModel = () => {
       bdm_name_en:(budgetMonth && budgetMonth.bdm_name_en) || "", 
       bdm_code:(budgetMonth && budgetMonth.bdm_code) || "", 
       bdm_description:(budgetMonth && budgetMonth.bdm_description) || "", 
-      bdm_status:(budgetMonth && budgetMonth.bdm_status) || "", 
-
+      bdm_status:(budgetMonth && budgetMonth.bdm_status) || "",
 is_deletable: (budgetMonth && budgetMonth.is_deletable) || 1,
 is_editable: (budgetMonth && budgetMonth.is_editable) || 1
     },
-
     validationSchema: Yup.object({
-    bdm_month: Yup.string().required(t('bdm_month')),
-    bdm_name_or: Yup.string().required(t('bdm_name_or')),
+    bdm_month: Yup.number().required(t('bdm_month')).test("unique-bdm_month", t("Already exists"), (value) => {
+          return !data?.data.some(
+            (item) =>
+              item.bdm_month == value && item.bdm_id !== budgetMonth?.bdm_id
+          );
+        }).min(1, t("budget_month_range"))
+        .max(12, t("budget_month_range"))
+        .integer("integer_only"),
+    bdm_name_or: Yup.string().required(t('bdm_name_or'))
+    .matches(/^(?=.*[a-zA-Z])[a-zA-Z0-9]*$/, t('must_be_alphanumeric')),
     bdm_name_am: Yup.string().required(t('bdm_name_am')),
-    bdm_name_en: Yup.string().required(t('bdm_name_en')),
+    bdm_name_en: Yup.string().required(t('bdm_name_en'))
+    .matches(/^(?=.*[a-zA-Z])[a-zA-Z0-9]*$/, t('must_be_alphanumeric'))
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -165,7 +169,7 @@ is_editable: (budgetMonth && budgetMonth.is_editable) || 1
         };
         // update BudgetMonth
         handleUpdateBudgetMonth(updateBudgetMonth);
-        validation.resetForm();
+       
       } else {
         const newBudgetMonth = {
           bdm_month:values.bdm_month, 
@@ -179,7 +183,6 @@ is_editable: (budgetMonth && budgetMonth.is_editable) || 1
         };
         // save new BudgetMonth
         handleAddBudgetMonth(newBudgetMonth);
-        validation.resetForm();
       }
     },
   });
@@ -204,7 +207,6 @@ const toggle = () => {
       setModal(true);
     }
   };
-
    const handleBudgetMonthClick = (arg) => {
     const budgetMonth = arg;
     // console.log("handleBudgetMonthClick", budgetMonth);
@@ -216,15 +218,13 @@ const toggle = () => {
       bdm_name_en:budgetMonth.bdm_name_en, 
       bdm_code:budgetMonth.bdm_code, 
       bdm_description:budgetMonth.bdm_description, 
-      bdm_status:budgetMonth.bdm_status, 
-
+      bdm_status:budgetMonth.bdm_status,
       is_deletable: budgetMonth.is_deletable,
       is_editable: budgetMonth.is_editable,
     });
     setIsEdit(true);
     toggle();
   };
-
   //delete projects
   const [deleteModal, setDeleteModal] = useState(false);
   const onClickDelete = (budgetMonth) => {
@@ -237,7 +237,7 @@ const toggle = () => {
     setBudgetMonth("");
     toggle();
   }
-;  const handleSearchResults = ({ data, error }) => {
+const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -353,8 +353,8 @@ const toggle = () => {
       },
     ];
      if (
-      data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable
+      data?.previledge?.is_role_editable==1 ||
+      data?.previledge?.is_role_deletable==1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -364,7 +364,7 @@ const toggle = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {cellProps.row.original.is_editable==1 && (
                 <Link
                   to="#"
                   className="text-success"
@@ -380,7 +380,7 @@ const toggle = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {cellProps.row.original.is_deletable==1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -441,7 +441,7 @@ const toggle = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={true}
+                      isAddButton={data?.previledge?.is_role_can_add==1}
                       isCustomPageSize={true}
                       handleUserClick={handleBudgetMonthClicks}
                       isPagination={true}
@@ -476,7 +476,7 @@ const toggle = () => {
                   <Label>{t('bdm_month')}<span className="text-danger">*</span></Label>
                       <Input
                         name='bdm_month'
-                        type='text'
+                        type='number'
                         placeholder={t('bdm_month')}
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
@@ -487,7 +487,7 @@ const toggle = () => {
                             ? true
                             : false
                         }
-                        maxLength={100}
+                        maxLength={2}
                       />
                       {validation.touched.bdm_month &&
                       validation.errors.bdm_month ? (
@@ -511,7 +511,7 @@ const toggle = () => {
                             ? true
                             : false
                         }
-                        maxLength={100}
+                        maxLength={20}
                       />
                       {validation.touched.bdm_name_or &&
                       validation.errors.bdm_name_or ? (
@@ -535,7 +535,7 @@ const toggle = () => {
                             ? true
                             : false
                         }
-                        maxLength={100}
+                        maxLength={20}
                       />
                       {validation.touched.bdm_name_am &&
                       validation.errors.bdm_name_am ? (
@@ -559,7 +559,7 @@ const toggle = () => {
                             ? true
                             : false
                         }
-                        maxLength={100}
+                        maxLength={20}
                       />
                       {validation.touched.bdm_name_en &&
                       validation.errors.bdm_name_en ? (
@@ -607,7 +607,7 @@ const toggle = () => {
                             ? true
                             : false
                         }
-                        maxLength={20}
+                        maxLength={425}
                       />
                       {validation.touched.bdm_description &&
                       validation.errors.bdm_description ? (

@@ -13,7 +13,7 @@ export const useFetchBudgetMonths = () => {
   return useQuery({
     queryKey: BUDGET_MONTH_QUERY_KEY,
     queryFn: () => getBudgetMonth(),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000,
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,

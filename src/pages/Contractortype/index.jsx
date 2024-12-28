@@ -151,9 +151,10 @@ const ContractorTypeModel = () => {
               item.cnt_type_name_or == value &&
               item.cnt_id !== contractorType?.cnt_id
           );
-        }),
+        }).matches(/^(?=.*[a-zA-Z])[a-zA-Z0-9]*$/, t('must_be_alphanumeric')),
       cnt_type_name_am: Yup.string().required(t("cnt_type_name_am")),
-      cnt_type_name_en: Yup.string().required(t("cnt_type_name_en")),
+      cnt_type_name_en: Yup.string().required(t("cnt_type_name_en"))
+      .matches(/^(?=.*[a-zA-Z])[a-zA-Z0-9]*$/, t('must_be_alphanumeric')),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -469,7 +470,7 @@ const ContractorTypeModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={100}
+                      maxLength={30}
                     />
                     {validation.touched.cnt_type_name_or &&
                     validation.errors.cnt_type_name_or ? (
@@ -493,7 +494,7 @@ const ContractorTypeModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={100}
+                      maxLength={30}
                     />
                     {validation.touched.cnt_type_name_am &&
                     validation.errors.cnt_type_name_am ? (
@@ -517,7 +518,7 @@ const ContractorTypeModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={100}
+                      maxLength={30}
                     />
                     {validation.touched.cnt_type_name_en &&
                     validation.errors.cnt_type_name_en ? (
