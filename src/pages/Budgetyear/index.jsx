@@ -143,7 +143,8 @@ const BudgetYearModel = () => {
             (item) =>
               item.bdy_name == value && item.bdy_id !== budgetYear?.bdy_id
           );
-        }).min(2017, t("budget_year_range"))
+        })
+        .min(2017, t("budget_year_range"))
         .max(2040, t("budget_year_range"))
         .integer("integer_only"),
       //bdy_code: Yup.string().required(t("bdy_code")),
@@ -354,7 +355,7 @@ const BudgetYearModel = () => {
 
     return baseColumns;
   }, [handleBudgetYearClick, toggleViewModal, onClickDelete]);
- if (isError) {
+  if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -405,7 +406,7 @@ const BudgetYearModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleBudgetYearClicks}
                       isPagination={true}
-                      SearchPlaceholder={ t("Results") + "..."}
+                      SearchPlaceholder={t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("budget_year")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -434,7 +435,10 @@ const BudgetYearModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("bdy_name")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("bdy_name")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="bdy_name"
                       type="number"
@@ -446,7 +450,6 @@ const BudgetYearModel = () => {
                           validation.handleChange(e);
                         }
                       }}
-
                       onBlur={validation.handleBlur}
                       value={validation.values.bdy_name || ""}
                       invalid={

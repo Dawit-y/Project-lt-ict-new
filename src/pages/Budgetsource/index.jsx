@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -9,8 +8,6 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
-//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 
@@ -23,10 +20,6 @@ import {
 } from "../../queries/budgetsource_query";
 import BudgetSourceModal from "./BudgetSourceModal";
 import { useTranslation } from "react-i18next";
-
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
 import {
   Button,
   Col,
@@ -119,14 +112,9 @@ const BudgetSourceModel = () => {
       setDeleteModal(false);
     }
   };
-  //END CRUD
-  //START FOREIGN CALLS
 
-  // validation
   const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
-
     initialValues: {
       pbs_name_or: (budgetSource && budgetSource.pbs_name_or) || "",
       pbs_name_am: (budgetSource && budgetSource.pbs_name_am) || "",
@@ -388,7 +376,8 @@ const BudgetSourceModel = () => {
 
     return baseColumns;
   }, [handleBudgetSourceClick, toggleViewModal, onClickDelete]);
- if (isError) {
+  
+  if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -441,7 +430,7 @@ const BudgetSourceModel = () => {
                       handleUserClick={handleBudgetSourceClicks}
                       isPagination={true}
                       // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={ t("Results") + "..."}
+                      SearchPlaceholder={t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("budget_source")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -470,7 +459,10 @@ const BudgetSourceModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pbs_name_or")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pbs_name_or")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pbs_name_or"
                       type="text"
@@ -494,7 +486,10 @@ const BudgetSourceModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pbs_name_am")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pbs_name_am")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pbs_name_am"
                       type="text"
@@ -518,7 +513,10 @@ const BudgetSourceModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pbs_name_en")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pbs_name_en")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pbs_name_en"
                       type="text"

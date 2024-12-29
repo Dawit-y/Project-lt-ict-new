@@ -23,10 +23,6 @@ import {
 } from "../../queries/accesslog_query";
 import AccessLogModal from "./AccessLogModal";
 import { useTranslation } from "react-i18next";
-
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
 import {
   Button,
   Col,
@@ -49,6 +45,8 @@ import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { useFetchPagess } from "../../queries/pages_query";
+import { createSelectOptions } from "../../utils/commonMethods";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -70,35 +68,17 @@ const AccessLogModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useState(null);
-  const pageInfo = useFetchPagess();
+  const { data, isLoading, error, isError, refetch } = useFetchAccessLogs();
+  const { data: pageInfo } = useFetchPagess();
   const addAccessLog = useAddAccessLog();
   const updateAccessLog = useUpdateAccessLog();
   const deleteAccessLog = useDeleteAccessLog();
-  const [pagesOptions, setPagesOptions] = useState([]);
-  const [selectedPages, setSelectedPages] = useState("");
-  useEffect(() => {
-    const fetchPages = async () => {
-      try {
-        // Assuming useFetchPagess returns a promise
-        const transformedData = pageInfo.data.data.map((item) => ({
-          label: item.pag_name.toString(),
-          value: item.pag_id,
-        }));
+  const pagesOptions = createSelectOptions(
+    pageInfo?.data || [],
+    "pag_id",
+    "pag_name"
+  );
 
-        const optionsWithDefault = [
-          { label: "Select Pages", value: "" }, // Capitalized "Select" and no space after colon
-          ...transformedData,
-        ];
-
-        setPagesOptions(optionsWithDefault);
-      } catch (error) {
-        console.error("Error fetching pages:", error);
-      }
-    };
-    fetchPages();
-  }, []);
-  //START CRUD
   const handleAddAccessLog = async (data) => {
     try {
       await addAccessLog.mutateAsync(data);
@@ -453,6 +433,10 @@ const AccessLogModel = () => {
 
     return baseColumns;
   }, [handleAccessLogClick, toggleViewModal, onClickDelete]);
+
+  if (isError) {
+    <FetchErrorHandler error={error} refetch={refetch} />;
+  }
 
   return (
     <React.Fragment>

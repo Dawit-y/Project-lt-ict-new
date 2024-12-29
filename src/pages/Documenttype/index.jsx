@@ -389,7 +389,7 @@ const DocumentTypeModel = () => {
 
     return baseColumns;
   }, [handleDocumentTypeClick, toggleViewModal, onClickDelete]);
- if (isError) {
+  if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -440,7 +440,7 @@ const DocumentTypeModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleDocumentTypeClicks}
                       isPagination={true}
-                      SearchPlaceholder={ t("Results") + "..."}
+                      SearchPlaceholder={t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("document_type")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -469,7 +469,10 @@ const DocumentTypeModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pdt_doc_name_or")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pdt_doc_name_or")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pdt_doc_name_or"
                       type="text"
@@ -493,7 +496,10 @@ const DocumentTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pdt_doc_name_am")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pdt_doc_name_am")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pdt_doc_name_am"
                       type="text"
@@ -517,7 +523,10 @@ const DocumentTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pdt_doc_name_en")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pdt_doc_name_en")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pdt_doc_name_en"
                       type="text"

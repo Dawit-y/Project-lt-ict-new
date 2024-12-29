@@ -151,10 +151,12 @@ const ContractorTypeModel = () => {
               item.cnt_type_name_or == value &&
               item.cnt_id !== contractorType?.cnt_id
           );
-        }).matches(/^(?=.*[a-zA-Z])[a-zA-Z0-9]*$/, t('must_be_alphanumeric')),
+        })
+        .matches(/^(?=.*[a-zA-Z])[a-zA-Z0-9]*$/, t("must_be_alphanumeric")),
       cnt_type_name_am: Yup.string().required(t("cnt_type_name_am")),
-      cnt_type_name_en: Yup.string().required(t("cnt_type_name_en"))
-      .matches(/^(?=.*[a-zA-Z])[a-zA-Z0-9]*$/, t('must_be_alphanumeric')),
+      cnt_type_name_en: Yup.string()
+        .required(t("cnt_type_name_en"))
+        .matches(/^(?=.*[a-zA-Z])[a-zA-Z0-9]*$/, t("must_be_alphanumeric")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -376,7 +378,7 @@ const ContractorTypeModel = () => {
 
     return baseColumns;
   }, [handleContractorTypeClick, toggleViewModal, onClickDelete]);
- if (isError) {
+  if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -456,7 +458,10 @@ const ContractorTypeModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("cnt_type_name_or")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("cnt_type_name_or")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="cnt_type_name_or"
                       type="text"
@@ -480,7 +485,10 @@ const ContractorTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("cnt_type_name_am")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("cnt_type_name_am")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="cnt_type_name_am"
                       type="text"
@@ -504,7 +512,10 @@ const ContractorTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("cnt_type_name_en")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("cnt_type_name_en")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="cnt_type_name_en"
                       type="text"

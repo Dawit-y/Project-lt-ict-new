@@ -36,7 +36,7 @@ const ProjectsLocation = () => {
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
- const { data, isLoading, error, isError, refetch } = useState("");
+  const { data, isLoading, error, isError, refetch } = useState("");
   const { t } = useTranslation();
 
   const parseGeoLocation = (geoLocation) => {
@@ -79,7 +79,7 @@ const ProjectsLocation = () => {
     };
     fetchProjectCategory();
   }, []);
-useEffect(() => {
+  useEffect(() => {
     setProjectParams({
       ...(prjLocationRegionId && {
         prj_location_region_id: prjLocationRegionId,
@@ -90,7 +90,7 @@ useEffect(() => {
       }),
     });
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
-   const handleNodeSelect = (node) => {
+  const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
       setPrjLocationZoneId(null); // Clear dependent states
@@ -110,85 +110,88 @@ useEffect(() => {
           breadcrumbItem={t("projects_location")}
         />
         <div className="w-100 d-flex gap-2">
-            <AddressStructureForProject onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />
-            <div className="w-100">
-        <AdvancedSearch
-          searchHook={useSearchProjects}
-          textSearchKeys={["prj_name", "prj_code"]}
-          dropdownSearchKeys={[
-            {
-              key: "prj_project_category_id",
-              options: projectCategoryOptions,
-            },
-          ]}
-           additionalParams={projectParams}
-            setAdditionalParams={setProjectParams}
-          onSearchResult={handleSearchResults}
-          setIsSearchLoading={setIsSearchLoading}
-          setSearchResults={setSearchResults}
-          setShowSearchResult={setShowSearchResult}
-        />
-        {isLoading || isSearchLoading ? (
-          <Spinners top={"top-65"} />
-        ) : markers && markers.length > 0 ? ( // Correct condition
-          <APIProvider apiKey={API_KEY}>
-            <Map
-              defaultCenter={{
-                lat: viewState.latitude,
-                lng: viewState.longitude,
-              }}
-              defaultZoom={8}
-              style={{ height: "100vh" }}
-              onDrag={(e) => {
-                setViewState({
-                  latitude: e.latLng.lat(),
-                  longitude: e.latLng.lng(),
-                  zoom: viewState.zoom,
-                });
-              }}
-              options={(maps) => ({
-                gestureHandling: "greedy",
-                zoomControl: true,
-                zoomControlOptions: {
-                  position: maps.ControlPosition.TOP_RIGHT,
+          <AddressStructureForProject
+            onNodeSelect={handleNodeSelect}
+            setIsAddressLoading={setIsAddressLoading}
+          />
+          <div className="w-100">
+            <AdvancedSearch
+              searchHook={useSearchProjects}
+              textSearchKeys={["prj_name", "prj_code"]}
+              dropdownSearchKeys={[
+                {
+                  key: "prj_project_category_id",
+                  options: projectCategoryOptions,
                 },
-              })}
-              reuseMaps={true}
-              mapId={"DEMO_MAP_ID"}
-            >
-              {markers.map((marker) => (
-                <AdvancedMarker
-                  key={marker.id}
-                  position={{ lat: marker.latitude, lng: marker.longitude }}
-                  onMouseEnter={() => setHoveredMarker(marker.id)}
-                  onMouseLeave={() => setHoveredMarker(null)}
+              ]}
+              additionalParams={projectParams}
+              setAdditionalParams={setProjectParams}
+              onSearchResult={handleSearchResults}
+              setIsSearchLoading={setIsSearchLoading}
+              setSearchResults={setSearchResults}
+              setShowSearchResult={setShowSearchResult}
+            />
+            {isLoading || isSearchLoading ? (
+              <Spinners top={"top-65"} />
+            ) : markers && markers.length > 0 ? ( // Correct condition
+              <APIProvider apiKey={API_KEY}>
+                <Map
+                  defaultCenter={{
+                    lat: viewState.latitude,
+                    lng: viewState.longitude,
+                  }}
+                  defaultZoom={8}
+                  style={{ height: "100vh" }}
+                  onDrag={(e) => {
+                    setViewState({
+                      latitude: e.latLng.lat(),
+                      longitude: e.latLng.lng(),
+                      zoom: viewState.zoom,
+                    });
+                  }}
+                  options={(maps) => ({
+                    gestureHandling: "greedy",
+                    zoomControl: true,
+                    zoomControlOptions: {
+                      position: maps.ControlPosition.TOP_RIGHT,
+                    },
+                  })}
+                  reuseMaps={true}
+                  mapId={"DEMO_MAP_ID"}
                 >
-                  <Pin />
-                  {hoveredMarker === marker.id && (
-                    <InfoWindow
-                      position={{
-                        lat: marker.latitude,
-                        lng: marker.longitude,
-                      }}
-                      options={{
-                        pixelOffset: new window.google.maps.Size(0, -40),
-                      }}
+                  {markers.map((marker) => (
+                    <AdvancedMarker
+                      key={marker.id}
+                      position={{ lat: marker.latitude, lng: marker.longitude }}
+                      onMouseEnter={() => setHoveredMarker(marker.id)}
+                      onMouseLeave={() => setHoveredMarker(null)}
                     >
-                      <h6 className="">{marker.name}</h6>
-                    </InfoWindow>
-                  )}
-                </AdvancedMarker>
-              ))}
-            </Map>
-          </APIProvider>
-        ) : (
-          <div className="position-absolute top-70 start-50">
-            <h6 className="text-danger mb-1">{t("No data available")}</h6>
+                      <Pin />
+                      {hoveredMarker === marker.id && (
+                        <InfoWindow
+                          position={{
+                            lat: marker.latitude,
+                            lng: marker.longitude,
+                          }}
+                          options={{
+                            pixelOffset: new window.google.maps.Size(0, -40),
+                          }}
+                        >
+                          <h6 className="">{marker.name}</h6>
+                        </InfoWindow>
+                      )}
+                    </AdvancedMarker>
+                  ))}
+                </Map>
+              </APIProvider>
+            ) : (
+              <div className="position-absolute top-70 start-50">
+                <h6 className="text-danger mb-1">{t("No data available")}</h6>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
-    </div>
-    </div>
     </div>
   );
 };

@@ -358,7 +358,7 @@ const SectorCategoryModel = () => {
 
     return baseColumns;
   }, [handleSectorCategoryClick, toggleViewModal, onClickDelete]);
- if (isError) {
+  if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -438,7 +438,10 @@ const SectorCategoryModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("psc_name")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("psc_name")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="psc_name"
                       type="text"

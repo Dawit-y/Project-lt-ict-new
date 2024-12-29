@@ -369,7 +369,7 @@ const StakeholderTypeModel = () => {
 
     return baseColumns;
   }, [handleStakeholderTypeClick, toggleViewModal, onClickDelete]);
- if (isError) {
+  if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -420,7 +420,7 @@ const StakeholderTypeModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleStakeholderTypeClicks}
                       isPagination={true}
-                      SearchPlaceholder={ t("Results") + "..."}
+                      SearchPlaceholder={t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("stakeholder_type")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -449,7 +449,10 @@ const StakeholderTypeModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("sht_type_name_or")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("sht_type_name_or")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="sht_type_name_or"
                       type="text"
@@ -473,7 +476,10 @@ const StakeholderTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("sht_type_name_am")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("sht_type_name_am")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="sht_type_name_am"
                       type="text"
@@ -497,7 +503,10 @@ const StakeholderTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("sht_type_name_en")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("sht_type_name_en")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="sht_type_name_en"
                       type="text"

@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -9,8 +8,6 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
-//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 
@@ -23,10 +20,6 @@ import {
 } from "../../queries/expenditurecode_query";
 import ExpenditureCodeModal from "./ExpenditureCodeModal";
 import { useTranslation } from "react-i18next";
-
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
 import {
   Button,
   Col,
@@ -44,7 +37,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -362,6 +355,10 @@ const ExpenditureCodeModel = () => {
     return baseColumns;
   }, [handleExpenditureCodeClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <ExpenditureCodeModal
@@ -439,7 +436,10 @@ const ExpenditureCodeModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pec_name")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pec_name")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pec_name"
                       type="text"

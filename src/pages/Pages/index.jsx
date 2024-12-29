@@ -492,6 +492,10 @@ const PagesModel = () => {
     return baseColumns;
   }, [handlePagesClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <PagesModal

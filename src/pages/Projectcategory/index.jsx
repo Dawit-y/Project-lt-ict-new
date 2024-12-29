@@ -392,7 +392,7 @@ const ProjectCategoryModel = () => {
 
     return baseColumns;
   }, [handleProjectCategoryClick, toggleViewModal, onClickDelete]);
- if (isError) {
+  if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -472,7 +472,10 @@ const ProjectCategoryModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pct_name_or")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pct_name_or")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pct_name_or"
                       type="text"
@@ -496,7 +499,10 @@ const ProjectCategoryModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pct_name_am")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pct_name_am")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pct_name_am"
                       type="text"
@@ -520,7 +526,10 @@ const ProjectCategoryModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pct_name_en")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pct_name_en")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pct_name_en"
                       type="text"

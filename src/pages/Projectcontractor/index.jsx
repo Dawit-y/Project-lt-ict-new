@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -9,9 +8,6 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
-//import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 
 import {
@@ -24,10 +20,6 @@ import {
 import { useFetchContractorTypes } from "../../queries/contractortype_query";
 import ProjectContractorModal from "./ProjectContractorModal";
 import { useTranslation } from "react-i18next";
-
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
 import {
   Button,
   Col,
@@ -135,12 +127,9 @@ const ProjectContractorModel = (props) => {
       setDeleteModal(false);
     }
   };
-  //END CRUD
-  //START FOREIGN CALLS
 
   // validation
   const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
@@ -558,6 +547,10 @@ const ProjectContractorModel = (props) => {
     return baseColumns;
   }, [handleProjectContractorClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <ProjectContractorModal
@@ -569,6 +562,7 @@ const ProjectContractorModel = (props) => {
         show={deleteModal}
         onDeleteClick={handleDeleteProjectContractor}
         onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteProjectContractor.isPending}
       />
       <div className={passedId ? "" : "page-content"}>
         <div className="container-fluid1">

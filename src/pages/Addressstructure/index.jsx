@@ -41,7 +41,6 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer } from "react-toastify";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -426,13 +425,9 @@ const AddressStructureModel = () => {
     return baseColumns;
   }, [handleAddressStructureClick, toggleViewModal, onClickDelete]);
 
-  const project_status = [
-    { label: "select Status name", value: "" },
-    { label: "Active", value: 1 },
-    { label: "Inactive", value: 0 },
-  ];
-
-  const dropdawntotal = [project_status];
+  if (isError) {
+    <FetchErrorHandler error={error} refetch={refetch} />;
+  }
 
   return (
     <React.Fragment>
