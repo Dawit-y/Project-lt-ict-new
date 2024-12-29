@@ -10,10 +10,6 @@ import ProjectProvider from "../context/ProjectContext";
 const ProjectPaymentList = lazy(() =>
   import("../pages/Projectpayment/ProjectPaymentList")
 );
-const Calendar = lazy(() => import("../pages/Calendar/index"));
-const ProjectLists = lazy(() =>
-  import("../pages/Projects/ProjectStatusLists/index")
-);
 const ProjectsTreeView = lazy(() => import("../pages/ProjectStatusTree/index"));
 const Logout = lazy(() => import("../pages/Authentication/Logout"));
 const Register = lazy(() => import("../pages/Authentication/Register"));
@@ -21,9 +17,6 @@ const ForgetPwd = lazy(() => import("../pages/Authentication/ForgetPassword"));
 
 const AddressStructure = lazy(() =>
   import("../pages/AddressTreeStructure/index.jsx")
-);
-const ViewProjectPage = lazy(() =>
-  import("../pages/Projects/ProjectStatusLists/ViewProjectPage")
 );
 const DocumentType = lazy(() => import("../pages/Documenttype/index"));
 const Project = lazy(() => import("../pages/Project/index"));
@@ -166,9 +159,6 @@ const authProtectedRoutes = [
   { path: "/contractor_type", component: <ContractorType /> },
   { path: "/document_type", component: <DocumentType /> },
   { path: "/access_log", component: <AccessLog /> },
-  { path: "/calendar", component: <Calendar /> },
-  { path: "/projects-status", component: <ProjectLists /> },
-  { path: "/view-project", component: <ViewProjectPage /> },
   { path: "/project_status", component: <ProjectStatus /> },
   { path: "/sector_category", component: <SectorCategory /> },
   { path: "/users", component: <Users /> },
