@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { isEmpty, update } from "lodash";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
@@ -22,17 +22,14 @@ import {
   useDeleteProjectBudgetExpenditure,
   useUpdateProjectBudgetExpenditure,
 } from "../../queries/projectbudgetexpenditure_query";
+import { useFetchProject } from "../../queries/project_query";
 import ProjectBudgetExpenditureModal from "./ProjectBudgetExpenditureModal";
 import { useTranslation } from "react-i18next";
-
-import { useFetchExpenditureCodes } from "../../queries/expenditurecode_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
 import { createSelectOptions } from "../../utils/commonMethods";
-
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
-
 import {
   Button,
   Col,
@@ -52,26 +49,29 @@ import {
   InputGroup,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
-
+import BudgetExipDetail from '../Budgetexipdetail/index';
+import ProjectDetailColapse from "../Project/ProjectDetailColapse";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-
-const ProjectBudgetExpenditureModel = (props) => {
-  const { passedId, isActive } = props;
-  const param = { pbe_project_id: passedId };
+const ProjectBudgetExpenditureModel = () => {
+  const location = useLocation();
+  const id = Number(location.pathname.split("/")[2]);
+  const param = { project_id: id };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [projectBudgetExpenditure, setProjectBudgetExpenditure] =
     useState(null);
 
@@ -81,14 +81,7 @@ const ProjectBudgetExpenditureModel = (props) => {
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjectBudgetExpenditures(param, isActive);
-
-  const { data: expenditureCodeData } = useFetchExpenditureCodes();
-  const expenditureCodeOptions = createSelectOptions(
-    expenditureCodeData?.data || [],
-    "pec_id",
-    "pec_name"
-  );
+    useFetchProjectBudgetExpenditures(param);
 
   const { data: budgetMonthData } = useFetchBudgetMonths();
   const budgetMonthOptions = createSelectOptions(
@@ -107,6 +100,8 @@ const ProjectBudgetExpenditureModel = (props) => {
   const addProjectBudgetExpenditure = useAddProjectBudgetExpenditure();
   const updateProjectBudgetExpenditure = useUpdateProjectBudgetExpenditure();
   const deleteProjectBudgetExpenditure = useDeleteProjectBudgetExpenditure();
+  const project = useFetchProject(id);
+  const [rowIsSelected, setRowIsSelected] = useState(null);
   //START CRUD
   const handleAddProjectBudgetExpenditure = async (data) => {
     try {
@@ -114,6 +109,7 @@ const ProjectBudgetExpenditureModel = (props) => {
       toast.success(`Data added successfully`, {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
       toast.error("Failed to add data", {
         autoClose: 2000,
@@ -128,6 +124,7 @@ const ProjectBudgetExpenditureModel = (props) => {
       toast.success(`data updated successfully`, {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
       toast.error(`Failed to update Data`, {
         autoClose: 2000,
@@ -160,13 +157,9 @@ const ProjectBudgetExpenditureModel = (props) => {
     enableReinitialize: true,
 
     initialValues: {
-      pbe_project_id: passedId,
+      pbe_project_id: id,
       pbe_reason:
         (projectBudgetExpenditure && projectBudgetExpenditure.pbe_reason) || "",
-      pbe_budget_code_id:
-        (projectBudgetExpenditure &&
-          projectBudgetExpenditure.pbe_budget_code_id) ||
-        "",
 
       pbe_budget_year_id:
         (projectBudgetExpenditure &&
@@ -207,12 +200,18 @@ const ProjectBudgetExpenditureModel = (props) => {
     },
 
     validationSchema: Yup.object({
-      pbe_reason: Yup.string().required(t("pbe_reason")),
-      pbe_budget_code_id: Yup.string().required(t("pbe_budget_code_id")),
-      pbe_budget_year_id: Yup.string().required(t("pbe_budget_year_id")),
-      pbe_budget_month_id: Yup.string().required(t("pbe_budget_month_id")),
-      pbe_used_date_gc: Yup.string().required(t("pbe_used_date_gc")),
-      ppe_amount: Yup.string().required(t("ppe_amount")),
+      pbe_reason: alphanumericValidation(3,200,true),
+      pbe_budget_year_id: numberValidation(1,50,true)
+      .test("unique-role-id", t("Already exists"), (value) => {
+          return !data?.data.some(
+            (item) =>
+              item.pbe_budget_year_id == value && item.pbe_id !== projectBudgetExpenditure?.pbe_id
+          );
+        }),      
+      pbe_budget_month_id: numberValidation(1,13,true),
+      //pbe_used_date_gc: Yup.string().required(t("pbe_used_date_gc")),
+      ppe_amount: amountValidation(1000,1000000000),
+      pbe_description:alphanumericValidation(3,200,true)
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -221,8 +220,6 @@ const ProjectBudgetExpenditureModel = (props) => {
         const updateProjectBudgetExpenditure = {
           pbe_id: projectBudgetExpenditure?.pbe_id,
           pbe_reason: values.pbe_reason,
-          pbe_project_id: values.pbe_project_id,
-          pbe_budget_code_id: values.pbe_budget_code_id,
           pbe_budget_year_id: values.pbe_budget_year_id,
           pbe_budget_month_id: values.pbe_budget_month_id,
           pbe_used_date_ec: values.pbe_used_date_ec,
@@ -237,12 +234,10 @@ const ProjectBudgetExpenditureModel = (props) => {
         };
         // update ProjectBudgetExpenditure
         handleUpdateProjectBudgetExpenditure(updateProjectBudgetExpenditure);
-        validation.resetForm();
       } else {
         const newProjectBudgetExpenditure = {
           pbe_reason: values.pbe_reason,
-          pbe_project_id: values.pbe_project_id,
-          pbe_budget_code_id: values.pbe_budget_code_id,
+          pbe_project_id: id,
           pbe_budget_year_id: values.pbe_budget_year_id,
           pbe_budget_month_id: values.pbe_budget_month_id,
           pbe_used_date_ec: values.pbe_used_date_ec,
@@ -253,8 +248,7 @@ const ProjectBudgetExpenditureModel = (props) => {
           pbe_created_date: values.pbe_created_date,
         };
         // save new ProjectBudgetExpenditure
-        handleAddProjectBudgetExpenditure(newProjectBudgetExpenditure);
-        validation.resetForm();
+        handleAddProjectBudgetExpenditure(newProjectBudgetExpenditure);        
       }
     },
   });
@@ -287,7 +281,6 @@ const ProjectBudgetExpenditureModel = (props) => {
       pbe_id: projectBudgetExpenditure.pbe_id,
       pbe_reason: projectBudgetExpenditure.pbe_reason,
       pbe_project_id: projectBudgetExpenditure.pbe_project_id,
-      pbe_budget_code_id: projectBudgetExpenditure.pbe_budget_code_id,
       pbe_budget_year_id: projectBudgetExpenditure.pbe_budget_year_id,
       pbe_budget_month_id: projectBudgetExpenditure.pbe_budget_month_id,
 
@@ -341,20 +334,6 @@ const ProjectBudgetExpenditureModel = (props) => {
 
       {
         header: "",
-        accessorKey: "pbe_budget_code",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pbe_budget_code, 30) || "-"}
-            </span>
-          );
-        },
-      },
-
-      {
-        header: "",
         accessorKey: "pbe_budget_year",
         enableColumnFilter: false,
         enableSorting: true,
@@ -380,20 +359,6 @@ const ProjectBudgetExpenditureModel = (props) => {
           );
         },
       },
-
-      {
-        header: "",
-        accessorKey: "pbe_used_date_gc",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pbe_used_date_gc, 30) || "-"}
-            </span>
-          );
-        },
-      },
       {
         header: "",
         accessorKey: "ppe_amount",
@@ -407,21 +372,6 @@ const ProjectBudgetExpenditureModel = (props) => {
           );
         },
       },
-
-      {
-        header: "",
-        accessorKey: "pbe_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pbe_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -430,7 +380,7 @@ const ProjectBudgetExpenditureModel = (props) => {
           return (
             <Button
               type="button"
-              color="primary"
+              color="soft-primary"
               className="btn-sm"
               onClick={() => {
                 const data = cellProps.row.original;
@@ -443,6 +393,26 @@ const ProjectBudgetExpenditureModel = (props) => {
           );
         },
       },
+        {
+        header: t("add_detail"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              type="button"
+              color="soft-success"
+              className="btn-sm "
+              onClick={() => {
+                const data = cellProps.row.original;
+                setRowIsSelected(cellProps.row.original);
+              }}
+            >
+              {t("add_detail")}
+            </Button>
+          );
+        },
+      }
     ];
     if (
       data?.previledge?.is_role_editable &&
@@ -519,14 +489,18 @@ const ProjectBudgetExpenditureModel = (props) => {
         isLoading={deleteProjectBudgetExpenditure.isPending}
       />
       <>
-        <div className="container-fluid1">
-          {isLoading || isSearchLoading ? (
-            <Spinners top={isActive ? "top-70" : ""} />
+        <div className="page-content">
+        <div className="container-fluid">
+          {isLoading || isSearchLoading || project.isLoading ? (
+            <Spinners />
           ) : (
-            <Row>
-              <Col xs="12">
-                <Card>
-                  <CardBody>
+         <Row>
+              <ProjectDetailColapse
+                data={project?.data?.data || []}
+                isExpanded={isExpanded}
+              />
+              {/* TableContainer for displaying data */}
+              <Col lg={12}>
                     <TableContainer
                       columns={columns}
                       data={
@@ -541,17 +515,24 @@ const ProjectBudgetExpenditureModel = (props) => {
                       isPagination={true}
                       SearchPlaceholder={t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={
-                        t("add") + " " + t("project_budget_expenditure")
-                      }
+                      buttonName={t("add")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                     />
-                  </CardBody>
-                </Card>
-              </Col>
+                 </Col>
+        {rowIsSelected ? (
+                <Col lg={12}>
+                  <BudgetExipDetail requestData={rowIsSelected} />
+                </Col>                
+              ) : (
+                <Col lg={rowIsSelected ? 0 : 0}>
+                  <Card>
+                    <p>Gannt chart</p>
+                  </Card>
+                </Col>
+              )}
             </Row>
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
@@ -596,42 +577,6 @@ const ProjectBudgetExpenditureModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pbe_budget_code_id")}{" "}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="pbe_budget_code_id"
-                      id="pbe_budget_code_id"
-                      type="select"
-                      className="form-select"
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pbe_budget_code_id || ""}
-                      invalid={
-                        validation.touched.pbe_budget_code_id &&
-                        validation.errors.pbe_budget_code_id
-                          ? true
-                          : false
-                      }
-                    >
-                      <option value={null}>Select Expenditure Code</option>
-                      {expenditureCodeOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {t(`${option.label}`)}
-                        </option>
-                      ))}
-                    </Input>
-                    {validation.touched.pbe_budget_code_id &&
-                    validation.errors.pbe_budget_code_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pbe_budget_code_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-
                   <Col className="col-md-6 mb-3">
                     <Label>
                       {t("pbe_budget_year_id")}{" "}
@@ -652,7 +597,7 @@ const ProjectBudgetExpenditureModel = (props) => {
                           : false
                       }
                     >
-                      <option value={null}>Select Year</option>
+                     <option value={null}>{t("select_one")}</option>
                       {budgetYearOptions.map((option) => (
                         <option key={option.value} value={option.value}>
                           {t(`${option.label}`)}
@@ -687,7 +632,7 @@ const ProjectBudgetExpenditureModel = (props) => {
                           : false
                       }
                     >
-                      <option value={null}>Select Month</option>
+                      <option value={null}>{t("select_one")}</option>
                       {budgetMonthOptions.map((option) => (
                         <option key={option.value} value={option.value}>
                           {t(`${option.label}`)}
@@ -701,56 +646,6 @@ const ProjectBudgetExpenditureModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <FormGroup>
-                      <Label>
-                        {t("pbe_used_date_gc")}
-                        <span className="text-danger">*</span>
-                      </Label>
-                      <InputGroup>
-                        <Flatpickr
-                          id="DataPicker"
-                          className={`form-control ${
-                            validation.touched.pbe_used_date_gc &&
-                            validation.errors.pbe_used_date_gc
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          name="pbe_used_date_gc"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
-                            enableTime: false,
-                          }}
-                          value={validation.values.pbe_used_date_gc || ""}
-                          onChange={(date) => {
-                            const formatedDate = formatDate(date[0]);
-                            validation.setFieldValue(
-                              "pbe_used_date_gc",
-                              formatedDate
-                            ); // Set value in Formik
-                          }}
-                          onBlur={validation.handleBlur}
-                        />
-
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
-                      </InputGroup>
-                      {validation.touched.pbe_used_date_gc &&
-                      validation.errors.pbe_used_date_gc ? (
-                        <FormFeedback>
-                          {validation.errors.pbe_used_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
-                  </Col>
-
                   <Col className="col-md-6 mb-3">
                     <Label>
                       {t("ppe_amount")}
@@ -844,6 +739,7 @@ const ProjectBudgetExpenditureModel = (props) => {
             </ModalBody>
           </Modal>
         </div>
+        </div>
       </>
     </React.Fragment>
   );
@@ -851,5 +747,4 @@ const ProjectBudgetExpenditureModel = (props) => {
 ProjectBudgetExpenditureModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,
 };
-
 export default ProjectBudgetExpenditureModel;

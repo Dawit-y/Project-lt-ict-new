@@ -259,7 +259,7 @@ const TableContainer = ({
             )}
           </tbody>
         </Table>
-      </div>
+      
       {isPagination && (
         <Row>
           <Col sm={12} md={5}>
@@ -327,8 +327,8 @@ const TableContainer = ({
           </Col>
         </Row>
       )}
+      </div>
     </Fragment>
   );
 };
-
 export default TableContainer;

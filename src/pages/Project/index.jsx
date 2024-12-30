@@ -65,6 +65,7 @@ import {
   FormGroup,
   InputGroup,
 } from "reactstrap";
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
@@ -79,9 +80,9 @@ const tabMapping = {
   2: { label: "Contractors", component: Projectcontractor },
   3: { label: "Payments", component: ProjectPayment },
   4: { label: "Stakeholders", component: ProjectStakeholder },
-  5: { label: "Budget Request", component: Budgetrequest },
+  //5: { label: "Budget Request", component: Budgetrequest },
   6: { label: "Geo Location", component: GeoLocation },
-  7: { label: "Budget Expenditures", component: ProjectBudgetExpenditureModel },
+  //7: { label: "Budget Expenditures", component: ProjectBudgetExpenditureModel },
   8: { label: "Employees", component: ProjectEmployeeModel },
   9: { label: "Handover", component: ProjectHandoverModel },
   10: { label: "Performance", component: ProjectPerformanceModel },
@@ -248,50 +249,38 @@ const ProjectModel = () => {
     },
 
     validationSchema: Yup.object({
-      prj_name: Yup.string()
-        .required(t("prj_name"))
+      prj_name: alphanumericValidation(3, 200, true)
         .test("unique-prj_name", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) => item.prj_name == value && item.prj_id !== project?.prj_id
           );
         }),
-      prj_name_am: Yup.string()
-        .required(t("prj_name_am"))
+      prj_name_am: alphanumericValidation(3, 200, true)
         .test("unique-prj_name_am", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.prj_name_am == value && item.prj_id !== project?.prj_id
           );
         }),
-      prj_name_en: Yup.string()
-        .required(t("prj_name_en"))
+      prj_name_en: alphanumericValidation(3, 200, true)
         .test("unique-prj_name_en", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.prj_name_en == value && item.prj_id !== project?.prj_id
           );
         }),
-      prj_code: Yup.string()
-        .required(t("prj_code"))
+      prj_code: alphanumericValidation(3, 20, true)
         .test("unique-prj_code", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) => item.prj_code == value && item.prj_id !== project?.prj_id
           );
         }),
       //prj_project_status_id: Yup.string().required(t('prj_project_status_id')),
-      prj_project_category_id: Yup.string().required(
-        t("prj_project_category_id")
-      ),
+      prj_project_category_id: numberValidation(1, 200, true),
       //prj_project_budget_source_id: Yup.string().required(t('prj_project_budget_source_id')),
-      prj_total_estimate_budget: Yup.number()
-        .required(t("prj_total_estimate_budget"))
-        .min(1000, t("prj_project_amount_range"))
-        .max(100000000000, t("prj_project_amount_range")),
+      prj_total_estimate_budget: amountValidation(1000,1000000000000,true),
 
-      /* prj_total_actual_budget: Yup.number().required(
-        t("prj_total_actual_budget")
-      ).min(1000, t('prj_project_amount_range'))
-    .max(100000000000, t('prj_project_amount_range')),*/
+      prj_total_actual_budget: amountValidation(1000,1000000000000,false),
       //prj_geo_location: Yup.string().required(t('prj_geo_location')),
       prj_sector_id: Yup.string().required(t("prj_sector_id")),
       prj_location_region_id: Yup.string().required(

@@ -1,30 +1,32 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  getProjectStakeholder,
-  updateProjectStakeholder,
-  addProjectStakeholder,
-  deleteProjectStakeholder,
-} from "../helpers/projectstakeholder_backend_helper";
+  getBudgetRequestTask,
+  updateBudgetRequestTask,
+  addBudgetRequestTask,
+  deleteBudgetRequestTask,
+} from "../helpers/budgetrequesttask_backend_helper";
 
-const PROJECT_STAKEHOLDER_QUERY_KEY = ["projectstakeholder"];
+const BUDGET_REQUEST_TASK_QUERY_KEY = ["budgetrequesttask"];
 
-// Fetch project_stakeholder
-export const useFetchProjectStakeholders = (param = {}) => {
+// Fetch budget_request_task
+export const useFetchBudgetRequestTasks = (param = {}, isActive) => {
   return useQuery({
-    queryKey: [...PROJECT_STAKEHOLDER_QUERY_KEY, "fetch", param],
-    queryFn: () => getProjectStakeholder(param),
-    staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
-    refetchOnWindowFocus: false,
+    queryKey: [...BUDGET_REQUEST_TASK_QUERY_KEY,"fetch", param],
+    queryFn: () => getBudgetRequestTask(param),
+    staleTime: 0, // Data is considered stale immediately
+    cacheTime: 0,
+    meta: { persist: false },
+    refetchOnWindowFocus: true,
     refetchOnMount: false,
+    enabled: true
   });
 };
 
-//search project_stakeholder
-export const useSearchProjectStakeholders = (searchParams = {}) => {
+//search budget_request_task
+export const useSearchBudgetRequestTasks = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...PROJECT_STAKEHOLDER_QUERY_KEY, searchParams],
-    queryFn: () => getProjectStakeholder(searchParams),
+    queryKey: [...BUDGET_REQUEST_TASK_QUERY_KEY,"search", searchParams],
+    queryFn: () => getBudgetRequestTask(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
@@ -33,16 +35,16 @@ export const useSearchProjectStakeholders = (searchParams = {}) => {
   });
 };
 
-// Add project_stakeholder
-export const useAddProjectStakeholder = () => {
+// Add budget_request_task
+export const useAddBudgetRequestTask = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: addProjectStakeholder,
+    mutationFn: addBudgetRequestTask,
     onSuccess: (newDataResponse) => {
       const queries = queryClient.getQueriesData({
-        queryKey: PROJECT_STAKEHOLDER_QUERY_KEY,
+        queryKey: BUDGET_REQUEST_TASK_QUERY_KEY,
       });
+
       const newData = {
         ...newDataResponse.data,
         ...newDataResponse.previledge,
@@ -61,14 +63,14 @@ export const useAddProjectStakeholder = () => {
   });
 };
 
-// Update project_stakeholder
-export const useUpdateProjectStakeholder = () => {
+// Update budget_request_task
+export const useUpdateBudgetRequestTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: updateProjectStakeholder,
-    onSuccess: (updatedData) => {
+    mutationFn: updateBudgetRequestTask,
+    onSuccess: (updatedBudgetRequestTask) => {
       const queries = queryClient.getQueriesData({
-        queryKey: PROJECT_STAKEHOLDER_QUERY_KEY,
+        queryKey: BUDGET_REQUEST_TASK_QUERY_KEY,
       });
 
       queries.forEach(([queryKey, oldData]) => {
@@ -77,8 +79,8 @@ export const useUpdateProjectStakeholder = () => {
           return {
             ...oldData,
             data: oldData.data.map((data) =>
-              data.psh_id === updatedData.data.psh_id
-                ? { ...data, ...updatedData.data }
+              data.brt_id === updatedBudgetRequestTask.data.brt_id
+                ? { ...data, ...updatedBudgetRequestTask.data }
                 : data
             ),
           };
@@ -88,14 +90,14 @@ export const useUpdateProjectStakeholder = () => {
   });
 };
 
-// Delete project_stakeholder
-export const useDeleteProjectStakeholder = () => {
+// Delete budget_request_task
+export const useDeleteBudgetRequestTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: deleteProjectStakeholder,
-    onSuccess: (deletedData, variable) => {
+    mutationFn: deleteBudgetRequestTask,
+     onSuccess: (deletedData, variable) => {
       const queries = queryClient.getQueriesData({
-        queryKey: PROJECT_STAKEHOLDER_QUERY_KEY,
+        queryKey: BUDGET_REQUEST_TASK_QUERY_KEY,
       });
 
       queries.forEach(([queryKey, oldData]) => {
@@ -104,7 +106,7 @@ export const useDeleteProjectStakeholder = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.psh_id !== parseInt(variable)
+              (dept) => dept.brt_id !== parseInt(deletedData.deleted_id)
             ),
           };
         });

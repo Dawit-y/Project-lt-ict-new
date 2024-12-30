@@ -34,6 +34,9 @@
 button {
   font-size: calc(10px + .5vmin);
 }
+.modal-xl{
+  --bs-modal-width:90%;
+}
 /*body{
   zoom:90%;
 }

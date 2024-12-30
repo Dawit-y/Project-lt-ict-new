@@ -13,7 +13,7 @@ import SearchComponent from "../../components/Common/SearchComponent";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 import {
   useFetchProjectEmployees,
   useSearchProjectEmployees,
@@ -87,6 +87,7 @@ const ProjectEmployeeModel = (props) => {
       toast.success(`Data added successfully`, {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
       toast.error("Failed to add data", {
         autoClose: 2000,
@@ -101,6 +102,7 @@ const ProjectEmployeeModel = (props) => {
       toast.success(`data updated successfully`, {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
       toast.error(`Failed to update Data`, {
         autoClose: 2000,
@@ -156,20 +158,19 @@ const ProjectEmployeeModel = (props) => {
       is_deletable: (projectEmployee && projectEmployee.is_deletable) || 1,
       is_editable: (projectEmployee && projectEmployee.is_editable) || 1,
     },
-
     validationSchema: Yup.object({
-      emp_id_no: Yup.string().required(t("emp_id_no")),
-      emp_full_name: Yup.string().required(t("emp_full_name")),
-      emp_email: Yup.string().required(t("emp_email")),
-      emp_phone_num: Yup.string().required(t("emp_phone_num")),
-      emp_role: Yup.string().required(t("emp_role")),
+      emp_id_no: alphanumericValidation(3,10,true),
+      emp_full_name: alphanumericValidation(3,200,true),
+      emp_email: alphanumericValidation(5,50,true).email('ivalid email address'),
+      emp_phone_num: alphanumericValidation(10,24,true),
+      emp_role: alphanumericValidation(3,425,true),
       //emp_project_id: Yup.string().required(t("emp_project_id")),
       //emp_start_date_ec: Yup.string().required(t("emp_start_date_ec")),
-      emp_start_date_gc: Yup.string().required(t("emp_start_date_gc")),
+     //emp_start_date_gc: alphanumericValidation(10,11,true),
      // emp_end_date_ec: Yup.string().required(t("emp_end_date_ec")),
       //emp_end_date_gc: Yup.string().required(t("emp_end_date_gc")),
-      //emp_address: Yup.string().required(t("emp_address")),
-      //emp_description: Yup.string().required(t("emp_description")),
+      emp_address: alphanumericValidation(3,425,false),
+      emp_description: alphanumericValidation(3,425,false),
       //emp_current_status: Yup.string().required(t("emp_current_status")),
     }),
     validateOnBlur: true,
@@ -197,7 +198,6 @@ const ProjectEmployeeModel = (props) => {
         };
         // update ProjectEmployee
         handleUpdateProjectEmployee(updateProjectEmployee);
-        validation.resetForm();
       } else {
         const newProjectEmployee = {
           emp_id_no: values.emp_id_no,
@@ -216,7 +216,7 @@ const ProjectEmployeeModel = (props) => {
         };
         // save new ProjectEmployee
         handleAddProjectEmployee(newProjectEmployee);
-        validation.resetForm();
+        
       }
     },
   });
@@ -377,19 +377,6 @@ const ProjectEmployeeModel = (props) => {
           return (
             <span>
               {truncateText(cellProps.row.original.emp_end_date_gc, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "emp_address",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emp_address, 30) || "-"}
             </span>
           );
         },
@@ -574,6 +561,7 @@ const ProjectEmployeeModel = (props) => {
                 <Row>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("emp_id_no")}</Label>
+                    <span className="text-danger">*</span>
                     <Input
                       name="emp_id_no"
                       type="text"

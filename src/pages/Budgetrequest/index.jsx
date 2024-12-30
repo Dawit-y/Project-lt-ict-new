@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { isEmpty, update } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
@@ -17,10 +17,13 @@ import {
   useUpdateBudgetRequest,
   useDeleteBudgetRequest,
 } from "../../queries/budget_request_query";
+import { useFetchProject } from "../../queries/project_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import BudgetRequestModal from "./BudgetRequestModal";
 import { useTranslation } from "react-i18next";
-
+import BudgetRequestAmount from '../Budgetrequestamount/index';
+import BudgetRequestTask from '../Budgetrequesttask/index';
+import BudgetExSource from '../Budgetexsource/index';
 import {
   Button,
   Col,
@@ -43,8 +46,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 import { formatDate } from "../../utils/commonMethods";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler"
-
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import ProjectDetailColapse from "../Project/ProjectDetailColapse";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -58,27 +61,30 @@ const statusClasses = {
   Requested: "secondary",
 };
 
-const BudgetRequestModel = (props) => {
-  const { passedId } = props;
-  const params = { project_id: passedId };
+const BudgetRequestModel = () => {
+   const location = useLocation();
+  const id = Number(location.pathname.split("/")[2]);
+  const param = { project_id: id };
   const { t } = useTranslation();
-
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-
+  const [isExpanded, setIsExpanded] = useState(true);
   const [budgetRequest, setBudgetRequest] = useState(null);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [searcherror, setSearchError] = useState(null);
   const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
   const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
 
   const { data, isLoading, isError, error, refetch } =
-    useFetchBudgetRequests(params);
+    useFetchBudgetRequests(param);
   const { data: budgetYearData } = useFetchBudgetYears();
 
   const addBudgetRequest = useAddBudgetRequest();
   const updateBudgetRequest = useUpdateBudgetRequest();
   const deleteBudgetRequest = useDeleteBudgetRequest();
-
+  const project = useFetchProject(id);
+  const [rowIsSelected, setRowIsSelected] = useState(null);
   const handleAddBudgetRequest = async (data) => {
     try {
       await addBudgetRequest.mutateAsync(data);
@@ -118,7 +124,7 @@ const BudgetRequestModel = (props) => {
       bdr_requested_amount:
         (budgetRequest && budgetRequest.bdr_requested_amount) || "",
 
-      bdr_project_id: passedId,
+      bdr_project_id: id,
       bdr_requested_date_ec:
         (budgetRequest && budgetRequest.bdr_requested_date_ec) || "",
       bdr_requested_date_gc:
@@ -146,7 +152,6 @@ const BudgetRequestModel = (props) => {
       if (isEdit) {
         const updatedBudgetRequest = {
           bdr_id: budgetRequest ? budgetRequest.bdr_id : 0,
-          bdr_project_id: passedId,
           bdr_budget_year_id: values.bdr_budget_year_id,
           bdr_requested_amount: values.bdr_requested_amount,
           bdr_requested_date_ec: values.bdr_requested_date_ec,
@@ -162,7 +167,7 @@ const BudgetRequestModel = (props) => {
       } else {
         const newBudgetRequest = {
           bdr_budget_year_id: values.bdr_budget_year_id,
-          bdr_project_id: passedId,
+          bdr_project_id: id,
           bdr_requested_amount: values.bdr_requested_amount,
           bdr_requested_date_ec: values.bdr_requested_date_ec,
           bdr_requested_date_gc: values.bdr_requested_date_gc,
@@ -259,7 +264,11 @@ const BudgetRequestModel = (props) => {
     setBudgetRequest("");
     toggle();
   };
-
+ const handleSearchResults = ({ data, error }) => {
+    setSearchResults(data);
+    setSearchError(error);
+    setShowSearchResult(true);
+  };
   const columns = useMemo(() => {
     const baseColumns = [
       {
@@ -347,7 +356,6 @@ const BudgetRequestModel = (props) => {
           );
         },
       },
-
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -369,6 +377,26 @@ const BudgetRequestModel = (props) => {
           );
         },
       },
+      {
+        header: t("add_detail"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                const data = cellProps.row.original
+                setRowIsSelected(cellProps.row.original);
+              }}
+            >
+              {t("add_detail")}
+            </Button>
+          );
+        },
+      }
     ];
     if (
       data?.previledge?.is_role_editable &&
@@ -443,17 +471,23 @@ const BudgetRequestModel = (props) => {
         onDeleteClick={handleDeleteBudgetRequest}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteBudgetRequest.isPending}
-      />
-      <div className="container-fluid1">
-        {passedId ? null : (
+      />        
           <Breadcrumbs
             title={t("budget_request")}
             breadcrumbItem={t("budget_request")}
           />
-        )}
-        {isLoading || searchLoading ? (
-          <Spinners />
-        ) : (
+       <div className="page-content">
+        <div className="container-fluid">
+          {isLoading || isSearchLoading || project.isLoading ? (
+            <Spinners />
+          ) : (
+         <Row>
+              <ProjectDetailColapse
+                data={project?.data?.data || []}
+                isExpanded={isExpanded}
+              />
+              {/* TableContainer for displaying data */}
+              <Col lg={12}>
           <TableContainer
             columns={columns}
             data={data?.data}
@@ -471,7 +505,24 @@ const BudgetRequestModel = (props) => {
             pagination="pagination"
             paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
           />
-        )}
+          </Col>
+        {rowIsSelected ? (
+                <Col lg={12}>
+                  <BudgetRequestTask requestData={rowIsSelected} />                
+                  <BudgetRequestAmount requestData={rowIsSelected} />
+                  <BudgetExSource requestData={rowIsSelected} />
+                </Col>
+                
+              ) : (
+                <Col lg={rowIsSelected ? 0 : 0}>
+                  <Card>
+                    <p>Gannt chart</p>
+                  </Card>
+                </Col>
+              )}
+            </Row>
+          )}
+
         <Modal isOpen={modal} toggle={toggle} className="modal-xl">
           <ModalHeader toggle={toggle} tag="h4">
             {!!isEdit
@@ -751,7 +802,7 @@ const BudgetRequestModel = (props) => {
           </ModalBody>
         </Modal>
       </div>
-      {/* </div> */}
+      </div>
     </React.Fragment>
   );
 };

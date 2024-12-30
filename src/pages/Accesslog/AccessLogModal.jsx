@@ -33,55 +33,38 @@ const AccessLogModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('acl_ip')}: <span className="text-primary">{transaction.acl_ip}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('acl_user_id')}: <span className="text-primary">{transaction.acl_user_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('acl_role_id')}: <span className="text-primary">{transaction.acl_role_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('acl_object_name')}: <span className="text-primary">{transaction.acl_object_name}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('acl_object_id')}: <span className="text-primary">{transaction.acl_object_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('acl_remark')}: <span className="text-primary">{transaction.acl_remark}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('acl_detail')}: <span className="text-primary">{transaction.acl_detail}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('acl_object_action')}: <span className="text-primary">{transaction.acl_object_action}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('acl_description')}: <span className="text-primary">{transaction.acl_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('acl_status')}: <span className="text-primary">{transaction.acl_status}</span>
-          </p>
-          </tr>
-
-          {transaction.is_deletable === 1 && (
-            <p className="text-danger">data is deletable</p>
-          )}
-          
-          {transaction.is_editable === 1 && (
-            <p className="text-success">Editable</p>
-          )}
+        <table className="table">
+  <tr>
+    <td className="col-sm-4 p-2">{t('acl_ip')}</td>
+    <td className="col-sm-8 p-2">{transaction.acl_ip}</td>
+  </tr>
+  <tr>
+    <td className="col-sm-4 p-2">{t('acl_user_id')}</td>
+    <td className="col-sm-8 p-2">{transaction.acl_user_id}</td>
+  </tr>
+  <tr>
+    <td className="col-sm-4 p-2">{t('acl_object_name')}</td>
+    <td className="col-sm-8 p-2">{transaction.acl_object_name}</td>
+  </tr>
+  <tr>
+    <td className="col-sm-4 p-2">{t('acl_detail')}</td>
+    <td className="col-sm-8 p-2">{transaction.acl_detail}</td>
+  </tr>
+  <tr>
+    <td className="col-sm-4 p-2">{t('acl_object_id')}</td>
+    <td className="col-sm-8 p-2">{transaction.acl_object_id}</td>
+  </tr>
+  <tr>
+    <td className="col-sm-4 p-2">{t('acl_create_time')}</td>
+    <td className="col-sm-8 p-2">{transaction.acl_create_time}</td>
+  </tr>
+  <tr>
+    <td className="col-sm-4 p-2">{t('acl_description')}</td>
+    <td className="col-sm-8 p-2" style={{ overflowWrap: "anywhere"}}>      
+        {transaction.acl_description}
+    </td>
+  </tr>
+</table>
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>

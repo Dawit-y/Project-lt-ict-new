@@ -10,6 +10,7 @@ import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 import {
   useFetchBudgetMonths,
   useSearchBudgetMonths,
@@ -129,23 +130,16 @@ const BudgetMonthModel = () => {
       is_editable: (budgetMonth && budgetMonth.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      bdm_month: Yup.number()
-        .required(t("bdm_month"))
+      bdm_month:numberValidation(1, 13, true)
         .test("unique-bdm_month", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.bdm_month == value && item.bdm_id !== budgetMonth?.bdm_id
           );
-        })
-        .min(1, t("budget_month_range"))
-        .max(12, t("budget_month_range"))
-        .integer("integer_only"),
-      bdm_name_or: Yup.string()
-        .required(t("bdm_name_or"))
-        .matches(/^(?=.*[a-zA-Z])[a-zA-Z0-9]*$/, t("must_be_alphanumeric")),
-      bdm_name_am: Yup.string().required(t("bdm_name_am")),
-      bdm_name_en: Yup.string()
-        .required(t("bdm_name_en"))
+        }),
+      bdm_name_or: alphanumericValidation(3, 20, true),
+      bdm_name_am: alphanumericValidation(3, 20, true),
+      bdm_name_en: alphanumericValidation(3, 20, true)
         .matches(/^(?=.*[a-zA-Z])[a-zA-Z0-9]*$/, t("must_be_alphanumeric")),
     }),
     validateOnBlur: true,

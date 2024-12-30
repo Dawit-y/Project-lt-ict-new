@@ -19,7 +19,7 @@ import {
 import { useFetchStakeholderTypes } from "../../queries/stakeholdertype_query";
 import ProjectStakeholderModal from "./ProjectStakeholderModal";
 import { useTranslation } from "react-i18next";
-
+import { alphanumericValidation,amountValidation,numberValidation,dropdownValidation } from '../../utils/Validation/validation';
 import {
   Button,
   Col,
@@ -33,6 +33,8 @@ import {
   FormFeedback,
   Label,
 } from "reactstrap";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { createSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
@@ -71,6 +73,7 @@ const ProjectStakeholderModel = (props) => {
       toast.success(`Data added successfully`, {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
       toast.error("Failed to add data", {
         autoClose: 2000,
@@ -85,6 +88,7 @@ const ProjectStakeholderModel = (props) => {
       toast.success(`data updated successfully`, {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
       toast.error(`Failed to update Data`, {
         autoClose: 2000,
@@ -135,17 +139,12 @@ const ProjectStakeholderModel = (props) => {
 
     validationSchema: Yup.object({
       // psh_project_id: Yup.string().required(t("psh_project_id")),
-      psh_name: Yup.string().required(t("psh_name")),
-      //psh_stakeholder_type: Yup.string().required(t("psh_stakeholder_type")),
-
-      psh_representative_name: Yup.string().required(
-        t("psh_representative_name")
-      ),
-      psh_representative_phone: Yup.string().required(
-        t("psh_representative_phone")
-      ),
-      //psh_role: Yup.string().required(t("psh_role")),
-      //psh_description: Yup.string().required(t("psh_description")),
+      psh_name: alphanumericValidation(3, 200, true),
+      psh_stakeholder_type: dropdownValidation(1,300,true),
+      psh_representative_name: alphanumericValidation(3, 200, true),
+      psh_representative_phone: alphanumericValidation(3, 24, true),
+      psh_role: alphanumericValidation(3, 425, false),
+      psh_description: alphanumericValidation(3, 425, false)
       //psh_status: Yup.string().required(t("psh_status")),
     }),
     validateOnBlur: true,
@@ -167,7 +166,7 @@ const ProjectStakeholderModel = (props) => {
           is_editable: values.is_editable,
         };
         handleUpdateProjectStakeholder(updateProjectStakeholder);
-        validation.resetForm();
+        
       } else {
         const newProjectStakeholder = {
           psh_project_id: values.psh_project_id,
@@ -180,7 +179,6 @@ const ProjectStakeholderModel = (props) => {
           psh_stakeholder_type: values.psh_stakeholder_type,
         };
         handleAddProjectStakeholder(newProjectStakeholder);
-        validation.resetForm();
       }
     },
   });
@@ -429,7 +427,7 @@ const ProjectStakeholderModel = (props) => {
               isPagination={true}
               SearchPlaceholder={26 + " " + t("Results") + "..."}
               buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-              buttonName={t("add") + " " + t("project_stakeholder")}
+              buttonName={t("add")}
               tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
               theadClass="table-light"
               pagination="pagination"
@@ -556,7 +554,7 @@ const ProjectStakeholderModel = (props) => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={24}
                     />
                     {validation.touched.psh_representative_phone &&
                     validation.errors.psh_representative_phone ? (
@@ -569,7 +567,7 @@ const ProjectStakeholderModel = (props) => {
                     <Label>{t("psh_role")}</Label>
                     <Input
                       name="psh_role"
-                      type="text"
+                      type="textarea"
                       placeholder={t("psh_role")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -580,7 +578,7 @@ const ProjectStakeholderModel = (props) => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={425}
                     />
                     {validation.touched.psh_role &&
                     validation.errors.psh_role ? (
@@ -593,7 +591,7 @@ const ProjectStakeholderModel = (props) => {
                     <Label>{t("psh_description")}</Label>
                     <Input
                       name="psh_description"
-                      type="text"
+                      type="textarea"
                       placeholder={t("psh_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -604,38 +602,12 @@ const ProjectStakeholderModel = (props) => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={425}
                     />
                     {validation.touched.psh_description &&
                     validation.errors.psh_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.psh_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3" style={{ display: "none" }}>
-                    <Label>{t("psh_status")}</Label>
-                    <Input
-                      name="psh_status"
-                      type="select"
-                      className="form-select"
-                      onChange={(e) => {
-                        validation.setFieldValue(
-                          "psh_status",
-                          Number(e.target.value)
-                        );
-                      }}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.psh_status}
-                    >
-                      <option value={""}>Select status</option>
-                      <option value={1}>{t("Active")}</option>
-                      <option value={0}>{t("Inactive")}</option>
-                    </Input>
-                    {validation.touched.psh_status &&
-                    validation.errors.psh_status ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.psh_status}
                       </FormFeedback>
                     ) : null}
                   </Col>
@@ -677,5 +649,4 @@ const ProjectStakeholderModel = (props) => {
 ProjectStakeholderModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,
 };
-
 export default ProjectStakeholderModel;
