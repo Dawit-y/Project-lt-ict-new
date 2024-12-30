@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -9,12 +8,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
-//import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-import { formatDate } from "../../utils/commonMethods";
-
 import {
   useFetchProjectBudgetExpenditures,
   useSearchProjectBudgetExpenditures,
@@ -28,8 +22,6 @@ import { useTranslation } from "react-i18next";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
 import { createSelectOptions } from "../../utils/commonMethods";
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
 import {
   Button,
   Col,
@@ -49,20 +41,27 @@ import {
   InputGroup,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
-import BudgetExipDetail from '../Budgetexipdetail/index';
+import BudgetExipDetail from "../Budgetexipdetail/index";
 import ProjectDetailColapse from "../Project/ProjectDetailColapse";
+import RightOffCanvas from "../../components/Common/RightOffCanvas";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
+
 const ProjectBudgetExpenditureModel = () => {
   const location = useLocation();
   const id = Number(location.pathname.split("/")[2]);
@@ -74,6 +73,8 @@ const ProjectBudgetExpenditureModel = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [projectBudgetExpenditure, setProjectBudgetExpenditure] =
     useState(null);
+  const [budgetExMetaData, setbudgetExMetaData] = useState([]);
+  const [showCanvas, setShowCanvas] = useState(false);
 
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -148,14 +149,9 @@ const ProjectBudgetExpenditureModel = () => {
       setDeleteModal(false);
     }
   };
-  //END CRUD
-  //START FOREIGN CALLS
 
-  // validation
   const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
-
     initialValues: {
       pbe_project_id: id,
       pbe_reason:
@@ -200,18 +196,22 @@ const ProjectBudgetExpenditureModel = () => {
     },
 
     validationSchema: Yup.object({
-      pbe_reason: alphanumericValidation(3,200,true),
-      pbe_budget_year_id: numberValidation(1,50,true)
-      .test("unique-role-id", t("Already exists"), (value) => {
+      pbe_reason: alphanumericValidation(3, 200, true),
+      pbe_budget_year_id: numberValidation(1, 50, true).test(
+        "unique-role-id",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) =>
-              item.pbe_budget_year_id == value && item.pbe_id !== projectBudgetExpenditure?.pbe_id
+              item.pbe_budget_year_id == value &&
+              item.pbe_id !== projectBudgetExpenditure?.pbe_id
           );
-        }),      
-      pbe_budget_month_id: numberValidation(1,13,true),
+        }
+      ),
+      pbe_budget_month_id: numberValidation(1, 13, true),
       //pbe_used_date_gc: Yup.string().required(t("pbe_used_date_gc")),
-      ppe_amount: amountValidation(1000,1000000000),
-      pbe_description:alphanumericValidation(3,200,true)
+      ppe_amount: amountValidation(1000, 1000000000),
+      pbe_description: alphanumericValidation(3, 200, true),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -248,7 +248,7 @@ const ProjectBudgetExpenditureModel = () => {
           pbe_created_date: values.pbe_created_date,
         };
         // save new ProjectBudgetExpenditure
-        handleAddProjectBudgetExpenditure(newProjectBudgetExpenditure);        
+        handleAddProjectBudgetExpenditure(newProjectBudgetExpenditure);
       }
     },
   });
@@ -296,6 +296,11 @@ const ProjectBudgetExpenditureModel = () => {
     });
     setIsEdit(true);
     toggle();
+  };
+
+  const handleClick = (data) => {
+    setShowCanvas(!showCanvas);
+    setbudgetExMetaData(data);
   };
 
   //delete projects
@@ -393,26 +398,6 @@ const ProjectBudgetExpenditureModel = () => {
           );
         },
       },
-        {
-        header: t("add_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="soft-success"
-              className="btn-sm "
-              onClick={() => {
-                const data = cellProps.row.original;
-                setRowIsSelected(cellProps.row.original);
-              }}
-            >
-              {t("add_detail")}
-            </Button>
-          );
-        },
-      }
     ];
     if (
       data?.previledge?.is_role_editable &&
@@ -462,6 +447,16 @@ const ProjectBudgetExpenditureModel = () => {
                   </UncontrolledTooltip>
                 </Link>
               )}
+              <Link
+                to="#"
+                className="text-secondary"
+                onClick={() => handleClick(cellProps.row.original)}
+              >
+                <i className="mdi mdi-cog font-size-18" id="viewtooltip" />
+                <UncontrolledTooltip placement="top" target="viewtooltip">
+                  Detail
+                </UncontrolledTooltip>
+              </Link>
             </div>
           );
         },
@@ -490,257 +485,261 @@ const ProjectBudgetExpenditureModel = () => {
       />
       <>
         <div className="page-content">
-        <div className="container-fluid">
-          {isLoading || isSearchLoading || project.isLoading ? (
-            <Spinners />
-          ) : (
-         <Row>
-              <ProjectDetailColapse
-                data={project?.data?.data || []}
-                isExpanded={isExpanded}
-              />
-              {/* TableContainer for displaying data */}
-              <Col lg={12}>
-                    <TableContainer
-                      columns={columns}
-                      data={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      isGlobalFilter={true}
-                      isAddButton={true}
-                      isCustomPageSize={true}
-                      handleUserClick={handleProjectBudgetExpenditureClicks}
-                      isPagination={true}
-                      SearchPlaceholder={t("Results") + "..."}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add")}
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                    />
-                 </Col>
-        {rowIsSelected ? (
+          <div className="container-fluid">
+            {isLoading || isSearchLoading || project.isLoading ? (
+              <Spinners />
+            ) : (
+              <Row>
+                <ProjectDetailColapse
+                  data={project?.data?.data || []}
+                  isExpanded={isExpanded}
+                />
+                {/* TableContainer for displaying data */}
                 <Col lg={12}>
-                  <BudgetExipDetail requestData={rowIsSelected} />
-                </Col>                
-              ) : (
-                <Col lg={rowIsSelected ? 0 : 0}>
-                  <Card>
-                    <p>Gannt chart</p>
-                  </Card>
+                  <TableContainer
+                    columns={columns}
+                    data={
+                      showSearchResult ? searchResults?.data : data?.data || []
+                    }
+                    isGlobalFilter={true}
+                    isAddButton={true}
+                    isCustomPageSize={true}
+                    handleUserClick={handleProjectBudgetExpenditureClicks}
+                    isPagination={true}
+                    SearchPlaceholder={t("Results") + "..."}
+                    buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                    buttonName={t("add")}
+                    tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                    theadClass="table-light"
+                    pagination="pagination"
+                    paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                  />
                 </Col>
-              )}
-            </Row>
-          )}
-          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-            <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit
-                ? t("edit") + " " + t("project_budget_expenditure")
-                : t("add") + " " + t("project_budget_expenditure")}
-            </ModalHeader>
-            <ModalBody>
-              <Form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  validation.handleSubmit();
-                  return false;
-                }}
-              >
-                <Row>
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pbe_reason")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="pbe_reason"
-                      type="text"
-                      placeholder={t("pbe_reason")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pbe_reason || ""}
-                      invalid={
-                        validation.touched.pbe_reason &&
-                        validation.errors.pbe_reason
-                          ? true
-                          : false
-                      }
-                      maxLength={100}
-                    />
-                    {validation.touched.pbe_reason &&
-                    validation.errors.pbe_reason ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pbe_reason}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pbe_budget_year_id")}{" "}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="pbe_budget_year_id"
-                      id="pbe_budget_year_id"
-                      type="select"
-                      className="form-select"
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pbe_budget_year_id || ""}
-                      invalid={
-                        validation.touched.pbe_budget_year_id &&
-                        validation.errors.pbe_budget_year_id
-                          ? true
-                          : false
-                      }
-                    >
-                     <option value={null}>{t("select_one")}</option>
-                      {budgetYearOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {t(`${option.label}`)}
-                        </option>
-                      ))}
-                    </Input>
-                    {validation.touched.pbe_budget_year_id &&
-                    validation.errors.pbe_budget_year_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pbe_budget_year_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+              </Row>
+            )}
+            <Modal isOpen={modal} toggle={toggle} className="modal-xl">
+              <ModalHeader toggle={toggle} tag="h4">
+                {!!isEdit
+                  ? t("edit") + " " + t("project_budget_expenditure")
+                  : t("add") + " " + t("project_budget_expenditure")}
+              </ModalHeader>
+              <ModalBody>
+                <Form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    validation.handleSubmit();
+                    return false;
+                  }}
+                >
+                  <Row>
+                    <Col className="col-md-6 mb-3">
+                      <Label>
+                        {t("pbe_reason")}
+                        <span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        name="pbe_reason"
+                        type="text"
+                        placeholder={t("pbe_reason")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.pbe_reason || ""}
+                        invalid={
+                          validation.touched.pbe_reason &&
+                          validation.errors.pbe_reason
+                            ? true
+                            : false
+                        }
+                        maxLength={100}
+                      />
+                      {validation.touched.pbe_reason &&
+                      validation.errors.pbe_reason ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.pbe_reason}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
+                    <Col className="col-md-6 mb-3">
+                      <Label>
+                        {t("pbe_budget_year_id")}{" "}
+                        <span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        name="pbe_budget_year_id"
+                        id="pbe_budget_year_id"
+                        type="select"
+                        className="form-select"
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.pbe_budget_year_id || ""}
+                        invalid={
+                          validation.touched.pbe_budget_year_id &&
+                          validation.errors.pbe_budget_year_id
+                            ? true
+                            : false
+                        }
+                      >
+                        <option value={null}>{t("select_one")}</option>
+                        {budgetYearOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {t(`${option.label}`)}
+                          </option>
+                        ))}
+                      </Input>
+                      {validation.touched.pbe_budget_year_id &&
+                      validation.errors.pbe_budget_year_id ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.pbe_budget_year_id}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
 
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pbe_budget_month_id")}{" "}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="pbe_budget_month_id"
-                      id="pbe_budget_month_id"
-                      type="select"
-                      className="form-select"
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pbe_budget_month_id || ""}
-                      invalid={
-                        validation.touched.pbe_budget_month_id &&
-                        validation.errors.pbe_budget_month_id
-                          ? true
-                          : false
-                      }
-                    >
-                      <option value={null}>{t("select_one")}</option>
-                      {budgetMonthOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {t(`${option.label}`)}
-                        </option>
-                      ))}
-                    </Input>
-                    {validation.touched.pbe_budget_month_id &&
-                    validation.errors.pbe_budget_month_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pbe_budget_month_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("ppe_amount")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="ppe_amount"
-                      type="number"
-                      placeholder={t("ppe_amount")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.ppe_amount || ""}
-                      invalid={
-                        validation.touched.ppe_amount &&
-                        validation.errors.ppe_amount
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.ppe_amount &&
-                    validation.errors.ppe_amount ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.ppe_amount}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                    <Col className="col-md-6 mb-3">
+                      <Label>
+                        {t("pbe_budget_month_id")}{" "}
+                        <span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        name="pbe_budget_month_id"
+                        id="pbe_budget_month_id"
+                        type="select"
+                        className="form-select"
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.pbe_budget_month_id || ""}
+                        invalid={
+                          validation.touched.pbe_budget_month_id &&
+                          validation.errors.pbe_budget_month_id
+                            ? true
+                            : false
+                        }
+                      >
+                        <option value={null}>{t("select_one")}</option>
+                        {budgetMonthOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {t(`${option.label}`)}
+                          </option>
+                        ))}
+                      </Input>
+                      {validation.touched.pbe_budget_month_id &&
+                      validation.errors.pbe_budget_month_id ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.pbe_budget_month_id}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
+                    <Col className="col-md-6 mb-3">
+                      <Label>
+                        {t("ppe_amount")}
+                        <span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        name="ppe_amount"
+                        type="number"
+                        placeholder={t("ppe_amount")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.ppe_amount || ""}
+                        invalid={
+                          validation.touched.ppe_amount &&
+                          validation.errors.ppe_amount
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.ppe_amount &&
+                      validation.errors.ppe_amount ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.ppe_amount}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
 
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pbe_description")}</Label>
-                    <Input
-                      name="pbe_description"
-                      type="textarea"
-                      rows={2}
-                      placeholder={t("pbe_description")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pbe_description || ""}
-                      invalid={
-                        validation.touched.pbe_description &&
-                        validation.errors.pbe_description
-                          ? true
-                          : false
-                      }
-                      maxLength={425}
-                    />
-                    {validation.touched.pbe_description &&
-                    validation.errors.pbe_description ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pbe_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <div className="text-end">
-                      {addProjectBudgetExpenditure.isPending ||
-                      updateProjectBudgetExpenditure.isPending ? (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addProjectBudgetExpenditure.isPending ||
-                            updateProjectBudgetExpenditure.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          <Spinner size={"sm"} color="light" className="me-2" />
-                          {t("Save")}
-                        </Button>
-                      ) : (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addProjectBudgetExpenditure.isPending ||
-                            updateProjectBudgetExpenditure.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          {t("Save")}
-                        </Button>
-                      )}
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
-            </ModalBody>
-          </Modal>
-        </div>
+                    <Col className="col-md-6 mb-3">
+                      <Label>{t("pbe_description")}</Label>
+                      <Input
+                        name="pbe_description"
+                        type="textarea"
+                        rows={2}
+                        placeholder={t("pbe_description")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.pbe_description || ""}
+                        invalid={
+                          validation.touched.pbe_description &&
+                          validation.errors.pbe_description
+                            ? true
+                            : false
+                        }
+                        maxLength={425}
+                      />
+                      {validation.touched.pbe_description &&
+                      validation.errors.pbe_description ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.pbe_description}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <div className="text-end">
+                        {addProjectBudgetExpenditure.isPending ||
+                        updateProjectBudgetExpenditure.isPending ? (
+                          <Button
+                            color="success"
+                            type="submit"
+                            className="save-user"
+                            disabled={
+                              addProjectBudgetExpenditure.isPending ||
+                              updateProjectBudgetExpenditure.isPending ||
+                              !validation.dirty
+                            }
+                          >
+                            <Spinner
+                              size={"sm"}
+                              color="light"
+                              className="me-2"
+                            />
+                            {t("Save")}
+                          </Button>
+                        ) : (
+                          <Button
+                            color="success"
+                            type="submit"
+                            className="save-user"
+                            disabled={
+                              addProjectBudgetExpenditure.isPending ||
+                              updateProjectBudgetExpenditure.isPending ||
+                              !validation.dirty
+                            }
+                          >
+                            {t("Save")}
+                          </Button>
+                        )}
+                      </div>
+                    </Col>
+                  </Row>
+                </Form>
+              </ModalBody>
+            </Modal>
+          </div>
         </div>
       </>
+
+      {showCanvas && (
+        <RightOffCanvas
+          handleClick={handleClick}
+          showCanvas={showCanvas}
+          canvasWidth={84}
+          name={""}
+          id={budgetExMetaData.pbe_id}
+          components={{
+            "Budget Expenditures": BudgetExipDetail,
+          }}
+        />
+      )}
     </React.Fragment>
   );
 };

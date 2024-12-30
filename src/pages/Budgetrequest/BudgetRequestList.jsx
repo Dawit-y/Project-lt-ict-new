@@ -80,15 +80,14 @@ const BudgetRequestListModel = () => {
   const { data, isLoading, error, isError, refetch } = useState(null);
   const { data: budgetYearData } = useFetchBudgetYears();
 
-const [projectParams, setProjectParams] = useState({});
+  const [projectParams, setProjectParams] = useState({});
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
 
-
   const [transaction, setTransaction] = useState({});
-  
+
   const budgetYearMap = useMemo(() => {
     return (
       budgetYearData?.data?.reduce((acc, year) => {
@@ -291,7 +290,7 @@ const [projectParams, setProjectParams] = useState({});
       }),
     });
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
-const handleNodeSelect = (node) => {
+  const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
       setPrjLocationZoneId(null); // Clear dependent states
@@ -302,7 +301,7 @@ const handleNodeSelect = (node) => {
     } else if (node.level === "woreda") {
       setPrjLocationWoredaId(node.id);
     }
-     if (showSearchResult) {
+    if (showSearchResult) {
       setShowSearchResult(false);
     }
   };
@@ -321,74 +320,85 @@ const handleNodeSelect = (node) => {
             breadcrumbItem={t("budget_request")}
           />
           <div className="w-100 d-flex gap-2">
-            <AddressStructureForProject onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />
+            <AddressStructureForProject
+              onNodeSelect={handleNodeSelect}
+              setIsAddressLoading={setIsAddressLoading}
+            />
             <div className="w-100">
-          <AdvancedSearch
-            searchHook={useSearchBudgetRequests}
-            dateSearchKeys={["budget_request_date"]}
-            textSearchKeys={["prj_name", "prj_code"]}
-            dropdownSearchKeys={[
-              {
-                key: "bdr_budget_year_id",
-                options: budgetYearOptions,
-              },
-            ]}
-            additionalParams={projectParams}
+              <AdvancedSearch
+                searchHook={useSearchBudgetRequests}
+                dateSearchKeys={["budget_request_date"]}
+                textSearchKeys={["prj_name", "prj_code"]}
+                dropdownSearchKeys={[
+                  {
+                    key: "bdr_budget_year_id",
+                    options: budgetYearOptions,
+                  },
+                ]}
+                additionalParams={projectParams}
                 setAdditionalParams={setProjectParams}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          />
-
-          {isLoading || isSearchLoading ? (
-            <Spinners />
-          ) : (
-            <>
-              <div
-                className="ag-theme-alpine"
-                style={{ height: "100%", width: "100%" }}
-              >
-                {/* Row for search input and buttons */}
-                <Row className="mb-3">
-                  <Col sm="12" md="6">
-                    {/* Search Input for  Filter */}
-                    <Input
-                      type="text"
-                      placeholder="Search..."
-                      onChange={(e) => setQuickFilterText(e.target.value)}
-                      className="mb-2"
-                    />
-                  </Col>
-                </Row>
-                {/* AG Grid */}
-                <div style={{ height: "400px" }}>
-                  <AgGridReact
-                    ref={gridRef}
-                    rowData={
-                      showSearchResult ? searchResults?.data : data?.data || []
-                    }
-                    columnDefs={columnDefs}
-                    pagination={true}
-                    paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                    paginationPageSize={10}
-                    quickFilterText={quickFilterText}
-                    onSelectionChanged={onSelectionChanged}
-                    rowHeight={30}
-                    animateRows={true}
-                  />
-                </div>
-                <BudgetRequestAnalysis
-                data={showSearchResult ? searchResults?.data : data?.data || []}
+                onSearchResult={handleSearchResults}
+                setIsSearchLoading={setIsSearchLoading}
+                setSearchResults={setSearchResults}
+                setShowSearchResult={setShowSearchResult}
               />
-              </div>
-              
-            </>
-          )}
+
+              {isLoading || isSearchLoading ? (
+                <Spinners />
+              ) : (
+                <>
+                  <div
+                    className="ag-theme-alpine"
+                    style={{ height: "100%", width: "100%" }}
+                  >
+                    {/* Row for search input and buttons */}
+                    <Row className="mb-3">
+                      <Col sm="12" md="6">
+                        <Input
+                          type="text"
+                          placeholder="Search..."
+                          onChange={(e) => setQuickFilterText(e.target.value)}
+                          className="mb-2"
+                        />
+                      </Col>
+                    </Row>
+                    {/* AG Grid */}
+                    <div style={{ height: "600px" }}>
+                      <AgGridReact
+                        ref={gridRef}
+                        rowData={
+                          showSearchResult
+                            ? searchResults?.data
+                            : data?.data || []
+                        }
+                        columnDefs={columnDefs}
+                        pagination={true}
+                        paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+                        paginationPageSize={10}
+                        quickFilterText={quickFilterText}
+                        onSelectionChanged={onSelectionChanged}
+                        rowHeight={30}
+                        animateRows={true}
+                        domLayout="autoHeight" // Auto-size the grid to fit content
+                        onGridReady={(params) => {
+                          params.api.sizeColumnsToFit(); // Size columns to fit the grid width
+                        }}
+                      />
+                    </div>
+                    <BudgetRequestAnalysis
+                      data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-</div>
-</div>
       {showCanvas && (
         <RightOffCanvas
           handleClick={handleEyeClick}

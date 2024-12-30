@@ -11,14 +11,14 @@ const BUDGET_EX_SOURCE_QUERY_KEY = ["budgetexsource"];
 // Fetch budget_ex_source
 export const useFetchBudgetExSources = (param = {}, isActive) => {
   return useQuery({
-    queryKey: [...BUDGET_EX_SOURCE_QUERY_KEY,"fetch", param],
+    queryKey: [...BUDGET_EX_SOURCE_QUERY_KEY, "fetch", param],
     queryFn: () => getBudgetExSource(param),
-  staleTime: 0, // Data is considered stale immediately
-    cacheTime: 0,
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 5,
     meta: { persist: false },
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: true
+    enabled: isActive,
   });
 };
 

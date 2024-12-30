@@ -11,21 +11,21 @@ const BUDGET_REQUEST_TASK_QUERY_KEY = ["budgetrequesttask"];
 // Fetch budget_request_task
 export const useFetchBudgetRequestTasks = (param = {}, isActive) => {
   return useQuery({
-    queryKey: [...BUDGET_REQUEST_TASK_QUERY_KEY,"fetch", param],
+    queryKey: [...BUDGET_REQUEST_TASK_QUERY_KEY, "fetch", param],
     queryFn: () => getBudgetRequestTask(param),
-    staleTime: 0, // Data is considered stale immediately
-    cacheTime: 0,
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 5,
     meta: { persist: false },
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: true
+    enabled: isActive,
   });
 };
 
 //search budget_request_task
 export const useSearchBudgetRequestTasks = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...BUDGET_REQUEST_TASK_QUERY_KEY,"search", searchParams],
+    queryKey: [...BUDGET_REQUEST_TASK_QUERY_KEY, "search", searchParams],
     queryFn: () => getBudgetRequestTask(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
@@ -95,7 +95,7 @@ export const useDeleteBudgetRequestTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteBudgetRequestTask,
-     onSuccess: (deletedData, variable) => {
+    onSuccess: (deletedData, variable) => {
       const queries = queryClient.getQueriesData({
         queryKey: BUDGET_REQUEST_TASK_QUERY_KEY,
       });

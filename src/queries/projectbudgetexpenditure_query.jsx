@@ -9,7 +9,7 @@ import {
 const PROJECT_BUDGET_EXPENDITURE_QUERY_KEY = ["projectbudgetexpenditure"];
 
 // Fetch project_budget_expenditure
-export const useFetchProjectBudgetExpenditures = (param = {}, isActive) => {
+export const useFetchProjectBudgetExpenditures = (param = {}) => {
   return useQuery({
     queryKey: [...PROJECT_BUDGET_EXPENDITURE_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectBudgetExpenditure(param),
@@ -17,7 +17,6 @@ export const useFetchProjectBudgetExpenditures = (param = {}, isActive) => {
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: isActive,
   });
 };
 

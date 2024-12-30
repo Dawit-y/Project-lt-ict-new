@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -9,9 +8,6 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
-//import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
   useFetchBudgetRequestAmounts,
@@ -22,8 +18,6 @@ import {
 } from "../../queries/budgetrequestamount_query";
 import BudgetRequestAmountModal from "./BudgetRequestAmountModal";
 import { useTranslation } from "react-i18next";
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
 import {
   Button,
   Col,
@@ -41,22 +35,24 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-const BudgetRequestAmountModel = ({requestData}) => {
-  //meta title
-  document.title = " BudgetRequestAmount";
-  const budgetRequestId =requestData.bdr_id;
-  const param = {budget_request_id: requestData.bdr_id };
+const BudgetRequestAmountModel = ({ passedId, isActive }) => {
+  const param = { budget_request_id: passedId };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -66,20 +62,21 @@ const BudgetRequestAmountModel = ({requestData}) => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useFetchBudgetRequestAmounts(param, false);
+  const { data, isLoading, error, isError, refetch } =
+    useFetchBudgetRequestAmounts(param, isActive);
   const addBudgetRequestAmount = useAddBudgetRequestAmount();
   const updateBudgetRequestAmount = useUpdateBudgetRequestAmount();
   const deleteBudgetRequestAmount = useDeleteBudgetRequestAmount();
-//START CRUD
+  //START CRUD
   const handleAddBudgetRequestAmount = async (data) => {
     try {
       await addBudgetRequestAmount.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.success(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -88,12 +85,12 @@ const BudgetRequestAmountModel = ({requestData}) => {
   const handleUpdateBudgetRequestAmount = async (data) => {
     try {
       await updateBudgetRequestAmount.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
+      toast.success(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -104,11 +101,11 @@ const BudgetRequestAmountModel = ({requestData}) => {
       try {
         const id = budgetRequestAmount.bra_id;
         await deleteBudgetRequestAmount.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t('delete_failure'), {
+        toast.success(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -117,90 +114,141 @@ const BudgetRequestAmountModel = ({requestData}) => {
   };
   //END CRUD
   //START FOREIGN CALLS
-  
-  
+
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
     initialValues: {
-     bra_expenditure_code_id:(budgetRequestAmount && budgetRequestAmount.bra_expenditure_code_id) || "", 
-bra_budget_request_id:(budgetRequestAmount && budgetRequestAmount.bra_budget_request_id) || "", 
-bra_current_year_expense:(budgetRequestAmount && budgetRequestAmount.bra_current_year_expense) || "", 
-bra_requested_amount:(budgetRequestAmount && budgetRequestAmount.bra_requested_amount) || "", 
-bra_approved_amount:(budgetRequestAmount && budgetRequestAmount.bra_approved_amount) || "", 
-bra_source_government_requested:(budgetRequestAmount && budgetRequestAmount.bra_source_government_requested) || "", 
-bra_source_government_approved:(budgetRequestAmount && budgetRequestAmount.bra_source_government_approved) || "", 
-bra_source_internal_requested:(budgetRequestAmount && budgetRequestAmount.bra_source_internal_requested) || "", 
-bra_source_internal_approved:(budgetRequestAmount && budgetRequestAmount.bra_source_internal_approved) || "", 
-bra_source_support_requested:(budgetRequestAmount && budgetRequestAmount.bra_source_support_requested) || "", 
-bra_source_support_approved:(budgetRequestAmount && budgetRequestAmount.bra_source_support_approved) || "", 
-bra_source_support_code:(budgetRequestAmount && budgetRequestAmount.bra_source_support_code) || "", 
-bra_source_credit_requested:(budgetRequestAmount && budgetRequestAmount.bra_source_credit_requested) || "", 
-bra_source_credit_approved:(budgetRequestAmount && budgetRequestAmount.bra_source_credit_approved) || "", 
-bra_source_credit_code:(budgetRequestAmount && budgetRequestAmount.bra_source_credit_code) || "", 
-bra_source_other_requested:(budgetRequestAmount && budgetRequestAmount.bra_source_other_requested) || "", 
-bra_source_other_approved:(budgetRequestAmount && budgetRequestAmount.bra_source_other_approved) || "", 
-bra_source_other_code:(budgetRequestAmount && budgetRequestAmount.bra_source_other_code) || "", 
-bra_requested_date:(budgetRequestAmount && budgetRequestAmount.bra_requested_date) || "", 
-bra_approved_date:(budgetRequestAmount && budgetRequestAmount.bra_approved_date) || "", 
-bra_description:(budgetRequestAmount && budgetRequestAmount.bra_description) || "", 
-bra_status:(budgetRequestAmount && budgetRequestAmount.bra_status) || "", 
+      bra_expenditure_code_id:
+        (budgetRequestAmount && budgetRequestAmount.bra_expenditure_code_id) ||
+        "",
+      bra_budget_request_id:
+        (budgetRequestAmount && budgetRequestAmount.bra_budget_request_id) ||
+        "",
+      bra_current_year_expense:
+        (budgetRequestAmount && budgetRequestAmount.bra_current_year_expense) ||
+        "",
+      bra_requested_amount:
+        (budgetRequestAmount && budgetRequestAmount.bra_requested_amount) || "",
+      bra_approved_amount:
+        (budgetRequestAmount && budgetRequestAmount.bra_approved_amount) || "",
+      bra_source_government_requested:
+        (budgetRequestAmount &&
+          budgetRequestAmount.bra_source_government_requested) ||
+        "",
+      bra_source_government_approved:
+        (budgetRequestAmount &&
+          budgetRequestAmount.bra_source_government_approved) ||
+        "",
+      bra_source_internal_requested:
+        (budgetRequestAmount &&
+          budgetRequestAmount.bra_source_internal_requested) ||
+        "",
+      bra_source_internal_approved:
+        (budgetRequestAmount &&
+          budgetRequestAmount.bra_source_internal_approved) ||
+        "",
+      bra_source_support_requested:
+        (budgetRequestAmount &&
+          budgetRequestAmount.bra_source_support_requested) ||
+        "",
+      bra_source_support_approved:
+        (budgetRequestAmount &&
+          budgetRequestAmount.bra_source_support_approved) ||
+        "",
+      bra_source_support_code:
+        (budgetRequestAmount && budgetRequestAmount.bra_source_support_code) ||
+        "",
+      bra_source_credit_requested:
+        (budgetRequestAmount &&
+          budgetRequestAmount.bra_source_credit_requested) ||
+        "",
+      bra_source_credit_approved:
+        (budgetRequestAmount &&
+          budgetRequestAmount.bra_source_credit_approved) ||
+        "",
+      bra_source_credit_code:
+        (budgetRequestAmount && budgetRequestAmount.bra_source_credit_code) ||
+        "",
+      bra_source_other_requested:
+        (budgetRequestAmount &&
+          budgetRequestAmount.bra_source_other_requested) ||
+        "",
+      bra_source_other_approved:
+        (budgetRequestAmount &&
+          budgetRequestAmount.bra_source_other_approved) ||
+        "",
+      bra_source_other_code:
+        (budgetRequestAmount && budgetRequestAmount.bra_source_other_code) ||
+        "",
+      bra_requested_date:
+        (budgetRequestAmount && budgetRequestAmount.bra_requested_date) || "",
+      bra_approved_date:
+        (budgetRequestAmount && budgetRequestAmount.bra_approved_date) || "",
+      bra_description:
+        (budgetRequestAmount && budgetRequestAmount.bra_description) || "",
+      bra_status: (budgetRequestAmount && budgetRequestAmount.bra_status) || "",
 
-is_deletable: (budgetRequestAmount && budgetRequestAmount.is_deletable) || 1,
-is_editable: (budgetRequestAmount && budgetRequestAmount.is_editable) || 1
+      is_deletable:
+        (budgetRequestAmount && budgetRequestAmount.is_deletable) || 1,
+      is_editable:
+        (budgetRequestAmount && budgetRequestAmount.is_editable) || 1,
     },
-validationSchema: Yup.object({
-bra_expenditure_code_id: Yup.string().required(t('bra_expenditure_code_id')),
-bra_current_year_expense: amountValidation(0,10000000000,false),
-bra_requested_amount: amountValidation(0,10000000000,true),
-bra_approved_amount: amountValidation(0,10000000000,false),
-bra_source_government_requested: amountValidation(0,10000000000,false),
-bra_source_government_approved: amountValidation(0,10000000000,false),
-bra_source_internal_requested: amountValidation(0,10000000000,false),
-bra_source_internal_approved: amountValidation(0,10000000000,false),
-bra_source_support_requested: amountValidation(0,10000000000,false),
-bra_source_support_approved: amountValidation(0,10000000000,false),
-bra_source_support_code: alphanumericValidation(0,10, false),
-bra_source_credit_requested: amountValidation(0,10000000000,false),
-bra_source_credit_approved: amountValidation(0,10000000000,false),
-bra_source_credit_code: alphanumericValidation(0,10, false),
-/*bra_source_other_requested: Yup.string().required(t('bra_source_other_requested')),
+    validationSchema: Yup.object({
+      bra_expenditure_code_id: Yup.string().required(
+        t("bra_expenditure_code_id")
+      ),
+      bra_current_year_expense: amountValidation(0, 10000000000, false),
+      bra_requested_amount: amountValidation(0, 10000000000, true),
+      bra_approved_amount: amountValidation(0, 10000000000, false),
+      bra_source_government_requested: amountValidation(0, 10000000000, false),
+      bra_source_government_approved: amountValidation(0, 10000000000, false),
+      bra_source_internal_requested: amountValidation(0, 10000000000, false),
+      bra_source_internal_approved: amountValidation(0, 10000000000, false),
+      bra_source_support_requested: amountValidation(0, 10000000000, false),
+      bra_source_support_approved: amountValidation(0, 10000000000, false),
+      bra_source_support_code: alphanumericValidation(0, 10, false),
+      bra_source_credit_requested: amountValidation(0, 10000000000, false),
+      bra_source_credit_approved: amountValidation(0, 10000000000, false),
+      bra_source_credit_code: alphanumericValidation(0, 10, false),
+      /*bra_source_other_requested: Yup.string().required(t('bra_source_other_requested')),
 bra_source_other_approved: Yup.string().required(t('bra_source_other_approved')),
 bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
-bra_requested_date: alphanumericValidation(0,50, false),
-bra_approved_date: alphanumericValidation(0,50, false),
-bra_description: alphanumericValidation(0,425, false),
-//bra_status: Yup.string().required(t('bra_status')),*/
+      bra_requested_date: alphanumericValidation(0, 50, false),
+      bra_approved_date: alphanumericValidation(0, 50, false),
+      bra_description: alphanumericValidation(0, 425, false),
+      //bra_status: Yup.string().required(t('bra_status')),*/
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateBudgetRequestAmount = {
-          bra_id:budgetRequestAmount.bra_id, 
-bra_expenditure_code_id:values.bra_expenditure_code_id, 
-bra_budget_request_id:values.bra_budget_request_id, 
-bra_current_year_expense:values.bra_current_year_expense, 
-bra_requested_amount:values.bra_requested_amount, 
-bra_approved_amount:values.bra_approved_amount, 
-bra_source_government_requested:values.bra_source_government_requested, 
-bra_source_government_approved:values.bra_source_government_approved, 
-bra_source_internal_requested:values.bra_source_internal_requested, 
-bra_source_internal_approved:values.bra_source_internal_approved, 
-bra_source_support_requested:values.bra_source_support_requested, 
-bra_source_support_approved:values.bra_source_support_approved, 
-bra_source_support_code:values.bra_source_support_code, 
-bra_source_credit_requested:values.bra_source_credit_requested, 
-bra_source_credit_approved:values.bra_source_credit_approved, 
-bra_source_credit_code:values.bra_source_credit_code, 
-bra_source_other_requested:values.bra_source_other_requested, 
-bra_source_other_approved:values.bra_source_other_approved, 
-bra_source_other_code:values.bra_source_other_code, 
-bra_requested_date:values.bra_requested_date, 
-bra_approved_date:values.bra_approved_date, 
-bra_description:values.bra_description, 
-bra_status:values.bra_status, 
+          bra_id: budgetRequestAmount.bra_id,
+          bra_expenditure_code_id: values.bra_expenditure_code_id,
+          bra_budget_request_id: values.bra_budget_request_id,
+          bra_current_year_expense: values.bra_current_year_expense,
+          bra_requested_amount: values.bra_requested_amount,
+          bra_approved_amount: values.bra_approved_amount,
+          bra_source_government_requested:
+            values.bra_source_government_requested,
+          bra_source_government_approved: values.bra_source_government_approved,
+          bra_source_internal_requested: values.bra_source_internal_requested,
+          bra_source_internal_approved: values.bra_source_internal_approved,
+          bra_source_support_requested: values.bra_source_support_requested,
+          bra_source_support_approved: values.bra_source_support_approved,
+          bra_source_support_code: values.bra_source_support_code,
+          bra_source_credit_requested: values.bra_source_credit_requested,
+          bra_source_credit_approved: values.bra_source_credit_approved,
+          bra_source_credit_code: values.bra_source_credit_code,
+          bra_source_other_requested: values.bra_source_other_requested,
+          bra_source_other_approved: values.bra_source_other_approved,
+          bra_source_other_code: values.bra_source_other_code,
+          bra_requested_date: values.bra_requested_date,
+          bra_approved_date: values.bra_approved_date,
+          bra_description: values.bra_description,
+          bra_status: values.bra_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -209,29 +257,29 @@ bra_status:values.bra_status,
         handleUpdateBudgetRequestAmount(updateBudgetRequestAmount);
       } else {
         const newBudgetRequestAmount = {
-          bra_expenditure_code_id:values.bra_expenditure_code_id, 
-bra_budget_request_id:budgetRequestId, 
-bra_current_year_expense:values.bra_current_year_expense, 
-bra_requested_amount:values.bra_requested_amount, 
-bra_approved_amount:values.bra_approved_amount, 
-bra_source_government_requested:values.bra_source_government_requested, 
-bra_source_government_approved:values.bra_source_government_approved, 
-bra_source_internal_requested:values.bra_source_internal_requested, 
-bra_source_internal_approved:values.bra_source_internal_approved, 
-bra_source_support_requested:values.bra_source_support_requested, 
-bra_source_support_approved:values.bra_source_support_approved, 
-bra_source_support_code:values.bra_source_support_code, 
-bra_source_credit_requested:values.bra_source_credit_requested, 
-bra_source_credit_approved:values.bra_source_credit_approved, 
-bra_source_credit_code:values.bra_source_credit_code, 
-bra_source_other_requested:values.bra_source_other_requested, 
-bra_source_other_approved:values.bra_source_other_approved, 
-bra_source_other_code:values.bra_source_other_code, 
-bra_requested_date:values.bra_requested_date, 
-bra_approved_date:values.bra_approved_date, 
-bra_description:values.bra_description, 
-bra_status:values.bra_status, 
-
+          bra_expenditure_code_id: values.bra_expenditure_code_id,
+          bra_budget_request_id: passedId,
+          bra_current_year_expense: values.bra_current_year_expense,
+          bra_requested_amount: values.bra_requested_amount,
+          bra_approved_amount: values.bra_approved_amount,
+          bra_source_government_requested:
+            values.bra_source_government_requested,
+          bra_source_government_approved: values.bra_source_government_approved,
+          bra_source_internal_requested: values.bra_source_internal_requested,
+          bra_source_internal_approved: values.bra_source_internal_approved,
+          bra_source_support_requested: values.bra_source_support_requested,
+          bra_source_support_approved: values.bra_source_support_approved,
+          bra_source_support_code: values.bra_source_support_code,
+          bra_source_credit_requested: values.bra_source_credit_requested,
+          bra_source_credit_approved: values.bra_source_credit_approved,
+          bra_source_credit_code: values.bra_source_credit_code,
+          bra_source_other_requested: values.bra_source_other_requested,
+          bra_source_other_approved: values.bra_source_other_approved,
+          bra_source_other_code: values.bra_source_other_code,
+          bra_requested_date: values.bra_requested_date,
+          bra_approved_date: values.bra_approved_date,
+          bra_description: values.bra_description,
+          bra_status: values.bra_status,
         };
         // save new BudgetRequestAmount
         handleAddBudgetRequestAmount(newBudgetRequestAmount);
@@ -245,48 +293,57 @@ bra_status:values.bra_status,
   useEffect(() => {
     setBudgetRequestAmount(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setBudgetRequestAmount(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setBudgetRequestAmount(null);
+      setBudgetRequestAmount(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleBudgetRequestAmountClick = (arg) => {
+  const handleBudgetRequestAmountClick = (arg) => {
     const budgetRequestAmount = arg;
     // console.log("handleBudgetRequestAmountClick", budgetRequestAmount);
     setBudgetRequestAmount({
-      bra_id:budgetRequestAmount.bra_id, 
-bra_expenditure_code_id:budgetRequestAmount.bra_expenditure_code_id, 
-bra_budget_request_id:budgetRequestAmount.bra_budget_request_id, 
-bra_current_year_expense:budgetRequestAmount.bra_current_year_expense, 
-bra_requested_amount:budgetRequestAmount.bra_requested_amount, 
-bra_approved_amount:budgetRequestAmount.bra_approved_amount, 
-bra_source_government_requested:budgetRequestAmount.bra_source_government_requested, 
-bra_source_government_approved:budgetRequestAmount.bra_source_government_approved, 
-bra_source_internal_requested:budgetRequestAmount.bra_source_internal_requested, 
-bra_source_internal_approved:budgetRequestAmount.bra_source_internal_approved, 
-bra_source_support_requested:budgetRequestAmount.bra_source_support_requested, 
-bra_source_support_approved:budgetRequestAmount.bra_source_support_approved, 
-bra_source_support_code:budgetRequestAmount.bra_source_support_code, 
-bra_source_credit_requested:budgetRequestAmount.bra_source_credit_requested, 
-bra_source_credit_approved:budgetRequestAmount.bra_source_credit_approved, 
-bra_source_credit_code:budgetRequestAmount.bra_source_credit_code, 
-bra_source_other_requested:budgetRequestAmount.bra_source_other_requested, 
-bra_source_other_approved:budgetRequestAmount.bra_source_other_approved, 
-bra_source_other_code:budgetRequestAmount.bra_source_other_code, 
-bra_requested_date:budgetRequestAmount.bra_requested_date, 
-bra_approved_date:budgetRequestAmount.bra_approved_date, 
-bra_description:budgetRequestAmount.bra_description, 
-bra_status:budgetRequestAmount.bra_status, 
+      bra_id: budgetRequestAmount.bra_id,
+      bra_expenditure_code_id: budgetRequestAmount.bra_expenditure_code_id,
+      bra_budget_request_id: budgetRequestAmount.bra_budget_request_id,
+      bra_current_year_expense: budgetRequestAmount.bra_current_year_expense,
+      bra_requested_amount: budgetRequestAmount.bra_requested_amount,
+      bra_approved_amount: budgetRequestAmount.bra_approved_amount,
+      bra_source_government_requested:
+        budgetRequestAmount.bra_source_government_requested,
+      bra_source_government_approved:
+        budgetRequestAmount.bra_source_government_approved,
+      bra_source_internal_requested:
+        budgetRequestAmount.bra_source_internal_requested,
+      bra_source_internal_approved:
+        budgetRequestAmount.bra_source_internal_approved,
+      bra_source_support_requested:
+        budgetRequestAmount.bra_source_support_requested,
+      bra_source_support_approved:
+        budgetRequestAmount.bra_source_support_approved,
+      bra_source_support_code: budgetRequestAmount.bra_source_support_code,
+      bra_source_credit_requested:
+        budgetRequestAmount.bra_source_credit_requested,
+      bra_source_credit_approved:
+        budgetRequestAmount.bra_source_credit_approved,
+      bra_source_credit_code: budgetRequestAmount.bra_source_credit_code,
+      bra_source_other_requested:
+        budgetRequestAmount.bra_source_other_requested,
+      bra_source_other_approved: budgetRequestAmount.bra_source_other_approved,
+      bra_source_other_code: budgetRequestAmount.bra_source_other_code,
+      bra_requested_date: budgetRequestAmount.bra_requested_date,
+      bra_approved_date: budgetRequestAmount.bra_approved_date,
+      bra_description: budgetRequestAmount.bra_description,
+      bra_status: budgetRequestAmount.bra_status,
 
       is_deletable: budgetRequestAmount.is_deletable,
       is_editable: budgetRequestAmount.is_editable,
@@ -306,8 +363,8 @@ bra_status:budgetRequestAmount.bra_status,
     setIsEdit(false);
     setBudgetRequestAmount("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -316,229 +373,253 @@ bra_status:budgetRequestAmount.bra_status,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'bra_expenditure_code_id',
+        header: "",
+        accessorKey: "bra_expenditure_code_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bra_expenditure_code_id, 30) ||
-                '-'}
+              {truncateText(
+                cellProps.row.original.bra_expenditure_code_id,
+                30
+              ) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'bra_current_year_expense',
+      },
+      {
+        header: "",
+        accessorKey: "bra_current_year_expense",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bra_current_year_expense, 30) ||
-                '-'}
+              {truncateText(
+                cellProps.row.original.bra_current_year_expense,
+                30
+              ) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'bra_requested_amount',
+      },
+      {
+        header: "",
+        accessorKey: "bra_requested_amount",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.bra_requested_amount, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'bra_approved_amount',
+      },
+      {
+        header: "",
+        accessorKey: "bra_approved_amount",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.bra_approved_amount, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'bra_source_government_requested',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bra_source_government_requested, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'bra_source_government_approved',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bra_source_government_approved, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'bra_source_internal_requested',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bra_source_internal_requested, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'bra_source_internal_approved',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bra_source_internal_approved, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'bra_source_support_requested',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bra_source_support_requested, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'bra_source_support_approved',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bra_source_support_approved, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'bra_source_support_code',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bra_source_support_code, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'bra_source_credit_requested',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bra_source_credit_requested, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'bra_source_credit_approved',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bra_source_credit_approved, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'bra_source_credit_code',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bra_source_credit_code, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
       },
-{
-        header: '',
-        accessorKey: 'bra_requested_date',
+      {
+        header: "",
+        accessorKey: "bra_source_government_requested",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(
+                cellProps.row.original.bra_source_government_requested,
+                30
+              ) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: "bra_source_government_approved",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(
+                cellProps.row.original.bra_source_government_approved,
+                30
+              ) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: "bra_source_internal_requested",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(
+                cellProps.row.original.bra_source_internal_requested,
+                30
+              ) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: "bra_source_internal_approved",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(
+                cellProps.row.original.bra_source_internal_approved,
+                30
+              ) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: "bra_source_support_requested",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(
+                cellProps.row.original.bra_source_support_requested,
+                30
+              ) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: "bra_source_support_approved",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(
+                cellProps.row.original.bra_source_support_approved,
+                30
+              ) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: "bra_source_support_code",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(
+                cellProps.row.original.bra_source_support_code,
+                30
+              ) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: "bra_source_credit_requested",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(
+                cellProps.row.original.bra_source_credit_requested,
+                30
+              ) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: "bra_source_credit_approved",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(
+                cellProps.row.original.bra_source_credit_approved,
+                30
+              ) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: "bra_source_credit_code",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(
+                cellProps.row.original.bra_source_credit_code,
+                30
+              ) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: "bra_requested_date",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.bra_requested_date, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'bra_approved_date',
+      },
+      {
+        header: "",
+        accessorKey: "bra_approved_date",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.bra_approved_date, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
+      },
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -561,9 +642,9 @@ bra_status:budgetRequestAmount.bra_status,
         },
       },
     ];
-     if (
-      data?.previledge?.is_role_editable==1 ||
-      data?.previledge?.is_role_deletable==1
+    if (
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -573,12 +654,12 @@ bra_status:budgetRequestAmount.bra_status,
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable==1 && (
+              {cellProps.row.original.is_editable == 1 && (
                 <Link
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleBudgetRequestAmountClick(data);
                   }}
                 >
@@ -589,7 +670,7 @@ bra_status:budgetRequestAmount.bra_status,
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable==1 && (
+              {cellProps.row.original.is_deletable == 1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -616,6 +697,10 @@ bra_status:budgetRequestAmount.bra_status,
     return baseColumns;
   }, [handleBudgetRequestAmountClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <BudgetRequestAmountModal
@@ -625,503 +710,520 @@ bra_status:budgetRequestAmount.bra_status,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteBudgetRequestAmount}
+        onDeleteClick={handleDeleteBudgetRequestAmount}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteBudgetRequestAmount.isPending}
-      />      
-          {isLoading || isSearchLoading ? (
-            <Spinners />
-          ) : (
+      />
+      {isLoading || isSearchLoading ? (
+        <Spinners />
+      ) : (
+        <Row>
+          <Col xs="12">
+            <Card>
+              <CardBody>
+                <TableContainer
+                  columns={columns}
+                  data={
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
+                  isGlobalFilter={true}
+                  isAddButton={true}
+                  //sAddButton={data?.previledge?.is_role_can_add==1}
+                  isCustomPageSize={true}
+                  handleUserClick={handleBudgetRequestAmountClicks}
+                  isPagination={true}
+                  // SearchPlaceholder="26 records..."
+                  SearchPlaceholder={26 + " " + t("Results") + "..."}
+                  buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                  buttonName={t("add")}
+                  tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                  theadClass="table-light"
+                  pagination="pagination"
+                  paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                />
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      )}
+      <Modal isOpen={modal} toggle={toggle} className="modal-xl">
+        <ModalHeader toggle={toggle} tag="h4">
+          {!!isEdit
+            ? t("edit") + " " + t("budget_request_amount")
+            : t("add") + " " + t("budget_request_amount")}
+        </ModalHeader>
+        <ModalBody>
+          <Form
+            onSubmit={(e) => {
+              e.preventDefault();
+              validation.handleSubmit();
+              return false;
+            }}
+          >
             <Row>
-              <Col xs="12">
-                <Card>
-                  <CardBody>
-                    <TableContainer
-                      columns={columns}
-                      data={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      isGlobalFilter={true}
-                      isAddButton={true}
-                      //sAddButton={data?.previledge?.is_role_can_add==1}
-                      isCustomPageSize={true}
-                      handleUserClick={handleBudgetRequestAmountClicks}
-                      isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add")}
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                    />
-                  </CardBody>
-                </Card>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("bra_expenditure_code_id")}</Label>
+                <Input
+                  name="bra_expenditure_code_id"
+                  type="text"
+                  placeholder={t("bra_expenditure_code_id")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bra_expenditure_code_id || ""}
+                  invalid={
+                    validation.touched.bra_expenditure_code_id &&
+                    validation.errors.bra_expenditure_code_id
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                />
+                {validation.touched.bra_expenditure_code_id &&
+                validation.errors.bra_expenditure_code_id ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bra_expenditure_code_id}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("bra_current_year_expense")}</Label>
+                <Input
+                  name="bra_current_year_expense"
+                  type="number"
+                  placeholder={t("bra_current_year_expense")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bra_current_year_expense || ""}
+                  invalid={
+                    validation.touched.bra_current_year_expense &&
+                    validation.errors.bra_current_year_expense
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                />
+                {validation.touched.bra_current_year_expense &&
+                validation.errors.bra_current_year_expense ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bra_current_year_expense}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("bra_requested_amount")}</Label>
+                <Input
+                  name="bra_requested_amount"
+                  type="number"
+                  placeholder={t("bra_requested_amount")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bra_requested_amount || ""}
+                  invalid={
+                    validation.touched.bra_requested_amount &&
+                    validation.errors.bra_requested_amount
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                  disabled={1 == 1}
+                />
+                {validation.touched.bra_requested_amount &&
+                validation.errors.bra_requested_amount ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bra_requested_amount}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("bra_approved_amount")}</Label>
+                <Input
+                  name="bra_approved_amount"
+                  type="number"
+                  placeholder={t("bra_approved_amount")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bra_approved_amount || ""}
+                  invalid={
+                    validation.touched.bra_approved_amount &&
+                    validation.errors.bra_approved_amount
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                  disabled={1 == 1}
+                />
+                {validation.touched.bra_approved_amount &&
+                validation.errors.bra_approved_amount ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bra_approved_amount}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("bra_source_government_requested")}</Label>
+                <Input
+                  name="bra_source_government_requested"
+                  type="number"
+                  placeholder={t("bra_source_government_requested")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={
+                    validation.values.bra_source_government_requested || ""
+                  }
+                  invalid={
+                    validation.touched.bra_source_government_requested &&
+                    validation.errors.bra_source_government_requested
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                  disabled={1 == 1}
+                />
+                {validation.touched.bra_source_government_requested &&
+                validation.errors.bra_source_government_requested ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bra_source_government_requested}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("bra_source_government_approved")}</Label>
+                <Input
+                  name="bra_source_government_approved"
+                  type="number"
+                  placeholder={t("bra_source_government_approved")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bra_source_government_approved || ""}
+                  invalid={
+                    validation.touched.bra_source_government_approved &&
+                    validation.errors.bra_source_government_approved
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                  disabled={1 == 1}
+                />
+                {validation.touched.bra_source_government_approved &&
+                validation.errors.bra_source_government_approved ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bra_source_government_approved}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("bra_source_internal_requested")}</Label>
+                <Input
+                  name="bra_source_internal_requested"
+                  type="number"
+                  placeholder={t("bra_source_internal_requested")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bra_source_internal_requested || ""}
+                  invalid={
+                    validation.touched.bra_source_internal_requested &&
+                    validation.errors.bra_source_internal_requested
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                  disabled={1 == 1}
+                />
+                {validation.touched.bra_source_internal_requested &&
+                validation.errors.bra_source_internal_requested ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bra_source_internal_requested}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("bra_source_internal_approved")}</Label>
+                <Input
+                  name="bra_source_internal_approved"
+                  type="number"
+                  placeholder={t("bra_source_internal_approved")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bra_source_internal_approved || ""}
+                  invalid={
+                    validation.touched.bra_source_internal_approved &&
+                    validation.errors.bra_source_internal_approved
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                  disabled={1 == 1}
+                />
+                {validation.touched.bra_source_internal_approved &&
+                validation.errors.bra_source_internal_approved ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bra_source_internal_approved}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("bra_source_support_requested")}</Label>
+                <Input
+                  name="bra_source_support_requested"
+                  type="number"
+                  placeholder={t("bra_source_support_requested")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bra_source_support_requested || ""}
+                  invalid={
+                    validation.touched.bra_source_support_requested &&
+                    validation.errors.bra_source_support_requested
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                  disabled={1 == 1}
+                />
+                {validation.touched.bra_source_support_requested &&
+                validation.errors.bra_source_support_requested ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bra_source_support_requested}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("bra_source_support_approved")}</Label>
+                <Input
+                  name="bra_source_support_approved"
+                  type="number"
+                  placeholder={t("bra_source_support_approved")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bra_source_support_approved || ""}
+                  invalid={
+                    validation.touched.bra_source_support_approved &&
+                    validation.errors.bra_source_support_approved
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                  disabled={1 == 1}
+                />
+                {validation.touched.bra_source_support_approved &&
+                validation.errors.bra_source_support_approved ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bra_source_support_approved}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("bra_source_support_code")}</Label>
+                <Input
+                  name="bra_source_support_code"
+                  type="text"
+                  placeholder={t("bra_source_support_code")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bra_source_support_code || ""}
+                  invalid={
+                    validation.touched.bra_source_support_code &&
+                    validation.errors.bra_source_support_code
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                />
+                {validation.touched.bra_source_support_code &&
+                validation.errors.bra_source_support_code ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bra_source_support_code}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("bra_source_credit_requested")}</Label>
+                <Input
+                  name="bra_source_credit_requested"
+                  type="number"
+                  placeholder={t("bra_source_credit_requested")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bra_source_credit_requested || ""}
+                  invalid={
+                    validation.touched.bra_source_credit_requested &&
+                    validation.errors.bra_source_credit_requested
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                  disabled={1 == 1}
+                />
+                {validation.touched.bra_source_credit_requested &&
+                validation.errors.bra_source_credit_requested ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bra_source_credit_requested}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("bra_source_credit_approved")}</Label>
+                <Input
+                  name="bra_source_credit_approved"
+                  type="number"
+                  placeholder={t("bra_source_credit_approved")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bra_source_credit_approved || ""}
+                  invalid={
+                    validation.touched.bra_source_credit_approved &&
+                    validation.errors.bra_source_credit_approved
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                  disabled={1 == 1}
+                />
+                {validation.touched.bra_source_credit_approved &&
+                validation.errors.bra_source_credit_approved ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bra_source_credit_approved}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("bra_source_credit_code")}</Label>
+                <Input
+                  name="bra_source_credit_code"
+                  type="text"
+                  placeholder={t("bra_source_credit_code")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bra_source_credit_code || ""}
+                  invalid={
+                    validation.touched.bra_source_credit_code &&
+                    validation.errors.bra_source_credit_code
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                  disabled={1 == 1}
+                />
+                {validation.touched.bra_source_credit_code &&
+                validation.errors.bra_source_credit_code ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bra_source_credit_code}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("bra_requested_date")}</Label>
+                <Input
+                  name="bra_requested_date"
+                  type="text"
+                  placeholder={t("bra_requested_date")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bra_requested_date || ""}
+                  invalid={
+                    validation.touched.bra_requested_date &&
+                    validation.errors.bra_requested_date
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                  disabled={1 == 1}
+                />
+                {validation.touched.bra_requested_date &&
+                validation.errors.bra_requested_date ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bra_requested_date}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("bra_approved_date")}</Label>
+                <Input
+                  name="bra_approved_date"
+                  type="text"
+                  placeholder={t("bra_approved_date")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bra_approved_date || ""}
+                  invalid={
+                    validation.touched.bra_approved_date &&
+                    validation.errors.bra_approved_date
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                  disabled={1 == 1}
+                />
+                {validation.touched.bra_approved_date &&
+                validation.errors.bra_approved_date ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bra_approved_date}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("bra_description")}</Label>
+                <Input
+                  name="bra_description"
+                  type="textarea"
+                  placeholder={t("bra_description")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bra_description || ""}
+                  invalid={
+                    validation.touched.bra_description &&
+                    validation.errors.bra_description
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                  disabled={1 == 1}
+                />
+                {validation.touched.bra_description &&
+                validation.errors.bra_description ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bra_description}
+                  </FormFeedback>
+                ) : null}
               </Col>
             </Row>
-          )}
-          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-            <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("budget_request_amount")) : (t("add") +" "+t("budget_request_amount"))}
-            </ModalHeader>
-            <ModalBody>
-              <Form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  validation.handleSubmit();
-                  return false;
-                }}
-              >
-                <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('bra_expenditure_code_id')}</Label>
-                      <Input
-                        name='bra_expenditure_code_id'
-                        type='text'
-                        placeholder={t('bra_expenditure_code_id')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bra_expenditure_code_id || ''}
-                        invalid={
-                          validation.touched.bra_expenditure_code_id &&
-                          validation.errors.bra_expenditure_code_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bra_expenditure_code_id &&
-                      validation.errors.bra_expenditure_code_id ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bra_expenditure_code_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bra_current_year_expense')}</Label>
-                      <Input
-                        name='bra_current_year_expense'
-                        type='number'
-                        placeholder={t('bra_current_year_expense')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bra_current_year_expense || ''}
-                        invalid={
-                          validation.touched.bra_current_year_expense &&
-                          validation.errors.bra_current_year_expense
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bra_current_year_expense &&
-                      validation.errors.bra_current_year_expense ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bra_current_year_expense}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bra_requested_amount')}</Label>
-                      <Input
-                        name='bra_requested_amount'
-                        type='number'
-                        placeholder={t('bra_requested_amount')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bra_requested_amount || ''}
-                        invalid={
-                          validation.touched.bra_requested_amount &&
-                          validation.errors.bra_requested_amount
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bra_requested_amount &&
-                      validation.errors.bra_requested_amount ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bra_requested_amount}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bra_approved_amount')}</Label>
-                      <Input
-                        name='bra_approved_amount'
-                        type='number'
-                        placeholder={t('bra_approved_amount')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bra_approved_amount || ''}
-                        invalid={
-                          validation.touched.bra_approved_amount &&
-                          validation.errors.bra_approved_amount
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bra_approved_amount &&
-                      validation.errors.bra_approved_amount ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bra_approved_amount}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bra_source_government_requested')}</Label>
-                      <Input
-                        name='bra_source_government_requested'
-                        type='number'
-                        placeholder={t('bra_source_government_requested')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bra_source_government_requested || ''}
-                        invalid={
-                          validation.touched.bra_source_government_requested &&
-                          validation.errors.bra_source_government_requested
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bra_source_government_requested &&
-                      validation.errors.bra_source_government_requested ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bra_source_government_requested}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bra_source_government_approved')}</Label>
-                      <Input
-                        name='bra_source_government_approved'
-                        type='number'
-                        placeholder={t('bra_source_government_approved')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bra_source_government_approved || ''}
-                        invalid={
-                          validation.touched.bra_source_government_approved &&
-                          validation.errors.bra_source_government_approved
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bra_source_government_approved &&
-                      validation.errors.bra_source_government_approved ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bra_source_government_approved}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bra_source_internal_requested')}</Label>
-                      <Input
-                        name='bra_source_internal_requested'
-                        type='number'
-                        placeholder={t('bra_source_internal_requested')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bra_source_internal_requested || ''}
-                        invalid={
-                          validation.touched.bra_source_internal_requested &&
-                          validation.errors.bra_source_internal_requested
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bra_source_internal_requested &&
-                      validation.errors.bra_source_internal_requested ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bra_source_internal_requested}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bra_source_internal_approved')}</Label>
-                      <Input
-                        name='bra_source_internal_approved'
-                        type='number'
-                        placeholder={t('bra_source_internal_approved')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bra_source_internal_approved || ''}
-                        invalid={
-                          validation.touched.bra_source_internal_approved &&
-                          validation.errors.bra_source_internal_approved
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bra_source_internal_approved &&
-                      validation.errors.bra_source_internal_approved ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bra_source_internal_approved}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bra_source_support_requested')}</Label>
-                      <Input
-                        name='bra_source_support_requested'
-                        type='number'
-                        placeholder={t('bra_source_support_requested')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bra_source_support_requested || ''}
-                        invalid={
-                          validation.touched.bra_source_support_requested &&
-                          validation.errors.bra_source_support_requested
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bra_source_support_requested &&
-                      validation.errors.bra_source_support_requested ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bra_source_support_requested}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bra_source_support_approved')}</Label>
-                      <Input
-                        name='bra_source_support_approved'
-                        type='number'
-                        placeholder={t('bra_source_support_approved')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bra_source_support_approved || ''}
-                        invalid={
-                          validation.touched.bra_source_support_approved &&
-                          validation.errors.bra_source_support_approved
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bra_source_support_approved &&
-                      validation.errors.bra_source_support_approved ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bra_source_support_approved}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bra_source_support_code')}</Label>
-                      <Input
-                        name='bra_source_support_code'
-                        type='text'
-                        placeholder={t('bra_source_support_code')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bra_source_support_code || ''}
-                        invalid={
-                          validation.touched.bra_source_support_code &&
-                          validation.errors.bra_source_support_code
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bra_source_support_code &&
-                      validation.errors.bra_source_support_code ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bra_source_support_code}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bra_source_credit_requested')}</Label>
-                      <Input
-                        name='bra_source_credit_requested'
-                        type='number'
-                        placeholder={t('bra_source_credit_requested')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bra_source_credit_requested || ''}
-                        invalid={
-                          validation.touched.bra_source_credit_requested &&
-                          validation.errors.bra_source_credit_requested
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bra_source_credit_requested &&
-                      validation.errors.bra_source_credit_requested ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bra_source_credit_requested}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bra_source_credit_approved')}</Label>
-                      <Input
-                        name='bra_source_credit_approved'
-                        type='number'
-                        placeholder={t('bra_source_credit_approved')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bra_source_credit_approved || ''}
-                        invalid={
-                          validation.touched.bra_source_credit_approved &&
-                          validation.errors.bra_source_credit_approved
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bra_source_credit_approved &&
-                      validation.errors.bra_source_credit_approved ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bra_source_credit_approved}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bra_source_credit_code')}</Label>
-                      <Input
-                        name='bra_source_credit_code'
-                        type='text'
-                        placeholder={t('bra_source_credit_code')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bra_source_credit_code || ''}
-                        invalid={
-                          validation.touched.bra_source_credit_code &&
-                          validation.errors.bra_source_credit_code
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bra_source_credit_code &&
-                      validation.errors.bra_source_credit_code ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bra_source_credit_code}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bra_requested_date')}</Label>
-                      <Input
-                        name='bra_requested_date'
-                        type='text'
-                        placeholder={t('bra_requested_date')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bra_requested_date || ''}
-                        invalid={
-                          validation.touched.bra_requested_date &&
-                          validation.errors.bra_requested_date
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bra_requested_date &&
-                      validation.errors.bra_requested_date ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bra_requested_date}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bra_approved_date')}</Label>
-                      <Input
-                        name='bra_approved_date'
-                        type='text'
-                        placeholder={t('bra_approved_date')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bra_approved_date || ''}
-                        invalid={
-                          validation.touched.bra_approved_date &&
-                          validation.errors.bra_approved_date
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bra_approved_date &&
-                      validation.errors.bra_approved_date ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bra_approved_date}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('bra_description')}</Label>
-                      <Input
-                        name='bra_description'
-                        type='textarea'
-                        placeholder={t('bra_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bra_description || ''}
-                        invalid={
-                          validation.touched.bra_description &&
-                          validation.errors.bra_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bra_description &&
-                      validation.errors.bra_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bra_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <div className="text-end">
-                      {addBudgetRequestAmount.isPending || updateBudgetRequestAmount.isPending ? (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addBudgetRequestAmount.isPending ||
-                            updateBudgetRequestAmount.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          <Spinner size={"sm"} color="light" className="me-2" />
-                          {t("Save")}
-                        </Button>
-                      ) : (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addBudgetRequestAmount.isPending ||
-                            updateBudgetRequestAmount.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          {t("Save")}
-                        </Button>
-                      )}
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
-            </ModalBody>
-          </Modal>
+            <Row>
+              <Col>
+                <div className="text-end">
+                  {addBudgetRequestAmount.isPending ||
+                  updateBudgetRequestAmount.isPending ? (
+                    <Button
+                      color="success"
+                      type="submit"
+                      className="save-user"
+                      disabled={
+                        addBudgetRequestAmount.isPending ||
+                        updateBudgetRequestAmount.isPending ||
+                        !validation.dirty
+                      }
+                    >
+                      <Spinner size={"sm"} color="light" className="me-2" />
+                      {t("Save")}
+                    </Button>
+                  ) : (
+                    <Button
+                      color="success"
+                      type="submit"
+                      className="save-user"
+                      disabled={
+                        addBudgetRequestAmount.isPending ||
+                        updateBudgetRequestAmount.isPending ||
+                        !validation.dirty
+                      }
+                    >
+                      {t("Save")}
+                    </Button>
+                  )}
+                </div>
+              </Col>
+            </Row>
+          </Form>
+        </ModalBody>
+      </Modal>
       <ToastContainer />
     </React.Fragment>
   );

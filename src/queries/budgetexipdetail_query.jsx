@@ -10,14 +10,14 @@ const BUDGET_EXIP_DETAIL_QUERY_KEY = ["budgetexipdetail"];
 // Fetch budget_exip_detail
 export const useFetchBudgetExipDetails = (param = {}, isActive) => {
   return useQuery({
-    queryKey: [...BUDGET_EXIP_DETAIL_QUERY_KEY,"fetch", param],
+    queryKey: [...BUDGET_EXIP_DETAIL_QUERY_KEY, "fetch", param],
     queryFn: () => getBudgetExipDetail(param),
-  staleTime: 0, // Data is considered stale immediately
-    cacheTime: 0,
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 5,
     meta: { persist: false },
     refetchOnWindowFocus: true,
     refetchOnMount: false,
-    enabled: true
+    enabled: isActive,
   });
 };
 
@@ -39,7 +39,7 @@ export const useAddBudgetExipDetail = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: addBudgetExipDetail,
-   onSuccess: (newDataResponse) => {
+    onSuccess: (newDataResponse) => {
       const queries = queryClient.getQueriesData({
         queryKey: BUDGET_EXIP_DETAIL_QUERY_KEY,
       });
@@ -65,7 +65,7 @@ export const useUpdateBudgetExipDetail = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateBudgetExipDetail,
-  onSuccess: (updatedBudgetExipDetail) => {
+    onSuccess: (updatedBudgetExipDetail) => {
       const queries = queryClient.getQueriesData({
         queryKey: BUDGET_EXIP_DETAIL_QUERY_KEY,
       });
@@ -90,7 +90,7 @@ export const useDeleteBudgetExipDetail = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteBudgetExipDetail,
-     onSuccess: (deletedData, variable) => {
+    onSuccess: (deletedData, variable) => {
       const queries = queryClient.getQueriesData({
         queryKey: BUDGET_EXIP_DETAIL_QUERY_KEY,
       });
