@@ -50,6 +50,7 @@ const DashboardComponent = ({ dashboardType, objectName, columnList,tableData })
                 <TableContainer
                   columns={columns}
                   data={tableData}
+                  isExcelExport={false}
                   isGlobalFilter={false}
                   isAddButton={false}
                   isCustomPageSize={false}
@@ -80,6 +81,7 @@ const DashboardComponent = ({ dashboardType, objectName, columnList,tableData })
                   columns={columns}
                   data={tableData}
                   isGlobalFilter={false}
+                  isExcelExport={false}
                   isAddButton={false}
                   isCustomPageSize={false}
                   isPagination={false}

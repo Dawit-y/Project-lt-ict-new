@@ -843,6 +843,7 @@
 "prj_project_amount_range":"Amount should be greater than 1000 and less than 100,000,000,000",
 "prj_name_en":"Project Name in English",
 "prj_name_am":"Project Name in Amharic",
+
 "budget_year_range":"Budget year should be between 2017 and 2040",
 "budget_month_range":"Budget month should be between 1 and 12",
 "integer_only":"It should be number only",
@@ -991,5 +992,8 @@
 "pbe_budget_month_id":"Month",
 "pbe_budget_year_id":"Year",
 "select_one":"Select One",
-"add_detail":"Add Detail"
+"add_detail":"Add Detail",
+"menu_miscellaneous":"Miscellaneous",
+"s_n":"S.N",
+"val_phone_number":"invalid phone number"
 }

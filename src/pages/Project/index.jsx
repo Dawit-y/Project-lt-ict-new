@@ -151,6 +151,7 @@ const ProjectModel = () => {
       toast.success(`Data added successfully`, {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
       toast.error("Failed to add data", {
         autoClose: 2000,
@@ -165,6 +166,7 @@ const ProjectModel = () => {
       toast.success(`data updated successfully`, {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
       toast.error(`Failed to update Data`, {
         autoClose: 2000,
@@ -291,10 +293,12 @@ const ProjectModel = () => {
         t("prj_location_woreda_id")
       ),
       prj_department_id: Yup.string().required(t("prj_department_id")),
+      prj_urban_ben_number: numberValidation(10,10000000,false),
+      prj_rural_ben_number: numberValidation(10,10000000,false),
       //prj_location_zone_id: Yup.string().required(t('prj_location_zone_id')),
       //prj_location_woreda_id: Yup.string().required(t('prj_location_woreda_id')),
       //prj_location_kebele_id: Yup.string().required(t('prj_location_kebele_id')),
-      //prj_location_description: Yup.string().required(t('prj_location_description')),
+      prj_location_description: alphanumericValidation(3,425,false),
       //prj_owner_region_id: Yup.string().required(t('prj_owner_region_id')),
       //prj_owner_zone_id: Yup.string().required(t('prj_owner_zone_id')),
       //prj_owner_woreda_id: Yup.string().required(t('prj_owner_woreda_id')),
@@ -313,9 +317,9 @@ const ProjectModel = () => {
 
       //prj_end_date_plan_gc: Yup.string().required(t("prj_end_date_plan_gc")),
       //prj_end_date_plan_et: Yup.string().required(t('prj_end_date_plan_et')),
-      //prj_outcome: Yup.string().required(t('prj_outcome')),
+      prj_outcome: alphanumericValidation(3,425,true),
       //prj_deleted: Yup.string().required(t('prj_deleted')),
-      //prj_remark: Yup.string().required(t('prj_remark')),
+      prj_remark: alphanumericValidation(3,425,false),
       //prj_created_date: Yup.string().required(t('prj_created_date')),
       //prj_owner_id: Yup.string().required(t('prj_owner_id')),
       //prj_urban_ben_number: Yup.string().required(t('prj_urban_ben_number')),
@@ -368,8 +372,7 @@ const ProjectModel = () => {
           is_editable: values.is_editable,
         };
         // update Project
-        handleUpdateProject(updateProject);
-        validation.resetForm();
+        handleUpdateProject(updateProject);        
       } else {
         const newProject = {
           prj_name: values.prj_name,
@@ -410,12 +413,8 @@ const ProjectModel = () => {
           prj_rural_ben_number: values.prj_rural_ben_number,
           prj_department_id: Number(values.prj_department_id),
         };
-        /* if (gridRef.current && gridRef.current.api) {
-  gridRef.current.api.setRowData(newProject); 
-}*/
         // save new Project
         handleAddProject(newProject);
-        validation.resetForm();
       }
     },
   });
@@ -766,40 +765,14 @@ const ProjectModel = () => {
     resizable: true,
     flex: 1,
   };
-  const sideBar = {
-    toolPanels: [
-      {
-        id: "columns",
-        labelDefault: "Columns",
-        labelKey: "columns",
-        iconKey: "columns",
-        toolPanel: "agColumnsToolPanel",
-      },
-      {
-        id: "filters",
-        labelDefault: "Filters",
-        labelKey: "filters",
-        iconKey: "filter",
-        toolPanel: "agFiltersToolPanel",
-      },
-    ],
-    defaultToolPanel: "columns",
-  };
   const onGridReady = (params) => {
     params.api.sizeColumnsToFit();
   };
-  const chartThemes = ["ag-default", "ag-material", "ag-pastel", "ag-vivid"];
 
   const onSelectionChanged = () => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
     const selectedData = selectedNodes.map((node) => node.data);
     setSelectedRows(selectedData);
-  };
-  // Filter by marked rows
-  const filterMarked = () => {
-    if (gridRef.current) {
-      gridRef.current.api.setRowData(selectedRows);
-    }
   };
   // Clear the filter and show all rows again
   const clearFilter = () => {
@@ -809,7 +782,6 @@ const ProjectModel = () => {
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
   return (
     <React.Fragment>
       <ProjectModal
@@ -1232,7 +1204,7 @@ const ProjectModel = () => {
                           </FormFeedback>
                         ) : null}
                       </Col>
-                      <Col className="col-md-4 mb-3">
+                      {/*<Col className="col-md-4 mb-3">
                         <FormGroup>
                           <Label>{t("prj_start_date_gc")}</Label>
                           <InputGroup>
@@ -1280,9 +1252,8 @@ const ProjectModel = () => {
                             </FormFeedback>
                           ) : null}
                         </FormGroup>
-                      </Col>
-
-                      <Col className="col-md-4 mb-3">
+                      </Col>*/}
+                     {/* <Col className="col-md-4 mb-3">
                         <FormGroup>
                           <Label>{t("prj_end_date_actual_gc")}</Label>
                           <InputGroup>
@@ -1332,7 +1303,7 @@ const ProjectModel = () => {
                             </FormFeedback>
                           ) : null}
                         </FormGroup>
-                      </Col>
+                      </Col>*/}
                       <Col className="col-md-6 mb-3">
                         <Label>{t("prj_urban_ben_number")}</Label>
                         <Input

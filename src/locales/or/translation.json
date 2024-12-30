@@ -1084,5 +1084,7 @@
   "pbe_budget_month_id": "Ji’a",
   "pbe_budget_year_id": "Bara",
   "select_one": "Tokko Filadhu",
-  "add_detail": "Odeeffannoo Dabaluu"
+  "add_detail": "Odeeffannoo Dabaluu",
+  "s_n":"Lakk.",
+  "val_phone_number":"Lakk bilbilaa sirri miti"
 }

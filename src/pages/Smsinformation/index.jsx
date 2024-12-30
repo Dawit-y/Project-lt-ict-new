@@ -343,61 +343,8 @@ smi_status:smsInformation.smi_status,
         },
       },
     ];
-     if (
-      data?.previledge?.is_role_editable==1 ||
-      data?.previledge?.is_role_deletable==1
-    ) {
-      baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable==1 && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;                    
-                    handleSmsInformationClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-
-              {cellProps.row.original.is_deletable==1 && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-            </div>
-          );
-        },
-      });
-    }
-
     return baseColumns;
   }, [handleSmsInformationClick, toggleViewModal, onClickDelete]);
-
   return (
     <React.Fragment>
       <SmsInformationModal
@@ -419,27 +366,8 @@ smi_status:smsInformation.smi_status,
           />
           <AdvancedSearch
             searchHook={useSearchSmsInformations}
-            textSearchKeys={["dep_name_am", "dep_name_en", "dep_name_or"]}
-            dropdownSearchKeys={[
-              {
-                key: "example",
-                options: [
-                  { value: "Freelance", label: "Example1" },
-                  { value: "Full Time", label: "Example2" },
-                  { value: "Part Time", label: "Example3" },
-                  { value: "Internship", label: "Example4" },
-                ],
-              },
-            ]}
-            checkboxSearchKeys={[
-              {
-                key: "example1",
-                options: [
-                  { value: "Engineering", label: "Example1" },
-                  { value: "Science", label: "Example2" },
-                ],
-              },
-            ]}
+            textSearchKeys={["smi_sent_to"]}
+            dropdownSearchKeys={[]}
             onSearchResult={handleSearchResults}
             setIsSearchLoading={setIsSearchLoading}
             setSearchResults={setSearchResults}

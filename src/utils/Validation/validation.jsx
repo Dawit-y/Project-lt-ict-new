@@ -19,6 +19,16 @@ export const alphanumericValidation = (minLength, maxLength, isRequired = true) 
   }
   return schema;
 };
+export const phoneValidation = (isRequired = true) => {
+  const { t } = useTranslation();
+  let schema = Yup.string()
+    .matches(/^\+2519\d{8}$/, t("val_phone_number"))
+  if (isRequired) {
+    schema = schema.required(t('val_required'));
+  }
+  return schema;
+};
+
 export const amountValidation = (minLength, maxLength, isRequired = true) => {
   const { t } = useTranslation();
   let schema = Yup.number()
