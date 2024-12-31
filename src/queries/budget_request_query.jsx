@@ -96,7 +96,6 @@ export const useUpdateBudgetRequest = () => {
         .getQueriesData({ queryKey: BUDGET_REQUESTS_QUERY_KEY })
         .map(([key, data]) => ({ key, data }));
 
-      console.log("all queries", allQueries);
       allQueries.forEach(({ key }) => {
         queryClient.setQueryData(key, (oldData) => {
           if (!oldData) return;

@@ -23,15 +23,9 @@ export const useAddFolder = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (passed) => {
-      console.log(passed);
-      return addAddressStructure(passed);
-    },
+    mutationFn: (passed) => addAddressStructure(passed),
     onSuccess: (newFolder) => {
-      queryClient.setQueryData(["folders"], (oldData) => {
-        const updatedData = addSubFolder(oldData, newFolder.rootId, newFolder);
-        return updatedData;
-      });
+      queryClient.invalidateQueries({ queryKey: ["folders"] });
     },
   });
 };
@@ -41,17 +35,9 @@ export const useRenameFolder = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, rootId, name }) =>
-      updateAddressStructure(id, rootId, name),
+    mutationFn: (passed) => updateAddressStructure(passed),
     onSuccess: (updatedFolder) => {
-      queryClient.setQueryData(["folders"], (oldData) => {
-        const updatedData = renameFolder(
-          oldData,
-          updatedFolder.id,
-          updatedFolder.name
-        );
-        return updatedData;
-      });
+      queryClient.invalidateQueries({ queryKey: ["folders"] });
     },
   });
 };
@@ -92,6 +78,23 @@ const buildTree = (data) => {
     },
   ];
   oromia[0].children = [...data];
+  const assignLevels = (node) => {
+    if (node.children.length === 0) {
+      node.level = "woreda";
+    } else {
+      const hasGrandChildren = node.children.some(
+        (child) => child.children.length > 0
+      );
+
+      if (hasGrandChildren) {
+        node.level = "region";
+      } else {
+        node.level = "zone";
+      }
+      node.children.forEach(assignLevels);
+    }
+  };
+  oromia.forEach(assignLevels);
   return oromia;
 };
 

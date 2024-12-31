@@ -26,11 +26,13 @@ export const addAddressStructure = async (params) => {
 };
 
 // update objectNames
-export const updateAddressStructure = (objectName) =>
-  post(
-    `${apiUrl}` + UPDATE_ADDRESS_STRUCTURE + `?add_id=${objectName?.add_id}`,
-    objectName
-  );
+export const updateAddressStructure = (params) => {
+  const queryString = new URLSearchParams(params).toString();
+  const url = queryString
+    ? `${UPDATE_ADDRESS_STRUCTURE}?${queryString}`
+    : UPDATE_ADDRESS_STRUCTURE;
+  return post(url);
+};
 
 // delete objectNames
 export const deleteAddressStructure = (objectName) =>
