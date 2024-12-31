@@ -24,6 +24,7 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { toast } from "react-toastify";
 
 const App_tree = () => {
+  document.title = "Regional Address Structure";
   const [selectedNode, setSelectedNode] = useState(null);
   const [formInputs, setFormInputs] = useState({
     add_name_or: "",
@@ -51,6 +52,26 @@ const App_tree = () => {
     setErrors({});
   };
 
+  const checkNameExistsAdd = (folders, name) => {
+    for (const folder of folders) {
+      if (folder.name.trim() == name.trim()) return true;
+      if (folder.children && folder.children.length > 0) {
+        if (checkNameExistsAdd(folder.children, name)) return true;
+      }
+    }
+    return false;
+  };
+  const checkNameExistsUpdate = (folders, name) => {
+    for (const folder of folders) {
+      if (folder.name.trim() == name.trim() && folder.id != selectedNode?.id)
+        return true;
+      if (folder.children && folder.children.length > 0) {
+        if (checkNameExistsUpdate(folder.children, name)) return true;
+      }
+    }
+    return false;
+  };
+
   const validateForm = () => {
     const newErrors = {};
     if (!formInputs.add_name_or)
@@ -66,6 +87,14 @@ const App_tree = () => {
   const handleAddFolder = async () => {
     if (!validateForm()) return;
 
+    if (checkNameExistsAdd(data, formInputs.add_name_or)) {
+      setErrors((prev) => ({
+        ...prev,
+        add_name_or: t("Already exists"),
+      }));
+      return;
+    }
+
     const rootId = selectedNode ? selectedNode.id : null;
     try {
       await addFolder.mutateAsync({ add_parent_id: rootId, ...formInputs });
@@ -79,6 +108,13 @@ const App_tree = () => {
   const handleUpdateFolder = async () => {
     if (!validateForm()) return;
 
+    if (checkNameExistsUpdate(data, formInputs.add_name_or)) {
+      setErrors((prev) => ({
+        ...prev,
+        add_name_or: t("Already exists"),
+      }));
+      return;
+    }
     try {
       await updateFolder.mutateAsync({
         add_id: selectedNode.id,
@@ -134,7 +170,9 @@ const App_tree = () => {
           />
           <div className="d-flex vh-100">
             <div className="w-30 p-3 bg-white border-end overflow-auto shadow-sm">
-              <h4 className="mb-2 text-secondary">{t("Address Structures")}</h4>
+              <h4 className="mb-2 text-secondary">
+                {t("Regional Address Structures")}
+              </h4>
               <hr className="text-dark" />
               {data?.map((node) => (
                 <TreeNode
