@@ -16,7 +16,7 @@ const Register = lazy(() => import("../pages/Authentication/Register"));
 const ForgetPwd = lazy(() => import("../pages/Authentication/ForgetPassword"));
 
 const AddressStructure = lazy(() =>
-  import("../pages/AddressTreeStructure/index.jsx")
+  import("../pages/AddressTreeStructure/index2.jsx")
 );
 const DocumentType = lazy(() => import("../pages/Documenttype/index"));
 const Project = lazy(() => import("../pages/Project/index"));
@@ -44,9 +44,7 @@ const Department = lazy(() => import("../pages/Department/index"));
 const BudgetRequestListModel = lazy(() =>
   import("../pages/Budgetrequest/BudgetRequestList")
 );
-const BudgetRequest = lazy(() =>
-  import("../pages/Budgetrequest/index")
-);
+const BudgetRequest = lazy(() => import("../pages/Budgetrequest/index"));
 const BudgetSource = lazy(() => import("../pages/Budgetsource/index"));
 const BudgetYear = lazy(() => import("../pages/Budgetyear/index"));
 const ContractTerminationReason = lazy(() =>
@@ -113,17 +111,17 @@ const ProjectSupplimentary = lazy(() =>
   import("../pages/Projectsupplimentary/index")
 );
 const ProjectVariation = lazy(() => import("../pages/Projectvariation/index"));
-import EmailInformation from '../pages/Emailinformation/index';
-import EmailTemplate from '../pages/Emailtemplate/index';
-import SmsInformation from '../pages/Smsinformation/index';
-import SmsTemplate from '../pages/Smstemplate/index';
-import BudgetRequestAmount from '../pages/Budgetrequestamount/index';
-import BudgetRequestTask from '../pages/Budgetrequesttask/index';
-import BudgetExSource from '../pages/Budgetexsource/index';
-import BudgetExipDetail from '../pages/Budgetexipdetail/index';
-import PaymentCategory from '../pages/Paymentcategory/index';
+import EmailInformation from "../pages/Emailinformation/index";
+import EmailTemplate from "../pages/Emailtemplate/index";
+import SmsInformation from "../pages/Smsinformation/index";
+import SmsTemplate from "../pages/Smstemplate/index";
+import BudgetRequestAmount from "../pages/Budgetrequestamount/index";
+import BudgetRequestTask from "../pages/Budgetrequesttask/index";
+import BudgetExSource from "../pages/Budgetexsource/index";
+import BudgetExipDetail from "../pages/Budgetexipdetail/index";
+import PaymentCategory from "../pages/Paymentcategory/index";
 const authProtectedRoutes = [
-  { path: "/expenditure_code", component: <ExpenditureCode /> }, 
+  { path: "/expenditure_code", component: <ExpenditureCode /> },
   { path: "/project_employee", component: <ProjectEmployee /> },
   { path: "/project_handover", component: <ProjectHandover /> },
   { path: "/project_performance", component: <ProjectPerformance /> },
@@ -160,7 +158,10 @@ const authProtectedRoutes = [
   //{ path: "/project_budget_expenditure",component: <ProjectBudgetExpenditure />},
   { path: "/budget_source", component: <BudgetSource /> },
   { path: "/budget_year", component: <BudgetYear /> },
-  { path: "/contract_termination_reason",component: <ContractTerminationReason />,},
+  {
+    path: "/contract_termination_reason",
+    component: <ContractTerminationReason />,
+  },
   { path: "/contractor_type", component: <ContractorType /> },
   { path: "/document_type", component: <DocumentType /> },
   { path: "/access_log", component: <AccessLog /> },
@@ -197,7 +198,7 @@ const authProtectedRoutes = [
       </ProjectProvider>
     ),
   },
-   {
+  {
     path: "/Project/:id/budget_request",
     component: (
       <ProjectProvider>
@@ -213,7 +214,7 @@ const authProtectedRoutes = [
       </ProjectProvider>
     ),
   },
-  
+
   { path: "/project_category", component: <ProjectCategory /> },
   { path: "/project_contractor", component: <ProjectContractor /> },
   { path: "/project_document", component: <ProjectDocument /> },
@@ -230,15 +231,15 @@ const authProtectedRoutes = [
   //   // this route should be at the end of all other routes
   //   // eslint-disable-next-line react/display-name
   { path: "/", exact: true, component: <Navigate to="/dashboard" /> },
-  {path: '/email_information', component: <EmailInformation/> },
- {path: '/email_template', component: <EmailTemplate/> },
- {path: '/sms_information', component: <SmsInformation/> },
- {path: '/sms_template', component: <SmsTemplate/> },
-  {path: '/budget_request_amount', component: <BudgetRequestAmount/> },
- {path: '/budget_request_task', component: <BudgetRequestTask/> },
- {path: '/budget_ex_source', component: <BudgetExSource/> },
- {path: '/budget_exip_detail', component: <BudgetExipDetail/> },
- {path: '/payment_category', component: <PaymentCategory/> },
+  { path: "/email_information", component: <EmailInformation /> },
+  { path: "/email_template", component: <EmailTemplate /> },
+  { path: "/sms_information", component: <SmsInformation /> },
+  { path: "/sms_template", component: <SmsTemplate /> },
+  { path: "/budget_request_amount", component: <BudgetRequestAmount /> },
+  { path: "/budget_request_task", component: <BudgetRequestTask /> },
+  { path: "/budget_ex_source", component: <BudgetExSource /> },
+  { path: "/budget_exip_detail", component: <BudgetExipDetail /> },
+  { path: "/payment_category", component: <PaymentCategory /> },
 ];
 
 const publicRoutes = [

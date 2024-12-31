@@ -76,26 +76,21 @@ export const useDeleteFolder = () => {
 
 // Helper functions
 const buildTree = (data) => {
-  const map = {};
-  const result = [];
-
-  data.forEach((item) => {
-    map[item.id] = { ...item, children: [] }; // Initialize the node with an empty children array
-  });
-
-  data.forEach((item) => {
-    if (item.rootId === null) {
-      // If the rootId is null, it's a root node
-      result.push(map[item.id]);
-    } else {
-      // Add the item to its parent's children array
-      if (map[item.rootId]) {
-        map[item.rootId].children.push(map[item.id]);
-      }
-    }
-  });
-
-  return result;
+  if (!data || !Array.isArray(data)) {
+    console.warn("Invalid data format for building the tree:", data);
+    return [];
+  }
+  const oromia = [
+    {
+      id: 1,
+      name: "Oromia",
+      rootId: null,
+      level: "region",
+      children: [],
+    },
+  ];
+  oromia[0].children = [...data];
+  return oromia;
 };
 
 const addSubFolder = (tree, parentId, newFolder) => {

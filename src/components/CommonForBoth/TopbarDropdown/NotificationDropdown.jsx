@@ -3,58 +3,35 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { Dropdown, DropdownToggle, DropdownMenu, Row, Col } from "reactstrap";
 import SimpleBar from "simplebar-react";
-
-// i18n
 import { withTranslation } from "react-i18next";
-
-import { createSelector } from "reselect";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  fetchNotificationsRequest,
-  markNotificationsAsReadRequest,
-} from "../../../store/notification/actions";
 import { formatDistanceToNow, parseISO } from "date-fns";
+import {
+  useFetchNotifications,
+  useMarkNotificationsAsRead,
+} from "../../../queries/notifications_query";
 
 const NotificationDropdown = (props) => {
   const [menu, setMenu] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
 
-  const dispatch = useDispatch();
-  const notificationProperties = createSelector(
-    (state) => state.notificationReducer,
-    (notificationReducer) => ({
-      notifications: notificationReducer.notifications,
-      loading: notificationReducer.loading,
-      previledge: notificationReducer.previledge,
-      error: notificationReducer.error,
-    })
-  );
+  const { data, isLoading, isError, error, refetch } = useFetchNotifications();
+  const notifications = data?.data || [];
+  const { mutate: markAsRead } = useMarkNotificationsAsRead();
 
-  const { notifications, loading, previledge, error } = useSelector(
-    notificationProperties
-  );
-
-  useEffect(() => {
-    dispatch(fetchNotificationsRequest());
-  }, [dispatch]);
-
-  // Update the unread notification count based on notifications data
   useEffect(() => {
     if (notifications) {
       const unreadCount = notifications.filter(
-        (notification) => notification.not_is_read === "0000-00-00 00:00:00"
+        (notification) => notification.not_is_read == 0
       ).length;
       setUnreadNotifications(unreadCount);
     }
   }, [notifications]);
 
-  // Function to format notification date to human-readable format
   const formatDate = (dateString) => {
     const parsedDate = parseISO(dateString);
     return formatDistanceToNow(parsedDate, { addSuffix: true });
   };
 
-  // Function to handle dropdown toggle
   const toggleMenu = () => {
     setMenu(!menu);
     if (!menu) {
@@ -63,11 +40,17 @@ const NotificationDropdown = (props) => {
   };
 
   const handleMarkUnreadAsRead = () => {
-    const unreadNotifications = notifications
-      .filter((notification) => notification.not_is_read === 0)
+    const unreadNotificationIds = notifications
+      .filter(
+        (notification) => notification.not_is_read === "0000-00-00 00:00:00"
+      )
       .map((notification) => notification.not_id);
-    if (unreadNotifications.length > 0) {
-      dispatch(markNotificationsAsReadRequest(unreadNotifications));
+    if (unreadNotificationIds.length > 0) {
+      markAsRead(unreadNotificationIds, {
+        onSuccess: () => {
+          refetch();
+        },
+      });
     }
     toggleMenu();
   };
@@ -106,23 +89,24 @@ const NotificationDropdown = (props) => {
                     className="small"
                     onClick={handleMarkUnreadAsRead}
                   >
-                    {" "}
                     View All
                   </Link>
                 )}
               </div>
             </Row>
           </div>
-          {notifications.length == 0 && (
+          {isError && (
+            <h6 className="text-center text-danger text-sm">
+              Error occured during Fetching
+            </h6>
+          )}
+          {notifications.length === 0 && !isError && (
             <h6 className="p-3 text-center">No New Notifications</h6>
           )}
-          {/* If notifications are loading */}
-          {loading && <div className="p-3 text-center">Loading...</div>}
 
-          {/* If there was an error */}
-          {error && <div className="p-3 text-center text-danger">{error}</div>}
+          {isLoading && <div className="p-3 text-center">Loading...</div>}
 
-          {!loading && notifications?.length > 0 && (
+          {!isLoading && notifications?.length > 0 && (
             <SimpleBar style={{ height: "230px" }}>
               {notifications.map((notification, index) => (
                 <Link
@@ -158,7 +142,6 @@ const NotificationDropdown = (props) => {
             </SimpleBar>
           )}
           <div className="p-2 border-top d-grid">
-
             {notifications.length > 0 && (
               <Link
                 className="btn btn-sm btn-link font-size-14 btn-block text-center"

@@ -129,8 +129,10 @@ const App_tree = () => {
             <div className="p-3 flex-grow-1 bg-light">
               <div className="mb-4 d-flex-col align-items-center w-75 mx-auto mt-5">
                 <h5 className="mb-2">
-                  Selected Address: {selectedNode ? selectedNode.name : "None"}
+                  <span>{"Selected Address: "}</span>
+                  <strong>{selectedNode ? selectedNode.name : "None"}</strong>
                 </h5>
+                <hr style={{ color: "black" }} />
                 <Form
                   onSubmit={(e) => {
                     e.preventDefault(); // Prevent the default form submission behavior
@@ -151,7 +153,6 @@ const App_tree = () => {
                         type="text"
                         value={formInputs.add_name_or}
                         onChange={handleInputChange}
-                        placeholder={t("insert_address_name_or")}
                         // invalid={!formInputs.add_name_or}
                       />
                       {/* {!formInputs.add_name_or && (
@@ -167,7 +168,6 @@ const App_tree = () => {
                         type="text"
                         value={formInputs.add_name_am}
                         onChange={handleInputChange}
-                        placeholder={t("insert_address_name_am")}
                       />
                     </Col>
                     <Col className="col-md-12 mb-3">
@@ -177,7 +177,6 @@ const App_tree = () => {
                         type="text"
                         value={formInputs.add_name_en}
                         onChange={handleInputChange}
-                        placeholder={t("insert_address_name_en")}
                       />
                     </Col>
                   </Row>

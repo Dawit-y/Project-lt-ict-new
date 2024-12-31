@@ -1,28 +1,25 @@
-import { createSelector } from "reselect";
-import { useSelector } from "react-redux";
-import { formatDistanceToNow, parseISO } from "date-fns";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
+import { formatDistanceToNow, parseISO } from "date-fns";
 import { useTranslation } from "react-i18next";
+import { useFetchNotifications } from "../../queries/notifications_query";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { Spinner } from "reactstrap";
 
 const Notifications = () => {
   const { t } = useTranslation();
-  const notificationProperties = createSelector(
-    (state) => state.notificationReducer,
-    (notificationReducer) => ({
-      notifications: notificationReducer.notifications,
-      loading: notificationReducer.loading,
-      previledge: notificationReducer.previledge,
-      error: notificationReducer.error,
-    })
-  );
+  const { data, isLoading, error, isError, refetch } = useFetchNotifications();
+  console.log("nots", data);
+  const notifications = data?.data || [];
 
-  const { notifications, loading, previledge, error } = useSelector(
-    notificationProperties
-  );
   const formatDate = (dateString) => {
-    const parsedDate = parseISO(dateString); // Parse the string into a Date object
-    return formatDistanceToNow(parsedDate, { addSuffix: true }); // Get a relative time format (e.g., "3 minutes ago")
+    const parsedDate = parseISO(dateString);
+    return formatDistanceToNow(parsedDate, { addSuffix: true });
   };
+
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <div className="page-content">
       <div className="container-fluid">
@@ -30,13 +27,9 @@ const Notifications = () => {
           title={t("notifications")}
           breadcrumbItem={t("notifications")}
         />
-        {/* If notifications are loading */}
-        {loading && <div className="p-3 text-center">Loading...</div>}
-
-        {/* If there was an error */}
-        {error && <div className="p-3 text-center text-danger">{error}</div>}
-
-        {!loading && notifications?.length > 0 && (
+        {isLoading ? (
+          <Spinner />
+        ) : (
           <div style={{ height: "100vh" }}>
             {notifications.map((notification, index) => (
               <div className="text-reset notification-item w-100 bg-white rounded-2 mb-2">

@@ -98,11 +98,7 @@ const App = (props) => {
             }
             key={idx}
             exact={true}
-            errorElement={
-              <NonAuthLayout>
-                <ErrorElement />
-              </NonAuthLayout>
-            }
+            errorElement={<ErrorElement />}
           />
         ))}
 
@@ -124,11 +120,7 @@ const App = (props) => {
             }
             key={idx}
             exact={true}
-            errorElement={
-              <Layout>
-                <ErrorElement />
-              </Layout>
-            }
+            errorElement={<ErrorElement />}
           />
         ))}
         <Route path="*" element={<NotFound />} />
