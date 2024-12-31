@@ -1,64 +1,12 @@
 import { useEffect, useState, memo } from "react";
 import { post } from "../../helpers/api_Lists";
-import { useQuery } from "@tanstack/react-query";
 import TreeNode from "../AddressTreeStructure/TreeNode";
 import { useTranslation } from "react-i18next";
-
-const url = "address_structure/listaddress";
-
-const getAddress = async () => {
-  try {
-    const response = await post(url);
-    return response;
-  } catch (error) {
-    console.error("Error in fetching data:", error);
-    throw new Error("Failed to fetch address structure");
-  }
-};
-
-const buildTree = (data) => {
-  if (!data || !Array.isArray(data)) {
-    console.warn("Invalid data format for building the tree:", data);
-    return [];
-  }
-
-  const oromia = [
-    {
-      id: 1,
-      name: "Oromia",
-      rootId: null,
-      level: "region",
-      children: [],
-    },
-  ];
-  oromia[0].children = [...data];
-
-  const assignLevels = (node) => {
-    if (node.children.length === 0) {
-      node.level = "woreda";
-    } else {
-      const hasGrandChildren = node.children.some(
-        (child) => child.children.length > 0
-      );
-
-      if (hasGrandChildren) {
-        node.level = "region";
-      } else {
-        node.level = "zone";
-      }
-      node.children.forEach(assignLevels);
-    }
-  };
-  oromia.forEach(assignLevels);
-  return oromia;
-};
+import { useFetchFolders } from "../../queries/address_structure_query";
 
 const AddressStructureForProject = ({ onNodeSelect, setIsAddressLoading }) => {
   const { t } = useTranslation();
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["address_structure"],
-    queryFn: getAddress,
-  });
+  const { data, isLoading, isError, error, refetch } = useFetchFolders();
 
   useEffect(() => {
     setIsAddressLoading(isLoading);
@@ -81,8 +29,6 @@ const AddressStructureForProject = ({ onNodeSelect, setIsAddressLoading }) => {
     return <div>Error fetching address structure</div>;
   }
 
-  const treeData = buildTree(data?.data);
-
   return (
     <div
       className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm col-md-2"
@@ -91,8 +37,8 @@ const AddressStructureForProject = ({ onNodeSelect, setIsAddressLoading }) => {
       <h4 className="mb-2 text-secondary">{t("address_tree_Search")}</h4>
       <hr className="text-dark" />
 
-      {treeData.length > 0 ? (
-        treeData.map((node) => (
+      {data.length > 0 ? (
+        data.map((node) => (
           <TreeNode key={node.id} node={node} onNodeClick={onNodeSelect} />
         ))
       ) : (
