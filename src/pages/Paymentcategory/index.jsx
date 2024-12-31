@@ -41,7 +41,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -63,20 +63,21 @@ const PaymentCategoryModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useFetchPaymentCategorys();
+  const { data, isLoading, error, isError, refetch } =
+    useFetchPaymentCategorys();
   const addPaymentCategory = useAddPaymentCategory();
   const updatePaymentCategory = useUpdatePaymentCategory();
   const deletePaymentCategory = useDeletePaymentCategory();
-//START CRUD
+  //START CRUD
   const handleAddPaymentCategory = async (data) => {
     try {
       await addPaymentCategory.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.success(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -85,12 +86,12 @@ const PaymentCategoryModel = () => {
   const handleUpdatePaymentCategory = async (data) => {
     try {
       await updatePaymentCategory.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
+      toast.success(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -101,11 +102,11 @@ const PaymentCategoryModel = () => {
       try {
         const id = paymentCategory.pyc_id;
         await deletePaymentCategory.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t('delete_failure'), {
+        toast.success(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -114,43 +115,41 @@ const PaymentCategoryModel = () => {
   };
   //END CRUD
   //START FOREIGN CALLS
-  
-  
+
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     pyc_name_or:(paymentCategory && paymentCategory.pyc_name_or) || "", 
-pyc_name_am:(paymentCategory && paymentCategory.pyc_name_am) || "", 
-pyc_name_en:(paymentCategory && paymentCategory.pyc_name_en) || "", 
-pyc_description:(paymentCategory && paymentCategory.pyc_description) || "", 
-pyc_status:(paymentCategory && paymentCategory.pyc_status) || "", 
+      pyc_name_or: (paymentCategory && paymentCategory.pyc_name_or) || "",
+      pyc_name_am: (paymentCategory && paymentCategory.pyc_name_am) || "",
+      pyc_name_en: (paymentCategory && paymentCategory.pyc_name_en) || "",
+      pyc_description:
+        (paymentCategory && paymentCategory.pyc_description) || "",
+      pyc_status: (paymentCategory && paymentCategory.pyc_status) || "",
 
-is_deletable: (paymentCategory && paymentCategory.is_deletable) || 1,
-is_editable: (paymentCategory && paymentCategory.is_editable) || 1
+      is_deletable: (paymentCategory && paymentCategory.is_deletable) || 1,
+      is_editable: (paymentCategory && paymentCategory.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      pyc_name_or: Yup.string().required(t('pyc_name_or')),
-pyc_name_am: Yup.string().required(t('pyc_name_am')),
-pyc_name_en: Yup.string().required(t('pyc_name_en')),
-//pyc_description: Yup.string().required(t('pyc_description')),
-//pyc_status: Yup.string().required(t('pyc_status')),
-
+      pyc_name_or: Yup.string().required(t("pyc_name_or")),
+      pyc_name_am: Yup.string().required(t("pyc_name_am")),
+      pyc_name_en: Yup.string().required(t("pyc_name_en")),
+      //pyc_description: Yup.string().required(t('pyc_description')),
+      //pyc_status: Yup.string().required(t('pyc_status')),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updatePaymentCategory = {
-          pyc_id: paymentCategory ? paymentCategory.pyc_id : 0,
-          pyc_id:paymentCategory.pyc_id, 
-pyc_name_or:values.pyc_name_or, 
-pyc_name_am:values.pyc_name_am, 
-pyc_name_en:values.pyc_name_en, 
-pyc_description:values.pyc_description, 
-pyc_status:values.pyc_status, 
+          pyc_id: paymentCategory?.pyc_id,
+          pyc_name_or: values.pyc_name_or,
+          pyc_name_am: values.pyc_name_am,
+          pyc_name_en: values.pyc_name_en,
+          pyc_description: values.pyc_description,
+          pyc_status: values.pyc_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -159,12 +158,11 @@ pyc_status:values.pyc_status,
         handleUpdatePaymentCategory(updatePaymentCategory);
       } else {
         const newPaymentCategory = {
-          pyc_name_or:values.pyc_name_or, 
-pyc_name_am:values.pyc_name_am, 
-pyc_name_en:values.pyc_name_en, 
-pyc_description:values.pyc_description, 
-pyc_status:values.pyc_status, 
-
+          pyc_name_or: values.pyc_name_or,
+          pyc_name_am: values.pyc_name_am,
+          pyc_name_en: values.pyc_name_en,
+          pyc_description: values.pyc_description,
+          pyc_status: values.pyc_status,
         };
         // save new PaymentCategory
         handleAddPaymentCategory(newPaymentCategory);
@@ -178,31 +176,31 @@ pyc_status:values.pyc_status,
   useEffect(() => {
     setPaymentCategory(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setPaymentCategory(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setPaymentCategory(null);
+      setPaymentCategory(null);
     } else {
       setModal(true);
     }
   };
 
-   const handlePaymentCategoryClick = (arg) => {
+  const handlePaymentCategoryClick = (arg) => {
     const paymentCategory = arg;
     // console.log("handlePaymentCategoryClick", paymentCategory);
     setPaymentCategory({
-      pyc_id:paymentCategory.pyc_id, 
-pyc_name_or:paymentCategory.pyc_name_or, 
-pyc_name_am:paymentCategory.pyc_name_am, 
-pyc_name_en:paymentCategory.pyc_name_en, 
-pyc_description:paymentCategory.pyc_description, 
-pyc_status:paymentCategory.pyc_status, 
+      pyc_id: paymentCategory.pyc_id,
+      pyc_name_or: paymentCategory.pyc_name_or,
+      pyc_name_am: paymentCategory.pyc_name_am,
+      pyc_name_en: paymentCategory.pyc_name_en,
+      pyc_description: paymentCategory.pyc_description,
+      pyc_status: paymentCategory.pyc_status,
 
       is_deletable: paymentCategory.is_deletable,
       is_editable: paymentCategory.is_editable,
@@ -222,8 +220,8 @@ pyc_status:paymentCategory.pyc_status,
     setIsEdit(false);
     setPaymentCategory("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -232,61 +230,57 @@ pyc_status:paymentCategory.pyc_status,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'pyc_name_or',
+        header: "",
+        accessorKey: "pyc_name_or",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pyc_name_or, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pyc_name_or, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pyc_name_am',
+      },
+      {
+        header: "",
+        accessorKey: "pyc_name_am",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pyc_name_am, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pyc_name_am, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pyc_name_en',
+      },
+      {
+        header: "",
+        accessorKey: "pyc_name_en",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pyc_name_en, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pyc_name_en, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pyc_description',
+      },
+      {
+        header: "",
+        accessorKey: "pyc_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pyc_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pyc_description, 30) || "-"}
             </span>
           );
         },
-      }, 
+      },
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -309,9 +303,9 @@ pyc_status:paymentCategory.pyc_status,
         },
       },
     ];
-     if (
-      data?.previledge?.is_role_editable==1 ||
-      data?.previledge?.is_role_deletable==1
+    if (
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -321,12 +315,12 @@ pyc_status:paymentCategory.pyc_status,
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable==1 && (
+              {cellProps.row.original.is_editable == 1 && (
                 <Link
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handlePaymentCategoryClick(data);
                   }}
                 >
@@ -337,7 +331,7 @@ pyc_status:paymentCategory.pyc_status,
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable==1 && (
+              {cellProps.row.original.is_deletable == 1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -373,7 +367,7 @@ pyc_status:paymentCategory.pyc_status,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeletePaymentCategory}
+        onDeleteClick={handleDeletePaymentCategory}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deletePaymentCategory.isPending}
       />
@@ -405,7 +399,7 @@ pyc_status:paymentCategory.pyc_status,
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("payment_category")}
+                      buttonName={t("add") + " " + t("payment_category")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -418,7 +412,9 @@ pyc_status:paymentCategory.pyc_status,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("payment_category")) : (t("add") +" "+t("payment_category"))}
+              {!!isEdit
+                ? t("edit") + " " + t("payment_category")
+                : t("add") + " " + t("payment_category")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -429,107 +425,108 @@ pyc_status:paymentCategory.pyc_status,
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('pyc_name_or')}</Label>
-                      <Input
-                        name='pyc_name_or'
-                        type='text'
-                        placeholder={t('pyc_name_or')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pyc_name_or || ''}
-                        invalid={
-                          validation.touched.pyc_name_or &&
-                          validation.errors.pyc_name_or
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pyc_name_or &&
-                      validation.errors.pyc_name_or ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pyc_name_or}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pyc_name_am')}</Label>
-                      <Input
-                        name='pyc_name_am'
-                        type='text'
-                        placeholder={t('pyc_name_am')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pyc_name_am || ''}
-                        invalid={
-                          validation.touched.pyc_name_am &&
-                          validation.errors.pyc_name_am
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pyc_name_am &&
-                      validation.errors.pyc_name_am ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pyc_name_am}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pyc_name_en')}</Label>
-                      <Input
-                        name='pyc_name_en'
-                        type='text'
-                        placeholder={t('pyc_name_en')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pyc_name_en || ''}
-                        invalid={
-                          validation.touched.pyc_name_en &&
-                          validation.errors.pyc_name_en
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pyc_name_en &&
-                      validation.errors.pyc_name_en ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pyc_name_en}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pyc_description')}</Label>
-                      <Input
-                        name='pyc_description'
-                        type='textarea'
-                        placeholder={t('pyc_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pyc_description || ''}
-                        invalid={
-                          validation.touched.pyc_description &&
-                          validation.errors.pyc_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pyc_description &&
-                      validation.errors.pyc_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pyc_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pyc_name_or")}</Label>
+                    <Input
+                      name="pyc_name_or"
+                      type="text"
+                      placeholder={t("pyc_name_or")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pyc_name_or || ""}
+                      invalid={
+                        validation.touched.pyc_name_or &&
+                        validation.errors.pyc_name_or
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pyc_name_or &&
+                    validation.errors.pyc_name_or ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pyc_name_or}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pyc_name_am")}</Label>
+                    <Input
+                      name="pyc_name_am"
+                      type="text"
+                      placeholder={t("pyc_name_am")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pyc_name_am || ""}
+                      invalid={
+                        validation.touched.pyc_name_am &&
+                        validation.errors.pyc_name_am
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pyc_name_am &&
+                    validation.errors.pyc_name_am ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pyc_name_am}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pyc_name_en")}</Label>
+                    <Input
+                      name="pyc_name_en"
+                      type="text"
+                      placeholder={t("pyc_name_en")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pyc_name_en || ""}
+                      invalid={
+                        validation.touched.pyc_name_en &&
+                        validation.errors.pyc_name_en
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pyc_name_en &&
+                    validation.errors.pyc_name_en ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pyc_name_en}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pyc_description")}</Label>
+                    <Input
+                      name="pyc_description"
+                      type="textarea"
+                      placeholder={t("pyc_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pyc_description || ""}
+                      invalid={
+                        validation.touched.pyc_description &&
+                        validation.errors.pyc_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.pyc_description &&
+                    validation.errors.pyc_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pyc_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {addPaymentCategory.isPending || updatePaymentCategory.isPending ? (
+                      {addPaymentCategory.isPending ||
+                      updatePaymentCategory.isPending ? (
                         <Button
                           color="success"
                           type="submit"

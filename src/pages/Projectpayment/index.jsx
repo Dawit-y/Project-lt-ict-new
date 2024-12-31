@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -8,21 +7,15 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
-//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 
 import {
-  getProjectPayment as onGetProjectPayment,
-  addProjectPayment as onAddProjectPayment,
-  updateProjectPayment as onUpdateProjectPayment,
-  deleteProjectPayment as onDeleteProjectPayment,
-} from "../../store/projectpayment/actions";
-
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
+  useFetchProjectPayments,
+  useAddProjectPayment,
+  useUpdateProjectPayment,
+  useDeleteProjectPayment,
+} from "../../queries/projectpayment_query";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -43,7 +36,7 @@ import {
   InputGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import Flatpickr from "react-flatpickr";
 import { formatDate } from "../../utils/commonMethods";
@@ -56,7 +49,8 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectPaymentModel = (props) => {
-  const { passedId } = props;
+  const { passedId, isActive } = props;
+  const param = { project_id: passedId };
   const { t } = useTranslation();
 
   const [modal, setModal] = useState(false);
@@ -64,9 +58,63 @@ const ProjectPaymentModel = (props) => {
   const [isEdit, setIsEdit] = useState(false);
 
   const [projectPayment, setProjectPayment] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
-  const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
-  //START FOREIGN CALLS
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+
+  const { data, isLoading, error, isError, refetch } = useFetchProjectPayments(
+    param,
+    isActive
+  );
+
+  const addProjectPayment = useAddProjectPayment();
+  const updateProjectPayment = useUpdateProjectPayment();
+  const deleteProjectPayment = useDeleteProjectPayment();
+
+  const handleAddProjectPayment = async (newProjectPayment) => {
+    try {
+      await addProjectPayment.mutateAsync(newProjectPayment);
+
+      toast.success(`Data added successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error("Failed to add data", {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+
+  const handleUpdateProjectPayment = async (data) => {
+    try {
+      await updateProjectPayment.mutateAsync(data);
+      toast.success(`data updated successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error(`Failed to update Data`, {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+
+  const handleDeleteProjectPayment = async () => {
+    if (projectPayment && projectPayment.prp_id) {
+      try {
+        const id = projectPayment.prp_id;
+        await deleteProjectPayment.mutateAsync(id);
+        toast.success(`Data deleted successfully`, {
+          autoClose: 2000,
+        });
+      } catch (error) {
+        toast.error(`Failed to delete Data`, {
+          autoClose: 2000,
+        });
+      }
+      setDeleteModal(false);
+    }
+  };
 
   // validation
   const validation = useFormik({
@@ -121,11 +169,11 @@ const ProjectPaymentModel = (props) => {
           is_editable: values.is_editable,
         };
         // update ProjectPayment
-        dispatch(onUpdateProjectPayment(updateProjectPayment));
+        handleUpdateProjectPayment(updateProjectPayment);
         validation.resetForm();
       } else {
         const newProjectPayment = {
-          prp_project_id: values.prp_project_id,
+          prp_project_id: passedId,
           prp_type: values.prp_type,
           prp_payment_date_et: values.prp_payment_date_et,
           prp_payment_date_gc: values.prp_payment_date_gc,
@@ -135,50 +183,14 @@ const ProjectPaymentModel = (props) => {
           prp_status: values.prp_status,
         };
         // save new ProjectPayments
-        dispatch(onAddProjectPayment(newProjectPayment));
+        handleAddProjectPayment(newProjectPayment);
         validation.resetForm();
       }
     },
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-  const dispatch = useDispatch();
-  // Fetch ProjectPayment on component mount
-  useEffect(() => {
-    dispatch(onGetProjectPayment(passedId));
-  }, [dispatch]);
 
-  const projectPaymentProperties = createSelector(
-    (state) => state.ProjectPaymentR, // this is geting from  reducer
-    (ProjectPaymentReducer) => ({
-      // this is from Project.reducer
-      projectPayment: ProjectPaymentReducer.projectPayment,
-      loading: ProjectPaymentReducer.loading,
-      update_loading: ProjectPaymentReducer.update_loading,
-    })
-  );
-
-  const {
-    projectPayment: { data, previledge },
-    loading,
-    update_loading,
-  } = useSelector(projectPaymentProperties);
-
-  useEffect(() => {
-    console.log("update_loading in useEffect", update_loading);
-    setModal(false);
-  }, [update_loading]);
-
-  const selectSearchProperties = createSelector(
-    (state) => state.search,
-    (search) => ({
-      results: search.results,
-    })
-  );
-
-  const { results } = useSelector(selectSearchProperties);
-
-  const [isLoading, setLoading] = useState(loading);
   useEffect(() => {
     setProjectPayment(data);
   }, [data]);
@@ -230,12 +242,6 @@ const ProjectPaymentModel = (props) => {
     setDeleteModal(true);
   };
 
-  const handleDeleteProjectPayment = () => {
-    if (projectPayment && projectPayment.prp_id) {
-      dispatch(onDeleteProjectPayment(projectPayment.prp_id));
-      setDeleteModal(false);
-    }
-  };
   const handleProjectPaymentClicks = () => {
     setIsEdit(false);
     setProjectPayment("");
@@ -347,7 +353,10 @@ const ProjectPaymentModel = (props) => {
         },
       },
     ];
-    if (previledge?.is_role_editable && previledge?.is_role_deletable) {
+    if (
+      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_deletable
+    ) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -432,15 +441,11 @@ const ProjectPaymentModel = (props) => {
         show={deleteModal}
         onDeleteClick={handleDeleteProjectPayment}
         onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteProjectPayment.isPending}
       />
 
       <div className={passedId ? "" : "page-content"}>
         <div className="container-fluid1">
-          {/* <Breadcrumbs
-            title={t("project_payment")}
-            breadcrumbItem={t("project_payment")}
-          /> */}
-
           {passedId ? null : (
             <Breadcrumbs
               title={t("project_payment")}
@@ -449,11 +454,11 @@ const ProjectPaymentModel = (props) => {
           )}
 
           {isLoading || searchLoading ? (
-            <Spinners setLoading={setLoading} />
+            <Spinners />
           ) : (
             <TableContainer
               columns={columns}
-              data={showSearchResults ? results : data}
+              data={showSearchResults ? results : data?.data || []}
               isGlobalFilter={true}
               isAddButton={true}
               isCustomPageSize={true}
@@ -479,12 +484,6 @@ const ProjectPaymentModel = (props) => {
                 onSubmit={(e) => {
                   e.preventDefault();
                   validation.handleSubmit();
-                  const modalCallback = () => setModal(false);
-                  if (isEdit) {
-                    onUpdateProjectPayment(validation.values, modalCallback);
-                  } else {
-                    onAddProjectPayment(validation.values, modalCallback);
-                  }
                   return false;
                 }}
               >
@@ -507,7 +506,7 @@ const ProjectPaymentModel = (props) => {
                           : false
                       }
                     >
-                      <option value="">Select Type</option>
+                      <option value="">Select Payment Type</option>
                       <option value="Advance">{t("Advance")}</option>
                       <option value="Interim">{t("Interim")}</option>
                       <option value="Final">{t("Final")}</option>
@@ -718,14 +717,19 @@ const ProjectPaymentModel = (props) => {
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {update_loading ? (
+                      {addProjectPayment.isPending ||
+                      updateProjectPayment.isPending ? (
                         <Button
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addProjectPayment.isPending ||
+                            updateProjectPayment.isPending ||
+                            !validation.dirty
+                          }
                         >
-                          <Spinner size={"sm"} color="success" />
+                          <Spinner size={"sm"} color="light" className="me-2" />
                           {t("Save")}
                         </Button>
                       ) : (
@@ -733,7 +737,11 @@ const ProjectPaymentModel = (props) => {
                           color="success"
                           type="submit"
                           className="save-user"
-                          disabled={update_loading || !validation.dirty}
+                          disabled={
+                            addProjectPayment.isPending ||
+                            updateProjectPayment.isPending ||
+                            !validation.dirty
+                          }
                         >
                           {t("Save")}
                         </Button>

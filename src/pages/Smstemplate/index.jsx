@@ -41,11 +41,15 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -68,16 +72,16 @@ const SmsTemplateModel = () => {
   const addSmsTemplate = useAddSmsTemplate();
   const updateSmsTemplate = useUpdateSmsTemplate();
   const deleteSmsTemplate = useDeleteSmsTemplate();
-//START CRUD
+  //START CRUD
   const handleAddSmsTemplate = async (data) => {
     try {
       await addSmsTemplate.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.success(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -86,12 +90,12 @@ const SmsTemplateModel = () => {
   const handleUpdateSmsTemplate = async (data) => {
     try {
       await updateSmsTemplate.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
+      toast.success(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -102,11 +106,11 @@ const SmsTemplateModel = () => {
       try {
         const id = smsTemplate.smt_id;
         await deleteSmsTemplate.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t('delete_failure'), {
+        toast.success(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -115,39 +119,37 @@ const SmsTemplateModel = () => {
   };
   //END CRUD
   //START FOREIGN CALLS
-  
-  
+
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     smt_template_name:(smsTemplate && smsTemplate.smt_template_name) || "", 
-smt_template_content:(smsTemplate && smsTemplate.smt_template_content) || "", 
-smt_description:(smsTemplate && smsTemplate.smt_description) || "", 
-smt_status:(smsTemplate && smsTemplate.smt_status) || "", 
+      smt_template_name: (smsTemplate && smsTemplate.smt_template_name) || "",
+      smt_template_content:
+        (smsTemplate && smsTemplate.smt_template_content) || "",
+      smt_description: (smsTemplate && smsTemplate.smt_description) || "",
+      smt_status: (smsTemplate && smsTemplate.smt_status) || "",
 
-is_deletable: (smsTemplate && smsTemplate.is_deletable) || 1,
-is_editable: (smsTemplate && smsTemplate.is_editable) || 1
+      is_deletable: (smsTemplate && smsTemplate.is_deletable) || 1,
+      is_editable: (smsTemplate && smsTemplate.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      smt_template_name: alphanumericValidation(3,200,true),
-smt_template_content: alphanumericValidation(50,200,true),
-smt_description: alphanumericValidation(3,200,false),
-
+      smt_template_name: alphanumericValidation(3, 200, true),
+      smt_template_content: alphanumericValidation(50, 200, true),
+      smt_description: alphanumericValidation(3, 200, false),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateSmsTemplate = {
-          smt_id: smsTemplate ? smsTemplate.smt_id : 0,
-          smt_id:smsTemplate.smt_id, 
-smt_template_name:values.smt_template_name, 
-smt_template_content:values.smt_template_content, 
-smt_description:values.smt_description, 
-smt_status:values.smt_status, 
+          smt_id: smsTemplate?.smt_id,
+          smt_template_name: values.smt_template_name,
+          smt_template_content: values.smt_template_content,
+          smt_description: values.smt_description,
+          smt_status: values.smt_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -156,11 +158,10 @@ smt_status:values.smt_status,
         handleUpdateSmsTemplate(updateSmsTemplate);
       } else {
         const newSmsTemplate = {
-          smt_template_name:values.smt_template_name, 
-smt_template_content:values.smt_template_content, 
-smt_description:values.smt_description, 
-smt_status:values.smt_status, 
-
+          smt_template_name: values.smt_template_name,
+          smt_template_content: values.smt_template_content,
+          smt_description: values.smt_description,
+          smt_status: values.smt_status,
         };
         // save new SmsTemplate
         handleAddSmsTemplate(newSmsTemplate);
@@ -174,30 +175,30 @@ smt_status:values.smt_status,
   useEffect(() => {
     setSmsTemplate(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setSmsTemplate(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setSmsTemplate(null);
+      setSmsTemplate(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleSmsTemplateClick = (arg) => {
+  const handleSmsTemplateClick = (arg) => {
     const smsTemplate = arg;
     // console.log("handleSmsTemplateClick", smsTemplate);
     setSmsTemplate({
-      smt_id:smsTemplate.smt_id, 
-smt_template_name:smsTemplate.smt_template_name, 
-smt_template_content:smsTemplate.smt_template_content, 
-smt_description:smsTemplate.smt_description, 
-smt_status:smsTemplate.smt_status, 
+      smt_id: smsTemplate.smt_id,
+      smt_template_name: smsTemplate.smt_template_name,
+      smt_template_content: smsTemplate.smt_template_content,
+      smt_description: smsTemplate.smt_description,
+      smt_status: smsTemplate.smt_status,
 
       is_deletable: smsTemplate.is_deletable,
       is_editable: smsTemplate.is_editable,
@@ -217,8 +218,8 @@ smt_status:smsTemplate.smt_status,
     setIsEdit(false);
     setSmsTemplate("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -227,43 +228,42 @@ smt_status:smsTemplate.smt_status,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'smt_template_name',
+        header: "",
+        accessorKey: "smt_template_name",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.smt_template_name, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'smt_template_content',
+      },
+      {
+        header: "",
+        accessorKey: "smt_template_content",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.smt_template_content, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'smt_description',
+      },
+      {
+        header: "",
+        accessorKey: "smt_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.smt_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.smt_description, 30) || "-"}
             </span>
           );
         },
@@ -290,9 +290,9 @@ smt_status:smsTemplate.smt_status,
         },
       },
     ];
-     if (
-      data?.previledge?.is_role_editable==1 ||
-      data?.previledge?.is_role_deletable==1
+    if (
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -302,12 +302,12 @@ smt_status:smsTemplate.smt_status,
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable==1 && (
+              {cellProps.row.original.is_editable == 1 && (
                 <Link
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleSmsTemplateClick(data);
                   }}
                 >
@@ -318,7 +318,7 @@ smt_status:smsTemplate.smt_status,
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable==1 && (
+              {cellProps.row.original.is_deletable == 1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -354,7 +354,7 @@ smt_status:smsTemplate.smt_status,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteSmsTemplate}
+        onDeleteClick={handleDeleteSmsTemplate}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteSmsTemplate.isPending}
       />
@@ -389,14 +389,14 @@ smt_status:smsTemplate.smt_status,
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add==1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleSmsTemplateClicks}
                       isPagination={true}
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("sms_template")}
+                      buttonName={t("add") + " " + t("sms_template")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -409,7 +409,9 @@ smt_status:smsTemplate.smt_status,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("sms_template")) : (t("add") +" "+t("sms_template"))}
+              {!!isEdit
+                ? t("edit") + " " + t("sms_template")
+                : t("add") + " " + t("sms_template")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -420,83 +422,84 @@ smt_status:smsTemplate.smt_status,
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('smt_template_name')}</Label>
-                      <Input
-                        name='smt_template_name'
-                        type='text'
-                        placeholder={t('smt_template_name')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.smt_template_name || ''}
-                        invalid={
-                          validation.touched.smt_template_name &&
-                          validation.errors.smt_template_name
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.smt_template_name &&
-                      validation.errors.smt_template_name ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.smt_template_name}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('smt_template_content')}</Label>
-                      <Input
-                        name='smt_template_content'
-                        type='textarea'
-                        placeholder={t('smt_template_content')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.smt_template_content || ''}
-                        invalid={
-                          validation.touched.smt_template_content &&
-                          validation.errors.smt_template_content
-                            ? true
-                            : false
-                        }
-                        maxLength={200}
-                      />
-                      {validation.touched.smt_template_content &&
-                      validation.errors.smt_template_content ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.smt_template_content}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('smt_description')}</Label>
-                      <Input
-                        name='smt_description'
-                        type='textarea'
-                        placeholder={t('smt_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.smt_description || ''}
-                        invalid={
-                          validation.touched.smt_description &&
-                          validation.errors.smt_description
-                            ? true
-                            : false
-                        }
-                        maxLength={425}
-                      />
-                      {validation.touched.smt_description &&
-                      validation.errors.smt_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.smt_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("smt_template_name")}</Label>
+                    <Input
+                      name="smt_template_name"
+                      type="text"
+                      placeholder={t("smt_template_name")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.smt_template_name || ""}
+                      invalid={
+                        validation.touched.smt_template_name &&
+                        validation.errors.smt_template_name
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.smt_template_name &&
+                    validation.errors.smt_template_name ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.smt_template_name}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("smt_template_content")}</Label>
+                    <Input
+                      name="smt_template_content"
+                      type="textarea"
+                      placeholder={t("smt_template_content")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.smt_template_content || ""}
+                      invalid={
+                        validation.touched.smt_template_content &&
+                        validation.errors.smt_template_content
+                          ? true
+                          : false
+                      }
+                      maxLength={200}
+                    />
+                    {validation.touched.smt_template_content &&
+                    validation.errors.smt_template_content ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.smt_template_content}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("smt_description")}</Label>
+                    <Input
+                      name="smt_description"
+                      type="textarea"
+                      placeholder={t("smt_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.smt_description || ""}
+                      invalid={
+                        validation.touched.smt_description &&
+                        validation.errors.smt_description
+                          ? true
+                          : false
+                      }
+                      maxLength={425}
+                    />
+                    {validation.touched.smt_description &&
+                    validation.errors.smt_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.smt_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {addSmsTemplate.isPending || updateSmsTemplate.isPending ? (
+                      {addSmsTemplate.isPending ||
+                      updateSmsTemplate.isPending ? (
                         <Button
                           color="success"
                           type="submit"

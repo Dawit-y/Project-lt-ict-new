@@ -35,7 +35,6 @@ const App_tree = () => {
   const { t } = useTranslation();
 
   const { data, isLoading, isError, error, refetch } = useFetchFolders();
-  console.log("data", data);
   const addFolder = useAddFolder();
   const updateFolder = useRenameFolder();
   const deleteFolder = useDeleteFolder();

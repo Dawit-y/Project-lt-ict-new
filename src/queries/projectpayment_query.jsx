@@ -9,14 +9,15 @@ import {
 const PROJECT_PAYMENT_QUERY_KEY = ["projectpayment"];
 
 // Fetch project_payment
-export const useFetchProjectPayments = () => {
+export const useFetchProjectPayments = (param = {}, isActive) => {
   return useQuery({
-    queryKey: PROJECT_PAYMENT_QUERY_KEY,
-    queryFn: () => getProjectPayment(),
+    queryKey: [...PROJECT_PAYMENT_QUERY_KEY, "fetch", param],
+    queryFn: () => getProjectPayment(param),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: isActive,
   });
 };
 
@@ -40,16 +41,23 @@ export const useAddProjectPayment = () => {
   return useMutation({
     mutationFn: addProjectPayment,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( PROJECT_PAYMENT_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_PAYMENT_QUERY_KEY,
+      });
+
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        });
       });
     },
   });
@@ -60,18 +68,23 @@ export const useUpdateProjectPayment = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateProjectPayment,
-    onSuccess: (updatedProjectPayment) => {
-      queryClient.setQueryData(PROJECT_PAYMENT_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
+    onSuccess: (updatedData) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_PAYMENT_QUERY_KEY,
+      });
 
-        return {
-          ...oldData,
-          data: oldData.data.map((ProjectPaymentData) =>
-            ProjectPaymentData.prp_id === updatedProjectPayment.data.prp_id
-              ? { ...ProjectPaymentData, ...updatedProjectPayment.data }
-              : ProjectPaymentData
-          ),
-        };
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((data) =>
+              data.prp_id === updatedData.data.prp_id
+                ? { ...data, ...updatedData.data }
+                : data
+            ),
+          };
+        });
       });
     },
   });
@@ -82,15 +95,21 @@ export const useDeleteProjectPayment = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteProjectPayment,
-    onSuccess: (deletedData) => {
-      queryClient.setQueryData(PROJECT_PAYMENT_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (ProjectPaymentData) => ProjectPaymentData.prp_id !== parseInt(deletedData.deleted_id)
-          ),
-        };
+    onSuccess: (deletedData, variable) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_PAYMENT_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (dept) => dept.prp_id !== parseInt(variable)
+            ),
+          };
+        });
       });
     },
   });

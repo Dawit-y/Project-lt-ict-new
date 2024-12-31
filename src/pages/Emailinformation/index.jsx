@@ -41,7 +41,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -63,20 +63,21 @@ const EmailInformationModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useFetchEmailInformations();
+  const { data, isLoading, error, isError, refetch } =
+    useFetchEmailInformations();
   const addEmailInformation = useAddEmailInformation();
   const updateEmailInformation = useUpdateEmailInformation();
   const deleteEmailInformation = useDeleteEmailInformation();
-//START CRUD
+  //START CRUD
   const handleAddEmailInformation = async (data) => {
     try {
       await addEmailInformation.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.success(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -85,12 +86,12 @@ const EmailInformationModel = () => {
   const handleUpdateEmailInformation = async (data) => {
     try {
       await updateEmailInformation.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
+      toast.success(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -101,11 +102,11 @@ const EmailInformationModel = () => {
       try {
         const id = emailInformation.emi_id;
         await deleteEmailInformation.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t('delete_failure'), {
+        toast.success(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -114,44 +115,44 @@ const EmailInformationModel = () => {
   };
   //END CRUD
   //START FOREIGN CALLS
-  
-  
+
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     emi_email_template_id:(emailInformation && emailInformation.emi_email_template_id) || "", 
-emi_sent_to:(emailInformation && emailInformation.emi_sent_to) || "", 
-emi_sent_date:(emailInformation && emailInformation.emi_sent_date) || "", 
-emi_email_content:(emailInformation && emailInformation.emi_email_content) || "", 
-emi_description:(emailInformation && emailInformation.emi_description) || "", 
-emi_status:(emailInformation && emailInformation.emi_status) || "", 
+      emi_email_template_id:
+        (emailInformation && emailInformation.emi_email_template_id) || "",
+      emi_sent_to: (emailInformation && emailInformation.emi_sent_to) || "",
+      emi_sent_date: (emailInformation && emailInformation.emi_sent_date) || "",
+      emi_email_content:
+        (emailInformation && emailInformation.emi_email_content) || "",
+      emi_description:
+        (emailInformation && emailInformation.emi_description) || "",
+      emi_status: (emailInformation && emailInformation.emi_status) || "",
 
-is_deletable: (emailInformation && emailInformation.is_deletable) || 1,
-is_editable: (emailInformation && emailInformation.is_editable) || 1
+      is_deletable: (emailInformation && emailInformation.is_deletable) || 1,
+      is_editable: (emailInformation && emailInformation.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      emi_email_template_id: Yup.string().required(t('emi_email_template_id')),
-emi_sent_to: Yup.string().required(t('emi_sent_to')),
-emi_sent_date: Yup.string().required(t('emi_sent_date')),
-emi_email_content: Yup.string().required(t('emi_email_content'))
-
+      emi_email_template_id: Yup.string().required(t("emi_email_template_id")),
+      emi_sent_to: Yup.string().required(t("emi_sent_to")),
+      emi_sent_date: Yup.string().required(t("emi_sent_date")),
+      emi_email_content: Yup.string().required(t("emi_email_content")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateEmailInformation = {
-          emi_id: emailInformation ? emailInformation.emi_id : 0,
-          emi_id:emailInformation.emi_id, 
-emi_email_template_id:values.emi_email_template_id, 
-emi_sent_to:values.emi_sent_to, 
-emi_sent_date:values.emi_sent_date, 
-emi_email_content:values.emi_email_content, 
-emi_description:values.emi_description, 
-emi_status:values.emi_status, 
+          emi_id: emailInformation?.emi_id,
+          emi_email_template_id: values.emi_email_template_id,
+          emi_sent_to: values.emi_sent_to,
+          emi_sent_date: values.emi_sent_date,
+          emi_email_content: values.emi_email_content,
+          emi_description: values.emi_description,
+          emi_status: values.emi_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -160,13 +161,12 @@ emi_status:values.emi_status,
         handleUpdateEmailInformation(updateEmailInformation);
       } else {
         const newEmailInformation = {
-          emi_email_template_id:values.emi_email_template_id, 
-emi_sent_to:values.emi_sent_to, 
-emi_sent_date:values.emi_sent_date, 
-emi_email_content:values.emi_email_content, 
-emi_description:values.emi_description, 
-emi_status:values.emi_status, 
-
+          emi_email_template_id: values.emi_email_template_id,
+          emi_sent_to: values.emi_sent_to,
+          emi_sent_date: values.emi_sent_date,
+          emi_email_content: values.emi_email_content,
+          emi_description: values.emi_description,
+          emi_status: values.emi_status,
         };
         // save new EmailInformation
         handleAddEmailInformation(newEmailInformation);
@@ -180,32 +180,32 @@ emi_status:values.emi_status,
   useEffect(() => {
     setEmailInformation(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setEmailInformation(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setEmailInformation(null);
+      setEmailInformation(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleEmailInformationClick = (arg) => {
+  const handleEmailInformationClick = (arg) => {
     const emailInformation = arg;
     // console.log("handleEmailInformationClick", emailInformation);
     setEmailInformation({
-      emi_id:emailInformation.emi_id, 
-emi_email_template_id:emailInformation.emi_email_template_id, 
-emi_sent_to:emailInformation.emi_sent_to, 
-emi_sent_date:emailInformation.emi_sent_date, 
-emi_email_content:emailInformation.emi_email_content, 
-emi_description:emailInformation.emi_description, 
-emi_status:emailInformation.emi_status, 
+      emi_id: emailInformation.emi_id,
+      emi_email_template_id: emailInformation.emi_email_template_id,
+      emi_sent_to: emailInformation.emi_sent_to,
+      emi_sent_date: emailInformation.emi_sent_date,
+      emi_email_content: emailInformation.emi_email_content,
+      emi_description: emailInformation.emi_description,
+      emi_status: emailInformation.emi_status,
 
       is_deletable: emailInformation.is_deletable,
       is_editable: emailInformation.is_editable,
@@ -225,8 +225,8 @@ emi_status:emailInformation.emi_status,
     setIsEdit(false);
     setEmailInformation("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -235,57 +235,55 @@ emi_status:emailInformation.emi_status,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'emi_email_template_id',
+        header: "",
+        accessorKey: "emi_email_template_id",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.emi_email_template_id, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'emi_sent_to',
+      },
+      {
+        header: "",
+        accessorKey: "emi_sent_to",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.emi_sent_to, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.emi_sent_to, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'emi_sent_date',
+      },
+      {
+        header: "",
+        accessorKey: "emi_sent_date",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.emi_sent_date, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.emi_sent_date, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'emi_email_content',
+      },
+      {
+        header: "",
+        accessorKey: "emi_email_content",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.emi_email_content, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
@@ -324,7 +322,7 @@ emi_status:emailInformation.emi_status,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteEmailInformation}
+        onDeleteClick={handleDeleteEmailInformation}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteEmailInformation.isPending}
       />
@@ -366,7 +364,7 @@ emi_status:emailInformation.emi_status,
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("email_information")}
+                      buttonName={t("add") + " " + t("email_information")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -379,7 +377,9 @@ emi_status:emailInformation.emi_status,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("email_information")) : (t("add") +" "+t("email_information"))}
+              {!!isEdit
+                ? t("edit") + " " + t("email_information")
+                : t("add") + " " + t("email_information")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -390,131 +390,132 @@ emi_status:emailInformation.emi_status,
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('emi_email_template_id')}</Label>
-                      <Input
-                        name='emi_email_template_id'
-                        type='text'
-                        placeholder={t('emi_email_template_id')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.emi_email_template_id || ''}
-                        invalid={
-                          validation.touched.emi_email_template_id &&
-                          validation.errors.emi_email_template_id
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.emi_email_template_id &&
-                      validation.errors.emi_email_template_id ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.emi_email_template_id}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('emi_sent_to')}</Label>
-                      <Input
-                        name='emi_sent_to'
-                        type='text'
-                        placeholder={t('emi_sent_to')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.emi_sent_to || ''}
-                        invalid={
-                          validation.touched.emi_sent_to &&
-                          validation.errors.emi_sent_to
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.emi_sent_to &&
-                      validation.errors.emi_sent_to ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.emi_sent_to}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('emi_sent_date')}</Label>
-                      <Input
-                        name='emi_sent_date'
-                        type='text'
-                        placeholder={t('emi_sent_date')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.emi_sent_date || ''}
-                        invalid={
-                          validation.touched.emi_sent_date &&
-                          validation.errors.emi_sent_date
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.emi_sent_date &&
-                      validation.errors.emi_sent_date ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.emi_sent_date}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('emi_email_content')}</Label>
-                      <Input
-                        name='emi_email_content'
-                        type='textarea'
-                        placeholder={t('emi_email_content')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.emi_email_content || ''}
-                        invalid={
-                          validation.touched.emi_email_content &&
-                          validation.errors.emi_email_content
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.emi_email_content &&
-                      validation.errors.emi_email_content ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.emi_email_content}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('emi_description')}</Label>
-                      <Input
-                        name='emi_description'
-                        type='textarea'
-                        placeholder={t('emi_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.emi_description || ''}
-                        invalid={
-                          validation.touched.emi_description &&
-                          validation.errors.emi_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.emi_description &&
-                      validation.errors.emi_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.emi_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("emi_email_template_id")}</Label>
+                    <Input
+                      name="emi_email_template_id"
+                      type="text"
+                      placeholder={t("emi_email_template_id")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.emi_email_template_id || ""}
+                      invalid={
+                        validation.touched.emi_email_template_id &&
+                        validation.errors.emi_email_template_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.emi_email_template_id &&
+                    validation.errors.emi_email_template_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.emi_email_template_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("emi_sent_to")}</Label>
+                    <Input
+                      name="emi_sent_to"
+                      type="text"
+                      placeholder={t("emi_sent_to")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.emi_sent_to || ""}
+                      invalid={
+                        validation.touched.emi_sent_to &&
+                        validation.errors.emi_sent_to
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.emi_sent_to &&
+                    validation.errors.emi_sent_to ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.emi_sent_to}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("emi_sent_date")}</Label>
+                    <Input
+                      name="emi_sent_date"
+                      type="text"
+                      placeholder={t("emi_sent_date")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.emi_sent_date || ""}
+                      invalid={
+                        validation.touched.emi_sent_date &&
+                        validation.errors.emi_sent_date
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.emi_sent_date &&
+                    validation.errors.emi_sent_date ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.emi_sent_date}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("emi_email_content")}</Label>
+                    <Input
+                      name="emi_email_content"
+                      type="textarea"
+                      placeholder={t("emi_email_content")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.emi_email_content || ""}
+                      invalid={
+                        validation.touched.emi_email_content &&
+                        validation.errors.emi_email_content
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.emi_email_content &&
+                    validation.errors.emi_email_content ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.emi_email_content}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("emi_description")}</Label>
+                    <Input
+                      name="emi_description"
+                      type="textarea"
+                      placeholder={t("emi_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.emi_description || ""}
+                      invalid={
+                        validation.touched.emi_description &&
+                        validation.errors.emi_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.emi_description &&
+                    validation.errors.emi_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.emi_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {addEmailInformation.isPending || updateEmailInformation.isPending ? (
+                      {addEmailInformation.isPending ||
+                      updateEmailInformation.isPending ? (
                         <Button
                           color="success"
                           type="submit"

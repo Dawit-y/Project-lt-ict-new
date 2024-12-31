@@ -41,11 +41,15 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -68,16 +72,16 @@ const EmailTemplateModel = () => {
   const addEmailTemplate = useAddEmailTemplate();
   const updateEmailTemplate = useUpdateEmailTemplate();
   const deleteEmailTemplate = useDeleteEmailTemplate();
-//START CRUD
+  //START CRUD
   const handleAddEmailTemplate = async (data) => {
     try {
       await addEmailTemplate.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.success(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -86,12 +90,12 @@ const EmailTemplateModel = () => {
   const handleUpdateEmailTemplate = async (data) => {
     try {
       await updateEmailTemplate.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
+      toast.success(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -102,11 +106,11 @@ const EmailTemplateModel = () => {
       try {
         const id = emailTemplate.emt_id;
         await deleteEmailTemplate.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t('delete_failure'), {
+        toast.success(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -115,39 +119,38 @@ const EmailTemplateModel = () => {
   };
   //END CRUD
   //START FOREIGN CALLS
-  
-  
+
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
 
     initialValues: {
-     emt_template_name:(emailTemplate && emailTemplate.emt_template_name) || "", 
-emt_template_content:(emailTemplate && emailTemplate.emt_template_content) || "", 
-emt_description:(emailTemplate && emailTemplate.emt_description) || "", 
-emt_status:(emailTemplate && emailTemplate.emt_status) || "", 
+      emt_template_name:
+        (emailTemplate && emailTemplate.emt_template_name) || "",
+      emt_template_content:
+        (emailTemplate && emailTemplate.emt_template_content) || "",
+      emt_description: (emailTemplate && emailTemplate.emt_description) || "",
+      emt_status: (emailTemplate && emailTemplate.emt_status) || "",
 
-is_deletable: (emailTemplate && emailTemplate.is_deletable) || 1,
-is_editable: (emailTemplate && emailTemplate.is_editable) || 1
+      is_deletable: (emailTemplate && emailTemplate.is_deletable) || 1,
+      is_editable: (emailTemplate && emailTemplate.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      emt_template_name: alphanumericValidation(3,200,true),
-emt_template_content: alphanumericValidation(50,200,true),
-emt_description: alphanumericValidation(3,425,false),
-
+      emt_template_name: alphanumericValidation(3, 200, true),
+      emt_template_content: alphanumericValidation(50, 200, true),
+      emt_description: alphanumericValidation(3, 425, false),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateEmailTemplate = {
-          emt_id: emailTemplate ? emailTemplate.emt_id : 0,
-          emt_id:emailTemplate.emt_id, 
-emt_template_name:values.emt_template_name, 
-emt_template_content:values.emt_template_content, 
-emt_description:values.emt_description, 
-emt_status:values.emt_status, 
+          emt_id: emailTemplate?.emt_id,
+          emt_template_name: values.emt_template_name,
+          emt_template_content: values.emt_template_content,
+          emt_description: values.emt_description,
+          emt_status: values.emt_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -156,11 +159,10 @@ emt_status:values.emt_status,
         handleUpdateEmailTemplate(updateEmailTemplate);
       } else {
         const newEmailTemplate = {
-          emt_template_name:values.emt_template_name, 
-emt_template_content:values.emt_template_content, 
-emt_description:values.emt_description, 
-emt_status:values.emt_status, 
-
+          emt_template_name: values.emt_template_name,
+          emt_template_content: values.emt_template_content,
+          emt_description: values.emt_description,
+          emt_status: values.emt_status,
         };
         // save new EmailTemplate
         handleAddEmailTemplate(newEmailTemplate);
@@ -174,30 +176,30 @@ emt_status:values.emt_status,
   useEffect(() => {
     setEmailTemplate(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setEmailTemplate(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setEmailTemplate(null);
+      setEmailTemplate(null);
     } else {
       setModal(true);
     }
   };
 
-   const handleEmailTemplateClick = (arg) => {
+  const handleEmailTemplateClick = (arg) => {
     const emailTemplate = arg;
     // console.log("handleEmailTemplateClick", emailTemplate);
     setEmailTemplate({
-      emt_id:emailTemplate.emt_id, 
-emt_template_name:emailTemplate.emt_template_name, 
-emt_template_content:emailTemplate.emt_template_content, 
-emt_description:emailTemplate.emt_description, 
-emt_status:emailTemplate.emt_status, 
+      emt_id: emailTemplate.emt_id,
+      emt_template_name: emailTemplate.emt_template_name,
+      emt_template_content: emailTemplate.emt_template_content,
+      emt_description: emailTemplate.emt_description,
+      emt_status: emailTemplate.emt_status,
 
       is_deletable: emailTemplate.is_deletable,
       is_editable: emailTemplate.is_editable,
@@ -217,8 +219,8 @@ emt_status:emailTemplate.emt_status,
     setIsEdit(false);
     setEmailTemplate("");
     toggle();
-  }
-;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -227,43 +229,42 @@ emt_status:emailTemplate.emt_status,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'emt_template_name',
+        header: "",
+        accessorKey: "emt_template_name",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.emt_template_name, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'emt_template_content',
+      },
+      {
+        header: "",
+        accessorKey: "emt_template_content",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.emt_template_content, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'emt_description',
+      },
+      {
+        header: "",
+        accessorKey: "emt_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.emt_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.emt_description, 30) || "-"}
             </span>
           );
         },
@@ -290,9 +291,9 @@ emt_status:emailTemplate.emt_status,
         },
       },
     ];
-     if (
-      data?.previledge?.is_role_editable==1 ||
-      data?.previledge?.is_role_deletable==1
+    if (
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -302,12 +303,12 @@ emt_status:emailTemplate.emt_status,
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable==1 && (
+              {cellProps.row.original.is_editable == 1 && (
                 <Link
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleEmailTemplateClick(data);
                   }}
                 >
@@ -317,7 +318,7 @@ emt_status:emailTemplate.emt_status,
                   </UncontrolledTooltip>
                 </Link>
               )}
-              {cellProps.row.original.is_deletable==1 && (
+              {cellProps.row.original.is_deletable == 1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -351,7 +352,7 @@ emt_status:emailTemplate.emt_status,
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteEmailTemplate}
+        onDeleteClick={handleDeleteEmailTemplate}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteEmailTemplate.isPending}
       />
@@ -386,14 +387,14 @@ emt_status:emailTemplate.emt_status,
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add==1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleEmailTemplateClicks}
                       isPagination={true}
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("email_template")}
+                      buttonName={t("add") + " " + t("email_template")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -406,7 +407,9 @@ emt_status:emailTemplate.emt_status,
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("email_template")) : (t("add") +" "+t("email_template"))}
+              {!!isEdit
+                ? t("edit") + " " + t("email_template")
+                : t("add") + " " + t("email_template")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -417,83 +420,84 @@ emt_status:emailTemplate.emt_status,
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('emt_template_name')}</Label>
-                      <Input
-                        name='emt_template_name'
-                        type='text'
-                        placeholder={t('emt_template_name')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.emt_template_name || ''}
-                        invalid={
-                          validation.touched.emt_template_name &&
-                          validation.errors.emt_template_name
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.emt_template_name &&
-                      validation.errors.emt_template_name ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.emt_template_name}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('emt_template_content')}</Label>
-                      <Input
-                        name='emt_template_content'
-                        type='textarea'
-                        placeholder={t('emt_template_content')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.emt_template_content || ''}
-                        invalid={
-                          validation.touched.emt_template_content &&
-                          validation.errors.emt_template_content
-                            ? true
-                            : false
-                        }
-                        maxLength={200}
-                      />
-                      {validation.touched.emt_template_content &&
-                      validation.errors.emt_template_content ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.emt_template_content}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('emt_description')}</Label>
-                      <Input
-                        name='emt_description'
-                        type='textarea'
-                        placeholder={t('emt_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.emt_description || ''}
-                        invalid={
-                          validation.touched.emt_description &&
-                          validation.errors.emt_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.emt_description &&
-                      validation.errors.emt_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.emt_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("emt_template_name")}</Label>
+                    <Input
+                      name="emt_template_name"
+                      type="text"
+                      placeholder={t("emt_template_name")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.emt_template_name || ""}
+                      invalid={
+                        validation.touched.emt_template_name &&
+                        validation.errors.emt_template_name
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.emt_template_name &&
+                    validation.errors.emt_template_name ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.emt_template_name}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("emt_template_content")}</Label>
+                    <Input
+                      name="emt_template_content"
+                      type="textarea"
+                      placeholder={t("emt_template_content")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.emt_template_content || ""}
+                      invalid={
+                        validation.touched.emt_template_content &&
+                        validation.errors.emt_template_content
+                          ? true
+                          : false
+                      }
+                      maxLength={200}
+                    />
+                    {validation.touched.emt_template_content &&
+                    validation.errors.emt_template_content ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.emt_template_content}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("emt_description")}</Label>
+                    <Input
+                      name="emt_description"
+                      type="textarea"
+                      placeholder={t("emt_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.emt_description || ""}
+                      invalid={
+                        validation.touched.emt_description &&
+                        validation.errors.emt_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.emt_description &&
+                    validation.errors.emt_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.emt_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {addEmailTemplate.isPending || updateEmailTemplate.isPending ? (
+                      {addEmailTemplate.isPending ||
+                      updateEmailTemplate.isPending ? (
                         <Button
                           color="success"
                           type="submit"

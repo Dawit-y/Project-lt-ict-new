@@ -13,6 +13,8 @@ export const useFetchFolders = () => {
     queryFn: () => getAddressStructure(),
     staleTime: 1000 * 60 * 5, // 5 minutes
     select: (data) => buildTree(data?.data),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 };
 
