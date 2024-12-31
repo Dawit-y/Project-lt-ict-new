@@ -53,19 +53,7 @@ const EmailInformationModal = (props) => {
                     <p className="mb-2">
             {t('emi_description')}: <span className="text-primary">{transaction.emi_description}</span>
           </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('emi_status')}: <span className="text-primary">{transaction.emi_status}</span>
-          </p>
           </tr>
-
-          {transaction.is_deletable === 1 && (
-            <p className="text-danger">data is deletable</p>
-          )}
-          
-          {transaction.is_editable === 1 && (
-            <p className="text-success">Editable</p>
-          )}
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>

@@ -86,6 +86,7 @@ const TableContainer = ({
   isCustomPageSize,
   handleUserClick,
   isJobListGlobalFilter,
+  isExcelExport=true,
 }) => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -167,26 +168,26 @@ const TableContainer = ({
             placeholder={SearchPlaceholder}
           />
         )}
-        {isAddButton && (
-          <Col sm={6}>
+        <Col sm={6}>
             <div className="text-sm-end">
+        {isAddButton && (          
               <Button
                 type="button"
-                className={buttonClass}
+                className="btn-soft-success m-2"
                 onClick={handleUserClick}
               >
                 <i className="mdi mdi-plus me-1"></i> {buttonName}
-              </Button>
-              {/* add export button */}
-              <ExportToExcel
-                tableData={data}
-                tablename={buttonName.split(" ")[1]}
-              />
-            </div>
-          </Col>
+              </Button>              
         )}
+        {isExcelExport && (   
+        <ExportToExcel
+                tableData={data}
+                tablename="excel_data"
+              />
+              )}
+        </div>
+          </Col>
       </Row>
-
       <div className={divClassName ? divClassName : "table-responsive"}>
         <Table
           hover

@@ -289,20 +289,6 @@ emi_status:emailInformation.emi_status,
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'emi_description',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emi_description, 30) ||
-                '-'}
-            </span>
-          );
-        },
       },
       {
         header: t("view_detail"),
@@ -326,58 +312,6 @@ emi_status:emailInformation.emi_status,
         },
       },
     ];
-     if (
-      data?.previledge?.is_role_editable==1 ||
-      data?.previledge?.is_role_deletable==1
-    ) {
-      baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable==1 && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;                    
-                    handleEmailInformationClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-
-              {cellProps.row.original.is_deletable==1 && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-            </div>
-          );
-        },
-      });
-    }
-
     return baseColumns;
   }, [handleEmailInformationClick, toggleViewModal, onClickDelete]);
 
@@ -425,7 +359,7 @@ emi_status:emailInformation.emi_status,
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add==1}
+                      isAddButton={false}
                       isCustomPageSize={true}
                       handleUserClick={handleEmailInformationClicks}
                       isPagination={true}

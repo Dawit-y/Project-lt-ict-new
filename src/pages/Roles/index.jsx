@@ -39,7 +39,7 @@ import {
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import Permission from "../../pages/Permission";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-
+import { alphanumericValidation} from '../../utils/Validation/validation';
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -85,6 +85,7 @@ const RolesModel = () => {
       toast.success(`data updated successfully`, {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
       toast.error(`Failed to update Data`, {
         autoClose: 2000,
@@ -101,6 +102,7 @@ const RolesModel = () => {
         toast.success(`Data deleted successfully`, {
           autoClose: 2000,
         });
+        validation.resetForm();
       } catch (error) {
         toast.error(`Failed to delete Data`, {
           autoClose: 2000,
@@ -109,31 +111,25 @@ const RolesModel = () => {
       setDeleteModal(false);
     }
   };
-
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
-
     initialValues: {
       rol_name: (roles && roles.rol_name) || "",
       rol_description: (roles && roles.rol_description) || "",
       rol_status: (roles && roles.rol_status) || "",
-
       is_deletable: (roles && roles.is_deletable) || 1,
       is_editable: (roles && roles.is_editable) || 1,
     },
-
     validationSchema: Yup.object({
-      rol_name: Yup.string()
-        .required(t("rol_name"))
+      rol_name: alphanumericValidation(3,20,true)
         .test("unique-role-id", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) => item.rol_name == value && item.rol_id !== roles?.rol_id
           );
         }),
-
-      //rol_name: Yup.string().required(t("rol_name")),
+      rol_description: alphanumericValidation(3,425,false)
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -149,7 +145,6 @@ const RolesModel = () => {
         };
         // update Roles
         handleUpdateRoles(updateRoles);
-        validation.resetForm();
       } else {
         const newRoles = {
           rol_name: values.rol_name,
@@ -158,7 +153,6 @@ const RolesModel = () => {
         };
         // save new Roless
         handleAddRoles(newRoles);
-        validation.resetForm();
       }
     },
   });

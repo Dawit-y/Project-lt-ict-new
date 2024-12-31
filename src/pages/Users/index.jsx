@@ -20,6 +20,7 @@ import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import {phoneValidation, alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 import {
   useFetchUserss,
   useSearchUserss,
@@ -200,7 +201,6 @@ const UsersModel = () => {
       is_deletable: (users && users.is_deletable) || 1,
       is_editable: (users && users.is_editable) || 1,
     },
-
     validationSchema: Yup.object({
       usr_email: Yup.string()
         .required(t("usr_email"))
@@ -226,10 +226,8 @@ const UsersModel = () => {
           /[@$!%*?&#]/,
           t("Password must contain at least one special character")
         ),
-      usr_full_name: Yup.string().required(t("usr_full_name")),
-      usr_phone_number: Yup.string()
-        .required(t("usr_phone_number"))
-        .matches(/^\d{0,12}$/, t("Phone number must have 12 digits or less")),
+      usr_full_name: alphanumericValidation(3,50,true),
+      usr_phone_number: phoneValidation(true),
       usr_sector_id: Yup.string().required(t("usr_sector_id")),
       usr_department_id: Yup.string().required(t("usr_department_id")),
       usr_region_id: Yup.number().required(t("usr_region_id")),
@@ -418,7 +416,6 @@ const UsersModel = () => {
     setUsers(users);
     setDeleteModal(true);
   };
-
   const handleClick = (data) => {
     setShowCanvas(!showCanvas); // Toggle canvas visibility
     // setProjectMetaData(data);
@@ -429,11 +426,10 @@ const UsersModel = () => {
     setUsers("");
     toggle();
   };
-
   const columnDefs = useMemo(() => {
     const baseColumns = [
       {
-        headerName: "Row",
+        headerName: t("s_n"),
         valueGetter: "node.rowIndex + 1",
         width: "70",
       },
@@ -442,11 +438,10 @@ const UsersModel = () => {
         field: "usr_email",
         sortable: true,
         filter: false,
-        width: "200",
+        width: "300",
         cellRenderer: (params) =>
           truncateText(params.data.usr_email, 30) || "-",
       },
-
       {
         headerName: t("usr_full_name"),
         field: "usr_full_name",
@@ -460,16 +455,16 @@ const UsersModel = () => {
         field: "usr_phone_number",
         sortable: true,
         filter: false,
-        width: "140",
+        width: "180",
         cellRenderer: (params) =>
           truncateText(params.data.usr_phone_number, 30) || "-",
       },
       {
         headerName: t("usr_sector_id"),
-        width: "200",
         field: "sector_name",
         sortable: true,
         filter: false,
+        width: "230",
         cellRenderer: (params) =>
           sectorInformationMap[params.data.usr_sector_id],
       },
@@ -652,7 +647,7 @@ const UsersModel = () => {
                 </Col>
                 <Col sm="12" md="6" className="text-md-end">
                   <Button color="success" onClick={handleUsersClicks}>
-                    Add New
+                    {t('add')}
                   </Button>
                 </Col>
               </Row>
@@ -806,7 +801,7 @@ const UsersModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={12}
+                      maxLength={13}
                     />
                     {validation.touched.usr_phone_number &&
                     validation.errors.usr_phone_number ? (

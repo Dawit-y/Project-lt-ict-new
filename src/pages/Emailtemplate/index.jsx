@@ -45,6 +45,7 @@ import { ToastContainer,toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -131,9 +132,9 @@ is_deletable: (emailTemplate && emailTemplate.is_deletable) || 1,
 is_editable: (emailTemplate && emailTemplate.is_editable) || 1
     },
     validationSchema: Yup.object({
-      emt_template_name: Yup.string().required(t('emt_template_name')),
-emt_template_content: Yup.string().required(t('emt_template_content')),
-emt_description: Yup.string().required(t('emt_description')),
+      emt_template_name: alphanumericValidation(3,200,true),
+emt_template_content: alphanumericValidation(50,200,true),
+emt_description: alphanumericValidation(3,425,false),
 
     }),
     validateOnBlur: true,

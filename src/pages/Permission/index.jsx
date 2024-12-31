@@ -34,7 +34,7 @@ import {
 } from "reactstrap";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { toast } from "react-toastify";
-
+import { alphanumericValidation} from '../../utils/Validation/validation';
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -59,17 +59,16 @@ const PermissionModel = (props) => {
     param,
     isActive
   );
-
   const addPermission = useAddPermission();
   const updatePermission = useUpdatePermission();
   const deletePermission = useDeletePermission();
-
   const handleAddPermission = async (newPermission, handoverDocumentData) => {
     try {
       await addPermission.mutateAsync(newPermission);
       toast.success(`Data added successfully`, {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
       toast.error("Failed to add data", {
         autoClose: 2000,
@@ -77,7 +76,6 @@ const PermissionModel = (props) => {
     }
     toggle();
   };
-
   const handleUpdatePermission = async (data) => {
     try {
       await updatePermission.mutateAsync(data);
@@ -88,10 +86,10 @@ const PermissionModel = (props) => {
       toast.error(`Failed to update Data`, {
         autoClose: 2000,
       });
+      validation.resetForm();
     }
     toggle();
   };
-
   const handleDeletePermission = async () => {
     if (permission && permission.pem_id) {
       try {
@@ -108,13 +106,10 @@ const PermissionModel = (props) => {
       setDeleteModal(false);
     }
   };
-
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
-    //  selectedItem={selectedItem}
-
     initialValues: {
       pem_page_id: (permission && permission.pem_page_id) || "",
       pag_id: (permission && permission.pag_id) || "",
@@ -130,11 +125,9 @@ const PermissionModel = (props) => {
       pem_search: (permission && permission.pem_search) || "",
       pem_description: (permission && permission.pem_description) || "",
       pem_status: (permission && permission.pem_status) || "",
-
       is_deletable: (permission && permission.is_deletable) || 1,
       is_editable: (permission && permission.is_editable) || 1,
     },
-
     validationSchema: Yup.object({
       // pem_page_id: Yup.number().required(t("pem_page_id")),
       // pem_id: Yup.number().required(t("pem_role_id")),
@@ -145,8 +138,7 @@ const PermissionModel = (props) => {
       pem_delete: Yup.number().required(t("pem_delete")),
       pem_show: Yup.number().required(t("pem_show")),
       pem_search: Yup.number().required(t("pem_search")),
-      pem_description: Yup.string().required(t("pem_description")),
-      // pem_status: Yup.number().required(t("pem_status")),
+      pem_description: alphanumericValidation(3,425,false),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -168,13 +160,11 @@ const PermissionModel = (props) => {
           pem_search: values.pem_search,
           pem_description: values.pem_description,
           pem_status: values.pem_status,
-
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
         // update Permission
-        handleUpdatePermission(updatePermission);
-        validation.resetForm();
+        handleUpdatePermission(updatePermission);        
       } else {
         const newPermission = {
           pem_id: values.pem_id,
@@ -192,20 +182,17 @@ const PermissionModel = (props) => {
         };
         // save new Permissions
         handleAddPermission(newPermission);
-        validation.resetForm();
       }
     },
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-
   useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setPermission(data);
       setIsEdit(false);
     }
   }, [data]);
-
   const toggle = () => {
     if (modal) {
       setModal(false);
@@ -233,19 +220,14 @@ const PermissionModel = (props) => {
       pem_search: permission.pem_search,
       pem_description: permission.pem_description,
       pem_status: permission.pem_status,
-
       is_deletable: permission.is_deletable,
       is_editable: permission.is_editable,
     });
-
     setIsEdit(true);
-
     toggle();
   };
-
   //delete projects
   const [deleteModal, setDeleteModal] = useState(false);
-
   const onClickDelete = (permission) => {
     setPermission(permission);
     setDeleteModal(true);
@@ -370,31 +352,6 @@ const PermissionModel = (props) => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "pem_search",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>{optionsMap[cellProps.row.original.pem_search] || "-"}</span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "pem_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pem_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -545,7 +502,7 @@ const PermissionModel = (props) => {
                           : false
                       }
                     >
-                      <option value="">{t("select_enabled_option")}</option>{" "}
+                      <option value="">{t("select_one")}</option>{" "}
                       {/* Default option */}
                       <option value={1}>{t("Yes")}</option>
                       <option value={2}>{t("No")}</option>
@@ -573,7 +530,7 @@ const PermissionModel = (props) => {
                           : false
                       }
                     >
-                      <option value="">{t("select_edit_option")}</option>{" "}
+                      <option value="">{t("select_one")}</option>{" "}
                       {/* Default option */}
                       <option value={1}>{t("Yes")}</option>
                       <option value={2}>{t("No")}</option>
@@ -602,7 +559,7 @@ const PermissionModel = (props) => {
                           : false
                       }
                     >
-                      <option value="">{t("select_insert_option")}</option>{" "}
+                      <option value="">{t("select_one")}</option>{" "}
                       {/* Default option */}
                       <option value={1}>{t("Yes")}</option>
                       <option value={2}>{t("No")}</option>
@@ -631,7 +588,7 @@ const PermissionModel = (props) => {
                           : false
                       }
                     >
-                      <option value="">{t("select_view_option")}</option>{" "}
+                      <option value="">{t("select_one")}</option>{" "}
                       {/* Default option */}
                       <option value={1}>{t("Yes")}</option>
                       <option value={2}>{t("No")}</option>
@@ -660,7 +617,7 @@ const PermissionModel = (props) => {
                           : false
                       }
                     >
-                      <option value="">{t("select_delete_option")}</option>{" "}
+                      <option value="">{t("select_one")}</option>{" "}
                       {/* Default option */}
                       <option value={1}>{t("Yes")}</option>
                       <option value={2}>{t("No")}</option>
@@ -689,7 +646,7 @@ const PermissionModel = (props) => {
                           : false
                       }
                     >
-                      <option value="">{t("select_show_option")}</option>{" "}
+                      <option value="">{t("select_one")}</option>{" "}
                       {/* Default option */}
                       <option value={1}>{t("Show")}</option>
                       <option value={2}>{t("Hide")}</option>
@@ -719,7 +676,7 @@ const PermissionModel = (props) => {
                           : false
                       }
                     >
-                      <option value="">{t("select_search_option")}</option>{" "}
+                      <option value="">{t("select_one")}</option>{" "}
                       {/* Default option */}
                       <option value={1}>{t("All")}</option>
                       <option value={2}>{t("Owner")}</option>
@@ -737,8 +694,8 @@ const PermissionModel = (props) => {
                     <Label>{t("pem_description")}</Label>
                     <Input
                       name="pem_description"
-                      type="text"
-                      placeholder={t("insert_status_name_amharic")}
+                      type="textarea"
+                      placeholder={t("pem_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.pem_description || ""}

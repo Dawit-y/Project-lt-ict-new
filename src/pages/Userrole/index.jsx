@@ -38,7 +38,7 @@ import {
 } from "reactstrap";
 import { ToastContainer } from "react-toastify";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
-
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -97,7 +97,6 @@ const UserRoleModel = (props) => {
       is_deletable: (userRole && userRole.is_deletable) || 1,
       is_editable: (userRole && userRole.is_editable) || 1,
     },
-
     validationSchema: Yup.object({
       url_role_id: Yup.number()
         .required(t("url_role_id"))
@@ -108,7 +107,7 @@ const UserRoleModel = (props) => {
           );
         }),
       // url_user_id: Yup.string().required(t("url_user_id")),
-      url_description: Yup.string().required(t("url_description")),
+      url_description: alphanumericValidation(3,425,false),
       url_status: Yup.string().required(t("url_status")),
     }),
     validateOnBlur: true,
