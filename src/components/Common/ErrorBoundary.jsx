@@ -30,7 +30,16 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="position-absolute top-50 start-50">
+        <div
+          className=""
+          style={{
+            width: "100wh",
+            height: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <div className="d-flex flex-column">
             <h6 className="text-danger mb-1">{"Something went wrong"}</h6>
             <button

@@ -6,7 +6,15 @@ const FetchErrorHandler = ({ error, refetch }) => {
   const { t } = useTranslation();
   if (!error) return null;
   return (
-    <div className="position-absolute top-50 start-50">
+    <div
+      style={{
+        width: "100wh",
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <div className="d-flex flex-column">
         <h6 className="text-danger mb-1">
           {t("Error occured while fetching")}

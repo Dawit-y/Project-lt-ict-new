@@ -8,7 +8,7 @@ import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
-import ProjectGannt from "../../pages/GanttChart";
+import GanttChart from "../GanttChart";
 
 import {
   useFetchProjectPlans,
@@ -69,6 +69,8 @@ const ProjectPlanModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
+  const [transaction, setTransaction] = useState({});
+  const [projectPlanSelected, setProjectPlanSelected] = useState(null);
 
   const { data, isLoading, error, isError, refetch } =
     useFetchProjectPlans(param);
@@ -117,6 +119,9 @@ const ProjectPlanModel = () => {
       try {
         const id = projectPlan.pld_id;
         await deleteProjectPlan.mutateAsync(id);
+        if (id === projectPlanSelected?.pld_id) {
+          setProjectPlanSelected(null);
+        }
         toast.success(`Data deleted successfully`, {
           autoClose: 2000,
         });
@@ -195,8 +200,6 @@ const ProjectPlanModel = () => {
       }
     },
   });
-  const [transaction, setTransaction] = useState({});
-  const [projectPlanSelected, setProjectPlanSelected] = useState(null);
 
   const toggleViewModal = () => setModal1(!modal1);
 
@@ -348,10 +351,6 @@ const ProjectPlanModel = () => {
               color="primary"
               className="btn-sm"
               onClick={() => {
-                const data = cellProps.row.original;
-                //toggleViewModal(data);
-
-                console.log("selected project plan", data);
                 setProjectPlanSelected(cellProps.row.original);
               }}
             >
@@ -483,17 +482,15 @@ const ProjectPlanModel = () => {
                 />
               </Col>
 
-              {/* Conditionally render ProjectGantt or an alternative card */}
-              {projectPlanSelected ? (
-                <Col lg={12}>
-                  <ProjectGannt data={projectPlanSelected} />
-                </Col>
-              ) : (
-                <Col lg={projectPlanSelected ? 0 : 0}>
-                  <Card>
-                    <p>Gannt chart</p>
+              {projectPlanSelected && (
+                <div className="w-100">
+                  <Card className="container text-center my-3 py-3">
+                    <h3>Gantt Chart For {projectPlanSelected.pld_name}</h3>
                   </Card>
-                </Col>
+                  <Col lg={12}>
+                    <GanttChart pld_id={projectPlanSelected.pld_id} />
+                  </Col>
+                </div>
               )}
             </Row>
           )}
