@@ -68,6 +68,8 @@ const DebouncedInput = ({
   );
 };
 
+const MAX_PAGE_NUMBERS = 10;
+
 const TableContainer = ({
   columns,
   data,
@@ -86,7 +88,7 @@ const TableContainer = ({
   isCustomPageSize,
   handleUserClick,
   isJobListGlobalFilter,
-  isExcelExport=true,
+  isExcelExport = true,
 }) => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -139,6 +141,32 @@ const TableContainer = ({
 
   const rowsToFill = 7 - getRowModel().rows.length;
 
+  const paginationState = getState().pagination;
+  const totalPages = getPageOptions().length;
+  const currentPage = paginationState.pageIndex;
+
+  // Calculate the start and end of the current range
+  const startPage =
+    Math.floor(currentPage / MAX_PAGE_NUMBERS) * MAX_PAGE_NUMBERS;
+  const endPage = Math.min(startPage + MAX_PAGE_NUMBERS, totalPages);
+
+  // Create the page numbers to display
+  const visiblePageNumbers = getPageOptions().slice(startPage, endPage);
+
+  const handlePrevious = () => {
+    if (getCanPreviousPage()) {
+      pageIndexRef.current = currentPage - 1; // Decrement the page index
+      previousPage(); // Call the function to go to the previous page
+    }
+  };
+
+  const handleNext = () => {
+    if (getCanNextPage()) {
+      pageIndexRef.current = currentPage + 1; // Increment the page index
+      nextPage(); // Call the function to go to the next page
+    }
+  };
+
   return (
     <Fragment>
       <Row className="mb-2">
@@ -169,24 +197,21 @@ const TableContainer = ({
           />
         )}
         <Col sm={6}>
-            <div className="text-sm-end">
-        {isAddButton && (          
+          <div className="text-sm-end">
+            {isAddButton && (
               <Button
                 type="button"
                 className="btn-soft-success m-2"
                 onClick={handleUserClick}
               >
                 <i className="mdi mdi-plus me-1"></i> {buttonName}
-              </Button>              
-        )}
-        {isExcelExport && (   
-        <ExportToExcel
-                tableData={data}
-                tablename="excel_data"
-              />
-              )}
-        </div>
-          </Col>
+              </Button>
+            )}
+            {isExcelExport && (
+              <ExportToExcel tableData={data} tablename="excel_data" />
+            )}
+          </div>
+        </Col>
       </Row>
       <div className={divClassName ? divClassName : "table-responsive"}>
         <Table
@@ -260,74 +285,73 @@ const TableContainer = ({
             )}
           </tbody>
         </Table>
-      
-      {isPagination && (
-        <Row>
-          <Col sm={12} md={5}>
-            <div className="dataTables_info">
-              {t("Showing")} {getState().pagination.pageSize} of {data.length}{" "}
-              {t("Results")}
-            </div>
-          </Col>
-          <Col sm={12} md={7}>
-            <div className={paginationWrapper}>
-              <ul className={pagination}>
-                <li
-                  className={`paginate_button page-item previous ${
-                    !getCanPreviousPage() ? "disabled" : ""
-                  }`}
-                >
-                  <Link
-                    to="#"
-                    className="page-link"
-                    onClick={() => {
-                      pageIndexRef.current = getState().pagination.pageIndex;
-                      previousPage();
-                    }}
-                  >
-                    <i className="mdi mdi-chevron-left"></i>
-                  </Link>
-                </li>
-                {getPageOptions().map((item, key) => (
+
+        {isPagination && (
+          <Row>
+            <Col sm={12} md={5}>
+              <div className="dataTables_info">
+                {t("Showing")} {paginationState.pageSize} of {data.length}{" "}
+                {t("Results")}
+              </div>
+            </Col>
+            <Col sm={12} md={7}>
+              <div className={paginationWrapper}>
+                <ul className={pagination}>
+                  {/* Previous Button */}
                   <li
-                    key={key}
-                    className={`paginate_button page-item ${
-                      getState().pagination.pageIndex === item ? "active" : ""
+                    className={`paginate_button page-item previous ${
+                      !getCanPreviousPage() ? "disabled" : ""
                     }`}
                   >
                     <Link
                       to="#"
                       className="page-link"
-                      onClick={() => {
-                        pageIndexRef.current = item;
-                        setPageIndex(item);
-                      }}
+                      onClick={handlePrevious} 
                     >
-                      {item + 1}
+                      <i className="mdi mdi-chevron-left"></i>
                     </Link>
                   </li>
-                ))}
-                <li
-                  className={`paginate_button page-item next ${
-                    !getCanNextPage() ? "disabled" : ""
-                  }`}
-                >
-                  <Link
-                    to="#"
-                    className="page-link"
-                    onClick={() => {
-                      pageIndexRef.current = getState().pagination.pageIndex;
-                      nextPage();
-                    }}
+
+                  {/* Render visible page numbers */}
+                  {visiblePageNumbers.map((item) => (
+                    <li
+                      key={item}
+                      className={`paginate_button page-item ${
+                        currentPage === item ? "active" : ""
+                      }`}
+                    >
+                      <Link
+                        to="#"
+                        className="page-link"
+                        onClick={() => {
+                          pageIndexRef.current = item;
+                          setPageIndex(item);
+                        }}
+                      >
+                        {item + 1}
+                      </Link>
+                    </li>
+                  ))}
+
+                  {/* Next Button */}
+                  <li
+                    className={`paginate_button page-item next ${
+                      !getCanNextPage() ? "disabled" : ""
+                    }`}
                   >
-                    <i className="mdi mdi-chevron-right"></i>
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </Col>
-        </Row>
-      )}
+                    <Link
+                      to="#"
+                      className="page-link"
+                      onClick={handleNext} 
+                    >
+                      <i className="mdi mdi-chevron-right"></i>
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            </Col>
+          </Row>
+        )}
       </div>
     </Fragment>
   );
