@@ -8,18 +8,13 @@ import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
-
 import {
-  getUserRole as onGetUserRole,
-  addUserRole as onAddUserRole,
-  updateUserRole as onUpdateUserRole,
-  deleteUserRole as onDeleteUserRole,
-} from "../../store/userrole/actions";
-
-import { getRoles as onGetRoles } from "../../store/roles/actions";
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
+  useFetchUserRoles,
+  useAddUserRoles,
+  useUpdateUserRoles,
+  useDeleteUserRoles,
+} from "../../queries/user_role_query.jsx";
+import { useFetchRoles } from "../../queries/roles_query.jsx";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -36,9 +31,16 @@ import {
   Label,
   InputGroup,
 } from "reactstrap";
-import { ToastContainer } from "react-toastify";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
+import { createSelectOptions } from "../../utils/commonMethods.js";
+import { toast } from "react-toastify";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler.jsx";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -47,47 +49,74 @@ const truncateText = (text, maxLength) => {
 };
 
 const UserRoleModel = (props) => {
-  const { passedId } = props;
-  //meta title
-  document.title = " UserRole";
-
+  const { passedId, isActive } = props;
+  const param = { user_id: passedId };
   const { t } = useTranslation();
-
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-
   const [userRole, setUserRole] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
-  const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
 
-  const dispatch = useDispatch();
-
-  // Fetch UserRole on component mount
-  useEffect(() => {
-    dispatch(onGetUserRole(passedId));
-    dispatch(onGetRoles());
-  }, [dispatch]);
-
-  const userRoleProperties = createSelector(
-    (state) => state.UserRoleR, // this is geting from  reducer
-    (UserRoleReducer) => ({
-      // this is from Project.reducer
-      userRole: UserRoleReducer.userRole,
-      loading: UserRoleReducer.loading,
-      update_loading: UserRoleReducer.update_loading,
-    })
+  const { data, isLoading, error, isError, refetch } = useFetchUserRoles(
+    param,
+    isActive
+  );
+  const { data: rolesData } = useFetchRoles();
+  const rolesOptions = createSelectOptions(
+    rolesData?.data || [],
+    "rol_id",
+    "rol_name"
   );
 
-  const {
-    userRole: { data, previledge },
-    loading,
-    update_loading,
-  } = useSelector(userRoleProperties);
+  const addUserRole = useAddUserRoles();
+  const updateUserRole = useUpdateUserRoles();
+  const deleteUserRole = useDeleteUserRoles();
+  //START CRUD
+  const handleAddUserRole = async (data) => {
+    try {
+      await addUserRole.mutateAsync(data);
+      toast.success(`Data added successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error("Failed to add data", {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
 
+  const handleUpdateUserRole = async (data) => {
+    try {
+      await updateUserRole.mutateAsync(data);
+      toast.success(`data updated successfully`, {
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error(`Failed to update Data`, {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+  const handleDeleteUserRole = async () => {
+    if (userRole && userRole.url_id) {
+      try {
+        const id = userRole.url_id;
+        await deleteUserRole.mutateAsync(id);
+        toast.success(`Data deleted successfully`, {
+          autoClose: 2000,
+        });
+      } catch (error) {
+        toast.error(`Failed to delete Data`, {
+          autoClose: 2000,
+        });
+      }
+      setDeleteModal(false);
+    }
+  };
   // validation
   const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
     initialValues: {
       url_user_id: (userRole && userRole.url_user_id) || "",
@@ -101,13 +130,12 @@ const UserRoleModel = (props) => {
       url_role_id: Yup.number()
         .required(t("url_role_id"))
         .test("unique-role-id", t("Already exists"), (value) => {
-          return !data.some(
+          return !data?.data.some(
             (item) =>
               item.url_role_id == value && item.url_id !== userRole?.url_id
           );
         }),
-      // url_user_id: Yup.string().required(t("url_user_id")),
-      url_description: alphanumericValidation(3,425,false),
+      url_description: alphanumericValidation(3, 425, false),
       url_status: Yup.string().required(t("url_status")),
     }),
     validateOnBlur: true,
@@ -120,12 +148,10 @@ const UserRoleModel = (props) => {
           url_user_id: values.url_user_id,
           url_description: values.url_description,
           url_status: values.url_status,
-
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
-        // update UserRole
-        dispatch(onUpdateUserRole(updateUserRole));
+        handleUpdateUserRole(updateUserRole);
         validation.resetForm();
       } else {
         const newUserRole = {
@@ -134,8 +160,7 @@ const UserRoleModel = (props) => {
           url_status: values.url_status,
           url_role_id: Number(values.url_role_id),
         };
-
-        dispatch(onAddUserRole(newUserRole));
+        handleAddUserRole(newUserRole);
         validation.resetForm();
       }
     },
@@ -143,45 +168,12 @@ const UserRoleModel = (props) => {
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
 
-  // console.log("user role ..", userRole);
-
-  const rolesProperties = createSelector(
-    (state) => state.RolesR, // this is geting from  reducer
-    (RolesReducer) => ({
-      // this is from Project.reducer
-      roles: RolesReducer.roles,
-      loading: RolesReducer.loading,
-      update_loading: RolesReducer.update_loading,
-    })
-  );
-
-  const {
-    roles: { data: roledata, previledge: rolepreviledge },
-    loading: roleloading,
-    update_loading: roleupdate_loading,
-  } = useSelector(rolesProperties);
-
   const roleDataMap = useMemo(() => {
-    return roledata.reduce((acc, role) => {
+    return rolesData?.data.reduce((acc, role) => {
       acc[role.rol_id] = role.rol_name;
       return acc;
     }, {});
-  }, [roledata]);
-
-  useEffect(() => {
-    setModal(false);
-  }, [update_loading]);
-
-  const selectSearchProperties = createSelector(
-    (state) => state.search,
-    (search) => ({
-      results: search.results,
-    })
-  );
-
-  const { results } = useSelector(selectSearchProperties);
-
-  const [isLoading, setLoading] = useState(loading);
+  }, [rolesData?.data]);
 
   useEffect(() => {
     setUserRole(data);
@@ -217,11 +209,9 @@ const UserRoleModel = (props) => {
     });
 
     setIsEdit(true);
-
     toggle();
   };
 
-  //delete projects
   const [deleteModal, setDeleteModal] = useState(false);
 
   const onClickDelete = (userRole) => {
@@ -229,26 +219,10 @@ const UserRoleModel = (props) => {
     setDeleteModal(true);
   };
 
-  const handleDeleteUserRole = () => {
-    if (userRole && userRole.url_id) {
-      dispatch(onDeleteUserRole(userRole.url_id));
-      dispatch(onGetUserRole(passedId));
-      setDeleteModal(false);
-    }
-  };
   const handleUserRoleClicks = () => {
     setIsEdit(false);
     setUserRole("");
     toggle();
-  };
-  const handleSearch = () => {
-    setSearchLoading(true); // Set loading to true when search is initiated// Update filtered data with search results
-    setShowSearchResults(true); // Show search results
-    setSearchLoading(false);
-  };
-
-  const handleClearSearch = () => {
-    setShowSearchResults(false);
   };
 
   const columns = useMemo(() => {
@@ -297,7 +271,10 @@ const UserRoleModel = (props) => {
         },
       },
     ];
-    if (previledge?.is_role_editable && previledge?.is_role_deletable) {
+    if (
+      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_deletable
+    ) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -349,6 +326,10 @@ const UserRoleModel = (props) => {
     return baseColumns;
   }, [handleUserRoleClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <DynamicDetailsModal
@@ -369,14 +350,15 @@ const UserRoleModel = (props) => {
         show={deleteModal}
         onDeleteClick={handleDeleteUserRole}
         onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteUserRole.isPending}
       />
 
-      {isLoading || searchLoading ? (
-        <Spinners setLoading={setLoading} />
+      {isLoading ? (
+        <Spinners />
       ) : (
         <TableContainer
           columns={columns}
-          data={showSearchResults ? results : data}
+          data={data?.data}
           isGlobalFilter={true}
           isAddButton={true}
           isCustomPageSize={true}
@@ -428,9 +410,9 @@ const UserRoleModel = (props) => {
                   }
                 >
                   <option value={null}>Select Role</option>
-                  {roledata.map((option) => (
-                    <option key={option.rol_id} value={option.rol_id}>
-                      {t(`${option.rol_name}`)}
+                  {rolesOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {t(`${option.label}`)}
                     </option>
                   ))}
                 </Input>
@@ -500,14 +482,18 @@ const UserRoleModel = (props) => {
             <Row>
               <Col>
                 <div className="text-end">
-                  {update_loading ? (
+                  {addUserRole.isPending || updateUserRole.isPending ? (
                     <Button
                       color="success"
                       type="submit"
                       className="save-user"
-                      disabled={update_loading || !validation.dirty}
+                      disabled={
+                        addUserRole.isPending ||
+                        updateUserRole.isPending ||
+                        !validation.dirty
+                      }
                     >
-                      <Spinner size={"sm"} color="#fff" />
+                      <Spinner size={"sm"} color="light" className="me-2" />
                       {t("Save")}
                     </Button>
                   ) : (
@@ -515,7 +501,11 @@ const UserRoleModel = (props) => {
                       color="success"
                       type="submit"
                       className="save-user"
-                      disabled={update_loading || !validation.dirty}
+                      disabled={
+                        addUserRole.isPending ||
+                        updateUserRole.isPending ||
+                        !validation.dirty
+                      }
                     >
                       {t("Save")}
                     </Button>

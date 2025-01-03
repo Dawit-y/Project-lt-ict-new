@@ -39,7 +39,7 @@ import {
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import Permission from "../../pages/Permission";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import { alphanumericValidation} from '../../utils/Validation/validation';
+import { alphanumericValidation } from "../../utils/Validation/validation";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -123,13 +123,16 @@ const RolesModel = () => {
       is_editable: (roles && roles.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      rol_name: alphanumericValidation(3,20,true)
-        .test("unique-role-id", t("Already exists"), (value) => {
+      rol_name: alphanumericValidation(3, 20, true).test(
+        "unique-role-id",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) => item.rol_name == value && item.rol_id !== roles?.rol_id
           );
-        }),
-      rol_description: alphanumericValidation(3,425,false)
+        }
+      ),
+      rol_description: alphanumericValidation(3, 425, false),
     }),
     validateOnBlur: true,
     validateOnChange: false,
