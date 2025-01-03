@@ -1,10 +1,25 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { LiaRedoAltSolid } from "react-icons/lia";
+import { toast } from "react-toastify";
 
 const FetchErrorHandler = ({ error, refetch }) => {
   const { t } = useTranslation();
+  const handleRefetch = () => {
+    if (!navigator.onLine) {
+      toast.error(
+        t("You are offline. Please check your internet connection."),
+        {
+          autoClose: 2000,
+        }
+      );
+      return;
+    }
+    refetch();
+  };
+
   if (!error) return null;
+
   return (
     <div
       style={{
@@ -17,9 +32,9 @@ const FetchErrorHandler = ({ error, refetch }) => {
     >
       <div className="d-flex flex-column">
         <h6 className="text-danger mb-1">
-          {t("Error occured while fetching")}
+          {t("Error occurred while fetching")}
         </h6>
-        <button onClick={refetch} className="btn btn-secondary">
+        <button onClick={handleRefetch} className="btn btn-secondary">
           <LiaRedoAltSolid />
           <span className="ms-2">{t("Retry")}</span>
         </button>

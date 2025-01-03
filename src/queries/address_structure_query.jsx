@@ -79,7 +79,7 @@ const buildTree = (data) => {
   ];
   oromia[0].children = [...data];
   const assignLevels = (node) => {
-    if (node.children.length === 0) {
+    if (node.children.length === 0 && node.rootId !== 1) {
       node.level = "woreda";
     } else {
       const hasGrandChildren = node.children.some(
