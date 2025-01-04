@@ -8,7 +8,6 @@ import classname from "classnames";
 import { withTranslation } from "react-i18next";
 
 import { connect } from "react-redux";
-import { sassFalse } from "sass";
 
 const Navbar = (props) => {
   const [sidedata, setSidedata] = useState([]);

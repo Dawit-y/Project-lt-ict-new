@@ -63,7 +63,7 @@ const AuthMiddleware = ({ children }) => {
         const { parent_menu, link_name, link_url, link_icon } = curr;
         if (!acc[parent_menu]) {
           acc[parent_menu] = {
-            title: parent_menu.charAt(0).toUpperCase() + parent_menu.slice(1),
+            title: parent_menu,
             icon: link_icon,
             submenu: [],
           };
