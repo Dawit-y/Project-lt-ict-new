@@ -135,6 +135,7 @@ const App = (props) => {
             </Layout>
           }
         />
+        <Route path="/not_found" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />
       </>
     )

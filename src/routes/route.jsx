@@ -88,7 +88,12 @@ const AuthMiddleware = ({ children }) => {
   const authPaths = extractAuthPaths(authProtectedRoutes);
   const allowedPaths = sidedata.length > 0 ? extractPaths(sidedata) : [];
 
-  if (allowedPaths.includes("/Project")) {
+  const isProjectPath = (path) => {
+    const projectPathRegex = /^\/Project(\/\d+)?(\/\w+)?$/;
+    return projectPathRegex.test(path);
+  };
+
+  if (isProjectPath(currentPath)) {
     allowedPaths.push(
       "/Project/:id",
       "/Project/:id/project_plan",
@@ -119,11 +124,11 @@ const AuthMiddleware = ({ children }) => {
     return <Navigate to="/login" state={{ from: location }} />;
   }
 
-  if (!authPaths.includes(currentPath)) {
-    return <Navigate to="*" />;
+  if (!authPaths.includes(currentPath) && !isProjectPath(currentPath)) {
+    return <Navigate to="/not_found" />;
   }
 
-  if (!allowedPaths.includes(currentPath)) {
+  if (!allowedPaths.includes(currentPath) && !isProjectPath(currentPath)) {
     return <Navigate to="/unauthorized" />;
   }
 
