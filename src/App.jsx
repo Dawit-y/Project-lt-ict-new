@@ -23,6 +23,7 @@ import VerticalLayout from "./components/VerticalLayout/";
 import HorizontalLayout from "./components/HorizontalLayout/";
 import NonAuthLayout from "./components/NonAuthLayout";
 import ErrorBoundary from "./components/Common/ErrorBoundary";
+import Unauthorized from "./components/Common/Unauthorized";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -123,6 +124,17 @@ const App = (props) => {
             errorElement={<ErrorElement />}
           />
         ))}
+
+        <Route
+          path="/unauthorized"
+          element={
+            <Layout>
+              <ErrorBoundary>
+                <Unauthorized />
+              </ErrorBoundary>
+            </Layout>
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </>
     )

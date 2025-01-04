@@ -1,4 +1,4 @@
-import {useAccessToken} from "../../helpers/jwt-token-access/accessToken";
+import { useAccessToken } from "../../helpers/jwt-token-access/accessToken";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -26,9 +26,7 @@ const Sidebar = (props) => {
 
   // Fetch sidedata from API
   useEffect(() => {
-
     const fetchSidedata = async () => {
-
       try {
         // Check if cached sidedata exists in localStorage
         const cachedData = localStorage.getItem(SIDEDATA_CACHE_KEY);
@@ -37,18 +35,21 @@ const Sidebar = (props) => {
           // If cache exists, parse and set it in state
           setSidedata(JSON.parse(cachedData));
         } else {
-          const storedUser = JSON.parse(localStorage.getItem('authUser'));
+          const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
           // Fetch data from API if not cached
           const response = await fetch(
             `${import.meta.env.VITE_BASE_API_URL}menus`,
             {
               method: "POST",
               headers: {
-                Authorization: storedUser.authorization.type+' '+storedUser.authorization.token
-    //}
+                Authorization:
+                  storedUser.authorization.type +
+                  " " +
+                  storedUser.authorization.token,
+                //}
                 //Authorization: accessToken, // Add accessToken in Authorization header
-          //Authorization: accessToken, // Add accessToken in Authorization header
-        },
+                //Authorization: accessToken, // Add accessToken in Authorization header
+              },
               body: JSON.stringify({}),
             }
           );

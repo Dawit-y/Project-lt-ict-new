@@ -175,7 +175,10 @@ const App_tree = () => {
   };
 
   const isDisabled =
-    addFolder.isPending || updateFolder.isPending || deleteFolder.isPending;
+    addFolder.isPending ||
+    updateFolder.isPending ||
+    deleteFolder.isPending ||
+    !selectedNode;
 
   if (isLoading)
     return (

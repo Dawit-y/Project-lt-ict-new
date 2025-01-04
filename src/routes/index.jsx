@@ -3,7 +3,6 @@ import { Navigate } from "react-router-dom";
 
 import Dashboard from "../pages/Dashboard/index";
 import Login from "../pages/Authentication/Login";
-import Unauthorized from "../components/Common/NotFound";
 import UsersProfile from "../pages/Profile";
 import ProjectProvider from "../context/ProjectContext";
 
@@ -120,6 +119,7 @@ import BudgetRequestTask from "../pages/Budgetrequesttask/index";
 import BudgetExSource from "../pages/Budgetexsource/index";
 import BudgetExipDetail from "../pages/Budgetexipdetail/index";
 import PaymentCategory from "../pages/Paymentcategory/index";
+
 const authProtectedRoutes = [
   { path: "/expenditure_code", component: <ExpenditureCode /> },
   { path: "/project_employee", component: <ProjectEmployee /> },
@@ -228,9 +228,6 @@ const authProtectedRoutes = [
   { path: "/projects_location", component: <ProjectsLocation /> },
   { path: "/statistical_report", component: <StatisticalReport /> },
   { path: "/report", component: <Report /> },
-  //   // this route should be at the end of all other routes
-  //   // eslint-disable-next-line react/display-name
-  { path: "/", exact: true, component: <Navigate to="/dashboard" /> },
   { path: "/email_information", component: <EmailInformation /> },
   { path: "/email_template", component: <EmailTemplate /> },
   { path: "/sms_information", component: <SmsInformation /> },
@@ -240,6 +237,9 @@ const authProtectedRoutes = [
   { path: "/budget_ex_source", component: <BudgetExSource /> },
   { path: "/budget_exip_detail", component: <BudgetExipDetail /> },
   { path: "/payment_category", component: <PaymentCategory /> },
+  //   // this route should be at the end of all other routes
+  //   // eslint-disable-next-line react/display-name
+  { path: "/", exact: true, component: <Navigate to="/dashboard" /> },
 ];
 
 const publicRoutes = [
@@ -248,7 +248,6 @@ const publicRoutes = [
   { path: "/forgot-password", component: <ForgetPwd /> },
   { path: "/register", component: <Register /> },
   { path: "/gantt", component: <Gantty /> },
-  { path: "/Unauthorized", components: <Unauthorized /> },
 ];
 
 export { authProtectedRoutes, publicRoutes };
