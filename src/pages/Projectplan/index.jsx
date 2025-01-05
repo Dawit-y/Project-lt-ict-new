@@ -8,7 +8,7 @@ import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
-import GanttChart from "../GanttChart";
+import GanttChart from "../GanttChart/index.jsx";
 
 import {
   useFetchProjectPlans,
@@ -488,7 +488,10 @@ const ProjectPlanModel = () => {
                     <h3>Gantt Chart For {projectPlanSelected.pld_name}</h3>
                   </Card>
                   <Col lg={12}>
-                    <GanttChart pld_id={projectPlanSelected.pld_id} />
+                    <GanttChart
+                      pld_id={projectPlanSelected.pld_id}
+                      name={projectPlanSelected.pld_name}
+                    />
                   </Col>
                 </div>
               )}

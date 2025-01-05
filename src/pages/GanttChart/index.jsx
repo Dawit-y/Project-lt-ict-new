@@ -1,9 +1,9 @@
 import React, { useEffect, memo, useRef } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import "dhtmlx-gantt/codebase/dhtmlxgantt.css";
 import gantt from "dhtmlx-gantt";
-import axios from "axios";
 import Spinners from "../../components/Common/Spinner";
+import { Button } from "reactstrap";
 
 const API_URL = "https://pms.awashsol.com/api";
 
@@ -68,201 +68,152 @@ const isValidDate = (dateString) => {
   );
 };
 
-const GanttChart = ({ pld_id }) => {
-  const queryClient = useQueryClient();
+const GanttChart = ({ pld_id, name }) => {
   const ganttInitialized = useRef(false);
   const processorInitialized = useRef(false);
 
-  const {
-    data = {},
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["tasks", pld_id],
-    queryFn: () => fetchTasks(pld_id),
-  });
-
-  const createMutation = useMutation({
-    mutationFn: createTask,
-    onSuccess: () => queryClient.invalidateQueries(["tasks", pld_id]),
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: updateTask,
-    onSuccess: () => queryClient.invalidateQueries(["tasks", pld_id]),
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteTask,
-    onSuccess: () => queryClient.invalidateQueries(["tasks", pld_id]),
-  });
-
-  const createLinkMutation = useMutation({
-    mutationFn: createLink,
-    onSuccess: () => queryClient.invalidateQueries(["tasks", pld_id]),
-  });
-
-  const updateLinkMutation = useMutation({
-    mutationFn: updateLink,
-    onSuccess: () => queryClient.invalidateQueries(["tasks", pld_id]),
-  });
-
-  const deleteLinkMutation = useMutation({
-    mutationFn: deleteLink,
-    onSuccess: () => queryClient.invalidateQueries(["tasks", pld_id]),
-  });
-
   useEffect(() => {
-    const ganttContainer = document.getElementById("gantt_here");
-    if (!ganttInitialized.current && ganttContainer) {
-      gantt.init("gantt_here");
+    const fetchAndRenderTasks = async () => {
+      try {
+        const data = await fetchTasks(pld_id);
 
-      gantt.config.lightbox.sections = [
-        {
-          name: "text",
-          height: 40,
-          map_to: "text",
-          type: "textarea",
-          focus: true,
-        },
-        {
-          name: "priority",
-          height: 22,
-          map_to: "priority",
-          type: "select",
-          options: [
-            { key: "Low", label: "Low" },
-            { key: "Medium", label: "Medium" },
-            { key: "High", label: "High" },
-          ],
-        },
-        { name: "notes", height: 70, map_to: "description", type: "textarea" },
-        { name: "time", type: "duration", map_to: "auto" },
-      ];
+        const formattedData = {
+          data:
+            data.tasks.map((task) => ({
+              id: task.id,
+              text: task.text || "New Task",
+              start_date: isValidDate(task.start_date)
+                ? new Date(task.start_date).toISOString().split("T")[0]
+                : new Date().toISOString().split("T")[0],
+              duration: Number(task.duration) || 1,
+              progress: parseFloat(task.progress) || 0,
+              open: task.open,
+              parent: task.parent || "0",
+              priority: task.priority || "Low",
+              description: task.notes || "",
+            })) || [],
+          links: data.links || [],
+        };
 
-      gantt.locale.labels.section_text = "Task Name";
-      gantt.locale.labels.section_priority = "Priority";
-      gantt.locale.labels.section_notes = "Description";
+        if (!ganttInitialized.current) {
+          gantt.init("gantt_here");
 
-      if (!processorInitialized.current) {
-        gantt.createDataProcessor(async (type, action, item, id) => {
-          let mutation;
-          if (type === "task") {
-            if (action === "create") {
-              mutation = createMutation.mutateAsync({
-                ...item,
-                project_plan_id: pld_id,
-              });
-            } else if (action === "update") {
-              mutation = updateMutation.mutateAsync({
-                ...item,
-                project_plan_id: pld_id,
-              });
-            } else if (action === "delete") {
-              mutation = deleteMutation.mutateAsync(id);
+          gantt.plugins({
+            export_api: true,
+          });
+
+          gantt.config.row_height = 50;
+          gantt.config.scale_height = 60;
+
+          gantt.config.scale_unit = "week";
+          gantt.config.lightbox.sections = [
+            {
+              name: "text",
+              height: 40,
+              map_to: "text",
+              type: "textarea",
+              focus: true,
+            },
+            {
+              name: "priority",
+              height: 22,
+              map_to: "priority",
+              type: "select",
+              options: [
+                { key: "Low", label: "Low" },
+                { key: "Medium", label: "Medium" },
+                { key: "High", label: "High" },
+              ],
+            },
+            {
+              name: "notes",
+              height: 70,
+              map_to: "description",
+              type: "textarea",
+            },
+            { name: "time", type: "duration", map_to: "auto" },
+          ];
+
+          gantt.locale.labels.section_text = "Task Name";
+          gantt.locale.labels.section_priority = "Priority";
+          gantt.locale.labels.section_notes = "Description";
+
+          gantt.templates.task_class = (start, end, task) => {
+            if (task.priority === "High") return "high-priority";
+            if (task.priority === "Medium") return "medium-priority";
+            return "low-priority";
+          };
+
+          ganttInitialized.current = true;
+        }
+
+        gantt.clearAll();
+        gantt.parse(formattedData);
+
+        if (!processorInitialized.current) {
+          gantt.createDataProcessor(async (type, action, item, id) => {
+            try {
+              if (type === "task") {
+                if (action === "create") {
+                  await createTask({ ...item, project_plan_id: pld_id });
+                } else if (action === "update") {
+                  await updateTask({ ...item, project_plan_id: pld_id });
+                } else if (action === "delete") {
+                  await deleteTask(id);
+                }
+              } else if (type === "link") {
+                if (action === "create") {
+                  await createLink({ ...item, project_plan_id: pld_id });
+                } else if (action === "update") {
+                  await updateLink({ ...item, project_plan_id: pld_id });
+                } else if (action === "delete") {
+                  await deleteLink(id);
+                }
+              }
+              return { success: true };
+            } catch (error) {
+              return { success: false, message: error.message };
             }
-          } else if (type === "link") {
-            if (action === "create") {
-              mutation = createLinkMutation.mutateAsync({
-                ...item,
-                project_plan_id: pld_id,
-              });
-            } else if (action === "update") {
-              mutation = updateLinkMutation.mutateAsync({
-                ...item,
-                project_plan_id: pld_id,
-              });
-            } else if (action === "delete") {
-              mutation = deleteLinkMutation.mutateAsync(id);
-            }
-          }
-
-          return mutation
-            .then((result) => ({ success: true, data: result }))
-            .catch((error) => ({ success: false, message: error.message }));
-        });
-
-        processorInitialized.current = true;
+          });
+          processorInitialized.current = true;
+        }
+      } catch (error) {
+        console.error("Error loading tasks:", error);
       }
+    };
 
-      gantt.templates.task_class = (start, end, task) => {
-        if (task.priority === "High") return "high-priority";
-        if (task.priority === "Medium") return "medium-priority";
-        return "low-priority";
-      };
+    fetchAndRenderTasks();
+  }, [pld_id]);
 
-      ganttInitialized.current = true;
-    }
-
-    if (data && ganttInitialized.current) {
-      gantt.clearAll();
-      const formattedData = {
-        data:
-          data.tasks.map((task) => ({
-            id: task.id,
-            text: task.text || "New Task",
-            start_date: isValidDate(task.start_date)
-              ? new Date(task.start_date).toISOString().split("T")[0]
-              : new Date().toISOString().split("T")[0],
-            duration: Number(task.duration) || 1,
-            progress: parseFloat(task.progress) || 0,
-            open: task.open,
-            parent: task.parent || "0",
-            priority: task.priority || "Low",
-            description: task.description || "",
-          })) || [],
-        links: data.links || [],
-      };
-      gantt.parse(formattedData);
-    }
-  }, [
-    data,
-    pld_id,
-    createMutation,
-    updateMutation,
-    deleteMutation,
-    createLinkMutation,
-    updateLinkMutation,
-    deleteLinkMutation,
-  ]);
-
-  if (isLoading)
-    return (
-      <div
-        style={{
-          width: "100wh",
-          height: "250px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Spinners />
-      </div>
-    );
-  if (isError)
-    return (
-      <div
-        style={{
-          width: "100wh",
-          height: "250px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <h5 className="text-danger">Error in Loading Gantt Chart.</h5>
-      </div>
-    );
+  const handleExportToPNG = () => {
+    gantt.exportToPNG({
+      name: `Gantt_chart_for_${name}.png`,
+      raw: true,
+    });
+  };
+  const handleExportToPDF = () => {
+    gantt.exportToPDF({
+      name: `Gantt_chart_for_${name}.pdf`,
+      raw: true,
+    });
+  };
 
   return (
     <div>
+      <div className="mb-2 d-flex">
+        <Button onClick={handleExportToPNG} className="me-2">
+          Export To PNG
+        </Button>
+        <Button onClick={handleExportToPDF} color="success">
+          Export To PDF
+        </Button>
+      </div>
       <div id="gantt_here" style={{ width: "100%", height: "500px" }}></div>
       <style>
         {`
-          .high-priority { background-color: #F40009; }
-          .medium-priority { background-color: orange; }
-          .low-priority { background-color: steelblue; }
+          .high-priority { background-color: #ff0000; }
+          .medium-priority { background-color: #b85924; }
+          .low-priority { background-color: #3db9d3; }
         `}
       </style>
     </div>
