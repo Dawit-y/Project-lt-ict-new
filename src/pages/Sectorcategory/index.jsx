@@ -13,6 +13,7 @@ import SearchComponent from "../../components/Common/SearchComponent";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 
 import {
   useFetchSectorCategorys,
@@ -80,11 +81,12 @@ const SectorCategoryModel = () => {
   const handleAddSectorCategory = async (data) => {
     try {
       await addSectorCategory.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+   toast.success(t('add_success'), {
         autoClose: 2000,
       });
+   validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.error(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -94,26 +96,28 @@ const SectorCategoryModel = () => {
   const handleUpdateSectorCategory = async (data) => {
     try {
       await updateSectorCategory.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t('update_success'), {
         autoClose: 2000,
-      });
+      })
+      validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
     toggle();
   };
+
   const handleDeleteSectorCategory = async () => {
     if (sectorCategory && sectorCategory.psc_id) {
       try {
         const id = sectorCategory.psc_id;
         await deleteSectorCategory.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+      toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+      toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -140,16 +144,16 @@ const SectorCategoryModel = () => {
     },
 
     validationSchema: Yup.object({
-      psc_name: Yup.string()
-        .required(t("psc_name"))
+      psc_name: alphanumericValidation(2,100,true)
         .test("unique-psc_name", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.psc_name == value && item.psc_id !== sectorCategory?.psc_id
           );
         }),
+        psc_code:numberValidation(2,5,false),
+      psc_description: alphanumericValidation(3,425,false)
 
-      //psc_code: Yup.string().required(t("psc_code")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -168,7 +172,6 @@ const SectorCategoryModel = () => {
         };
         // update SectorCategory
         handleUpdateSectorCategory(updateSectorCategory);
-        validation.resetForm();
       } else {
         const newSectorCategory = {
           psc_name: values.psc_name,
@@ -179,7 +182,6 @@ const SectorCategoryModel = () => {
         };
         // save new SectorCategory
         handleAddSectorCategory(newSectorCategory);
-        validation.resetForm();
       }
     },
   });
@@ -305,8 +307,8 @@ const SectorCategoryModel = () => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable
+     data?.previledge?.is_role_editable==1 ||
+     data?.previledge?.is_role_deletable==1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -316,7 +318,7 @@ const SectorCategoryModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {cellProps.row.original.is_editable==1 && ( 
                 <Link
                   to="#"
                   className="text-success"
@@ -332,7 +334,7 @@ const SectorCategoryModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {cellProps.row.original.is_deletable==1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -358,7 +360,7 @@ const SectorCategoryModel = () => {
 
     return baseColumns;
   }, [handleSectorCategoryClick, toggleViewModal, onClickDelete]);
-  if (isError) {
+ if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -405,11 +407,11 @@ const SectorCategoryModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={true}
+                      isAddButton={data?.previledge?.is_role_can_add==1}
                       isCustomPageSize={true}
                       handleUserClick={handleSectorCategoryClicks}
                       isPagination={true}
-                      SearchPlaceholder={t("Results") + "..."}
+                      SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("sector_category")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -438,10 +440,7 @@ const SectorCategoryModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("psc_name")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("psc_name")}<span className="text-danger">*</span></Label>
                     <Input
                       name="psc_name"
                       type="text"

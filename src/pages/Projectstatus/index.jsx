@@ -26,7 +26,7 @@ import { useTranslation } from "react-i18next";
 
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
-
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 import {
   Button,
   Col,
@@ -79,11 +79,12 @@ const ProjectStatusModel = () => {
   const handleAddProjectStatus = async (data) => {
     try {
       await addProjectStatus.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+    toast.success(t('add_success'), {
         autoClose: 2000,
       });
+    validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+     toast.success(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -93,11 +94,12 @@ const ProjectStatusModel = () => {
   const handleUpdateProjectStatus = async (data) => {
     try {
       await updateProjectStatus.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+     toast.success(t('update_success'), {
         autoClose: 2000,
       });
+     validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+     toast.success(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -108,13 +110,13 @@ const ProjectStatusModel = () => {
       try {
         const id = projectStatus.prs_id;
         await deleteProjectStatus.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
-          autoClose: 2000,
-        });
+       toast.success(t('delete_success'), {
+        autoClose: 2000,
+      });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
-          autoClose: 2000,
-        });
+       toast.success(t('delete_failure'), {
+        autoClose: 2000,
+      });
       }
       setDeleteModal(false);
     }
@@ -143,10 +145,8 @@ const ProjectStatusModel = () => {
       is_deletable: (projectStatus && projectStatus.is_deletable) || 1,
       is_editable: (projectStatus && projectStatus.is_editable) || 1,
     },
-
     validationSchema: Yup.object({
-      prs_status_name_or: Yup.string()
-        .required(t("prs_status_name_or"))
+      prs_status_name_or: alphanumericValidation(4,100,true)
         .test("unique-prs_status_name_or", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
@@ -155,9 +155,10 @@ const ProjectStatusModel = () => {
           );
         }),
       prs_status_name_am: Yup.string().required(t("prs_status_name_am")),
-      prs_status_name_en: Yup.string().required(t("prs_status_name_en")),
-      //prs_color_code: Yup.string().required(t("prs_color_code")),
-      //prs_order_number: Yup.string().required(t("prs_order_number")),
+      prs_status_name_en: alphanumericValidation(2,100,true),
+      prs_color_code: alphanumericValidation(6,20,false),
+      prs_order_number: numberValidation(1,10,true),
+      prs_description: alphanumericValidation(2,425,false)
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -179,7 +180,6 @@ const ProjectStatusModel = () => {
         };
         // update ProjectStatus
         handleUpdateProjectStatus(updateProjectStatus);
-        validation.resetForm();
       } else {
         const newProjectStatus = {
           prs_status_name_or: values.prs_status_name_or,
@@ -193,7 +193,6 @@ const ProjectStatusModel = () => {
         };
         // save new ProjectStatus
         handleAddProjectStatus(newProjectStatus);
-        validation.resetForm();
       }
     },
   });
@@ -469,7 +468,7 @@ const ProjectStatusModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleProjectStatusClicks}
                       isPagination={true}
-                      SearchPlaceholder={t("Results") + "..."}
+                      SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("project_status")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"

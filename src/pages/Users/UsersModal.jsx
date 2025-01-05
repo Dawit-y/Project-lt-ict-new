@@ -56,7 +56,7 @@ const UsersModal = (props) => {
   const handleChangeUserStatus = async (data) => {
     try {
       await changeUserStatus.mutateAsync(data);
-      setSwitch1(true);
+      setSwitch1(!switch1);
       toast.success(`data updated successfully`, {
         autoClose: 2000,
       });
@@ -377,10 +377,10 @@ const UsersModal = (props) => {
                               style={{
                                 fontSize: "16px",
                                 fontWeight: "bold",
-                                color: switch1 ? "#d9534f" : "#28a745", // Green for Active, Red for Inactive
+                                color: !switch1 ? "#d9534f" : "#28a745", // Green for Active, Red for Inactive
                               }}
                             >
-                              {transaction.usr_is_active ? "Active" : "Inactive"}
+                              {switch1==1 ? "Active" : "Inactive"}
                             </span>
                             </td>
                     </tr>
@@ -481,7 +481,7 @@ const UsersModal = (props) => {
               onClick={handlePasswordChange}
               disabled={passwordStrength === "Weak" || !newPassword}
             >
-              Edit
+              Change Password
             </Button>
           </ModalFooter>
         </Modal>

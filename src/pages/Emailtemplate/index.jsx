@@ -130,15 +130,20 @@ const EmailTemplateModel = () => {
         (emailTemplate && emailTemplate.emt_template_name) || "",
       emt_template_content:
         (emailTemplate && emailTemplate.emt_template_content) || "",
+        emt_template_content_am:
+        (emailTemplate && emailTemplate.emt_template_content_am) || "",
+  emt_template_content_en:
+        (emailTemplate && emailTemplate.emt_template_content_en) || "",
       emt_description: (emailTemplate && emailTemplate.emt_description) || "",
-      emt_status: (emailTemplate && emailTemplate.emt_status) || "",
 
       is_deletable: (emailTemplate && emailTemplate.is_deletable) || 1,
       is_editable: (emailTemplate && emailTemplate.is_editable) || 1,
     },
     validationSchema: Yup.object({
       emt_template_name: alphanumericValidation(3, 200, true),
-      emt_template_content: alphanumericValidation(50, 200, true),
+      emt_template_content: alphanumericValidation(10, 200, true),
+      //emt_template_content_am: alphanumericValidation(10, 200, false),
+      emt_template_content_en: alphanumericValidation(10, 200, false),
       emt_description: alphanumericValidation(3, 425, false),
     }),
     validateOnBlur: true,
@@ -149,6 +154,8 @@ const EmailTemplateModel = () => {
           emt_id: emailTemplate?.emt_id,
           emt_template_name: values.emt_template_name,
           emt_template_content: values.emt_template_content,
+          emt_template_content_am: values.emt_template_content_am,
+          emt_template_content_en: values.emt_template_content_en,
           emt_description: values.emt_description,
           emt_status: values.emt_status,
 
@@ -161,6 +168,8 @@ const EmailTemplateModel = () => {
         const newEmailTemplate = {
           emt_template_name: values.emt_template_name,
           emt_template_content: values.emt_template_content,
+          emt_template_content_am: values.emt_template_content_am,
+          emt_template_content_en: values.emt_template_content_en,
           emt_description: values.emt_description,
           emt_status: values.emt_status,
         };
@@ -198,6 +207,8 @@ const EmailTemplateModel = () => {
       emt_id: emailTemplate.emt_id,
       emt_template_name: emailTemplate.emt_template_name,
       emt_template_content: emailTemplate.emt_template_content,
+       emt_template_content_am: emailTemplate.emt_template_content_am,
+        emt_template_content_en: emailTemplate.emt_template_content_en,
       emt_description: emailTemplate.emt_description,
       emt_status: emailTemplate.emt_status,
 
@@ -252,19 +263,6 @@ const EmailTemplateModel = () => {
             <span>
               {truncateText(cellProps.row.original.emt_template_content, 30) ||
                 "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "emt_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emt_description, 30) || "-"}
             </span>
           );
         },
@@ -392,7 +390,7 @@ const EmailTemplateModel = () => {
                       handleUserClick={handleEmailTemplateClicks}
                       isPagination={true}
                       // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("email_template")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -465,6 +463,54 @@ const EmailTemplateModel = () => {
                     validation.errors.emt_template_content ? (
                       <FormFeedback type="invalid">
                         {validation.errors.emt_template_content}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("emt_template_content_am")}</Label>
+                    <Input
+                      name="emt_template_content_am"
+                      type="textarea"
+                      placeholder={t("emt_template_content_am")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.emt_template_content_am || ""}
+                      invalid={
+                        validation.touched.emt_template_content_am &&
+                        validation.errors.emt_template_content_am
+                          ? true
+                          : false
+                      }
+                      maxLength={200}
+                    />
+                    {validation.touched.emt_template_content_am &&
+                    validation.errors.emt_template_content_am ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.emt_template_content_am}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("emt_template_content_en")}</Label>
+                    <Input
+                      name="emt_template_content_en"
+                      type="textarea"
+                      placeholder={t("emt_template_content_en")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.emt_template_content_en || ""}
+                      invalid={
+                        validation.touched.emt_template_content_en &&
+                        validation.errors.emt_template_content_en
+                          ? true
+                          : false
+                      }
+                      maxLength={200}
+                    />
+                    {validation.touched.emt_template_content_en &&
+                    validation.errors.emt_template_content_en ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.emt_template_content_en}
                       </FormFeedback>
                     ) : null}
                   </Col>

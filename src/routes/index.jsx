@@ -109,6 +109,7 @@ const ProjectPlan = lazy(() => import("../pages/Projectplan/index"));
 const ProjectSupplimentary = lazy(() =>
   import("../pages/Projectsupplimentary/index")
 );
+const SupersetDashboard = lazy(() => import("../Dashboards/SupersetDashboard"));
 const ProjectVariation = lazy(() => import("../pages/Projectvariation/index"));
 import EmailInformation from "../pages/Emailinformation/index";
 import EmailTemplate from "../pages/Emailtemplate/index";
@@ -121,6 +122,7 @@ import BudgetExipDetail from "../pages/Budgetexipdetail/index";
 import PaymentCategory from "../pages/Paymentcategory/index";
 
 const authProtectedRoutes = [
+  { path: "/supersetdashboard", component: <SupersetDashboard /> },
   { path: "/expenditure_code", component: <ExpenditureCode /> },
   { path: "/project_employee", component: <ProjectEmployee /> },
   { path: "/project_handover", component: <ProjectHandover /> },

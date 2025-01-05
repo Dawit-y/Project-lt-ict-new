@@ -348,7 +348,7 @@ const Report = () => {
                               isAddButton={true}
                               isCustomPageSize={true}
                               isPagination={true}
-                              SearchPlaceholder={t("Results") + "..."}
+                              SearchPlaceholder={t("filter_placeholder")}
                               buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                               buttonName={t("add") + " " + t("budget_source")}
                               tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -365,7 +365,7 @@ const Report = () => {
                               isAddButton={true}
                               isCustomPageSize={true}
                               isPagination={true}
-                              SearchPlaceholder={t("Results") + "..."}
+                              SearchPlaceholder={t("filter_placeholder")}
                               buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                               buttonName={t("add") + " " + t("budget_source")}
                               tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"

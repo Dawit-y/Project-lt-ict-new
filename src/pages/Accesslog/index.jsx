@@ -61,13 +61,11 @@ const AccessLogModel = () => {
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [accessLog, setAccessLog] = useState(null);
-
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-
-  const { data, isLoading, error, isError, refetch } = useFetchAccessLogs();
+  const { data, isLoading, error, isError, refetch } = useState(null);
   const { data: pageInfo } = useFetchPagess();
   const addAccessLog = useAddAccessLog();
   const updateAccessLog = useUpdateAccessLog();
@@ -77,7 +75,6 @@ const AccessLogModel = () => {
     "pag_id",
     "pag_name"
   );
-
   const handleAddAccessLog = async (data) => {
     try {
       await addAccessLog.mutateAsync(data);
@@ -409,10 +406,10 @@ const AccessLogModel = () => {
             textSearchKeys={["acl_user_id"]}
             dateSearchKeys={["log_time"]}
             dropdownSearchKeys={[
-              {
+             /* {
                 key: "acl_role_id",
                 options: pagesOptions,
-              },
+              },*/
             ]}
             checkboxSearchKeys={[]}
             onSearchResult={handleSearchResults}
@@ -440,7 +437,7 @@ const AccessLogModel = () => {
                       handleUserClick={handleAccessLogClicks}
                       isPagination={true}
                       // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("access_log")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"

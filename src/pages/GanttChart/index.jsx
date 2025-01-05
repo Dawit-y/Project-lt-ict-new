@@ -116,7 +116,8 @@ const GanttChart = ({ pld_id }) => {
     const ganttContainer = document.getElementById("gantt_here");
     if (!ganttInitialized.current && ganttContainer) {
       gantt.init("gantt_here");
-
+       gantt.config.scale_unit = "week";
+    //gantt.config.date_scale = "%M"
       gantt.config.lightbox.sections = [
         {
           name: "text",

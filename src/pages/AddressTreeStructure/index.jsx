@@ -179,7 +179,6 @@ const App_tree = () => {
     updateFolder.isPending ||
     deleteFolder.isPending ||
     !selectedNode;
-
   if (isLoading)
     return (
       <div>
@@ -190,7 +189,6 @@ const App_tree = () => {
       </div>
     );
   if (isError) return <FetchErrorHandler error={error} refetch={refetch} />;
-
   return (
     <>
       <DeleteModal
@@ -202,13 +200,13 @@ const App_tree = () => {
       <div className="page-content">
         <div className="container-fluid">
           <Breadcrumbs
-            title={t("Address Structure")}
-            breadcrumbItem={t("tree")}
+            title={t("address_tree_Search")}
+            
           />
           <div className="d-flex vh-100">
             <div className="w-30 p-3 bg-white border-end overflow-auto shadow-sm">
               <h4 className="mb-2 text-secondary">
-                {t("Regional Address Structures")}
+                {t("address_tree_Search")}
               </h4>
               <hr className="text-dark" />
               {data?.map((node) => (
@@ -238,7 +236,6 @@ const App_tree = () => {
                     ) : (
                       <span className="my-auto">
                         <h6 className="my-auto">
-                          {t("Please select an address before updating.")}
                         </h6>
                       </span>
                     )}
@@ -258,7 +255,7 @@ const App_tree = () => {
                           <span className="me-2">
                             <i className="mdi mdi-plus"></i>
                           </span>
-                          <span className="">Add</span>
+                          <span className="">{t('add')}</span>
                         </NavLink>
                       </NavItem>
                       <NavItem className="flex-grow-1 text-center">
@@ -272,10 +269,10 @@ const App_tree = () => {
                           <span className="me-2">
                             <i className="mdi mdi-pencil"></i>
                           </span>
-                          <span className="">Rename</span>
+                          <span className="">{t('edit')}</span>
                         </NavLink>
                       </NavItem>
-                      <NavItem className="flex-grow-1 text-center">
+                     {/* <NavItem className="flex-grow-1 text-center">
                         <NavLink
                           style={{ cursor: "pointer" }}
                           className={classnames({ active: activeTab === "3" })}
@@ -286,11 +283,10 @@ const App_tree = () => {
                           <span className="me-2">
                             <i className="mdi mdi-delete"></i>
                           </span>
-                          <span className="">Delete</span>
+                          <span className="">{t('delete')}</span>
                         </NavLink>
-                      </NavItem>
+                      </NavItem>*/}
                     </Nav>
-
                     <TabContent
                       activeTab={activeTab}
                       className="p-3 text-muted"
@@ -420,7 +416,7 @@ const App_tree = () => {
                               >
                                 <span>
                                   <i className="mdi mdi-pencil me-2" />
-                                  {t("Rename")}
+                                  {t("edit")}
                                 </span>
                               </Button>
                             </Form>
@@ -496,5 +492,4 @@ const App_tree = () => {
     </>
   );
 };
-
 export default App_tree;

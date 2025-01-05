@@ -24,6 +24,7 @@ import PaymentCategoryModal from "./PaymentCategoryModal";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 import {
   Button,
   Col,
@@ -133,10 +134,10 @@ const PaymentCategoryModel = () => {
       is_editable: (paymentCategory && paymentCategory.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      pyc_name_or: Yup.string().required(t("pyc_name_or")),
+      pyc_name_or: alphanumericValidation(3,20,true),
       pyc_name_am: Yup.string().required(t("pyc_name_am")),
-      pyc_name_en: Yup.string().required(t("pyc_name_en")),
-      //pyc_description: Yup.string().required(t('pyc_description')),
+      pyc_name_en: alphanumericValidation(3,20,true),
+      pyc_description: alphanumericValidation(3,425,false),
       //pyc_status: Yup.string().required(t('pyc_status')),
     }),
     validateOnBlur: true,
@@ -150,7 +151,6 @@ const PaymentCategoryModel = () => {
           pyc_name_en: values.pyc_name_en,
           pyc_description: values.pyc_description,
           pyc_status: values.pyc_status,
-
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -397,7 +397,7 @@ const PaymentCategoryModel = () => {
                       handleUserClick={handlePaymentCategoryClicks}
                       isPagination={true}
                       // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("payment_category")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"

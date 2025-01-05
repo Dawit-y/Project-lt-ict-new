@@ -77,18 +77,18 @@ import { useProjectContext } from "../../context/ProjectContext";
 
 const tabMapping = {
   1: { label: "Documents", component: ProjectDocument },
-  2: { label: "Contractors", component: Projectcontractor },
-  3: { label: "Payments", component: ProjectPayment },
+  44: { label: "Contractors", component: Projectcontractor },
+  26: { label: "Payments", component: ProjectPayment },
   4: { label: "Stakeholders", component: ProjectStakeholder },
   //5: { label: "Budget Request", component: Budgetrequest },
-  6: { label: "Geo Location", component: GeoLocation },
+  33: { label: "Geo Location", component: GeoLocation },
   //7: { label: "Budget Expenditures", component: ProjectBudgetExpenditureModel },
-  8: { label: "Employees", component: ProjectEmployeeModel },
-  9: { label: "Handover", component: ProjectHandoverModel },
-  10: { label: "Performance", component: ProjectPerformanceModel },
-  11: { label: "Supplementary", component: ProjectSupplimentaryModel },
-  12: { label: "Variations", component: ProjectVariationModel },
-  13: { label: "Budget Plan", component: ProjectBudgetPlan },
+  43: { label: "Employees", component: ProjectEmployeeModel },
+  38: { label: "Handover", component: ProjectHandoverModel },
+  37: { label: "Performance", component: ProjectPerformanceModel },
+  41: { label: "Supplementary", component: ProjectSupplimentaryModel },
+  40: { label: "Variations", component: ProjectVariationModel },
+  46: { label: "Budget Plan", component: ProjectBudgetPlan },
 };
 
 const ProjectModel = () => {

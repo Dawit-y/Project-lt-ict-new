@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -8,8 +9,11 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
+import SearchComponent from "../../components/Common/SearchComponent";
+//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 
 import {
   useFetchBudgetSources,
@@ -20,6 +24,10 @@ import {
 } from "../../queries/budgetsource_query";
 import BudgetSourceModal from "./BudgetSourceModal";
 import { useTranslation } from "react-i18next";
+
+import { useSelector, useDispatch } from "react-redux";
+import { createSelector } from "reselect";
+
 import {
   Button,
   Col,
@@ -72,25 +80,28 @@ const BudgetSourceModel = () => {
   const handleAddBudgetSource = async (data) => {
     try {
       await addBudgetSource.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+      toast.success(t('add_success'), {
         autoClose: 2000,
       });
+       validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.error(t('add_failure'), {
         autoClose: 2000,
       });
     }
     toggle();
   };
 
+
   const handleUpdateBudgetSource = async (data) => {
     try {
       await updateBudgetSource.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t('update_success'), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -101,11 +112,11 @@ const BudgetSourceModel = () => {
       try {
         const id = budgetSource.pbs_id;
         await deleteBudgetSource.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+      toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+      toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -113,8 +124,14 @@ const BudgetSourceModel = () => {
     }
   };
 
+  //END CRUD
+  //START FOREIGN CALLS
+
+  // validation
   const validation = useFormik({
+    // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
+
     initialValues: {
       pbs_name_or: (budgetSource && budgetSource.pbs_name_or) || "",
       pbs_name_am: (budgetSource && budgetSource.pbs_name_am) || "",
@@ -127,19 +144,18 @@ const BudgetSourceModel = () => {
       is_editable: (budgetSource && budgetSource.is_editable) || 1,
     },
 
-    validationSchema: Yup.object({
-      pbs_name_or: Yup.string()
-        .required(t("pbs_name_or"))
-        .test("unique-pbs_name_or", t("Already exists"), (value) => {
+    validationSchema: Yup.object({        
+      pbs_name_or: alphanumericValidation(2,100,true).test("unique-pbs_name_or", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.pbs_name_or == value && item.pbs_id !== budgetSource?.pbs_id
           );
         }),
-      pbs_name_am: Yup.string().required(t("pbs_name_am")),
-      pbs_name_en: Yup.string().required(t("pbs_name_en")),
-      //pbs_code: Yup.string().required(t("pbs_code")),
-    }),
+      pbs_name_am: Yup.string().required(t("pbs_name_am")),   
+     pbs_name_en: alphanumericValidation(2,100,true),
+     pbs_description: alphanumericValidation(3,425,false)
+
+      }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
@@ -152,13 +168,11 @@ const BudgetSourceModel = () => {
           pbs_code: values.pbs_code,
           pbs_description: values.pbs_description,
           pbs_status: values.pbs_status,
-
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
         // update BudgetSource
         handleUpdateBudgetSource(updateBudgetSource);
-        validation.resetForm();
       } else {
         const newBudgetSource = {
           pbs_name_or: values.pbs_name_or,
@@ -170,7 +184,6 @@ const BudgetSourceModel = () => {
         };
         // save new BudgetSource
         handleAddBudgetSource(newBudgetSource);
-        validation.resetForm();
       }
     },
   });
@@ -207,7 +220,6 @@ const BudgetSourceModel = () => {
       pbs_code: budgetSource.pbs_code,
       pbs_description: budgetSource.pbs_description,
       pbs_status: budgetSource.pbs_status,
-
       is_deletable: budgetSource.is_deletable,
       is_editable: budgetSource.is_editable,
     });
@@ -323,8 +335,8 @@ const BudgetSourceModel = () => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable
+      data?.previledge?.is_role_editable==1 ||
+      data?.previledge?.is_role_deletable==1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -334,8 +346,8 @@ const BudgetSourceModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
-                <Link
+            {cellProps.row.original.is_editable==1 && (  
+                 <Link
                   to="#"
                   className="text-success"
                   onClick={() => {
@@ -349,8 +361,7 @@ const BudgetSourceModel = () => {
                   </UncontrolledTooltip>
                 </Link>
               )}
-
-              {cellProps.row.original.is_deletable && (
+            {cellProps.row.original.is_deletable==1 && (  
                 <Link
                   to="#"
                   className="text-danger"
@@ -376,8 +387,7 @@ const BudgetSourceModel = () => {
 
     return baseColumns;
   }, [handleBudgetSourceClick, toggleViewModal, onClickDelete]);
-  
-  if (isError) {
+ if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -425,12 +435,11 @@ const BudgetSourceModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={true}
+                      isAddButton={data?.previledge?.is_role_can_add==1}
                       isCustomPageSize={true}
                       handleUserClick={handleBudgetSourceClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={t("Results") + "..."}
+                      SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("budget_source")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -459,10 +468,7 @@ const BudgetSourceModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pbs_name_or")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("pbs_name_or")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pbs_name_or"
                       type="text"
@@ -486,10 +492,7 @@ const BudgetSourceModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pbs_name_am")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("pbs_name_am")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pbs_name_am"
                       type="text"
@@ -513,10 +516,7 @@ const BudgetSourceModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pbs_name_en")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("pbs_name_en")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pbs_name_en"
                       type="text"

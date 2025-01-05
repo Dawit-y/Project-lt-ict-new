@@ -13,6 +13,7 @@ import SearchComponent from "../../components/Common/SearchComponent";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 
 import {
   useFetchContractorTypes,
@@ -80,11 +81,12 @@ const ContractorTypeModel = () => {
   const handleAddContractorType = async (data) => {
     try {
       await addContractorType.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+   toast.success(t('add_success'), {
         autoClose: 2000,
       });
+   validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.error(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -94,11 +96,12 @@ const ContractorTypeModel = () => {
   const handleUpdateContractorType = async (data) => {
     try {
       await updateContractorType.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t('update_success'), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -109,17 +112,19 @@ const ContractorTypeModel = () => {
       try {
         const id = contractorType.cnt_id;
         await deleteContractorType.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+      toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+      toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
       setDeleteModal(false);
     }
   };
+
+
   //END CRUD
   //START FOREIGN CALLS
 
@@ -143,20 +148,16 @@ const ContractorTypeModel = () => {
     },
 
     validationSchema: Yup.object({
-      cnt_type_name_or: Yup.string()
-        .required(t("cnt_type_name_or"))
+      cnt_type_name_or: alphanumericValidation(2,100,true)
         .test("unique-cnt_type_name_or", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.cnt_type_name_or == value &&
               item.cnt_id !== contractorType?.cnt_id
           );
-        })
-        .matches(/^(?=.*[a-zA-Z])[a-zA-Z0-9]*$/, t("must_be_alphanumeric")),
+        }),
       cnt_type_name_am: Yup.string().required(t("cnt_type_name_am")),
-      cnt_type_name_en: Yup.string()
-        .required(t("cnt_type_name_en"))
-        .matches(/^(?=.*[a-zA-Z])[a-zA-Z0-9]*$/, t("must_be_alphanumeric")),
+      cnt_type_name_en: alphanumericValidation(2,100,true)
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -175,7 +176,6 @@ const ContractorTypeModel = () => {
         };
         // update ContractorType
         handleUpdateContractorType(updateContractorType);
-        validation.resetForm();
       } else {
         const newContractorType = {
           cnt_type_name_or: values.cnt_type_name_or,
@@ -186,7 +186,6 @@ const ContractorTypeModel = () => {
         };
         // save new ContractorType
         handleAddContractorType(newContractorType);
-        validation.resetForm();
       }
     },
   });
@@ -222,7 +221,6 @@ const ContractorTypeModel = () => {
       cnt_type_name_en: contractorType.cnt_type_name_en,
       cnt_description: contractorType.cnt_description,
       cnt_status: contractorType.cnt_status,
-
       is_deletable: contractorType.is_deletable,
       is_editable: contractorType.is_editable,
     });
@@ -325,8 +323,8 @@ const ContractorTypeModel = () => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable
+     data?.previledge?.is_role_editable==1 ||
+     data?.previledge?.is_role_deletable==1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -336,7 +334,7 @@ const ContractorTypeModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+                {cellProps.row.original.is_editable==1 && (    
                 <Link
                   to="#"
                   className="text-success"
@@ -352,7 +350,7 @@ const ContractorTypeModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+                 {cellProps.row.original.is_deletable==1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -378,7 +376,7 @@ const ContractorTypeModel = () => {
 
     return baseColumns;
   }, [handleContractorTypeClick, toggleViewModal, onClickDelete]);
-  if (isError) {
+ if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -425,11 +423,11 @@ const ContractorTypeModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={true}
+                      isAddButton={data?.previledge?.is_role_can_add==1}
                       isCustomPageSize={true}
                       handleUserClick={handleContractorTypeClicks}
                       isPagination={true}
-                      SearchPlaceholder={t("Results") + "..."}
+                      SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("contractor_type")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -458,10 +456,7 @@ const ContractorTypeModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("cnt_type_name_or")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("cnt_type_name_or")}<span className="text-danger">*</span></Label>
                     <Input
                       name="cnt_type_name_or"
                       type="text"
@@ -475,7 +470,7 @@ const ContractorTypeModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={30}
+                      maxLength={100}
                     />
                     {validation.touched.cnt_type_name_or &&
                     validation.errors.cnt_type_name_or ? (
@@ -485,10 +480,7 @@ const ContractorTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("cnt_type_name_am")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("cnt_type_name_am")}<span className="text-danger">*</span></Label>
                     <Input
                       name="cnt_type_name_am"
                       type="text"
@@ -502,7 +494,7 @@ const ContractorTypeModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={30}
+                      maxLength={100}
                     />
                     {validation.touched.cnt_type_name_am &&
                     validation.errors.cnt_type_name_am ? (
@@ -512,10 +504,7 @@ const ContractorTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("cnt_type_name_en")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("cnt_type_name_en")}<span className="text-danger">*</span></Label>
                     <Input
                       name="cnt_type_name_en"
                       type="text"
@@ -529,7 +518,7 @@ const ContractorTypeModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={30}
+                      maxLength={100}
                     />
                     {validation.touched.cnt_type_name_en &&
                     validation.errors.cnt_type_name_en ? (
