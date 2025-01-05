@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -8,8 +9,11 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
+import SearchComponent from "../../components/Common/SearchComponent";
+//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 
 import {
   useFetchStakeholderTypes,
@@ -20,6 +24,10 @@ import {
 } from "../../queries/stakeholdertype_query";
 import StakeholderTypeModal from "./StakeholderTypeModal";
 import { useTranslation } from "react-i18next";
+
+import { useSelector, useDispatch } from "react-redux";
+import { createSelector } from "reselect";
+
 import {
   Button,
   Col,
@@ -73,11 +81,12 @@ const StakeholderTypeModel = () => {
   const handleAddStakeholderType = async (data) => {
     try {
       await addStakeholderType.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+   toast.success(t('add_success'), {
         autoClose: 2000,
       });
+   validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.error(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -87,26 +96,28 @@ const StakeholderTypeModel = () => {
   const handleUpdateStakeholderType = async (data) => {
     try {
       await updateStakeholderType.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t('update_success'), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
     toggle();
   };
+
   const handleDeleteStakeholderType = async () => {
     if (stakeholderType && stakeholderType.sht_id) {
       try {
         const id = stakeholderType.sht_id;
         await deleteStakeholderType.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+      toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+      toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -131,14 +142,12 @@ const StakeholderTypeModel = () => {
       sht_description:
         (stakeholderType && stakeholderType.sht_description) || "",
       sht_status: (stakeholderType && stakeholderType.sht_status) || "",
-
       is_deletable: (stakeholderType && stakeholderType.is_deletable) || 1,
       is_editable: (stakeholderType && stakeholderType.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
-      sht_type_name_or: Yup.string()
-        .required(t("sht_type_name_or"))
+      sht_type_name_or: alphanumericValidation(2,100,true)
         .test("unique-sht_type_name_or", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
@@ -147,7 +156,8 @@ const StakeholderTypeModel = () => {
           );
         }),
       sht_type_name_am: Yup.string().required(t("sht_type_name_am")),
-      sht_type_name_en: Yup.string().required(t("sht_type_name_en")),
+      sht_type_name_en: alphanumericValidation(2,100,true),
+      sht_description: alphanumericValidation(3,425,true),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -160,13 +170,11 @@ const StakeholderTypeModel = () => {
           sht_type_name_en: values.sht_type_name_en,
           sht_description: values.sht_description,
           sht_status: values.sht_status,
-
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
         // update StakeholderType
         handleUpdateStakeholderType(updateStakeholderType);
-        validation.resetForm();
       } else {
         const newStakeholderType = {
           sht_type_name_or: values.sht_type_name_or,
@@ -177,7 +185,6 @@ const StakeholderTypeModel = () => {
         };
         // save new StakeholderType
         handleAddStakeholderType(newStakeholderType);
-        validation.resetForm();
       }
     },
   });
@@ -213,7 +220,6 @@ const StakeholderTypeModel = () => {
       sht_type_name_en: stakeholderType.sht_type_name_en,
       sht_description: stakeholderType.sht_description,
       sht_status: stakeholderType.sht_status,
-
       is_deletable: stakeholderType.is_deletable,
       is_editable: stakeholderType.is_editable,
     });
@@ -316,8 +322,8 @@ const StakeholderTypeModel = () => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable
+     data?.previledge?.is_role_editable==1 ||
+     data?.previledge?.is_role_deletable==1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -327,7 +333,7 @@ const StakeholderTypeModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {cellProps.row.original.is_editable==1 && (
                 <Link
                   to="#"
                   className="text-success"
@@ -343,7 +349,7 @@ const StakeholderTypeModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {cellProps.row.original.is_deletable==1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -369,7 +375,7 @@ const StakeholderTypeModel = () => {
 
     return baseColumns;
   }, [handleStakeholderTypeClick, toggleViewModal, onClickDelete]);
-  if (isError) {
+ if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -416,11 +422,11 @@ const StakeholderTypeModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={true}
+                      isAddButton={data?.previledge?.is_role_can_add==1}
                       isCustomPageSize={true}
                       handleUserClick={handleStakeholderTypeClicks}
                       isPagination={true}
-                      SearchPlaceholder={t("Results") + "..."}
+                      SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("stakeholder_type")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -449,10 +455,7 @@ const StakeholderTypeModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("sht_type_name_or")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("sht_type_name_or")}<span className="text-danger">*</span></Label>
                     <Input
                       name="sht_type_name_or"
                       type="text"
@@ -476,10 +479,7 @@ const StakeholderTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("sht_type_name_am")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("sht_type_name_am")}<span className="text-danger">*</span></Label>
                     <Input
                       name="sht_type_name_am"
                       type="text"
@@ -503,10 +503,7 @@ const StakeholderTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("sht_type_name_en")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("sht_type_name_en")}<span className="text-danger">*</span></Label>
                     <Input
                       name="sht_type_name_en"
                       type="text"

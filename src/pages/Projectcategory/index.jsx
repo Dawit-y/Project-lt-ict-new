@@ -13,6 +13,7 @@ import SearchComponent from "../../components/Common/SearchComponent";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 
 import {
   useFetchProjectCategorys,
@@ -80,11 +81,12 @@ const ProjectCategoryModel = () => {
   const handleAddProjectCategory = async (data) => {
     try {
       await addProjectCategory.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+  toast.success(t('add_success'), {
         autoClose: 2000,
       });
+  validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.error(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -94,11 +96,12 @@ const ProjectCategoryModel = () => {
   const handleUpdateProjectCategory = async (data) => {
     try {
       await updateProjectCategory.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t('update_success'), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -109,11 +112,11 @@ const ProjectCategoryModel = () => {
       try {
         const id = projectCategory.pct_id;
         await deleteProjectCategory.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+      toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+      toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -136,14 +139,12 @@ const ProjectCategoryModel = () => {
       pct_description:
         (projectCategory && projectCategory.pct_description) || "",
       pct_status: (projectCategory && projectCategory.pct_status) || "",
-
       is_deletable: (projectCategory && projectCategory.is_deletable) || 1,
       is_editable: (projectCategory && projectCategory.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
-      pct_name_or: Yup.string()
-        .required(t("pct_name_or"))
+      pct_name_or: alphanumericValidation(2,100,true)
         .test("unique-pct_name_or", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
@@ -152,8 +153,8 @@ const ProjectCategoryModel = () => {
           );
         }),
       pct_name_am: Yup.string().required(t("pct_name_am")),
-      pct_name_en: Yup.string().required(t("pct_name_en")),
-      //pct_code: Yup.string().required(t("pct_code")),
+      pct_name_en: alphanumericValidation(2,100,true),
+      pct_description: alphanumericValidation(3,425,false)
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -173,7 +174,6 @@ const ProjectCategoryModel = () => {
         };
         // update ProjectCategory
         handleUpdateProjectCategory(updateProjectCategory);
-        validation.resetForm();
       } else {
         const newProjectCategory = {
           pct_name_or: values.pct_name_or,
@@ -185,7 +185,6 @@ const ProjectCategoryModel = () => {
         };
         // save new ProjectCategory
         handleAddProjectCategory(newProjectCategory);
-        validation.resetForm();
       }
     },
   });
@@ -339,8 +338,8 @@ const ProjectCategoryModel = () => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable
+      data?.previledge?.is_role_editable==1 ||
+      data?.previledge?.is_role_deletable==1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -350,7 +349,7 @@ const ProjectCategoryModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+          {cellProps.row.original.is_editable==1 && (
                 <Link
                   to="#"
                   className="text-success"
@@ -366,7 +365,7 @@ const ProjectCategoryModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+          {cellProps.row.original.is_deletable==1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -392,7 +391,7 @@ const ProjectCategoryModel = () => {
 
     return baseColumns;
   }, [handleProjectCategoryClick, toggleViewModal, onClickDelete]);
-  if (isError) {
+ if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -416,7 +415,7 @@ const ProjectCategoryModel = () => {
           />
           <AdvancedSearch
             searchHook={useSearchProjectCategorys}
-            textSearchKeys={["dep_name_or"]}
+            textSearchKeys={["pct_name_or"]}
             dropdownSearchKeys={[]}
             checkboxSearchKeys={[]}
             onSearchResult={handleSearchResults}
@@ -439,11 +438,11 @@ const ProjectCategoryModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={true}
+                      isAddButton={data?.previledge?.is_role_can_add==1}
                       isCustomPageSize={true}
                       handleUserClick={handleProjectCategoryClicks}
                       isPagination={true}
-                      SearchPlaceholder={t("Results") + "..."}
+                      SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("project_category")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -472,10 +471,7 @@ const ProjectCategoryModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pct_name_or")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("pct_name_or")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pct_name_or"
                       type="text"
@@ -499,10 +495,7 @@ const ProjectCategoryModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pct_name_am")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("pct_name_am")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pct_name_am"
                       type="text"
@@ -526,10 +519,7 @@ const ProjectCategoryModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pct_name_en")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("pct_name_en")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pct_name_en"
                       type="text"

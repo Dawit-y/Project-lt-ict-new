@@ -75,25 +75,26 @@ const UserRoleModel = (props) => {
   const handleAddUserRole = async (data) => {
     try {
       await addUserRole.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.success(t("update_failure"), {
         autoClose: 2000,
       });
     }
     toggle();
   };
-
   const handleUpdateUserRole = async (data) => {
     try {
       await updateUserRole.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.success(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -104,11 +105,11 @@ const UserRoleModel = (props) => {
       try {
         const id = userRole.url_id;
         await deleteUserRole.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       }
@@ -151,8 +152,7 @@ const UserRoleModel = (props) => {
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
-        handleUpdateUserRole(updateUserRole);
-        validation.resetForm();
+        handleUpdateUserRole(updateUserRole);        
       } else {
         const newUserRole = {
           url_user_id: passedId,
@@ -161,13 +161,11 @@ const UserRoleModel = (props) => {
           url_role_id: Number(values.url_role_id),
         };
         handleAddUserRole(newUserRole);
-        validation.resetForm();
       }
     },
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-
   const roleDataMap = useMemo(() => {
     return rolesData?.data.reduce((acc, role) => {
       acc[role.rol_id] = role.rol_name;
@@ -365,7 +363,7 @@ const UserRoleModel = (props) => {
           handleUserClick={handleUserRoleClicks}
           isPagination={true}
           // SearchPlaceholder="26 records..."
-          SearchPlaceholder={26 + " " + t("Results") + "..."}
+          SearchPlaceholder={t("filter_placeholder")}
           buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
           buttonName={t("add") + " " + t("user_role")}
           tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"

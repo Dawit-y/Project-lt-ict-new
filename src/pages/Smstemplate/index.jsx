@@ -129,6 +129,10 @@ const SmsTemplateModel = () => {
       smt_template_name: (smsTemplate && smsTemplate.smt_template_name) || "",
       smt_template_content:
         (smsTemplate && smsTemplate.smt_template_content) || "",
+        smt_template_content_am:
+        (smsTemplate && smsTemplate.smt_template_content_am) || "",
+        smt_template_content_en:
+        (smsTemplate && smsTemplate.smt_template_content_en) || "",
       smt_description: (smsTemplate && smsTemplate.smt_description) || "",
       smt_status: (smsTemplate && smsTemplate.smt_status) || "",
 
@@ -137,7 +141,9 @@ const SmsTemplateModel = () => {
     },
     validationSchema: Yup.object({
       smt_template_name: alphanumericValidation(3, 200, true),
-      smt_template_content: alphanumericValidation(50, 200, true),
+      smt_template_content: alphanumericValidation(10, 200, true),
+      smt_template_content_en: alphanumericValidation(10, 200, false),
+      //smt_template_content_am: alphanumericValidation(50, 200, false),
       smt_description: alphanumericValidation(3, 200, false),
     }),
     validateOnBlur: true,
@@ -148,6 +154,8 @@ const SmsTemplateModel = () => {
           smt_id: smsTemplate?.smt_id,
           smt_template_name: values.smt_template_name,
           smt_template_content: values.smt_template_content,
+          smt_template_content_am: values.smt_template_content_am,
+          smt_template_content_en: values.smt_template_content_en,
           smt_description: values.smt_description,
           smt_status: values.smt_status,
 
@@ -160,6 +168,8 @@ const SmsTemplateModel = () => {
         const newSmsTemplate = {
           smt_template_name: values.smt_template_name,
           smt_template_content: values.smt_template_content,
+          smt_template_content_am: values.smt_template_content_am,
+          smt_template_content_en: values.smt_template_content_en,
           smt_description: values.smt_description,
           smt_status: values.smt_status,
         };
@@ -197,6 +207,8 @@ const SmsTemplateModel = () => {
       smt_id: smsTemplate.smt_id,
       smt_template_name: smsTemplate.smt_template_name,
       smt_template_content: smsTemplate.smt_template_content,
+      smt_template_content_am: smsTemplate.smt_template_content_am,
+      smt_template_content_en: smsTemplate.smt_template_content_en,
       smt_description: smsTemplate.smt_description,
       smt_status: smsTemplate.smt_status,
 
@@ -251,19 +263,6 @@ const SmsTemplateModel = () => {
             <span>
               {truncateText(cellProps.row.original.smt_template_content, 30) ||
                 "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "smt_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.smt_description, 30) || "-"}
             </span>
           );
         },
@@ -394,7 +393,7 @@ const SmsTemplateModel = () => {
                       handleUserClick={handleSmsTemplateClicks}
                       isPagination={true}
                       // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("sms_template")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -467,6 +466,54 @@ const SmsTemplateModel = () => {
                     validation.errors.smt_template_content ? (
                       <FormFeedback type="invalid">
                         {validation.errors.smt_template_content}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("smt_template_content_am")}</Label>
+                    <Input
+                      name="smt_template_content_am"
+                      type="textarea"
+                      placeholder={t("smt_template_content_am")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.smt_template_content_am || ""}
+                      invalid={
+                        validation.touched.smt_template_content_am &&
+                        validation.errors.smt_template_content_am
+                          ? true
+                          : false
+                      }
+                      maxLength={200}
+                    />
+                    {validation.touched.smt_template_content_am &&
+                    validation.errors.smt_template_content_am ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.smt_template_content_am}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("smt_template_content_en")}</Label>
+                    <Input
+                      name="smt_template_content_en"
+                      type="textarea"
+                      placeholder={t("smt_template_content_en")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.smt_template_content_en || ""}
+                      invalid={
+                        validation.touched.smt_template_content_en &&
+                        validation.errors.smt_template_content_en
+                          ? true
+                          : false
+                      }
+                      maxLength={200}
+                    />
+                    {validation.touched.smt_template_content_en &&
+                    validation.errors.smt_template_content_en ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.smt_template_content_en}
                       </FormFeedback>
                     ) : null}
                   </Col>

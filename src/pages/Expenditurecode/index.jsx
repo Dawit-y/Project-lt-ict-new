@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -8,8 +9,11 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
+import SearchComponent from "../../components/Common/SearchComponent";
+//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 
 import {
   useFetchExpenditureCodes,
@@ -20,6 +24,10 @@ import {
 } from "../../queries/expenditurecode_query";
 import ExpenditureCodeModal from "./ExpenditureCodeModal";
 import { useTranslation } from "react-i18next";
+
+import { useSelector, useDispatch } from "react-redux";
+import { createSelector } from "reselect";
+
 import {
   Button,
   Col,
@@ -37,7 +45,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -73,11 +81,12 @@ const ExpenditureCodeModel = () => {
   const handleAddExpenditureCode = async (data) => {
     try {
       await addExpenditureCode.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+      toast.success(t('add_success'), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.error(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -87,26 +96,28 @@ const ExpenditureCodeModel = () => {
   const handleUpdateExpenditureCode = async (data) => {
     try {
       await updateExpenditureCode.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t('update_success'), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
     toggle();
   };
+
   const handleDeleteExpenditureCode = async () => {
     if (expenditureCode && expenditureCode.pec_id) {
       try {
         const id = expenditureCode.pec_id;
         await deleteExpenditureCode.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+      toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+      toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -132,22 +143,22 @@ const ExpenditureCodeModel = () => {
     },
 
     validationSchema: Yup.object({
-      pec_name: Yup.string()
-        .required(t("pec_name"))
+      pec_name: alphanumericValidation(2,100,true)
         .test("unique-pec_name", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.pec_name == value && item.pec_id !== expenditureCode?.pec_id
           );
         }),
-      pec_code: Yup.string()
-        .required(t("pec_code"))
+      pec_code: alphanumericValidation(2,100,true)
         .test("unique-pec_code", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.pec_code == value && item.pec_id !== expenditureCode?.pec_id
           );
         }),
+         pec_description: alphanumericValidation(3,425,false)
+
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -164,7 +175,6 @@ const ExpenditureCodeModel = () => {
         };
         // update ExpenditureCode
         handleUpdateExpenditureCode(updateExpenditureCode);
-        validation.resetForm();
       } else {
         const newExpenditureCode = {
           pec_name: values.pec_name,
@@ -174,7 +184,6 @@ const ExpenditureCodeModel = () => {
         };
         // save new ExpenditureCode
         handleAddExpenditureCode(newExpenditureCode);
-        validation.resetForm();
       }
     },
   });
@@ -301,8 +310,8 @@ const ExpenditureCodeModel = () => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable
+      data?.previledge?.is_role_editable==1 ||
+ data?.previledge?.is_role_deletable==1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -312,7 +321,7 @@ const ExpenditureCodeModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {cellProps.row.original.is_editable==1 && (  
                 <Link
                   to="#"
                   className="text-success"
@@ -328,7 +337,7 @@ const ExpenditureCodeModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {cellProps.row.original.is_deletable==1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -354,10 +363,6 @@ const ExpenditureCodeModel = () => {
 
     return baseColumns;
   }, [handleExpenditureCodeClick, toggleViewModal, onClickDelete]);
-
-  if (isError) {
-    <FetchErrorHandler error={error} refetch={refetch} />;
-  }
 
   return (
     <React.Fragment>
@@ -403,11 +408,11 @@ const ExpenditureCodeModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={true}
+                      isAddButton={data?.previledge?.is_role_can_add==1}
                       isCustomPageSize={true}
                       handleUserClick={handleExpenditureCodeClicks}
                       isPagination={true}
-                      SearchPlaceholder={t("Results") + "..."}
+                      SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("expenditure_code")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -436,10 +441,7 @@ const ExpenditureCodeModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pec_name")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("pec_name")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pec_name"
                       type="text"

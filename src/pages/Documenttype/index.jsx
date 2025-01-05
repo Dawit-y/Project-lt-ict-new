@@ -13,6 +13,7 @@ import SearchComponent from "../../components/Common/SearchComponent";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 
 import {
   useFetchDocumentTypes,
@@ -79,11 +80,12 @@ const DocumentTypeModel = () => {
   const handleAddDocumentType = async (data) => {
     try {
       await addDocumentType.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+  toast.success(t('add_success'), {
         autoClose: 2000,
       });
+  validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.error(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -93,11 +95,12 @@ const DocumentTypeModel = () => {
   const handleUpdateDocumentType = async (data) => {
     try {
       await updateDocumentType.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t('update_success'), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -108,17 +111,18 @@ const DocumentTypeModel = () => {
       try {
         const id = documentType.pdt_id;
         await deleteDocumentType.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+      toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+      toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
       setDeleteModal(false);
     }
   };
+
   //END CRUD
   //START FOREIGN CALLS
 
@@ -140,8 +144,7 @@ const DocumentTypeModel = () => {
     },
 
     validationSchema: Yup.object({
-      pdt_doc_name_or: Yup.string()
-        .required(t("pdt_doc_name_or"))
+      pdt_doc_name_or: alphanumericValidation(2,100,true)
         .test("unique-pdt_doc_name_or", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
@@ -150,8 +153,8 @@ const DocumentTypeModel = () => {
           );
         }),
       pdt_doc_name_am: Yup.string().required(t("pdt_doc_name_am")),
-      pdt_doc_name_en: Yup.string().required(t("pdt_doc_name_en")),
-      //pdt_code: Yup.string().required(t("pdt_code")),
+      pdt_doc_name_en: alphanumericValidation(2,100,true),
+      pdt_description: alphanumericValidation(3,425,false)
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -171,7 +174,6 @@ const DocumentTypeModel = () => {
         };
         // update DocumentType
         handleUpdateDocumentType(updateDocumentType);
-        validation.resetForm();
       } else {
         const newDocumentType = {
           pdt_doc_name_or: values.pdt_doc_name_or,
@@ -183,7 +185,6 @@ const DocumentTypeModel = () => {
         };
         // save new DocumentType
         handleAddDocumentType(newDocumentType);
-        validation.resetForm();
       }
     },
   });
@@ -220,7 +221,6 @@ const DocumentTypeModel = () => {
       pdt_code: documentType.pdt_code,
       pdt_description: documentType.pdt_description,
       pdt_status: documentType.pdt_status,
-
       is_deletable: documentType.is_deletable,
       is_editable: documentType.is_editable,
     });
@@ -336,8 +336,8 @@ const DocumentTypeModel = () => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable
+  data?.previledge?.is_role_editable==1 ||
+ data?.previledge?.is_role_deletable==1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -347,7 +347,7 @@ const DocumentTypeModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+                {cellProps.row.original.is_editable==1 && (     
                 <Link
                   to="#"
                   className="text-success"
@@ -363,7 +363,7 @@ const DocumentTypeModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+                {cellProps.row.original.is_deletable==1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -389,7 +389,7 @@ const DocumentTypeModel = () => {
 
     return baseColumns;
   }, [handleDocumentTypeClick, toggleViewModal, onClickDelete]);
-  if (isError) {
+ if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -436,11 +436,11 @@ const DocumentTypeModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={true}
+                      isAddButton={data?.previledge?.is_role_can_add==1}
                       isCustomPageSize={true}
                       handleUserClick={handleDocumentTypeClicks}
                       isPagination={true}
-                      SearchPlaceholder={t("Results") + "..."}
+                      SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("document_type")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -469,10 +469,7 @@ const DocumentTypeModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pdt_doc_name_or")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("pdt_doc_name_or")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pdt_doc_name_or"
                       type="text"
@@ -496,10 +493,7 @@ const DocumentTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pdt_doc_name_am")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("pdt_doc_name_am")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pdt_doc_name_am"
                       type="text"
@@ -523,10 +517,7 @@ const DocumentTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pdt_doc_name_en")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("pdt_doc_name_en")}<span className="text-danger">*</span></Label>
                     <Input
                       name="pdt_doc_name_en"
                       type="text"

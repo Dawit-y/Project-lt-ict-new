@@ -11,6 +11,8 @@ import Spinners from "../../components/Common/Spinner";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+
 import {
   useFetchDepartments,
   useSearchDepartments,
@@ -71,33 +73,53 @@ const DepartmentModel = () => {
   const updateDepartment = useUpdateDepartment();
   const deleteDepartment = useDeleteDepartment();
 
-  const handleAddDepartment = async (department) => {
+    //START CRUD
+  const handleAddDepartment = async (data) => {
     try {
-      await addDepartment.mutateAsync(department);
-      toast.success(`Department added successfully`, {
+      await addDepartment.mutateAsync(data);
+   toast.success(t('add_success'), {
         autoClose: 2000,
       });
+   validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add department", {
+      toast.error(t('add_failure'), {
         autoClose: 2000,
       });
     }
     toggle();
   };
 
-  const handleUpdateDepartment = async (department) => {
+  const handleUpdateDepartment = async (data) => {
     try {
-      await updateDepartment.mutateAsync(department);
-      toast.success(`Department ${department.dep_id} updated successfully`, {
+      await updateDepartment.mutateAsync(data);
+      toast.success(t('update_success'), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update department ${department.dep_id}`, {
+      toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
     toggle();
   };
+  const handleDeleteDepartment = async () => {
+    if (department && department.cnt_id) {
+      try {
+        const id = department.cnt_id;
+        await deleteDepartment.mutateAsync(id);
+      toast.success(t('delete_success'), {
+          autoClose: 2000,
+        });
+      } catch (error) {
+      toast.error(t('delete_failure'), {
+          autoClose: 2000,
+        });
+      }
+      setDeleteModal(false);
+    }
+  };
+
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
@@ -122,8 +144,7 @@ const DepartmentModel = () => {
     },
 
     validationSchema: Yup.object({
-      dep_name_or: Yup.string()
-        .required(t("dep_name_or"))
+      dep_name_or: alphanumericValidation(2,100,true)
         .test("unique-dep_name_or", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
@@ -131,34 +152,20 @@ const DepartmentModel = () => {
           );
         }),
       dep_name_am: Yup.string()
-        .required(t("dep_name_am"))
         .test("unique-dep_name_am", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.dep_name_am == value && item.dep_id !== department?.dep_id
           );
         }),
-      dep_name_en: Yup.string()
-        .required(t("dep_name_en"))
+      dep_name_en:alphanumericValidation(2,100,true)
         .test("unique-dep_name_en", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.dep_name_en == value && item.dep_id !== department?.dep_id
           );
         }),
-      /*   dep_code: Yup.string()
-        .required(t("dep_code"))
-        .test("unique-code", t("Already exists"), (value) => {
-          return !data?.data.some(
-            (item) =>
-              item.dep_code == value && item.dep_id !== department?.dep_id
-          );
-        }),*/
-      //dep_available_at_region: Yup.boolean(),
-      //dep_available_at_zone: Yup.boolean(),
-      //dep_available_at_woreda: Yup.boolean(),
-      //dep_description: Yup.string().required(t("dep_description")),
-      //dep_status: Yup.string().required(t("dep_status")),
+          dep_description: alphanumericValidation(3,425,false)
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -181,7 +188,6 @@ const DepartmentModel = () => {
         };
         // update Department
         handleUpdateDepartment(updateDepartmentData);
-        validation.resetForm();
       } else {
         const newDepartmentData = {
           dep_name_or: values.dep_name_or,
@@ -196,7 +202,6 @@ const DepartmentModel = () => {
         };
         // save new Departments
         handleAddDepartment(newDepartmentData);
-        validation.resetForm();
       }
     },
   });
@@ -254,22 +259,6 @@ const DepartmentModel = () => {
     setDeleteModal(true);
   };
 
-  const handleDeleteDepartment = async () => {
-    if (department && department.dep_id) {
-      try {
-        const id = department.dep_id;
-        await deleteDepartment.mutateAsync(id);
-        toast.success(`Department ${id} deleted successfully`, {
-          autoClose: 2000,
-        });
-      } catch (error) {
-        toast.error(`Failed to delete department ${department.dep_id}`, {
-          autoClose: 2000,
-        });
-      }
-      setDeleteModal(false);
-    }
-  };
   const handleDepartmentClicks = () => {
     setIsEdit(false);
     setDepartment("");
@@ -402,8 +391,8 @@ const DepartmentModel = () => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable
+   data?.previledge?.is_role_editable==1 ||
+ data?.previledge?.is_role_deletable==1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -413,9 +402,8 @@ const DepartmentModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {(cellProps.row.original?.is_editable ||
-                cellProps.row.original?.is_role_editable) && (
-                <Link
+            {cellProps.row.original.is_editable==1 && ( 
+                 <Link
                   to="#"
                   className="text-success"
                   onClick={() => {
@@ -433,9 +421,8 @@ const DepartmentModel = () => {
                 </Link>
               )}
 
-              {(cellProps.row.original?.is_deletable ||
-                cellProps.row.original?.is_role_deletable) && (
-                <Link
+             {cellProps.row.original.is_deletable==1 && (
+                  <Link
                   to="#"
                   className="text-danger"
                   onClick={() => {
@@ -487,26 +474,8 @@ const DepartmentModel = () => {
           <AdvancedSearch
             searchHook={useSearchDepartments}
             textSearchKeys={["dep_name_or", "dep_name_am", "dep_name_en"]}
-            dropdownSearchKeys={[
-              {
-                key: "example",
-                options: [
-                  { value: "Freelance", label: "Example1" },
-                  { value: "Full Time", label: "Example2" },
-                  { value: "Part Time", label: "Example3" },
-                  { value: "Internship", label: "Example4" },
-                ],
-              },
-            ]}
-            checkboxSearchKeys={[
-              {
-                key: "example1",
-                options: [
-                  { value: "Engineering", label: "Example1" },
-                  { value: "Science", label: "Example2" },
-                ],
-              },
-            ]}
+            dropdownSearchKeys={[]}
+            checkboxSearchKeys={[]}
             onSearchResult={handleSearchResults}
             setIsSearchLoading={setIsSearchLoading}
             setSearchResults={setSearchResults}
@@ -527,11 +496,11 @@ const DepartmentModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={true}
+                      isAddButton={data?.previledge?.is_role_can_add==1}
                       isCustomPageSize={true}
                       handleUserClick={handleDepartmentClicks}
                       isPagination={true}
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("department")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"

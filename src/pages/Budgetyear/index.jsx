@@ -13,6 +13,7 @@ import SearchComponent from "../../components/Common/SearchComponent";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 
 import {
   useFetchBudgetYears,
@@ -79,11 +80,12 @@ const BudgetYearModel = () => {
   const handleAddBudgetYear = async (data) => {
     try {
       await addBudgetYear.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+  toast.success(t('add_success'), {
         autoClose: 2000,
       });
+  validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.error(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -93,26 +95,29 @@ const BudgetYearModel = () => {
   const handleUpdateBudgetYear = async (data) => {
     try {
       await updateBudgetYear.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t('update_success'), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
     toggle();
   };
+
+
   const handleDeleteBudgetYear = async () => {
     if (budgetYear && budgetYear.bdy_id) {
       try {
         const id = budgetYear.bdy_id;
         await deleteBudgetYear.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+      toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+      toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -136,19 +141,15 @@ const BudgetYearModel = () => {
       is_editable: (budgetYear && budgetYear.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      bdy_name: Yup.number()
-        .required(t("bdy_name"))
-        .test("unique-bdy_name", t("Already exists"), (value) => {
+      bdy_name:numberValidation(2017,2040,true).test("unique-bdy_name", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.bdy_name == value && item.bdy_id !== budgetYear?.bdy_id
           );
-        })
-        .min(2017, t("budget_year_range"))
-        .max(2040, t("budget_year_range"))
-        .integer("integer_only"),
-      //bdy_code: Yup.string().required(t("bdy_code")),
+        }),
+        bdy_description: alphanumericValidation(3,425,false)
     }),
+
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
@@ -165,7 +166,6 @@ const BudgetYearModel = () => {
         };
         // update BudgetYear
         handleUpdateBudgetYear(updateBudgetYear);
-        validation.resetForm();
       } else {
         const newBudgetYear = {
           bdy_name: values.bdy_name,
@@ -177,7 +177,7 @@ const BudgetYearModel = () => {
         };
         // save new BudgetYear
         handleAddBudgetYear(newBudgetYear);
-        validation.resetForm();
+        
       }
     },
   });
@@ -302,8 +302,8 @@ const BudgetYearModel = () => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable
+      data?.previledge?.is_role_editable==1 ||
+      data?.previledge?.is_role_deletable==1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -313,7 +313,7 @@ const BudgetYearModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+{cellProps.row.original.is_editable==1 && ( 
                 <Link
                   to="#"
                   className="text-success"
@@ -329,8 +329,8 @@ const BudgetYearModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
-                <Link
+           {cellProps.row.original.is_deletable==1 && (
+                           <Link
                   to="#"
                   className="text-danger"
                   onClick={() => {
@@ -355,7 +355,7 @@ const BudgetYearModel = () => {
 
     return baseColumns;
   }, [handleBudgetYearClick, toggleViewModal, onClickDelete]);
-  if (isError) {
+ if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -402,11 +402,11 @@ const BudgetYearModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={true}
+                      isAddButton={data?.previledge?.is_role_can_add==1}
                       isCustomPageSize={true}
                       handleUserClick={handleBudgetYearClicks}
                       isPagination={true}
-                      SearchPlaceholder={t("Results") + "..."}
+                      SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add") + " " + t("budget_year")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -435,10 +435,7 @@ const BudgetYearModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("bdy_name")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("bdy_name")}<span className="text-danger">*</span></Label>
                     <Input
                       name="bdy_name"
                       type="number"
@@ -450,6 +447,7 @@ const BudgetYearModel = () => {
                           validation.handleChange(e);
                         }
                       }}
+
                       onBlur={validation.handleBlur}
                       value={validation.values.bdy_name || ""}
                       invalid={

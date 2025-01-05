@@ -13,6 +13,7 @@ import SearchComponent from "../../components/Common/SearchComponent";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 
 import {
   useFetchContractTerminationReasons,
@@ -81,11 +82,12 @@ const ContractTerminationReasonModel = () => {
   const handleAddContractTerminationReason = async (data) => {
     try {
       await addContractTerminationReason.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+      toast.success(t('add_success'), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.error(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -95,11 +97,12 @@ const ContractTerminationReasonModel = () => {
   const handleUpdateContractTerminationReason = async (data) => {
     try {
       await updateContractTerminationReason.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t('update_success'), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -110,11 +113,11 @@ const ContractTerminationReasonModel = () => {
       try {
         const id = contractTerminationReason.ctr_id;
         await deleteContractTerminationReason.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+      toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+      toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -122,6 +125,7 @@ const ContractTerminationReasonModel = () => {
     }
   };
   //END CRUD
+
   //START FOREIGN CALLS
 
   // validation
@@ -157,10 +161,8 @@ const ContractTerminationReasonModel = () => {
         (contractTerminationReason && contractTerminationReason.is_editable) ||
         1,
     },
-
     validationSchema: Yup.object({
-      ctr_reason_name_or: Yup.string()
-        .required(t("ctr_reason_name_or"))
+      ctr_reason_name_or: alphanumericValidation(2,100,true)
         .test("unique-ctr_reason_name_or", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
@@ -169,7 +171,9 @@ const ContractTerminationReasonModel = () => {
           );
         }),
       ctr_reason_name_am: Yup.string().required(t("ctr_reason_name_am")),
-      ctr_reason_name_en: Yup.string().required(t("ctr_reason_name_en")),
+      ctr_reason_name_en: alphanumericValidation(2,100,true),
+      ctr_description: alphanumericValidation(3,425,false)
+
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -188,7 +192,6 @@ const ContractTerminationReasonModel = () => {
         };
         // update ContractTerminationReason
         handleUpdateContractTerminationReason(updateContractTerminationReason);
-        validation.resetForm();
       } else {
         const newContractTerminationReason = {
           ctr_reason_name_or: values.ctr_reason_name_or,
@@ -199,7 +202,6 @@ const ContractTerminationReasonModel = () => {
         };
         // save new ContractTerminationReason
         handleAddContractTerminationReason(newContractTerminationReason);
-        validation.resetForm();
       }
     },
   });
@@ -341,8 +343,8 @@ const ContractTerminationReasonModel = () => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable
+      data?.previledge?.is_role_editable==1 ||
+ data?.previledge?.is_role_deletable==1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -352,8 +354,8 @@ const ContractTerminationReasonModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
-                <Link
+{cellProps.row.original.is_editable==1 && (            
+               <Link
                   to="#"
                   className="text-success"
                   onClick={() => {
@@ -368,7 +370,7 @@ const ContractTerminationReasonModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+   {cellProps.row.original.is_deletable==1 && (    
                 <Link
                   to="#"
                   className="text-danger"
@@ -394,7 +396,7 @@ const ContractTerminationReasonModel = () => {
 
     return baseColumns;
   }, [handleContractTerminationReasonClick, toggleViewModal, onClickDelete]);
-  if (isError) {
+ if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -441,12 +443,11 @@ const ContractTerminationReasonModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={true}
+                      isAddButton={data?.previledge?.is_role_can_add==1}
                       isCustomPageSize={true}
                       handleUserClick={handleContractTerminationReasonClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={t("Results") + "..."}
+                      SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={
                         t("add") + " " + t("contract_termination_reason")
@@ -477,10 +478,7 @@ const ContractTerminationReasonModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("ctr_reason_name_or")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("ctr_reason_name_or")}<span className="text-danger">*</span></Label>
                     <Input
                       name="ctr_reason_name_or"
                       type="text"
@@ -504,10 +502,7 @@ const ContractTerminationReasonModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("ctr_reason_name_am")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("ctr_reason_name_am")}<span className="text-danger">*</span></Label>
                     <Input
                       name="ctr_reason_name_am"
                       type="text"
@@ -531,10 +526,7 @@ const ContractTerminationReasonModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("ctr_reason_name_en")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("ctr_reason_name_en")}<span className="text-danger">*</span></Label>
                     <Input
                       name="ctr_reason_name_en"
                       type="text"
