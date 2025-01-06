@@ -65,7 +65,11 @@ import {
   FormGroup,
   InputGroup,
 } from "reactstrap";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
@@ -251,38 +255,50 @@ const ProjectModel = () => {
     },
 
     validationSchema: Yup.object({
-      prj_name: alphanumericValidation(3, 200, true)
-        .test("unique-prj_name", t("Already exists"), (value) => {
+      prj_name: alphanumericValidation(3, 200, true).test(
+        "unique-prj_name",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) => item.prj_name == value && item.prj_id !== project?.prj_id
           );
-        }),
-      prj_name_am: alphanumericValidation(3, 200, true)
-        .test("unique-prj_name_am", t("Already exists"), (value) => {
+        }
+      ),
+      prj_name_am: alphanumericValidation(3, 200, true).test(
+        "unique-prj_name_am",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) =>
               item.prj_name_am == value && item.prj_id !== project?.prj_id
           );
-        }),
-      prj_name_en: alphanumericValidation(3, 200, true)
-        .test("unique-prj_name_en", t("Already exists"), (value) => {
+        }
+      ),
+      prj_name_en: alphanumericValidation(3, 200, true).test(
+        "unique-prj_name_en",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) =>
               item.prj_name_en == value && item.prj_id !== project?.prj_id
           );
-        }),
-      prj_code: alphanumericValidation(3, 20, true)
-        .test("unique-prj_code", t("Already exists"), (value) => {
+        }
+      ),
+      prj_code: alphanumericValidation(3, 20, true).test(
+        "unique-prj_code",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) => item.prj_code == value && item.prj_id !== project?.prj_id
           );
-        }),
+        }
+      ),
       //prj_project_status_id: Yup.string().required(t('prj_project_status_id')),
       prj_project_category_id: numberValidation(1, 200, true),
       //prj_project_budget_source_id: Yup.string().required(t('prj_project_budget_source_id')),
-      prj_total_estimate_budget: amountValidation(1000,1000000000000,true),
+      prj_total_estimate_budget: amountValidation(1000, 1000000000000, true),
 
-      prj_total_actual_budget: amountValidation(1000,1000000000000,false),
+      prj_total_actual_budget: amountValidation(1000, 1000000000000, false),
       //prj_geo_location: Yup.string().required(t('prj_geo_location')),
       prj_sector_id: Yup.string().required(t("prj_sector_id")),
       prj_location_region_id: Yup.string().required(
@@ -293,12 +309,12 @@ const ProjectModel = () => {
         t("prj_location_woreda_id")
       ),
       prj_department_id: Yup.string().required(t("prj_department_id")),
-      prj_urban_ben_number: numberValidation(10,10000000,false),
-      prj_rural_ben_number: numberValidation(10,10000000,false),
+      prj_urban_ben_number: numberValidation(10, 10000000, false),
+      prj_rural_ben_number: numberValidation(10, 10000000, false),
       //prj_location_zone_id: Yup.string().required(t('prj_location_zone_id')),
       //prj_location_woreda_id: Yup.string().required(t('prj_location_woreda_id')),
       //prj_location_kebele_id: Yup.string().required(t('prj_location_kebele_id')),
-      prj_location_description: alphanumericValidation(3,425,false),
+      prj_location_description: alphanumericValidation(3, 425, false),
       //prj_owner_region_id: Yup.string().required(t('prj_owner_region_id')),
       //prj_owner_zone_id: Yup.string().required(t('prj_owner_zone_id')),
       //prj_owner_woreda_id: Yup.string().required(t('prj_owner_woreda_id')),
@@ -317,9 +333,9 @@ const ProjectModel = () => {
 
       //prj_end_date_plan_gc: Yup.string().required(t("prj_end_date_plan_gc")),
       //prj_end_date_plan_et: Yup.string().required(t('prj_end_date_plan_et')),
-      prj_outcome: alphanumericValidation(3,425,true),
+      prj_outcome: alphanumericValidation(3, 425, true),
       //prj_deleted: Yup.string().required(t('prj_deleted')),
-      prj_remark: alphanumericValidation(3,425,false),
+      prj_remark: alphanumericValidation(3, 425, false),
       //prj_created_date: Yup.string().required(t('prj_created_date')),
       //prj_owner_id: Yup.string().required(t('prj_owner_id')),
       //prj_urban_ben_number: Yup.string().required(t('prj_urban_ben_number')),
@@ -372,7 +388,7 @@ const ProjectModel = () => {
           is_editable: values.is_editable,
         };
         // update Project
-        handleUpdateProject(updateProject);        
+        handleUpdateProject(updateProject);
       } else {
         const newProject = {
           prj_name: values.prj_name,
@@ -1253,7 +1269,7 @@ const ProjectModel = () => {
                           ) : null}
                         </FormGroup>
                       </Col>*/}
-                     {/* <Col className="col-md-4 mb-3">
+                      {/* <Col className="col-md-4 mb-3">
                         <FormGroup>
                           <Label>{t("prj_end_date_actual_gc")}</Label>
                           <InputGroup>

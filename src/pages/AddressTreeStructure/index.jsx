@@ -46,7 +46,9 @@ const App_tree = () => {
   const [descendants, setDescendants] = useState([]);
   const { t } = useTranslation();
 
-  const { data, isLoading, isError, error, refetch } = useFetchFolders();
+  const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+  const userId = storedUser?.user.usr_id;
+  const { data, isLoading, isError, error, refetch } = useFetchFolders(userId);
   const addFolder = useAddFolder();
   const updateFolder = useRenameFolder();
   const deleteFolder = useDeleteFolder();
@@ -98,7 +100,10 @@ const App_tree = () => {
   };
   const checkNameExistsUpdate = (folders, name) => {
     for (const folder of folders) {
-      if (folder.name.trim() == name.trim() && folder.id != selectedNode?.id)
+      if (
+        String(folder?.name).trim() == String(name).trim() &&
+        folder.id != selectedNode?.id
+      )
         return true;
       if (folder.children && folder.children.length > 0) {
         if (checkNameExistsUpdate(folder.children, name)) return true;
@@ -199,10 +204,7 @@ const App_tree = () => {
       />
       <div className="page-content">
         <div className="container-fluid">
-          <Breadcrumbs
-            title={t("address_tree_Search")}
-            
-          />
+          <Breadcrumbs title={t("address_tree_Search")} />
           <div className="d-flex vh-100">
             <div className="w-30 p-3 bg-white border-end overflow-auto shadow-sm">
               <h4 className="mb-2 text-secondary">
@@ -235,8 +237,7 @@ const App_tree = () => {
                       </h5>
                     ) : (
                       <span className="my-auto">
-                        <h6 className="my-auto">
-                        </h6>
+                        <h6 className="my-auto"></h6>
                       </span>
                     )}
                   </div>
@@ -255,7 +256,7 @@ const App_tree = () => {
                           <span className="me-2">
                             <i className="mdi mdi-plus"></i>
                           </span>
-                          <span className="">{t('add')}</span>
+                          <span className="">{t("add")}</span>
                         </NavLink>
                       </NavItem>
                       <NavItem className="flex-grow-1 text-center">
@@ -269,10 +270,10 @@ const App_tree = () => {
                           <span className="me-2">
                             <i className="mdi mdi-pencil"></i>
                           </span>
-                          <span className="">{t('edit')}</span>
+                          <span className="">{t("edit")}</span>
                         </NavLink>
                       </NavItem>
-                     {/* <NavItem className="flex-grow-1 text-center">
+                      {/* <NavItem className="flex-grow-1 text-center">
                         <NavLink
                           style={{ cursor: "pointer" }}
                           className={classnames({ active: activeTab === "3" })}
@@ -283,9 +284,9 @@ const App_tree = () => {
                           <span className="me-2">
                             <i className="mdi mdi-delete"></i>
                           </span>
-                          <span className="">{t('delete')}</span>
+                          <span className="">{t("delete")}</span>
                         </NavLink>
-                      </NavItem>*/}
+                      </NavItem> */}
                     </Nav>
                     <TabContent
                       activeTab={activeTab}

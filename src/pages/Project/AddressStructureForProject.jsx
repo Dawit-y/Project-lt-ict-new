@@ -6,7 +6,9 @@ import { useFetchFolders } from "../../queries/address_structure_query";
 
 const AddressStructureForProject = ({ onNodeSelect, setIsAddressLoading }) => {
   const { t } = useTranslation();
-  const { data, isLoading, isError, error, refetch } = useFetchFolders();
+  const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+  const userId = storedUser?.user.usr_id;
+  const { data, isLoading, isError, error, refetch } = useFetchFolders(userId);
 
   useEffect(() => {
     setIsAddressLoading(isLoading);

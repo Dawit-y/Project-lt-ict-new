@@ -3,6 +3,14 @@ import { Navigate, useLocation } from "react-router-dom";
 import { authProtectedRoutes } from ".";
 import { Spinner } from "reactstrap";
 
+// these are paths that are allowed if the user is authenticated
+const allowedPathsIfAuthenticated = [
+  "/",
+  "/dashboard",
+  "/profile",
+  "/notifications",
+];
+
 function extractPaths(menuStructure) {
   const paths = [];
 
@@ -14,7 +22,7 @@ function extractPaths(menuStructure) {
   }
 
   traverse(menuStructure);
-  return [...paths, "/", "/dashboard"];
+  return [...paths, ...allowedPathsIfAuthenticated];
 }
 
 function extractAuthPaths(routes) {

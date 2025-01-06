@@ -7,9 +7,9 @@ import {
 } from "../helpers/addressstructure_backend_helper";
 
 // Custom hook for fetching folders
-export const useFetchFolders = () => {
+export const useFetchFolders = (userId) => {
   return useQuery({
-    queryKey: ["folders"],
+    queryKey: ["folders", userId],
     queryFn: () => getAddressStructure(),
     staleTime: 1000 * 60 * 5, // 5 minutes
     select: (data) => buildTree(data?.data),
@@ -49,15 +49,15 @@ export const useDeleteFolder = () => {
   return useMutation({
     mutationFn: (id) => deleteAddressStructure(id),
     onSuccess: (deletedId, variable) => {
-      queryClient.setQueryData(["folders"], (oldData) => {
-        if (!oldData) return oldData;
-
-        const updatedData = deleteFolder(oldData?.data, variable);
-        return {
-          ...oldData,
-          data: updatedData,
-        };
-      });
+      // queryClient.setQueryData(["folders"], (oldData) => {
+      //   if (!oldData) return oldData;
+      //   const updatedData = deleteFolder(oldData?.data, variable);
+      //   return {
+      //     ...oldData,
+      //     data: updatedData,
+      //   };
+      // });
+      queryClient.invalidateQueries({ queryKey: ["folders"] });
     },
   });
 };

@@ -72,7 +72,6 @@ const Login = (props) => {
         dispatch(loginUser(values, props.router.navigate));
         localStorage.setItem("I18N_LANGUAGE", "en");
         localStorage.setItem("i18nextLng", "en");
-        
       } catch (error) {
         // console.log("error message ", error);
         // If login fails, catch the error and display it
@@ -90,37 +89,6 @@ const Login = (props) => {
   );
 
   const { error, loading } = useSelector(LoginProperties);
-
-  const signIn = (type) => {
-    dispatch(socialLogin(type, props.router.navigate));
-  };
-
-  //for facebook and google authentication
-  const socialResponse = (type) => {
-    signIn(type);
-  };
-  const getPasswordStrength = (password) => {
-    let strength = 0;
-    if (password.length >= 8) strength += 1;
-    if (/[A-Z]/.test(password)) strength += 1;
-    if (/[a-z]/.test(password)) strength += 1;
-    if (/\d/.test(password)) strength += 1;
-    if (/[@$!%*#?&]/.test(password)) strength += 1;
-
-    switch (strength) {
-      case 0:
-      case 1:
-        return "Weak";
-      case 2:
-      case 3:
-        return "Moderate";
-      case 4:
-      case 5:
-        return "Strong";
-      default:
-        return "";
-    }
-  };
 
   return (
     <React.Fragment>
@@ -212,12 +180,7 @@ const Login = (props) => {
                             value={validation.values.password || ""}
                             type={showPassword ? "text" : "password"}
                             placeholder="Enter Password"
-                            onChange={(e) => {
-                              validation.handleChange(e);
-                              setPasswordStrength(
-                                getPasswordStrength(e.target.value)
-                              ); // Update strength
-                            }}
+                            onChange={validation.handleChange}
                             onBlur={validation.handleBlur}
                             invalid={
                               validation.touched.password &&
