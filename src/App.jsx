@@ -135,7 +135,16 @@ const App = (props) => {
             </Layout>
           }
         />
-        <Route path="/not_found" element={<NotFound />} />
+        <Route
+          path="/not_found"
+          element={
+            <Layout>
+              <ErrorBoundary>
+                <NotFound />
+              </ErrorBoundary>
+            </Layout>
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </>
     )

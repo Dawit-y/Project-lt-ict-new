@@ -101,7 +101,10 @@ const ProjectBudgetExpenditureModel = () => {
   const addProjectBudgetExpenditure = useAddProjectBudgetExpenditure();
   const updateProjectBudgetExpenditure = useUpdateProjectBudgetExpenditure();
   const deleteProjectBudgetExpenditure = useDeleteProjectBudgetExpenditure();
-  const project = useFetchProject(id);
+
+  const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+  const userId = storedUser?.user.usr_id;
+  const project = useFetchProject(id, userId);
   const [rowIsSelected, setRowIsSelected] = useState(null);
   //START CRUD
   const handleAddProjectBudgetExpenditure = async (data) => {

@@ -25,7 +25,9 @@ const ProjectsOverview = (props) => {
   const { id } = useParams();
   const projectId = Number(id);
 
-  const project = useFetchProject(projectId);
+  const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+  const userId = storedUser?.user.usr_id;
+  const project = useFetchProject(projectId, userId);
   const documents = useFetchProjectDocuments({ project_id: projectId }, true);
   const stakeholders = useFetchProjectStakeholders({
     project_id: projectId,

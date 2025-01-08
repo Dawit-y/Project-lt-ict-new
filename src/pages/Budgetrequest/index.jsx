@@ -49,6 +49,7 @@ import { formatDate } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import ProjectDetailColapse from "../Project/ProjectDetailColapse";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
+import ActionModal from "./ActionModal";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -69,6 +70,7 @@ const BudgetRequestModel = () => {
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
+  const [actionModal, setActionModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [budgetRequest, setBudgetRequest] = useState(null);
@@ -86,7 +88,10 @@ const BudgetRequestModel = () => {
   const addBudgetRequest = useAddBudgetRequest();
   const updateBudgetRequest = useUpdateBudgetRequest();
   const deleteBudgetRequest = useDeleteBudgetRequest();
-  const project = useFetchProject(id);
+
+  const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+  const userId = storedUser?.user.usr_id;
+  const project = useFetchProject(id, userId);
 
   const handleAddBudgetRequest = async (data) => {
     try {
@@ -185,6 +190,7 @@ const BudgetRequestModel = () => {
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
+  const toggleActionModal = () => setActionModal(!actionModal);
 
   const budgetYearMap = useMemo(() => {
     return (
@@ -377,8 +383,8 @@ const BudgetRequestModel = () => {
               className="btn-sm"
               onClick={() => {
                 const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
+                toggleViewModal();
+                setTransaction(data);
               }}
             >
               {t("view_detail")}
@@ -387,9 +393,11 @@ const BudgetRequestModel = () => {
         },
       },
     ];
+
     if (
       data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable
+      data?.previledge?.is_role_deletable &&
+      project?.data?.request_role == "requester"
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -452,6 +460,30 @@ const BudgetRequestModel = () => {
       });
     }
 
+    if (project?.data?.request_role == "approver") {
+      baseColumns.push({
+        header: t("take_action"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                const data = cellProps.row.original;
+                toggleActionModal();
+                setTransaction(data);
+              }}
+            >
+              {t("take_action")}
+            </Button>
+          );
+        },
+      });
+    }
+
     return baseColumns;
   }, [handleBudgetRequestClick, toggleViewModal, onClickDelete]);
 
@@ -465,6 +497,11 @@ const BudgetRequestModel = () => {
         isOpen={modal1}
         toggle={toggleViewModal}
         transaction={transaction}
+      />
+      <ActionModal
+        isOpen={actionModal}
+        toggle={toggleActionModal}
+        data={transaction}
       />
       <DeleteModal
         show={deleteModal}
@@ -571,7 +608,6 @@ const BudgetRequestModel = () => {
                           : false
                       }
                       maxLength={20}
-                      disabled={1 == 1}
                     />
                     {validation.touched.bdr_requested_amount &&
                     validation.errors.bdr_requested_amount ? (
@@ -633,7 +669,6 @@ const BudgetRequestModel = () => {
                             ); // Set value in Formik
                           }}
                           onBlur={validation.handleBlur}
-                          disabled={1 == 1}
                         />
 
                         <Button
@@ -716,7 +751,6 @@ const BudgetRequestModel = () => {
                           : false
                       }
                       maxLength={200}
-                      disabled={1 == 1}
                     />
                     {validation.touched.bdr_description &&
                     validation.errors.bdr_description ? (

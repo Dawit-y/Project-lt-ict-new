@@ -23,9 +23,9 @@ export const useFetchProjects = () => {
 };
 
 // Fetch single project
-export const useFetchProject = (id) => {
+export const useFetchProject = (id, userId) => {
   return useQuery({
-    queryKey: [...PROJECT_QUERY_KEY, "detail", id],
+    queryKey: [...PROJECT_QUERY_KEY, "detail", id, userId],
     queryFn: () => fetchProject(id),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },

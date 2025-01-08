@@ -42,7 +42,6 @@ import {
   amountValidation,
   numberValidation,
 } from "../../utils/Validation/validation";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const truncateText = (text, maxLength) => {
@@ -825,7 +824,6 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                       : false
                   }
                   maxLength={20}
-                  disabled={1 == 1}
                 />
                 {validation.touched.bra_requested_amount &&
                 validation.errors.bra_requested_amount ? (
@@ -834,31 +832,7 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   </FormFeedback>
                 ) : null}
               </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>{t("bra_approved_amount")}</Label>
-                <Input
-                  name="bra_approved_amount"
-                  type="number"
-                  placeholder={t("bra_approved_amount")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.bra_approved_amount || ""}
-                  invalid={
-                    validation.touched.bra_approved_amount &&
-                    validation.errors.bra_approved_amount
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
-                  disabled={1 == 1}
-                />
-                {validation.touched.bra_approved_amount &&
-                validation.errors.bra_approved_amount ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.bra_approved_amount}
-                  </FormFeedback>
-                ) : null}
-              </Col>
+
               <Col className="col-md-6 mb-3">
                 <Label>{t("bra_source_government_requested")}</Label>
                 <Input
@@ -877,7 +851,6 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                       : false
                   }
                   maxLength={20}
-                  disabled={1 == 1}
                 />
                 {validation.touched.bra_source_government_requested &&
                 validation.errors.bra_source_government_requested ? (
@@ -886,31 +859,7 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   </FormFeedback>
                 ) : null}
               </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>{t("bra_source_government_approved")}</Label>
-                <Input
-                  name="bra_source_government_approved"
-                  type="number"
-                  placeholder={t("bra_source_government_approved")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.bra_source_government_approved || ""}
-                  invalid={
-                    validation.touched.bra_source_government_approved &&
-                    validation.errors.bra_source_government_approved
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
-                  disabled={1 == 1}
-                />
-                {validation.touched.bra_source_government_approved &&
-                validation.errors.bra_source_government_approved ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.bra_source_government_approved}
-                  </FormFeedback>
-                ) : null}
-              </Col>
+
               <Col className="col-md-6 mb-3">
                 <Label>{t("bra_source_internal_requested")}</Label>
                 <Input
@@ -927,7 +876,6 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                       : false
                   }
                   maxLength={20}
-                  disabled={1 == 1}
                 />
                 {validation.touched.bra_source_internal_requested &&
                 validation.errors.bra_source_internal_requested ? (
@@ -936,31 +884,7 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   </FormFeedback>
                 ) : null}
               </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>{t("bra_source_internal_approved")}</Label>
-                <Input
-                  name="bra_source_internal_approved"
-                  type="number"
-                  placeholder={t("bra_source_internal_approved")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.bra_source_internal_approved || ""}
-                  invalid={
-                    validation.touched.bra_source_internal_approved &&
-                    validation.errors.bra_source_internal_approved
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
-                  disabled={1 == 1}
-                />
-                {validation.touched.bra_source_internal_approved &&
-                validation.errors.bra_source_internal_approved ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.bra_source_internal_approved}
-                  </FormFeedback>
-                ) : null}
-              </Col>
+
               <Col className="col-md-6 mb-3">
                 <Label>{t("bra_source_support_requested")}</Label>
                 <Input
@@ -977,7 +901,6 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                       : false
                   }
                   maxLength={20}
-                  disabled={1 == 1}
                 />
                 {validation.touched.bra_source_support_requested &&
                 validation.errors.bra_source_support_requested ? (
@@ -986,31 +909,7 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   </FormFeedback>
                 ) : null}
               </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>{t("bra_source_support_approved")}</Label>
-                <Input
-                  name="bra_source_support_approved"
-                  type="number"
-                  placeholder={t("bra_source_support_approved")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.bra_source_support_approved || ""}
-                  invalid={
-                    validation.touched.bra_source_support_approved &&
-                    validation.errors.bra_source_support_approved
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
-                  disabled={1 == 1}
-                />
-                {validation.touched.bra_source_support_approved &&
-                validation.errors.bra_source_support_approved ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.bra_source_support_approved}
-                  </FormFeedback>
-                ) : null}
-              </Col>
+
               <Col className="col-md-6 mb-3">
                 <Label>{t("bra_source_support_code")}</Label>
                 <Input
@@ -1051,7 +950,6 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                       : false
                   }
                   maxLength={20}
-                  disabled={1 == 1}
                 />
                 {validation.touched.bra_source_credit_requested &&
                 validation.errors.bra_source_credit_requested ? (
@@ -1060,31 +958,7 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   </FormFeedback>
                 ) : null}
               </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>{t("bra_source_credit_approved")}</Label>
-                <Input
-                  name="bra_source_credit_approved"
-                  type="number"
-                  placeholder={t("bra_source_credit_approved")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.bra_source_credit_approved || ""}
-                  invalid={
-                    validation.touched.bra_source_credit_approved &&
-                    validation.errors.bra_source_credit_approved
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
-                  disabled={1 == 1}
-                />
-                {validation.touched.bra_source_credit_approved &&
-                validation.errors.bra_source_credit_approved ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.bra_source_credit_approved}
-                  </FormFeedback>
-                ) : null}
-              </Col>
+
               <Col className="col-md-6 mb-3">
                 <Label>{t("bra_source_credit_code")}</Label>
                 <Input
@@ -1101,7 +975,6 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                       : false
                   }
                   maxLength={20}
-                  disabled={1 == 1}
                 />
                 {validation.touched.bra_source_credit_code &&
                 validation.errors.bra_source_credit_code ? (
@@ -1126,7 +999,6 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                       : false
                   }
                   maxLength={20}
-                  disabled={1 == 1}
                 />
                 {validation.touched.bra_requested_date &&
                 validation.errors.bra_requested_date ? (
@@ -1135,31 +1007,7 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   </FormFeedback>
                 ) : null}
               </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>{t("bra_approved_date")}</Label>
-                <Input
-                  name="bra_approved_date"
-                  type="text"
-                  placeholder={t("bra_approved_date")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.bra_approved_date || ""}
-                  invalid={
-                    validation.touched.bra_approved_date &&
-                    validation.errors.bra_approved_date
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
-                  disabled={1 == 1}
-                />
-                {validation.touched.bra_approved_date &&
-                validation.errors.bra_approved_date ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.bra_approved_date}
-                  </FormFeedback>
-                ) : null}
-              </Col>
+
               <Col className="col-md-6 mb-3">
                 <Label>{t("bra_description")}</Label>
                 <Input
@@ -1176,7 +1024,6 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                       : false
                   }
                   maxLength={20}
-                  disabled={1 == 1}
                 />
                 {validation.touched.bra_description &&
                 validation.errors.bra_description ? (

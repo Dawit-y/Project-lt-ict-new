@@ -553,7 +553,6 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                       : false
                   }
                   maxLength={20}
-                  disabled={1 == 1}
                 />
                 {validation.touched.brt_task_name &&
                 validation.errors.brt_task_name ? (
@@ -578,7 +577,6 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                       : false
                   }
                   maxLength={20}
-                  disabled={1 == 1}
                 />
                 {validation.touched.brt_measurement &&
                 validation.errors.brt_measurement ? (
@@ -603,7 +601,6 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                       : false
                   }
                   maxLength={20}
-                  disabled={1 == 1}
                 />
                 {validation.touched.brt_previous_year_physical &&
                 validation.errors.brt_previous_year_physical ? (
@@ -628,7 +625,6 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                       : false
                   }
                   maxLength={20}
-                  disabled={1 == 1}
                 />
                 {validation.touched.brt_previous_year_financial &&
                 validation.errors.brt_previous_year_financial ? (
@@ -653,7 +649,6 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                       : false
                   }
                   maxLength={20}
-                  disabled={1 == 1}
                 />
                 {validation.touched.brt_current_year_physical &&
                 validation.errors.brt_current_year_physical ? (
@@ -678,7 +673,6 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                       : false
                   }
                   maxLength={20}
-                  disabled={1 == 1}
                 />
                 {validation.touched.brt_current_year_financial &&
                 validation.errors.brt_current_year_financial ? (
@@ -703,7 +697,6 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                       : false
                   }
                   maxLength={20}
-                  disabled={1 == 1}
                 />
                 {validation.touched.brt_next_year_physical &&
                 validation.errors.brt_next_year_physical ? (
@@ -728,7 +721,6 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                       : false
                   }
                   maxLength={20}
-                  disabled={1 == 1}
                 />
                 {validation.touched.brt_next_year_financial &&
                 validation.errors.brt_next_year_financial ? (
@@ -753,7 +745,6 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                       : false
                   }
                   maxLength={20}
-                  disabled={1 == 1}
                 />
                 {validation.touched.brt_description &&
                 validation.errors.brt_description ? (
