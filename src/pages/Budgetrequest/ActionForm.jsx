@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo } from "react";
 import {
   Card,
   Form,
@@ -11,6 +11,11 @@ import {
   Col,
   Row,
   Button,
+  ModalBody,
+  Modal,
+  ModalHeader,
+  ModalFooter,
+  Table,
 } from "reactstrap";
 import { useTranslation } from "react-i18next";
 import { useUpdateBudgetRequestAmount } from "../../queries/budgetrequestamount_query";
@@ -22,9 +27,8 @@ import {
   alphanumericValidation,
 } from "../../utils/Validation/validation";
 
-const ActionForm = ({ amount }) => {
+const ActionForm = ({ isOpen, toggle, amount }) => {
   const { t } = useTranslation();
-  console.log(amount);
   const updateBudgetRequestAmount = useUpdateBudgetRequestAmount();
   const handleUpdateBudgetRequestAmount = async (data) => {
     try {
@@ -79,214 +83,328 @@ const ActionForm = ({ amount }) => {
     },
   });
   return (
-    <Card>
-      <CardBody>
-        <CardTitle className="mb-4">{`Approve Request for ${amount?.bra_expenditure_code_id}`}</CardTitle>
-        <Form
-          onSubmit={(e) => {
-            e.preventDefault();
-            validation.handleSubmit();
-            return false;
-          }}
-        >
-          <Row>
-            <Col className="col-md-12 mb-3">
-              <Label>{t("bra_approved_amount")}</Label>
-              <Input
-                name="bra_approved_amount"
-                type="number"
-                placeholder={t("bra_approved_amount")}
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                value={validation.values.bra_approved_amount || ""}
-                invalid={
-                  validation.touched.bra_approved_amount &&
-                  validation.errors.bra_approved_amount
-                    ? true
-                    : false
-                }
-                maxLength={20}
-              />
-              {validation.touched.bra_approved_amount &&
-              validation.errors.bra_approved_amount ? (
-                <FormFeedback type="invalid">
-                  {validation.errors.bra_approved_amount}
-                </FormFeedback>
-              ) : null}
-            </Col>
+    <>
+      <Modal
+        isOpen={isOpen}
+        role="dialog"
+        autoFocus={true}
+        centered={true}
+        className="modal-xl"
+        tabIndex="-1"
+        toggle={toggle}
+      >
+        <div className="modal-xl">
+          <ModalHeader
+            toggle={toggle}
+          >{`Approve Request for ${amount?.bra_expenditure_code_id}`}</ModalHeader>
+          <ModalBody>
+            <Row>
+              <Col xl={6}>
+                <Table>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <strong>{t(`bra_current_year_expense`)}:</strong>
+                      </td>
+                      <td>
+                        <span className="text-primary">
+                          {amount?.bra_current_year_expense}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>{t(`bra_requested_amount`)}:</strong>
+                      </td>
+                      <td>
+                        <span className="text-primary">
+                          {amount?.bra_requested_amount}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>{t(`bra_source_government_requested`)}:</strong>
+                      </td>
+                      <td>
+                        <span className="text-primary">
+                          {amount?.bra_source_government_requested}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>{t(`bra_source_internal_requested`)}:</strong>
+                      </td>
+                      <td>
+                        <span className="text-primary">
+                          {amount?.bra_source_internal_requested}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>{t(`bra_source_support_requested`)}:</strong>
+                      </td>
+                      <td>
+                        <span className="text-primary">
+                          {amount?.bra_source_support_requested}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>{t(`bra_source_credit_requested`)}:</strong>
+                      </td>
+                      <td>
+                        <span className="text-primary">
+                          {amount?.bra_source_credit_requested}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>{t(`bra_source_credit_code`)}:</strong>
+                      </td>
+                      <td>
+                        <span className="text-primary">
+                          {amount?.bra_source_credit_code}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </Table>
+              </Col>
 
-            <Col className="col-md-12 mb-3">
-              <Label>{t("bra_source_government_approved")}</Label>
-              <Input
-                name="bra_source_government_approved"
-                type="number"
-                placeholder={t("bra_source_government_approved")}
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                value={validation.values.bra_source_government_approved || ""}
-                invalid={
-                  validation.touched.bra_source_government_approved &&
-                  validation.errors.bra_source_government_approved
-                    ? true
-                    : false
-                }
-                maxLength={20}
-              />
-              {validation.touched.bra_source_government_approved &&
-              validation.errors.bra_source_government_approved ? (
-                <FormFeedback type="invalid">
-                  {validation.errors.bra_source_government_approved}
-                </FormFeedback>
-              ) : null}
-            </Col>
-            <Col className="col-md-12 mb-3">
-              <Label>{t("bra_source_internal_approved")}</Label>
-              <Input
-                name="bra_source_internal_approved"
-                type="number"
-                placeholder={t("bra_source_internal_approved")}
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                value={validation.values.bra_source_internal_approved || ""}
-                invalid={
-                  validation.touched.bra_source_internal_approved &&
-                  validation.errors.bra_source_internal_approved
-                    ? true
-                    : false
-                }
-                maxLength={20}
-              />
-              {validation.touched.bra_source_internal_approved &&
-              validation.errors.bra_source_internal_approved ? (
-                <FormFeedback type="invalid">
-                  {validation.errors.bra_source_internal_approved}
-                </FormFeedback>
-              ) : null}
-            </Col>
-            <Col className="col-md-12 mb-3">
-              <Label>{t("bra_source_support_approved")}</Label>
-              <Input
-                name="bra_source_support_approved"
-                type="number"
-                placeholder={t("bra_source_support_approved")}
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                value={validation.values.bra_source_support_approved || ""}
-                invalid={
-                  validation.touched.bra_source_support_approved &&
-                  validation.errors.bra_source_support_approved
-                    ? true
-                    : false
-                }
-                maxLength={20}
-              />
-              {validation.touched.bra_source_support_approved &&
-              validation.errors.bra_source_support_approved ? (
-                <FormFeedback type="invalid">
-                  {validation.errors.bra_source_support_approved}
-                </FormFeedback>
-              ) : null}
-            </Col>
-            <Col className="col-md-12 mb-3">
-              <Label>{t("bra_source_other_approved")}</Label>
-              <Input
-                name="bra_source_other_approved"
-                type="number"
-                placeholder={t("bra_source_other_approved")}
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                value={validation.values.bra_source_other_approved || ""}
-                invalid={
-                  validation.touched.bra_source_other_approved &&
-                  validation.errors.bra_source_other_approved
-                    ? true
-                    : false
-                }
-                maxLength={20}
-              />
-              {validation.touched.bra_source_other_approved &&
-              validation.errors.bra_source_other_approved ? (
-                <FormFeedback type="invalid">
-                  {validation.errors.bra_source_other_approved}
-                </FormFeedback>
-              ) : null}
-            </Col>
-            <Col className="col-md-12 mb-3">
-              <Label>{t("bra_source_credit_approved")}</Label>
-              <Input
-                name="bra_source_credit_approved"
-                type="number"
-                placeholder={t("bra_source_credit_approved")}
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                value={validation.values.bra_source_credit_approved || ""}
-                invalid={
-                  validation.touched.bra_source_credit_approved &&
-                  validation.errors.bra_source_credit_approved
-                    ? true
-                    : false
-                }
-                maxLength={20}
-              />
-              {validation.touched.bra_source_credit_approved &&
-              validation.errors.bra_source_credit_approved ? (
-                <FormFeedback type="invalid">
-                  {validation.errors.bra_source_credit_approved}
-                </FormFeedback>
-              ) : null}
-            </Col>
-            <Col className="col-md-12 mb-3">
-              <Label>{t("bra_approved_date")}</Label>
-              <Input
-                name="bra_approved_date"
-                type="text"
-                placeholder={t("bra_approved_date")}
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                value={validation.values.bra_approved_date || ""}
-                invalid={
-                  validation.touched.bra_approved_date &&
-                  validation.errors.bra_approved_date
-                    ? true
-                    : false
-                }
-                maxLength={20}
-              />
-              {validation.touched.bra_approved_date &&
-              validation.errors.bra_approved_date ? (
-                <FormFeedback type="invalid">
-                  {validation.errors.bra_approved_date}
-                </FormFeedback>
-              ) : null}
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <div className="text-end">
-                {updateBudgetRequestAmount.isPending ? (
-                  <Button
-                    color="success"
-                    type="submit"
-                    className="save-user"
-                    disabled={
-                      updateBudgetRequestAmount.isPending || !validation.dirty
-                    }
-                  >
-                    <Spinner size={"sm"} color="light" className="me-2" />
-                    {t("Save")}
-                  </Button>
-                ) : (
-                  <Button color="success" type="submit" className="save-user">
-                    {t("Save")}
-                  </Button>
-                )}
-              </div>
-            </Col>
-          </Row>
-        </Form>
-      </CardBody>
-    </Card>
+              <Col xl={6}>
+                <Form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    validation.handleSubmit();
+                    return false;
+                  }}
+                >
+                  <Row>
+                    <Col className="col-md-12 mb-3">
+                      <Label>{t("bra_approved_amount")}</Label>
+                      <Input
+                        name="bra_approved_amount"
+                        type="number"
+                        placeholder={t("bra_approved_amount")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.bra_approved_amount || ""}
+                        invalid={
+                          validation.touched.bra_approved_amount &&
+                          validation.errors.bra_approved_amount
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.bra_approved_amount &&
+                      validation.errors.bra_approved_amount ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.bra_approved_amount}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
+
+                    <Col className="col-md-12 mb-3">
+                      <Label>{t("bra_source_government_approved")}</Label>
+                      <Input
+                        name="bra_source_government_approved"
+                        type="number"
+                        placeholder={t("bra_source_government_approved")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={
+                          validation.values.bra_source_government_approved || ""
+                        }
+                        invalid={
+                          validation.touched.bra_source_government_approved &&
+                          validation.errors.bra_source_government_approved
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.bra_source_government_approved &&
+                      validation.errors.bra_source_government_approved ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.bra_source_government_approved}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
+                    <Col className="col-md-12 mb-3">
+                      <Label>{t("bra_source_internal_approved")}</Label>
+                      <Input
+                        name="bra_source_internal_approved"
+                        type="number"
+                        placeholder={t("bra_source_internal_approved")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={
+                          validation.values.bra_source_internal_approved || ""
+                        }
+                        invalid={
+                          validation.touched.bra_source_internal_approved &&
+                          validation.errors.bra_source_internal_approved
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.bra_source_internal_approved &&
+                      validation.errors.bra_source_internal_approved ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.bra_source_internal_approved}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
+                    <Col className="col-md-12 mb-3">
+                      <Label>{t("bra_source_support_approved")}</Label>
+                      <Input
+                        name="bra_source_support_approved"
+                        type="number"
+                        placeholder={t("bra_source_support_approved")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={
+                          validation.values.bra_source_support_approved || ""
+                        }
+                        invalid={
+                          validation.touched.bra_source_support_approved &&
+                          validation.errors.bra_source_support_approved
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.bra_source_support_approved &&
+                      validation.errors.bra_source_support_approved ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.bra_source_support_approved}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
+                    <Col className="col-md-12 mb-3">
+                      <Label>{t("bra_source_other_approved")}</Label>
+                      <Input
+                        name="bra_source_other_approved"
+                        type="number"
+                        placeholder={t("bra_source_other_approved")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={
+                          validation.values.bra_source_other_approved || ""
+                        }
+                        invalid={
+                          validation.touched.bra_source_other_approved &&
+                          validation.errors.bra_source_other_approved
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.bra_source_other_approved &&
+                      validation.errors.bra_source_other_approved ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.bra_source_other_approved}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
+                    <Col className="col-md-12 mb-3">
+                      <Label>{t("bra_source_credit_approved")}</Label>
+                      <Input
+                        name="bra_source_credit_approved"
+                        type="number"
+                        placeholder={t("bra_source_credit_approved")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={
+                          validation.values.bra_source_credit_approved || ""
+                        }
+                        invalid={
+                          validation.touched.bra_source_credit_approved &&
+                          validation.errors.bra_source_credit_approved
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.bra_source_credit_approved &&
+                      validation.errors.bra_source_credit_approved ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.bra_source_credit_approved}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
+                    <Col className="col-md-12 mb-3">
+                      <Label>{t("bra_approved_date")}</Label>
+                      <Input
+                        name="bra_approved_date"
+                        type="text"
+                        placeholder={t("bra_approved_date")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.bra_approved_date || ""}
+                        invalid={
+                          validation.touched.bra_approved_date &&
+                          validation.errors.bra_approved_date
+                            ? true
+                            : false
+                        }
+                        maxLength={20}
+                      />
+                      {validation.touched.bra_approved_date &&
+                      validation.errors.bra_approved_date ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.bra_approved_date}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <div className="text-end">
+                        {updateBudgetRequestAmount.isPending ? (
+                          <Button
+                            color="success"
+                            type="submit"
+                            className="save-user"
+                            disabled={
+                              updateBudgetRequestAmount.isPending ||
+                              !validation.dirty
+                            }
+                          >
+                            <Spinner
+                              size={"sm"}
+                              color="light"
+                              className="me-2"
+                            />
+                            {t("Save")}
+                          </Button>
+                        ) : (
+                          <Button
+                            color="success"
+                            type="submit"
+                            className="save-user"
+                          >
+                            {t("Save")}
+                          </Button>
+                        )}
+                      </div>
+                    </Col>
+                  </Row>
+                </Form>
+              </Col>
+            </Row>
+          </ModalBody>
+        </div>
+      </Modal>
+    </>
   );
 };
 
-export default ActionForm;
+export default memo(ActionForm);
