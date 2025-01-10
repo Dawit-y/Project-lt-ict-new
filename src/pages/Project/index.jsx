@@ -82,6 +82,7 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { formatDate } from "../../utils/commonMethods";
 import AddressStructureForProject from "./AddressStructureForProject";
 import { useProjectContext } from "../../context/ProjectContext";
+import SearchForProject from "../../components/Common/SearchForProject";
 
 const tabMapping = {
   1: { label: "Documents", component: ProjectDocument },
@@ -125,6 +126,11 @@ const ProjectModel = () => {
     setPrjLocationRegionId,
     setPrjLocationZoneId,
     setPrjLocationWoredaId,
+    params,
+    setParams,
+    searchParams,
+    setSearchParams,
+    searchData,
   } = useProjectContext();
 
   const [isAddressLoading, setIsAddressLoading] = useState(false);
@@ -331,9 +337,9 @@ const ProjectModel = () => {
       // t("prj_start_date_plan_gc")
       // ),
       //prj_end_date_actual_et: Yup.string().required(t('prj_end_date_actual_et')),
-      prj_end_date_actual_gc: Yup.string().required(
-        t("prj_end_date_actual_gc")
-      ),
+      // prj_end_date_actual_gc: Yup.string().required(
+      //   t("prj_end_date_actual_gc")
+      // ),
 
       //prj_end_date_plan_gc: Yup.string().required(t("prj_end_date_plan_gc")),
       //prj_end_date_plan_et: Yup.string().required(t('prj_end_date_plan_et')),
@@ -440,7 +446,6 @@ const ProjectModel = () => {
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-
   // Fetch Project on component mount
   useEffect(() => {
     setProject(data);
@@ -555,11 +560,6 @@ const ProjectModel = () => {
     setIsEdit(false);
     setProject("");
     toggle();
-  };
-  const handleSearchResults = ({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
   };
 
   const localeText = {
@@ -802,6 +802,7 @@ const ProjectModel = () => {
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
+
   return (
     <React.Fragment>
       <ProjectModal
@@ -824,8 +825,7 @@ const ProjectModel = () => {
               setIsAddressLoading={setIsAddressLoading}
             />
             <div className="w-100">
-              <AdvancedSearch
-                searchHook={useSearchProjects}
+              <SearchForProject
                 textSearchKeys={["prj_name", "prj_code"]}
                 dropdownSearchKeys={[
                   {
@@ -834,18 +834,14 @@ const ProjectModel = () => {
                   },
                 ]}
                 checkboxSearchKeys={[]}
-                /*   Component={CascadingDropdowns}
-            component_params={{
-              dropdown1name: "prj_location_region_id",
-              dropdown2name: "prj_location_zone_id",
-              dropdown3name: "prj_location_woreda_id",
-            }}*/
                 additionalParams={projectParams}
                 setAdditionalParams={setProjectParams}
-                onSearchResult={handleSearchResults}
-                setIsSearchLoading={setIsSearchLoading}
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
+                params={params}
+                setParams={setParams}
+                searchParams={searchParams}
+                setSearchParams={setSearchParams}
               />
               {isLoading || isSearchLoading || isAddressLoading ? (
                 <div
@@ -882,9 +878,7 @@ const ProjectModel = () => {
                     <AgGridReact
                       ref={gridRef}
                       rowData={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
+                        showSearchResult ? searchData?.data : data?.data || []
                       }
                       columnDefs={columnDefs}
                       pagination={true}

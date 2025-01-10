@@ -1,4 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
+import { useSearchProjects } from "../queries/project_query";
+import FetchErrorHandler from "../components/Common/FetchErrorHandler";
 
 // Create the context
 const ProjectContext = createContext();
@@ -15,6 +17,32 @@ const ProjectProvider = ({ children }) => {
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
 
+  const [params, setParams] = useState({});
+  const [searchParams, setSearchParams] = useState({});
+  const {
+    data: searchData,
+    error: srError,
+    isError: isSrError,
+    refetch: search,
+  } = useSearchProjects(searchParams);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsSearchLoading(true);
+        await search();
+        setShowSearchResult(true);
+      } catch (error) {
+        console.error("Error during search:", error);
+      } finally {
+        setIsSearchLoading(false);
+      }
+    };
+    if (Object.keys(searchParams).length > 0) {
+      fetchData();
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     setProjectParams({
       ...(prjLocationRegionId && {
@@ -26,6 +54,10 @@ const ProjectProvider = ({ children }) => {
       }),
     });
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
+
+  if (isSrError) {
+    return <FetchErrorHandler error={srError} refetch={search} />;
+  }
 
   return (
     <ProjectContext.Provider
@@ -46,6 +78,11 @@ const ProjectProvider = ({ children }) => {
         setPrjLocationZoneId,
         prjLocationWoredaId,
         setPrjLocationWoredaId,
+        params,
+        setParams,
+        searchParams,
+        setSearchParams,
+        searchData,
       }}
     >
       {children}

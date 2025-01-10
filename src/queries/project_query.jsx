@@ -43,7 +43,7 @@ export const useSearchProjects = (searchParams = {}) => {
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: searchParams.length > 0,
+    enabled: !!Object.keys(searchParams).length,
   });
 };
 
@@ -54,16 +54,9 @@ export const useAddProject = () => {
   return useMutation({
     mutationFn: addProject,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData(PROJECT_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_QUERY_KEY,
+        exact: false,
       });
     },
   });
@@ -75,17 +68,9 @@ export const useUpdateProject = () => {
   return useMutation({
     mutationFn: updateProject,
     onSuccess: (updatedProject) => {
-      queryClient.setQueryData(PROJECT_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-
-        return {
-          ...oldData,
-          data: oldData.data.map((ProjectData) =>
-            ProjectData.prj_id === updatedProject.data.prj_id
-              ? { ...ProjectData, ...updatedProject.data }
-              : ProjectData
-          ),
-        };
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_QUERY_KEY,
+        exact: false,
       });
     },
   });
@@ -97,15 +82,9 @@ export const useDeleteProject = () => {
   return useMutation({
     mutationFn: deleteProject,
     onSuccess: (deletedData) => {
-      queryClient.setQueryData(PROJECT_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (ProjectData) =>
-              ProjectData.prj_id !== parseInt(deletedData.deleted_id)
-          ),
-        };
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_QUERY_KEY,
+        exact: false,
       });
     },
   });
