@@ -11,7 +11,7 @@ COPY package*.json ./
 RUN npm install --legacy-peer-deps
 
 #FIX THIS
-# COPY .env ./app
+#COPY /home/testthree/pms_files/dev-frontend.env ./app
  
 # Copy the rest of the source code
 COPY . .
