@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
-import axios from 'axios'; // Axios for API requests
+import axios from "axios"; // Axios for API requests
 import DashboardComponent from "./Dashboardcomp";
-import {useAccessToken} from "../../helpers/jwt-token-access/accessToken";
-import {getProjectDashboard} from "../../helpers/Project_Backend";
+import { useAccessToken } from "../../helpers/jwt-token-access/accessToken";
+import { getProjectDashboard } from "../../helpers/Project_Backend";
 //i18n
 import { withTranslation } from "react-i18next";
 
-
 const Dashboard = () => {
-   const accessToken = useAccessToken();
-  const role="Deputy";
+  const accessToken = useAccessToken();
+  const role = "Deputy";
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,7 +28,7 @@ const Dashboard = () => {
         // Set the data from the response
         setData(response); // Assuming response is already the data you need
       } catch (err) {
-        console.error('Error fetching data:', err);
+        console.error("Error fetching data:", err);
         setError(err);
       } finally {
         setLoading(false); // Ensure loading state is updated in both success and error cases
@@ -45,36 +44,36 @@ const Dashboard = () => {
 
   // Find data for the given role
   //const roleData = data?.find((item) => item.role === role);
-const roleData = data;
+  const roleData = data;
   if (!roleData) {
     return <p>Role not found</p>;
   }
   //meta title
-return (
-      <div className="page-content">
-        <div className="container-fluid">
+  return (
+    <div className="page-content">
+      <div className="container-fluid">
         <div className="row">
           {roleData.map((component, index) => (
             <div
               key={index}
               className={component.class_name} // 3 columns, 4 units each (12 / 3 = 4)
             >
-            {component?.data ? (
-              <DashboardComponent
-                dashboardType={component.dashboard_type}
-                objectName={component.name}
-                columnList={component.column_list}
-                tableData={component.data}
-              />):(
-              <div>Loading data...</div>
+              {component?.data ? (
+                <DashboardComponent
+                  dashboardType={component.dashboard_type}
+                  objectName={component.name}
+                  columnList={component.column_list}
+                  tableData={component.data}
+                />
+              ) : (
+                <div>Loading data...</div>
               )}
             </div>
           ))}
         </div>
-        </div>
-        </div>
+      </div>
+    </div>
   );
-  };
-  
-  export default withTranslation()(Dashboard);
-  
+};
+
+export default withTranslation()(Dashboard);

@@ -19,9 +19,7 @@ import DeleteModal from "../../components/Common/DeleteModal";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "../../App.css";
-
+import "./ag-grid.css";
 import {
   useFetchProjects,
   useSearchProjects,
@@ -64,6 +62,7 @@ import {
   Label,
   FormGroup,
   InputGroup,
+  Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
@@ -113,12 +112,8 @@ const ProjectModel = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
   const {
-    searchResults,
     setSearchResults,
     isSearchLoading,
-    setIsSearchLoading,
-    searchError,
-    setSearchError,
     showSearchResult,
     setShowSearchResult,
     projectParams,
@@ -205,7 +200,7 @@ const ProjectModel = () => {
     }
   };
 
-  const allowedTabs = searchResults?.allowedTabs || [];
+  const allowedTabs = searchData?.allowedTabs || [];
   const dynamicComponents = allowedTabs.reduce((acc, tabIndex) => {
     const tab = tabMapping[tabIndex];
     if (tab) {
@@ -776,8 +771,54 @@ const ProjectModel = () => {
       });
     }
 
+    if (1 == 1) {
+      baseColumnDefs.push({
+        headerName: "Lists",
+        cellRenderer: renderConfiguration,
+        cellStyle: { overflow: "visible", zIndex: "auto" },
+        suppressMenu: true,
+        resizable: true,
+        minWidth: 100,
+        width: 80,
+      });
+    }
+
     return baseColumnDefs;
   }, [data, handleProjectClick, onClickDelete, t]);
+
+  function renderConfiguration(params) {
+    const { prj_id } = params.data || {};
+    return (
+      <UncontrolledDropdown>
+        <DropdownToggle
+          className="btn btn-light btn-sm"
+          type="button"
+          id={`dropdownMenuButton${prj_id}`}
+          style={{ zIndex: 1050 }}
+        >
+          <i className="bx bx-dots-vertical-rounded"></i>
+        </DropdownToggle>
+        <DropdownMenu
+          className="dropdown-menu"
+          style={{ position: "absolute", zIndex: 1050 }}
+          aria-labelledby={`dropdownMenuButton${prj_id}`}
+        >
+          <Link
+            to={`/Project/${prj_id}/budget_request`}
+            className="dropdown-item"
+          >
+            {t("Budget Request")}
+          </Link>
+          <Link
+            to={`/Project/${prj_id}/budget_expenditure`}
+            className="dropdown-item"
+          >
+            {t("Budget Expenditure")}
+          </Link>
+        </DropdownMenu>
+      </UncontrolledDropdown>
+    );
+  }
 
   const defaultColDef = {
     sortable: true,
@@ -876,6 +917,7 @@ const ProjectModel = () => {
                   {/* AG Grid */}
                   <div style={{ height: "600px" }}>
                     <AgGridReact
+                      rowStyle={{ overflow: "visible" }}
                       ref={gridRef}
                       rowData={
                         showSearchResult ? searchData?.data : data?.data || []
@@ -886,7 +928,7 @@ const ProjectModel = () => {
                       paginationPageSize={10}
                       quickFilterText={quickFilterText}
                       onSelectionChanged={onSelectionChanged}
-                      rowHeight={30} // Set the row height here
+                      rowHeight={35} // Set the row height here
                       animateRows={true} // Enables row animations
                       domLayout="autoHeight" // Auto-size the grid to fit content
                       onGridReady={(params) => {
