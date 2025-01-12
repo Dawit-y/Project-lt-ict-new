@@ -14,7 +14,7 @@ RUN npm install --legacy-peer-deps
 
 # -- FIXED: Copy your environment file from within the build context
 #    so Vite can read it at build time.  We'll call it `.env` inside /app.
-COPY dev-frontend.env .env
+#COPY dev-frontend.env .env
 
 # Copy the rest of the source code
 COPY . .
