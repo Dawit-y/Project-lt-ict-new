@@ -1,41 +1,42 @@
-# Stage 1: Build the React application
+# 1) Build Stage
 FROM node:16.20-alpine AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Create and set a working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json (or yarn.lock) first for better caching
 COPY package*.json ./
 
 # Install dependencies
+# (Use --legacy-peer-deps if you need to bypass certain peer-dep checks)
 RUN npm install --legacy-peer-deps
 
-#FIX THIS
-#COPY /home/testthree/pms_files/dev-frontend.env ./app
- 
-# Copy the rest of the source code
+# Copy the rest of your source code (including .env, src, etc.)
 COPY . .
 
-# Add Node.js memory options to handle large builds
-ENV NODE_OPTIONS="--max-old-space-size=4096"
-
-# Build the application
+# If you have environment variables prefixed with VITE_ in your .env,
+# they will be read at build time by Vite.
+# Build the app (this outputs files to /app/dist by default)
 RUN npm run build
 
-# Stage 2: Serve the React application with Nginx
+##
+# Stage 2: Serve with Nginx
+##
 FROM nginx:alpine
 
-# Remove the default Nginx static assets
+# Remove default index and other static files in /usr/share/nginx/html
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copy the build output from the build stage
+# Copy your compiled build from Stage 1
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy custom Nginx configuration
+# (Optional) If you have a custom Nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 1234
-EXPOSE 1111
+# Expose the port that Nginx listens on (default 80 in nginx:alpine)
+EXPOSE 80
 
-# Start Nginx
+# Start Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]
