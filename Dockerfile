@@ -1,8 +1,7 @@
-FROM nginx:alpine
+# 1) Build Stage
+FROM node:16.20-alpine AS build
 
-# Install Node.js & npm via apk (Alpine package manager)
-# 'apk add nodejs npm' should install the versions available in the Alpine repositories
-RUN apk add --no-cache nodejs npm
+WORKDIR /app
 
 # Create and set a working directory
 WORKDIR /app
