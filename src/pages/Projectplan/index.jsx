@@ -9,7 +9,6 @@ import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
 import GanttChart from "../GanttChart/index.jsx";
-
 import {
   useFetchProjectPlans,
   useSearchProjectPlans,
@@ -38,6 +37,11 @@ import {
   Badge,
   InputGroup,
 } from "reactstrap";
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { createSelectOptions, formatDate } from "../../utils/commonMethods";
@@ -52,7 +56,7 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-
+import DatePicker from "../../components/Common/DatePicker";
 const ProjectPlanModel = () => {
   const location = useLocation();
   const id = Number(location.pathname.split("/")[2]);
@@ -92,11 +96,12 @@ const ProjectPlanModel = () => {
   const handleAddProjectPlan = async (data) => {
     try {
       await addProjectPlan.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+      toast.success(t('add_success'), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.success(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -106,11 +111,12 @@ const ProjectPlanModel = () => {
   const handleUpdateProjectPlan = async (data) => {
     try {
       await updateProjectPlan.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t('update_success'), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.success(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -124,11 +130,11 @@ const ProjectPlanModel = () => {
         if (id === projectPlanSelected?.pld_id) {
           setProjectPlanSelected(null);
         }
-        toast.success(`Data deleted successfully`, {
+        toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+        toast.success(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -153,14 +159,14 @@ const ProjectPlanModel = () => {
     },
 
     validationSchema: Yup.object({
-      pld_name: Yup.string().required(t("pld_name")),
+      pld_name: alphanumericValidation(3,200,true),
       //pld_project_id: Yup.string().required(t("pld_project_id")),
-      pld_budget_year_id: Yup.string().required(t("pld_budget_year_id")),
+      pld_budget_year_id: numberValidation(1,20,true),
       //pld_start_date_ec: Yup.string().required(t("pld_start_date_ec")),
       pld_start_date_gc: Yup.string().required(t("pld_start_date_gc")),
       // pld_end_date_ec: Yup.string().required(t("pld_end_date_ec")),
       pld_end_date_gc: Yup.string().required(t("pld_end_date_gc")),
-      //pld_description: Yup.string().required(t("pld_description")),
+      pld_description: alphanumericValidation(3,425, false)
       //pld_status: Yup.string().required(t("pld_status")),
     }),
     validateOnBlur: true,
@@ -182,8 +188,7 @@ const ProjectPlanModel = () => {
           is_editable: values.is_editable,
         };
         // update ProjectPlan
-        handleUpdateProjectPlan(updateProjectPlan);
-        validation.resetForm();
+        handleUpdateProjectPlan(updateProjectPlan);        
       } else {
         const newProjectPlan = {
           pld_name: values.pld_name,
@@ -198,7 +203,6 @@ const ProjectPlanModel = () => {
         };
         // save new ProjectPlan
         handleAddProjectPlan(newProjectPlan);
-        validation.resetForm();
       }
     },
   });
@@ -362,22 +366,6 @@ const ProjectPlanModel = () => {
         },
       },
     ];
-    // const baseColumnSelected = [
-    //   {
-    //     header: "",
-    //     accessorKey: "pld_name",
-    //     enableColumnFilter: false,
-    //     enableSorting: true,
-    //     cell: (cellProps) => {
-    //       return (
-    //         <span>
-    //           {truncateText(cellProps.row.original.pld_name, 30) || "-"}
-    //         </span>
-    //       );
-    //     },
-    //   },
-    // ];
-
     if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable
@@ -464,6 +452,8 @@ const ProjectPlanModel = () => {
               />
               {/* TableContainer for displaying data */}
               <Col lg={12}>
+              <Card>
+              <CardBody>
                 <TableContainer
                   columns={columns}
                   data={
@@ -474,25 +464,28 @@ const ProjectPlanModel = () => {
                   isCustomPageSize={true}
                   handleUserClick={handleProjectPlanClicks}
                   isPagination={true}
-                  SearchPlaceholder={`${26} ${t("Results")}...`}
+                  SearchPlaceholder={t('filter_placeholder')}
                   buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                  buttonName={`${t("add")} ${t("project_plan")}`}
+                  buttonName={`${t("add")}`}
                   tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                   theadClass="table-light"
                   pagination="pagination"
                   paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                />
+                />              
+              </CardBody>
+              </Card>  
               </Col>
-
               {projectPlanSelected && (
                 <div className="w-100">
-                  <Card className="container text-center my-3 py-3">
-                    <h3>Gantt Chart For {projectPlanSelected.pld_name}</h3>
+                  <Card className="container text-center my-3 py-2">
+                    <h3>{t('view_gannt')} : {projectPlanSelected.pld_name}</h3>
                   </Card>
                   <Col lg={12}>
                     <GanttChart
                       pld_id={projectPlanSelected.pld_id}
                       name={projectPlanSelected.pld_name}
+                      startDate={projectPlanSelected.pld_start_date_gc}
+                      endDate={projectPlanSelected.pld_end_date_gc}
                     />
                   </Col>
                 </div>
@@ -572,96 +565,18 @@ const ProjectPlanModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <FormGroup>
-                      <Label>{t("pld_start_date_gc")}</Label>
-                      <InputGroup>
-                        <Flatpickr
-                          id="DataPicker"
-                          className={`form-control ${
-                            validation.touched.pld_start_date_gc &&
-                            validation.errors.pld_start_date_gc
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          name="pld_start_date_gc"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
-                            enableTime: false,
-                          }}
-                          value={validation.values.pld_start_date_gc || ""}
-                          onChange={(date) => {
-                            const formatedDate = formatDate(date[0]);
-                            validation.setFieldValue(
-                              "pld_start_date_gc",
-                              formatedDate
-                            ); // Set value in Formik
-                          }}
-                          onBlur={validation.handleBlur}
-                        />
-
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
-                      </InputGroup>
-                      {validation.touched.pld_start_date_gc &&
-                      validation.errors.pld_start_date_gc ? (
-                        <FormFeedback>
-                          {validation.errors.pld_start_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
+                    <DatePicker 
+                      isRequired="true"
+                      validation={validation}
+                      componentId="pld_start_date_gc"
+                      />
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <FormGroup>
-                      <Label>{t("pld_end_date_gc")}</Label>
-                      <InputGroup>
-                        <Flatpickr
-                          id="DataPicker"
-                          className={`form-control ${
-                            validation.touched.pld_end_date_gc &&
-                            validation.errors.pld_end_date_gc
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          name="pld_end_date_gc"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
-                            enableTime: false,
-                          }}
-                          value={validation.values.pld_end_date_gc || ""}
-                          onChange={(date) => {
-                            const formatedDate = formatDate(date[0]);
-                            validation.setFieldValue(
-                              "pld_end_date_gc",
-                              formatedDate
-                            ); // Set value in Formik
-                          }}
-                          onBlur={validation.handleBlur}
-                        />
-
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
-                      </InputGroup>
-                      {validation.touched.pld_end_date_gc &&
-                      validation.errors.pld_end_date_gc ? (
-                        <FormFeedback>
-                          {validation.errors.pld_end_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
+                    <DatePicker 
+                      isRequired="true"
+                      validation={validation}
+                      componentId="pld_end_date_gc"
+                      />
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("pld_description")}</Label>

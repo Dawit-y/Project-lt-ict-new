@@ -1,49 +1,28 @@
 import React, { useEffect, useMemo, useState,useRef } from "react";
-import axios from "axios";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
 import "bootstrap/dist/css/bootstrap.min.css";
-import TableContainer from "../../components/Common/TableContainer";
-import * as Yup from "yup";
-import { useFormik } from "formik";
-import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
 //import components
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import DeleteModal from "../../components/Common/DeleteModal";
-
 import {
   useFetchProjectBudgetExpenditures,
-  useSearchProjectBudgetExpenditures,
-  useAddProjectBudgetExpenditure,
-  useDeleteProjectBudgetExpenditure,
-  useUpdateProjectBudgetExpenditure,
+  useSearchProjectBudgetExpenditures
 } from "../../queries/projectbudgetexpenditure_query";
-import ProjectBudgetExpenditureModal from "./ProjectBudgetExpenditureModal";
+import { useFetchBudgetYears } from "../../queries/budgetyear_query";
+import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
 import { useTranslation } from "react-i18next";
-
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
 import {
   Button,
   Col,
   Row,
-  UncontrolledTooltip,
   Modal,
   ModalHeader,
   ModalBody,
-  Form,
   Input,
-  FormFeedback,
   Label,
   Card,
   CardBody,
@@ -61,7 +40,7 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-
+import { createSelectOptions } from "../../utils/commonMethods";
 const ProjectBudgetExpenditureList = () => {
   //meta title
   document.title = " ProjectBudgetExpenditure";
@@ -84,10 +63,19 @@ const ProjectBudgetExpenditureList = () => {
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
+  const { data: budgetYearData } = useFetchBudgetYears();
+  const { data: budgetMonthData } = useFetchBudgetMonths();
 
-
-
-
+   const budgetYearOptions = createSelectOptions(
+    budgetYearData?.data || [],
+    "bdy_id",
+    "bdy_name"
+  );
+  const budgetMonthOptions = createSelectOptions(
+    budgetMonthData?.data || [],
+    "bdm_id",
+    "bdm_month"
+  );
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
@@ -165,17 +153,7 @@ const columnDefs = useMemo(() => {
         cellRenderer: (params) => {
           return truncateText(params.data.prj_code, 30) || "-";
         },
-      },
-        {
-        headerName: t("pbe_reason"),
-        field: "pbe_reason",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.pbe_reason, 30) || "-";
-        },
-      },
-      
+      },      
       {
         headerName: t("pbe_budget_code"),
         field: "pbe_budget_code",
@@ -185,8 +163,6 @@ const columnDefs = useMemo(() => {
           return truncateText(params.data.pbe_budget_code, 30) || "-";
         },
       },
-       
-
       {
         headerName: t("pbe_budget_year"),
         field: "pbe_budget_year",
@@ -195,9 +171,7 @@ const columnDefs = useMemo(() => {
         cellRenderer: (params) => {
           return truncateText(params.data.pbe_budget_year, 30) || "-";
         },
-      }
-      ,
-
+      },
       {
         headerName: t("pbe_budget_month"),
         field: "pbe_budget_month",
@@ -207,30 +181,24 @@ const columnDefs = useMemo(() => {
           return truncateText(params.data.pbe_budget_month, 30) || "-";
         },
       },
-
-      {
-        headerName: t("pbe_used_date_gc"),
-        field: "pbe_used_date_gc",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.pbe_used_date_gc, 30) || "-";
-        },
-      },
       {
         headerName: t("ppe_amount"),
         field: "ppe_amount",
         sortable: true,
         filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.ppe_amount, 30) || "-";
-        },
+        valueFormatter: (params) => {
+      if (params.value != null) {
+        return new Intl.NumberFormat("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(params.value);
+      }
+      return "0.00"; // Default value if null or undefined
+    }
       }
     ];
     return baseColumnDefs;
-  });
-
-  
+  });  
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
@@ -239,8 +207,7 @@ const columnDefs = useMemo(() => {
       <div className="page-content">
         <div>
           <Breadcrumbs
-            title={t("project_budget_expenditure_list")}
-            breadcrumbItem={t("Project Payment List")}
+            breadcrumbItem={t("project_budget_expenditure_list")}
           />
           <div className="w-100 d-flex gap-2">
             <AddressStructureForProject onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />
@@ -248,17 +215,17 @@ const columnDefs = useMemo(() => {
           <AdvancedSearch
             searchHook={useSearchProjectBudgetExpenditures}
             textSearchKeys={["prj_name", "prj_code"]}
-            dateSearchKeys={["payment_date"]}
+            dateSearchKeys={[]}
             dropdownSearchKeys={[
-              {
-                key: "prp_type",
-                options: [
-                  { value: "Advance", label: "Advance" },
-                  { value: "Interim", label: "Interim" },
-                  { value: "Final", label: "Final" },
-                ],
-              },
-            ]}
+                  {
+                    key: "budget_year",
+                    options: budgetYearOptions,
+                  },
+                  {
+                    key: "budget_month",
+                    options: budgetMonthOptions,
+                  },
+                ]}
             checkboxSearchKeys={[]}
             additionalParams={projectParams}
             setAdditionalParams={setProjectParams}

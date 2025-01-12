@@ -19,7 +19,6 @@ export const useFetchPaymentCategorys = () => {
     refetchOnMount: false,
   });
 };
-
 //search payment_category
 export const useSearchPaymentCategorys = (searchParams = {}) => {
   return useQuery({
@@ -32,7 +31,6 @@ export const useSearchPaymentCategorys = (searchParams = {}) => {
     enabled: searchParams.length > 0,
   });
 };
-
 // Add payment_category
 export const useAddPaymentCategory = () => {
   const queryClient = useQueryClient();

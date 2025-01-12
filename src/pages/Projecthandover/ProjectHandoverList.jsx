@@ -170,7 +170,7 @@ const ProjectHandoverList = (props) => {
         headerName: t("prh_handover_date_gc"),
         field: "prh_handover_date_gc",
         sortable: true,
-        filter: true,
+        filter: "agDateColumnFilter",
         cellRenderer: (params) => {
           return truncateText(params.data.prh_handover_date_gc, 30) || "-";
         },

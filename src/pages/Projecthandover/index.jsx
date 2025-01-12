@@ -19,7 +19,8 @@ import {
 import { useAddProjectDocument } from "../../queries/projectdocument_query";
 import ProjectHandoverModal from "./ProjectHandoverModal";
 import { useTranslation } from "react-i18next";
-
+import { PAGE_ID } from "../../constants/constantFile";
+import DatePicker from "../../components/Common/DatePicker";
 import {
   Button,
   Col,
@@ -37,7 +38,13 @@ import {
   FormGroup,
   Badge,
   InputGroup,
+  InputGroupText
 } from "reactstrap";
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import "flatpickr/dist/themes/material_blue.css";
@@ -86,11 +93,12 @@ const ProjectHandoverModel = (props) => {
       const handoverId = response?.data?.prh_id;
       handoverDocumentData["prd_owner_id"] = handoverId;
       await addProjectDocument.mutateAsync(handoverDocumentData);
-      toast.success(`Data added successfully`, {
+     toast.success(t('add_success'), {
         autoClose: 2000,
       });
+     validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.success(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -100,11 +108,12 @@ const ProjectHandoverModel = (props) => {
   const handleUpdateProjectHandover = async (data) => {
     try {
       await updateProjectHandover.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+     toast.success(t('update_success'), {
         autoClose: 2000,
       });
+     validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.success(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -116,11 +125,11 @@ const ProjectHandoverModel = (props) => {
       try {
         const id = projectHandover.prh_id;
         await deleteProjectHandover.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+        toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+        toast.success(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -151,10 +160,10 @@ const ProjectHandoverModel = (props) => {
       //prh_project_id: Yup.string().required(t("prh_project_id")),
       // prh_handover_date_ec: Yup.string().required(t("prh_handover_date_ec")),
       prh_handover_date_gc: Yup.string().required(t("prh_handover_date_gc")),
-      //prh_description: Yup.string().required(t("prh_description")),
+      prh_description: alphanumericValidation(3,425,false),
       //prh_status: Yup.string().required(t("prh_status")),
       prd_document_type_id: Yup.string().required(t("prd_document_type_id")),
-      prd_name: Yup.string().required(t("prd_name")),
+      prd_name: alphanumericValidation(3,20,true),
       prd_file: Yup.string().required(t("prd_file")),
     }),
     validateOnBlur: true,
@@ -172,8 +181,7 @@ const ProjectHandoverModel = (props) => {
           is_editable: values.is_editable,
         };
         // update ProjectHandover
-        handleUpdateProjectHandover(updateProjectHandover);
-        validation.resetForm();
+        handleUpdateProjectHandover(updateProjectHandover); 
       } else {
         const newProjectHandover = {
           prh_project_id: passedId,
@@ -183,7 +191,7 @@ const ProjectHandoverModel = (props) => {
           prh_status: values.prh_status,
         };
         const handoverDocumentData = {
-          prd_owner_type_id: 1,
+          prd_owner_type_id: PAGE_ID.PROJ_HANDOVER,
           prd_project_id: passedId,
           prd_document_type_id: values.prd_document_type_id,
           prd_name: values.prd_name,
@@ -192,10 +200,8 @@ const ProjectHandoverModel = (props) => {
           prd_size: values.prd_size,
           prd_file_extension: values.prd_file_extension,
         };
-
         // save new ProjectHandover
         handleAddProjectHandover(newProjectHandover, handoverDocumentData);
-        validation.resetForm();
       }
     },
   });
@@ -436,7 +442,7 @@ const ProjectHandoverModel = (props) => {
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("project_handover")}
+                      buttonName={t("add")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -463,50 +469,11 @@ const ProjectHandoverModel = (props) => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <FormGroup>
-                      <Label>{t("prh_handover_date_gc")}</Label>
-                      <InputGroup>
-                        <Flatpickr
-                          id="DataPicker"
-                          className={`form-control ${
-                            validation.touched.prh_handover_date_gc &&
-                            validation.errors.prh_handover_date_gc
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          name="prh_handover_date_gc"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
-                            enableTime: false,
-                          }}
-                          value={validation.values.prh_handover_date_gc || ""}
-                          onChange={(date) => {
-                            const formatedDate = formatDate(date[0]);
-                            validation.setFieldValue(
-                              "prh_handover_date_gc",
-                              formatedDate
-                            ); // Set value in Formik
-                          }}
-                          onBlur={validation.handleBlur}
-                        />
-
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
-                      </InputGroup>
-                      {validation.touched.prh_handover_date_gc &&
-                      validation.errors.prh_handover_date_gc ? (
-                        <FormFeedback>
-                          {validation.errors.prh_handover_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
+                      <DatePicker 
+                      isRequired="true"
+                      validation={validation}
+                      componentId="prh_handover_date_gc"
+                      />
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("prh_description")}</Label>

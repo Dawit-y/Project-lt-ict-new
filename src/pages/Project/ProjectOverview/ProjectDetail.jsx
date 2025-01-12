@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import { Card, CardBody, Col, Row, Spinner } from "reactstrap";
 import img1 from "../../../assets/images/companies/img-1.png";
 import { useTranslation } from "react-i18next";
-
 const ProjectDetail = ({ data }) => {
   const { t } = useTranslation();
   if (!data) {
@@ -44,13 +43,10 @@ const ProjectDetail = ({ data }) => {
             <p className="text-muted">{data?.prj_owner_description}</p>
           </div>
         </div>
-
         <h5 className="font-size-15 mt-4">{t("prj_outcome")} :</h5>
         <p className="text-muted">{data?.prj_outcome}</p>
-
         <h5 className="font-size-15 mt-4">{t("prj_remark")} :</h5>
         <p className="text-muted">{data?.prj_remark}</p>
-
         <div className="text-muted mt-4">
           {filteredDataArray?.map(([key, value], index) => (
             <p key={index}>

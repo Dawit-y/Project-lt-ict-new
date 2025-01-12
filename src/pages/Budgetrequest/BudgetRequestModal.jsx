@@ -47,19 +47,7 @@ const BudgetRequestModal = (props) => {
           </p>
           </tr><tr>
                     <p className="mb-2">
-            {t('bdr_project_id')}: <span className="text-primary">{transaction.bdr_project_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bdr_requested_date_ec')}: <span className="text-primary">{transaction.bdr_requested_date_ec}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
             {t('bdr_requested_date_gc')}: <span className="text-primary">{transaction.bdr_requested_date_gc}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bdr_released_date_ec')}: <span className="text-primary">{transaction.bdr_released_date_ec}</span>
           </p>
           </tr><tr>
                     <p className="mb-2">
@@ -71,7 +59,7 @@ const BudgetRequestModal = (props) => {
           </p>
           </tr><tr>
                     <p className="mb-2">
-            {t('bdr_status')}: <span className="text-primary">{transaction.bdr_status}</span>
+            {t('bdr_status')}: <span className="text-primary">{transaction.bdr_request_status}</span>
           </p>
           </tr>
         </ModalBody>

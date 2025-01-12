@@ -9,15 +9,20 @@ import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-
 import {
   useFetchProjectPayments,
   useAddProjectPayment,
   useUpdateProjectPayment,
   useDeleteProjectPayment,
 } from "../../queries/projectpayment_query";
+import { useFetchPaymentCategorys } from "../../queries/paymentcategory_query";
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 import { useTranslation } from "react-i18next";
-
+import DatePicker from "../../components/Common/DatePicker";
 import {
   Button,
   Col,
@@ -35,6 +40,7 @@ import {
   FormGroup,
   InputGroup,
   Badge,
+  InputGroupText
 } from "reactstrap";
 import { toast } from "react-toastify";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
@@ -69,16 +75,15 @@ const ProjectPaymentModel = (props) => {
   const addProjectPayment = useAddProjectPayment();
   const updateProjectPayment = useUpdateProjectPayment();
   const deleteProjectPayment = useDeleteProjectPayment();
-
+const { data: paymentCategoryData } = useFetchPaymentCategorys();
   const handleAddProjectPayment = async (newProjectPayment) => {
     try {
       await addProjectPayment.mutateAsync(newProjectPayment);
-
-      toast.success(`Data added successfully`, {
+      toast.success(t('add_success'), {
         autoClose: 2000,
       });
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.success(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -88,11 +93,12 @@ const ProjectPaymentModel = (props) => {
   const handleUpdateProjectPayment = async (data) => {
     try {
       await updateProjectPayment.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t('update_success'), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.success(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -104,23 +110,30 @@ const ProjectPaymentModel = (props) => {
       try {
         const id = projectPayment.prp_id;
         await deleteProjectPayment.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+         toast.success(t('delete_success'), {
           autoClose: 2000,
         });
+         validation.resetForm();
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+         toast.success(t('delete_failure'), {
           autoClose: 2000,
         });
       }
       setDeleteModal(false);
     }
   };
-
+const paymentCategoryMap = useMemo(() => {
+    return (
+      paymentCategoryData?.data?.reduce((acc, payment_category) => {
+        acc[payment_category.pyc_id] = payment_category.pyc_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [paymentCategoryData]);
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
-
     initialValues: {
       prp_project_id: passedId,
       prp_type: (projectPayment && projectPayment.prp_type) || "",
@@ -141,14 +154,18 @@ const ProjectPaymentModel = (props) => {
 
     validationSchema: Yup.object({
       // prp_project_id: Yup.string().required(t("prp_project_id")),
-      prp_type: Yup.string().required(t("prp_type")),
+      prp_type: numberValidation(1,10,true)
+      .test("unique-role-id", t("Already exists"), (value) => {
+          return !data?.data.some(
+            (item) =>
+              item.prp_type == value && item.prp_id !== projectPayment?.prp_id
+          );
+        }),
       // prp_payment_date_et: Yup.string().required(t("prp_payment_date_et")),
       prp_payment_date_gc: Yup.string().required(t("prp_payment_date_gc")),
-      prp_payment_amount: Yup.string().required(t("prp_payment_amount")),
-      prp_payment_percentage: Yup.string().required(
-        t("prp_payment_percentage")
-      ),
-      //prp_description: Yup.string().required(t("prp_description")),
+      prp_payment_amount: amountValidation(1,10000000000,true),
+      prp_payment_percentage: amountValidation(1,100,true),
+      prp_description: alphanumericValidation(3,425,false)
       //prp_status: Yup.string().required(t("prp_status")),
     }),
     validateOnBlur: true,
@@ -169,8 +186,7 @@ const ProjectPaymentModel = (props) => {
           is_editable: values.is_editable,
         };
         // update ProjectPayment
-        handleUpdateProjectPayment(updateProjectPayment);
-        validation.resetForm();
+        handleUpdateProjectPayment(updateProjectPayment);        
       } else {
         const newProjectPayment = {
           prp_project_id: passedId,
@@ -184,7 +200,6 @@ const ProjectPaymentModel = (props) => {
         };
         // save new ProjectPayments
         handleAddProjectPayment(newProjectPayment);
-        validation.resetForm();
       }
     },
   });
@@ -210,7 +225,6 @@ const ProjectPaymentModel = (props) => {
       setModal(true);
     }
   };
-
   const handleProjectPaymentClick = (arg) => {
     const projectPayment = arg;
     // console.log("handleProjectPaymentClick", projectPayment);
@@ -224,24 +238,19 @@ const ProjectPaymentModel = (props) => {
       prp_payment_percentage: projectPayment.prp_payment_percentage,
       prp_description: projectPayment.prp_description,
       prp_status: projectPayment.prp_status,
-
       is_deletable: projectPayment.is_deletable,
       is_editable: projectPayment.is_editable,
     });
-
     setIsEdit(true);
-
     toggle();
   };
 
   //delete projects
   const [deleteModal, setDeleteModal] = useState(false);
-
   const onClickDelete = (projectPayment) => {
     setProjectPayment(projectPayment);
     setDeleteModal(true);
   };
-
   const handleProjectPaymentClicks = () => {
     setIsEdit(false);
     setProjectPayment("");
@@ -267,7 +276,7 @@ const ProjectPaymentModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.prp_type, 50) || "-"}
+              {paymentCategoryMap[cellProps.row.original.prp_type] || ""}
             </span>
           );
         },
@@ -317,20 +326,6 @@ const ProjectPaymentModel = (props) => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "prp_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prp_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -404,7 +399,6 @@ const ProjectPaymentModel = (props) => {
         },
       });
     }
-
     return baseColumns;
   }, [handleProjectPaymentClick, toggleViewModal, onClickDelete]);
 
@@ -413,37 +407,31 @@ const ProjectPaymentModel = (props) => {
     { label: "Active", value: 1 },
     { label: "Inactive", value: 0 },
   ];
-
   const dropdawntotal = [project_status];
-
   return (
     <React.Fragment>
       <DynamicDetailsModal
         isOpen={modal1}
         toggle={toggleViewModal} // Function to close the modal
         data={transaction} // Pass transaction as data to the modal
-        title="View Payment Details"
+        title={t('project_payment')}
         description={transaction.prp_description}
         dateInEC={transaction.prp_payment_date_et}
         dateInGC={transaction.prp_payment_date_gc}
         fields={[
-          { label: "Payment Type", key: "prp_type" },
-          { label: "Payment Amount", key: "prp_payment_amount" },
-          { label: "Percentage", key: "prp_payment_percentage" },
-          { label: "Project Payment Status", key: "prp_status" },
-          { label: "Is Deletable", key: "is_deletable" },
-          { label: "Is Editable", key: "is_editable" },
+          { label: t('prp_type'), key: "prp_type", value:paymentCategoryMap[transaction.prp_type]},
+          { label: t('prp_payment_amount'), key: "prp_payment_amount" },
+          { label: t('prp_payment_percentage'), key: "prp_payment_percentage" },
+          //{ label: t('prp_payment_percentage'), key: "prp_status" },
         ]}
-        footerText="Close"
+        footerText={t('close')}
       />
-
       <DeleteModal
         show={deleteModal}
         onDeleteClick={handleDeleteProjectPayment}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteProjectPayment.isPending}
       />
-
       <div className={passedId ? "" : "page-content"}>
         <div className="container-fluid1">
           {passedId ? null : (
@@ -466,7 +454,7 @@ const ProjectPaymentModel = (props) => {
               isPagination={true}
               SearchPlaceholder={t("filter_placeholder")}
               buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-              buttonName={t("add") + " " + t("project_payment")}
+              buttonName={t("add")}
               tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
               theadClass="table-light"
               pagination="pagination"
@@ -488,14 +476,12 @@ const ProjectPaymentModel = (props) => {
                 }}
               >
                 <Row>
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("prp_type")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                <Col className="col-md-6 mb-3">
+                    <Label>{t("prp_type")}<span className="text-danger">*</span></Label>
                     <Input
                       name="prp_type"
                       type="select"
+                      placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.prp_type || ""}
@@ -505,12 +491,14 @@ const ProjectPaymentModel = (props) => {
                           ? true
                           : false
                       }
+                      maxLength={20}
                     >
-                      <option value="">Select Payment Type</option>
-                      <option value="Advance">{t("Advance")}</option>
-                      <option value="Interim">{t("Interim")}</option>
-                      <option value="Final">{t("Final")}</option>
-                      <option value="Other">{t("Other")}</option>
+                      <option value="">{t('select_one')}</option>
+                      {paymentCategoryData?.data?.map((data) => (
+                        <option key={data.pyc_id} value={data.pyc_id}>
+                          {data.pyc_name_or}
+                        </option>
+                      ))}
                     </Input>
                     {validation.touched.prp_type &&
                     validation.errors.prp_type ? (
@@ -519,83 +507,14 @@ const ProjectPaymentModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-
-                  <Col className="col-md-6 mb-3" style={{ display: "none" }}>
-                    <Label>{t("prp_payment_date_et")}</Label>
-                    <Input
-                      name="prp_payment_date_et"
-                      type="text"
-                      placeholder={t("prp_payment_date_et")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_payment_date_et || ""}
-                      invalid={
-                        validation.touched.prp_payment_date_et &&
-                        validation.errors.prp_payment_date_et
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prp_payment_date_et &&
-                    validation.errors.prp_payment_date_et ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_payment_date_et}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-
-                  <Col className="col-md-3 mb-3">
-                    <FormGroup>
-                      <Label>
-                        {t("prp_payment_date_gc")}
-                        <span className="text-danger">*</span>
-                      </Label>
-                      <InputGroup>
-                        <Flatpickr
-                          id="DataPicker"
-                          className={`form-control ${
-                            validation.touched.prp_payment_date_gc &&
-                            validation.errors.prp_payment_date_gc
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          name="prp_payment_date_gc"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
-                            enableTime: false,
-                          }}
-                          value={validation.values.prp_payment_date_gc || ""}
-                          onChange={(date) => {
-                            const formatedDate = formatDate(date[0]);
-                            validation.setFieldValue(
-                              "prp_payment_date_gc",
-                              formatedDate
-                            ); // Set value in Formik
-                          }}
-                          onBlur={validation.handleBlur}
-                        />
-
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
-                      </InputGroup>
-                      {validation.touched.prp_payment_date_gc &&
-                      validation.errors.prp_payment_date_gc ? (
-                        <FormFeedback>
-                          {validation.errors.prp_payment_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
-                  </Col>
-
-                  <Col className="col-md-4 mb-3">
+                   <Col className="col-md-6 mb-3">
+                  <DatePicker 
+                      isRequired="true"
+                      validation={validation}
+                      componentId="prp_payment_date_gc"
+                      />
+                      </Col>
+                  <Col className="col-md-6 mb-3">
                     <Label>
                       {t("prp_payment_amount")}
                       <span className="text-danger">*</span>
@@ -624,7 +543,7 @@ const ProjectPaymentModel = (props) => {
                     ) : null}
                   </Col>
 
-                  <Col className="col-md-4 mb-3">
+                  <Col className="col-md-6 mb-3">
                     <Label>{t("prp_payment_percentage")}</Label>
                     <div className="d-flex align-items-center">
                       <Input

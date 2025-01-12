@@ -106,7 +106,7 @@ export const useDeleteProjectVariation = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.prv_id !== parseInt(variable)
+              (dept) => dept.prv_id !== parseInt(deletedData.deleted_id)
             ),
           };
         });

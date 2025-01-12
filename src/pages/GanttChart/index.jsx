@@ -4,7 +4,7 @@ import "dhtmlx-gantt/codebase/dhtmlxgantt.css";
 import gantt from "dhtmlx-gantt";
 import Spinners from "../../components/Common/Spinner";
 import { Button } from "reactstrap";
-
+import { useTranslation } from "react-i18next";
 const API_URL = "https://pms.awashsol.com/api";
 
 const fetchTasks = async (projectPlanId) => {
@@ -68,7 +68,8 @@ const isValidDate = (dateString) => {
   );
 };
 
-const GanttChart = ({ pld_id, name }) => {
+const GanttChart = ({ pld_id, name, startDate, endDate }) => {
+  const { t } = useTranslation();
   const ganttInitialized = useRef(false);
   const processorInitialized = useRef(false);
 
@@ -102,9 +103,10 @@ const GanttChart = ({ pld_id, name }) => {
             export_api: true,
           });
 
-          gantt.config.row_height = 50;
-          gantt.config.scale_height = 60;
-
+          gantt.config.row_height = 40;
+          gantt.config.scale_height = 50;
+          gantt.config.start_date = startDate;
+          gantt.config.end_date = endDate;
           gantt.config.scale_unit = "week";
           gantt.config.lightbox.sections = [
             {
@@ -183,7 +185,7 @@ const GanttChart = ({ pld_id, name }) => {
     };
 
     fetchAndRenderTasks();
-  }, [pld_id]);
+  }, [pld_id, startDate, endDate]);
 
   const handleExportToPNG = () => {
     gantt.exportToPNG({
@@ -202,10 +204,10 @@ const GanttChart = ({ pld_id, name }) => {
     <div>
       <div className="mb-2 d-flex">
         <Button onClick={handleExportToPNG} className="me-2">
-          Export To PNG
+          {t('gantt_export_image')}
         </Button>
         <Button onClick={handleExportToPDF} color="success">
-          Export To PDF
+         {t('gantt_export_pdf')}
         </Button>
       </div>
       <div id="gantt_here" style={{ width: "100%", height: "500px" }}></div>

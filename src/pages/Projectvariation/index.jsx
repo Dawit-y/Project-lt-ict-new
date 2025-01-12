@@ -18,7 +18,8 @@ import {
 } from "../../queries/projectvariation_query";
 import ProjectVariationModal from "./ProjectVariationModal";
 import { useTranslation } from "react-i18next";
-
+import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 import {
   Button,
   Col,
@@ -35,7 +36,8 @@ import {
   CardBody,
   FormGroup,
   Badge,
-  InputGroup
+  InputGroup,
+  InputGroupText
 } from "reactstrap";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -75,25 +77,26 @@ const ProjectVariationModel = (props) => {
   const handleAddProjectVariation = async (data) => {
     try {
       await addProjectVariation.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+      toast.success(t('add_success'), {
         autoClose: 2000,
       });
+        validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.success(t('add_failure'), {
         autoClose: 2000,
       });
     }
     toggle();
   };
-
   const handleUpdateProjectVariation = async (data) => {
     try {
       await updateProjectVariation.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+       toast.success(t('update_success'), {
         autoClose: 2000,
       });
+        validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+       toast.success(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -104,11 +107,11 @@ const ProjectVariationModel = (props) => {
       try {
         const id = projectVariation.prv_id;
         await deleteProjectVariation.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+         toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+         toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       }
@@ -147,14 +150,14 @@ const ProjectVariationModel = (props) => {
     },
 
     validationSchema: Yup.object({
-      prv_requested_amount: Yup.string().required(t("prv_requested_amount")),
-      //prv_released_amount: Yup.string().required(t("prv_released_amount")),
+      prv_requested_amount: amountValidation(1000,100000000, true),
+      prv_released_amount: amountValidation(1000,100000000, true),
      // prv_project_id: Yup.string().required(t("prv_project_id")),
       //prv_requested_date_ec: Yup.string().required(t("prv_requested_date_ec")),
-      prv_requested_date_gc: Yup.string().required(t("prv_requested_date_gc")),
+      prv_requested_date_gc: alphanumericValidation(10,10,true),
      // prv_released_date_ec: Yup.string().required(t("prv_released_date_ec")),
-      //prv_released_date_gc: Yup.string().required(t("prv_released_date_gc")),
-      //prv_description: Yup.string().required(t("prv_description")),
+      prv_released_date_gc: alphanumericValidation(10,10,true),
+      prv_description: alphanumericValidation(3,425,false),
       //prv_status: Yup.string().required(t("prv_status")),
     }),
     validateOnBlur: true,
@@ -172,13 +175,11 @@ const ProjectVariationModel = (props) => {
           prv_released_date_gc: values.prv_released_date_gc,
           prv_description: values.prv_description,
           prv_status: values.prv_status,
-
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
         // update ProjectVariation
         handleUpdateProjectVariation(updateProjectVariation);
-        validation.resetForm();
       } else {
         const newProjectVariation = {
           prv_requested_amount: values.prv_requested_amount,
@@ -192,8 +193,7 @@ const ProjectVariationModel = (props) => {
           prv_status: values.prv_status,
         };
         // save new ProjectVariation
-        handleAddProjectVariation(newProjectVariation);
-        validation.resetForm();
+        handleAddProjectVariation(newProjectVariation);      
       }
     },
   });
@@ -416,10 +416,19 @@ const ProjectVariationModel = (props) => {
 
   return (
     <React.Fragment>
-      <ProjectVariationModal
+      <DynamicDetailsModal
         isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
+        toggle={toggleViewModal} // Function to close the modal
+        data={transaction} // Pass transaction as data to the modal
+        title={t('project_variation')}
+        description={transaction.prv_description}      
+        fields={[
+          { label: t('prv_requested_date_gc'), key: "prv_requested_date_gc" },
+          { label: t('prv_released_date_gc'), key: "prv_released_date_gc" },
+          { label: t('prv_requested_amount'), key: "prv_requested_amount" },
+          { label: t('prv_released_amount'), key: "prv_released_amount" }
+        ]}
+        footerText={t('close')}
       />
       <DeleteModal
         show={deleteModal}
@@ -483,7 +492,7 @@ const ProjectVariationModel = (props) => {
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("project_variation")}
+                      buttonName={t("add")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -510,7 +519,7 @@ const ProjectVariationModel = (props) => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prv_requested_amount")}</Label>
+                    <Label>{t("prv_requested_amount")}<span className="text-danger">*</span></Label>
                     <Input
                       name="prv_requested_amount"
                       type="number"
@@ -534,7 +543,7 @@ const ProjectVariationModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prv_released_amount")}</Label>
+                    <Label>{t("prv_released_amount")}<span className="text-danger">*</span></Label>
                     <Input
                       name="prv_released_amount"
                       type="number"
@@ -558,16 +567,19 @@ const ProjectVariationModel = (props) => {
                     ) : null}
                   </Col>
                  <Col className="col-md-6 mb-3">
-                    <FormGroup>
-                      <Label>{t("prv_requested_date_gc")}</Label>
+                      <Label>{t("prv_requested_date_gc")}<span className="text-danger">*</span></Label>
                       <InputGroup>
+                      <div
+                          className={`d-flex w-100 ${
+                            validation.touched.prv_requested_date_gc &&
+                            validation.errors.prv_requested_date_gc
+                              ? "border border-danger rounded"
+                              : ""
+                          }`}
+                        >
                         <Flatpickr
                           id="DataPicker"
-                          className={`form-control ${validation.touched.prv_requested_date_gc &&
-                              validation.errors.prv_requested_date_gc
-                              ? "is-invalid"
-                              : ""
-                            }`}
+                          className="form-control"
                           name="prv_requested_date_gc"
                           options={{
                             altInput: true,
@@ -585,34 +597,32 @@ const ProjectVariationModel = (props) => {
                           }}
                           onBlur={validation.handleBlur}
                         />
-
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
+                        <InputGroupText>
+                            <i className="fa fa-calendar" aria-hidden="true" />
+                          </InputGroupText>
+                        </div>
+                        {validation.touched.prv_requested_date_gc &&
+                          validation.errors.prv_requested_date_gc && (
+                            <div className="text-danger small mt-1">
+                              {validation.errors.prv_requested_date_gc}
+                            </div>
+                          )}
                       </InputGroup>
-                      {validation.touched.prv_requested_date_gc &&
-                        validation.errors.prv_requested_date_gc ? (
-                        <FormFeedback>
-                          {validation.errors.prv_requested_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
                   </Col>
                    <Col className="col-md-6 mb-3">
-                    <FormGroup>
-                      <Label>{t("prv_released_date_gc")}</Label>
+                      <Label>{t("prv_released_date_gc")}<span className="text-danger">*</span></Label>
                       <InputGroup>
+                      <div
+                          className={`d-flex w-100 ${
+                            validation.touched.prv_released_date_gc &&
+                            validation.errors.prv_released_date_gc
+                              ? "border border-danger rounded"
+                              : ""
+                          }`}
+                        >
                         <Flatpickr
                           id="DataPicker"
-                          className={`form-control ${validation.touched.prv_released_date_gc &&
-                              validation.errors.prv_released_date_gc
-                              ? "is-invalid"
-                              : ""
-                            }`}
+                          className="form-control"
                           name="prv_released_date_gc"
                           options={{
                             altInput: true,
@@ -630,22 +640,17 @@ const ProjectVariationModel = (props) => {
                           }}
                           onBlur={validation.handleBlur}
                         />
-
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
+                        <InputGroupText>
+                            <i className="fa fa-calendar" aria-hidden="true" />
+                          </InputGroupText>
+                        </div>
+                        {validation.touched.prv_released_date_gc &&
+                          validation.errors.prv_released_date_gc && (
+                            <div className="text-danger small mt-1">
+                              {validation.errors.prv_released_date_gc}
+                            </div>
+                          )}
                       </InputGroup>
-                      {validation.touched.prv_released_date_gc &&
-                        validation.errors.prv_released_date_gc ? (
-                        <FormFeedback>
-                          {validation.errors.prv_released_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("prv_description")}</Label>
@@ -662,7 +667,7 @@ const ProjectVariationModel = (props) => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={425}
                     />
                     {validation.touched.prv_description &&
                     validation.errors.prv_description ? (

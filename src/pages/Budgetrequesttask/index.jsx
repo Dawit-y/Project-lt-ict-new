@@ -41,7 +41,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   alphanumericValidation,
@@ -204,6 +204,8 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
           brt_next_year_financial: values.brt_next_year_financial,
           brt_description: values.brt_description,
           brt_status: values.brt_status,
+          is_deletable: 1,
+          is_editable: 1,
         };
         // save new BudgetRequestTask
         handleAddBudgetRequestTask(newBudgetRequestTask);
@@ -538,7 +540,7 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
           >
             <Row>
               <Col className="col-md-6 mb-3">
-                <Label>{t("brt_task_name")}</Label>
+                <Label>{t("brt_task_name")}<span className="text-danger">*</span></Label>
                 <Input
                   name="brt_task_name"
                   type="text"
@@ -562,7 +564,7 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                 ) : null}
               </Col>
               <Col className="col-md-6 mb-3">
-                <Label>{t("brt_measurement")}</Label>
+                <Label>{t("brt_measurement")}<span className="text-danger">*</span></Label>
                 <Input
                   name="brt_measurement"
                   type="text"
@@ -586,7 +588,7 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                 ) : null}
               </Col>
               <Col className="col-md-6 mb-3">
-                <Label>{t("brt_previous_year_physical")}</Label>
+                <Label>{t("brt_previous_year_physical")}<span className="text-danger">*</span></Label>
                 <Input
                   name="brt_previous_year_physical"
                   type="number"
@@ -610,7 +612,7 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                 ) : null}
               </Col>
               <Col className="col-md-6 mb-3">
-                <Label>{t("brt_previous_year_financial")}</Label>
+                <Label>{t("brt_previous_year_financial")}<span className="text-danger">*</span></Label>
                 <Input
                   name="brt_previous_year_financial"
                   type="number"
@@ -634,7 +636,7 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                 ) : null}
               </Col>
               <Col className="col-md-6 mb-3">
-                <Label>{t("brt_current_year_physical")}</Label>
+                <Label>{t("brt_current_year_physical")}<span className="text-danger">*</span></Label>
                 <Input
                   name="brt_current_year_physical"
                   type="number"
@@ -658,7 +660,7 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                 ) : null}
               </Col>
               <Col className="col-md-6 mb-3">
-                <Label>{t("brt_current_year_financial")}</Label>
+                <Label>{t("brt_current_year_financial")}<span className="text-danger">*</span></Label>
                 <Input
                   name="brt_current_year_financial"
                   type="number"
@@ -682,7 +684,7 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                 ) : null}
               </Col>
               <Col className="col-md-6 mb-3">
-                <Label>{t("brt_next_year_physical")}</Label>
+                <Label>{t("brt_next_year_physical")}<span className="text-danger">*</span></Label>
                 <Input
                   name="brt_next_year_physical"
                   type="number"
@@ -706,7 +708,7 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                 ) : null}
               </Col>
               <Col className="col-md-6 mb-3">
-                <Label>{t("brt_next_year_financial")}</Label>
+                <Label>{t("brt_next_year_financial")}<span className="text-danger">*</span></Label>
                 <Input
                   name="brt_next_year_financial"
                   type="text"
@@ -744,7 +746,7 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                       ? true
                       : false
                   }
-                  maxLength={20}
+                  maxLength={425}
                 />
                 {validation.touched.brt_description &&
                 validation.errors.brt_description ? (
@@ -792,7 +794,6 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
           </Form>
         </ModalBody>
       </Modal>
-      <ToastContainer />
     </React.Fragment>
   );
 };

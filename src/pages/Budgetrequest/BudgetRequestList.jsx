@@ -161,24 +161,36 @@ const BudgetRequestListModel = () => {
         field: "bdr_requested_amount",
         sortable: true,
         filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.bdr_requested_amount, 30) || "-";
-        },
+        valueFormatter: (params) => {
+      if (params.value != null) {
+        return new Intl.NumberFormat("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(params.value);
+      }
+      return "0.00"; // Default value if null or undefined
+    }
       },
       {
         headerName: t("bdr_released_amount"),
         field: "bdr_released_amount",
         sortable: true,
         filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.bdr_released_amount, 30) || "-";
-        },
+         valueFormatter: (params) => {
+      if (params.value != null) {
+        return new Intl.NumberFormat("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(params.value);
+      }
+      return "0.00"; // Default value if null or undefined
+    }
       },
       {
         headerName: t("bdr_requested_date_gc"),
         field: "bdr_requested_date_gc",
         sortable: true,
-        filter: true,
+        filter: "agDateColumnFilter",
         cellRenderer: (params) => {
           return truncateText(params.data.bdr_requested_date_gc, 30) || "-";
         },
@@ -187,7 +199,7 @@ const BudgetRequestListModel = () => {
         headerName: t("bdr_released_date_gc"),
         field: "bdr_released_date_gc",
         sortable: true,
-        filter: true,
+        filter: "agDateColumnFilter",
         cellRenderer: (params) => {
           return truncateText(params.data.bdr_released_date_gc, 30) || "-";
         },

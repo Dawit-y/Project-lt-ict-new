@@ -70,12 +70,19 @@ TabWrapper.propTypes = {
   ).isRequired,
 };
 
-export const DetailsView = ({ details }) => {
+export const DetailsView = ({ details,keysToRemove }) => {
   const { t } = useTranslation();
+const removeKeys = (obj, keysToRemove) => {
+  const newObj = { ...obj }; // Create a shallow copy of the object
+  keysToRemove.forEach((key) => delete newObj[key]); // Remove the specified keys
+  return newObj;
+};
+
+const newTransaction=removeKeys(details, keysToRemove); // Replace with keys to remove
   return (
     <Table>
       <tbody>
-        {Object.entries(details).map(([key, value]) => (
+        {Object.entries(newTransaction).map(([key, value]) => (
           <tr key={key}>
             <td>
               <strong>{t(`${key}`)}:</strong>

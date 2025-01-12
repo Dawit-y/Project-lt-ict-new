@@ -60,7 +60,7 @@ const FileUploadField = ({ validation }) => {
         "prd_file_extension",
         file.name.split(".").pop()
       );
-      validation.setFieldValue("prd_size", `${fileSizeInKB} KB`);
+      validation.setFieldValue("prd_size", `${fileSizeInKB}`);
     }
   };
 

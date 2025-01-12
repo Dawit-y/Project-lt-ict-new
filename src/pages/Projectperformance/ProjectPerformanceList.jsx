@@ -27,12 +27,13 @@ import {
 } from "../../queries/projectperformance_query";
 import AddressStructureForProject from "../Project/AddressStructureForProject";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
+import { useFetchBudgetYears } from "../../queries/budgetyear_query";
+import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
 import ProjectPerformanceModal from "./ProjectPerformanceModal";
 import { useTranslation } from "react-i18next";
 
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
-
 import {
   Button,
   Col,
@@ -65,14 +66,8 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-
 const ProjectPerformanceList= (props) => {
-  const { data: projectStatusData } = useFetchProjectStatuss();
-  const projectStatusOptions = createSelectOptions(
-    projectStatusData?.data || [],
-    "prs_id",
-    "prs_status_name_or"
-  );
+
   //  get passed data from tab
   const { passedId, isActive } = props;
   const param = { prp_project_id: passedId };
@@ -100,6 +95,25 @@ const ProjectPerformanceList= (props) => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [quickFilterText, setQuickFilterText] = useState("");
   const gridRef = useRef(null);
+   const { data: budgetYearData } = useFetchBudgetYears();
+  const { data: budgetMonthData } = useFetchBudgetMonths();
+  const { data: projectStatusData } = useFetchProjectStatuss();
+  const projectStatusOptions = createSelectOptions(
+    projectStatusData?.data || [],
+    "prs_id",
+    "prs_status_name_or"
+  );
+const budgetYearOptions = createSelectOptions(
+    budgetYearData?.data || [],
+    "bdy_id",
+    "bdy_name"
+  );
+  const budgetMonthOptions = createSelectOptions(
+    budgetMonthData?.data || [],
+    "bdm_id",
+    "bdm_month"
+  );
+
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
@@ -182,6 +196,26 @@ const ProjectPerformanceList= (props) => {
         width: 60,
       },
       {
+        headerName: t("prp_budget_year_id"),
+        field: "prp_budget_year_id",
+        sortable: true,
+        filter: true,
+        width:"120px",
+        cellRenderer: (params) => {
+          return truncateText(params.data.year_name, 30) || "-";
+        },
+      },
+      {
+        headerName: t("prp_budget_month_id"),
+        field: "prp_budget_month_id",
+        sortable: true,
+        filter: true,
+        width:"120px",
+        cellRenderer: (params) => {
+          return truncateText(params.data.month_name, 30) || "-";
+        },
+      },
+      {
         headerName: t("prj_name"),
         field: "prj_name",
         sortable: true,
@@ -205,14 +239,14 @@ const ProjectPerformanceList= (props) => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.prp_project_status_id, 30) || "-";
+          return truncateText(params.data.status_name, 30) || "-";
         },
       },
       {
         headerName: t("prp_record_date_gc"),
         field: "prp_record_date_gc",
         sortable: true,
-        filter: true,
+        filter: "agDateColumnFilter", // Enable date filtering
         cellRenderer: (params) => {
           return truncateText(params.data.prp_record_date_gc, 30) || "-";
         },
@@ -222,11 +256,16 @@ const ProjectPerformanceList= (props) => {
         field: "prp_total_budget_used",
         sortable: true,
         filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prp_total_budget_used, 30) || "-";
-        },
+        valueFormatter: (params) => {
+      if (params.value != null) {
+        return new Intl.NumberFormat("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(params.value);
+      }
+      return "0.00"; // Default value if null or undefined
+    }
       },
-
       {
         headerName: t("prp_physical_performance"),
         field: "prp_physical_performance",
@@ -234,15 +273,6 @@ const ProjectPerformanceList= (props) => {
         filter: true,
         cellRenderer: (params) => {
           return truncateText(params.data.prp_physical_performance, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prp_description"),
-        field: "prp_description",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prp_description, 30) || "-";
         },
       },
     ];
@@ -266,12 +296,20 @@ const ProjectPerformanceList= (props) => {
           <AdvancedSearch
             searchHook={useSearchProjectPerformances}
             textSearchKeys={["prj_name", "prj_code"]}
-            dateSearchKeys={["performance_date"]}
             dropdownSearchKeys={[
               {
                     key: "prp_project_status_id",
                     options: projectStatusOptions,
-                  }]}
+                  },
+                  {
+                    key: "budget_year",
+                    options: budgetYearOptions,
+                  },
+                  {
+                    key: "budget_month",
+                    options: budgetMonthOptions,
+                  }
+                  ]}
             checkboxSearchKeys={[]}
             additionalParams={projectParams}
             setAdditionalParams={setProjectParams}

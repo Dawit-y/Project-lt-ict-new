@@ -46,7 +46,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -75,6 +74,7 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
     "pec_id",
     "pec_name"
   );
+
   const expenditureCodeMap = useMemo(() => {
     return (
       expenditureCodeData?.data?.reduce((acc, expend) => {
@@ -281,20 +281,7 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
         },
       },
       {
-        header: "",
-        accessorKey: "bed_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bed_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: t("view_detail"),
+        header: t("view_details"),
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
@@ -309,7 +296,7 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
                 setTransaction(cellProps.row.original);
               }}
             >
-              {t("view_detail")}
+              {t("view_details")}
             </Button>
           );
         },
@@ -403,7 +390,7 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add == 1}
+                      isAddButton={true}
                       isCustomPageSize={true}
                       handleUserClick={handleBudgetExipDetailClicks}
                       isPagination={true}
@@ -569,5 +556,4 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
 BudgetExipDetailModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,
 };
-
 export default BudgetExipDetailModel;

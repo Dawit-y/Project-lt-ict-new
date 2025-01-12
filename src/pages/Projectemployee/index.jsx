@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState, useLayoutEffect } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -23,7 +22,7 @@ import {
 } from "../../queries/projectemployee_query";
 import ProjectEmployeeModal from "./ProjectEmployeeModal";
 import { useTranslation } from "react-i18next";
-
+import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
 import "flatpickr/dist/themes/material_blue.css";
@@ -44,7 +43,8 @@ import {
   CardBody,
   FormGroup,
   Badge,
-  InputGroup
+  InputGroup,
+  InputGroupText
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -84,12 +84,12 @@ const ProjectEmployeeModel = (props) => {
   const handleAddProjectEmployee = async (data) => {
     try {
       await addProjectEmployee.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+      toast.success(t('add_success'), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.success(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -99,12 +99,12 @@ const ProjectEmployeeModel = (props) => {
   const handleUpdateProjectEmployee = async (data) => {
     try {
       await updateProjectEmployee.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t('update_success'), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.success(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -115,11 +115,12 @@ const ProjectEmployeeModel = (props) => {
       try {
         const id = projectEmployee.emp_id;
         await deleteProjectEmployee.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+       toast.success(t('delete_success'), {
           autoClose: 2000,
         });
+
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+        toast.success(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -133,7 +134,6 @@ const ProjectEmployeeModel = (props) => {
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
-
     initialValues: {
       emp_id_no: (projectEmployee && projectEmployee.emp_id_no) || "",
       emp_full_name: (projectEmployee && projectEmployee.emp_full_name) || "",
@@ -154,21 +154,26 @@ const ProjectEmployeeModel = (props) => {
         (projectEmployee && projectEmployee.emp_description) || "",
       emp_current_status:
         (projectEmployee && projectEmployee.emp_current_status) || "",
-
       is_deletable: (projectEmployee && projectEmployee.is_deletable) || 1,
       is_editable: (projectEmployee && projectEmployee.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      emp_id_no: alphanumericValidation(3,10,true),
+      emp_id_no: alphanumericValidation(3,10,true)
+      .test("unique-role-id", t("Already exists"), (value) => {
+          return !data?.data.some(
+            (item) =>
+              item.emp_id_no == value && item.emp_id !== projectEmployee?.emp_id
+          );
+        }),
       emp_full_name: alphanumericValidation(3,200,true),
-      emp_email: alphanumericValidation(5,50,true).email('ivalid email address'),
+      emp_email: alphanumericValidation(5,50,false).email('ivalid email address'),
       emp_phone_num: alphanumericValidation(10,24,true),
       emp_role: alphanumericValidation(3,425,true),
       //emp_project_id: Yup.string().required(t("emp_project_id")),
       //emp_start_date_ec: Yup.string().required(t("emp_start_date_ec")),
-     //emp_start_date_gc: alphanumericValidation(10,11,true),
+     emp_start_date_gc: alphanumericValidation(10,11,true),
      // emp_end_date_ec: Yup.string().required(t("emp_end_date_ec")),
-      //emp_end_date_gc: Yup.string().required(t("emp_end_date_gc")),
+      emp_end_date_gc: Yup.string().required(t("emp_end_date_gc")),
       emp_address: alphanumericValidation(3,425,false),
       emp_description: alphanumericValidation(3,425,false),
       //emp_current_status: Yup.string().required(t("emp_current_status")),
@@ -466,10 +471,25 @@ const ProjectEmployeeModel = (props) => {
 
   return (
     <React.Fragment>
-      <ProjectEmployeeModal
+    <DynamicDetailsModal
         isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
+        toggle={toggleViewModal} // Function to close the modal
+        data={transaction} // Pass transaction as data to the modal
+        title={t('project_employee')}
+        description={transaction.emp_description}
+      
+        fields={[
+          { label: t('emp_id_no'), key: "emp_id_no" },
+          { label: t('emp_full_name'), key: "emp_full_name" },
+          { label: t('emp_email'), key: "emp_email" },
+          { label: t('emp_phone_num'), key: "emp_phone_num" },
+
+          { label: t('emp_role'), key: "emp_role" },
+          { label: t('emp_start_date_gc'), key: "emp_start_date_gc" },
+          { label: t('emp_end_date_gc'), key: "emp_end_date_gc" },
+          { label: t('emp_address'), key: "emp_address" }
+        ]}
+        footerText={t('close')}
       />
       <DeleteModal
         show={deleteModal}
@@ -533,7 +553,7 @@ const ProjectEmployeeModel = (props) => {
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("project_employee")}
+                      buttonName={t("add")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -585,7 +605,7 @@ const ProjectEmployeeModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("emp_full_name")}</Label>
+                    <Label>{t("emp_full_name")}<span className="text-danger">*</span></Label>
                     <Input
                       name="emp_full_name"
                       type="text"
@@ -633,7 +653,7 @@ const ProjectEmployeeModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("emp_phone_num")}</Label>
+                    <Label>{t("emp_phone_num")}<span className="text-danger">*</span></Label>
                     <Input
                       name="emp_phone_num"
                       type="text"
@@ -657,7 +677,7 @@ const ProjectEmployeeModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("emp_role")}</Label>
+                    <Label>{t("emp_role")}<span className="text-danger">*</span></Label>
                     <Input
                       name="emp_role"
                       type="text"
@@ -681,16 +701,19 @@ const ProjectEmployeeModel = (props) => {
                     ) : null}
                   </Col>
                  <Col className="col-md-6 mb-3">
-                    <FormGroup>
-                      <Label>{t("emp_start_date_gc")}</Label>
+                      <Label>{t("emp_start_date_gc")}<span className="text-danger">*</span></Label>
                       <InputGroup>
+                      <div
+                          className={`d-flex w-100 ${
+                            validation.touched.emp_start_date_gc &&
+                            validation.errors.emp_start_date_gc
+                              ? "border border-danger rounded"
+                              : ""
+                          }`}
+                        >
                         <Flatpickr
                           id="DataPicker"
-                          className={`form-control ${validation.touched.emp_start_date_gc &&
-                              validation.errors.emp_start_date_gc
-                              ? "is-invalid"
-                              : ""
-                            }`}
+                          className="form-control"
                           name="emp_start_date_gc"
                           options={{
                             altInput: true,
@@ -708,34 +731,32 @@ const ProjectEmployeeModel = (props) => {
                           }}
                           onBlur={validation.handleBlur}
                         />
-
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
+                        <InputGroupText>
+                            <i className="fa fa-calendar" aria-hidden="true" />
+                          </InputGroupText>
+                        </div>
+                        {validation.touched.emp_start_date_gc &&
+                          validation.errors.emp_start_date_gc && (
+                            <div className="text-danger small mt-1">
+                              {validation.errors.emp_start_date_gc}
+                            </div>
+                          )}
                       </InputGroup>
-                      {validation.touched.emp_start_date_gc &&
-                        validation.errors.emp_start_date_gc ? (
-                        <FormFeedback>
-                          {validation.errors.emp_start_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <FormGroup>
                       <Label>{t("emp_end_date_gc")}</Label>
                       <InputGroup>
+                      <div
+                          className={`d-flex w-100 ${
+                            validation.touched.emp_end_date_gc &&
+                            validation.errors.emp_end_date_gc
+                              ? "border border-danger rounded"
+                              : ""
+                          }`}
+                        >
                         <Flatpickr
                           id="DataPicker"
-                          className={`form-control ${validation.touched.emp_end_date_gc &&
-                              validation.errors.emp_end_date_gc
-                              ? "is-invalid"
-                              : ""
-                            }`}
+                          className="form-control"
                           name="emp_end_date_gc"
                           options={{
                             altInput: true,
@@ -753,22 +774,17 @@ const ProjectEmployeeModel = (props) => {
                           }}
                           onBlur={validation.handleBlur}
                         />
-
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
+                        <InputGroupText>
+                            <i className="fa fa-calendar" aria-hidden="true" />
+                          </InputGroupText>
+                        </div>
+                        {validation.touched.emp_end_date_gc &&
+                          validation.errors.emp_end_date_gc && (
+                            <div className="text-danger small mt-1">
+                              {validation.errors.emp_end_date_gc}
+                            </div>
+                          )}
                       </InputGroup>
-                      {validation.touched.emp_end_date_gc &&
-                        validation.errors.emp_end_date_gc ? (
-                        <FormFeedback>
-                          {validation.errors.emp_end_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("emp_address")}</Label>
@@ -785,7 +801,7 @@ const ProjectEmployeeModel = (props) => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={425}
                     />
                     {validation.touched.emp_address &&
                     validation.errors.emp_address ? (
@@ -809,7 +825,7 @@ const ProjectEmployeeModel = (props) => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={425}
                     />
                     {validation.touched.emp_description &&
                     validation.errors.emp_description ? (

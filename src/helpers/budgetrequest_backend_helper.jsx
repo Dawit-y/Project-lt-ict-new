@@ -20,6 +20,17 @@ export const getBudgetRequest = async (params) => {
   }
 };
 
+// add project_budget_request
+export const addBudgetRequest = async (objectName) =>
+  post(`${apiUrl}` + ADD_BUDGET_REQUEST, objectName);
+
+// update project_budget_request
+export const updateBudgetRequest = (objectName) =>
+post(`${apiUrl}`+UPDATE_BUDGET_REQUEST +`?bdr_id=${objectName?.bdr_id}`, objectName);
+
+// delete  project_budget_request
+export const deleteBudgetRequest = (objectName) =>
+  post(`${apiUrl}`+DELETE_BUDGET_REQUEST+`?bdr_id=${objectName}`);
 export const getBudgetRequestList = async (params) => {
   const queryString = new URLSearchParams(params).toString();
   const url = queryString
@@ -32,33 +43,3 @@ export const getBudgetRequestList = async (params) => {
     console.log(error);
   }
 };
-
-// add budget request
-export const addBudgetRequest = async (objectName) => {
-  try {
-    const response = await axios.post(
-      `${apiUrl}` + ADD_BUDGET_REQUEST,
-      objectName,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Failed to update grid:", error);
-    throw error;
-  }
-};
-// update objectNames
-export const updateBudgetRequest = (objectName) =>
-  post(
-    `${apiUrl}` + UPDATE_BUDGET_REQUEST + `?bdr_id=${objectName?.bdr_id}`,
-    objectName
-  );
-
-// delete objectNames
-export const deleteBudgetRequest = (objectName) =>
-  // post(`${url.DELETE_ORDER}?bdr_id=${order?.bdr_id}`);
-  post(`${apiUrl}` + DELETE_BUDGET_REQUEST + `?bdr_id=${objectName}`);

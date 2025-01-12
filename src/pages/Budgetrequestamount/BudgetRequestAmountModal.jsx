@@ -33,103 +33,71 @@ const BudgetRequestAmountModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('bra_expenditure_code_id')}: <span className="text-primary">{transaction.bra_expenditure_code_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_budget_request_id')}: <span className="text-primary">{transaction.bra_budget_request_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_current_year_expense')}: <span className="text-primary">{transaction.bra_current_year_expense}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_requested_amount')}: <span className="text-primary">{transaction.bra_requested_amount}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_approved_amount')}: <span className="text-primary">{transaction.bra_approved_amount}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_source_government_requested')}: <span className="text-primary">{transaction.bra_source_government_requested}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_source_government_approved')}: <span className="text-primary">{transaction.bra_source_government_approved}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_source_internal_requested')}: <span className="text-primary">{transaction.bra_source_internal_requested}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_source_internal_approved')}: <span className="text-primary">{transaction.bra_source_internal_approved}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_source_support_requested')}: <span className="text-primary">{transaction.bra_source_support_requested}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_source_support_approved')}: <span className="text-primary">{transaction.bra_source_support_approved}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_source_support_code')}: <span className="text-primary">{transaction.bra_source_support_code}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_source_credit_requested')}: <span className="text-primary">{transaction.bra_source_credit_requested}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_source_credit_approved')}: <span className="text-primary">{transaction.bra_source_credit_approved}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_source_credit_code')}: <span className="text-primary">{transaction.bra_source_credit_code}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_source_other_requested')}: <span className="text-primary">{transaction.bra_source_other_requested}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_source_other_approved')}: <span className="text-primary">{transaction.bra_source_other_approved}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_source_other_code')}: <span className="text-primary">{transaction.bra_source_other_code}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_requested_date')}: <span className="text-primary">{transaction.bra_requested_date}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_approved_date')}: <span className="text-primary">{transaction.bra_approved_date}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_description')}: <span className="text-primary">{transaction.bra_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bra_status')}: <span className="text-primary">{transaction.bra_status}</span>
-          </p>
-          </tr>
+       <table className="table table-bordered">
+  <tbody>
+    <tr>
+      <td>{t('bra_expenditure_code_id')}</td>
+      <td className="text-primary">{transaction.bra_expenditure_code_id}</td>
+      <td>{t('bra_current_year_expense')}</td>
+      <td className="text-primary">{transaction.bra_current_year_expense}</td>
+    </tr>
+    <tr>
+      <td>{t('bra_requested_amount')}</td>
+      <td className="text-primary">{transaction.bra_requested_amount}</td>
+      <td>{t('bra_approved_amount')}</td>
+      <td className="text-primary">{transaction.bra_approved_amount}</td>
+    </tr>
+    <tr>
+      <td>{t('bra_source_government_requested')}</td>
+      <td className="text-primary">{transaction.bra_source_government_requested}</td>
+      <td>{t('bra_source_government_approved')}</td>
+      <td className="text-primary">{transaction.bra_source_government_approved}</td>
+    </tr>
+    <tr>
+      <td>{t('bra_source_internal_requested')}</td>
+      <td className="text-primary">{transaction.bra_source_internal_requested}</td>
+      <td>{t('bra_source_internal_approved')}</td>
+      <td className="text-primary">{transaction.bra_source_internal_approved}</td>
+    </tr>
+    <tr>
+      <td>{t('bra_source_support_requested')}</td>
+      <td className="text-primary">{transaction.bra_source_support_requested}</td>
+      <td>{t('bra_source_support_approved')}</td>
+      <td className="text-primary">{transaction.bra_source_support_approved}</td>
+    </tr>
+    <tr>
+      <td>{t('bra_source_support_code')}</td>
+      <td className="text-primary">{transaction.bra_source_support_code}</td>
+      <td>{t('bra_source_credit_requested')}</td>
+      <td className="text-primary">{transaction.bra_source_credit_requested}</td>
+    </tr>
+    <tr>
+      <td>{t('bra_source_credit_approved')}</td>
+      <td className="text-primary">{transaction.bra_source_credit_approved}</td>
+      <td>{t('bra_source_credit_code')}</td>
+      <td className="text-primary">{transaction.bra_source_credit_code}</td>
+    </tr>
+    <tr>
+      <td>{t('bra_source_other_requested')}</td>
+      <td className="text-primary">{transaction.bra_source_other_requested}</td>
+      <td>{t('bra_source_other_approved')}</td>
+      <td className="text-primary">{transaction.bra_source_other_approved}</td>
+    </tr>
+    <tr>
+      <td>{t('bra_source_other_code')}</td>
+      <td className="text-primary">{transaction.bra_source_other_code}</td>
+      <td>{t('bra_requested_date')}</td>
+      <td className="text-primary">{transaction.bra_requested_date}</td>
+    </tr>
+    <tr>
+      <td>{t('bra_approved_date')}</td>
+      <td className="text-primary">{transaction.bra_approved_date}</td>
+      <td>{t('bra_description')}</td>
+      <td className="text-primary">{transaction.bra_description}</td>
+    </tr>
+  </tbody>
+</table>
 
-          {transaction.is_deletable === 1 && (
-            <p className="text-danger">data is deletable</p>
-          )}
-          
-          {transaction.is_editable === 1 && (
-            <p className="text-success">Editable</p>
-          )}
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>

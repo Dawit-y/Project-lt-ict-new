@@ -33,59 +33,39 @@ const BudgetRequestTaskModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('brt_task_name')}: <span className="text-primary">{transaction.brt_task_name}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('brt_measurement')}: <span className="text-primary">{transaction.brt_measurement}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('brt_budget_request_id')}: <span className="text-primary">{transaction.brt_budget_request_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('brt_previous_year_physical')}: <span className="text-primary">{transaction.brt_previous_year_physical}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('brt_previous_year_financial')}: <span className="text-primary">{transaction.brt_previous_year_financial}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('brt_current_year_physical')}: <span className="text-primary">{transaction.brt_current_year_physical}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('brt_current_year_financial')}: <span className="text-primary">{transaction.brt_current_year_financial}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('brt_next_year_physical')}: <span className="text-primary">{transaction.brt_next_year_physical}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('brt_next_year_financial')}: <span className="text-primary">{transaction.brt_next_year_financial}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('brt_description')}: <span className="text-primary">{transaction.brt_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('brt_status')}: <span className="text-primary">{transaction.brt_status}</span>
-          </p>
-          </tr>
+       <table className="table table-bordered">
+  <tbody>
+    <tr>
+      <td>{t('brt_task_name')}</td>
+      <td className="text-primary">{transaction.brt_task_name}</td>
+      <td>{t('brt_measurement')}</td>
+      <td className="text-primary">{transaction.brt_measurement}</td>
+    </tr>
+    <tr>
+      <td>{t('brt_previous_year_physical')}</td>
+      <td className="text-primary">{transaction.brt_previous_year_physical}</td>
+      <td>{t('brt_previous_year_financial')}</td>
+      <td className="text-primary">{transaction.brt_previous_year_financial}</td>
+    </tr>
+    <tr>
+      <td>{t('brt_current_year_physical')}</td>
+      <td className="text-primary">{transaction.brt_current_year_physical}</td>
+      <td>{t('brt_current_year_financial')}</td>
+      <td className="text-primary">{transaction.brt_current_year_financial}</td>
+    </tr>
+    <tr>
+      <td>{t('brt_next_year_physical')}</td>
+      <td className="text-primary">{transaction.brt_next_year_physical}</td>
+      <td>{t('brt_next_year_financial')}</td>
+      <td className="text-primary">{transaction.brt_next_year_financial}</td>
+    </tr>
+    <tr>
+      <td>{t('brt_description')}</td>
+      <td className="text-primary" colSpan="3">{transaction.brt_description}</td>
+    </tr>
+  </tbody>
+</table>
 
-          {transaction.is_deletable === 1 && (
-            <p className="text-danger">data is deletable</p>
-          )}
-          
-          {transaction.is_editable === 1 && (
-            <p className="text-success">Editable</p>
-          )}
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>

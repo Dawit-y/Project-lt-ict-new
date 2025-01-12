@@ -269,19 +269,6 @@ const PaymentCategoryModel = () => {
         },
       },
       {
-        header: "",
-        accessorKey: "pyc_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pyc_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
         header: t("view_detail"),
         enableColumnFilter: false,
         enableSorting: true,
@@ -399,7 +386,7 @@ const PaymentCategoryModel = () => {
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("payment_category")}
+                      buttonName={t("add")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"

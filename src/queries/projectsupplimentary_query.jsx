@@ -105,7 +105,7 @@ export const useDeleteProjectSupplimentary = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.prs_id !== parseInt(variable)
+              (dept) => dept.prs_id !== parseInt(deletedData.deleted_id)
             ),
           };
         });

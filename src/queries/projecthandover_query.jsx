@@ -106,7 +106,7 @@ export const useDeleteProjectHandover = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.prh_id !== parseInt(variable)
+              (dept) => dept.prh_id !== parseInt(deletedData.deleted_id)
             ),
           };
         });

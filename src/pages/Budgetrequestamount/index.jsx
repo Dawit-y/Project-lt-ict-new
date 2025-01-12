@@ -195,7 +195,7 @@ const BudgetRequestAmountModel = ({ passedId, isActive }) => {
         (budgetRequestAmount && budgetRequestAmount.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      bra_expenditure_code_id: Yup.string().required(
+      bra_expenditure_code_id: Yup.number().required(
         t("bra_expenditure_code_id")
       ),
       bra_current_year_expense: amountValidation(0, 10000000000, false),
@@ -592,34 +592,6 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
         },
       },
       {
-        header: "",
-        accessorKey: "bra_requested_date",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bra_requested_date, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "bra_approved_date",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bra_approved_date, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
         header: t("view_detail"),
         enableColumnFilter: false,
         enableSorting: true,
@@ -642,8 +614,7 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
       },
     ];
     if (
-      data?.previledge?.is_role_editable == 1 ||
-      data?.previledge?.is_role_deletable == 1
+      1==1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -653,7 +624,7 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable == 1 && (
+              {1 == 1 && (
                 <Link
                   to="#"
                   className="text-success"
@@ -699,7 +670,6 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
   if (isError) {
     <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
   return (
     <React.Fragment>
       <BudgetRequestAmountModal
@@ -716,10 +686,6 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
       {isLoading || isSearchLoading ? (
         <Spinners />
       ) : (
-        <Row>
-          <Col xs="12">
-            <Card>
-              <CardBody>
                 <TableContainer
                   columns={columns}
                   data={
@@ -740,10 +706,6 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   pagination="pagination"
                   paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                 />
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
       )}
       <Modal isOpen={modal} toggle={toggle} className="modal-xl">
         <ModalHeader toggle={toggle} tag="h4">
@@ -761,7 +723,7 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
           >
             <Row>
               <Col className="col-md-6 mb-3">
-                <Label>{t("bra_expenditure_code_id")}</Label>
+                <Label>{t("bra_expenditure_code_id")}<span className="text-danger">*</span></Label>
                 <Input
                   name="bra_expenditure_code_id"
                   type="text"
@@ -983,30 +945,6 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   </FormFeedback>
                 ) : null}
               </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>{t("bra_requested_date")}</Label>
-                <Input
-                  name="bra_requested_date"
-                  type="text"
-                  placeholder={t("bra_requested_date")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.bra_requested_date || ""}
-                  invalid={
-                    validation.touched.bra_requested_date &&
-                    validation.errors.bra_requested_date
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
-                />
-                {validation.touched.bra_requested_date &&
-                validation.errors.bra_requested_date ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.bra_requested_date}
-                  </FormFeedback>
-                ) : null}
-              </Col>
 
               <Col className="col-md-6 mb-3">
                 <Label>{t("bra_description")}</Label>
@@ -1071,7 +1009,6 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
           </Form>
         </ModalBody>
       </Modal>
-      <ToastContainer />
     </React.Fragment>
   );
 };

@@ -13,7 +13,7 @@ import {
 } from "../../components/Common/DetailViewWrapper";
 import { useSearchProjectDocuments } from "../../queries/projectdocument_query";
 import Spinners from "../../components/Common/Spinner";
-
+import { PAGE_ID } from "../../constants/constantFile";
 const modalStyle = {
   width: "100%",
   marginTop: "30px",
@@ -23,17 +23,17 @@ const ProjectHandoverModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction } = props;
   const handoverId = transaction?.prh_id;
-  const param = { prd_owner_type_id: 1, prd_owner_id: handoverId };
+  const param = { prd_owner_type_id: PAGE_ID.PROJ_HANDOVER, prd_owner_id: handoverId };
 
   const { data, isLoading } = useSearchProjectDocuments(
     handoverId ? param : null
   );
-
+  const keysToRemove = ["prh_update_time","is_role_editable","is_role_deletable","prh_handover_date_ec","is_deletable", "is_editable", "prh_project_id","prh_id","prh_status","prh_create_time","prh_delete_time","prh_created_by"];
   const tabs = [
     {
       id: "details",
       label: "Details",
-      content: <DetailsView details={transaction} />,
+      content: <DetailsView details={transaction} keysToRemove={keysToRemove} />,
     },
     {
       id: "pdf",

@@ -33,43 +33,30 @@ const ProjectPlanModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('pld_name')}: <span className="text-primary">{transaction.pld_name}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pld_project_id')}: <span className="text-primary">{transaction.pld_project_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pld_budget_year_id')}: <span className="text-primary">{transaction.pld_budget_year_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pld_start_date_ec')}: <span className="text-primary">{transaction.pld_start_date_ec}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pld_start_date_gc')}: <span className="text-primary">{transaction.pld_start_date_gc}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pld_end_date_ec')}: <span className="text-primary">{transaction.pld_end_date_ec}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pld_end_date_gc')}: <span className="text-primary">{transaction.pld_end_date_gc}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pld_description')}: <span className="text-primary">{transaction.pld_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pld_status')}: <span className="text-primary">{transaction.pld_status}</span>
-          </p>
-          </tr>
+        <table className="table table-bordered">
+  <tbody>
+    <tr>
+      <td>{t('pld_name')}</td>
+      <td className="text-primary">{transaction.pld_name}</td>
+    </tr>
+    <tr>
+      <td>{t('pld_budget_year_id')}</td>
+      <td className="text-primary">{transaction.pld_budget_year_id}</td>
+    </tr>
+    <tr>
+      <td>{t('pld_start_date_gc')}</td>
+      <td className="text-primary">{transaction.pld_start_date_gc}</td>
+    </tr>
+    <tr>
+      <td>{t('pld_end_date_gc')}</td>
+      <td className="text-primary">{transaction.pld_end_date_gc}</td>
+    </tr>
+    <tr>
+      <td>{t('pld_description')}</td>
+      <td className="text-primary">{transaction.pld_description}</td>
+    </tr>
+  </tbody>
+</table>
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>

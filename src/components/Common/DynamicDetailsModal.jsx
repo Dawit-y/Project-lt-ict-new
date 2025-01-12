@@ -11,12 +11,10 @@ import {
   Col,
   Row,
 } from "reactstrap";
-
 const modalStyle = {
   width: "100%",
   height: "100%",
 };
-
 const DynamicDetailsModal = (props) => {
   const { t } = useTranslation();
   const {
@@ -31,7 +29,6 @@ const DynamicDetailsModal = (props) => {
     dateInGC,
     dateInEC,
   } = props;
-
   const renderTableRows = () => {
     // Ensure that fields is an array and data (transaction) is an object
     if (Array.isArray(fields) && typeof data === "object") {
@@ -39,18 +36,21 @@ const DynamicDetailsModal = (props) => {
         <tr key={index}>
           <th scope="row">{field.label} :</th>
           <td>
-            {typeof data[field.key] === "number"
-              ? data[field.key].toLocaleString()
-              : data && data[field.key]
-              ? data[field.key]
-              : "N/A"}
+          {
+         field.value
+        ? field.value
+        : typeof data[field.key] === "number"
+        ? data[field.key].toLocaleString()
+        : data && data[field.key]
+        ? data[field.key]
+        : "-"
+          }
           </td>
         </tr>
       ));
     }
     return null; // Return null if fields or data are not valid
   };
-
   return (
     <Modal
       isOpen={isOpen}
@@ -68,18 +68,15 @@ const DynamicDetailsModal = (props) => {
           <div className="d-flex">
             <div className="flex-grow-1 overflow-hidden">
               <h5 className="text-truncate font-size-15">{t("Description")}</h5>
-              <p className="text-muted">{description || "N/A"}</p>
+              <p className="text-muted">{description || "-"}</p>
             </div>
           </div>
-
-          <h5 className="font-size-15 mt-4">{t("Details")}</h5>
-
+          <h5 className="font-size-15 mt-4">{t("view_details")}</h5>
           <div className="text-muted mt-4">
-            <Table className="table-nowrap mb-0">
+            <Table className="table-nowrap mb-0 table-sm table-hover">
               <tbody>{renderTableRows()}</tbody>
             </Table>
           </div>
-
           {/* Static date fields */}
           <Row className="task-dates justify-content-center">
             {dateInEC && (
@@ -93,13 +90,12 @@ const DynamicDetailsModal = (props) => {
                 </div>
               </Col>
             )}
-
             {dateInGC && (
               <Col sm="4" xs="6">
                 <div className="mt-4 text-center">
                   <h5 className="font-size-14">
                     <i className="bx bx-calendar-check me-1 text-primary" />{" "}
-                    Date in Gregorian Calendar
+                    Date
                   </h5>
                   <p className="text-muted mb-0">{dateInGC}</p>
                 </div>
@@ -116,7 +112,6 @@ const DynamicDetailsModal = (props) => {
     </Modal>
   );
 };
-
 DynamicDetailsModal.propTypes = {
   toggle: PropTypes.func,
   isOpen: PropTypes.bool,
@@ -131,5 +126,4 @@ DynamicDetailsModal.propTypes = {
   footerText: PropTypes.string,
   modalClassName: PropTypes.string,
 };
-
 export default DynamicDetailsModal;

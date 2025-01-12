@@ -194,18 +194,9 @@ const ProjectEmployeeList = () => {
         headerName: t("emp_start_date_gc"),
         field: "emp_start_date_gc",
         sortable: true,
-        filter: true,
+        filter: "agDateColumnFilter",
         cellRenderer: (params) => {
           return truncateText(params.data.emp_start_date_gc, 30) || "-";
-        },
-      },
-      {
-        headerName: t("emp_end_date_ec"),
-        field: "emp_end_date_ec",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.emp_end_date_ec, 30) || "-";
         },
       }
     ];

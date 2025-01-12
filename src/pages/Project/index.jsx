@@ -17,7 +17,7 @@ import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
+/*import "ag-grid-community/styles/ag-grid.css";*/
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "./ag-grid.css";
 import {
@@ -30,7 +30,6 @@ import {
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import { useFetchDepartments } from "../../queries/department_query";
-import ProjectModal from "./ProjectModal";
 import { useTranslation } from "react-i18next";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import ProjectDocument from "../../pages/Projectdocument/index";
@@ -45,8 +44,6 @@ import ProjectHandoverModel from "../Projecthandover";
 import ProjectPerformanceModel from "../Projectperformance";
 import ProjectSupplimentaryModel from "../Projectsupplimentary";
 import ProjectVariationModel from "../Projectvariation";
-import "flatpickr/dist/themes/material_blue.css";
-import Flatpickr from "react-flatpickr";
 import ProjectBudgetPlan from "../../pages/Projectbudgetplan/index";
 import {
   Button,
@@ -84,23 +81,6 @@ import { useProjectContext } from "../../context/ProjectContext";
 import SearchForProject from "../../components/Common/SearchForProject";
 import ExportToExcel from "../../components/Common/ExportToExcel";
 import ExportToPDF from "../../components/Common/ExportToPdf";
-
-const tabMapping = {
-  1: { label: "Documents", component: ProjectDocument },
-  44: { label: "Contractors", component: Projectcontractor },
-  26: { label: "Payments", component: ProjectPayment },
-  4: { label: "Stakeholders", component: ProjectStakeholder },
-  //5: { label: "Budget Request", component: Budgetrequest },
-  33: { label: "Geo Location", component: GeoLocation },
-  //7: { label: "Budget Expenditures", component: ProjectBudgetExpenditureModel },
-  43: { label: "Employees", component: ProjectEmployeeModel },
-  38: { label: "Handover", component: ProjectHandoverModel },
-  37: { label: "Performance", component: ProjectPerformanceModel },
-  41: { label: "Supplementary", component: ProjectSupplimentaryModel },
-  40: { label: "Variations", component: ProjectVariationModel },
-  46: { label: "Budget Plan", component: ProjectBudgetPlan },
-};
-
 const ProjectModel = () => {
   document.title = " Project";
   const [projectMetaData, setProjectMetaData] = useState([]);
@@ -130,6 +110,21 @@ const ProjectModel = () => {
     searchData,
   } = useProjectContext();
 
+const tabMapping = {
+  1: { label: t('project_document'), component: ProjectDocument },
+  44: { label: t('project_contractor'), component: Projectcontractor },
+  26: { label: t('project_payment'), component: ProjectPayment },
+  4: { label: t('project_stakeholder'), component: ProjectStakeholder },
+  //5: { label: "Budget Request", component: Budgetrequest },
+  33: { label: t('prj_geo_location'), component: GeoLocation },
+  //7: { label: "Budget Expenditures", component: ProjectBudgetExpenditureModel },
+  43: { label: t('project_employee'), component: ProjectEmployeeModel },
+  38: { label: t('project_handover'), component: ProjectHandoverModel },
+  37: { label: t('project_performance'), component: ProjectPerformanceModel },
+  41: { label: t('project_supplimentary'), component: ProjectSupplimentaryModel },
+  40: { label: t('project_variation'), component: ProjectVariationModel },
+  //46: { label: t('project_supplimentary'), component: ProjectBudgetPlan },
+};
   const [isAddressLoading, setIsAddressLoading] = useState(false);
 
   const { data, isLoading, error, isError, refetch } = useFetchProjects();
@@ -318,35 +313,9 @@ const ProjectModel = () => {
       prj_department_id: Yup.string().required(t("prj_department_id")),
       prj_urban_ben_number: numberValidation(10, 10000000, false),
       prj_rural_ben_number: numberValidation(10, 10000000, false),
-      //prj_location_zone_id: Yup.string().required(t('prj_location_zone_id')),
-      //prj_location_woreda_id: Yup.string().required(t('prj_location_woreda_id')),
-      //prj_location_kebele_id: Yup.string().required(t('prj_location_kebele_id')),
       prj_location_description: alphanumericValidation(3, 425, false),
-      //prj_owner_region_id: Yup.string().required(t('prj_owner_region_id')),
-      //prj_owner_zone_id: Yup.string().required(t('prj_owner_zone_id')),
-      //prj_owner_woreda_id: Yup.string().required(t('prj_owner_woreda_id')),
-      //prj_owner_kebele_id: Yup.string().required(t('prj_owner_kebele_id')),
-      //prj_owner_description: Yup.string().required(t('prj_owner_description')),
-      //prj_start_date_et: Yup.string().required(t('prj_start_date_et')),
-      // prj_start_date_gc: Yup.string().required(t("prj_start_date_gc")),
-      //prj_start_date_plan_et: Yup.string().required(t('prj_start_date_plan_et')),
-      // prj_start_date_plan_gc: Yup.string().required(
-      // t("prj_start_date_plan_gc")
-      // ),
-      //prj_end_date_actual_et: Yup.string().required(t('prj_end_date_actual_et')),
-      // prj_end_date_actual_gc: Yup.string().required(
-      //   t("prj_end_date_actual_gc")
-      // ),
-
-      //prj_end_date_plan_gc: Yup.string().required(t("prj_end_date_plan_gc")),
-      //prj_end_date_plan_et: Yup.string().required(t('prj_end_date_plan_et')),
       prj_outcome: alphanumericValidation(3, 425, true),
-      //prj_deleted: Yup.string().required(t('prj_deleted')),
       prj_remark: alphanumericValidation(3, 425, false),
-      //prj_created_date: Yup.string().required(t('prj_created_date')),
-      //prj_owner_id: Yup.string().required(t('prj_owner_id')),
-      //prj_urban_ben_number: Yup.string().required(t('prj_urban_ben_number')),
-      //prj_rural_ben_number: Yup.string().required(t('prj_rural_ben_number')),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -454,7 +423,6 @@ const ProjectModel = () => {
       setIsEdit(false);
     }
   }, [data]);
-
   const toggle = () => {
     if (modal) {
       setModal(false);
@@ -463,7 +431,6 @@ const ProjectModel = () => {
       setModal(true);
     }
   };
-
   const handleNodeSelect = useCallback(
     (node) => {
       if (node.level === "region") {
@@ -488,12 +455,10 @@ const ProjectModel = () => {
       setShowSearchResult,
     ]
   );
-
   const handleClick = (data) => {
     setShowCanvas(!showCanvas); // Toggle canvas visibility
     setProjectMetaData(data);
   };
-
   const handleProjectClick = (arg) => {
     const project = arg;
     // console.log("handleProjectClick", project);
@@ -536,16 +501,12 @@ const ProjectModel = () => {
       prj_urban_ben_number: project.prj_urban_ben_number,
       prj_rural_ben_number: project.prj_rural_ben_number,
       prj_department_id: project.prj_department_id,
-
       is_deletable: project.is_deletable,
       is_editable: project.is_editable,
     });
-    //setSelectedProjectCategory(project.prj_project_category_id);
-    //setSelectedSector(project.prj_sector_id);
     setIsEdit(true);
     toggle();
   };
-
   //delete projects
   const [deleteModal, setDeleteModal] = useState(false);
   const onClickDelete = (project) => {
@@ -558,7 +519,6 @@ const ProjectModel = () => {
     setProject("");
     toggle();
   };
-
   const localeText = {
     // For Pagination Panel
     page: t("page"),
@@ -571,26 +531,8 @@ const ProjectModel = () => {
     previous: t("previous"),
     loadingOoo: t("loadingOoo"),
     noRowsToShow: t("noRowsToShow"),
-
     // For Set Filter
     selectAll: t("selectAll"),
-    selectAllSearchResults: t("selectAllSearchResults"),
-    searchOoo: t("search..."),
-    blank: t("blanks"),
-    notBlank: t("notBlank"),
-    noMatches: t("noMatches"),
-    columns: t("columns"),
-    filters: t("filters"),
-    values: t("values"),
-    pageSize: t("pageSize"),
-    sortAscending: t("sortAscending"),
-    sortDescending: t("sortDescending"),
-    chooseColumns: t("chooseColumns"),
-    noPin: t("noPin"),
-    pinLeft: t("pinLeft"),
-    pinRight: t("pinRight"),
-    // For Number Filter & Text Filter
-    filterOoo: t("filterOoo"),
     equals: t("equals"),
     notEqual: t("notEqual"),
     lessThan: t("lessThan"),
@@ -602,31 +544,10 @@ const ProjectModel = () => {
     notContains: t("notContains"),
     startsWith: t("startsWith"),
     endsWith: t("endsWith"),
-
     // For Column Menu
     pinColumn: t("pinColumn"),
     before: t("before"),
     after: t("after"),
-    autosizeThiscolumn: t("autosizeThiscolumn"),
-    autosizeAllColumns: t("autosizeAllColumns"),
-    groupBy: t("groupBy"),
-    ungroupBy: t("ungroupBy"),
-    resetColumns: t("resetColumns"),
-    expandAll: t("expandAll"),
-    collapseAll: t("collapseAll"),
-    copy: t("copy"),
-    ctrlC: t("ctrlC"),
-    copyWithHeaders: t("copyWithHeaders"),
-    paste: t("paste"),
-    ctrlV: t("ctrlV"),
-    export: t("export"),
-    none: t("none"),
-    count: t("count"),
-    average: t("average"),
-    filteredRows: t("filteredRows"),
-    selectedRows: t("selectedRows"),
-    totalRows: t("totalRows"),
-    totalAndFilteredRows: t("totalAndFilteredRows"),
   };
   const columnDefs = useMemo(() => {
     const baseColumnDefs = [
@@ -636,15 +557,24 @@ const ProjectModel = () => {
         valueGetter: (params) => params.node.rowIndex + 1,
         sortable: false,
         filter: false,
-        width: 60,
+        width: 70,
       },
       {
         field: "prj_name",
         headerName: t("prj_name"),
         sortable: true,
         filter: "agTextColumnFilter",
-        /*floatingFilter: true,*/
         width: 300,
+        valueFormatter: (params) =>
+          params.node.footer ? t("Total") : params.value, // Display "Total" for footer
+      },
+       {
+        field: "prj_code",
+        headerName: t("prj_code"),
+        sortable: true,
+        filter: "agTextColumnFilter",
+        /*floatingFilter: true,*/
+        width: 150,
         valueFormatter: (params) =>
           params.node.footer ? t("Total") : params.value, // Display "Total" for footer
       },
@@ -659,42 +589,6 @@ const ProjectModel = () => {
           }
           return params.value ? `$${params.value.toLocaleString()}` : "";
         },
-      },
-      {
-        field: "prj_total_actual_budget",
-        headerName: t("prj_total_actual_budget"),
-        valueFormatter: (params) => {
-          if (params.node.footer) {
-            return params.value
-              ? `$${params.value.toLocaleString()}` // Show total in footer
-              : "";
-          }
-          return params.value ? `$${params.value.toLocaleString()}` : "";
-        },
-      },
-      {
-        field: "prj_start_date_gc",
-        headerName: t("prj_start_date_gc"),
-        sortable: true,
-        filter: "agDateColumnFilter",
-        valueFormatter: (params) =>
-          params.node.footer
-            ? "" // Suppress in footer
-            : params.value
-            ? new Date(params.value).toLocaleDateString()
-            : "Invalid date",
-      },
-      {
-        field: "prj_end_date_actual_gc",
-        headerName: t("prj_end_date_actual_gc"),
-        sortable: true,
-        filter: "agDateColumnFilter",
-        valueFormatter: (params) =>
-          params.node.footer
-            ? "" // Suppress in footer
-            : params.value
-            ? new Date(params.value).toLocaleDateString()
-            : "Invalid date",
       },
       {
         headerName: t("view_details"),
@@ -721,7 +615,7 @@ const ProjectModel = () => {
       baseColumnDefs.push({
         headerName: t("actions"),
         field: "actions",
-        width: 150,
+        width: 100,
         cellRenderer: (params) => {
           if (!params.data || params.node.group || params.node.footer)
             return null; // Suppress in group/footer rows
@@ -740,7 +634,6 @@ const ProjectModel = () => {
                   </UncontrolledTooltip>
                 </Link>
               )}
-
               {Object.keys(dynamicComponents).length > 0 && (
                 <Link
                   to="#"
@@ -753,46 +646,31 @@ const ProjectModel = () => {
                   </UncontrolledTooltip>
                 </Link>
               )}
-
-              <Link
-                to={`/Project/${params.data.prj_id}/project_plan`}
-                state={{ projectId: params.data.prj_id }}
-                className="text-secondary me-2"
-              >
-                <i
-                  className="mdi mdi-file-document-outline font-size-18"
-                  id="plantooltip"
-                />
-                <UncontrolledTooltip placement="top" target="plantooltip">
-                  Project Plan
-                </UncontrolledTooltip>
-              </Link>
             </div>
           );
         },
       });
     }
-
     if (1 == 1) {
       baseColumnDefs.push({
-        headerName: "Lists",
+        headerName: "...",
         cellRenderer: renderConfiguration,
         cellStyle: { overflow: "visible", zIndex: "auto" },
+        suppressMenu: true,
         resizable: true,
-        minWidth: 100,
+        minWidth: 80,
         width: 80,
+        zIndex:9999
       });
     }
-
     return baseColumnDefs;
   }, [data, handleProjectClick, onClickDelete, t]);
-
   function renderConfiguration(params) {
-    const { prj_id } = params.data || "";
+    const { prj_id } = params.data || {};
     return (
       <UncontrolledDropdown>
         <DropdownToggle
-          className="btn btn-light btn-sm my-auto"
+          className="btn btn-light btn-sm"
           type="button"
           id={`dropdownMenuButton${prj_id}`}
           style={{ zIndex: 1050 }}
@@ -808,19 +686,24 @@ const ProjectModel = () => {
             to={`/Project/${prj_id}/budget_request`}
             className="dropdown-item"
           >
-            {t("Budget Request")}
+            {t("budget_request")}
           </Link>
           <Link
             to={`/Project/${prj_id}/budget_expenditure`}
             className="dropdown-item"
           >
-            {t("Budget Expenditure")}
+            {t("project_budget_expenditure")}
+          </Link>
+          <Link
+            to={`/Project/${prj_id}/project_plan`}
+            className="dropdown-item"
+          >
+            {t("project_plan")}
           </Link>
         </DropdownMenu>
       </UncontrolledDropdown>
     );
   }
-
   const defaultColDef = {
     sortable: true,
     filter: true,
@@ -830,28 +713,17 @@ const ProjectModel = () => {
   const onGridReady = (params) => {
     params.api.sizeColumnsToFit();
   };
-
   const onSelectionChanged = () => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
     const selectedData = selectedNodes.map((node) => node.data);
     setSelectedRows(selectedData);
   };
-  // Clear the filter and show all rows again
-  const clearFilter = () => {
-    gridRef.current.api.setRowData(showSearchResults ? results : data);
-  };
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
   return (
     <React.Fragment>
-      <ProjectModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      />
       <DeleteModal
         show={deleteModal}
         onDeleteClick={handleDeleteProject}
@@ -897,10 +769,8 @@ const ProjectModel = () => {
                   className="ag-theme-alpine"
                   style={{ height: "100%", width: "100%" }}
                 >
-                  {/* Row for search input and buttons */}
                   <Row className="mb-3">
                     <Col sm="12" md="6">
-                      {/* Search Input for  Filter */}
                       <Input
                         type="text"
                         placeholder={t("Search") + "..."}
@@ -908,13 +778,9 @@ const ProjectModel = () => {
                         className="mb-2"
                       />
                     </Col>
-                    <Col
-                      sm="12"
-                      md="6"
-                      className="text-md-end d-flex align-items-center justify-content-end gap-2"
-                    >
+                    <Col sm="12" md="6" className="text-md-end d-flex align-items-center justify-content-end gap-2">
                       <Button color="success" onClick={handleProjectClicks}>
-                        {t("Add New Project")}
+                        {t("add")}
                       </Button>
                       <ExportToExcel
                         tableData={searchData?.data || []}
@@ -928,8 +794,6 @@ const ProjectModel = () => {
                       />
                     </Col>
                   </Row>
-
-                  {/* AG Grid */}
                   <div style={{ height: "600px" }}>
                     <AgGridReact
                       rowStyle={{ overflow: "visible" }}
@@ -1274,107 +1138,7 @@ const ProjectModel = () => {
                             {validation.errors.prj_department_id}
                           </FormFeedback>
                         ) : null}
-                      </Col>
-                      {/*<Col className="col-md-4 mb-3">
-                        <FormGroup>
-                          <Label>{t("prj_start_date_gc")}</Label>
-                          <InputGroup>
-                            <Flatpickr
-                              id="DataPicker"
-                              className={`form-control ${
-                                validation.touched.prj_start_date_gc &&
-                                validation.errors.prj_start_date_gc
-                                  ? "is-invalid"
-                                  : ""
-                              }`}
-                              name="prj_start_date_gc"
-                              options={{
-                                altInput: true,
-                                altFormat: "Y/m/d",
-                                dateFormat: "Y/m/d",
-                                enableTime: false,
-                              }}
-                              value={validation.values.prj_start_date_gc || ""}
-                              onChange={(date) => {
-                                const formatedDate = formatDate(date[0]);
-                                validation.setFieldValue(
-                                  "prj_start_date_gc",
-                                  formatedDate
-                                ); // Set value in Formik
-                              }}
-                              onBlur={validation.handleBlur}
-                            />
-
-                            <Button
-                              type="button"
-                              className="btn btn-outline-secondary"
-                              disabled
-                            >
-                              <i
-                                className="fa fa-calendar"
-                                aria-hidden="true"
-                              />
-                            </Button>
-                          </InputGroup>
-                          {validation.touched.prj_start_date_gc &&
-                          validation.errors.prj_start_date_gc ? (
-                            <FormFeedback>
-                              {validation.errors.prj_start_date_gc}
-                            </FormFeedback>
-                          ) : null}
-                        </FormGroup>
-                      </Col>*/}
-                      {/* <Col className="col-md-4 mb-3">
-                        <FormGroup>
-                          <Label>{t("prj_end_date_actual_gc")}</Label>
-                          <InputGroup>
-                            <Flatpickr
-                              id="DataPicker"
-                              className={`form-control ${
-                                validation.touched.prj_end_date_actual_gc &&
-                                validation.errors.prj_end_date_actual_gc
-                                  ? "is-invalid"
-                                  : ""
-                              }`}
-                              name="prj_end_date_actual_gc"
-                              options={{
-                                altInput: true,
-                                altFormat: "Y/m/d",
-                                dateFormat: "Y/m/d",
-                                enableTime: false,
-                              }}
-                              value={
-                                validation.values.prj_end_date_actual_gc || ""
-                              }
-                              onChange={(date) => {
-                                const formatedDate = formatDate(date[0]);
-                                validation.setFieldValue(
-                                  "prj_end_date_actual_gc",
-                                  formatedDate
-                                ); // Set value in Formik
-                              }}
-                              onBlur={validation.handleBlur}
-                            />
-
-                            <Button
-                              type="button"
-                              className="btn btn-outline-secondary"
-                              disabled
-                            >
-                              <i
-                                className="fa fa-calendar"
-                                aria-hidden="true"
-                              />
-                            </Button>
-                          </InputGroup>
-                          {validation.touched.prj_end_date_actual_gc &&
-                          validation.errors.prj_end_date_actual_gc ? (
-                            <FormFeedback>
-                              {validation.errors.prj_end_date_actual_gc}
-                            </FormFeedback>
-                          ) : null}
-                        </FormGroup>
-                      </Col>*/}
+                      </Col>                     
                       <Col className="col-md-6 mb-3">
                         <Label>{t("prj_urban_ben_number")}</Label>
                         <Input
@@ -1515,7 +1279,6 @@ const ProjectModel = () => {
           </div>
         </div>
       </div>
-
       {showCanvas && (
         <RightOffCanvas
           handleClick={handleClick}
@@ -1532,5 +1295,4 @@ const ProjectModel = () => {
 ProjectModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,
 };
-
 export default ProjectModel;

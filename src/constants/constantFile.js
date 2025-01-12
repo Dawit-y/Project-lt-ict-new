@@ -30,9 +30,18 @@ export const NAVBAR_TEXTS = {
   about: "About Us",
   contact: "Contact",
 };
-
+export const PAGE_ID = {
+   PROJ_DOCUMENT:1,
+   PROJ_PAYMENT:26,
+   PROJ_LOCATION:33,
+   PROJ_HANDOVER:38,
+   PROJ_VARIATION:40,
+   PROJ_SUPPLIMENTARY:41,
+   PROJ_EMPLOYEE: 43,
+   PROJ_CONTRACTOR: 44,
+   PROJ_STAKEHOLDER: 1
+};
 
 //Login Page Constants
-
 export const LOGIN_TITLE = "Project Management System";
 export const BUREAU_NAME = "Oromia Region Bureau of Finance";

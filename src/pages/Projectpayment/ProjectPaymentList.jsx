@@ -2,28 +2,25 @@ import React, { useEffect, useMemo, useState, useRef } from "react";
 import Spinners from "../../components/Common/Spinner";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useTranslation } from "react-i18next";
-
 import { Button, Col, Row, Input } from "reactstrap";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import PaymentAnalaysis from "./PaymentAnalaysis";
+//import PaymentAnalaysis from "./PaymentAnalaysis";
 import {
   useFetchProjectPayments,
   useSearchProjectPayments,
 } from "../../queries/projectpayment_query";
 import AddressStructureForProject from "../Project/AddressStructureForProject";
-
+import { useFetchPaymentCategorys } from "../../queries/paymentcategory_query";
+import { createSelectOptions } from "../../utils/commonMethods";
 const ProjectPaymentList = () => {
   document.title = "Project Payment List";
-
   const { t } = useTranslation();
-  //   const [project, setProject] = useState(null);
   const [projectPayment, setProjectPayment] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -35,12 +32,15 @@ const ProjectPaymentList = () => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const { data, isLoading, error, isError, refetch } = useState("");
-  // const { data, isLoading, error, isError, refetch } = useState(false);
-
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
-
+  const { data: paymentCategoryData } = useFetchPaymentCategorys();
+   const paymentCategoryOptions = createSelectOptions(
+    paymentCategoryData?.data || [],
+    "pyc_id",
+    "pyc_name_or"
+  );
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
@@ -131,18 +131,18 @@ const ProjectPaymentList = () => {
       },
       {
         headerName: t("prp_type"),
-        field: "prp_type",
+        field: "payment_category",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.prp_type, 30) || "-";
+          return truncateText(params.data.payment_category, 30) || "-";
         },
       },
       {
         headerName: t("prp_payment_date_gc"),
         field: "prp_payment_date_gc",
         sortable: true,
-        filter: true,
+        filter: "agDateColumnFilter",
         cellRenderer: (params) => {
           return truncateText(params.data.prp_payment_date_gc, 30) || "-";
         },
@@ -152,11 +152,16 @@ const ProjectPaymentList = () => {
         field: "prp_payment_amount",
         sortable: true,
         filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prp_payment_amount, 30) || "-";
-        },
+        valueFormatter: (params) => {
+      if (params.value != null) {
+        return new Intl.NumberFormat("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(params.value);
+      }
+      return "0.00"; // Default value if null or undefined
+    }
       },
-
       {
         headerName: t("prp_payment_percentage"),
         field: "prp_payment_percentage",
@@ -165,20 +170,10 @@ const ProjectPaymentList = () => {
         cellRenderer: (params) => {
           return truncateText(params.data.prp_payment_percentage, 30) || "-";
         },
-      },
-      {
-        headerName: t("prp_description"),
-        field: "prp_description",
-        sortable: true,
-        filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prp_description, 30) || "-";
-        },
-      },
+      }
     ];
     return baseColumnDefs;
   });
-  // console.log("here is the data" + JSON.stringify(data[0]));
   return (
     <React.Fragment>
       <div className="page-content">
@@ -200,11 +195,7 @@ const ProjectPaymentList = () => {
                 dropdownSearchKeys={[
                   {
                     key: "prp_type",
-                    options: [
-                      { value: "Advance", label: "Advance" },
-                      { value: "Interim", label: "Interim" },
-                      { value: "Final", label: "Final" },
-                    ],
+                    options: paymentCategoryOptions,
                   },
                 ]}
                 checkboxSearchKeys={[]}
@@ -260,11 +251,11 @@ const ProjectPaymentList = () => {
                       }}
                     />
                   </div>
-                  <PaymentAnalaysis
+                  {/*<PaymentAnalaysis
                     data={
                       showSearchResult ? searchResults?.data : data?.data || []
                     }
-                  />
+                  />*/}
                 </div>
               )}
             </div>

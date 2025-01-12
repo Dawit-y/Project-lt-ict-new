@@ -106,7 +106,7 @@ export const useDeleteProjectPayment = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.prp_id !== parseInt(variable)
+              (dept) => dept.prp_id !== parseInt(deletedData.deleted_id)
             ),
           };
         });

@@ -68,11 +68,11 @@ const RolesModel = () => {
   const handleAddRoles = async (data) => {
     try {
       await addRoles.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+      toast.success(t('add_success'), {
         autoClose: 2000,
       });
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.success(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -82,12 +82,12 @@ const RolesModel = () => {
   const handleUpdateRoles = async (data) => {
     try {
       await updateRoles.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t('update_success'), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.success(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -99,12 +99,12 @@ const RolesModel = () => {
         const id = roles.rol_id;
         console.log("role id", id);
         await deleteRoles.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+        toast.success(t('delete_success'), {
           autoClose: 2000,
         });
         validation.resetForm();
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+        toast.success(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -128,7 +128,7 @@ const RolesModel = () => {
         t("Already exists"),
         (value) => {
           return !data?.data.some(
-            (item) => item.rol_name == value && item.rol_id !== roles?.rol_id
+            (item) => item.rol_name.toLowerCase() == value.toLowerCase() && item.rol_id !== roles?.rol_id
           );
         }
       ),

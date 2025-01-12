@@ -9,16 +9,13 @@ import {
   ModalHeader,
   Table,
 } from "reactstrap"
-
 const modalStyle = {
   width: '100%',
   height: '100%',
 };
-
 const ProjectPerformanceModal = (props) => {
   const { t } = useTranslation();
-  const { isOpen, toggle, transaction } = props;
-
+  const { isOpen, toggle, transaction, budgetYearMap,budgetMonthMap,projectStatusMap } = props;
   return (
     <Modal
       isOpen={isOpen}
@@ -33,47 +30,40 @@ const ProjectPerformanceModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('prp_project_id')}: <span className="text-primary">{transaction.prp_project_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prp_project_status_id')}: <span className="text-primary">{transaction.prp_project_status_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prp_record_date_ec')}: <span className="text-primary">{transaction.prp_record_date_ec}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prp_record_date_gc')}: <span className="text-primary">{transaction.prp_record_date_gc}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prp_total_budget_used')}: <span className="text-primary">{transaction.prp_total_budget_used}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prp_physical_performance')}: <span className="text-primary">{transaction.prp_physical_performance}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prp_description')}: <span className="text-primary">{transaction.prp_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prp_status')}: <span className="text-primary">{transaction.prp_status}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prp_created_date')}: <span className="text-primary">{transaction.prp_created_date}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prp_termination_reason_id')}: <span className="text-primary">{transaction.prp_termination_reason_id}</span>
-          </p>
-          </tr>
+      <table>
+  <tbody>
+    <tr>
+      <td>{t('prp_budget_year_id')}</td>
+      <td className="text-primary">{budgetYearMap[transaction.prp_budget_year_id] || ""}</td>
+    </tr>
+    <tr>
+      <td>{t('prp_budget_month_id')}</td>
+      <td className="text-primary">{budgetMonthMap[transaction.prp_budget_month_id] || ""}</td>
+    </tr>
+    <tr>
+      <td>{t('prp_project_status_id')}</td>
+      <td className="text-primary">{projectStatusMap[transaction.prp_project_status_id] || ""}</td>
+    </tr>
+    <tr>
+      <td>{t('prp_record_date_gc')}</td>
+      <td className="text-primary">{transaction.prp_record_date_gc}</td>
+    </tr>
+    <tr>
+      <td>{t('prp_total_budget_used')}</td>
+      <td className="text-primary">{transaction.prp_total_budget_used ? new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(transaction.prp_total_budget_used)
+    : "0.00"}</td>
+    </tr>
+    <tr>
+      <td>{t('prp_physical_performance')}</td>
+      <td className="text-primary">{transaction.prp_physical_performance}</td>
+    </tr>
+    <tr>
+      <td>{t('prp_description')}</td>
+      <td className="text-primary">{transaction.prp_description}</td>
+    </tr>
+  </tbody>
+</table>
+
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>

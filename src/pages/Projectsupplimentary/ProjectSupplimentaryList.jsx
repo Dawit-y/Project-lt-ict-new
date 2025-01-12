@@ -173,24 +173,36 @@ const ProjectSupplimentaryList = () => {
         field: "prs_requested_amount",
         sortable: true,
         filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prs_requested_amount, 30) || "-";
-        },
+        valueFormatter: (params) => {
+      if (params.value != null) {
+        return new Intl.NumberFormat("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(params.value);
+      }
+      return "0.00"; // Default value if null or undefined
+    }
       },
       {
         headerName: t("prs_released_amount"),
         field: "prs_released_amount",
         sortable: true,
         filter: true,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prs_released_amount, 30) || "-";
-        },
+         valueFormatter: (params) => {
+      if (params.value != null) {
+        return new Intl.NumberFormat("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(params.value);
+      }
+      return "0.00"; // Default value if null or undefined
+    }
       },
       {
         headerName: t("prs_requested_date_gc"),
         field: "prs_requested_date_gc",
         sortable: true,
-        filter: true,
+        filter: "agDateColumnFilter",
         cellRenderer: (params) => {
           return truncateText(params.data.prs_requested_date_gc, 30) || "-";
         },
@@ -200,7 +212,7 @@ const ProjectSupplimentaryList = () => {
         headerName: t("prs_released_date_gc"),
         field: "prs_released_date_gc",
         sortable: true,
-        filter: true,
+        filter: "agDateColumnFilter",
         cellRenderer: (params) => {
           return truncateText(params.data.prs_released_date_gc, 30) || "-";
         },

@@ -56,7 +56,7 @@ const Navbar = (props) => {
               path: `/${link_url}`,
             });
             return acc;
-          }, {});
+          }, {data});
 
           const groupedSidedata = Object.values(groupedData);
 

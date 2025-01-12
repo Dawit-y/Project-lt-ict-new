@@ -74,7 +74,7 @@ const ProjectsOverview = (props) => {
                       </CardTitle>
                       <CardBody>
                         <>
-                          <div className="container-fluid">
+                          <div className="container-fluid1">
                             <APIProvider apiKey={API_KEY}>
                               <Map
                                 style={{ height: "100vh" }}

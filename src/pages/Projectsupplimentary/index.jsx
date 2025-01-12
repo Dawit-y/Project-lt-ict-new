@@ -13,7 +13,7 @@ import SearchComponent from "../../components/Common/SearchComponent";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-
+import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
 import {
   useFetchProjectSupplimentarys,
   useSearchProjectSupplimentarys,
@@ -23,7 +23,7 @@ import {
 } from "../../queries/projectsupplimentary_query";
 import ProjectSupplimentaryModal from "./ProjectSupplimentaryModal";
 import { useTranslation } from "react-i18next";
-
+import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
 
@@ -44,6 +44,7 @@ import {
   FormGroup,
   Badge,
   InputGroup,
+  InputGroupText
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -84,11 +85,12 @@ const ProjectSupplimentaryModel = (props) => {
   const handleAddProjectSupplimentary = async (data) => {
     try {
       await addProjectSupplimentary.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+      toast.success(t('add_success'), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.success(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -98,11 +100,12 @@ const ProjectSupplimentaryModel = (props) => {
   const handleUpdateProjectSupplimentary = async (data) => {
     try {
       await updateProjectSupplimentary.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t('update_success'), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.success(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -113,11 +116,11 @@ const ProjectSupplimentaryModel = (props) => {
       try {
         const id = projectSupplimentary.prs_id;
         await deleteProjectSupplimentary.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+        toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+        toast.success(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -165,14 +168,24 @@ const ProjectSupplimentaryModel = (props) => {
     },
 
     validationSchema: Yup.object({
-      prs_requested_amount: Yup.string().required(t("prs_requested_amount")),
-      //prs_released_amount: Yup.string().required(t("prs_released_amount")),
+      prs_requested_amount: amountValidation(1000,100000000,true),
+      prs_released_amount: amountValidation(1000,100000000,true),
       //prs_project_id: Yup.string().required(t("prs_project_id")),
       //prs_requested_date_ec: Yup.string().required(t("prs_requested_date_ec")),
       prs_requested_date_gc: Yup.string().required(t("prs_requested_date_gc")),
+      prs_released_date_gc: Yup.string().required(t("prs_released_date_gc"))
+      .test(
+        "unique-prj_name",
+        t("Already exists"),
+        (value) => {
+          return !data?.data.some(
+            (item) => item.prs_requested_date_gc == value && item.prs_id !== projectSupplimentary?.prs_id
+          );
+        }
+      ),
       //prs_released_date_ec: Yup.string().required(t("prs_released_date_ec")),
       //prs_released_date_gc: Yup.string().required(t("prs_released_date_gc")),
-      //prs_description: Yup.string().required(t("prs_description")),
+      prs_description:alphanumericValidation(3,425,false)
       //prs_status: Yup.string().required(t("prs_status")),
     }),
     validateOnBlur: true,
@@ -196,7 +209,6 @@ const ProjectSupplimentaryModel = (props) => {
         };
         // update ProjectSupplimentary
         handleUpdateProjectSupplimentary(updateProjectSupplimentary);
-        validation.resetForm();
       } else {
         const newProjectSupplimentary = {
           prs_requested_amount: values.prs_requested_amount,
@@ -211,7 +223,6 @@ const ProjectSupplimentaryModel = (props) => {
         };
         // save new ProjectSupplimentary
         handleAddProjectSupplimentary(newProjectSupplimentary);
-        validation.resetForm();
       }
     },
   });
@@ -433,10 +444,20 @@ const ProjectSupplimentaryModel = (props) => {
 
   return (
     <React.Fragment>
-      <ProjectSupplimentaryModal
+     <DynamicDetailsModal
         isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
+        toggle={toggleViewModal} // Function to close the modal
+        data={transaction} // Pass transaction as data to the modal
+        title={t('project_supplimentary')}
+        description={transaction.prs_description}
+      
+        fields={[
+          { label: t('prs_requested_date_gc'), key: "prs_requested_date_gc" },
+          { label: t('prs_released_date_gc'), key: "prs_released_date_gc" },
+          { label: t('prs_requested_amount'), key: "prs_requested_amount" },
+          { label: t('prs_released_amount'), key: "prs_released_amount" }
+        ]}
+        footerText={t('close')}
       />
       <DeleteModal
         show={deleteModal}
@@ -500,7 +521,7 @@ const ProjectSupplimentaryModel = (props) => {
                       // SearchPlaceholder="26 records..."
                       SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("project_supplimentary")}
+                      buttonName={t("add")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -527,7 +548,7 @@ const ProjectSupplimentaryModel = (props) => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prs_requested_amount")}</Label>
+                    <Label>{t("prs_requested_amount")}<span className="text-danger">*</span></Label>
                     <Input
                       name="prs_requested_amount"
                       type="number"
@@ -551,7 +572,7 @@ const ProjectSupplimentaryModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prs_released_amount")}</Label>
+                    <Label>{t("prs_released_amount")}<span className="text-danger">*</span></Label>
                     <Input
                       name="prs_released_amount"
                       type="number"
@@ -575,17 +596,19 @@ const ProjectSupplimentaryModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <FormGroup>
-                      <Label>{t("prs_requested_date_gc")}</Label>
+                      <Label>{t("prs_requested_date_gc")}<span className="text-danger">*</span></Label>
                       <InputGroup>
-                        <Flatpickr
-                          id="DataPicker"
-                          className={`form-control ${
+                      <div
+                          className={`d-flex w-100 ${
                             validation.touched.prs_requested_date_gc &&
                             validation.errors.prs_requested_date_gc
-                              ? "is-invalid"
+                              ? "border border-danger rounded"
                               : ""
                           }`}
+                        >
+                        <Flatpickr
+                          id="DataPicker"
+                          className="form-control"
                           name="prs_requested_date_gc"
                           options={{
                             altInput: true,
@@ -603,35 +626,32 @@ const ProjectSupplimentaryModel = (props) => {
                           }}
                           onBlur={validation.handleBlur}
                         />
-
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
+                        <InputGroupText>
+                            <i className="fa fa-calendar" aria-hidden="true" />
+                          </InputGroupText>
+                        </div>
+                        {validation.touched.prs_requested_date_gc &&
+                          validation.errors.prs_requested_date_gc && (
+                            <div className="text-danger small mt-1">
+                              {validation.errors.prs_requested_date_gc}
+                            </div>
+                          )}
                       </InputGroup>
-                      {validation.touched.prs_requested_date_gc &&
-                      validation.errors.prs_requested_date_gc ? (
-                        <FormFeedback>
-                          {validation.errors.prs_requested_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <FormGroup>
-                      <Label>{t("prs_released_date_gc")}</Label>
+                      <Label>{t("prs_released_date_gc")}<span className="text-danger">*</span></Label>
                       <InputGroup>
-                        <Flatpickr
-                          id="DataPicker"
-                          className={`form-control ${
+                      <div
+                          className={`d-flex w-100 ${
                             validation.touched.prs_released_date_gc &&
                             validation.errors.prs_released_date_gc
-                              ? "is-invalid"
+                              ? "border border-danger rounded"
                               : ""
                           }`}
+                        >
+                        <Flatpickr
+                          id="DataPicker"
+                          className="form-control"
                           name="prs_released_date_gc"
                           options={{
                             altInput: true,
@@ -649,22 +669,17 @@ const ProjectSupplimentaryModel = (props) => {
                           }}
                           onBlur={validation.handleBlur}
                         />
-
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
+                        <InputGroupText>
+                            <i className="fa fa-calendar" aria-hidden="true" />
+                          </InputGroupText>
+                        </div>
+                        {validation.touched.prs_released_date_gc &&
+                          validation.errors.prs_released_date_gc && (
+                            <div className="text-danger small mt-1">
+                              {validation.errors.prs_released_date_gc}
+                            </div>
+                          )}
                       </InputGroup>
-                      {validation.touched.prs_released_date_gc &&
-                      validation.errors.prs_released_date_gc ? (
-                        <FormFeedback>
-                          {validation.errors.prs_released_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("prs_description")}</Label>
@@ -681,7 +696,7 @@ const ProjectSupplimentaryModel = (props) => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={425}
                     />
                     {validation.touched.prs_description &&
                     validation.errors.prs_description ? (

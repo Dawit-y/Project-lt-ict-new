@@ -89,8 +89,8 @@ const TableContainer = ({
   isCustomPageSize,
   handleUserClick,
   isJobListGlobalFilter,
-  isExcelExport = true,
-  isPdfExport = true,
+  isExcelExport = false,
+  isPdfExport = false,
   excludeKey = [],
   tableName = "",
 }) => {

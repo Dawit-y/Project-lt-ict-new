@@ -472,7 +472,7 @@ const DepartmentModel = () => {
         isOpen={modal1}
         toggle={toggleViewModal}
         details={transaction}
-        excludeKey={["is_editable", "is_deletable"]}
+        excludeKey={["dep_id","is_editable", "is_deletable","dep_create_time","dep_update_time","dep_status","dep_created_by","dep_delete_time"]}
       />
       <DeleteModal
         show={deleteModal}
