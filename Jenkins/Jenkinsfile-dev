@@ -1,111 +1,153 @@
 pipeline {
     agent any
 
+    // --------------------------
+    // Global Configuration
+    // --------------------------
     environment {
-        NODE_VERSION = '16.20.2'
-        NODE_OPTIONS = '--max-old-space-size=4096'
-        DEPLOY_DIR = '/var/www/react-app-dev'
-        NGINX_CONF = '/etc/nginx/sites-available/react-app-dev'
+        // Node
+        NODE_VERSION       = '16.20.2'
+        NODE_OPTIONS       = '--max-old-space-size=4096'
+        
+        // Docker
+        DOCKER_IMAGE       = 'otecpms/react-app-dev'
+        DOCKER_TAG         = 'latest'
+        FULL_DOCKER_IMAGE  = "${DOCKER_IMAGE}:${DOCKER_TAG}"
+        REGISTRY_URL       = 'https://registry.hub.docker.com'
+        REGISTRY_CREDENTIALS = 'dockerhub-credentials'
+        
+        // Environment file + Ports
+        ENV_FILE_PATH      = '/home/testthree/pms_files/dev-frontend.env'
+        DEV_PORT_EXT       = '1112'
+        DEV_PORT_INT       = '1111'
+        
+        // Container name
+        CONTAINER_NAME     = 'react-app-dev'
     }
 
-    triggers {
-        pollSCM('H/1 * * * *') 
+    // --------------------------
+    // Pipeline-Level Options
+    // --------------------------
+    options {
+        retry(3)  // Automatically retry failed stages up to 3 times
     }
 
+    // --------------------------
+    // Stages
+    // --------------------------
     stages {
-        stage('Checkout') {
+
+        /*
+        stage('Clean Workspace and Pull') {
             steps {
-                git branch: 'main', credentialsId: 'github-token', url: 'https://github.com/yared098/Project-lt-ict-new.git'
+                script {
+                    sh '''
+                        echo "Cleaning the workspace..."
+                        git clean -fdx        # Remove all untracked files and directories
+                        git reset --hard      # Reset any changes to tracked files
+                        
+                        echo "Pulling the latest code from the main branch..."
+                        git pull origin main
+                    '''
+                }
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Clean Docker Cache') {
             steps {
-                nodejs(NODE_VERSION) {
-                    script {
-                        sh '''
-                        echo "Installing dependencies using npm cache..."
-                        npm install --force
-                        '''
+                script {
+                    sh '''
+                        echo "Cleaning up Docker cache..."
+                        # Remove dangling images
+                        docker image prune -f
+                        
+                        # Remove unused volumes
+                        docker volume prune -f
+                        
+                        # Remove unused networks
+                        docker network prune -f
+                        
+                        # Remove stopped containers
+                        docker container prune -f
+                        
+                        echo "Docker cache cleanup completed."
+                    '''
+                }
+            }
+        }
+        */
+
+        stage('Prepare Environment File') {
+            steps {
+                script {
+                    sh """
+                        echo "Copying environment file..."
+                        cp ${ENV_FILE_PATH} .env
+                        echo "Environment file copied successfully."
+                    """
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // If your Dockerfile is named "Dockerfile" in the root directory,
+                    // you can simply do: docker.build("${FULL_DOCKER_IMAGE}")
+                    docker.build("${FULL_DOCKER_IMAGE}", "-f Dockerfile .")
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Use docker.withRegistry to authenticate and push the image
+                    docker.withRegistry("${REGISTRY_URL}", "${REGISTRY_CREDENTIALS}") {
+                        docker.image("${FULL_DOCKER_IMAGE}").push()
+                        // Push with "latest" tag for convenience if needed
+                        docker.image("${FULL_DOCKER_IMAGE}").push('latest')
                     }
                 }
             }
         }
 
-        stage('Run Tests') {
-            steps {
-                nodejs(NODE_VERSION) {
-                    sh 'echo "Running Tests..."' 
-                }
-            }
-        }
-        
-            stage('Copying .env Files') {
-            steps {
-                
-              
-             script {
-                    sh '''
-                    echo "Adding file to production folder..."
-                    cp /home/testthree/pms_files/dev-frontend.env .env
-                    '''
-                  }
-            }
-        }
-
-        stage('Build') {
-            steps {
-                nodejs(NODE_VERSION) {
-                    sh 'npm run build'
-                }
-            }
-        }
-
-        stage('Deploy to Nginx') {
+        stage('Deploy to Server') {
             steps {
                 script {
-                    sh '''
-                    echo "Deploying React application to Nginx..."
+                    sh """
+                        echo "Deploying React application with Docker..."
+                        
+                        # Pull the latest Docker image
+                        docker pull ${DOCKER_IMAGE}:latest
 
-                    # Ensure deployment directory exists
-                    sudo mkdir -p ${DEPLOY_DIR}
+                        # Stop and remove the container if it exists
+                        if [ \$(docker ps -a -q -f name=${CONTAINER_NAME}) ]; then
+                            echo "Container ${CONTAINER_NAME} found. Stopping and removing..."
+                            docker stop ${CONTAINER_NAME} || true
+                            docker rm ${CONTAINER_NAME} || true
+                        fi
 
-                    # Replace old build with new build files
-                    sudo rm -rf ${DEPLOY_DIR}/*
-                    sudo cp -r dist/* ${DEPLOY_DIR}/
+                        # Run the new container
+                        echo "Starting new container..."
+                        docker run -d --name ${CONTAINER_NAME} \\
+                                   -p ${DEV_PORT_EXT}:${DEV_PORT_INT} \\
+                                   ${DOCKER_IMAGE}:latest
 
-                    # Create or update Nginx configuration
-                    if [ ! -f ${NGINX_CONF} ]; then
-                        echo "Creating Nginx configuration..."
-                        sudo bash -c 'cat <<EOL > ${NGINX_CONF}
-server {
-    listen 1234;
-    server_name _;
-
-    root ${DEPLOY_DIR};
-    index index.html;
-
-    location / {
-        try_files \$uri /index.html;
-    }
-}
-EOL'
-                        sudo ln -sf ${NGINX_CONF} /etc/nginx/sites-enabled/
-                    else
-                        echo "Nginx configuration already exists."
-                    fi
-
-                    # Restart Nginx to apply changes
-                    echo "Restarting Nginx..."
-                    sudo systemctl restart nginx
-
-                    echo "Deployment completed. React app is now served on port 1234."
-                    '''
+                        echo "Deployment completed. React app is now served on port ${DEV_PORT_EXT}."
+                        
+                        # Debug: Inspect environment variables inside the running container
+                        echo "Environment variables in the running container:"
+                        docker exec ${CONTAINER_NAME} printenv
+                    """
                 }
             }
         }
     }
 
+    // --------------------------
+    // Post Actions
+    // --------------------------
     post {
         success {
             echo 'Build and deployment succeeded!'
