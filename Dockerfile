@@ -3,15 +3,16 @@ FROM node:16.20-alpine AS build
 
 WORKDIR /app
 
-# Create and set a working directory
-WORKDIR /app
-
+ 
 # Copy package.json and package-lock.json (or yarn.lock) first for better caching
 COPY package*.json ./
 
 # Install dependencies
 # (Use --legacy-peer-deps if you need to bypass certain peer-dep checks)
 RUN npm install --legacy-peer-deps
+
+
+COPY .env /app/.env
 
 # Copy the rest of your source code (including .env, src, etc.)
 COPY . .
