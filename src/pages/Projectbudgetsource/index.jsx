@@ -9,7 +9,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
+
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
@@ -75,7 +75,7 @@ const ProjectBudgetSourceModel = (props) => {
 
   const { data, isLoading, error, isError, refetch } =
     useFetchProjectBudgetSources(param, isActive);
- const { data: budgetSourceData } = useFetchBudgetSources();
+  const { data: budgetSourceData } = useFetchBudgetSources();
   const budgetSourceOptions = createSelectOptions(
     budgetSourceData?.data || [],
     "pbs_id",
@@ -172,7 +172,7 @@ const ProjectBudgetSourceModel = (props) => {
         const updateProjectBudgetSource = {
           bsr_id: projectBudgetSource?.bsr_id,
           bsr_name: values.bsr_name,
-         // bsr_project_id: values.bsr_project_id,
+          // bsr_project_id: values.bsr_project_id,
           bsr_budget_source_id: values.bsr_budget_source_id,
           bsr_amount: values.bsr_amount,
           bsr_status: values.bsr_status,
@@ -412,7 +412,7 @@ const ProjectBudgetSourceModel = (props) => {
       />
       <div className="page-content1">
         <div className="container-fluid1">
-        {isLoading || isSearchLoading ? (
+          {isLoading || isSearchLoading ? (
             <Spinners top={isActive ? "top-70" : ""} />
           ) : (
             <TableContainer
@@ -474,40 +474,38 @@ const ProjectBudgetSourceModel = (props) => {
                   </Col>
 
                   <Col className="col-md-6 mb-3">
-                        <Label>
-                          {t("bsr_budget_source_id")}
-                          <span className="text-danger">*</span>
-                        </Label>
-                        <Input
-                          name="bsr_budget_source_id"
-                          type="select"
-                          className="form-select"
-                          onChange={validation.handleChange}
-                          onBlur={validation.handleBlur}
-                          value={
-                            validation.values.bsr_budget_source_id || ""
-                          }
-                          invalid={
-                            validation.touched.bsr_budget_source_id &&
-                            validation.errors.bsr_budget_source_id
-                              ? true
-                              : false
-                          }
-                        >
-                          <option value={null}>Select Budget Source</option>
-                          {budgetSourceOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {t(`${option.label}`)}
-                            </option>
-                          ))}
-                        </Input>
-                        {validation.touched.bsr_budget_source_id &&
-                        validation.errors.bsr_budget_source_id ? (
-                          <FormFeedback type="invalid">
-                            {validation.errors.bsr_budget_source_id}
-                          </FormFeedback>
-                        ) : null}
-                      </Col>
+                    <Label>
+                      {t("bsr_budget_source_id")}
+                      <span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      name="bsr_budget_source_id"
+                      type="select"
+                      className="form-select"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bsr_budget_source_id || ""}
+                      invalid={
+                        validation.touched.bsr_budget_source_id &&
+                        validation.errors.bsr_budget_source_id
+                          ? true
+                          : false
+                      }
+                    >
+                      <option value={null}>Select Budget Source</option>
+                      {budgetSourceOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {t(`${option.label}`)}
+                        </option>
+                      ))}
+                    </Input>
+                    {validation.touched.bsr_budget_source_id &&
+                    validation.errors.bsr_budget_source_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.bsr_budget_source_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("bsr_amount")}</Label>
                     <Input

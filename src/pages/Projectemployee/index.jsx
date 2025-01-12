@@ -8,11 +8,15 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
+
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 import {
   useFetchProjectEmployees,
   useSearchProjectEmployees,
@@ -44,7 +48,7 @@ import {
   FormGroup,
   Badge,
   InputGroup,
-  InputGroupText
+  InputGroupText,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -84,12 +88,12 @@ const ProjectEmployeeModel = (props) => {
   const handleAddProjectEmployee = async (data) => {
     try {
       await addProjectEmployee.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.success(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -99,12 +103,12 @@ const ProjectEmployeeModel = (props) => {
   const handleUpdateProjectEmployee = async (data) => {
     try {
       await updateProjectEmployee.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
+      toast.success(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -115,12 +119,11 @@ const ProjectEmployeeModel = (props) => {
       try {
         const id = projectEmployee.emp_id;
         await deleteProjectEmployee.mutateAsync(id);
-       toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
-
       } catch (error) {
-        toast.success(t('delete_failure'), {
+        toast.success(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -158,24 +161,29 @@ const ProjectEmployeeModel = (props) => {
       is_editable: (projectEmployee && projectEmployee.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      emp_id_no: alphanumericValidation(3,10,true)
-      .test("unique-role-id", t("Already exists"), (value) => {
+      emp_id_no: alphanumericValidation(3, 10, true).test(
+        "unique-role-id",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) =>
               item.emp_id_no == value && item.emp_id !== projectEmployee?.emp_id
           );
-        }),
-      emp_full_name: alphanumericValidation(3,200,true),
-      emp_email: alphanumericValidation(5,50,false).email('ivalid email address'),
-      emp_phone_num: alphanumericValidation(10,24,true),
-      emp_role: alphanumericValidation(3,425,true),
+        }
+      ),
+      emp_full_name: alphanumericValidation(3, 200, true),
+      emp_email: alphanumericValidation(5, 50, false).email(
+        "ivalid email address"
+      ),
+      emp_phone_num: alphanumericValidation(10, 24, true),
+      emp_role: alphanumericValidation(3, 425, true),
       //emp_project_id: Yup.string().required(t("emp_project_id")),
       //emp_start_date_ec: Yup.string().required(t("emp_start_date_ec")),
-     emp_start_date_gc: alphanumericValidation(10,11,true),
-     // emp_end_date_ec: Yup.string().required(t("emp_end_date_ec")),
+      emp_start_date_gc: alphanumericValidation(10, 11, true),
+      // emp_end_date_ec: Yup.string().required(t("emp_end_date_ec")),
       emp_end_date_gc: Yup.string().required(t("emp_end_date_gc")),
-      emp_address: alphanumericValidation(3,425,false),
-      emp_description: alphanumericValidation(3,425,false),
+      emp_address: alphanumericValidation(3, 425, false),
+      emp_description: alphanumericValidation(3, 425, false),
       //emp_current_status: Yup.string().required(t("emp_current_status")),
     }),
     validateOnBlur: true,
@@ -221,7 +229,6 @@ const ProjectEmployeeModel = (props) => {
         };
         // save new ProjectEmployee
         handleAddProjectEmployee(newProjectEmployee);
-        
       }
     },
   });
@@ -471,25 +478,24 @@ const ProjectEmployeeModel = (props) => {
 
   return (
     <React.Fragment>
-    <DynamicDetailsModal
+      <DynamicDetailsModal
         isOpen={modal1}
         toggle={toggleViewModal} // Function to close the modal
         data={transaction} // Pass transaction as data to the modal
-        title={t('project_employee')}
+        title={t("project_employee")}
         description={transaction.emp_description}
-      
         fields={[
-          { label: t('emp_id_no'), key: "emp_id_no" },
-          { label: t('emp_full_name'), key: "emp_full_name" },
-          { label: t('emp_email'), key: "emp_email" },
-          { label: t('emp_phone_num'), key: "emp_phone_num" },
+          { label: t("emp_id_no"), key: "emp_id_no" },
+          { label: t("emp_full_name"), key: "emp_full_name" },
+          { label: t("emp_email"), key: "emp_email" },
+          { label: t("emp_phone_num"), key: "emp_phone_num" },
 
-          { label: t('emp_role'), key: "emp_role" },
-          { label: t('emp_start_date_gc'), key: "emp_start_date_gc" },
-          { label: t('emp_end_date_gc'), key: "emp_end_date_gc" },
-          { label: t('emp_address'), key: "emp_address" }
+          { label: t("emp_role"), key: "emp_role" },
+          { label: t("emp_start_date_gc"), key: "emp_start_date_gc" },
+          { label: t("emp_end_date_gc"), key: "emp_end_date_gc" },
+          { label: t("emp_address"), key: "emp_address" },
         ]}
-        footerText={t('close')}
+        footerText={t("close")}
       />
       <DeleteModal
         show={deleteModal}
@@ -605,7 +611,10 @@ const ProjectEmployeeModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("emp_full_name")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("emp_full_name")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="emp_full_name"
                       type="text"
@@ -653,7 +662,10 @@ const ProjectEmployeeModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("emp_phone_num")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("emp_phone_num")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="emp_phone_num"
                       type="text"
@@ -677,7 +689,10 @@ const ProjectEmployeeModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("emp_role")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("emp_role")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="emp_role"
                       type="text"
@@ -700,17 +715,20 @@ const ProjectEmployeeModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                 <Col className="col-md-6 mb-3">
-                      <Label>{t("emp_start_date_gc")}<span className="text-danger">*</span></Label>
-                      <InputGroup>
+                  <Col className="col-md-6 mb-3">
+                    <Label>
+                      {t("emp_start_date_gc")}
+                      <span className="text-danger">*</span>
+                    </Label>
+                    <InputGroup>
                       <div
-                          className={`d-flex w-100 ${
-                            validation.touched.emp_start_date_gc &&
-                            validation.errors.emp_start_date_gc
-                              ? "border border-danger rounded"
-                              : ""
-                          }`}
-                        >
+                        className={`d-flex w-100 ${
+                          validation.touched.emp_start_date_gc &&
+                          validation.errors.emp_start_date_gc
+                            ? "border border-danger rounded"
+                            : ""
+                        }`}
+                      >
                         <Flatpickr
                           id="DataPicker"
                           className="form-control"
@@ -732,28 +750,28 @@ const ProjectEmployeeModel = (props) => {
                           onBlur={validation.handleBlur}
                         />
                         <InputGroupText>
-                            <i className="fa fa-calendar" aria-hidden="true" />
-                          </InputGroupText>
-                        </div>
-                        {validation.touched.emp_start_date_gc &&
-                          validation.errors.emp_start_date_gc && (
-                            <div className="text-danger small mt-1">
-                              {validation.errors.emp_start_date_gc}
-                            </div>
-                          )}
-                      </InputGroup>
+                          <i className="fa fa-calendar" aria-hidden="true" />
+                        </InputGroupText>
+                      </div>
+                      {validation.touched.emp_start_date_gc &&
+                        validation.errors.emp_start_date_gc && (
+                          <div className="text-danger small mt-1">
+                            {validation.errors.emp_start_date_gc}
+                          </div>
+                        )}
+                    </InputGroup>
                   </Col>
                   <Col className="col-md-6 mb-3">
-                      <Label>{t("emp_end_date_gc")}</Label>
-                      <InputGroup>
+                    <Label>{t("emp_end_date_gc")}</Label>
+                    <InputGroup>
                       <div
-                          className={`d-flex w-100 ${
-                            validation.touched.emp_end_date_gc &&
-                            validation.errors.emp_end_date_gc
-                              ? "border border-danger rounded"
-                              : ""
-                          }`}
-                        >
+                        className={`d-flex w-100 ${
+                          validation.touched.emp_end_date_gc &&
+                          validation.errors.emp_end_date_gc
+                            ? "border border-danger rounded"
+                            : ""
+                        }`}
+                      >
                         <Flatpickr
                           id="DataPicker"
                           className="form-control"
@@ -775,16 +793,16 @@ const ProjectEmployeeModel = (props) => {
                           onBlur={validation.handleBlur}
                         />
                         <InputGroupText>
-                            <i className="fa fa-calendar" aria-hidden="true" />
-                          </InputGroupText>
-                        </div>
-                        {validation.touched.emp_end_date_gc &&
-                          validation.errors.emp_end_date_gc && (
-                            <div className="text-danger small mt-1">
-                              {validation.errors.emp_end_date_gc}
-                            </div>
-                          )}
-                      </InputGroup>
+                          <i className="fa fa-calendar" aria-hidden="true" />
+                        </InputGroupText>
+                      </div>
+                      {validation.touched.emp_end_date_gc &&
+                        validation.errors.emp_end_date_gc && (
+                          <div className="text-danger small mt-1">
+                            {validation.errors.emp_end_date_gc}
+                          </div>
+                        )}
+                    </InputGroup>
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("emp_address")}</Label>

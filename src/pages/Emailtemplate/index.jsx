@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -9,8 +8,6 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
-//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
@@ -22,8 +19,6 @@ import {
 } from "../../queries/emailtemplate_query";
 import EmailTemplateModal from "./EmailTemplateModal";
 import { useTranslation } from "react-i18next";
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
 import {
   Button,
   Col,
@@ -130,9 +125,9 @@ const EmailTemplateModel = () => {
         (emailTemplate && emailTemplate.emt_template_name) || "",
       emt_template_content:
         (emailTemplate && emailTemplate.emt_template_content) || "",
-        emt_template_content_am:
+      emt_template_content_am:
         (emailTemplate && emailTemplate.emt_template_content_am) || "",
-  emt_template_content_en:
+      emt_template_content_en:
         (emailTemplate && emailTemplate.emt_template_content_en) || "",
       emt_description: (emailTemplate && emailTemplate.emt_description) || "",
 
@@ -207,8 +202,8 @@ const EmailTemplateModel = () => {
       emt_id: emailTemplate.emt_id,
       emt_template_name: emailTemplate.emt_template_name,
       emt_template_content: emailTemplate.emt_template_content,
-       emt_template_content_am: emailTemplate.emt_template_content_am,
-        emt_template_content_en: emailTemplate.emt_template_content_en,
+      emt_template_content_am: emailTemplate.emt_template_content_am,
+      emt_template_content_en: emailTemplate.emt_template_content_en,
       emt_description: emailTemplate.emt_description,
       emt_status: emailTemplate.emt_status,
 

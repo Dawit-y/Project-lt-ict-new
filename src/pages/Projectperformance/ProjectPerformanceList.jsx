@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState,useRef } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
@@ -9,7 +9,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
+
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
@@ -50,7 +50,7 @@ import {
   CardBody,
   FormGroup,
   Badge,
-  InputGroup
+  InputGroup,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -66,8 +66,7 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-const ProjectPerformanceList= (props) => {
-
+const ProjectPerformanceList = (props) => {
   //  get passed data from tab
   const { passedId, isActive } = props;
   const param = { prp_project_id: passedId };
@@ -83,19 +82,18 @@ const ProjectPerformanceList= (props) => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-   const [projectParams, setProjectParams] = useState({});
+  const [projectParams, setProjectParams] = useState({});
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
-  const { data, isLoading, error, isError, refetch } =
-    useState({});
+  const { data, isLoading, error, isError, refetch } = useState({});
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
   const [selectedRows, setSelectedRows] = useState([]);
   const [quickFilterText, setQuickFilterText] = useState("");
   const gridRef = useRef(null);
-   const { data: budgetYearData } = useFetchBudgetYears();
+  const { data: budgetYearData } = useFetchBudgetYears();
   const { data: budgetMonthData } = useFetchBudgetMonths();
   const { data: projectStatusData } = useFetchProjectStatuss();
   const projectStatusOptions = createSelectOptions(
@@ -103,7 +101,7 @@ const ProjectPerformanceList= (props) => {
     "prs_id",
     "prs_status_name_or"
   );
-const budgetYearOptions = createSelectOptions(
+  const budgetYearOptions = createSelectOptions(
     budgetYearData?.data || [],
     "bdy_id",
     "bdy_name"
@@ -169,7 +167,7 @@ const budgetYearOptions = createSelectOptions(
       }),
     });
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
-   const handleNodeSelect = (node) => {
+  const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
       setPrjLocationZoneId(null); // Clear dependent states
@@ -200,7 +198,7 @@ const budgetYearOptions = createSelectOptions(
         field: "prp_budget_year_id",
         sortable: true,
         filter: true,
-        width:"120px",
+        width: "120px",
         cellRenderer: (params) => {
           return truncateText(params.data.year_name, 30) || "-";
         },
@@ -210,7 +208,7 @@ const budgetYearOptions = createSelectOptions(
         field: "prp_budget_month_id",
         sortable: true,
         filter: true,
-        width:"120px",
+        width: "120px",
         cellRenderer: (params) => {
           return truncateText(params.data.month_name, 30) || "-";
         },
@@ -257,14 +255,14 @@ const budgetYearOptions = createSelectOptions(
         sortable: true,
         filter: true,
         valueFormatter: (params) => {
-      if (params.value != null) {
-        return new Intl.NumberFormat("en-US", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }).format(params.value);
-      }
-      return "0.00"; // Default value if null or undefined
-    }
+          if (params.value != null) {
+            return new Intl.NumberFormat("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(params.value);
+          }
+          return "0.00"; // Default value if null or undefined
+        },
       },
       {
         headerName: t("prp_physical_performance"),
@@ -282,7 +280,7 @@ const budgetYearOptions = createSelectOptions(
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
- return (
+  return (
     <React.Fragment>
       <div className="page-content">
         <div>
@@ -291,13 +289,16 @@ const budgetYearOptions = createSelectOptions(
             breadcrumbItem={t("project_performance_list")}
           />
           <div className="w-100 d-flex gap-2">
-            <AddressStructureForProject onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />
+            <AddressStructureForProject
+              onNodeSelect={handleNodeSelect}
+              setIsAddressLoading={setIsAddressLoading}
+            />
             <div className="w-100">
-          <AdvancedSearch
-            searchHook={useSearchProjectPerformances}
-            textSearchKeys={["prj_name", "prj_code"]}
-            dropdownSearchKeys={[
-              {
+              <AdvancedSearch
+                searchHook={useSearchProjectPerformances}
+                textSearchKeys={["prj_name", "prj_code"]}
+                dropdownSearchKeys={[
+                  {
                     key: "prp_project_status_id",
                     options: projectStatusOptions,
                   },
@@ -308,66 +309,67 @@ const budgetYearOptions = createSelectOptions(
                   {
                     key: "budget_month",
                     options: budgetMonthOptions,
-                  }
-                  ]}
-            checkboxSearchKeys={[]}
-            additionalParams={projectParams}
-            setAdditionalParams={setProjectParams}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          />
-          {isLoading || isSearchLoading ? (
-            <Spinners />
-          ) : (
-            <div
-              className="ag-theme-alpine"
-              style={{ height: "100%", width: "100%" }}
-            >
-              {/* Row for search input and buttons */}
-              <Row className="mb-3">
-                <Col sm="12" md="6">
-                  {/* Search Input for  Filter */}
-                  <Input
-                    type="text"
-                    placeholder="Search..."
-                    onChange={(e) => setQuickFilterText(e.target.value)}
-                    className="mb-2"
-                    style={{ width: "50%", maxWidth: "400px" }}
-                  />
-                </Col>
-                <Col sm="12" md="6" className="text-md-end"></Col>
-              </Row>
+                  },
+                ]}
+                checkboxSearchKeys={[]}
+                additionalParams={projectParams}
+                setAdditionalParams={setProjectParams}
+                onSearchResult={handleSearchResults}
+                setIsSearchLoading={setIsSearchLoading}
+                setSearchResults={setSearchResults}
+                setShowSearchResult={setShowSearchResult}
+              />
+              {isLoading || isSearchLoading ? (
+                <Spinners />
+              ) : (
+                <div
+                  className="ag-theme-alpine"
+                  style={{ height: "100%", width: "100%" }}
+                >
+                  {/* Row for search input and buttons */}
+                  <Row className="mb-3">
+                    <Col sm="12" md="6">
+                      {/* Search Input for  Filter */}
+                      <Input
+                        type="text"
+                        placeholder="Search..."
+                        onChange={(e) => setQuickFilterText(e.target.value)}
+                        className="mb-2"
+                        style={{ width: "50%", maxWidth: "400px" }}
+                      />
+                    </Col>
+                    <Col sm="12" md="6" className="text-md-end"></Col>
+                  </Row>
 
-              {/* AG Grid */}
-              <div>
-                <AgGridReact
-                  ref={gridRef}
-                  rowData={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
-                  columnDefs={columnDefs}
-                  pagination={true}
-                  paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                  paginationPageSize={10}
-                  quickFilterText={quickFilterText}
-                  onSelectionChanged={onSelectionChanged}
-                  rowHeight={30} // Set the row height here
-                  animateRows={true} // Enables row animations
-                  domLayout="autoHeight" // Auto-size the grid to fit content
-                  onGridReady={(params) => {
-                    params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                  }}
-                />
-              </div>
+                  {/* AG Grid */}
+                  <div>
+                    <AgGridReact
+                      ref={gridRef}
+                      rowData={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
+                      columnDefs={columnDefs}
+                      pagination={true}
+                      paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+                      paginationPageSize={10}
+                      quickFilterText={quickFilterText}
+                      onSelectionChanged={onSelectionChanged}
+                      rowHeight={30} // Set the row height here
+                      animateRows={true} // Enables row animations
+                      domLayout="autoHeight" // Auto-size the grid to fit content
+                      onGridReady={(params) => {
+                        params.api.sizeColumnsToFit(); // Size columns to fit the grid width
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
-      </div>    
       </div>
-      </div>
-
     </React.Fragment>
   );
 };

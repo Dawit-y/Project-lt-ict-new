@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -9,9 +8,6 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
-//import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
   useFetchBudgetRequestTasks,
@@ -540,7 +536,10 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
           >
             <Row>
               <Col className="col-md-6 mb-3">
-                <Label>{t("brt_task_name")}<span className="text-danger">*</span></Label>
+                <Label>
+                  {t("brt_task_name")}
+                  <span className="text-danger">*</span>
+                </Label>
                 <Input
                   name="brt_task_name"
                   type="text"
@@ -564,7 +563,10 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                 ) : null}
               </Col>
               <Col className="col-md-6 mb-3">
-                <Label>{t("brt_measurement")}<span className="text-danger">*</span></Label>
+                <Label>
+                  {t("brt_measurement")}
+                  <span className="text-danger">*</span>
+                </Label>
                 <Input
                   name="brt_measurement"
                   type="text"
@@ -588,7 +590,10 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                 ) : null}
               </Col>
               <Col className="col-md-6 mb-3">
-                <Label>{t("brt_previous_year_physical")}<span className="text-danger">*</span></Label>
+                <Label>
+                  {t("brt_previous_year_physical")}
+                  <span className="text-danger">*</span>
+                </Label>
                 <Input
                   name="brt_previous_year_physical"
                   type="number"
@@ -612,7 +617,10 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                 ) : null}
               </Col>
               <Col className="col-md-6 mb-3">
-                <Label>{t("brt_previous_year_financial")}<span className="text-danger">*</span></Label>
+                <Label>
+                  {t("brt_previous_year_financial")}
+                  <span className="text-danger">*</span>
+                </Label>
                 <Input
                   name="brt_previous_year_financial"
                   type="number"
@@ -636,7 +644,10 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                 ) : null}
               </Col>
               <Col className="col-md-6 mb-3">
-                <Label>{t("brt_current_year_physical")}<span className="text-danger">*</span></Label>
+                <Label>
+                  {t("brt_current_year_physical")}
+                  <span className="text-danger">*</span>
+                </Label>
                 <Input
                   name="brt_current_year_physical"
                   type="number"
@@ -660,7 +671,10 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                 ) : null}
               </Col>
               <Col className="col-md-6 mb-3">
-                <Label>{t("brt_current_year_financial")}<span className="text-danger">*</span></Label>
+                <Label>
+                  {t("brt_current_year_financial")}
+                  <span className="text-danger">*</span>
+                </Label>
                 <Input
                   name="brt_current_year_financial"
                   type="number"
@@ -684,7 +698,10 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                 ) : null}
               </Col>
               <Col className="col-md-6 mb-3">
-                <Label>{t("brt_next_year_physical")}<span className="text-danger">*</span></Label>
+                <Label>
+                  {t("brt_next_year_physical")}
+                  <span className="text-danger">*</span>
+                </Label>
                 <Input
                   name="brt_next_year_physical"
                   type="number"
@@ -708,7 +725,10 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                 ) : null}
               </Col>
               <Col className="col-md-6 mb-3">
-                <Label>{t("brt_next_year_financial")}<span className="text-danger">*</span></Label>
+                <Label>
+                  {t("brt_next_year_financial")}
+                  <span className="text-danger">*</span>
+                </Label>
                 <Input
                   name="brt_next_year_financial"
                   type="text"

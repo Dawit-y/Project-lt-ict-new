@@ -9,11 +9,15 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
+
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 
 import {
   useFetchContractorTypes,
@@ -81,12 +85,12 @@ const ContractorTypeModel = () => {
   const handleAddContractorType = async (data) => {
     try {
       await addContractorType.mutateAsync(data);
-   toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
-   validation.resetForm();
+      validation.resetForm();
     } catch (error) {
-      toast.error(t('add_failure'), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -96,12 +100,12 @@ const ContractorTypeModel = () => {
   const handleUpdateContractorType = async (data) => {
     try {
       await updateContractorType.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('update_failure'), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -112,18 +116,17 @@ const ContractorTypeModel = () => {
       try {
         const id = contractorType.cnt_id;
         await deleteContractorType.mutateAsync(id);
-      toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-      toast.error(t('delete_failure'), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
       setDeleteModal(false);
     }
   };
-
 
   //END CRUD
   //START FOREIGN CALLS
@@ -148,16 +151,19 @@ const ContractorTypeModel = () => {
     },
 
     validationSchema: Yup.object({
-      cnt_type_name_or: alphanumericValidation(2,100,true)
-        .test("unique-cnt_type_name_or", t("Already exists"), (value) => {
+      cnt_type_name_or: alphanumericValidation(2, 100, true).test(
+        "unique-cnt_type_name_or",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) =>
               item.cnt_type_name_or == value &&
               item.cnt_id !== contractorType?.cnt_id
           );
-        }),
+        }
+      ),
       cnt_type_name_am: Yup.string().required(t("cnt_type_name_am")),
-      cnt_type_name_en: alphanumericValidation(2,100,true)
+      cnt_type_name_en: alphanumericValidation(2, 100, true),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -323,8 +329,8 @@ const ContractorTypeModel = () => {
       },
     ];
     if (
-     data?.previledge?.is_role_editable==1 ||
-     data?.previledge?.is_role_deletable==1
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -334,7 +340,7 @@ const ContractorTypeModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-                {cellProps.row.original.is_editable==1 && (    
+              {cellProps.row.original.is_editable == 1 && (
                 <Link
                   to="#"
                   className="text-success"
@@ -350,7 +356,7 @@ const ContractorTypeModel = () => {
                 </Link>
               )}
 
-                 {cellProps.row.original.is_deletable==1 && (
+              {cellProps.row.original.is_deletable == 1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -376,7 +382,7 @@ const ContractorTypeModel = () => {
 
     return baseColumns;
   }, [handleContractorTypeClick, toggleViewModal, onClickDelete]);
- if (isError) {
+  if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -423,7 +429,7 @@ const ContractorTypeModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add==1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleContractorTypeClicks}
                       isPagination={true}
@@ -456,7 +462,10 @@ const ContractorTypeModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("cnt_type_name_or")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("cnt_type_name_or")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="cnt_type_name_or"
                       type="text"
@@ -480,7 +489,10 @@ const ContractorTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("cnt_type_name_am")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("cnt_type_name_am")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="cnt_type_name_am"
                       type="text"
@@ -504,7 +516,10 @@ const ContractorTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("cnt_type_name_en")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("cnt_type_name_en")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="cnt_type_name_en"
                       type="text"

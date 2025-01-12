@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState,useRef } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
@@ -9,7 +9,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
+
 //import components
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
@@ -50,7 +50,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -75,18 +75,15 @@ const ProjectVariationList = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-   const [projectParams, setProjectParams] = useState({});
+  const [projectParams, setProjectParams] = useState({});
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
-  const { data, isLoading, error, isError, refetch } =  useState("");
+  const { data, isLoading, error, isError, refetch } = useState("");
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
-
-
-
 
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
@@ -106,7 +103,6 @@ const ProjectVariationList = () => {
   };
   //START FOREIGN CALLS
 
-
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
@@ -123,7 +119,7 @@ const ProjectVariationList = () => {
       }),
     });
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
-   const handleNodeSelect = (node) => {
+  const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
       setPrjLocationZoneId(null); // Clear dependent states
@@ -138,7 +134,7 @@ const ProjectVariationList = () => {
       setShowSearchResult(false);
     }
   };
-const columnDefs = useMemo(() => {
+  const columnDefs = useMemo(() => {
     const baseColumnDefs = [
       {
         headerName: t("S.N"),
@@ -171,30 +167,30 @@ const columnDefs = useMemo(() => {
         field: "prv_requested_amount",
         sortable: true,
         filter: true,
-         valueFormatter: (params) => {
-      if (params.value != null) {
-        return new Intl.NumberFormat("en-US", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }).format(params.value);
-      }
-      return "0.00"; // Default value if null or undefined
-    }
+        valueFormatter: (params) => {
+          if (params.value != null) {
+            return new Intl.NumberFormat("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(params.value);
+          }
+          return "0.00"; // Default value if null or undefined
+        },
       },
       {
         headerName: t("prv_released_amount"),
         field: "prv_released_amount",
         sortable: true,
         filter: true,
-         valueFormatter: (params) => {
-      if (params.value != null) {
-        return new Intl.NumberFormat("en-US", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }).format(params.value);
-      }
-      return "0.00"; // Default value if null or undefined
-    }
+        valueFormatter: (params) => {
+          if (params.value != null) {
+            return new Intl.NumberFormat("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(params.value);
+          }
+          return "0.00"; // Default value if null or undefined
+        },
       },
       {
         headerName: t("prv_requested_date_gc"),
@@ -214,7 +210,7 @@ const columnDefs = useMemo(() => {
         cellRenderer: (params) => {
           return truncateText(params.data.prv_released_date_gc, 30) || "-";
         },
-      }
+      },
     ];
     return baseColumnDefs;
   });
@@ -230,71 +226,75 @@ const columnDefs = useMemo(() => {
             breadcrumbItem={t("project_variation_list")}
           />
           <div className="w-100 d-flex gap-2">
-            <AddressStructureForProject onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />
+            <AddressStructureForProject
+              onNodeSelect={handleNodeSelect}
+              setIsAddressLoading={setIsAddressLoading}
+            />
             <div className="w-100">
-          <AdvancedSearch
-            searchHook={useSearchProjectVariations}
-            textSearchKeys={["prj_name", "prj_code"]}
-            dateSearchKeys={["variation_date"]}
-            dropdownSearchKeys={[]}
-            checkboxSearchKeys={[]}
-            additionalParams={projectParams}
-            setAdditionalParams={setProjectParams}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          />
-          {isLoading || isSearchLoading ? (
-            <Spinners />
-          ) : (
-            <div
-              className="ag-theme-alpine"
-              style={{ height: "100%", width: "100%" }}
-            >
-              {/* Row for search input and buttons */}
-              <Row className="mb-3">
-                <Col sm="12" md="6">
-                  {/* Search Input for  Filter */}
-                  <Input
-                    type="text"
-                    placeholder="Search..."
-                    onChange={(e) => setQuickFilterText(e.target.value)}
-                    className="mb-2"
-                    style={{ width: "50%", maxWidth: "400px" }}
-                  />
-                </Col>
-                <Col sm="12" md="6" className="text-md-end"></Col>
-              </Row>
+              <AdvancedSearch
+                searchHook={useSearchProjectVariations}
+                textSearchKeys={["prj_name", "prj_code"]}
+                dateSearchKeys={["variation_date"]}
+                dropdownSearchKeys={[]}
+                checkboxSearchKeys={[]}
+                additionalParams={projectParams}
+                setAdditionalParams={setProjectParams}
+                onSearchResult={handleSearchResults}
+                setIsSearchLoading={setIsSearchLoading}
+                setSearchResults={setSearchResults}
+                setShowSearchResult={setShowSearchResult}
+              />
+              {isLoading || isSearchLoading ? (
+                <Spinners />
+              ) : (
+                <div
+                  className="ag-theme-alpine"
+                  style={{ height: "100%", width: "100%" }}
+                >
+                  {/* Row for search input and buttons */}
+                  <Row className="mb-3">
+                    <Col sm="12" md="6">
+                      {/* Search Input for  Filter */}
+                      <Input
+                        type="text"
+                        placeholder="Search..."
+                        onChange={(e) => setQuickFilterText(e.target.value)}
+                        className="mb-2"
+                        style={{ width: "50%", maxWidth: "400px" }}
+                      />
+                    </Col>
+                    <Col sm="12" md="6" className="text-md-end"></Col>
+                  </Row>
 
-              {/* AG Grid */}
-              <div>
-                <AgGridReact
-                  ref={gridRef}
-                  rowData={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
-                  columnDefs={columnDefs}
-                  pagination={true}
-                  paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                  paginationPageSize={10}
-                  quickFilterText={quickFilterText}
-                  onSelectionChanged={onSelectionChanged}
-                  rowHeight={30} // Set the row height here
-                  animateRows={true} // Enables row animations
-                  domLayout="autoHeight" // Auto-size the grid to fit content
-                  onGridReady={(params) => {
-                    params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                  }}
-                />
-              </div>
+                  {/* AG Grid */}
+                  <div>
+                    <AgGridReact
+                      ref={gridRef}
+                      rowData={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
+                      columnDefs={columnDefs}
+                      pagination={true}
+                      paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+                      paginationPageSize={10}
+                      quickFilterText={quickFilterText}
+                      onSelectionChanged={onSelectionChanged}
+                      rowHeight={30} // Set the row height here
+                      animateRows={true} // Enables row animations
+                      domLayout="autoHeight" // Auto-size the grid to fit content
+                      onGridReady={(params) => {
+                        params.api.sizeColumnsToFit(); // Size columns to fit the grid width
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
-      </div>    
       </div>
-      </div>
-
     </React.Fragment>
   );
 };

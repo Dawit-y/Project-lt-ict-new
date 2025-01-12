@@ -9,7 +9,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
+
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
@@ -24,7 +24,11 @@ import PaymentCategoryModal from "./PaymentCategoryModal";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 import {
   Button,
   Col,
@@ -134,10 +138,10 @@ const PaymentCategoryModel = () => {
       is_editable: (paymentCategory && paymentCategory.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      pyc_name_or: alphanumericValidation(3,20,true),
+      pyc_name_or: alphanumericValidation(3, 20, true),
       pyc_name_am: Yup.string().required(t("pyc_name_am")),
-      pyc_name_en: alphanumericValidation(3,20,true),
-      pyc_description: alphanumericValidation(3,425,false),
+      pyc_name_en: alphanumericValidation(3, 20, true),
+      pyc_description: alphanumericValidation(3, 425, false),
       //pyc_status: Yup.string().required(t('pyc_status')),
     }),
     validateOnBlur: true,

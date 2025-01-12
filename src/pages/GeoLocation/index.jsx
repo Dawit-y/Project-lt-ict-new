@@ -1,16 +1,14 @@
 import React, { useState, useCallback } from "react";
 import PropTypes from "prop-types";
-import { useDispatch, useSelector } from "react-redux";
-import { createSelector } from "reselect";
 import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
 import { Button, Spinner } from "reactstrap";
-import { updateProject } from "../../store/project/actions";
+import { useUpdateProject } from "../../queries/project_query";
+import { toast } from "react-toastify";
 
 const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 
 const GeoLocation = (props) => {
   const { passedId } = props;
-
   const [markerPosition, setMarkerPosition] = useState({
     lat: 9.0192,
     lng: 38.7525,
@@ -21,6 +19,21 @@ const GeoLocation = (props) => {
     longitude: 38.7525,
     zoom: 8,
   });
+  const updateProject = useUpdateProject();
+  const handleUpdateProject = async (data) => {
+    try {
+      await updateProject.mutateAsync(data);
+      toast.success(`data updated successfully`, {
+        autoClose: 2000,
+      });
+      validation.resetForm();
+    } catch (error) {
+      toast.error(`Failed to update Data`, {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
 
   const handleMapClick = useCallback((event) => {
     const lat = event.detail.latLng.lat;
@@ -48,22 +61,12 @@ const GeoLocation = (props) => {
     }));
   };
 
-  const projectProperties = createSelector(
-    (state) => state.ProjectR,
-    (ProjectReducer) => ({
-      update_loading: ProjectReducer.update_loading,
-    })
-  );
-
-  const { update_loading } = useSelector(projectProperties);
-  const dispatch = useDispatch();
-
   const handleLocationUpdate = (passedId) => {
     const data = {
       prj_id: passedId,
       prj_geo_location: `${markerPosition.lat},${markerPosition.lng}`,
     };
-    dispatch(updateProject(data));
+    handleUpdateProject(data);
   };
 
   return (
@@ -98,7 +101,7 @@ const GeoLocation = (props) => {
       </div>
 
       <div className="mt-3 w-full">
-        {update_loading ? (
+        {updateProject.isPending ? (
           <Button
             color="primary"
             className="mx-auto"
@@ -114,7 +117,7 @@ const GeoLocation = (props) => {
             color="primary"
             className="mx-auto"
             onClick={() => handleLocationUpdate(passedId)}
-            disabled={update_loading}
+            disabled={updateProject.isPending}
           >
             Update
           </Button>

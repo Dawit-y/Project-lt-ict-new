@@ -152,7 +152,7 @@ const UserRoleModel = (props) => {
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
-        handleUpdateUserRole(updateUserRole);        
+        handleUpdateUserRole(updateUserRole);
       } else {
         const newUserRole = {
           url_user_id: passedId,
@@ -231,7 +231,9 @@ const UserRoleModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return <span>{roleDataMap[cellProps.row.original.url_role_id]}</span>;
+          return (
+            <span>{roleDataMap[cellProps.row.original.url_role_id] || ""}</span>
+          );
         },
       },
       {

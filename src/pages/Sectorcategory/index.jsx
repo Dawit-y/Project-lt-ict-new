@@ -9,11 +9,15 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
+
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 
 import {
   useFetchSectorCategorys,
@@ -81,12 +85,12 @@ const SectorCategoryModel = () => {
   const handleAddSectorCategory = async (data) => {
     try {
       await addSectorCategory.mutateAsync(data);
-   toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
-   validation.resetForm();
+      validation.resetForm();
     } catch (error) {
-      toast.error(t('add_failure'), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -96,12 +100,12 @@ const SectorCategoryModel = () => {
   const handleUpdateSectorCategory = async (data) => {
     try {
       await updateSectorCategory.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
-      })
+      });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('update_failure'), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -113,11 +117,11 @@ const SectorCategoryModel = () => {
       try {
         const id = sectorCategory.psc_id;
         await deleteSectorCategory.mutateAsync(id);
-      toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-      toast.error(t('delete_failure'), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -144,16 +148,18 @@ const SectorCategoryModel = () => {
     },
 
     validationSchema: Yup.object({
-      psc_name: alphanumericValidation(2,100,true)
-        .test("unique-psc_name", t("Already exists"), (value) => {
+      psc_name: alphanumericValidation(2, 100, true).test(
+        "unique-psc_name",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) =>
               item.psc_name == value && item.psc_id !== sectorCategory?.psc_id
           );
-        }),
-        psc_code:numberValidation(2,5,false),
-      psc_description: alphanumericValidation(3,425,false)
-
+        }
+      ),
+      psc_code: numberValidation(2, 5, false),
+      psc_description: alphanumericValidation(3, 425, false),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -307,8 +313,8 @@ const SectorCategoryModel = () => {
       },
     ];
     if (
-     data?.previledge?.is_role_editable==1 ||
-     data?.previledge?.is_role_deletable==1
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -318,7 +324,7 @@ const SectorCategoryModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable==1 && ( 
+              {cellProps.row.original.is_editable == 1 && (
                 <Link
                   to="#"
                   className="text-success"
@@ -334,7 +340,7 @@ const SectorCategoryModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable==1 && (
+              {cellProps.row.original.is_deletable == 1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -360,7 +366,7 @@ const SectorCategoryModel = () => {
 
     return baseColumns;
   }, [handleSectorCategoryClick, toggleViewModal, onClickDelete]);
- if (isError) {
+  if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -407,7 +413,7 @@ const SectorCategoryModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add==1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleSectorCategoryClicks}
                       isPagination={true}
@@ -440,7 +446,10 @@ const SectorCategoryModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("psc_name")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("psc_name")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="psc_name"
                       type="text"

@@ -9,11 +9,15 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
+
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 
 import {
   useFetchSectorInformations,
@@ -68,7 +72,8 @@ const SectorInformationModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } =useFetchSectorInformations();
+  const { data, isLoading, error, isError, refetch } =
+    useFetchSectorInformations();
   const { data: sectorCategoryData } = useFetchSectorCategorys();
   const sectorCategoryOptions = createSelectOptions(
     sectorCategoryData?.data || [],
@@ -82,12 +87,12 @@ const SectorInformationModel = () => {
   const handleAddSectorInformation = async (data) => {
     try {
       await addSectorInformation.mutateAsync(data);
-   toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
-   validation.resetForm();
+      validation.resetForm();
     } catch (error) {
-      toast.error(t('add_failure'), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -97,12 +102,12 @@ const SectorInformationModel = () => {
   const handleUpdateSectorInformation = async (data) => {
     try {
       await updateSectorInformation.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('update_failure'), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -114,11 +119,11 @@ const SectorInformationModel = () => {
       try {
         const id = sectorInformation.sci_id;
         await deleteSectorInformation.mutateAsync(id);
-      toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-      toast.error(t('delete_failure'), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -154,19 +159,22 @@ const SectorInformationModel = () => {
       is_editable: (sectorInformation && sectorInformation.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      sci_name_or: alphanumericValidation(2,100,true)
-        .test("unique-sci_name_or", t("Already exists"), (value) => {
+      sci_name_or: alphanumericValidation(2, 100, true).test(
+        "unique-sci_name_or",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) =>
               item.sci_name_or == value &&
               item.sci_id !== sectorInformation?.sci_id
           );
-        }),
-      sci_sector_category_id:numberValidation(1,10,true),
+        }
+      ),
+      sci_sector_category_id: numberValidation(1, 10, true),
       sci_name_am: Yup.string().required(t("sci_name_am")),
-      sci_name_en: alphanumericValidation(2,100,true),
-      sci_code: numberValidation(3,5,false),
-      sci_description: alphanumericValidation(3,425,false)
+      sci_name_en: alphanumericValidation(2, 100, true),
+      sci_code: numberValidation(3, 5, false),
+      sci_description: alphanumericValidation(3, 425, false),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -178,7 +186,7 @@ const SectorInformationModel = () => {
           sci_name_am: values.sci_name_am,
           sci_name_en: values.sci_name_en,
           sci_code: values.sci_code,
-           sci_sector_category_id: values.sci_sector_category_id,
+          sci_sector_category_id: values.sci_sector_category_id,
           sci_available_at_region: values.sci_available_at_region ? 1 : 0,
           sci_available_at_zone: values.sci_available_at_zone ? 1 : 0,
           sci_available_at_woreda: values.sci_available_at_woreda ? 1 : 0,
@@ -333,8 +341,10 @@ const SectorInformationModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.sci_sector_category_id, 30) ||
-                "-"}
+              {truncateText(
+                cellProps.row.original.sci_sector_category_id,
+                30
+              ) || "-"}
             </span>
           );
         },
@@ -347,8 +357,9 @@ const SectorInformationModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-            {cellProps.row.original.sci_available_at_region == 1 ? "Yes" : "No"}
-
+              {cellProps.row.original.sci_available_at_region == 1
+                ? "Yes"
+                : "No"}
             </span>
           );
         },
@@ -361,8 +372,7 @@ const SectorInformationModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-            {cellProps.row.original.sci_available_at_zone == 1 ? "Yes" : "No"}
-
+              {cellProps.row.original.sci_available_at_zone == 1 ? "Yes" : "No"}
             </span>
           );
         },
@@ -375,7 +385,9 @@ const SectorInformationModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {cellProps.row.original.sci_available_at_woreda == 1 ? "Yes" : "No"}
+              {cellProps.row.original.sci_available_at_woreda == 1
+                ? "Yes"
+                : "No"}
             </span>
           );
         },
@@ -403,8 +415,8 @@ const SectorInformationModel = () => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable==1 ||
- data?.previledge?.is_role_deletable==1
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -414,7 +426,7 @@ const SectorInformationModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-            {cellProps.row.original.is_editable==1 && (  
+              {cellProps.row.original.is_editable == 1 && (
                 <Link
                   to="#"
                   className="text-success"
@@ -430,7 +442,7 @@ const SectorInformationModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable==1 && (
+              {cellProps.row.original.is_deletable == 1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -504,7 +516,7 @@ const SectorInformationModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add==1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleSectorInformationClicks}
                       isPagination={true}
@@ -537,7 +549,10 @@ const SectorInformationModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("sci_name_or")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("sci_name_or")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="sci_name_or"
                       type="text"
@@ -561,7 +576,10 @@ const SectorInformationModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("sci_name_am")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("sci_name_am")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="sci_name_am"
                       type="text"
@@ -585,7 +603,10 @@ const SectorInformationModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("sci_name_en")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("sci_name_en")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="sci_name_en"
                       type="text"

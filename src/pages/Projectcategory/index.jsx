@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -9,11 +8,13 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
-//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 
 import {
   useFetchProjectCategorys,
@@ -24,9 +25,6 @@ import {
 } from "../../queries/projectcategory_query";
 import ProjectCategoryModal from "./ProjectCategoryModal";
 import { useTranslation } from "react-i18next";
-
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
 
 import {
   Button,
@@ -45,8 +43,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
@@ -81,12 +78,12 @@ const ProjectCategoryModel = () => {
   const handleAddProjectCategory = async (data) => {
     try {
       await addProjectCategory.mutateAsync(data);
-  toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
-  validation.resetForm();
+      validation.resetForm();
     } catch (error) {
-      toast.error(t('add_failure'), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -96,12 +93,12 @@ const ProjectCategoryModel = () => {
   const handleUpdateProjectCategory = async (data) => {
     try {
       await updateProjectCategory.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('update_failure'), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -112,11 +109,11 @@ const ProjectCategoryModel = () => {
       try {
         const id = projectCategory.pct_id;
         await deleteProjectCategory.mutateAsync(id);
-      toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-      toast.error(t('delete_failure'), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -144,17 +141,20 @@ const ProjectCategoryModel = () => {
     },
 
     validationSchema: Yup.object({
-      pct_name_or: alphanumericValidation(2,100,true)
-        .test("unique-pct_name_or", t("Already exists"), (value) => {
+      pct_name_or: alphanumericValidation(2, 100, true).test(
+        "unique-pct_name_or",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) =>
               item.pct_name_or == value &&
               item.pct_id !== projectCategory?.pct_id
           );
-        }),
+        }
+      ),
       pct_name_am: Yup.string().required(t("pct_name_am")),
-      pct_name_en: alphanumericValidation(2,100,true),
-      pct_description: alphanumericValidation(3,425,false)
+      pct_name_en: alphanumericValidation(2, 100, true),
+      pct_description: alphanumericValidation(3, 425, false),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -338,8 +338,8 @@ const ProjectCategoryModel = () => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable==1 ||
-      data?.previledge?.is_role_deletable==1
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -349,7 +349,7 @@ const ProjectCategoryModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-          {cellProps.row.original.is_editable==1 && (
+              {cellProps.row.original.is_editable == 1 && (
                 <Link
                   to="#"
                   className="text-success"
@@ -365,7 +365,7 @@ const ProjectCategoryModel = () => {
                 </Link>
               )}
 
-          {cellProps.row.original.is_deletable==1 && (
+              {cellProps.row.original.is_deletable == 1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -391,7 +391,7 @@ const ProjectCategoryModel = () => {
 
     return baseColumns;
   }, [handleProjectCategoryClick, toggleViewModal, onClickDelete]);
- if (isError) {
+  if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -438,7 +438,7 @@ const ProjectCategoryModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add==1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleProjectCategoryClicks}
                       isPagination={true}
@@ -471,7 +471,10 @@ const ProjectCategoryModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pct_name_or")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pct_name_or")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pct_name_or"
                       type="text"
@@ -495,7 +498,10 @@ const ProjectCategoryModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pct_name_am")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pct_name_am")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pct_name_am"
                       type="text"
@@ -519,7 +525,10 @@ const ProjectCategoryModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pct_name_en")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pct_name_en")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pct_name_en"
                       type="text"
