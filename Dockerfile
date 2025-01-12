@@ -1,7 +1,8 @@
-##
-# Stage 1: Build the React/Vite application
-##
-FROM node:16.20-alpine AS build
+FROM nginx:alpine
+
+# Install Node.js & npm via apk (Alpine package manager)
+# 'apk add nodejs npm' should install the versions available in the Alpine repositories
+RUN apk add --no-cache nodejs npm
 
 # Create and set a working directory
 WORKDIR /app
