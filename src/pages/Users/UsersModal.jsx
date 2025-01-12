@@ -2,7 +2,6 @@ import React, { useTransition, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import Switch from "react-switch";
-import axios from "axios";
 import {
   Button,
   Modal,
@@ -20,7 +19,11 @@ import {
   Input,
 } from "reactstrap";
 
-import { useUpdateUsers,useChangeUserStatus,useChangePassword } from "../../queries/users_query";
+import {
+  useUpdateUsers,
+  useChangeUserStatus,
+  useChangePassword,
+} from "../../queries/users_query";
 import { toast } from "react-toastify";
 import avatar from "../../assets/images/users/defaultAvatar.png";
 
@@ -51,8 +54,8 @@ const UsersModal = (props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const updateUsers = useUpdateUsers();
   const changeUserStatus = useChangeUserStatus();
-   const changeUserPassword = useChangePassword();
-  
+  const changeUserPassword = useChangePassword();
+
   const handleChangeUserStatus = async (data) => {
     try {
       await changeUserStatus.mutateAsync(data);
@@ -353,14 +356,18 @@ const UsersModal = (props) => {
             <Col className="md-6">
               <div className="text-muted mt-4">
                 <Table className="table-nowrap mb-0">
-                  <tbody>                   
+                  <tbody>
                     <tr>
                       <th scope="row">{t("usr_zone_id")}</th>
                       <td>{transaction.zone_name}</td>
                     </tr>
                     <tr>
                       <th scope="row"> {t("usr_woreda_id")}</th>
-                      <td>{transaction.usr_woreda_id === 0 ? "--" : transaction.usr_woreda_id}</td>
+                      <td>
+                        {transaction.usr_woreda_id === 0
+                          ? "--"
+                          : transaction.usr_woreda_id}
+                      </td>
                     </tr>
 
                     <tr>
@@ -373,16 +380,17 @@ const UsersModal = (props) => {
                     </tr>
                     <tr>
                       <th scope="row"> {t("usr_is_active")}</th>
-                      <td><span
-                              style={{
-                                fontSize: "16px",
-                                fontWeight: "bold",
-                                color: !switch1 ? "#d9534f" : "#28a745", // Green for Active, Red for Inactive
-                              }}
-                            >
-                              {switch1==1 ? "Active" : "Inactive"}
-                            </span>
-                            </td>
+                      <td>
+                        <span
+                          style={{
+                            fontSize: "16px",
+                            fontWeight: "bold",
+                            color: !switch1 ? "#d9534f" : "#28a745", // Green for Active, Red for Inactive
+                          }}
+                        >
+                          {switch1 == 1 ? "Active" : "Inactive"}
+                        </span>
+                      </td>
                     </tr>
                   </tbody>
                 </Table>
@@ -403,7 +411,7 @@ const UsersModal = (props) => {
           }}
           backdrop={"static"}
           id="staticBackdrop"
-          centered="true"
+          centered={true}
         >
           <ModalHeader
             toggle={() => {

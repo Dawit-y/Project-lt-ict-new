@@ -47,6 +47,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import DetailModal from "../../components/Common/DetailModal";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -467,10 +468,11 @@ const DepartmentModel = () => {
 
   return (
     <React.Fragment>
-      <DepartmentModal
+      <DetailModal
         isOpen={modal1}
         toggle={toggleViewModal}
-        transaction={transaction}
+        details={transaction}
+        excludeKey={["is_editable", "is_deletable"]}
       />
       <DeleteModal
         show={deleteModal}
