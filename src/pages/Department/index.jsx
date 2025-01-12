@@ -11,7 +11,11 @@ import Spinners from "../../components/Common/Spinner";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 
 import {
   useFetchDepartments,
@@ -73,16 +77,16 @@ const DepartmentModel = () => {
   const updateDepartment = useUpdateDepartment();
   const deleteDepartment = useDeleteDepartment();
 
-    //START CRUD
+  //START CRUD
   const handleAddDepartment = async (data) => {
     try {
       await addDepartment.mutateAsync(data);
-   toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
-   validation.resetForm();
+      validation.resetForm();
     } catch (error) {
-      toast.error(t('add_failure'), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -92,12 +96,12 @@ const DepartmentModel = () => {
   const handleUpdateDepartment = async (data) => {
     try {
       await updateDepartment.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('update_failure'), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -108,11 +112,11 @@ const DepartmentModel = () => {
       try {
         const id = department.cnt_id;
         await deleteDepartment.mutateAsync(id);
-      toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-      toast.error(t('delete_failure'), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -144,28 +148,37 @@ const DepartmentModel = () => {
     },
 
     validationSchema: Yup.object({
-      dep_name_or: alphanumericValidation(2,100,true)
-        .test("unique-dep_name_or", t("Already exists"), (value) => {
+      dep_name_or: alphanumericValidation(2, 100, true).test(
+        "unique-dep_name_or",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) =>
               item.dep_name_or == value && item.dep_id !== department?.dep_id
           );
-        }),
-      dep_name_am: Yup.string()
-        .test("unique-dep_name_am", t("Already exists"), (value) => {
+        }
+      ),
+      dep_name_am: Yup.string().test(
+        "unique-dep_name_am",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) =>
               item.dep_name_am == value && item.dep_id !== department?.dep_id
           );
-        }),
-      dep_name_en:alphanumericValidation(2,100,true)
-        .test("unique-dep_name_en", t("Already exists"), (value) => {
+        }
+      ),
+      dep_name_en: alphanumericValidation(2, 100, true).test(
+        "unique-dep_name_en",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) =>
               item.dep_name_en == value && item.dep_id !== department?.dep_id
           );
-        }),
-          dep_description: alphanumericValidation(3,425,false)
+        }
+      ),
+      dep_description: alphanumericValidation(3, 425, false),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -391,8 +404,8 @@ const DepartmentModel = () => {
       },
     ];
     if (
-   data?.previledge?.is_role_editable==1 ||
- data?.previledge?.is_role_deletable==1
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -402,8 +415,8 @@ const DepartmentModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-            {cellProps.row.original.is_editable==1 && ( 
-                 <Link
+              {cellProps.row.original.is_editable == 1 && (
+                <Link
                   to="#"
                   className="text-success"
                   onClick={() => {
@@ -421,8 +434,8 @@ const DepartmentModel = () => {
                 </Link>
               )}
 
-             {cellProps.row.original.is_deletable==1 && (
-                  <Link
+              {cellProps.row.original.is_deletable == 1 && (
+                <Link
                   to="#"
                   className="text-danger"
                   onClick={() => {
@@ -496,7 +509,7 @@ const DepartmentModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add==1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleDepartmentClicks}
                       isPagination={true}
@@ -507,6 +520,8 @@ const DepartmentModel = () => {
                       theadClass="table-light"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                      excludeKey={["is_editable", "is_deletable"]} // will be used by export to excel and pdf components
+                      tableName="Department Data" // will be used by export to excel and pdf components
                     />
                   </CardBody>
                 </Card>

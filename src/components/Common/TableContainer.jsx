@@ -14,6 +14,7 @@ import {
 
 import { rankItem } from "@tanstack/match-sorter-utils";
 import ExportToExcel from "../../components/Common/ExportToExcel";
+import ExportToPDF from "./ExportToPdf";
 
 // Column Filter
 const Filter = ({ column }) => {
@@ -89,6 +90,9 @@ const TableContainer = ({
   handleUserClick,
   isJobListGlobalFilter,
   isExcelExport = true,
+  isPdfExport = true,
+  excludeKey = [],
+  tableName = "",
 }) => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -169,35 +173,38 @@ const TableContainer = ({
 
   return (
     <Fragment>
-      <Row className="mb-2">
-        {isCustomPageSize && (
-          <Col sm={2}>
-            <select
-              className="form-select pageSize mb-2"
-              value={table.getState().pagination.pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-                table.setPageSize(Number(e.target.value));
-              }}
-            >
-              {[10, 20, 30, 40, 50].map((pageSize) => (
-                <option key={pageSize} value={pageSize}>
-                  {t("Showing")} {pageSize}
-                </option>
-              ))}
-            </select>
-          </Col>
-        )}
-        {isGlobalFilter && (
-          <DebouncedInput
-            value={globalFilter ?? ""}
-            onChange={(value) => setGlobalFilter(String(value))}
-            className="form-control search-box me-2 mb-2 d-inline-block"
-            placeholder={SearchPlaceholder}
-          />
-        )}
+      <Row className="mb-2 d-flex align-items-center justify-content-between">
+        <>
+          {isCustomPageSize && (
+            <Col sm={2} className="">
+              <select
+                className="form-select pageSize my-auto"
+                value={table.getState().pagination.pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  table.setPageSize(Number(e.target.value));
+                }}
+              >
+                {[10, 20, 30, 40, 50].map((pageSize) => (
+                  <option key={pageSize} value={pageSize}>
+                    {t("Showing")} {pageSize}
+                  </option>
+                ))}
+              </select>
+            </Col>
+          )}
+          {isGlobalFilter && (
+            <DebouncedInput
+              value={globalFilter ?? ""}
+              onChange={(value) => setGlobalFilter(String(value))}
+              className="form-control search-box me-2 my-auto d-inline-block"
+              placeholder={SearchPlaceholder}
+            />
+          )}
+        </>
+
         <Col sm={6}>
-          <div className="text-sm-end">
+          <div className="text-sm-end d-flex align-items-center justify-content-end gap-1">
             {isAddButton && (
               <Button
                 type="button"
@@ -208,7 +215,19 @@ const TableContainer = ({
               </Button>
             )}
             {isExcelExport && (
-              <ExportToExcel tableData={data} tablename="excel_data" />
+              <ExportToExcel
+                tableData={data}
+                tablename={tableName}
+                excludeKey={excludeKey}
+              />
+            )}
+
+            {isPdfExport && (
+              <ExportToPDF
+                tableData={data}
+                tablename={tableName}
+                excludeKey={excludeKey}
+              />
             )}
           </div>
         </Col>
@@ -303,11 +322,7 @@ const TableContainer = ({
                       !getCanPreviousPage() ? "disabled" : ""
                     }`}
                   >
-                    <Link
-                      to="#"
-                      className="page-link"
-                      onClick={handlePrevious} 
-                    >
+                    <Link to="#" className="page-link" onClick={handlePrevious}>
                       <i className="mdi mdi-chevron-left"></i>
                     </Link>
                   </li>
@@ -339,11 +354,7 @@ const TableContainer = ({
                       !getCanNextPage() ? "disabled" : ""
                     }`}
                   >
-                    <Link
-                      to="#"
-                      className="page-link"
-                      onClick={handleNext} 
-                    >
+                    <Link to="#" className="page-link" onClick={handleNext}>
                       <i className="mdi mdi-chevron-right"></i>
                     </Link>
                   </li>

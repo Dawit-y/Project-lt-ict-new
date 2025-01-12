@@ -82,6 +82,8 @@ import { formatDate } from "../../utils/commonMethods";
 import AddressStructureForProject from "./AddressStructureForProject";
 import { useProjectContext } from "../../context/ProjectContext";
 import SearchForProject from "../../components/Common/SearchForProject";
+import ExportToExcel from "../../components/Common/ExportToExcel";
+import ExportToPDF from "../../components/Common/ExportToPdf";
 
 const tabMapping = {
   1: { label: "Documents", component: ProjectDocument },
@@ -776,7 +778,6 @@ const ProjectModel = () => {
         headerName: "Lists",
         cellRenderer: renderConfiguration,
         cellStyle: { overflow: "visible", zIndex: "auto" },
-        suppressMenu: true,
         resizable: true,
         minWidth: 100,
         width: 80,
@@ -787,11 +788,11 @@ const ProjectModel = () => {
   }, [data, handleProjectClick, onClickDelete, t]);
 
   function renderConfiguration(params) {
-    const { prj_id } = params.data || {};
+    const { prj_id } = params.data || "";
     return (
       <UncontrolledDropdown>
         <DropdownToggle
-          className="btn btn-light btn-sm"
+          className="btn btn-light btn-sm my-auto"
           type="button"
           id={`dropdownMenuButton${prj_id}`}
           style={{ zIndex: 1050 }}
@@ -907,10 +908,24 @@ const ProjectModel = () => {
                         className="mb-2"
                       />
                     </Col>
-                    <Col sm="12" md="6" className="text-md-end">
+                    <Col
+                      sm="12"
+                      md="6"
+                      className="text-md-end d-flex align-items-center justify-content-end gap-2"
+                    >
                       <Button color="success" onClick={handleProjectClicks}>
                         {t("Add New Project")}
                       </Button>
+                      <ExportToExcel
+                        tableData={searchData?.data || []}
+                        tablename={"projects"}
+                        excludeKey={["is_editable", "is_deletable"]}
+                      />
+                      <ExportToPDF
+                        tableData={searchData?.data || []}
+                        tablename={"projects"}
+                        excludeKey={["is_editable", "is_deletable"]}
+                      />
                     </Col>
                   </Row>
 
