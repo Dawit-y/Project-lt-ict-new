@@ -1,0 +1,159 @@
+pipeline {
+    agent any
+
+    // --------------------------
+    // Global Configuration
+    // --------------------------
+    environment {
+        // Node
+        NODE_VERSION       = '16.20.2'
+        NODE_OPTIONS       = '--max-old-space-size=4096'
+        
+        // Docker
+        DOCKER_IMAGE       = 'otecpms/react-app-qa'
+        DOCKER_TAG         = 'latest'
+        FULL_DOCKER_IMAGE  = "${DOCKER_IMAGE}:${DOCKER_TAG}"
+        REGISTRY_URL       = 'https://registry.hub.docker.com'
+        REGISTRY_CREDENTIALS = 'dockerhub-credentials'
+        
+        // Environment file + Ports
+        ENV_FILE_PATH      = '/home/testthree/pms_files/qa-frontend.env'
+        PORT_EXT       = '1234'
+        PORT_INT       = '80'
+        
+        // Container name
+        CONTAINER_NAME     = 'react-app-qa'
+    }
+
+    // --------------------------
+    // Pipeline-Level Options
+    // --------------------------
+    options {
+        retry(3)  // Automatically retry failed stages up to 3 times
+    }
+
+    // --------------------------
+    // Stages
+    // --------------------------
+    stages {
+
+        /*
+        stage('Clean Workspace and Pull') {
+            steps {
+                script {
+                    sh '''
+                        echo "Cleaning the workspace..."
+                        git clean -fdx        # Remove all untracked files and directories
+                        git reset --hard      # Reset any changes to tracked files
+                        
+                        echo "Pulling the latest code from the main branch..."
+                        git pull origin main
+                    '''
+                }
+            }
+        }
+
+        stage('Clean Docker Cache') {
+            steps {
+                script {
+                    sh '''
+                        echo "Cleaning up Docker cache..."
+                        # Remove dangling images
+                        docker image prune -f
+                        
+                        # Remove unused volumes
+                        docker volume prune -f
+                        
+                        # Remove unused networks
+                        docker network prune -f
+                        
+                        # Remove stopped containers
+                        docker container prune -f
+                        
+                        echo "Docker cache cleanup completed."
+                    '''
+                }
+            }
+        }
+        */
+
+        stage('Prepare Environment File') {
+            steps {
+                script {
+                    sh """
+                        echo "Copying environment file..."
+                        cp ${ENV_FILE_PATH} .env
+                        echo "Environment file copied successfully."
+                    """
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // If your Dockerfile is named "Dockerfile" in the root directory,
+                    // you can simply do: docker.build("${FULL_DOCKER_IMAGE}")
+                    docker.build("${FULL_DOCKER_IMAGE}", "-f Dockerfile .")
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Use docker.withRegistry to authenticate and push the image
+                    docker.withRegistry("${REGISTRY_URL}", "${REGISTRY_CREDENTIALS}") {
+                        docker.image("${FULL_DOCKER_IMAGE}").push()
+                        // Push with "latest" tag for convenience if needed
+                        docker.image("${FULL_DOCKER_IMAGE}").push('latest')
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to Server') {
+            steps {
+                script {
+                    sh """
+                        echo "Deploying React application with Docker..."
+                        
+                        # Pull the latest Docker image
+                        docker pull ${DOCKER_IMAGE}:latest
+
+                        # Stop and remove the container if it exists
+                        if [ \$(docker ps -a -q -f name=${CONTAINER_NAME}) ]; then
+                            echo "Container ${CONTAINER_NAME} found. Stopping and removing..."
+                            docker stop ${CONTAINER_NAME} || true
+                            docker rm ${CONTAINER_NAME} || true
+                        fi
+
+                        # Run the new container
+                        echo "Starting new container..."
+                        docker run -d --name ${CONTAINER_NAME} \\
+                                   -p ${PORT_EXT}:${PORT_INT} \\
+                                   ${DOCKER_IMAGE}:latest
+
+                        echo "Deployment completed. React app is now served on port ${PORT_EXT}."
+                        
+                        # Debug: Inspect environment variables inside the running container
+                        echo "Environment variables in the running container:"
+                        # docker exec ${CONTAINER_NAME} printenv
+                    """
+                }
+            }
+        }
+    }
+
+    // --------------------------
+    // Post Actions
+    // --------------------------
+    post {
+        success {
+            echo 'Build and deployment succeeded!'
+        }
+        failure {
+            echo 'Build or deployment failed.'
+        }
+    }
+}
