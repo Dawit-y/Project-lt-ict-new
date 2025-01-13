@@ -11,10 +11,12 @@ WORKDIR /app
 
 # 3) Copy package files first for better caching
 COPY package*.json ./
+#   Copy the rest of your source code (including .env, src, etc.)
+COPY . .
+
 RUN npm install --legacy-peer-deps
 
-# 4) Copy the rest of your source code (including .env, src, etc.)
-COPY . .
+
 
 # 5) Build the React/Vite app (outputs to /app/dist)
 RUN npm run build
