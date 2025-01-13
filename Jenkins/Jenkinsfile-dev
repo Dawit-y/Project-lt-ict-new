@@ -18,8 +18,8 @@ pipeline {
         
         // Environment file + Ports
         ENV_FILE_PATH      = '/home/testthree/pms_files/dev-frontend.env'
-        DEV_PORT_EXT       = '1212'
-        DEV_PORT_INT       = '80'
+        PORT_EXT       = '1212'
+        PORT_INT       = '80'
         
         // Container name
         CONTAINER_NAME     = 'react-app-dev'
@@ -131,10 +131,10 @@ pipeline {
                         # Run the new container
                         echo "Starting new container..."
                         docker run -d --name ${CONTAINER_NAME} \\
-                                   -p ${DEV_PORT_EXT}:${DEV_PORT_INT} \\
+                                   -p ${PORT_EXT}:${PORT_INT} \\
                                    ${DOCKER_IMAGE}:latest
 
-                        echo "Deployment completed. React app is now served on port ${DEV_PORT_EXT}."
+                        echo "Deployment completed. React app is now served on port ${PORT_EXT}."
                         
                         # Debug: Inspect environment variables inside the running container
                         echo "Environment variables in the running container:"
