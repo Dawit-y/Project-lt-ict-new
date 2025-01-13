@@ -25,7 +25,7 @@ pipeline {
         PORT_INT       = '80'
         
         // Container name
-        CONTAINER_NAME     = 'react-app-dev'
+        CONTAINER_NAME     = 'react-app-devx'
     }
 
     // --------------------------
