@@ -26,7 +26,8 @@ RUN rm -rf /usr/share/nginx/html/*
 RUN cp -r dist/* /usr/share/nginx/html/
 
 # 9) (Optional) Copy custom Nginx config if you have one
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/qa.conf
+
 
 # 10) Expose port 80
 EXPOSE 80
