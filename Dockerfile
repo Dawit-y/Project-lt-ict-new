@@ -31,8 +31,8 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 # 6) Copy your SSL certificate files into the image
 # (Alternatively, you can mount these at runtime if security policies require.)
-COPY certs/fullchain.pem /etc/ssl/certs/fullchain.pem
-COPY certs/privkey.pem /etc/ssl/private/privkey.pem
+COPY certs_ssl/fullchain.pem /etc/ssl/certs/fullchain.pem
+COPY certs_ssl/privkey.pem /etc/ssl/private/privkey.pem
 
 # 7) Expose SSL port (443) (and optionally port 80 for HTTP->HTTPS redirection)
 EXPOSE 443
