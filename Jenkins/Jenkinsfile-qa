@@ -1,0 +1,146 @@
+pipeline {
+    agent any
+
+ 
+    environment {
+        NODE_OPTIONS           = '--max-old-space-size=4096'
+        REGISTRY_CREDENTIALS   = 'dockerhub-credentials'
+
+        // Instead of overriding Dev image, we commit a brand-new QA image.
+        QA_DOCKER_IMAGE        = 'otecpms/react-app-qa:latest'
+         DEV_DOCKER_IMAGE        =  'otecpms/react-app-devx:latest'
+
+       
+
+        // QA .env file on Jenkins
+        QA_ENV_FILE_PATH       = '/home/testthree/pms_files/qa-frontend.env'
+        QA_ENV_CONTAINER_PATH  = '/app/.env'
+
+        // QA container name + ports
+        QA_CONTAINER_NAME      = 'react-app-qa'
+        QA_PORT_EXT            = '1234'
+        QA_PORT_INT            = '80'
+    }
+
+    options {
+        retry(3)  // Retry failing stages up to 3 times
+    }
+
+    stages {
+        stage('Pull Dev Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', REGISTRY_CREDENTIALS) {
+                        sh """
+                            echo "Pulling the Dev image..."
+                            docker pull ${DEV_DOCKER_IMAGE}
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Swap Env & Rebuild in Container') {
+            steps {
+                script {
+                    sh """
+                        # 1) Remove any existing temp container
+                        if [ \$(docker ps -aq -f name=temp-container) ]; then
+                            echo "Removing old temp-container..."
+                            docker rm -f temp-container
+                        fi
+
+                        # 2) Create a stopped container from the Dev image
+                        echo "Creating temp-container from ${DEV_DOCKER_IMAGE}..."
+                        docker create --name temp-container ${DEV_DOCKER_IMAGE}
+
+                        # 3) Copy QA .env into /app/.env
+                        echo "Copying QA env file into container..."
+                        docker start temp-container
+                        docker exec temp-container mkdir -p /app
+                        docker cp ${QA_ENV_FILE_PATH} temp-container:${QA_ENV_CONTAINER_PATH}
+                        cat ${QA_ENV_FILE_PATH}
+                    """
+
+                    // (Optional) Reinstall dependencies if needed
+                    sh """
+                        echo "Re-installing dependencies (optional)..."
+                        docker exec temp-container npm install --legacy-peer-deps
+                    """
+
+                    // Rebuild the React/Vite app with the new .env
+                    sh """
+                        echo "Rebuilding app in temp-container..."
+                        docker exec temp-container npm run build
+                    """
+                    
+                     
+                    sh """
+                        echo "Rebuilding app in temp-container..."
+                        docker exec temp-container rm -rf /usr/share/nginx/html/
+                        docker exec temp-container cp -r /app/dist/ /usr/share/nginx/html/
+                    """
+
+                    // Stop container now that the build is done
+                    sh """
+                        docker stop temp-container
+                    """
+
+                    // Commit the container to a NEW QA image (do not overwrite dev)
+                    sh """
+                        echo "Committing to a new QA image: ${env.QA_DOCKER_IMAGE}"
+                        docker commit temp-container ${env.QA_DOCKER_IMAGE}
+                        docker rm -f temp-container
+                    """
+                }
+            }
+        }
+
+        stage('Push QA Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', REGISTRY_CREDENTIALS) {
+                        // Push newly committed QA image
+                        docker.image("${QA_DOCKER_IMAGE}").push()
+                        // Optionally push :latest again, but it’s already :latest
+                    }
+                }
+            }
+        }
+
+        stage('Deploy QA Container') {
+            steps {
+                script {
+                    sh """
+                        echo "Deploying QA environment from the new QA image..."
+
+                        # Stop/remove any old QA container
+                        if [ \$(docker ps -aq -f name=${QA_CONTAINER_NAME}) ]; then
+                            docker stop ${QA_CONTAINER_NAME} || true
+                            docker rm ${QA_CONTAINER_NAME} || true
+                        fi
+
+                        # Run the newly created QA image
+                        docker run -d --name ${QA_CONTAINER_NAME} \\
+                            -p ${QA_PORT_EXT}:${QA_PORT_INT} \\
+                            ${QA_DOCKER_IMAGE} \\
+                            nginx -g "daemon off;"
+                            
+                            
+
+                        echo "QA container is now running on port ${QA_PORT_EXT}."
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "QA pipeline executed successfully!"
+        }
+        failure {
+            echo "QA pipeline execution failed!"
+        }
+    }
+}

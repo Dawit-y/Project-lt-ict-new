@@ -1,0 +1,145 @@
+pipeline {
+    agent any
+
+ 
+    environment {
+        NODE_OPTIONS           = '--max-old-space-size=4096'
+        REGISTRY_CREDENTIALS   = 'dockerhub-credentials'
+
+        // Instead of overriding Dev image, we commit a brand-new PROD image.
+        PROD_DOCKER_IMAGE        = 'otecpms/react-app-prod:latest'
+         QA_DOCKER_IMAGE        =  'otecpms/react-app-qa:latest'
+
+       
+
+        // PROD .env file on Jenkins
+        PROD_ENV_FILE_PATH       = '/home/testthree/pms_files/prod-frontend.env'
+        PROD_ENV_CONTAINER_PATH  = '/app/.env'
+
+        // PROD container name + ports
+        PROD_CONTAINER_NAME      = 'react-app-prod'
+        PROD_PORT_EXT            = '8080'
+        PROD_PORT_INT            = '80'
+    }
+
+    options {
+        retry(3)  // Retry failing stages up to 3 times
+    }
+
+    stages {
+        stage('Pull Dev Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', REGISTRY_CREDENTIALS) {
+                        sh """
+                            echo "Pulling the Dev image..."
+                            docker pull ${QA_DOCKER_IMAGE}
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Swap Env & Rebuild in Container') {
+            steps {
+                script {
+                    sh """
+                        # 1) Remove any existing temp container
+                        if [ \$(docker ps -aq -f name=temp-container-prod) ]; then
+                            echo "Removing old temp-container-prod..."
+                            docker rm -f temp-container-prod
+                        fi
+
+                        # 2) Create a stopped container from the Dev image
+                        echo "Creating temp-container-prod from ${QA_DOCKER_IMAGE}..."
+                        docker create --name temp-container-prod ${QA_DOCKER_IMAGE}
+
+                        # 3) Copy PROD .env into /app/.env
+                        echo "Copying PROD env file into container..."
+                        docker start temp-container-prod
+                        docker exec temp-container-prod mkdir -p /app
+                        docker cp ${PROD_ENV_FILE_PATH} temp-container-prod:${PROD_ENV_CONTAINER_PATH}
+                    """
+
+                    // (Optional) Reinstall dependencies if needed
+                    sh """
+                        echo "Re-installing dependencies (optional)..."
+                        docker exec temp-container-prod npm install --legacy-peer-deps
+                    """
+
+                    // Rebuild the React/Vite app with the new .env
+                    sh """
+                        echo "Rebuilding app in temp-container-prod..."
+                        docker exec temp-container-prod npm run build
+                    """
+                    
+                     
+                    sh """
+                        echo "Rebuilding app in temp-container-prod..."
+                        docker exec temp-container-prod rm -rf /usr/share/nginx/html/
+                        docker exec temp-container-prod cp -r /app/dist/ /usr/share/nginx/html/
+                    """
+
+                    // Stop container now that the build is done
+                    sh """
+                        docker stop temp-container-prod
+                    """
+
+                    // Commit the container to a NEW PROD image (do not overwrite dev)
+                    sh """
+                        echo "Committing to a new PROD image: ${env.PROD_DOCKER_IMAGE}"
+                        docker commit temp-container-prod ${env.PROD_DOCKER_IMAGE}
+                        docker rm -f temp-container-prod
+                    """
+                }
+            }
+        }
+
+        stage('Push PROD Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', REGISTRY_CREDENTIALS) {
+                        // Push newly committed PROD image
+                        docker.image("${PROD_DOCKER_IMAGE}").push()
+                        // Optionally push :latest again, but it’s already :latest
+                    }
+                }
+            }
+        }
+
+        stage('Deploy PROD Container') {
+            steps {
+                script {
+                    sh """
+                        echo "Deploying PROD environment from the new PROD image..."
+
+                        # Stop/remove any old PROD container
+                        if [ \$(docker ps -aq -f name=${PROD_CONTAINER_NAME}) ]; then
+                            docker stop ${PROD_CONTAINER_NAME} || true
+                            docker rm ${PROD_CONTAINER_NAME} || true
+                        fi
+
+                        # Run the newly created PROD image
+                        docker run -d --name ${PROD_CONTAINER_NAME} \\
+                            -p ${PROD_PORT_EXT}:${PROD_PORT_INT} \\
+                            ${PROD_DOCKER_IMAGE} \\
+                            nginx -g "daemon off;"
+                            
+                            
+
+                        echo "PROD container is now running on port ${PROD_PORT_EXT}."
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "PROD pipeline executed successfully!"
+        }
+        failure {
+            echo "PROD pipeline execution failed!"
+        }
+    }
+}

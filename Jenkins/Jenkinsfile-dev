@@ -10,7 +10,7 @@ pipeline {
         NODE_OPTIONS       = '--max-old-space-size=4096'
         
         // Docker
-        DOCKER_IMAGE       = 'otecpms/react-app-dev'
+        DOCKER_IMAGE       = 'otecpms/react-app-devx'
         DOCKER_TAG         = 'latest'
         FULL_DOCKER_IMAGE  = "${DOCKER_IMAGE}:${DOCKER_TAG}"
         REGISTRY_URL       = 'https://registry.hub.docker.com'
@@ -18,11 +18,14 @@ pipeline {
         
         // Environment file + Ports
         ENV_FILE_PATH      = '/home/testthree/pms_files/dev-frontend.env'
-        DEV_PORT_EXT       = '1234'
-        DEV_PORT_INT       = '1111'
+     SSL_CERTIFICATE    = '/home/testthree/certs/fullchain.pem'
+        SSL_CERTIFICATE_KEY = '/home/testthree/certs/privkey.pem'
+
+        PORT_EXT       = '1212'
+        PORT_INT       = '80'
         
         // Container name
-        CONTAINER_NAME     = 'react-app-dev'
+        CONTAINER_NAME     = 'react-app-devx'
     }
 
     // --------------------------
@@ -77,7 +80,22 @@ pipeline {
         }
         */
 
-        stage('Prepare Environment File') {
+    stage('SSL') {
+            steps {
+                script {
+                    // Create a local directory for SSL certificates (in the workspace) so we avoid permission issues
+                    sh """
+                        echo "Preparing to copy SSL certificate files..."
+                        mkdir -p certs_ssl
+                        cp ${SSL_CERTIFICATE} certs_ssl/fullchain.pem
+                        cp ${SSL_CERTIFICATE_KEY} certs_ssl/privkey.pem
+                        echo "SSL certificate files copied successfully to certs_copy."
+                    """
+                }
+            }
+        }
+
+        stage('Copying environment file') {
             steps {
                 script {
                     sh """
@@ -131,14 +149,14 @@ pipeline {
                         # Run the new container
                         echo "Starting new container..."
                         docker run -d --name ${CONTAINER_NAME} \\
-                                   -p ${DEV_PORT_EXT}:${DEV_PORT_INT} \\
+                                   -p ${PORT_EXT}:${PORT_INT} \\
                                    ${DOCKER_IMAGE}:latest
 
-                        echo "Deployment completed. React app is now served on port ${DEV_PORT_EXT}."
+                        echo "Deployment completed. React app is now served on port ${PORT_EXT}."
                         
                         # Debug: Inspect environment variables inside the running container
                         echo "Environment variables in the running container:"
-                        docker exec ${CONTAINER_NAME} printenv
+                        # docker exec ${CONTAINER_NAME} printenv
                     """
                 }
             }
