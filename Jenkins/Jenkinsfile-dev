@@ -86,9 +86,9 @@ pipeline {
                     // Create a local directory for SSL certificates (in the workspace) so we avoid permission issues
                     sh """
                         echo "Preparing to copy SSL certificate files..."
-                        mkdir -p certs_ssl
-                        cp ${SSL_CERTIFICATE} certs_ssl/fullchain.pem
-                        cp ${SSL_CERTIFICATE_KEY} certs_ssl/privkey.pem
+                      #  mkdir -p certs_ssl
+                       # cp ${SSL_CERTIFICATE} certs_ssl/fullchain.pem
+                       # cp ${SSL_CERTIFICATE_KEY} certs_ssl/privkey.pem
                         echo "SSL certificate files copied successfully to certs_copy."
                     """
                 }
