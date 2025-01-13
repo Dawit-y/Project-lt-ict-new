@@ -59,6 +59,7 @@ pipeline {
                         docker start temp-container
                         docker exec temp-container mkdir -p /app
                         docker cp ${QA_ENV_FILE_PATH} temp-container:${QA_ENV_CONTAINER_PATH}
+                        cat ${QA_ENV_FILE_PATH}
                     """
 
                     // (Optional) Reinstall dependencies if needed
@@ -76,6 +77,7 @@ pipeline {
                      
                     sh """
                         echo "Rebuilding app in temp-container..."
+                        docker exec temp-container rm -rf /usr/share/nginx/html/
                         docker exec temp-container cp -r /app/dist/ /usr/share/nginx/html/
                     """
 
