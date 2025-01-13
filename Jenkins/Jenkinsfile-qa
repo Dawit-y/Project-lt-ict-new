@@ -8,7 +8,7 @@ pipeline {
 
         // Instead of overriding Dev image, we commit a brand-new QA image.
         QA_DOCKER_IMAGE        = 'otecpms/react-app-qa:latest'
-         DEV_DOCKER_IMAGE        =  'otecpms/react-app-dev:latest'
+         DEV_DOCKER_IMAGE        =  'otecpms/react-app-devx:latest'
 
        
 
