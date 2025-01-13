@@ -138,7 +138,7 @@ pipeline {
                         
                         # Debug: Inspect environment variables inside the running container
                         echo "Environment variables in the running container:"
-                        docker exec ${CONTAINER_NAME} printenv
+                        # docker exec ${CONTAINER_NAME} printenv
                     """
                 }
             }
