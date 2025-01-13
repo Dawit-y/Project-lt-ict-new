@@ -76,6 +76,7 @@ pipeline {
                      
                     sh """
                         echo "Rebuilding app in temp-container-prod..."
+                        docker exec temp-container rm -rf /usr/share/nginx/html/
                         docker exec temp-container-prod cp -r /app/dist/ /usr/share/nginx/html/
                     """
 
