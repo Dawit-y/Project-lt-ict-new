@@ -1,32 +1,26 @@
 pipeline {
     agent any
 
-    parameters {
-        string(
-            name: 'DEV_DOCKER_IMAGE',
-            defaultValue: 'otecpms/react-app-devx:latest',
-            description: 'Docker image built in Dev environment (must have source + Node.js installed)'
-        )
-    }
-
+    // --------------------------
+    // Global Configuration
+    // --------------------------
     environment {
-        // Node related settings
+        // Node
         NODE_VERSION       = '16.20.2'
         NODE_OPTIONS       = '--max-old-space-size=4096'
         
-        // Docker image settings
+        // Docker
         DOCKER_IMAGE       = 'otecpms/react-app-devx'
         DOCKER_TAG         = 'latest'
         FULL_DOCKER_IMAGE  = "${DOCKER_IMAGE}:${DOCKER_TAG}"
         REGISTRY_URL       = 'https://registry.hub.docker.com'
         REGISTRY_CREDENTIALS = 'dockerhub-credentials'
         
-        // Environment & SSL certificate file paths on the Jenkins machine
+        // Environment file + Ports
         ENV_FILE_PATH      = '/home/testthree/pms_files/dev-frontend.env'
-        SSL_CERTIFICATE    = '/home/testthree/certs/fullchain.pem'
+     SSL_CERTIFICATE    = '/home/testthree/certs/fullchain.pem'
         SSL_CERTIFICATE_KEY = '/home/testthree/certs/privkey.pem'
-        
-        // Ports for running the container
+
         PORT_EXT       = '1212'
         PORT_INT       = '80'
         
@@ -34,24 +28,67 @@ pipeline {
         CONTAINER_NAME     = 'react-app-dev'
     }
 
+    // --------------------------
+    // Pipeline-Level Options
+    // --------------------------
     options {
-        retry(3)  // Retry any failing stages up to 3 times
+        retry(3)  // Automatically retry failed stages up to 3 times
     }
 
+    // --------------------------
+    // Stages
+    // --------------------------
     stages {
+
         /*
-        // Optional cleanup/pull stages can be uncommented if needed.
+        stage('Clean Workspace and Pull') {
+            steps {
+                script {
+                    sh '''
+                        echo "Cleaning the workspace..."
+                        git clean -fdx        # Remove all untracked files and directories
+                        git reset --hard      # Reset any changes to tracked files
+                        
+                        echo "Pulling the latest code from the main branch..."
+                        git pull origin main
+                    '''
+                }
+            }
+        }
+
+        stage('Clean Docker Cache') {
+            steps {
+                script {
+                    sh '''
+                        echo "Cleaning up Docker cache..."
+                        # Remove dangling images
+                        docker image prune -f
+                        
+                        # Remove unused volumes
+                        docker volume prune -f
+                        
+                        # Remove unused networks
+                        docker network prune -f
+                        
+                        # Remove stopped containers
+                        docker container prune -f
+                        
+                        echo "Docker cache cleanup completed."
+                    '''
+                }
+            }
+        }
         */
-        
-        stage('SSL') {
+
+    stage('SSL') {
             steps {
                 script {
                     // Create a local directory for SSL certificates (in the workspace) so we avoid permission issues
                     sh """
                         echo "Preparing to copy SSL certificate files..."
-                        mkdir -p certs_copy
-                        cp ${SSL_CERTIFICATE} certs_copy/fullchain.pem
-                        cp ${SSL_CERTIFICATE_KEY} certs_copy/private.pem
+                        mkdir -p certs_ssl
+                        cp ${SSL_CERTIFICATE} certs_ssl/fullchain.pem
+                        cp ${SSL_CERTIFICATE_KEY} certs_ssl/private.pem
                         echo "SSL certificate files copied successfully to certs_copy."
                     """
                 }
@@ -73,7 +110,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image using the specified Dockerfile
+                    // If your Dockerfile is named "Dockerfile" in the root directory,
+                    // you can simply do: docker.build("${FULL_DOCKER_IMAGE}")
                     docker.build("${FULL_DOCKER_IMAGE}", "-f Dockerfile .")
                 }
             }
@@ -82,8 +120,10 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
+                    // Use docker.withRegistry to authenticate and push the image
                     docker.withRegistry("${REGISTRY_URL}", "${REGISTRY_CREDENTIALS}") {
                         docker.image("${FULL_DOCKER_IMAGE}").push()
+                        // Push with "latest" tag for convenience if needed
                         docker.image("${FULL_DOCKER_IMAGE}").push('latest')
                     }
                 }
@@ -99,7 +139,7 @@ pipeline {
                         # Pull the latest Docker image
                         docker pull ${DOCKER_IMAGE}:latest
 
-                        # Stop and remove any container with the same name
+                        # Stop and remove the container if it exists
                         if [ \$(docker ps -a -q -f name=${CONTAINER_NAME}) ]; then
                             echo "Container ${CONTAINER_NAME} found. Stopping and removing..."
                             docker stop ${CONTAINER_NAME} || true
@@ -113,18 +153,25 @@ pipeline {
                                    ${DOCKER_IMAGE}:latest
 
                         echo "Deployment completed. React app is now served on port ${PORT_EXT}."
+                        
+                        # Debug: Inspect environment variables inside the running container
+                        echo "Environment variables in the running container:"
+                        # docker exec ${CONTAINER_NAME} printenv
                     """
                 }
             }
         }
     }
 
+    // --------------------------
+    // Post Actions
+    // --------------------------
     post {
         success {
-            echo "Build and deployment succeeded!"
+            echo 'Build and deployment succeeded!'
         }
         failure {
-            echo "Build or deployment failed."
+            echo 'Build or deployment failed.'
         }
     }
 }
