@@ -88,7 +88,7 @@ pipeline {
                         echo "Preparing to copy SSL certificate files..."
                         mkdir -p certs_ssl
                         cp ${SSL_CERTIFICATE} certs_ssl/fullchain.pem
-                        cp ${SSL_CERTIFICATE_KEY} certs_ssl/private.pem
+                        cp ${SSL_CERTIFICATE_KEY} certs_ssl/privkey.pem
                         echo "SSL certificate files copied successfully to certs_copy."
                     """
                 }
