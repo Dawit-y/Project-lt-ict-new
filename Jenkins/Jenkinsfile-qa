@@ -1,159 +1,144 @@
 pipeline {
     agent any
 
-    // --------------------------
-    // Global Configuration
-    // --------------------------
+ 
     environment {
-        // Node
-        NODE_VERSION       = '16.20.2'
-        NODE_OPTIONS       = '--max-old-space-size=4096'
-        
-        // Docker
-        DOCKER_IMAGE       = 'otecpms/react-app-qa'
-        DOCKER_TAG         = 'latest'
-        FULL_DOCKER_IMAGE  = "${DOCKER_IMAGE}:${DOCKER_TAG}"
-        REGISTRY_URL       = 'https://registry.hub.docker.com'
-        REGISTRY_CREDENTIALS = 'dockerhub-credentials'
-        
-        // Environment file + Ports
-        ENV_FILE_PATH      = '/home/testthree/pms_files/qa-frontend.env'
-        PORT_EXT       = '1234'
-        PORT_INT       = '80'
-        
-        // Container name
-        CONTAINER_NAME     = 'react-app-qa'
+        NODE_OPTIONS           = '--max-old-space-size=4096'
+        REGISTRY_CREDENTIALS   = 'dockerhub-credentials'
+
+        // Instead of overriding Dev image, we commit a brand-new QA image.
+        QA_DOCKER_IMAGE        = 'otecpms/react-app-qa:latest'
+         DEV_DOCKER_IMAGE        =  'otecpms/react-app-dev:latest'
+
+       
+
+        // QA .env file on Jenkins
+        QA_ENV_FILE_PATH       = '/home/testthree/pms_files/qa-frontend.env'
+        QA_ENV_CONTAINER_PATH  = '/app/.env'
+
+        // QA container name + ports
+        QA_CONTAINER_NAME      = 'react-app-qa1'
+        QA_PORT_EXT            = '1234'
+        QA_PORT_INT            = '80'
     }
 
-    // --------------------------
-    // Pipeline-Level Options
-    // --------------------------
     options {
-        retry(3)  // Automatically retry failed stages up to 3 times
+        retry(3)  // Retry failing stages up to 3 times
     }
 
-    // --------------------------
-    // Stages
-    // --------------------------
     stages {
-
-        /*
-        stage('Clean Workspace and Pull') {
+        stage('Pull Dev Docker Image') {
             steps {
                 script {
-                    sh '''
-                        echo "Cleaning the workspace..."
-                        git clean -fdx        # Remove all untracked files and directories
-                        git reset --hard      # Reset any changes to tracked files
-                        
-                        echo "Pulling the latest code from the main branch..."
-                        git pull origin main
-                    '''
-                }
-            }
-        }
-
-        stage('Clean Docker Cache') {
-            steps {
-                script {
-                    sh '''
-                        echo "Cleaning up Docker cache..."
-                        # Remove dangling images
-                        docker image prune -f
-                        
-                        # Remove unused volumes
-                        docker volume prune -f
-                        
-                        # Remove unused networks
-                        docker network prune -f
-                        
-                        # Remove stopped containers
-                        docker container prune -f
-                        
-                        echo "Docker cache cleanup completed."
-                    '''
-                }
-            }
-        }
-        */
-
-        stage('Prepare Environment File') {
-            steps {
-                script {
-                    sh """
-                        echo "Copying environment file..."
-                        cp ${ENV_FILE_PATH} .env
-                        echo "Environment file copied successfully."
-                    """
-                }
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    // If your Dockerfile is named "Dockerfile" in the root directory,
-                    // you can simply do: docker.build("${FULL_DOCKER_IMAGE}")
-                    docker.build("${FULL_DOCKER_IMAGE}", "-f Dockerfile .")
-                }
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    // Use docker.withRegistry to authenticate and push the image
-                    docker.withRegistry("${REGISTRY_URL}", "${REGISTRY_CREDENTIALS}") {
-                        docker.image("${FULL_DOCKER_IMAGE}").push()
-                        // Push with "latest" tag for convenience if needed
-                        docker.image("${FULL_DOCKER_IMAGE}").push('latest')
+                    docker.withRegistry('https://registry.hub.docker.com', REGISTRY_CREDENTIALS) {
+                        sh """
+                            echo "Pulling the Dev image..."
+                            docker pull ${DEV_DOCKER_IMAGE}
+                        """
                     }
                 }
             }
         }
 
-        stage('Deploy to Server') {
+        stage('Swap Env & Rebuild in Container') {
             steps {
                 script {
                     sh """
-                        echo "Deploying React application with Docker..."
-                        
-                        # Pull the latest Docker image
-                        docker pull ${DOCKER_IMAGE}:latest
-
-                        # Stop and remove the container if it exists
-                        if [ \$(docker ps -a -q -f name=${CONTAINER_NAME}) ]; then
-                            echo "Container ${CONTAINER_NAME} found. Stopping and removing..."
-                            docker stop ${CONTAINER_NAME} || true
-                            docker rm ${CONTAINER_NAME} || true
+                        # 1) Remove any existing temp container
+                        if [ \$(docker ps -aq -f name=temp-container) ]; then
+                            echo "Removing old temp-container..."
+                            docker rm -f temp-container
                         fi
 
-                        # Run the new container
-                        echo "Starting new container..."
-                        docker run -d --name ${CONTAINER_NAME} \\
-                                   -p ${PORT_EXT}:${PORT_INT} \\
-                                   ${DOCKER_IMAGE}:latest
+                        # 2) Create a stopped container from the Dev image
+                        echo "Creating temp-container from ${DEV_DOCKER_IMAGE}..."
+                        docker create --name temp-container ${DEV_DOCKER_IMAGE}
 
-                        echo "Deployment completed. React app is now served on port ${PORT_EXT}."
-                        
-                        # Debug: Inspect environment variables inside the running container
-                        echo "Environment variables in the running container:"
-                        # docker exec ${CONTAINER_NAME} printenv
+                        # 3) Copy QA .env into /app/.env
+                        echo "Copying QA env file into container..."
+                        docker start temp-container
+                        docker exec temp-container mkdir -p /app
+                        docker cp ${QA_ENV_FILE_PATH} temp-container:${QA_ENV_CONTAINER_PATH}
+                    """
+
+                    // (Optional) Reinstall dependencies if needed
+                    sh """
+                        echo "Re-installing dependencies (optional)..."
+                        docker exec temp-container npm install --legacy-peer-deps
+                    """
+
+                    // Rebuild the React/Vite app with the new .env
+                    sh """
+                        echo "Rebuilding app in temp-container..."
+                        docker exec temp-container npm run build
+                    """
+                    
+                     
+                    sh """
+                        echo "Rebuilding app in temp-container..."
+                        docker exec temp-container cp -r /app/dist/ /usr/share/nginx/html/
+                    """
+
+                    // Stop container now that the build is done
+                    sh """
+                        docker stop temp-container
+                    """
+
+                    // Commit the container to a NEW QA image (do not overwrite dev)
+                    sh """
+                        echo "Committing to a new QA image: ${env.QA_DOCKER_IMAGE}"
+                        docker commit temp-container ${env.QA_DOCKER_IMAGE}
+                        docker rm -f temp-container
+                    """
+                }
+            }
+        }
+
+        stage('Push QA Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', REGISTRY_CREDENTIALS) {
+                        // Push newly committed QA image
+                        docker.image("${QA_DOCKER_IMAGE}").push()
+                        // Optionally push :latest again, but it’s already :latest
+                    }
+                }
+            }
+        }
+
+        stage('Deploy QA Container') {
+            steps {
+                script {
+                    sh """
+                        echo "Deploying QA environment from the new QA image..."
+
+                        # Stop/remove any old QA container
+                        if [ \$(docker ps -aq -f name=${QA_CONTAINER_NAME}) ]; then
+                            docker stop ${QA_CONTAINER_NAME} || true
+                            docker rm ${QA_CONTAINER_NAME} || true
+                        fi
+
+                        # Run the newly created QA image
+                        docker run -d --name ${QA_CONTAINER_NAME} \\
+                            -p ${QA_PORT_EXT}:${QA_PORT_INT} \\
+                            ${QA_DOCKER_IMAGE} \\
+                            nginx -g "daemon off;"
+                            
+                            
+
+                        echo "QA container is now running on port ${QA_PORT_EXT}."
                     """
                 }
             }
         }
     }
 
-    // --------------------------
-    // Post Actions
-    // --------------------------
     post {
         success {
-            echo 'Build and deployment succeeded!'
+            echo "QA pipeline executed successfully!"
         }
         failure {
-            echo 'Build or deployment failed.'
+            echo "QA pipeline execution failed!"
         }
     }
 }
