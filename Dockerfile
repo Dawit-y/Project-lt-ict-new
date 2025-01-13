@@ -35,7 +35,7 @@ COPY certs_ssl/fullchain.pem /etc/ssl/certs/fullchain.pem
 COPY certs_ssl/privkey.pem /etc/ssl/private/privkey.pem
 
 # 7) Expose SSL port (443) (and optionally port 80 for HTTP->HTTPS redirection)
-EXPOSE 443
+# EXPOSE 443
 EXPOSE 80
 
 # 8) Start Nginx in the foreground
