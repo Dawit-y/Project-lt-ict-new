@@ -24,7 +24,7 @@ pipeline {
         // Environment & SSL certificate file paths on the Jenkins machine
         ENV_FILE_PATH      = '/home/testthree/pms_files/dev-frontend.env'
         SSL_CERTIFICATE    = '/home/testthree/certs/fullchain.pem'
-        SSL_CERTIFICATE_KEY = '/home/testthree/certs/private.pem'
+        SSL_CERTIFICATE_KEY = '/home/testthree/certs/privkey.pem'
         
         // Ports for running the container
         PORT_EXT       = '1212'
