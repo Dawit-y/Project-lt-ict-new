@@ -17,7 +17,7 @@ pipeline {
         QA_ENV_CONTAINER_PATH  = '/app/.env'
 
         // QA container name + ports
-        QA_CONTAINER_NAME      = 'react-app-qa1'
+        QA_CONTAINER_NAME      = 'react-app-qa'
         QA_PORT_EXT            = '1234'
         QA_PORT_INT            = '80'
     }
