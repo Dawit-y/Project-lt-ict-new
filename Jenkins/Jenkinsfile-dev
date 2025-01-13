@@ -94,7 +94,7 @@ pipeline {
             }
         }
 
-        stage('SSL') {
+        stage('Copying environment file') {
             steps {
                 script {
                     sh """
