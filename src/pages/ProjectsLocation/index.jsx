@@ -15,8 +15,10 @@ import {
   useFetchProjects,
   useSearchProjects,
 } from "../../queries/project_query";
+import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import Spinners from "../../components/Common/Spinner";
 import AddressStructureForProject from "../Project/AddressStructureForProject";
+import { createSelectOptions } from "../../utils/commonMethods";
 const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 
 const ProjectsLocation = () => {
@@ -30,12 +32,19 @@ const ProjectsLocation = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const [projectCategoryOptions, setProjectCategoryOptions] = useState([]);
   const [projectParams, setProjectParams] = useState({});
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
+
+  const { data: projectCategoryData } = useFetchProjectCategorys();
+  const projectCategoryOptions = createSelectOptions(
+    projectCategoryData?.data || [],
+    "pct_id",
+    "pct_name_or"
+  );
+
   const { data, isLoading, error, isError, refetch } = useState("");
   const { t } = useTranslation();
 
@@ -58,27 +67,7 @@ const ProjectsLocation = () => {
     setSearchError(error);
     setShowSearchResult(true);
   };
-  useEffect(() => {
-    const fetchProjectCategory = async () => {
-      try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_BASE_API_URL}project_category/listgrid`
-        );
-        const transformedData = response.data.data.map((item) => ({
-          label: item.pct_name_or.toString(),
-          value: item.pct_id.toString(),
-        }));
-        const optionsWithDefault = [
-          { label: "Select Project Category", value: "" },
-          ...transformedData,
-        ];
-        setProjectCategoryOptions(optionsWithDefault);
-      } catch (error) {
-        console.error("Error fetching category:", error);
-      }
-    };
-    fetchProjectCategory();
-  }, []);
+
   useEffect(() => {
     setProjectParams({
       ...(prjLocationRegionId && {
@@ -90,6 +79,7 @@ const ProjectsLocation = () => {
       }),
     });
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
+
   const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
@@ -186,7 +176,7 @@ const ProjectsLocation = () => {
               </APIProvider>
             ) : (
               <div className="position-absolute top-70 start-50">
-                <h6 className="text-danger mb-1">{t("No data available")}</h6>
+                <h6 className="mt-5 mb-1">{t("No data available")}</h6>
               </div>
             )}
           </div>

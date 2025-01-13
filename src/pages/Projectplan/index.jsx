@@ -96,12 +96,12 @@ const ProjectPlanModel = () => {
   const handleAddProjectPlan = async (data) => {
     try {
       await addProjectPlan.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.success(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -111,12 +111,12 @@ const ProjectPlanModel = () => {
   const handleUpdateProjectPlan = async (data) => {
     try {
       await updateProjectPlan.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
+      toast.success(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -130,11 +130,11 @@ const ProjectPlanModel = () => {
         if (id === projectPlanSelected?.pld_id) {
           setProjectPlanSelected(null);
         }
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t('delete_failure'), {
+        toast.success(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -159,14 +159,14 @@ const ProjectPlanModel = () => {
     },
 
     validationSchema: Yup.object({
-      pld_name: alphanumericValidation(3,200,true),
+      pld_name: alphanumericValidation(3, 200, true),
       //pld_project_id: Yup.string().required(t("pld_project_id")),
-      pld_budget_year_id: numberValidation(1,20,true),
+      pld_budget_year_id: numberValidation(1, 20, true),
       //pld_start_date_ec: Yup.string().required(t("pld_start_date_ec")),
       pld_start_date_gc: Yup.string().required(t("pld_start_date_gc")),
       // pld_end_date_ec: Yup.string().required(t("pld_end_date_ec")),
       pld_end_date_gc: Yup.string().required(t("pld_end_date_gc")),
-      pld_description: alphanumericValidation(3,425, false)
+      pld_description: alphanumericValidation(3, 425, false),
       //pld_status: Yup.string().required(t("pld_status")),
     }),
     validateOnBlur: true,
@@ -188,7 +188,7 @@ const ProjectPlanModel = () => {
           is_editable: values.is_editable,
         };
         // update ProjectPlan
-        handleUpdateProjectPlan(updateProjectPlan);        
+        handleUpdateProjectPlan(updateProjectPlan);
       } else {
         const newProjectPlan = {
           pld_name: values.pld_name,
@@ -452,33 +452,37 @@ const ProjectPlanModel = () => {
               />
               {/* TableContainer for displaying data */}
               <Col lg={12}>
-              <Card>
-              <CardBody>
-                <TableContainer
-                  columns={columns}
-                  data={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
-                  isGlobalFilter={true}
-                  isAddButton={true}
-                  isCustomPageSize={true}
-                  handleUserClick={handleProjectPlanClicks}
-                  isPagination={true}
-                  SearchPlaceholder={t('filter_placeholder')}
-                  buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                  buttonName={`${t("add")}`}
-                  tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                  theadClass="table-light"
-                  pagination="pagination"
-                  paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                />              
-              </CardBody>
-              </Card>  
+                <Card>
+                  <CardBody>
+                    <TableContainer
+                      columns={columns}
+                      data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
+                      isGlobalFilter={true}
+                      isAddButton={true}
+                      isCustomPageSize={true}
+                      handleUserClick={handleProjectPlanClicks}
+                      isPagination={true}
+                      SearchPlaceholder={t("filter_placeholder")}
+                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                      buttonName={`${t("add")}`}
+                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                      theadClass="table-light"
+                      pagination="pagination"
+                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                    />
+                  </CardBody>
+                </Card>
               </Col>
               {projectPlanSelected && (
                 <div className="w-100">
                   <Card className="container text-center my-3 py-2">
-                    <h3>{t('view_gannt')} : {projectPlanSelected.pld_name}</h3>
+                    <h3>
+                      {t("view_gannt")} : {projectPlanSelected.pld_name}
+                    </h3>
                   </Card>
                   <Col lg={12}>
                     <GanttChart
@@ -565,18 +569,18 @@ const ProjectPlanModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <DatePicker 
+                    <DatePicker
                       isRequired="true"
                       validation={validation}
                       componentId="pld_start_date_gc"
-                      />
+                    />
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <DatePicker 
+                    <DatePicker
                       isRequired="true"
                       validation={validation}
                       componentId="pld_end_date_gc"
-                      />
+                    />
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("pld_description")}</Label>

@@ -110,21 +110,24 @@ const ProjectModel = () => {
     searchData,
   } = useProjectContext();
 
-const tabMapping = {
-  1: { label: t('project_document'), component: ProjectDocument },
-  44: { label: t('project_contractor'), component: Projectcontractor },
-  26: { label: t('project_payment'), component: ProjectPayment },
-  4: { label: t('project_stakeholder'), component: ProjectStakeholder },
-  //5: { label: "Budget Request", component: Budgetrequest },
-  33: { label: t('prj_geo_location'), component: GeoLocation },
-  //7: { label: "Budget Expenditures", component: ProjectBudgetExpenditureModel },
-  43: { label: t('project_employee'), component: ProjectEmployeeModel },
-  38: { label: t('project_handover'), component: ProjectHandoverModel },
-  37: { label: t('project_performance'), component: ProjectPerformanceModel },
-  41: { label: t('project_supplimentary'), component: ProjectSupplimentaryModel },
-  40: { label: t('project_variation'), component: ProjectVariationModel },
-  //46: { label: t('project_supplimentary'), component: ProjectBudgetPlan },
-};
+  const tabMapping = {
+    1: { label: t("project_document"), component: ProjectDocument },
+    44: { label: t("project_contractor"), component: Projectcontractor },
+    26: { label: t("project_payment"), component: ProjectPayment },
+    4: { label: t("project_stakeholder"), component: ProjectStakeholder },
+    //5: { label: "Budget Request", component: Budgetrequest },
+    33: { label: t("prj_geo_location"), component: GeoLocation },
+    //7: { label: "Budget Expenditures", component: ProjectBudgetExpenditureModel },
+    43: { label: t("project_employee"), component: ProjectEmployeeModel },
+    38: { label: t("project_handover"), component: ProjectHandoverModel },
+    37: { label: t("project_performance"), component: ProjectPerformanceModel },
+    41: {
+      label: t("project_supplimentary"),
+      component: ProjectSupplimentaryModel,
+    },
+    40: { label: t("project_variation"), component: ProjectVariationModel },
+    //46: { label: t('project_supplimentary'), component: ProjectBudgetPlan },
+  };
   const [isAddressLoading, setIsAddressLoading] = useState(false);
 
   const { data, isLoading, error, isError, refetch } = useFetchProjects();
@@ -568,7 +571,7 @@ const tabMapping = {
         valueFormatter: (params) =>
           params.node.footer ? t("Total") : params.value, // Display "Total" for footer
       },
-       {
+      {
         field: "prj_code",
         headerName: t("prj_code"),
         sortable: true,
@@ -656,11 +659,10 @@ const tabMapping = {
         headerName: "...",
         cellRenderer: renderConfiguration,
         cellStyle: { overflow: "visible", zIndex: "auto" },
-        suppressMenu: true,
         resizable: true,
         minWidth: 80,
         width: 80,
-        zIndex:9999
+        zIndex: 9999,
       });
     }
     return baseColumnDefs;
@@ -778,7 +780,11 @@ const tabMapping = {
                         className="mb-2"
                       />
                     </Col>
-                    <Col sm="12" md="6" className="text-md-end d-flex align-items-center justify-content-end gap-2">
+                    <Col
+                      sm="12"
+                      md="6"
+                      className="text-md-end d-flex align-items-center justify-content-end gap-2"
+                    >
                       <Button color="success" onClick={handleProjectClicks}>
                         {t("add")}
                       </Button>
@@ -1138,7 +1144,7 @@ const tabMapping = {
                             {validation.errors.prj_department_id}
                           </FormFeedback>
                         ) : null}
-                      </Col>                     
+                      </Col>
                       <Col className="col-md-6 mb-3">
                         <Label>{t("prj_urban_ben_number")}</Label>
                         <Input

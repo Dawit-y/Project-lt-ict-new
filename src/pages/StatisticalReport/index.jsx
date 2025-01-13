@@ -320,18 +320,18 @@ const StatisticalReport = () => {
             setIsAddressLoading={setIsAddressLoading}
           />
           <div className="w-100">
-            <Row>
+            <Row className="d-flex align-items-center justify-content-center">
               <Col xs="2" sm="2" lg="2">
-                <Card className="job-filter">
-                  <CardBody>
-                    <FormGroup>
+                <Card className="">
+                  <CardBody className="">
+                    <>
                       <Input
                         type="select"
                         name="endpoint"
                         id="api-endpoints"
                         value={selectedEndpoint.name}
                         onChange={handleSelectionChange}
-                        className="mb-1"
+                        className=""
                       >
                         <option value="">{t("select_stat")}</option>
                         {endpoints.map((endpoint, index) => (
@@ -340,7 +340,7 @@ const StatisticalReport = () => {
                           </option>
                         ))}
                       </Input>
-                    </FormGroup>
+                    </>
                   </CardBody>
                 </Card>
               </Col>

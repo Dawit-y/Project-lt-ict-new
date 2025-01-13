@@ -73,6 +73,9 @@ const GanttChart = ({ pld_id, name, startDate, endDate }) => {
   const ganttInitialized = useRef(false);
   const processorInitialized = useRef(false);
 
+  const newStartDate = new Date(startDate);
+  const newEndDate = new Date(endDate);
+
   useEffect(() => {
     const fetchAndRenderTasks = async () => {
       try {
@@ -105,9 +108,9 @@ const GanttChart = ({ pld_id, name, startDate, endDate }) => {
 
           gantt.config.row_height = 40;
           gantt.config.scale_height = 50;
-          gantt.config.start_date = startDate;
-          gantt.config.end_date = endDate;
-          gantt.config.scale_unit = "week";
+          gantt.config.start_date = newStartDate.toISOString();
+          gantt.config.end_date = newEndDate.toISOString();
+          gantt.config.scales = [{ unit: "week", step: 1, format: "%d %M" }];
           gantt.config.lightbox.sections = [
             {
               name: "text",
@@ -204,10 +207,10 @@ const GanttChart = ({ pld_id, name, startDate, endDate }) => {
     <div>
       <div className="mb-2 d-flex">
         <Button onClick={handleExportToPNG} className="me-2">
-          {t('gantt_export_image')}
+          {t("gantt_export_image")}
         </Button>
         <Button onClick={handleExportToPDF} color="success">
-         {t('gantt_export_pdf')}
+          {t("gantt_export_pdf")}
         </Button>
       </div>
       <div id="gantt_here" style={{ width: "100%", height: "500px" }}></div>
