@@ -18,6 +18,9 @@ pipeline {
         
         // Environment file + Ports
         ENV_FILE_PATH      = '/home/testthree/pms_files/dev-frontend.env'
+        SSL_CERTIFICATE    = '/home/testthree/certs/fullchain.pem'
+        SSL_CERTIFICATE_KEY = '/home/testthree/certs/private.pem'
+
         PORT_EXT       = '1212'
         PORT_INT       = '80'
         
@@ -77,7 +80,21 @@ pipeline {
         }
         */
 
-        stage('Prepare Environment File') {
+        stage('SSL') {
+            steps {
+                script {
+                    sh """
+                        echo "Copying SSL Certificate file..."
+                        mkdir cert
+                       cp ${SSL_CERTIFICATE} /cert
+                       cp ${SSL_CERTIFICATE_key} /cert
+                        echo " file copied successfully."
+                    """
+                }
+            }
+        }
+
+        stage('SSL') {
             steps {
                 script {
                     sh """
