@@ -85,7 +85,7 @@ pipeline {
                 script {
                     sh """
                         echo "Copying SSL Certificate file..."
-                        mkdir cert
+                       mkdir -p cert
                        cp ${SSL_CERTIFICATE} /cert
                        cp ${SSL_CERTIFICATE_key} /cert
                         echo " file copied successfully."
