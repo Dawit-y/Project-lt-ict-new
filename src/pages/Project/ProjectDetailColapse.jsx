@@ -5,7 +5,6 @@ import {
   AccordionItem,
 } from "reactstrap";
 import ProjectDetail from "./ProjectOverview/ProjectDetail";
-
 const ProjectDetailColapse = ({ data }) => {
   return (
     <UncontrolledAccordion className="mb-3 p-2">
@@ -22,5 +21,4 @@ const ProjectDetailColapse = ({ data }) => {
     </UncontrolledAccordion>
   );
 };
-
 export default ProjectDetailColapse;

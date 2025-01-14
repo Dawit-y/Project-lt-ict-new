@@ -179,7 +179,14 @@ const ProjectEmployeeModel = (props) => {
       emp_role: alphanumericValidation(3, 425, true),
       //emp_project_id: Yup.string().required(t("emp_project_id")),
       //emp_start_date_ec: Yup.string().required(t("emp_start_date_ec")),
-      emp_start_date_gc: alphanumericValidation(10, 11, true),
+      emp_start_date_gc: Yup.string().required(t("emp_start_date_gc"))
+      .test(
+      'is-before-end-date',
+      'start date must be earlier than or equal to en date',
+      function (value) {
+        const { emp_end_date_gc } = this.parent; // Access other fields in the form
+        return !emp_end_date_gc || !value || new Date(value) <= new Date(emp_end_date_gc);
+      }),
       // emp_end_date_ec: Yup.string().required(t("emp_end_date_ec")),
       emp_end_date_gc: Yup.string().required(t("emp_end_date_gc")),
       emp_address: alphanumericValidation(3, 425, false),

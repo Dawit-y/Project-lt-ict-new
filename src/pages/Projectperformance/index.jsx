@@ -48,8 +48,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { createSelectOptions } from "../../utils/commonMethods";
-import "flatpickr/dist/themes/material_blue.css";
-import Flatpickr from "react-flatpickr";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import { formatDate } from "../../utils/commonMethods";
 const truncateText = (text, maxLength) => {
@@ -58,6 +56,7 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
+import DatePicker from "../../components/Common/DatePicker";
 const ProjectPerformanceModel = (props) => {
   const { passedId, isActive } = props;
   const param = { prp_project_id: passedId };
@@ -648,50 +647,11 @@ const ProjectPerformanceModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <FormGroup>
-                      <Label>{t("prp_record_date_gc")}<span className="text-danger">*</span></Label>
-                      <InputGroup>
-                        <Flatpickr
-                          id="DataPicker"
-                          className={`form-control ${
-                            validation.touched.prp_record_date_gc &&
-                            validation.errors.prp_record_date_gc
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          name="prp_record_date_gc"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
-                            enableTime: false,
-                          }}
-                          value={validation.values.prp_record_date_gc || ""}
-                          onChange={(date) => {
-                            const formatedDate = formatDate(date[0]);
-                            validation.setFieldValue(
-                              "prp_record_date_gc",
-                              formatedDate
-                            ); // Set value in Formik
-                          }}
-                          onBlur={validation.handleBlur}
-                        />
-
-                        <Button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          disabled
-                        >
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </Button>
-                      </InputGroup>
-                      {validation.touched.prp_record_date_gc &&
-                      validation.errors.prp_record_date_gc ? (
-                        <FormFeedback>
-                          {validation.errors.prp_record_date_gc}
-                        </FormFeedback>
-                      ) : null}
-                    </FormGroup>
+                    <DatePicker 
+                      isRequired="true"
+                      validation={validation}
+                      componentId="prp_record_date_gc"
+                      />
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("prp_total_budget_used")}<span className="text-danger">*</span></Label>

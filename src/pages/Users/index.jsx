@@ -10,7 +10,6 @@ import CascadingDropdowns from "../../components/Common/CascadingDropdowns1";
 import CascadingDropdownsearch from "../../components/Common/CascadingDropdowns2";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import DeleteModal from "../../components/Common/DeleteModal";
 // pages
 import UserRoles from "../../pages/Userrole/index";
 
@@ -127,11 +126,12 @@ const UsersModel = () => {
   const handleAddUsers = async (data) => {
     try {
       await addUsers.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.success(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -141,11 +141,12 @@ const UsersModel = () => {
   const handleUpdateUsers = async (data) => {
     try {
       await updateUsers.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.success(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -156,11 +157,11 @@ const UsersModel = () => {
       try {
         const id = users.usr_id;
         await deleteUsers.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+        toast.success(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -265,7 +266,6 @@ const UsersModel = () => {
         };
         // update Users
         handleUpdateUsers(updateUsers);
-        validation.resetForm();
       } else if (isDuplicateModalOpen) {
         const duplcateuser = {
           usr_email: "",
@@ -293,7 +293,6 @@ const UsersModel = () => {
         // setSelectedDepartment(values.usr_department_id);
         // update Users
         handleAddUsers(duplcateuser);
-        validation.resetForm();
       } else {
         const newUsers = {
           usr_email: values.usr_email,
@@ -431,14 +430,14 @@ const UsersModel = () => {
       {
         headerName: t("s_n"),
         valueGetter: "node.rowIndex + 1",
-        width: "70",
+        flex: 1,
       },
       {
         headerName: t("usr_email"),
         field: "usr_email",
         sortable: true,
         filter: false,
-        width: "300",
+        flex: 4,
         cellRenderer: (params) =>
           truncateText(params.data.usr_email, 30) || "-",
       },
@@ -447,6 +446,7 @@ const UsersModel = () => {
         field: "usr_full_name",
         sortable: true,
         filter: false,
+        flex: 4,
         cellRenderer: (params) =>
           truncateText(params.data.usr_full_name, 30) || "-",
       },
@@ -455,7 +455,7 @@ const UsersModel = () => {
         field: "usr_phone_number",
         sortable: true,
         filter: false,
-        width: "180",
+       flex: 3,
         cellRenderer: (params) =>
           truncateText(params.data.usr_phone_number, 30) || "-",
       },
@@ -464,7 +464,7 @@ const UsersModel = () => {
         field: "sector_name",
         sortable: true,
         filter: false,
-        width: "230",
+        flex: 3,
         cellRenderer: (params) =>
           sectorInformationMap[params.data.usr_sector_id],
       },
@@ -486,7 +486,7 @@ const UsersModel = () => {
       },*/
       {
         headerName: t("view_detail"),
-        width: "140",
+        flex: 2,
         sortable: true,
         filter: false,
         cellRenderer: (params) => (
@@ -514,7 +514,7 @@ const UsersModel = () => {
         headerName: t("Action"),
         sortable: true,
         filter: false,
-        width: "230",
+        flex: 2,
         cellRenderer: (params) => (
           <div className="d-flex gap-3">
             {(params.data?.is_editable || params.data?.is_role_editable) && (
@@ -570,7 +570,6 @@ const UsersModel = () => {
         ),
       });
     }
-
     return baseColumns;
   }, [
     handleUsersClick,
@@ -601,12 +600,6 @@ const UsersModel = () => {
         isOpen={modal1}
         toggle={toggleViewModal}
         transaction={transaction}
-      />
-      <DeleteModal
-        show={deleteModal}
-        onDeleteClick={handleDeleteUsers}
-        onCloseClick={() => setDeleteModal(false)}
-        isLoading={deleteUsers.isPending}
       />
       <div className="page-content">
         <div className="container-fluid">

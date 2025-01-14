@@ -560,30 +560,31 @@ const ProjectModel = () => {
         valueGetter: (params) => params.node.rowIndex + 1,
         sortable: false,
         filter: false,
-        width: 70,
+        flex: 1,
       },
       {
         field: "prj_name",
         headerName: t("prj_name"),
         sortable: true,
         filter: "agTextColumnFilter",
-        width: 300,
+        flex: 5,
         valueFormatter: (params) =>
           params.node.footer ? t("Total") : params.value, // Display "Total" for footer
       },
-      {
+       {
         field: "prj_code",
         headerName: t("prj_code"),
         sortable: true,
         filter: "agTextColumnFilter",
         /*floatingFilter: true,*/
-        width: 150,
+        flex: 4,
         valueFormatter: (params) =>
           params.node.footer ? t("Total") : params.value, // Display "Total" for footer
       },
       {
         field: "prj_total_estimate_budget",
         headerName: t("prj_total_estimate_budget"),
+        flex: 3,
         valueFormatter: (params) => {
           if (params.node.footer) {
             return params.value
@@ -597,7 +598,7 @@ const ProjectModel = () => {
         headerName: t("view_details"),
         sortable: false,
         filter: false,
-        width: 100,
+       flex: 2,
         cellRenderer: (params) => {
           if (params.node.footer) {
             return ""; // Suppress button for footer
@@ -618,7 +619,7 @@ const ProjectModel = () => {
       baseColumnDefs.push({
         headerName: t("actions"),
         field: "actions",
-        width: 100,
+        flex: 2,
         cellRenderer: (params) => {
           if (!params.data || params.node.group || params.node.footer)
             return null; // Suppress in group/footer rows
@@ -659,10 +660,10 @@ const ProjectModel = () => {
         headerName: "...",
         cellRenderer: renderConfiguration,
         cellStyle: { overflow: "visible", zIndex: "auto" },
+        suppressMenu: true,
         resizable: true,
         minWidth: 80,
-        width: 80,
-        zIndex: 9999,
+        flex: 2
       });
     }
     return baseColumnDefs;

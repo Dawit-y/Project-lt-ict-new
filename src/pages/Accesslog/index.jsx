@@ -12,7 +12,6 @@ import Spinners from "../../components/Common/Spinner";
 
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import DeleteModal from "../../components/Common/DeleteModal";
 import {
   useFetchAccessLogs,
   useSearchAccessLogs,
@@ -333,48 +332,7 @@ const AccessLogModel = () => {
             </Button>
           );
         },
-      },
-       {
-        header: "Action",
-        enableColumnFilter: false,
-        enableSorting: false,
-        cell: (cellProps) => {
-          return (
-            <UncontrolledDropdown>
-              <DropdownToggle tag="a" className="card-drop">Actions
-              </DropdownToggle>
-
-              <DropdownMenu className="dropdown-menu-end">
-                <DropdownItem
-                  onClick={() => {
-                    const customerData = cellProps.row.original;
-                   /* handleCustomerClick(customerData);*/
-                  }
-                  }
-                >
-                  <i className="mdi mdi-pencil font-size-16 text-success me-1" id="edittooltip"></i>
-                  Edit
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </DropdownItem>
-
-                <DropdownItem
-                  onClick={() => {
-                    const customerData = cellProps.row.original;
-                    onClickDelete(customerData);
-                  }}>
-                  <i className="mdi mdi-trash-can font-size-16 text-danger me-1" id="deletetooltip"></i>
-                  Delete
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
-          );
-        }
-      },
+      }
     ];
     return baseColumns;
   }, [handleAccessLogClick, toggleViewModal, onClickDelete]);
@@ -389,12 +347,6 @@ const AccessLogModel = () => {
         toggle={toggleViewModal}
         transaction={transaction}
       />
-      <DeleteModal
-        show={deleteModal}
-        onDeleteClick={handleDeleteAccessLog}
-        onCloseClick={() => setDeleteModal(false)}
-        isLoading={deleteAccessLog.isPending}
-      />
       <div className="page-content">
         <div className="container-fluid">
           <Breadcrumbs
@@ -405,12 +357,7 @@ const AccessLogModel = () => {
             searchHook={useSearchAccessLogs}
             textSearchKeys={["acl_user_id"]}
             dateSearchKeys={["log_time"]}
-            dropdownSearchKeys={[
-             /* {
-                key: "acl_role_id",
-                options: pagesOptions,
-              },*/
-            ]}
+            dropdownSearchKeys={[]}
             checkboxSearchKeys={[]}
             onSearchResult={handleSearchResults}
             setIsSearchLoading={setIsSearchLoading}

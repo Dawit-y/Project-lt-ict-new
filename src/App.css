@@ -34,7 +34,7 @@
 button {
   font-size: calc(10px + .5vmin);
 }
-@media (min-width: 1200px) {
+@media (min-width: 900px) {
     .modal-xl {
          --bs-modal-width: 90% !important;
     }

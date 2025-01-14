@@ -54,7 +54,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-
+import DatePicker from "../../components/Common/DatePicker";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -176,7 +176,14 @@ const ProjectSupplimentaryModel = (props) => {
       prs_released_amount: amountValidation(1000, 100000000, true),
       //prs_project_id: Yup.string().required(t("prs_project_id")),
       //prs_requested_date_ec: Yup.string().required(t("prs_requested_date_ec")),
-      prs_requested_date_gc: Yup.string().required(t("prs_requested_date_gc")),
+      prs_requested_date_gc: Yup.string().required(t("prs_requested_date_gc"))
+      .test(
+      'is-before-end-date',
+      'request date must be earlier than or equal to the released date',
+      function (value) {
+        const { prs_released_date_gc } = this.parent; // Access other fields in the form
+        return !prs_released_date_gc || !value || new Date(value) <= new Date(prs_released_date_gc);
+      }),
       prs_released_date_gc: Yup.string()
         .required(t("prs_released_date_gc"))
         .test("unique-prj_name", t("Already exists"), (value) => {
@@ -604,96 +611,18 @@ const ProjectSupplimentaryModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("prs_requested_date_gc")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <InputGroup>
-                      <div
-                        className={`d-flex w-100 ${
-                          validation.touched.prs_requested_date_gc &&
-                          validation.errors.prs_requested_date_gc
-                            ? "border border-danger rounded"
-                            : ""
-                        }`}
-                      >
-                        <Flatpickr
-                          id="DataPicker"
-                          className="form-control"
-                          name="prs_requested_date_gc"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
-                            enableTime: false,
-                          }}
-                          value={validation.values.prs_requested_date_gc || ""}
-                          onChange={(date) => {
-                            const formatedDate = formatDate(date[0]);
-                            validation.setFieldValue(
-                              "prs_requested_date_gc",
-                              formatedDate
-                            ); // Set value in Formik
-                          }}
-                          onBlur={validation.handleBlur}
-                        />
-                        <InputGroupText>
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </InputGroupText>
-                      </div>
-                      {validation.touched.prs_requested_date_gc &&
-                        validation.errors.prs_requested_date_gc && (
-                          <div className="text-danger small mt-1">
-                            {validation.errors.prs_requested_date_gc}
-                          </div>
-                        )}
-                    </InputGroup>
+                    <DatePicker 
+                      isRequired="true"
+                      validation={validation}
+                      componentId="prs_requested_date_gc"
+                      />
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("prs_released_date_gc")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <InputGroup>
-                      <div
-                        className={`d-flex w-100 ${
-                          validation.touched.prs_released_date_gc &&
-                          validation.errors.prs_released_date_gc
-                            ? "border border-danger rounded"
-                            : ""
-                        }`}
-                      >
-                        <Flatpickr
-                          id="DataPicker"
-                          className="form-control"
-                          name="prs_released_date_gc"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
-                            enableTime: false,
-                          }}
-                          value={validation.values.prs_released_date_gc || ""}
-                          onChange={(date) => {
-                            const formatedDate = formatDate(date[0]);
-                            validation.setFieldValue(
-                              "prs_released_date_gc",
-                              formatedDate
-                            ); // Set value in Formik
-                          }}
-                          onBlur={validation.handleBlur}
-                        />
-                        <InputGroupText>
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </InputGroupText>
-                      </div>
-                      {validation.touched.prs_released_date_gc &&
-                        validation.errors.prs_released_date_gc && (
-                          <div className="text-danger small mt-1">
-                            {validation.errors.prs_released_date_gc}
-                          </div>
-                        )}
-                    </InputGroup>
+                    <DatePicker 
+                      isRequired="true"
+                      validation={validation}
+                      componentId="prs_released_date_gc"
+                      />
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("prs_description")}</Label>
