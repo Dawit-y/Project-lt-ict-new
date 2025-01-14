@@ -97,119 +97,81 @@ const ProjectStakeholderList = () => {
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: "",
-        accessorKey: "psh_project_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.psh_project_id, 30) || "-"}
-            </span>
-          );
+        headerName: t("psh_project_id"),
+        field: "psh_project_id",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => {
+          return truncateText(params.data.psh_project_id, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "psh_name",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.psh_name, 30) || "-"}
-            </span>
-          );
+        headerName: t("psh_name"),
+        field: "psh_name",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => {
+          return truncateText(params.data.psh_name, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "psh_stakeholder_type",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.psh_stakeholder_type, 30) ||
-                "-"}
-            </span>
-          );
+        headerName: t("psh_stakeholder_type"),
+        field: "psh_stakeholder_type",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => {
+          return truncateText(params.data.psh_stakeholder_type, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "psh_representative_name",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.psh_representative_name,
-                30
-              ) || "-"}
-            </span>
-          );
+        headerName: t("psh_representative_name"),
+        field: "psh_representative_name",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => {
+          return truncateText(params.data.psh_representative_name, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "psh_representative_phone",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.psh_representative_phone,
-                30
-              ) || "-"}
-            </span>
-          );
+        headerName: t("psh_representative_phone"),
+        field: "psh_representative_phone",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => {
+          return truncateText(params.data.psh_representative_phone, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "psh_role",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.psh_role, 30) || "-"}
-            </span>
-          );
+        headerName: t("psh_role"),
+        field: "psh_role",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => {
+          return truncateText(params.data.psh_role, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "psh_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.psh_description, 30) || "-"}
-            </span>
-          );
+        headerName: t("psh_description"),
+        field: "psh_description",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => {
+          return truncateText(params.data.psh_description, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "psh_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.psh_status, 30) || "-"}
-            </span>
-          );
+        headerName: t("psh_status"),
+        field: "psh_status",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => {
+          return truncateText(params.data.psh_status, 30) || "-";
         },
       },
     ];
     return baseColumns;
   });
+
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
@@ -286,7 +248,7 @@ const ProjectStakeholderList = () => {
                           ? searchResults?.data
                           : data?.data || []
                       }
-                      columnDefs={columnDefs}
+                      columnDefs={columns}
                       pagination={true}
                       paginationPageSizeSelector={[10, 20, 30, 40, 50]}
                       paginationPageSize={10}

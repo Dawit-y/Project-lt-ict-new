@@ -40,7 +40,6 @@ const Login = (props) => {
   //meta title
   document.title = "Login - PMS";
   const dispatch = useDispatch();
-  const [passwordStrength, setPasswordStrength] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -61,20 +60,13 @@ const Login = (props) => {
       password: Yup.string()
         .required("Please Enter Your Password")
         .min(8, "Password should be at least 8 characters long"),
-      // .matches(/[a-z]/, "Password must contain at least one lowercase letter")
-      // .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
-      // .matches(/\d/, "Password must contain at least one number")
-      // .matches(/[@$!%*#?&]/, "Password must contain at least one special character"),
     }),
     onSubmit: async (values) => {
       try {
-        // console.log("login page ...");
         dispatch(loginUser(values, props.router.navigate));
         localStorage.setItem("I18N_LANGUAGE", "en");
         localStorage.setItem("i18nextLng", "en");
       } catch (error) {
-        // console.log("error message ", error);
-        // If login fails, catch the error and display it
         setResponseError(error.message); // Set the error message
       }
     },
