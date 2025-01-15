@@ -19,7 +19,7 @@ import {
 import { useFetchStakeholderTypes } from "../../queries/stakeholdertype_query";
 import ProjectStakeholderModal from "./ProjectStakeholderModal";
 import { useTranslation } from "react-i18next";
-import { alphanumericValidation,amountValidation,numberValidation,dropdownValidation } from '../../utils/Validation/validation';
+import { phoneValidation,alphanumericValidation,amountValidation,numberValidation,dropdownValidation } from '../../utils/Validation/validation';
 import {
   Button,
   Col,
@@ -112,7 +112,14 @@ const ProjectStakeholderModel = (props) => {
       setDeleteModal(false);
     }
   };
-
+const stakeholderTypeMap = useMemo(() => {
+    return (
+      stakeholderTypeData?.data?.reduce((acc, stakehlder_type) => {
+        acc[stakehlder_type.sht_id] = stakehlder_type.sht_type_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [stakeholderTypeData]);
   // validation
   const validation = useFormik({
     enableReinitialize: true,
@@ -142,7 +149,7 @@ const ProjectStakeholderModel = (props) => {
       psh_name: alphanumericValidation(3, 200, true),
       psh_stakeholder_type: dropdownValidation(1,300,true),
       psh_representative_name: alphanumericValidation(3, 200, true),
-      psh_representative_phone: alphanumericValidation(3, 24, true),
+      psh_representative_phone: phoneValidation(true),
       psh_role: alphanumericValidation(3, 425, false),
       psh_description: alphanumericValidation(3, 425, false)
       //psh_status: Yup.string().required(t("psh_status")),
@@ -495,6 +502,13 @@ const ProjectStakeholderModel = (props) => {
                           : false
                       }
                     >
+                    <option value="">{t('select_one')}</option>
+                      {stakeholderTypeData?.data?.map((data) => (
+                        <option key={data.sht_id} value={data.sht_id}>
+                          {data.sht_type_name_or}
+                        </option>
+                      ))}
+
                       <option value="">Select Stakeholder Type</option>
                       {stakeholderTypeOptions.map((option) => (
                         <option key={option.value} value={option.value}>

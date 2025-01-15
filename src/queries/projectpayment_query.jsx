@@ -13,8 +13,8 @@ export const useFetchProjectPayments = (param = {}, isActive) => {
   return useQuery({
     queryKey: [...PROJECT_PAYMENT_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectPayment(param),
-    staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
+    staleTime: 0,
+    meta: { persist: false },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     enabled: isActive,
