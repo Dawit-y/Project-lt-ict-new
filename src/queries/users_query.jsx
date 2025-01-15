@@ -5,7 +5,7 @@ import {
   addUsers,
   deleteUsers,
   changeUserStatus,
-  changePassword
+  changePassword,
 } from "../helpers/users_backend_helper";
 
 const USERS_QUERY_KEY = ["users"];
@@ -45,7 +45,6 @@ export const useAddUsers = () => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,
-          ...newDataResponse.previledge,
         };
         return {
           ...oldData,

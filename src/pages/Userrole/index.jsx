@@ -231,9 +231,9 @@ const UserRoleModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
-          return (
-            <span>{roleDataMap[cellProps.row.original.url_role_id] || ""}</span>
-          );
+          const roleId = cellProps.row.original.url_role_id;
+          const roleName = roleDataMap?.[roleId] ?? "Unknown Role";
+          return <span>{roleName}</span>;
         },
       },
       {

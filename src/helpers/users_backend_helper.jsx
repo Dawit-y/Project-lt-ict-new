@@ -23,12 +23,12 @@ export const getUsers = async (params = {}) => {
 // add users
 export const addUsers = async (objectName) => {
   try {
-    const response = await axios.post(`${apiUrl}` + ADD_USERS, objectName, {
+    const response = await post(ADD_USERS, objectName, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
-    return response.data;
+    return response;
   } catch (error) {
     console.error("Failed to update grid:", error);
     throw error;
@@ -37,10 +37,7 @@ export const addUsers = async (objectName) => {
 
 // update users
 export const updateUsers = (objectName) =>
-  post(
-    `${apiUrl}` + UPDATE_USERS + `?usr_id=${objectName?.usr_id}`,
-    objectName
-  );
+  post(UPDATE_USERS + `?usr_id=${objectName?.usr_id}`, objectName);
 
 // change password
 export const changeUserStatus = (objectName) =>

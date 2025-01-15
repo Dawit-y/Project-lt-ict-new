@@ -19,7 +19,12 @@ import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import {phoneValidation, alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import {
+  phoneValidation,
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 import {
   useFetchUserss,
   useSearchUserss,
@@ -227,7 +232,7 @@ const UsersModel = () => {
           /[@$!%*?&#]/,
           t("Password must contain at least one special character")
         ),
-      usr_full_name: alphanumericValidation(3,50,true),
+      usr_full_name: alphanumericValidation(3, 50, true),
       usr_phone_number: phoneValidation(true),
       usr_sector_id: Yup.string().required(t("usr_sector_id")),
       usr_department_id: Yup.string().required(t("usr_department_id")),
@@ -319,7 +324,6 @@ const UsersModel = () => {
         };
 
         handleAddUsers(newUsers);
-        validation.resetForm();
       }
     },
   });
@@ -455,7 +459,7 @@ const UsersModel = () => {
         field: "usr_phone_number",
         sortable: true,
         filter: false,
-       flex: 3,
+        flex: 3,
         cellRenderer: (params) =>
           truncateText(params.data.usr_phone_number, 30) || "-",
       },
@@ -640,7 +644,7 @@ const UsersModel = () => {
                 </Col>
                 <Col sm="12" md="6" className="text-md-end">
                   <Button color="success" onClick={handleUsersClicks}>
-                    {t('add')}
+                    {t("add")}
                   </Button>
                 </Col>
               </Row>

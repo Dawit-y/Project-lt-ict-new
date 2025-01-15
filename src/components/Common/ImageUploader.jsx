@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import { Card, CardBody, CardSubtitle, Form, Row, Col } from "reactstrap";
 import Dropzone from "react-dropzone";
 
 const ImageUploader = ({ validation }) => {
-  // Define max size constants within the component
   const MAX_SIZE_MB = 5;
   const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
@@ -11,7 +10,6 @@ const ImageUploader = ({ validation }) => {
   const [fileErrors, setFileErrors] = useState(null);
 
   const handleAcceptedFiles = (files) => {
-    console.log(files);
     const formattedFiles = files.map((file) => ({
       ...file,
       preview: URL.createObjectURL(file), // Generate preview URL for images
@@ -35,7 +33,6 @@ const ImageUploader = ({ validation }) => {
     setFileErrors(errors);
   };
 
-  console.log(validation.values);
   return (
     <Col className="col-12">
       <Card>
