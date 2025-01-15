@@ -241,7 +241,7 @@ const TableContainer = ({
           <thead className={theadClass}>
             {getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
-                <th>{t('S.N')}</th>
+                <th>{t("S.N")}</th>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
@@ -309,8 +309,11 @@ const TableContainer = ({
           <Row>
             <Col sm={12} md={5}>
               <div className="dataTables_info">
-                {t("Showing")} {paginationState.pageSize} of {data.length}{" "}
-                {t("Results")}
+                {paginationState.pageSize > data.length
+                  ? `${t("Showing")} ${data.length} of ${data.length}`
+                  : `${t("Showing")} ${paginationState.pageSize} of ${
+                      data.length
+                    }`}
               </div>
             </Col>
             <Col sm={12} md={7}>

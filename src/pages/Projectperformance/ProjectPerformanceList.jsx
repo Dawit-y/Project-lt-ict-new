@@ -1,65 +1,22 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import axios from "axios";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
-import TableContainer from "../../components/Common/TableContainer";
-import * as Yup from "yup";
-import { useFormik } from "formik";
-import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-
-//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import DeleteModal from "../../components/Common/DeleteModal";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
-import {
-  useFetchProjectPerformances,
-  useSearchProjectPerformances,
-  useAddProjectPerformance,
-  useDeleteProjectPerformance,
-  useUpdateProjectPerformance,
-} from "../../queries/projectperformance_query";
+import { useSearchProjectPerformances } from "../../queries/projectperformance_query";
 import AddressStructureForProject from "../Project/AddressStructureForProject";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
-import ProjectPerformanceModal from "./ProjectPerformanceModal";
 import { useTranslation } from "react-i18next";
-
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
-  InputGroup,
-} from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
+import { Col, Row, Input } from "reactstrap";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { createSelectOptions } from "../../utils/commonMethods";
-import "flatpickr/dist/themes/material_blue.css";
-import Flatpickr from "react-flatpickr";
-import { formatDate } from "../../utils/commonMethods";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -67,11 +24,10 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 const ProjectPerformanceList = (props) => {
-  //  get passed data from tab
+  document.title = " Project Performance";
   const { passedId, isActive } = props;
   const param = { prp_project_id: passedId };
-  //meta title
-  document.title = " ProjectPerformance";
+
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);

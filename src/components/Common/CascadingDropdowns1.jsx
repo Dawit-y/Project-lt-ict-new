@@ -2,13 +2,11 @@ import React, { useEffect } from "react";
 import { FormGroup, Label, Input, FormFeedback } from "reactstrap";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { post } from "../../helpers/api_Lists";
 
 const fetchAddressByParent = async (parentId) => {
-  const response = await axios.post(
-    `${import.meta.env.VITE_BASE_API_URL}addressbyparent?parent_id=${parentId}`
-  );
-  return response.data.data || [];
+  const response = await post(`addressbyparent?parent_id=${parentId}`);
+  return response?.data || [];
 };
 
 const CascadingDropdowns1 = ({
@@ -48,7 +46,7 @@ const CascadingDropdowns1 = ({
   } = useQuery({
     queryKey: ["woredas", validation.values[dropdown2name]],
     queryFn: () => fetchAddressByParent(validation.values[dropdown2name]),
-    enabled: !!validation.values[dropdown2name], 
+    enabled: !!validation.values[dropdown2name],
   });
 
   // Handle region change
@@ -101,7 +99,8 @@ const CascadingDropdowns1 = ({
       {/* Zone Dropdown */}
       <FormGroup>
         <Label for={dropdown2name}>
-          {t("dep_available_at_zone")}{" "}
+          {t("dep_available_at_zone")}
+          {required && <span className="text-danger">*</span>}
         </Label>
         <Input
           type="select"
@@ -120,7 +119,9 @@ const CascadingDropdowns1 = ({
         >
           <option value="">{t("select_zone")}</option>
           {loadingZones ? (
-            <option>{t("loading")}</option>
+            <option disabled>{t("Loading...")}</option>
+          ) : zones.length === 0 ? (
+            <option disabled>{t("no_zones_available")}</option>
           ) : (
             zones.map((zone) => (
               <option key={zone.id} value={zone.id}>
@@ -138,7 +139,8 @@ const CascadingDropdowns1 = ({
       {/* Woreda Dropdown */}
       <FormGroup>
         <Label for={dropdown3name}>
-          {t("dep_available_at_woreda")}{" "}
+          {t("dep_available_at_woreda")}
+          {required && <span className="text-danger">*</span>}
         </Label>
         <Input
           type="select"
@@ -157,7 +159,9 @@ const CascadingDropdowns1 = ({
         >
           <option value="">{t("select_woreda")}</option>
           {loadingWoredas ? (
-            <option>{t("loading")}</option>
+            <option disabled>{t("Loading...")}</option>
+          ) : woredas.length === 0 ? (
+            <option disabled>{t("no_woredas_available")}</option>
           ) : (
             woredas.map((woreda) => (
               <option key={woreda.id} value={woreda.id}>

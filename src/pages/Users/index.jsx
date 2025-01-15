@@ -233,12 +233,15 @@ const UsersModel = () => {
           t("Password must contain at least one special character")
         ),
       usr_full_name: alphanumericValidation(3, 50, true),
-      usr_phone_number: phoneValidation(true),
+      usr_phone_number: Yup.string()
+        .matches(/^[79]\d{8}$/, "Invalid Phone Number.")
+        .required("Phone number is required."),
+
       usr_sector_id: Yup.string().required(t("usr_sector_id")),
       usr_department_id: Yup.string().required(t("usr_department_id")),
       usr_region_id: Yup.number().required(t("usr_region_id")),
-      //usr_zone_id: Yup.number().required(t("usr_zone_id")),
-      //usr_woreda_id: Yup.number().required(t("usr_woreda_id")),
+      usr_zone_id: Yup.number().required(t("usr_zone_id")),
+      usr_woreda_id: Yup.number().required(t("usr_woreda_id")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -303,7 +306,7 @@ const UsersModel = () => {
           usr_email: values.usr_email,
           usr_password: values.usr_password,
           usr_full_name: values.usr_full_name,
-          usr_phone_number: values.usr_phone_number,
+          usr_phone_number: `+251${values.usr_phone_number}`,
           usr_role_id: Number(values.usr_role_id),
           usr_region_id: Number(values.usr_region_id),
           usr_zone_id: Number(values.usr_zone_id),
@@ -322,7 +325,6 @@ const UsersModel = () => {
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
-
         handleAddUsers(newUsers);
       }
     },
@@ -595,6 +597,8 @@ const UsersModel = () => {
     }
   };
 
+  console.log(validation.errors);
+
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
@@ -625,7 +629,7 @@ const UsersModel = () => {
             setShowSearchResult={setShowSearchResult}
           />
           {isLoading || isSearchLoading ? (
-            <Spinners />
+            <Spinners top={"top-60"} />
           ) : (
             <div
               className="ag-theme-alpine"
@@ -782,31 +786,40 @@ const UsersModel = () => {
                   </Col>
                   <Col className="col-md-4 mb-3">
                     <Label>
-                      {t("usr_phone_number")}{" "}
-                      <span className="text-danger">*</span>
+                      Phone Number <span className="text-danger">*</span>
                     </Label>
-                    <Input
-                      name="usr_phone_number"
-                      type="text"
-                      placeholder={t("usr_phone_number")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.usr_phone_number || ""}
-                      invalid={
-                        validation.touched.usr_phone_number &&
-                        validation.errors.usr_phone_number
-                          ? true
-                          : false
-                      }
-                      maxLength={13}
-                    />
-                    {validation.touched.usr_phone_number &&
-                    validation.errors.usr_phone_number ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.usr_phone_number}
-                      </FormFeedback>
-                    ) : null}
+                    <InputGroup>
+                      <InputGroupText>{"+251"}</InputGroupText>
+                      <Input
+                        name="usr_phone_number"
+                        type="text"
+                        placeholder="Enter phone number"
+                        onChange={(e) => {
+                          const inputValue = e.target.value;
+                          let formattedValue = inputValue.replace(/^0/, "");
+                          formattedValue = formattedValue.replace(/[^\d]/g, "");
+                          formattedValue = formattedValue.substring(0, 9);
+                          validation.setFieldValue(
+                            "usr_phone_number",
+                            formattedValue
+                          );
+                        }}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.usr_phone_number}
+                        invalid={
+                          validation.touched.usr_phone_number &&
+                          !!validation.errors.usr_phone_number
+                        }
+                      />
+                      {validation.touched.usr_phone_number &&
+                      validation.errors.usr_phone_number ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.usr_phone_number}
+                        </FormFeedback>
+                      ) : null}
+                    </InputGroup>
                   </Col>
+
                   <Col className="col-md-4 mb-3">
                     <Label>
                       {t("usr_sector_id")}{" "}
