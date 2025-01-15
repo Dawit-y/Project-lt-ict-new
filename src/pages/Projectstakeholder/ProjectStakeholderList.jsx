@@ -149,25 +149,7 @@ const ProjectStakeholderList = () => {
         cellRenderer: (params) => {
           return truncateText(params.data.psh_role, 30) || "-";
         },
-      },
-      {
-        headerName: t("psh_description"),
-        field: "psh_description",
-        sortable: true,
-        filter: false,
-        cellRenderer: (params) => {
-          return truncateText(params.data.psh_description, 30) || "-";
-        },
-      },
-      {
-        headerName: t("psh_status"),
-        field: "psh_status",
-        sortable: true,
-        filter: false,
-        cellRenderer: (params) => {
-          return truncateText(params.data.psh_status, 30) || "-";
-        },
-      },
+      }
     ];
     return baseColumns;
   });
@@ -192,24 +174,11 @@ const ProjectStakeholderList = () => {
               <AdvancedSearch
                 searchHook={useSearchProjectStakeholders}
                 textSearchKeys={["prj_name", "prj_code"]}
-                dateSearchKeys={["payment_date"]}
-                dropdownSearchKeys={[
-                  {
-                    key: "prp_type",
-                    options: [
-                      { value: "Advance", label: "Advance" },
-                      { value: "Interim", label: "Interim" },
-                      { value: "Final", label: "Final" },
-                    ],
-                  },
-                ]}
+                dateSearchKeys={[]}
+                dropdownSearchKeys={[]}
                 checkboxSearchKeys={[]}
-                Component={CascadingDropdowns}
-                component_params={{
-                  dropdown1name: "prj_location_region_id",
-                  dropdown2name: "prj_location_zone_id",
-                  dropdown3name: "prj_location_woreda_id",
-                }}
+                
+                component_params={{}}
                 additionalParams={projectParams}
                 setAdditionalParams={setProjectParams}
                 onSearchResult={handleSearchResults}

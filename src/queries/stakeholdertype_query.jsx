@@ -13,10 +13,10 @@ export const useFetchStakeholderTypes = () => {
   return useQuery({
     queryKey: STAKEHOLDER_TYPE_QUERY_KEY,
     queryFn: () => getStakeholderType(),
-    staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
+   staleTime: 0,
+    meta: { persist: false },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: false
   });
 };
 

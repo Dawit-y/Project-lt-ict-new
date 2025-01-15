@@ -13,10 +13,10 @@ export const useFetchProjectStakeholders = (param = {}) => {
   return useQuery({
     queryKey: [...PROJECT_STAKEHOLDER_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectStakeholder(param),
-    staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
+    staleTime: 0,
+    meta: { persist: false },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: false
   });
 };
 

@@ -521,7 +521,7 @@ const ProjectPerformanceModel = (props) => {
               columns={columns}
               data={showSearchResult ? searchResults?.data : data?.data || []}
               isGlobalFilter={true}
-              isAddButton={true}
+              isAddButton={data?.previledge?.is_role_can_add}
               isCustomPageSize={true}
               handleUserClick={handleProjectPerformanceClicks}
               isPagination={true}

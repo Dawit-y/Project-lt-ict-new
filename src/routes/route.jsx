@@ -10,6 +10,7 @@ const allowedPathsIfAuthenticated = [
   "/dashboard",
   "/profile",
   "/notifications",
+  "/supersetdashboard"
 ];
 
 function extractPaths(menuStructure) {

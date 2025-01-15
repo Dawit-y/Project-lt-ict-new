@@ -114,7 +114,7 @@ const ProjectModel = () => {
     1: { label: t("project_document"), component: ProjectDocument },
     44: { label: t("project_contractor"), component: Projectcontractor },
     26: { label: t("project_payment"), component: ProjectPayment },
-    4: { label: t("project_stakeholder"), component: ProjectStakeholder },
+    53: { label: t("project_stakeholder"), component: ProjectStakeholder },
     //5: { label: "Budget Request", component: Budgetrequest },
     33: { label: t("prj_geo_location"), component: GeoLocation },
     //7: { label: "Budget Expenditures", component: ProjectBudgetExpenditureModel },
