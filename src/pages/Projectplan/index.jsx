@@ -57,6 +57,7 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 import DatePicker from "../../components/Common/DatePicker";
+import Breadcrumb from "../../components/Common/Breadcrumb.jsx";
 const ProjectPlanModel = () => {
   const location = useLocation();
   const id = Number(location.pathname.split("/")[2]);
@@ -211,8 +212,14 @@ const ProjectPlanModel = () => {
 
   // Fetch ProjectPlan on component mount
   useEffect(() => {
-    setProjectPlan(data);
-  }, [data]);
+    setProjectPlan(data?.data);
+    if (projectPlanSelected) {
+      const plan = data?.data.find(
+        (plan) => plan.id === projectPlanSelected?.id
+      );
+      setProjectPlanSelected(plan);
+    }
+  }, [data?.data]);
 
   useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
@@ -442,6 +449,7 @@ const ProjectPlanModel = () => {
       />
       <div className="page-content">
         <div className="container-fluid">
+          <Breadcrumb />
           {isLoading || isSearchLoading || project.isLoading ? (
             <Spinners />
           ) : (
@@ -580,6 +588,7 @@ const ProjectPlanModel = () => {
                       isRequired="true"
                       validation={validation}
                       componentId="pld_end_date_gc"
+                      minDate={validation.values.pld_start_date_gc}
                     />
                   </Col>
                   <Col className="col-md-6 mb-3">

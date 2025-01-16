@@ -5,6 +5,7 @@ import gantt from "dhtmlx-gantt";
 import Spinners from "../../components/Common/Spinner";
 import { Button } from "reactstrap";
 import { useTranslation } from "react-i18next";
+
 const API_URL = "https://pms.awashsol.com/api";
 
 const fetchTasks = async (projectPlanId) => {
@@ -189,6 +190,14 @@ const GanttChart = ({ pld_id, name, startDate, endDate }) => {
 
     fetchAndRenderTasks();
   }, [pld_id, startDate, endDate]);
+
+  useEffect(() => {
+    if (ganttInitialized.current) {
+      gantt.config.start_date = newStartDate.toISOString();
+      gantt.config.end_date = newEndDate.toISOString();
+      gantt.render();
+    }
+  }, [newStartDate, newEndDate]);
 
   const handleExportToPNG = () => {
     gantt.exportToPNG({

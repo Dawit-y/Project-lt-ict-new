@@ -15,9 +15,15 @@ import {
   FormGroup,
   Badge,
   InputGroup,
-  InputGroupText
+  InputGroupText,
 } from "reactstrap";
-const DatePicker = ({ isRequired, validation, componentId }) => {
+const DatePicker = ({
+  isRequired,
+  validation,
+  componentId,
+  minDate,
+  maxDate,
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -43,11 +49,13 @@ const DatePicker = ({ isRequired, validation, componentId }) => {
               altFormat: "Y/m/d",
               dateFormat: "Y/m/d",
               enableTime: false,
+              minDate: minDate ? minDate : null,
+              maxDate: maxDate ? maxDate : null,
             }}
             value={validation.values[componentId] || ""}
             onChange={(date) => {
               const formattedDate = formatDate(date[0]);
-              validation.setFieldValue(""+componentId+"", formattedDate); // Set value dynamically in Formik
+              validation.setFieldValue("" + componentId + "", formattedDate); // Set value dynamically in Formik
             }}
             onBlur={validation.handleBlur}
           />
@@ -65,4 +73,3 @@ const DatePicker = ({ isRequired, validation, componentId }) => {
   );
 };
 export default DatePicker;
-

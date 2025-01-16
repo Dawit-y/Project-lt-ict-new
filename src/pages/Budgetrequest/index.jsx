@@ -98,12 +98,12 @@ const BudgetRequestModel = () => {
   const handleAddBudgetRequest = async (data) => {
     try {
       await addBudgetRequest.mutateAsync(data);
-       toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-       toast.success(t('add_failure'), {
+      toast.success(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -113,12 +113,12 @@ const BudgetRequestModel = () => {
   const handleUpdateBudgetRequest = async (data) => {
     try {
       await updateBudgetRequest.mutateAsync(data);
-       toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-       toast.success(t('update_failure'), {
+      toast.success(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -153,9 +153,9 @@ const BudgetRequestModel = () => {
 
     validationSchema: Yup.object({
       bdr_budget_year_id: Yup.string().required(t("bdr_budget_year_id")),
-      bdr_requested_amount: amountValidation(1000,10000000000,true),
+      bdr_requested_amount: amountValidation(1000, 10000000000, true),
       bdr_requested_date_gc: Yup.string().required(t("bdr_requested_date_gc")),
-      bdr_description: alphanumericValidation(3,425,false)
+      bdr_description: alphanumericValidation(3, 425, false),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -509,12 +509,13 @@ const BudgetRequestModel = () => {
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteBudgetRequest.isPending}
       />
-      <Breadcrumbs
-        title={t("budget_request")}
-        breadcrumbItem={t("budget_request")}
-      />
+
       <div className="page-content">
         <div className="container-fluid">
+          <Breadcrumbs
+            title={t("budget_request")}
+            breadcrumbItem={t("budget_request")}
+          />
           {isLoading || isSearchLoading || project.isLoading ? (
             <Spinners />
           ) : (
@@ -525,26 +526,26 @@ const BudgetRequestModel = () => {
               />
               {/* TableContainer for displaying data */}
               <Col lg={12}>
-              <Card>
-              <CardBody>
-                <TableContainer
-                  columns={columns}
-                  data={data?.data}
-                  isGlobalFilter={true}
-                  isAddButton={project?.data?.request_role == "requester"}
-                  isCustomPageSize={true}
-                  handleUserClick={handleBudgetRequestClicks}
-                  isPagination={true}
-                  // SearchPlaceholder="26 records..."
-                  SearchPlaceholder={t("filter_placeholder")}
-                  buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                  buttonName={t("add")}
-                  tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                  theadClass="table-light"
-                  pagination="pagination"
-                  paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                />
-                </CardBody>
+                <Card>
+                  <CardBody>
+                    <TableContainer
+                      columns={columns}
+                      data={data?.data}
+                      isGlobalFilter={true}
+                      isAddButton={project?.data?.request_role == "requester"}
+                      isCustomPageSize={true}
+                      handleUserClick={handleBudgetRequestClicks}
+                      isPagination={true}
+                      // SearchPlaceholder="26 records..."
+                      SearchPlaceholder={t("filter_placeholder")}
+                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                      buttonName={t("add")}
+                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                      theadClass="table-light"
+                      pagination="pagination"
+                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                    />
+                  </CardBody>
                 </Card>
               </Col>
             </Row>
@@ -565,7 +566,10 @@ const BudgetRequestModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("bdr_budget_year_id")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("bdr_budget_year_id")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="bdr_budget_year_id"
                       type="select"
@@ -596,7 +600,10 @@ const BudgetRequestModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("bdr_requested_amount")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("bdr_requested_amount")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="bdr_requested_amount"
                       type="text"
@@ -645,11 +652,11 @@ const BudgetRequestModel = () => {
                 </Col> */}
 
                   <Col className="col-md-6 mb-3">
-                     <DatePicker 
+                    <DatePicker
                       isRequired="true"
                       validation={validation}
                       componentId="bdr_requested_date_gc"
-                      />
+                    />
                   </Col>
                   {/* <Col className="col-md-6 mb-3">
                   <Label>{t("bdr_released_date_ec")}</Label>
@@ -795,12 +802,12 @@ const BudgetRequestModel = () => {
           handleClick={handleClick}
           showCanvas={showCanvas}
           canvasWidth={84}
-          name={t('budget_request')}
+          name={t("budget_request")}
           id={budgetRequestMetaData.bdr_id}
           components={{
-            [t('budget_request_amount')]: BudgetRequestAmount,
-            [t('budget_request_task')]: BudgetRequestTask,
-            [t('budget_ex_source')]: BudgetExSource,
+            [t("budget_request_amount")]: BudgetRequestAmount,
+            [t("budget_request_task")]: BudgetRequestTask,
+            [t("budget_ex_source")]: BudgetExSource,
           }}
         />
       )}

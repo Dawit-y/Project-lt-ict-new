@@ -7,7 +7,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { Spinner,UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
+import {
+  Spinner,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 
 //import components
@@ -332,7 +338,7 @@ const AccessLogModel = () => {
             </Button>
           );
         },
-      }
+      },
     ];
     return baseColumns;
   }, [handleAccessLogClick, toggleViewModal, onClickDelete]);
