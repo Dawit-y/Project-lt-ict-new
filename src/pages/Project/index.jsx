@@ -269,7 +269,11 @@ const ProjectModel = () => {
           );
         }
       ),
-      prj_name_am: alphanumericValidation(3, 200, true).test(
+      prj_name_am:  Yup.string()
+      .matches(/^[\u1200-\u137F\s.,;!?@#$%^&*()_+\-=[\]{}|:'"<>\\/`~]+$/, t("only_amharic"))
+       .min(10, `${t('val_min_length')}`)
+    .max(100, `${t('val_max_length')}`)
+    .test(
         "unique-prj_name_am",
         t("Already exists"),
         (value) => {
@@ -578,6 +582,15 @@ const ProjectModel = () => {
         filter: "agTextColumnFilter",
         /*floatingFilter: true,*/
         flex: 4,
+        valueFormatter: (params) =>
+          params.node.footer ? t("Total") : params.value, // Display "Total" for footer
+      },
+      {
+        field: "add_name_or",
+        headerName: t("add_name_or"),
+        sortable: true,
+        filter: "agTextColumnFilter",
+        flex: 3,
         valueFormatter: (params) =>
           params.node.footer ? t("Total") : params.value, // Display "Total" for footer
       },
@@ -1029,6 +1042,7 @@ const ProjectModel = () => {
                           minLength="3"
                           maxLength="12"
                           min="1"
+                          step=".01"
                           name="prj_total_estimate_budget"
                           type="number"
                           placeholder={t("prj_total_estimate_budget")}
@@ -1056,6 +1070,7 @@ const ProjectModel = () => {
                         <Input
                           name="prj_total_actual_budget"
                           type="number"
+                          step=".01"
                           placeholder={t("prj_total_actual_budget")}
                           onChange={validation.handleChange}
                           onBlur={validation.handleBlur}

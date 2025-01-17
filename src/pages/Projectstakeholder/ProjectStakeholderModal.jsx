@@ -35,10 +35,6 @@ const ProjectStakeholderModal = (props) => {
         <ModalBody>
         <tr>
                     <p className="mb-2">
-            {t('psh_project_id')}: <span className="text-primary">{transaction.psh_project_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
             {t('psh_name')}: <span className="text-primary">{transaction.psh_name}</span>
           </p>
           </tr><tr>
@@ -60,10 +56,6 @@ const ProjectStakeholderModal = (props) => {
           </tr><tr>
                     <p className="mb-2">
             {t('psh_description')}: <span className="text-primary">{transaction.psh_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('psh_status')}: <span className="text-primary">{transaction.psh_status}</span>
           </p>
           </tr>
         </ModalBody>

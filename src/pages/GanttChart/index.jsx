@@ -101,7 +101,7 @@ const GanttChart = ({ pld_id, name, startDate, endDate }) => {
         };
 
         if (!ganttInitialized.current) {
-          gantt.init("gantt_here");
+          
 
           gantt.plugins({
             export_api: true,
@@ -112,6 +112,7 @@ const GanttChart = ({ pld_id, name, startDate, endDate }) => {
           gantt.config.start_date = newStartDate.toISOString();
           gantt.config.end_date = newEndDate.toISOString();
           gantt.config.scales = [{ unit: "week", step: 1, format: "%d %M" }];
+          gantt.config.date_format = "%Y-%m-%d %H:%i";
           gantt.config.lightbox.sections = [
             {
               name: "text",
@@ -149,7 +150,7 @@ const GanttChart = ({ pld_id, name, startDate, endDate }) => {
             if (task.priority === "Medium") return "medium-priority";
             return "low-priority";
           };
-
+            gantt.init("gantt_here");
           ganttInitialized.current = true;
         }
 

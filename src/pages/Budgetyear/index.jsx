@@ -379,22 +379,6 @@ const BudgetYearModel = () => {
       />
       <div className="page-content">
         <div className="container-fluid">
-          <iframe
-            width="600"
-            height="400"
-            seamless
-            frameBorder="0"
-            scrolling="no"
-            src="http://196.188.182.83:1110/superset/explore/p/w1GWNon4QD0/?standalone=true&filters={%22Godina%22:[%22Baalee%22]}"
-          ></iframe>
-          <iframe
-            width="100%"
-            height="1200"
-            seamless=""
-            frameborder="0"
-            scrolling="no"
-            src="http://196.188.182.83:1110/superset/dashboard/12/?standalone=true&native_filters_key=ceT6HsuMr90bgwinMUUj4-A4VmFGhZfU0i2j87cn1-Evg7LC9APp7VyC4jWIbUj1&filters={%22Godina%22:[%22Baalee%22]}"
-          />
           <Breadcrumbs
             title={t("budget_year")}
             breadcrumbItem={t("budget_year")}

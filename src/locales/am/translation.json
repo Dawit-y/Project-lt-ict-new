@@ -856,7 +856,7 @@
 "project_payment_stat":"ክፍያ",
 "select_stat":"የሪፖርት አይነት ምረጥ",
 "exportToExcel":"ወደ ኤክሴል",
-"exportToPdf":"ወደ PDF",
+"exportToPdf":" PDF",
 "statistical_report":"ስታቲስቲካል ሪፖርት",
 "dash_project_by_sector":"የፕሮጀክት ብዛት በሴክተር",
 "dash_project_payment":"የፕሮጀክት ክፍያ",
@@ -1119,5 +1119,9 @@
 "no_data":"መረጃ የለም",
 "view_gannt":"ጋንት ቻርት",
 "gantt_export_image":"ወደ ምስል ዉሰድ",
-"gantt_export_pdf":"ወደ PDF ዉሰድ"
+"gantt_export_pdf":"ወደ PDF ዉሰድ",
+"project_stakeholder_lis": "የፕሮጀክት ",
+"srch_search":"ለመፈለግ እዚህ ይጫኑ",
+"srch_clear":"ለመሰረዝ እዚህ ይጫኑ",
+"srch_more":"ተXእማሪ ፍላዳዎችን ለማድረግ እዚህ ይጫኑ"
 }

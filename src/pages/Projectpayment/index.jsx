@@ -448,7 +448,7 @@ const paymentCategoryMap = useMemo(() => {
               columns={columns}
               data={showSearchResults ? results : data?.data || []}
               isGlobalFilter={true}
-              isAddButton={data?.previledge?.is_role_can_add}
+              isAddButton={data?.previledge?.is_role_can_add==1}
               isCustomPageSize={true}
               handleUserClick={handleProjectPaymentClicks}
               isPagination={true}

@@ -13,10 +13,10 @@ export const useFetchProjectVariations = (param = {}, isActive) => {
   return useQuery({
     queryKey: [...PROJECT_VARIATION_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectVariation(param),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0,
     meta: { persist: true },
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
     enabled: isActive,
   });
 };

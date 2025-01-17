@@ -342,7 +342,7 @@ const stakeholderTypeMap = useMemo(() => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_editable ||
       data?.previledge?.is_role_deletable
     ) {
       baseColumns.push({
@@ -428,7 +428,7 @@ const stakeholderTypeMap = useMemo(() => {
               columns={columns}
               data={data?.data || []}
               isGlobalFilter={true}
-              isAddButton={true}
+              isAddButton={data?.previledge?.is_role_can_add==1}
               isCustomPageSize={true}
               handleUserClick={handleProjectStakeholderClicks}
               isPagination={true}

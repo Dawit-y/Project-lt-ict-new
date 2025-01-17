@@ -421,7 +421,7 @@ const ProjectPerformanceModel = (props) => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_editable || 
       data?.previledge?.is_role_deletable
     ) {
       baseColumns.push({
@@ -502,7 +502,6 @@ const ProjectPerformanceModel = (props) => {
           { label: t('prp_project_status_id'), key: "prp_project_status_id", value:projectStatusMap[transaction.prp_project_status_id]},
           { label: t('prp_total_budget_used'), key: "prp_total_budget_used"},
           { label: t('prp_physical_performance'), key: "prp_physical_performance"}
-          //{ label: t('prp_payment_percentage'), key: "prp_status" },
         ]}
         footerText={t('close')}
       />
@@ -521,7 +520,7 @@ const ProjectPerformanceModel = (props) => {
               columns={columns}
               data={showSearchResult ? searchResults?.data : data?.data || []}
               isGlobalFilter={true}
-              isAddButton={data?.previledge?.is_role_can_add}
+              isAddButton={data?.previledge?.is_role_can_add==1}
               isCustomPageSize={true}
               handleUserClick={handleProjectPerformanceClicks}
               isPagination={true}

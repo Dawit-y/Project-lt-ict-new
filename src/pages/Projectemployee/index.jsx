@@ -182,7 +182,7 @@ const ProjectEmployeeModel = (props) => {
       emp_start_date_gc: Yup.string().required(t("emp_start_date_gc"))
       .test(
       'is-before-end-date',
-      'start date must be earlier than or equal to en date',
+      'start date must be earlier than or equal to end date',
       function (value) {
         const { emp_end_date_gc } = this.parent; // Access other fields in the form
         return !emp_end_date_gc || !value || new Date(value) <= new Date(emp_end_date_gc);
@@ -423,7 +423,7 @@ const ProjectEmployeeModel = (props) => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_editable ||
       data?.previledge?.is_role_deletable
     ) {
       baseColumns.push({
@@ -559,7 +559,7 @@ const ProjectEmployeeModel = (props) => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={true}
+                      isAddButton={data?.previledge?.is_role_can_add==1}
                       isCustomPageSize={true}
                       handleUserClick={handleProjectEmployeeClicks}
                       isPagination={true}

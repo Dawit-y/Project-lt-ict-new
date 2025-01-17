@@ -284,8 +284,8 @@
   "prj_create_time": "Create Time",
   "prj_update_time": "Update Time",
   "prj_owner_id": "Owner",
-  "prj_urban_ben_number": "Urban Ben Number",
-  "prj_rural_ben_number": "Rural Ben Number",
+  "prj_urban_ben_number": "Urban Beneficiery Number",
+  "prj_rural_ben_number": "Rural Beneficiery Number",
   "prj_department_id":"Department",
   "project_contractor": "Project Contractor",
   "cni_id": "Id",
@@ -1010,5 +1010,9 @@
 "no_data":"No data available",
 "view_gannt":"Gantt Chart",
 "gantt_export_image":"Export to Image",
-"gantt_export_pdf":"Export to PDF"
+"gantt_export_pdf":"Export to PDF",
+"project_stakeholder_lis": "Stakeholder List",
+"srch_search":"click here to view results",
+"srch_clear":"click here to clear search parameters",
+"srch_more":"click here to search by more parameters"
 }

@@ -165,8 +165,14 @@ const ProjectPlanModel = () => {
       pld_budget_year_id: numberValidation(1, 20, true),
       //pld_start_date_ec: Yup.string().required(t("pld_start_date_ec")),
       pld_start_date_gc: Yup.string().required(t("pld_start_date_gc")),
-      // pld_end_date_ec: Yup.string().required(t("pld_end_date_ec")),
-      pld_end_date_gc: Yup.string().required(t("pld_end_date_gc")),
+     pld_start_date_gc: Yup.string().required(t("pld_start_date_gc"))
+      .test(
+      'is-before-end-date',
+      'start date must be earlier than or equal to end date',
+      function (value) {
+        const { pld_end_date_gc } = this.parent; // Access other fields in the form
+        return !pld_end_date_gc || !value || new Date(value) <= new Date(pld_end_date_gc);
+      }),
       pld_description: alphanumericValidation(3, 425, false),
       //pld_status: Yup.string().required(t("pld_status")),
     }),

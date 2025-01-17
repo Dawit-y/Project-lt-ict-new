@@ -162,7 +162,7 @@ const ProjectVariationModel = (props) => {
         const { prv_released_date_gc } = this.parent; // Access other fields in the form
         return !prv_released_date_gc || !value || new Date(value) <= new Date(prv_released_date_gc);
       }),
-     prv_released_date_ec: Yup.string().required(t("prv_released_date_ec")),
+     prv_released_date_gc: Yup.string().required(t("prv_released_date_gc")),
       prv_description: alphanumericValidation(3,425,false),
       //prv_status: Yup.string().required(t("prv_status")),
     }),
@@ -360,7 +360,7 @@ const ProjectVariationModel = (props) => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_editable ||
       data?.previledge?.is_role_deletable
     ) {
       baseColumns.push({
@@ -491,7 +491,7 @@ const ProjectVariationModel = (props) => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={true}
+                      isAddButton={data?.previledge?.is_role_can_add==1}
                       isCustomPageSize={true}
                       handleUserClick={handleProjectVariationClicks}
                       isPagination={true}

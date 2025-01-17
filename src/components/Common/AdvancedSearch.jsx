@@ -289,10 +289,9 @@ const AdvancedSearch = ({
                         placement="top"
                         target={"search-icon-wrapper"}
                       >
-                        {t("search")}
+                        {t("srch_search")}
                       </UncontrolledTooltip>
                     </div>
-
                     <div className="position-relative flex-grow-1 h-100">
                       <button
                         type="button"
@@ -316,7 +315,7 @@ const AdvancedSearch = ({
                         placement="top"
                         target={"clear-button"}
                       >
-                        {t("clear")}
+                        {t("srch_clear")}
                       </UncontrolledTooltip>
                     </div>
 
@@ -333,7 +332,7 @@ const AdvancedSearch = ({
                           placement="top"
                           target={"more-filter-icon"}
                         >
-                          {t("more")}
+                          {t("srch_more")}
                         </UncontrolledTooltip>
                       </div>
                     )}

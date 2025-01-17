@@ -922,6 +922,7 @@
 "project_payment_stat":"Kaffaltii",
 "select_stat":"Gosa Gabaasaa Filadhu",
 "exportToExcel":"Gara Ekselii",
+"exportToPdf":"Gara PDF",
 "statistical_report":"Gabaasa Istaatistiksii",
 "dash_project_by_sector":"Baay`ina Pirojeektii Seekteraan",
 "dash_project_payment":"Kaffaltii Pirojeektii",
@@ -1100,5 +1101,9 @@
 "no_data":"daataan hin jiru",
 "view_gannt":"Gantt Chaartii",
 "gantt_export_image":"Gara Fakki Gessi",
-"gantt_export_pdf":"Gara PDF Gessi"
+"gantt_export_pdf":"Gara PDF Gessi",
+"project_stakeholder_lis": "Dhimmamtoota Pirojekti",
+"srch_search":"bu`aa ilaaluf asitti cuqaasaa",
+"srch_clear":"bu`aa duraa ilaaluf asitti cuqaasaa",
+"srch_more":"dabalata barbaaduuf asitti cuqaasaa"
 }

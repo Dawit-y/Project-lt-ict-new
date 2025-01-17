@@ -313,7 +313,7 @@ const ProjectHandoverModel = (props) => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_editable ||
       data?.previledge?.is_role_deletable
     ) {
       baseColumns.push({
@@ -435,7 +435,7 @@ const ProjectHandoverModel = (props) => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={true}
+                      isAddButton={data?.previledge?.is_role_can_add==1}
                       isCustomPageSize={true}
                       handleUserClick={handleProjectHandoverClicks}
                       isPagination={true}

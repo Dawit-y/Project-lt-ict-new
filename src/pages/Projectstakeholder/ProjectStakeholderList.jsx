@@ -97,12 +97,29 @@ const ProjectStakeholderList = () => {
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        headerName: t("psh_project_id"),
-        field: "psh_project_id",
-        sortable: true,
+        headerName: t("S.N"),
+        field: "sn",
+        valueGetter: (params) => params.node.rowIndex + 1,
+        sortable: false,
         filter: false,
+        width: 60,
+      },
+      {
+        headerName: t("prj_name"),
+        field: "prj_name",
+        sortable: true,
+        filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.psh_project_id, 30) || "-";
+          return truncateText(params.data.prj_name, 30) || "-";
+        },
+      },
+      {
+        headerName: t("prj_code"),
+        field: "prj_code",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_code, 30) || "-";
         },
       },
       {

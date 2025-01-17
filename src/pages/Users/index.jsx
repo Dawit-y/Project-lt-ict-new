@@ -233,10 +233,7 @@ const UsersModel = () => {
           t("Password must contain at least one special character")
         ),
       usr_full_name: alphanumericValidation(3, 50, true),
-      usr_phone_number: Yup.string()
-        .matches(/^[79]\d{8}$/, "Invalid Phone Number.")
-        .required("Phone number is required."),
-
+      usr_phone_number: phoneValidation(true),
       usr_sector_id: Yup.string().required(t("usr_sector_id")),
       usr_department_id: Yup.string().required(t("usr_department_id")),
       usr_region_id: Yup.number().required(t("usr_region_id")),
@@ -614,7 +611,7 @@ const UsersModel = () => {
           <Breadcrumbs title={t("users")} breadcrumbItem={t("users")} />
           <AdvancedSearch
             searchHook={useSearchUserss}
-            textSearchKeys={["usr_email"]}
+            textSearchKeys={["usr_email","usr_phone_number"]}
             dropdownSearchKeys={[]}
             checkboxSearchKeys={[]}
             Component={CascadingDropdownsearch}
