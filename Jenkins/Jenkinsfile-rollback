@@ -1,0 +1,107 @@
+pipeline {
+    agent any
+
+    environment {
+        // Repository and registry details
+        PROD_DOCKER_IMAGE     = 'otecpms/react-app-prod'
+        REGISTRY_CREDENTIALS  = 'dockerhub-credentials'
+        DOCKER_REGISTRY_URL   = 'https://index.docker.io/v1/'
+        // Docker Hub API URL to fetch the available tags (first page only)
+        PROD_DOCKER_API_URL   = 'https://registry.hub.docker.com/v2/repositories/otecpms/react-app-prod/tags/'
+        
+        // Deployment settings - adjust as needed
+        PROD_CONTAINER_NAME   = 'react-app-prod'
+        PROD_PORT_EXT         = '8080'
+        PROD_PORT_INT         = '80'
+    }
+    
+    stages {
+        stage('Fetch Available Tags') {
+            steps {
+                script {
+                    // Fetch tags using curl from Docker Hub API
+                    def response = sh(
+                        script: "curl -s '${PROD_DOCKER_API_URL}'",
+                        returnStdout: true
+                    ).trim()
+
+                    // Parse the JSON response (requires Pipeline Utility Steps Plugin)
+                    def json = readJSON text: response
+
+                    // Extract tag names from the JSON (assuming a 'results' array)
+                    def tags = []
+                    json.results.each { tagInfo ->
+                        tags.add(tagInfo.name)
+                    }
+                    
+                    if (tags.isEmpty()) {
+                        error "No tags found for ${PROD_DOCKER_IMAGE}!"
+                    }
+                    
+                    echo "Available tags: ${tags.join(', ')}"
+                    
+                    // Prompt user to choose the tag for rollback; with a single parameter, input returns the string.
+                    def selectedTag = input(
+                        id: 'tagInput',
+                        message: 'Select a Docker tag for rollback',
+                        parameters: [
+                            choice(
+                                name: 'SELECTED_TAG',
+                                choices: tags.join("\n"),
+                                description: 'Choose one of the available tags'
+                            )
+                        ]
+                    )
+                    
+                    // Save the selected tag into an environment variable
+                    env.SELECTED_TAG = selectedTag
+                    echo "User selected tag: ${env.SELECTED_TAG}"
+                }
+            }
+        }
+        
+        stage('Pull and Deploy Selected Image') {
+            steps {
+                script {
+                    // Build full image reference (e.g., otecpms/react-app-prod:v42)
+                    def imageToDeploy = "${PROD_DOCKER_IMAGE}:${env.SELECTED_TAG}"
+                    
+                    // Pull the selected image from Docker Hub using the recommended v1 endpoint
+                    docker.withRegistry(DOCKER_REGISTRY_URL, REGISTRY_CREDENTIALS) {
+                        echo "Pulling image: ${imageToDeploy}"
+                        sh "docker pull ${imageToDeploy}"
+                    }
+                    
+                    // Stop and remove any existing production container
+                    sh '''
+                        if [ $(docker ps -a -q -f name=''' + PROD_CONTAINER_NAME + ''') ]; then
+                            echo "Stopping and removing existing container ${PROD_CONTAINER_NAME}..."
+                            docker stop ''' + PROD_CONTAINER_NAME + ''' || true
+                            docker rm ''' + PROD_CONTAINER_NAME + ''' || true
+                        fi
+                    '''
+                    
+                    // Run a new container using the selected (rollback) image
+                    sh """
+                        echo "Deploying container using image: ${imageToDeploy}"
+                        docker run -d --name ${PROD_CONTAINER_NAME} \\
+                            -p ${PROD_PORT_EXT}:${PROD_PORT_INT} \\
+                            ${imageToDeploy} \\
+                            nginx -g "daemon off;"
+                            
+                        echo "Rollback complete: PROD container is now running on port ${PROD_PORT_EXT}."
+                    """
+                }
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo "Rollback pipeline executed successfully! Deployed image: ${PROD_DOCKER_IMAGE}:${env.SELECTED_TAG}"
+        }
+        failure {
+            echo "Rollback pipeline execution failed!"
+        }
+    }
+}
