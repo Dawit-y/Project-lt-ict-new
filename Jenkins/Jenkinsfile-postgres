@@ -16,20 +16,14 @@ pipeline {
         FULL_DOCKER_IMAGE   = "${DOCKER_IMAGE}:${DOCKER_TAG}"
         REGISTRY_CREDENTIALS= 'dockerhub-credentials'  // Docker registry credential ID stored in Jenkins
     }
-    
-    stages {
+     stages {
         stage('Dump Database Schema') {
             steps {
                 script {
-                    // Securely bind PostgreSQL username and password stored in Jenkins (ID: postgres-credentials)
-                    withCredentials([usernamePassword(credentialsId: 'postgres-credentials', 
-                                                      usernameVariable: 'POSTGRES_USER', 
-                                                      passwordVariable: 'POSTGRES_PASSWORD')]) {
-                        sh """
-                        echo "Dumping schema from PostgreSQL database at ${POSTGRES_HOST}:${POSTGRES_PORT}..."
-                        PGPASSWORD=${POSTGRES_PASSWORD} pg_dump --host=${POSTGRES_HOST} --port=${POSTGRES_PORT} --username=${POSTGRES_USER} --schema-only --no-owner ${POSTGRES_DB} > ${SCHEMA_DUMP_FILE}
-                        """
-                    }
+                    sh """
+                    echo "Dumping schema from PostgreSQL database at ${POSTGRES_HOST}:${POSTGRES_PORT}..."
+                    PGPASSWORD=${POSTGRES_PASSWORD} pg_dump --host=${POSTGRES_HOST} --port=${POSTGRES_PORT} --username=${POSTGRES_USER} --schema-only --no-owner ${POSTGRES_DB} > ${SCHEMA_DUMP_FILE}
+                    """
                 }
             }
         }
@@ -37,11 +31,10 @@ pipeline {
         stage('Prepare Dockerfile') {
             steps {
                 script {
-                    // Create a Dockerfile that copies the dumped schema into the appropriate init directory
                     writeFile file: 'Dockerfile', text: '''
-                        FROM postgres:latest
-                        COPY schema.sql /docker-entrypoint-initdb.d/schema.sql
-                    '''.stripIndent()
+                    FROM postgres:latest
+                    COPY schema.sql /docker-entrypoint-initdb.d/schema.sql
+                    '''
                 }
             }
         }
@@ -49,35 +42,37 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image using the secure DOCKER_IMAGE value retrieved from Jenkins
-                    docker.build(FULL_DOCKER_IMAGE, '.')
+                    docker.build("${FULL_DOCKER_IMAGE}", '.')
                 }
             }
         }
 
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', REGISTRY_CREDENTIALS) {
-                        // Push the image tagged as 'latest'
-                        docker.image(FULL_DOCKER_IMAGE).push('latest')
-                        
-                        // Create a unique tag based on the Jenkins BUILD_NUMBER and current date
-                        def currentDate = new Date().format("yyyyMMdd")
-                        def uniqueTag = "${env.BUILD_NUMBER}-${currentDate}"
-                        def uniqueImage = "${DOCKER_IMAGE}:${uniqueTag}"
-                        
-                        echo "Tagging image with unique tag: ${uniqueTag}"
-                        
-                        // Tag the existing image with the unique tag and push it
-                        sh "docker tag ${FULL_DOCKER_IMAGE} ${uniqueImage}"
-                        docker.image(uniqueImage).push()
-                        
-                        echo "Successfully pushed images with tags: ${uniqueTag} and latest"
-                    }
-                }
+       stage('Push Docker Image') {
+    steps {
+        script {
+            docker.withRegistry('https://registry.hub.docker.com', REGISTRY_CREDENTIALS) {
+                // Push the image tagged as 'latest'
+                docker.image("${FULL_DOCKER_IMAGE}").push()
+                
+                // Generate a unique tag based on BUILD_NUMBER and current date
+                def currentDate = new Date().format("yyyyMMdd")
+                def uniqueTag = "${env.BUILD_NUMBER}-${currentDate}"
+                def uniqueImage = "${DOCKER_IMAGE}:${uniqueTag}"
+                
+                echo "Tagging image with unique tag: ${uniqueTag}"
+                
+                // Tag the existing image with the unique tag
+                sh "docker tag ${FULL_DOCKER_IMAGE} ${uniqueImage}"
+                
+                // Push the image tagged with the unique tag
+                docker.image("${uniqueImage}").push()
+                
+                echo "Successfully pushed images with tags: ${uniqueTag} and latest"
             }
         }
+    }
+}
+
     }
 
     post {
