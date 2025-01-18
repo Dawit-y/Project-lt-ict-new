@@ -21,10 +21,13 @@ pipeline {
 stage('Debug Environment Variables') {
     steps {
         script {
-            sh "env | grep POSTGRES_PORT"
+            sh """
+            echo "POSTGRES_PORT: ${POSTGRES_PORT}"
+            """
         }
     }
 }
+
         stage('Dump Database Schema') {
             steps {
                 script {
