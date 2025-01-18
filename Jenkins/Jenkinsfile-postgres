@@ -1,23 +1,38 @@
 pipeline {
     agent any
 
+    environment {
+        // Retrieve these values from Jenkins Secret Text credentials
+        POSTGRES_HOST    = credentials('postgres_host')
+        POSTGRES_PORT    = credentials('postgres_port')
+        POSTGRES_DB      = credentials('postgres_db')
+        SCHEMA_DUMP_FILE = 'schema.sql'
+        DOCKER_IMAGE     = 'otecpms/postgres-schema'
+        POSTGRES_USER    = credentials('postgres_user')
+        POSTGRES_PASSWORD= credentials('postgres_password')
+        
+        // Constant and computed values
+        DOCKER_TAG          = 'latest'
+        FULL_DOCKER_IMAGE   = "${DOCKER_IMAGE}:${DOCKER_TAG}"
+        REGISTRY_CREDENTIALS= 'dockerhub-credentials'  // Docker registry credential ID stored in Jenkins
+    }
+
     stages {
         stage('Dump Database Schema') {
             steps {
                 script {
-                    // Bind all sensitive PostgreSQL values from Jenkins credentials into local shell variables.
-                    withCredentials([
-                        string(credentialsId: 'postgres_host', variable: 'MY_POSTGRES_HOST'),
-                        string(credentialsId: 'postgres_port', variable: 'MY_POSTGRES_PORT'),
-                        string(credentialsId: 'postgres_db', variable: 'MY_POSTGRES_DB'),
-                        string(credentialsId: 'postgres_user', variable: 'MY_POSTGRES_USER'),
-                        string(credentialsId: 'postgres_password', variable: 'MY_POSTGRES_PASSWORD')
+                    // Pass secrets securely as environment variables to the shell
+                    withEnv([
+                        "PGPASSWORD=${POSTGRES_PASSWORD}",
+                        "PGUSER=${POSTGRES_USER}",
+                        "PGHOST=${POSTGRES_HOST}",
+                        "PGPORT=${POSTGRES_PORT}",
+                        "PGDATABASE=${POSTGRES_DB}"
                     ]) {
-                        // Use triple single-quoted string so that the shell does variable interpolation
-                        sh '''
-                            echo "Dumping schema from PostgreSQL database at $MY_POSTGRES_HOST:$MY_POSTGRES_PORT..."
-                            PGPASSWORD=$MY_POSTGRES_PASSWORD pg_dump --host=$MY_POSTGRES_HOST --port=$MY_POSTGRES_PORT --username=$MY_POSTGRES_USER --schema-only --no-owner $MY_POSTGRES_DB > schema.sql
-                        '''
+                        sh """
+                        echo "Dumping schema from PostgreSQL database..."
+                        pg_dump --schema-only --no-owner > ${SCHEMA_DUMP_FILE}
+                        """
                     }
                 }
             }
@@ -26,11 +41,10 @@ pipeline {
         stage('Prepare Dockerfile') {
             steps {
                 script {
-                    // Create the Dockerfile that copies the schema dump.
                     writeFile file: 'Dockerfile', text: '''
-                        FROM postgres:latest
-                        COPY schema.sql /docker-entrypoint-initdb.d/schema.sql
-                    '''.stripIndent()
+                    FROM postgres:latest
+                    COPY schema.sql /docker-entrypoint-initdb.d/schema.sql
+                    '''
                 }
             }
         }
@@ -38,16 +52,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Define image name and tag (non-sensitive values)
-                    def dockerImage = 'otecpms/postgres-schema'
-                    def dockerTag = 'latest'
-                    def fullDockerImage = "${dockerImage}:${dockerTag}"
-                    
-                    // Build the Docker image
-                    docker.build(fullDockerImage, '.')
-                    
-                    // Store the full image name in the current script scope
-                    env.FULL_DOCKER_IMAGE = fullDockerImage
+                    docker.build("${FULL_DOCKER_IMAGE}", '.')
                 }
             }
         }
@@ -55,22 +60,22 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-credentials') {
-                        // Push the 'latest' tagged image
-                        docker.image(env.FULL_DOCKER_IMAGE).push('latest')
+                    docker.withRegistry('https://registry.hub.docker.com', REGISTRY_CREDENTIALS) {
+                        // Push the image tagged as 'latest'
+                        docker.image("${FULL_DOCKER_IMAGE}").push('latest')
                         
                         // Generate a unique tag based on BUILD_NUMBER and current date
                         def currentDate = new Date().format("yyyyMMdd")
                         def uniqueTag = "${env.BUILD_NUMBER}-${currentDate}"
-                        def uniqueImage = "otecpms/postgres-schema:${uniqueTag}"
+                        def uniqueImage = "${DOCKER_IMAGE}:${uniqueTag}"
                         
                         echo "Tagging image with unique tag: ${uniqueTag}"
                         
-                        // Tag the built image with the unique tag
-                        sh "docker tag ${env.FULL_DOCKER_IMAGE} ${uniqueImage}"
+                        // Tag the existing image with the unique tag
+                        sh "docker tag ${FULL_DOCKER_IMAGE} ${uniqueImage}"
                         
-                        // Push the image with the unique tag
-                        docker.image(uniqueImage).push()
+                        // Push the image tagged with the unique tag
+                        docker.image("${uniqueImage}").push()
                         
                         echo "Successfully pushed images with tags: ${uniqueTag} and latest"
                     }
