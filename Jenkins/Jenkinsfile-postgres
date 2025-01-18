@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Retrieve these values from Jenkins Secret Text credentials
-        POSTGRES_HOST    = credentials('postgres_host')
+        POSTGRES_HOST    ='postgres_host'
         POSTGRES_PORT    = credentials('postgres_port')
         POSTGRES_DB      = credentials('postgres_db')
         SCHEMA_DUMP_FILE = 'schema.sql'
