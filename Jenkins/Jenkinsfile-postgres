@@ -3,27 +3,33 @@ pipeline {
 
     environment {
         // Retrieve these values from Jenkins Secret Text credentials
-        POSTGRES_HOST    = credentials('postgres_host')
-        POSTGRES_PORT    = credentials('postgres_port')
-        POSTGRES_DB      = credentials('postgres_db')
-        SCHEMA_DUMP_FILE = 'schema.sql'
-        DOCKER_IMAGE = 'otecpms/postgres-schema'
-        POSTGRES_USER =  credentials('postgres_user')
-        POSTGRES_PASSWORD =  credentials('postgres_password')
+        POSTGRES_HOST     = credentials('postgres_host')
+        POSTGRES_PORT     = credentials('postgres_port')
+        POSTGRES_DB       = credentials('postgres_db')
+        // schema file and image names can remain non-secret if they are not sensitive
+        SCHEMA_DUMP_FILE  = 'schema.sql'
+        DOCKER_IMAGE      = 'otecpms/postgres-schema'
+        
+        // Retrieve additional secrets from Jenkins credentials
+        POSTGRES_USER     = credentials('postgres_user')
+        POSTGRES_PASSWORD = credentials('postgres_password')
         
         // Constant and computed values
         DOCKER_TAG          = 'latest'
         FULL_DOCKER_IMAGE   = "${DOCKER_IMAGE}:${DOCKER_TAG}"
-        REGISTRY_CREDENTIALS= 'dockerhub-credentials'  // Docker registry credential ID stored in Jenkins
+        REGISTRY_CREDENTIALS  = 'dockerhub-credentials'  // Docker registry credential ID stored in Jenkins
     }
-     stages {
+    
+    stages {
         stage('Dump Database Schema') {
             steps {
                 script {
-                    sh """
-                    echo "Dumping schema from PostgreSQL database at ${POSTGRES_HOST}:${POSTGRES_PORT}..."
-                    PGPASSWORD=${POSTGRES_PASSWORD} pg_dump --host=${POSTGRES_HOST} --port=${POSTGRES_PORT} --username=${POSTGRES_USER} --schema-only --no-owner ${POSTGRES_DB} > ${SCHEMA_DUMP_FILE}
-                    """
+                    // Use triple single quotes so that shell variable interpolation happens in the shell,
+                    // not at the Groovy level.
+                    sh '''
+                        echo "Dumping schema from PostgreSQL database at $POSTGRES_HOST:$POSTGRES_PORT..."
+                        PGPASSWORD=$POSTGRES_PASSWORD pg_dump --host=$POSTGRES_HOST --port=$POSTGRES_PORT --username=$POSTGRES_USER --schema-only --no-owner $POSTGRES_DB > $SCHEMA_DUMP_FILE
+                    '''
                 }
             }
         }
@@ -31,10 +37,11 @@ pipeline {
         stage('Prepare Dockerfile') {
             steps {
                 script {
+                    // Create a simple Dockerfile that adds the schema dump
                     writeFile file: 'Dockerfile', text: '''
-                    FROM postgres:latest
-                    COPY schema.sql /docker-entrypoint-initdb.d/schema.sql
-                    '''
+                        FROM postgres:latest
+                        COPY schema.sql /docker-entrypoint-initdb.d/schema.sql
+                    '''.stripIndent()
                 }
             }
         }
@@ -42,37 +49,36 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${FULL_DOCKER_IMAGE}", '.')
+                    docker.build(FULL_DOCKER_IMAGE, '.')
                 }
             }
         }
 
-       stage('Push Docker Image') {
-    steps {
-        script {
-            docker.withRegistry('https://registry.hub.docker.com', REGISTRY_CREDENTIALS) {
-                // Push the image tagged as 'latest'
-                docker.image("${FULL_DOCKER_IMAGE}").push()
-                
-                // Generate a unique tag based on BUILD_NUMBER and current date
-                def currentDate = new Date().format("yyyyMMdd")
-                def uniqueTag = "${env.BUILD_NUMBER}-${currentDate}"
-                def uniqueImage = "${DOCKER_IMAGE}:${uniqueTag}"
-                
-                echo "Tagging image with unique tag: ${uniqueTag}"
-                
-                // Tag the existing image with the unique tag
-                sh "docker tag ${FULL_DOCKER_IMAGE} ${uniqueImage}"
-                
-                // Push the image tagged with the unique tag
-                docker.image("${uniqueImage}").push()
-                
-                echo "Successfully pushed images with tags: ${uniqueTag} and latest"
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', REGISTRY_CREDENTIALS) {
+                        // Push the image tagged as 'latest'
+                        docker.image(FULL_DOCKER_IMAGE).push('latest')
+                        
+                        // Generate a unique tag using BUILD_NUMBER and the current date
+                        def currentDate = new Date().format("yyyyMMdd")
+                        def uniqueTag = "${env.BUILD_NUMBER}-${currentDate}"
+                        def uniqueImage = "${DOCKER_IMAGE}:${uniqueTag}"
+                        
+                        echo "Tagging image with unique tag: ${uniqueTag}"
+                        
+                        // Tag the existing image with the unique tag
+                        sh "docker tag ${FULL_DOCKER_IMAGE} ${uniqueImage}"
+                        
+                        // Push the image with the unique tag
+                        docker.image(uniqueImage).push()
+                        
+                        echo "Successfully pushed images with tags: ${uniqueTag} and latest"
+                    }
+                }
             }
         }
-    }
-}
-
     }
 
     post {
