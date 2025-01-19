@@ -16,6 +16,7 @@ import {
 } from "../../queries/project_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import { createSelectOptions } from "../../utils/commonMethods";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import Spinners from "../../components/Common/Spinner";
 import "leaflet/dist/leaflet.css";
 
@@ -43,7 +44,8 @@ const ProjectsLocation = () => {
     "pct_name_or"
   );
 
-  const { data, isLoading, error } = useFetchProjects(projectParams);
+  const { data, isLoading, error, isError, refetch } =
+    useFetchProjects(projectParams);
   const { t } = useTranslation();
 
   const parseGeoLocation = (geoLocation) => {
@@ -91,6 +93,10 @@ const ProjectsLocation = () => {
     }
   };
 
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <div className="page-content">
       <div className="" style={{ position: "relative" }}>
@@ -129,7 +135,7 @@ const ProjectsLocation = () => {
                 center={[viewState.latitude, viewState.longitude]}
                 zoom={viewState.zoom}
                 style={{ height: "400px", width: "100%", zIndex: "1" }}
-                scrollWheelZoom={false}
+                scrollWheelZoom={true}
               >
                 <TileLayer
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

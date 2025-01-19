@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from "react";
 import { Button, Spinner } from "reactstrap";
 import { useUpdateProject, useFetchProject } from "../../queries/project_query";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { toast } from "react-toastify";
 import {
   MapContainer,
@@ -83,29 +84,38 @@ function GeoLocation({ passedId, isActive }) {
   const handleMapClick = (latlng) => {
     setMarkerPos([latlng.lat, latlng.lng]);
   };
+
+  if (project.isError) {
+    return (
+      <FetchErrorHandler error={project.error} refetch={project.refetch} />
+    );
+  }
   return (
     <>
       <div className="w-full h-full d-flex align-items-center justify-content-center">
-        <MapContainer
-          center={position}
-          zoom={13}
-          scrollWheelZoom={false}
-          style={{ height: "400px", width: "100%" }}
-          onClick={handleMapClick}
-        >
-          <MapResizer isActive={isActive} />
-          <MapClickHandler onMapClick={handleMapClick} />
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <Marker
-            draggable={true}
-            eventHandlers={eventHandlers}
-            position={markerPos}
-            ref={markerRef}
-          />
-        </MapContainer>
+        {project.isLoading ? (
+          <Spinner />
+        ) : (
+          <MapContainer
+            center={position}
+            zoom={13}
+            scrollWheelZoom={true}
+            style={{ height: "400px", width: "100%" }}
+          >
+            <MapResizer isActive={isActive} />
+            <MapClickHandler onMapClick={handleMapClick} />
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <Marker
+              draggable={true}
+              eventHandlers={eventHandlers}
+              position={markerPos}
+              ref={markerRef}
+            />
+          </MapContainer>
+        )}
       </div>
       <div className="mt-3 w-full">
         {updateProject.isPending ? (
