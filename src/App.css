@@ -32,12 +32,12 @@
   }
 }
 button {
-  font-size: calc(10px + .5vmin);
+  font-size: calc(10px + 0.5vmin);
 }
 @media (min-width: 900px) {
-    .modal-xl {
-         --bs-modal-width: 90% !important;
-    }
+  .modal-xl {
+    --bs-modal-width: 90% !important;
+  }
 }
 /*body{
   zoom:90%;
@@ -45,3 +45,9 @@ button {
 .offcanvas-backdrop{
 height: 100%;
 }*/
+
+.leaflet-container {
+  height: 600px;
+  width: 100%;
+  display: block;
+}

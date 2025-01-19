@@ -62,6 +62,7 @@ const NotificationDropdown = (props) => {
         toggle={toggleMenu}
         className="dropdown d-inline-block"
         tag="li"
+        style={{ zIndex: "999999999999999" }}
       >
         <DropdownToggle
           className="btn header-item noti-icon position-relative"

@@ -67,7 +67,7 @@ const Navbar = (props) => {
 
   return (
     <React.Fragment>
-      <div className="topnav">
+      <div className="topnav" style={{ zIndex: "" }}>
         <div className="container-fluid">
           <nav
             className="navbar navbar-light navbar-expand-lg topnav-menu"
@@ -90,6 +90,7 @@ const Navbar = (props) => {
                       <div className="arrow-down"></div>
                     </div>
                     <div
+                      style={{ zIndex: 2000 }}
                       className={classname("dropdown-menu", {
                         show: activeMenuIndex === index,
                       })}
@@ -100,6 +101,7 @@ const Navbar = (props) => {
                           to={submenu.path}
                           className="dropdown-item"
                           onClick={handleSubmenuClick} // Collapse all on click
+                          style={{ zIndex: 200 }}
                         >
                           {props.t(submenu.name)}
                         </Link>

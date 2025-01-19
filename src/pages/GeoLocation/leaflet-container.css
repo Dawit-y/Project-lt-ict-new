@@ -1,0 +1,8 @@
+.leaflet-container {
+  width: 100%;
+  height: 500px;
+}
+
+.my-leaflet-map-container img {
+  max-height: none;
+}

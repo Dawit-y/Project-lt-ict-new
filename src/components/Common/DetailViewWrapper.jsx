@@ -70,15 +70,15 @@ TabWrapper.propTypes = {
   ).isRequired,
 };
 
-export const DetailsView = ({ details,keysToRemove }) => {
+export const DetailsView = ({ details, keysToRemove }) => {
   const { t } = useTranslation();
-const removeKeys = (obj, keysToRemove) => {
-  const newObj = { ...obj }; // Create a shallow copy of the object
-  keysToRemove.forEach((key) => delete newObj[key]); // Remove the specified keys
-  return newObj;
-};
+  const removeKeys = (obj, keysToRemove) => {
+    const newObj = { ...obj }; // Create a shallow copy of the object
+    keysToRemove.forEach((key) => delete newObj[key]); // Remove the specified keys
+    return newObj;
+  };
 
-const newTransaction=removeKeys(details, keysToRemove); // Replace with keys to remove
+  const newTransaction = removeKeys(details, keysToRemove); // Replace with keys to remove
   return (
     <Table>
       <tbody>
@@ -277,6 +277,6 @@ export const PDFPreview = ({ filePath, fileSize }) => {
 };
 
 PDFPreview.propTypes = {
-  filePath: PropTypes.string.isRequired,
-  fileSize: PropTypes.number.isRequired,
+  filePath: PropTypes.string,
+  fileSize: PropTypes.number,
 };

@@ -1,113 +1,115 @@
-import React, { useState, useCallback } from "react";
-import PropTypes from "prop-types";
-import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import { Button, Spinner } from "reactstrap";
-import { useUpdateProject } from "../../queries/project_query";
+import { useUpdateProject, useFetchProject } from "../../queries/project_query";
 import { toast } from "react-toastify";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import "./leaflet-container.css";
 
-const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+const MapResizer = ({ isActive }) => {
+  const map = useMap();
+  useEffect(() => {
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 500);
+  }, [map, isActive]);
 
-const GeoLocation = (props) => {
-  const { passedId } = props;
-  const [markerPosition, setMarkerPosition] = useState({
-    lat: 9.0192,
-    lng: 38.7525,
+  return null;
+};
+
+const MapClickHandler = ({ onMapClick }) => {
+  useMapEvents({
+    click: (e) => {
+      onMapClick(e.latlng);
+    },
   });
 
-  const [viewState, setViewState] = useState({
-    latitude: 9.0192,
-    longitude: 38.7525,
-    zoom: 8,
-  });
+  return null;
+};
+
+function GeoLocation({ passedId, isActive }) {
+  const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+  const userId = storedUser?.user.usr_id;
+  const project = useFetchProject(passedId, userId);
+
+  const fetchedLocation = project?.data?.data?.prj_geo_location;
+  const isValidLocation = fetchedLocation?.includes(",");
+  const location = isValidLocation
+    ? fetchedLocation
+    : "9.033210806941447,38.753355757339804";
+
+  const [latitude, longitude] = location.split(",").map(Number);
+  const position = [latitude, longitude];
+
+  const [markerPos, setMarkerPos] = useState(position);
+  const markerRef = useRef(null);
+  const eventHandlers = useMemo(
+    () => ({
+      dragend() {
+        const marker = markerRef.current;
+        if (marker != null) {
+          setMarkerPos([marker.getLatLng().lat, marker.getLatLng().lng]);
+        }
+      },
+    }),
+    []
+  );
+
   const updateProject = useUpdateProject();
-  const handleUpdateProject = async (data) => {
+
+  const handleUpdateProject = async () => {
     try {
+      const data = {
+        prj_id: passedId,
+        prj_geo_location: `${markerPos[0]},${markerPos[1]}`,
+      };
       await updateProject.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(`Data updated successfully`, {
         autoClose: 2000,
       });
-      validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.error(`Failed to update data`, {
         autoClose: 2000,
       });
     }
-    toggle();
   };
 
-  const handleMapClick = useCallback((event) => {
-    const lat = event.detail.latLng.lat;
-    const lng = event.detail.latLng.lng;
-    setMarkerPosition({ lat, lng });
-  }, []);
-
-  const handleMarkerDragEnd = useCallback((event) => {
-    const lat = event.latLng.lat();
-    const lng = event.latLng.lng();
-    setMarkerPosition({ lat, lng });
-  }, []);
-
-  const handleZoomIn = () => {
-    setViewState((prevState) => ({
-      ...prevState,
-      zoom: Math.min(prevState.zoom + 1, 21),
-    }));
+  const handleMapClick = (latlng) => {
+    setMarkerPos([latlng.lat, latlng.lng]);
   };
-
-  const handleZoomOut = () => {
-    setViewState((prevState) => ({
-      ...prevState,
-      zoom: Math.max(prevState.zoom - 1, 1),
-    }));
-  };
-
-  const handleLocationUpdate = (passedId) => {
-    const data = {
-      prj_id: passedId,
-      prj_geo_location: `${markerPosition.lat},${markerPosition.lng}`,
-    };
-    handleUpdateProject(data);
-  };
-
   return (
-    <div style={{ position: "relative" }}>
-      <APIProvider apiKey={API_KEY}>
-        <Map
-          style={{ height: "100vh" }}
-          viewState={viewState}
-          onViewStateChange={({ viewState }) => setViewState(viewState)}
-          center={{ lat: viewState.latitude, lng: viewState.longitude }}
-          zoom={viewState.zoom}
-          gestureHandling="greedy"
-          disableDefaultUI={true}
+    <>
+      <div className="w-full h-full d-flex align-items-center justify-content-center">
+        <MapContainer
+          center={position}
+          zoom={13}
+          scrollWheelZoom={false}
+          style={{ height: "400px", width: "100%" }}
           onClick={handleMapClick}
         >
-          <Marker
-            position={markerPosition}
-            draggable={true}
-            onDragEnd={handleMarkerDragEnd}
+          <MapResizer isActive={isActive} />
+          <MapClickHandler onMapClick={handleMapClick} />
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-        </Map>
-      </APIProvider>
-
-      {/* Zoom Controls */}
-      <div className="position-absolute bottom-0 end-0 me-3 mb-5 pb-3 d-flex flex-column gap-2">
-        <Button color="primary" onClick={handleZoomIn}>
-          +
-        </Button>
-        <Button color="primary" onClick={handleZoomOut}>
-          -
-        </Button>
+          <Marker
+            draggable={true}
+            eventHandlers={eventHandlers}
+            position={markerPos}
+            ref={markerRef}
+          />
+        </MapContainer>
       </div>
-
       <div className="mt-3 w-full">
         {updateProject.isPending ? (
-          <Button
-            color="primary"
-            className="mx-auto"
-            onClick={() => handleLocationUpdate(passedId)}
-            disabled
-          >
+          <Button color="primary" className="mx-auto" disabled>
             <span className="flex align-items-center justify-content-center">
               <Spinner size={"sm"} /> <span className="ms-2">Update</span>
             </span>
@@ -116,19 +118,15 @@ const GeoLocation = (props) => {
           <Button
             color="primary"
             className="mx-auto"
-            onClick={() => handleLocationUpdate(passedId)}
+            onClick={handleUpdateProject}
             disabled={updateProject.isPending}
           >
             Update
           </Button>
         )}
       </div>
-    </div>
+    </>
   );
-};
-
-GeoLocation.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
-};
+}
 
 export default GeoLocation;

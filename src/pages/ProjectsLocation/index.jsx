@@ -1,25 +1,23 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import {
-  APIProvider,
-  Map,
-  AdvancedMarker,
-  InfoWindow,
-  Pin,
-} from "@vis.gl/react-google-maps";
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMapEvents,
+} from "react-leaflet";
 import Breadcrumb from "../../components/Common/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
+import AddressStructureForProject from "../Project/AddressStructureForProject";
 import {
   useFetchProjects,
   useSearchProjects,
 } from "../../queries/project_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
-import Spinners from "../../components/Common/Spinner";
-import AddressStructureForProject from "../Project/AddressStructureForProject";
 import { createSelectOptions } from "../../utils/commonMethods";
-const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+import Spinners from "../../components/Common/Spinner";
+import "leaflet/dist/leaflet.css";
 
 const ProjectsLocation = () => {
   const [viewState, setViewState] = useState({
@@ -45,7 +43,7 @@ const ProjectsLocation = () => {
     "pct_name_or"
   );
 
-  const { data, isLoading, error, isError, refetch } = useState("");
+  const { data, isLoading, error } = useFetchProjects(projectParams);
   const { t } = useTranslation();
 
   const parseGeoLocation = (geoLocation) => {
@@ -92,6 +90,7 @@ const ProjectsLocation = () => {
       setPrjLocationWoredaId(node.id);
     }
   };
+
   return (
     <div className="page-content">
       <div className="" style={{ position: "relative" }}>
@@ -121,59 +120,37 @@ const ProjectsLocation = () => {
               setSearchResults={setSearchResults}
               setShowSearchResult={setShowSearchResult}
             />
-            {isLoading || isSearchLoading ? (
-              <Spinners top={"top-65"} />
-            ) : markers && markers.length > 0 ? ( // Correct condition
-              <APIProvider apiKey={API_KEY}>
-                <Map
-                  defaultCenter={{
-                    lat: viewState.latitude,
-                    lng: viewState.longitude,
-                  }}
-                  defaultZoom={8}
-                  style={{ height: "100vh" }}
-                  onDrag={(e) => {
-                    setViewState({
-                      latitude: e.latLng.lat(),
-                      longitude: e.latLng.lng(),
-                      zoom: viewState.zoom,
-                    });
-                  }}
-                  options={(maps) => ({
-                    gestureHandling: "greedy",
-                    zoomControl: true,
-                    zoomControlOptions: {
-                      position: maps.ControlPosition.TOP_RIGHT,
-                    },
-                  })}
-                  reuseMaps={true}
-                  mapId={"DEMO_MAP_ID"}
-                >
-                  {markers.map((marker) => (
-                    <AdvancedMarker
-                      key={marker.id}
-                      position={{ lat: marker.latitude, lng: marker.longitude }}
-                      onMouseEnter={() => setHoveredMarker(marker.id)}
-                      onMouseLeave={() => setHoveredMarker(null)}
-                    >
-                      <Pin />
-                      {hoveredMarker === marker.id && (
-                        <InfoWindow
-                          position={{
-                            lat: marker.latitude,
-                            lng: marker.longitude,
-                          }}
-                          options={{
-                            pixelOffset: new window.google.maps.Size(0, -40),
-                          }}
-                        >
-                          <h6 className="">{marker.name}</h6>
-                        </InfoWindow>
-                      )}
-                    </AdvancedMarker>
-                  ))}
-                </Map>
-              </APIProvider>
+            {isLoading || isSearchLoading || isAddressLoading ? (
+              <div style={{ width: "100%", height: "400px" }}>
+                <Spinners />
+              </div>
+            ) : markers && markers.length > 0 ? (
+              <MapContainer
+                center={[viewState.latitude, viewState.longitude]}
+                zoom={viewState.zoom}
+                style={{ height: "400px", width: "100%", zIndex: "1" }}
+                scrollWheelZoom={false}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                {markers.map((marker) => (
+                  <Marker
+                    key={marker.id}
+                    position={[marker.latitude, marker.longitude]}
+                    eventHandlers={{
+                      mouseover: () => setHoveredMarker(marker.id),
+                    }}
+                  >
+                    {hoveredMarker === marker.id && (
+                      <Popup>
+                        <h6>{marker.name}</h6>
+                      </Popup>
+                    )}
+                  </Marker>
+                ))}
+              </MapContainer>
             ) : (
               <div className="position-absolute top-70 start-50">
                 <h6 className="mt-5 mb-1">{t("No data available")}</h6>
@@ -185,4 +162,5 @@ const ProjectsLocation = () => {
     </div>
   );
 };
+
 export default ProjectsLocation;
