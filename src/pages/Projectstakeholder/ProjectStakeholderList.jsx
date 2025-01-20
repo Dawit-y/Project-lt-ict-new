@@ -5,10 +5,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-
 import { useSearchProjectStakeholders } from "../../queries/projectstakeholder_query";
 import { useTranslation } from "react-i18next";
 import { Col, Row, Input } from "reactstrap";
@@ -27,11 +24,6 @@ const ProjectStakeholderList = () => {
   //meta title
   document.title = " ProjectStakeholder";
   const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [projectStakeholder, setProjectStakeholder] = useState(null);
-
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
@@ -41,6 +33,7 @@ const ProjectStakeholderList = () => {
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
+  const [include, setInclude] = useState(0);
   const { data, isLoading, error, isError, refetch } = useState("");
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
@@ -78,8 +71,9 @@ const ProjectStakeholderList = () => {
       ...(prjLocationWoredaId && {
         prj_location_woreda_id: prjLocationWoredaId,
       }),
+      ...(include === 1 && { include }),
     });
-  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
+  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
   const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
@@ -166,7 +160,7 @@ const ProjectStakeholderList = () => {
         cellRenderer: (params) => {
           return truncateText(params.data.psh_role, 30) || "-";
         },
-      }
+      },
     ];
     return baseColumns;
   });
@@ -186,6 +180,7 @@ const ProjectStakeholderList = () => {
             <AddressStructureForProject
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
+              setInclude={setInclude}
             />
             <div className="w-100">
               <AdvancedSearch
@@ -194,7 +189,6 @@ const ProjectStakeholderList = () => {
                 dateSearchKeys={[]}
                 dropdownSearchKeys={[]}
                 checkboxSearchKeys={[]}
-                
                 component_params={{}}
                 additionalParams={projectParams}
                 setAdditionalParams={setProjectParams}

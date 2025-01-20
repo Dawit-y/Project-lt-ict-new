@@ -82,6 +82,7 @@ const ProjectBudgetSourceList = () => {
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
+  const [include, setInclude] = useState(0);
   const { data, isLoading, error, isError, refetch } = useState("");
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
@@ -126,8 +127,9 @@ const ProjectBudgetSourceList = () => {
       ...(prjLocationWoredaId && {
         prj_location_woreda_id: prjLocationWoredaId,
       }),
+      ...(include === 1 && { include }),
     });
-  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
+  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
   const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
@@ -216,6 +218,7 @@ const ProjectBudgetSourceList = () => {
             <AddressStructureForProject
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
+              setInclude={setInclude}
             />
             <div className="w-100">
               <AdvancedSearch

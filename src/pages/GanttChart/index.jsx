@@ -70,7 +70,7 @@ const isValidDate = (dateString) => {
 };
 
 const GanttChart = ({ pld_id, name, startDate, endDate }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const ganttInitialized = useRef(false);
   const processorInitialized = useRef(false);
 
@@ -101,8 +101,6 @@ const GanttChart = ({ pld_id, name, startDate, endDate }) => {
         };
 
         if (!ganttInitialized.current) {
-          
-
           gantt.plugins({
             export_api: true,
           });
@@ -113,6 +111,8 @@ const GanttChart = ({ pld_id, name, startDate, endDate }) => {
           gantt.config.end_date = newEndDate.toISOString();
           gantt.config.scales = [{ unit: "week", step: 1, format: "%d %M" }];
           gantt.config.date_format = "%Y-%m-%d %H:%i";
+
+          // Lightbox sections with translations
           gantt.config.lightbox.sections = [
             {
               name: "text",
@@ -120,6 +120,7 @@ const GanttChart = ({ pld_id, name, startDate, endDate }) => {
               map_to: "text",
               type: "textarea",
               focus: true,
+              label: t("task_name"),
             },
             {
               name: "priority",
@@ -127,30 +128,49 @@ const GanttChart = ({ pld_id, name, startDate, endDate }) => {
               map_to: "priority",
               type: "select",
               options: [
-                { key: "Low", label: "Low" },
-                { key: "Medium", label: "Medium" },
-                { key: "High", label: "High" },
+                { key: "Low", label: t("low_priority") },
+                { key: "Medium", label: t("medium_priority") },
+                { key: "High", label: t("high_priority") },
               ],
+              label: t("priority"),
             },
             {
               name: "notes",
               height: 70,
               map_to: "description",
               type: "textarea",
+              label: t("description"),
             },
-            { name: "time", type: "duration", map_to: "auto" },
+            {
+              name: "time",
+              type: "duration",
+              map_to: "auto",
+              label: t("time"),
+            },
           ];
 
-          gantt.locale.labels.section_text = "Task Name";
-          gantt.locale.labels.section_priority = "Priority";
-          gantt.locale.labels.section_notes = "Description";
+          gantt.locale.labels.section_text = t("task_name");
+          gantt.locale.labels.section_priority = t("priority");
+          gantt.locale.labels.section_notes = t("description");
+          gantt.locale.labels.section_time = t("time");
+          gantt.locale.labels.new_task = t("new_task");
+          gantt.locale.labels.task_name = t("task_name");
+          gantt.locale.labels.start_date = t("start_time");
+          gantt.locale.labels.duration = t("duration");
+          gantt.locale.labels.icon_save = t("save");
+          gantt.locale.labels.icon_cancel = t("cancel");
+          gantt.locale.labels.icon_delete = t("delete");
+          gantt.locale.labels.column_text = t("task_name");
+          gantt.locale.labels.column_start_date = t("start_date");
+          gantt.locale.labels.column_duration = t("duration");
 
           gantt.templates.task_class = (start, end, task) => {
             if (task.priority === "High") return "high-priority";
             if (task.priority === "Medium") return "medium-priority";
             return "low-priority";
           };
-            gantt.init("gantt_here");
+
+          gantt.init("gantt_here");
           ganttInitialized.current = true;
         }
 
@@ -190,7 +210,7 @@ const GanttChart = ({ pld_id, name, startDate, endDate }) => {
     };
 
     fetchAndRenderTasks();
-  }, [pld_id, startDate, endDate]);
+  }, [pld_id, startDate, endDate, t]); // Add 't' as a dependency
 
   useEffect(() => {
     if (ganttInitialized.current) {

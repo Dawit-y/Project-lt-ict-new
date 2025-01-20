@@ -1,60 +1,17 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import axios from "axios";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
-import TableContainer from "../../components/Common/TableContainer";
-import * as Yup from "yup";
-import { useFormik } from "formik";
-import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-
-//import components
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import DeleteModal from "../../components/Common/DeleteModal";
-
-import {
-  useFetchProjectSupplimentarys,
-  useSearchProjectSupplimentarys,
-  useAddProjectSupplimentary,
-  useDeleteProjectSupplimentary,
-  useUpdateProjectSupplimentary,
-} from "../../queries/projectsupplimentary_query";
-import ProjectSupplimentaryModal from "./ProjectSupplimentaryModal";
+import { useSearchProjectSupplimentarys } from "../../queries/projectsupplimentary_query";
 import { useTranslation } from "react-i18next";
-
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
-import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
-} from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { Button, Col, Row, Input } from "reactstrap";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import AddressStructureForProject from "../Project/AddressStructureForProject";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -66,10 +23,6 @@ const ProjectSupplimentaryList = () => {
   //meta title
   document.title = " ProjectSupplimentary";
   const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [projectSupplimentary, setProjectSupplimentary] = useState(null);
 
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -80,6 +33,7 @@ const ProjectSupplimentaryList = () => {
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
+  const [include, setInclude] = useState(0);
   const { data, isLoading, error, isError, refetch } = useState("");
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
@@ -117,8 +71,9 @@ const ProjectSupplimentaryList = () => {
       ...(prjLocationWoredaId && {
         prj_location_woreda_id: prjLocationWoredaId,
       }),
+      ...(include === 1 && { include }),
     });
-  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
+  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
   const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
@@ -231,6 +186,7 @@ const ProjectSupplimentaryList = () => {
             <AddressStructureForProject
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
+              setInclude={setInclude}
             />
             <div className="w-100">
               <AdvancedSearch

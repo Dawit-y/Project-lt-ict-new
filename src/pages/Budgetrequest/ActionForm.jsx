@@ -130,9 +130,6 @@ const ActionForm = ({ isOpen, toggle, amount }) => {
       }, {});
   }
 
-  console.log("errors", validation.errors);
-  console.log("touched", validation.touched);
-
   return (
     <>
       <Modal

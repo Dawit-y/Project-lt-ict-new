@@ -81,6 +81,7 @@ import { useProjectContext } from "../../context/ProjectContext";
 import SearchForProject from "../../components/Common/SearchForProject";
 import ExportToExcel from "../../components/Common/ExportToExcel";
 import ExportToPDF from "../../components/Common/ExportToPdf";
+
 const ProjectModel = () => {
   document.title = " Project";
   const [projectMetaData, setProjectMetaData] = useState([]);
@@ -108,6 +109,7 @@ const ProjectModel = () => {
     searchParams,
     setSearchParams,
     searchData,
+    setInclude,
   } = useProjectContext();
 
   const tabMapping = {
@@ -269,20 +271,19 @@ const ProjectModel = () => {
           );
         }
       ),
-      prj_name_am:  Yup.string()
-      .matches(/^[\u1200-\u137F\s.,;!?@#$%^&*()_+\-=[\]{}|:'"<>\\/`~]+$/, t("only_amharic"))
-       .min(10, `${t('val_min_length')}`)
-    .max(100, `${t('val_max_length')}`)
-    .test(
-        "unique-prj_name_am",
-        t("Already exists"),
-        (value) => {
+      prj_name_am: Yup.string()
+        .matches(
+          /^[\u1200-\u137F\s.,;!?@#$%^&*()_+\-=[\]{}|:'"<>\\/`~]+$/,
+          t("only_amharic")
+        )
+        .min(10, `${t("val_min_length")}`)
+        .max(100, `${t("val_max_length")}`)
+        .test("unique-prj_name_am", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.prj_name_am == value && item.prj_id !== project?.prj_id
           );
-        }
-      ),
+        }),
       prj_name_en: alphanumericValidation(3, 200, true).test(
         "unique-prj_name_en",
         t("Already exists"),
@@ -575,7 +576,7 @@ const ProjectModel = () => {
         valueFormatter: (params) =>
           params.node.footer ? t("Total") : params.value, // Display "Total" for footer
       },
-       {
+      {
         field: "prj_code",
         headerName: t("prj_code"),
         sortable: true,
@@ -611,7 +612,7 @@ const ProjectModel = () => {
         headerName: t("view_details"),
         sortable: false,
         filter: false,
-       flex: 2,
+        flex: 2,
         cellRenderer: (params) => {
           if (params.node.footer) {
             return ""; // Suppress button for footer
@@ -673,10 +674,9 @@ const ProjectModel = () => {
         headerName: "...",
         cellRenderer: renderConfiguration,
         cellStyle: { overflow: "visible", zIndex: "auto" },
-        suppressMenu: true,
         resizable: true,
         minWidth: 80,
-        flex: 2
+        flex: 2,
       });
     }
     return baseColumnDefs;
@@ -753,6 +753,7 @@ const ProjectModel = () => {
             <AddressStructureForProject
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
+              setInclude={setInclude}
             />
             <div className="w-100">
               <SearchForProject

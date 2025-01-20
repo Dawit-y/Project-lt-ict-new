@@ -42,6 +42,7 @@ const ProjectPerformanceList = (props) => {
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
+  const [include, setInclude] = useState(0);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const { data, isLoading, error, isError, refetch } = useState({});
   const [transaction, setTransaction] = useState({});
@@ -121,8 +122,9 @@ const ProjectPerformanceList = (props) => {
       ...(prjLocationWoredaId && {
         prj_location_woreda_id: prjLocationWoredaId,
       }),
+      ...(include === 1 && { include }),
     });
-  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
+  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
   const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
@@ -248,6 +250,7 @@ const ProjectPerformanceList = (props) => {
             <AddressStructureForProject
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
+              setInclude={setInclude}
             />
             <div className="w-100">
               <AdvancedSearch

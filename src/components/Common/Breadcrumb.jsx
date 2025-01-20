@@ -10,7 +10,6 @@ const Breadcrumb = (props) => {
   const location = useLocation();
   const { t } = useTranslation();
 
-  // Function to generate breadcrumb items based on pathname
   const generateBreadcrumbs = () => {
     const pathParts = location.pathname.split("/").filter(Boolean);
     const breadcrumbs = [];
@@ -21,29 +20,35 @@ const Breadcrumb = (props) => {
 
     let accumulatedPath = "";
     for (let i = 0; i < pathParts.length; i++) {
-      accumulatedPath += `/${pathParts[i]}`;
+      const label = pathParts[i];
 
-      let label = pathParts[i];
-      if (label.toLowerCase() === "project" && i + 1 < pathParts.length) {
-        breadcrumbs.push({
-          path: accumulatedPath,
-          label: "Project",
-        });
-        accumulatedPath += `/${pathParts[++i]}`;
-        breadcrumbs.push({
-          path: accumulatedPath,
-          label: "Details",
-        });
+      // Skip numeric parts (e.g., IDs like 23)
+      if (!isNaN(label)) {
+        accumulatedPath += `/${label}`;
         continue;
-      } else if (label.includes("_")) {
-        label = label
-          .split("_")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" ");
-      } else {
-        label = label.charAt(0).toUpperCase() + label.slice(1);
       }
 
+      accumulatedPath += `/${label}`;
+
+      // Special case for `/Project/:id` to add "Details"
+      if (
+        label.toLowerCase() === "project" &&
+        i + 1 < pathParts.length &&
+        !isNaN(pathParts[i + 1]) && // Ensure the next part is numeric
+        i + 2 === pathParts.length // Ensure there are no further segments
+      ) {
+        breadcrumbs.push({
+          path: accumulatedPath,
+          label: "project",
+        });
+        breadcrumbs.push({
+          path: accumulatedPath,
+          label: "details",
+        });
+        break;
+      }
+
+      // Add other meaningful parts as breadcrumbs
       breadcrumbs.push({
         path: accumulatedPath,
         label,
@@ -68,7 +73,7 @@ const Breadcrumb = (props) => {
               <IoArrowBackCircleOutline size={30} className="" />
             </Link>
             <h4 className="mb-0 font-size-18 align-middle">
-              {breadcrumbs[breadcrumbs.length - 1]?.label || ""}
+              {t(`${breadcrumbs[breadcrumbs.length - 1]?.label}`) || ""}
             </h4>
           </div>
 
@@ -80,7 +85,7 @@ const Breadcrumb = (props) => {
                   className="d-flex align-items-center justify-content-center gap-1 text-decoration-none"
                 >
                   <AiOutlineHome />
-                  <span>{"Home"}</span>
+                  <span>{t("home_page")}</span>
                 </Link>
               </BreadcrumbItem>
               {breadcrumbs.map((breadcrumb, index) => (
@@ -89,7 +94,7 @@ const Breadcrumb = (props) => {
                   active={index === breadcrumbs.length - 1}
                 >
                   {index === breadcrumbs.length - 1 ? (
-                    `${t(breadcrumb.label)}`
+                    t(`${breadcrumb.label}`)
                   ) : (
                     <Link to={breadcrumb.path}>{t(`${breadcrumb.label}`)}</Link>
                   )}

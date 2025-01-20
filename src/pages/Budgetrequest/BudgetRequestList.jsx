@@ -58,6 +58,7 @@ const statusClasses = {
   Requested: "secondary",
 };
 import AddressStructureForProject from "../Project/AddressStructureForProject";
+import { setIn } from "formik";
 const BudgetRequestListModel = () => {
   //  get passed data from tab
 
@@ -85,6 +86,7 @@ const BudgetRequestListModel = () => {
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
+  const [include, setInclude] = useState(0);
 
   const [transaction, setTransaction] = useState({});
 
@@ -162,29 +164,29 @@ const BudgetRequestListModel = () => {
         sortable: true,
         filter: true,
         valueFormatter: (params) => {
-      if (params.value != null) {
-        return new Intl.NumberFormat("en-US", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }).format(params.value);
-      }
-      return "0.00"; // Default value if null or undefined
-    }
+          if (params.value != null) {
+            return new Intl.NumberFormat("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(params.value);
+          }
+          return "0.00"; // Default value if null or undefined
+        },
       },
       {
         headerName: t("bdr_released_amount"),
         field: "bdr_released_amount",
         sortable: true,
         filter: true,
-         valueFormatter: (params) => {
-      if (params.value != null) {
-        return new Intl.NumberFormat("en-US", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }).format(params.value);
-      }
-      return "0.00"; // Default value if null or undefined
-    }
+        valueFormatter: (params) => {
+          if (params.value != null) {
+            return new Intl.NumberFormat("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(params.value);
+          }
+          return "0.00"; // Default value if null or undefined
+        },
       },
       {
         headerName: t("bdr_requested_date_gc"),
@@ -288,9 +290,6 @@ const BudgetRequestListModel = () => {
     gridRef.current.api.setRowData(showSearchResults ? results : data);
   };
 
-  if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
-  }
   useEffect(() => {
     setProjectParams({
       ...(prjLocationRegionId && {
@@ -300,8 +299,10 @@ const BudgetRequestListModel = () => {
       ...(prjLocationWoredaId && {
         prj_location_woreda_id: prjLocationWoredaId,
       }),
+      ...(include === 1 && { include }),
     });
-  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
+  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
+
   const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
@@ -317,6 +318,10 @@ const BudgetRequestListModel = () => {
       setShowSearchResult(false);
     }
   };
+
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
   return (
     <React.Fragment>
       <BudgetRequestListModal
@@ -335,6 +340,7 @@ const BudgetRequestListModel = () => {
             <AddressStructureForProject
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
+              setInclude={setInclude}
             />
             <div className="w-100">
               <AdvancedSearch

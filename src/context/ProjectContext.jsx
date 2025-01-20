@@ -16,6 +16,7 @@ const ProjectProvider = ({ children }) => {
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
+  const [include, setInclude] = useState(0);
 
   const [params, setParams] = useState({});
   const [searchParams, setSearchParams] = useState({});
@@ -52,8 +53,9 @@ const ProjectProvider = ({ children }) => {
       ...(prjLocationWoredaId && {
         prj_location_woreda_id: prjLocationWoredaId,
       }),
+      ...(include === 1 && { include: include }),
     });
-  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
+  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
 
   if (isSrError) {
     return <FetchErrorHandler error={srError} refetch={search} />;
@@ -83,6 +85,7 @@ const ProjectProvider = ({ children }) => {
         searchParams,
         setSearchParams,
         searchData,
+        setInclude,
       }}
     >
       {children}

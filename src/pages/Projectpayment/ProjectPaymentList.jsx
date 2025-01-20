@@ -18,6 +18,7 @@ import {
 import AddressStructureForProject from "../Project/AddressStructureForProject";
 import { useFetchPaymentCategorys } from "../../queries/paymentcategory_query";
 import { createSelectOptions } from "../../utils/commonMethods";
+
 const ProjectPaymentList = () => {
   document.title = "Project Payment List";
   const { t } = useTranslation();
@@ -31,12 +32,13 @@ const ProjectPaymentList = () => {
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
+  const [include, setInclude] = useState(0);
   const { data, isLoading, error, isError, refetch } = useState("");
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
   const { data: paymentCategoryData } = useFetchPaymentCategorys();
-   const paymentCategoryOptions = createSelectOptions(
+  const paymentCategoryOptions = createSelectOptions(
     paymentCategoryData?.data || [],
     "pyc_id",
     "pyc_name_or"
@@ -84,8 +86,9 @@ const ProjectPaymentList = () => {
       ...(prjLocationWoredaId && {
         prj_location_woreda_id: prjLocationWoredaId,
       }),
+      ...(include === 1 && { include }),
     });
-  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
+  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
   const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
@@ -153,14 +156,14 @@ const ProjectPaymentList = () => {
         sortable: true,
         filter: true,
         valueFormatter: (params) => {
-      if (params.value != null) {
-        return new Intl.NumberFormat("en-US", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }).format(params.value);
-      }
-      return "0.00"; // Default value if null or undefined
-    }
+          if (params.value != null) {
+            return new Intl.NumberFormat("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(params.value);
+          }
+          return "0.00"; // Default value if null or undefined
+        },
       },
       {
         headerName: t("prp_payment_percentage"),
@@ -170,7 +173,7 @@ const ProjectPaymentList = () => {
         cellRenderer: (params) => {
           return truncateText(params.data.prp_payment_percentage, 30) || "-";
         },
-      }
+      },
     ];
     return baseColumnDefs;
   });
@@ -186,6 +189,7 @@ const ProjectPaymentList = () => {
             <AddressStructureForProject
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
+              setInclude={setInclude}
             />
             <div className="w-100">
               <AdvancedSearch

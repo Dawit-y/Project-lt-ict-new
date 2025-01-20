@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState,useRef } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
@@ -48,7 +48,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -73,12 +73,13 @@ const ProjectContractorList = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-   const [projectParams, setProjectParams] = useState({});
+  const [projectParams, setProjectParams] = useState({});
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
-  const { data, isLoading, error, isError, refetch } =  useState("");
+  const [include, setInclude] = useState(0);
+  const { data, isLoading, error, isError, refetch } = useState("");
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
@@ -101,7 +102,6 @@ const ProjectContractorList = () => {
   };
   //START FOREIGN CALLS
 
-
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
@@ -116,9 +116,11 @@ const ProjectContractorList = () => {
       ...(prjLocationWoredaId && {
         prj_location_woreda_id: prjLocationWoredaId,
       }),
+      ...(include === 1 && { include }),
     });
-  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
-   const handleNodeSelect = (node) => {
+  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
+
+  const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
       setPrjLocationZoneId(null); // Clear dependent states
@@ -131,7 +133,7 @@ const ProjectContractorList = () => {
     }
   };
 
-const columnDefs = useMemo(() => {
+  const columnDefs = useMemo(() => {
     const baseColumnDefs = [
       {
         headerName: t("S.N"),
@@ -155,7 +157,7 @@ const columnDefs = useMemo(() => {
         field: "prj_code",
         sortable: true,
         filter: true,
-        hide:true,
+        hide: true,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_code, 35) || "-";
         },
@@ -169,7 +171,7 @@ const columnDefs = useMemo(() => {
           return truncateText(params.data.cni_name, 35) || "-";
         },
       },
-     
+
       {
         headerName: t("cni_contractor_type"),
         field: "cni_contractor_type",
@@ -179,7 +181,7 @@ const columnDefs = useMemo(() => {
           return truncateText(params.data.cni_contractor_type, 35) || "-";
         },
       },
-       {
+      {
         headerName: t("cni_tin_num"),
         field: "cni_tin_num",
         sortable: true,
@@ -206,18 +208,20 @@ const columnDefs = useMemo(() => {
           return truncateText(params.data.cni_total_contract_price, 35) || "-";
         },
       },
-     
+
       {
         headerName: t("cni_contract_start_date_gc"),
         field: "cni_contract_start_date_gc",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.cni_contract_start_date_gc, 35) || "-";
+          return (
+            truncateText(params.data.cni_contract_start_date_gc, 35) || "-"
+          );
         },
       },
 
-        {
+      {
         headerName: t("cni_contract_end_date_gc"),
         field: "cni_contract_end_date_gc",
         sortable: true,
@@ -237,7 +241,7 @@ const columnDefs = useMemo(() => {
         },
       },
 
-       {
+      {
         headerName: t("cni_phone_number"),
         field: "cni_phone_number",
         sortable: true,
@@ -245,13 +249,13 @@ const columnDefs = useMemo(() => {
         cellRenderer: (params) => {
           return truncateText(params.data.cni_phone_number, 35) || "-";
         },
-      }
+      },
     ];
     return baseColumnDefs;
   });
 
   //START UNCHANGED
-  
+
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
@@ -264,71 +268,76 @@ const columnDefs = useMemo(() => {
             breadcrumbItem={t("project_contract_list")}
           />
           <div className="w-100 d-flex gap-2">
-            <AddressStructureForProject onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />
+            <AddressStructureForProject
+              onNodeSelect={handleNodeSelect}
+              setIsAddressLoading={setIsAddressLoading}
+              setInclude={setInclude}
+            />
             <div className="w-100">
-          <AdvancedSearch
-            searchHook={useSearchProjectContractors}
-            textSearchKeys={["prj_name", "prj_code"]}
-            dateSearchKeys={["contractsign_date"]}
-            dropdownSearchKeys={[]}
-            checkboxSearchKeys={[]}
-            additionalParams={projectParams}
-            setAdditionalParams={setProjectParams}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          />
-          {isLoading || isSearchLoading ? (
-            <Spinners />
-          ) : (
-            <div
-              className="ag-theme-alpine"
-              style={{ height: "100%", width: "100%" }}
-            >
-              {/* Row for search input and buttons */}
-              <Row className="mb-3">
-                <Col sm="12" md="6">
-                  {/* Search Input for  Filter */}
-                  <Input
-                    type="text"
-                    placeholder="Search..."
-                    onChange={(e) => setQuickFilterText(e.target.value)}
-                    className="mb-2"
-                    style={{ width: "50%", maxWidth: "400px" }}
-                  />
-                </Col>
-                <Col sm="12" md="6" className="text-md-end"></Col>
-              </Row>
+              <AdvancedSearch
+                searchHook={useSearchProjectContractors}
+                textSearchKeys={["prj_name", "prj_code"]}
+                dateSearchKeys={["contractsign_date"]}
+                dropdownSearchKeys={[]}
+                checkboxSearchKeys={[]}
+                additionalParams={projectParams}
+                setAdditionalParams={setProjectParams}
+                onSearchResult={handleSearchResults}
+                setIsSearchLoading={setIsSearchLoading}
+                setSearchResults={setSearchResults}
+                setShowSearchResult={setShowSearchResult}
+              />
+              {isLoading || isSearchLoading ? (
+                <Spinners />
+              ) : (
+                <div
+                  className="ag-theme-alpine"
+                  style={{ height: "100%", width: "100%" }}
+                >
+                  {/* Row for search input and buttons */}
+                  <Row className="mb-3">
+                    <Col sm="12" md="6">
+                      {/* Search Input for  Filter */}
+                      <Input
+                        type="text"
+                        placeholder="Search..."
+                        onChange={(e) => setQuickFilterText(e.target.value)}
+                        className="mb-2"
+                        style={{ width: "50%", maxWidth: "400px" }}
+                      />
+                    </Col>
+                    <Col sm="12" md="6" className="text-md-end"></Col>
+                  </Row>
 
-              {/* AG Grid */}
-              <div>
-                <AgGridReact
-                  ref={gridRef}
-                  rowData={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
-                  columnDefs={columnDefs}
-                  pagination={true}
-                  paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                  paginationPageSize={10}
-                  quickFilterText={quickFilterText}
-                  onSelectionChanged={onSelectionChanged}
-                  rowHeight={30} // Set the row height here
-                  animateRows={true} // Enables row animations
-                  domLayout="autoHeight" // Auto-size the grid to fit content
-                  onGridReady={(params) => {
-                    params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                  }}
-                />
-              </div>
+                  {/* AG Grid */}
+                  <div>
+                    <AgGridReact
+                      ref={gridRef}
+                      rowData={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
+                      columnDefs={columnDefs}
+                      pagination={true}
+                      paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+                      paginationPageSize={10}
+                      quickFilterText={quickFilterText}
+                      onSelectionChanged={onSelectionChanged}
+                      rowHeight={30} // Set the row height here
+                      animateRows={true} // Enables row animations
+                      domLayout="autoHeight" // Auto-size the grid to fit content
+                      onGridReady={(params) => {
+                        params.api.sizeColumnsToFit(); // Size columns to fit the grid width
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
-      </div>    
       </div>
-      </div>
-
     </React.Fragment>
   );
 };

@@ -63,7 +63,7 @@ const ProjectPlanModel = () => {
   const id = Number(location.pathname.split("/")[2]);
   const param = { pld_project_id: id };
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -164,15 +164,20 @@ const ProjectPlanModel = () => {
       //pld_project_id: Yup.string().required(t("pld_project_id")),
       pld_budget_year_id: numberValidation(1, 20, true),
       //pld_start_date_ec: Yup.string().required(t("pld_start_date_ec")),
-      pld_start_date_gc: Yup.string().required(t("pld_start_date_gc")),
-     pld_start_date_gc: Yup.string().required(t("pld_start_date_gc"))
-      .test(
-      'is-before-end-date',
-      'start date must be earlier than or equal to end date',
-      function (value) {
-        const { pld_end_date_gc } = this.parent; // Access other fields in the form
-        return !pld_end_date_gc || !value || new Date(value) <= new Date(pld_end_date_gc);
-      }),
+      pld_start_date_gc: Yup.string()
+        .required(t("pld_start_date_gc"))
+        .test(
+          "is-before-end-date",
+          "start date must be earlier than or equal to end date",
+          function (value) {
+            const { pld_end_date_gc } = this.parent; // Access other fields in the form
+            return (
+              !pld_end_date_gc ||
+              !value ||
+              new Date(value) <= new Date(pld_end_date_gc)
+            );
+          }
+        ),
       pld_description: alphanumericValidation(3, 425, false),
       //pld_status: Yup.string().required(t("pld_status")),
     }),
@@ -242,6 +247,18 @@ const ProjectPlanModel = () => {
       setModal(true);
     }
   };
+
+  const [rerenderKey, setRerenderKey] = useState(0);
+  useEffect(() => {
+    const handleLanguageChange = () => {
+      setRerenderKey((prevState) => prevState + 1);
+    };
+    i18n.on("languageChanged", handleLanguageChange);
+
+    return () => {
+      i18n.off("languageChanged", handleLanguageChange);
+    };
+  }, [i18n, t]);
 
   const handleProjectPlanClick = (arg) => {
     const projectPlan = arg;
@@ -500,6 +517,7 @@ const ProjectPlanModel = () => {
                   </Card>
                   <Col lg={12}>
                     <GanttChart
+                      key={rerenderKey}
                       pld_id={projectPlanSelected.pld_id}
                       name={projectPlanSelected.pld_name}
                       startDate={projectPlanSelected.pld_start_date_gc}

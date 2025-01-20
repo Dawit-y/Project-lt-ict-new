@@ -15,7 +15,7 @@ const TreeNode = ({ node, onNodeClick, level = 0 }) => {
     nodeRef.current.classList.add("bg-info-subtle");
     onNodeClick(node);
   };
-  
+
   return (
     <div
       className="position-relative ms-3 py-1"
