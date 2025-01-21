@@ -75,13 +75,12 @@ import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import { createSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import { formatDate } from "../../utils/commonMethods";
 import AddressStructureForProject from "./AddressStructureForProject";
 import { useProjectContext } from "../../context/ProjectContext";
 import SearchForProject from "../../components/Common/SearchForProject";
 import ExportToExcel from "../../components/Common/ExportToExcel";
 import ExportToPDF from "../../components/Common/ExportToPdf";
-
+import PrintPage from "../../components/Common/PrintPage";
 const ProjectModel = () => {
   document.title = " Project";
   const [projectMetaData, setProjectMetaData] = useState([]);
@@ -159,12 +158,12 @@ const ProjectModel = () => {
   const handleAddProject = async (data) => {
     try {
       await addProject.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+      toast.error(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -174,12 +173,12 @@ const ProjectModel = () => {
   const handleUpdateProject = async (data) => {
     try {
       await updateProject.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.error(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -190,11 +189,11 @@ const ProjectModel = () => {
       try {
         const id = project.prj_id;
         await deleteProject.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+        toast.error(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+        toast.error(t("delete_success"), {
           autoClose: 2000,
         });
       }
@@ -630,17 +629,15 @@ const ProjectModel = () => {
     ];
     // Add actions column based on privileges
     if (1 == 1) {
-      baseColumnDefs.push({
+     baseColumnDefs.push({
         headerName: t("actions"),
         field: "actions",
         flex: 2,
         cellRenderer: (params) => {
-          if (!params.data || params.node.group || params.node.footer)
-            return null; // Suppress in group/footer rows
           const { is_editable, is_deletable } = params.data || {};
           return (
             <div className="action-icons">
-              {is_editable && (
+              {(searchData?.previledge?.is_role_editable==1 && params.data.is_editable==1) && (
                 <Link
                   to="#"
                   className="text-success me-2"
@@ -800,9 +797,11 @@ const ProjectModel = () => {
                       md="6"
                       className="text-md-end d-flex align-items-center justify-content-end gap-2"
                     >
+                      {(searchData?.previledge?.is_role_can_add==1) && (
                       <Button color="success" onClick={handleProjectClicks}>
                         {t("add")}
                       </Button>
+                      )}
                       <ExportToExcel
                         tableData={searchData?.data || []}
                         tablename={"projects"}
@@ -813,6 +812,14 @@ const ProjectModel = () => {
                         tablename={"projects"}
                         excludeKey={["is_editable", "is_deletable"]}
                       />
+                      <PrintPage
+                        tableData={searchData?.data || []}
+                        tablename={t("Projects")}
+                        excludeKey={["is_editable", "is_deletable"]}
+                        gridRef={gridRef}
+                        columnDefs={columnDefs}
+                        columnsToIgnore="3"
+                      /> 
                     </Col>
                   </Row>
                   <div style={{ height: "600px" }}>
@@ -828,7 +835,7 @@ const ProjectModel = () => {
                       paginationPageSize={10}
                       quickFilterText={quickFilterText}
                       onSelectionChanged={onSelectionChanged}
-                      rowHeight={35} // Set the row height here
+                      rowHeight={32} // Set the row height here
                       animateRows={true} // Enables row animations
                       domLayout="autoHeight" // Auto-size the grid to fit content
                       onGridReady={(params) => {

@@ -433,7 +433,6 @@ const PermissionModel = (props) => {
   if (isError) {
     <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
   return (
     <React.Fragment>
       <PermissionModal

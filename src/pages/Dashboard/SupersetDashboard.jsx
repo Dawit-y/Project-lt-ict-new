@@ -1,36 +1,40 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  Button,
   Col,
   Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
   Card,
-  CardBody,
-  FormGroup,
-  Badge,
-  InputGroup,
-  InputGroupText,
+  CardBody
 } from "reactstrap";
-const SupersetDashboard = () => {
+const SupersetDashboard = (dashboardPath) => {
+  const [dashboardUrl, setDashboardUrl] = useState("");
+  const storedUser = sessionStorage.getItem("authUser");
+  const User = storedUser ? JSON.parse(storedUser) : null; // Handle null case
+  const zoneId = User.user.usr_zone_id;
+  const sectorId = User.user.usr_sector_id;
+  const departmentId = User.user.departmentId; 
+  useEffect(() => {
+    // Construct the iframe URL with dynamic parameters
+   //const baseUrl = "http://196.188.182.83:1110/superset/dashboard/12/?standalone=true";
+  //const baseUrl = "https://report.pms.oro.gov.et/superset/dashboard/p/elMJeM8JXQr/";
+   const baseUrl=dashboardPath.dashboardPath;
+   const url = new URL(baseUrl);
+    // Add query parameters
+   url.searchParams.set("standalone", "true");
+   url.searchParams.set("zone_id", zoneId);
+   url.searchParams.set("sector_id", sectorId);
+   url.searchParams.set("department_id", departmentId);
+   const fullUrl = url.toString();
+    // Update the iframe URL
+   setDashboardUrl(fullUrl);
+ }, [User]);
   return (
-     <React.Fragment>
-     <div className="page-content">
-     <div className="container-fluid1">
-     <Row>
-              <Col xs="12">
-<iframe width="100%" height="1200" seamless="" frameborder="0" scrolling="no" src="http://196.188.182.83:1110/superset/dashboard/12/?standalone=true&Godina=Baalee&native_filters_key=ceT6HsuMr90bgwinMUUj4-A4VmFGhZfU0i2j87cn1-Evg7LC9APp7VyC4jWIbUj1"/>
-</Col>
-</Row>
-</div>
-</div>
- </React.Fragment>
-  );
+   <Row>
+   <Col xs="12">
+   <iframe width="100%" height="1200" seamless=""
+   scrolling="no" 
+   src={dashboardUrl}/>
+   </Col>
+   </Row>
+   );
 };
 export default SupersetDashboard;

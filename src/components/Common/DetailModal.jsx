@@ -22,8 +22,9 @@ const DetailModal = (props) => {
   );
 
   const printDetail = () => {
+    console.log(details);
     const modalContent = document.getElementById("printable-content").innerHTML;
-    const printWindow = window.open("", "_blank", "width=800,height=600");
+    const printWindow = window.open("", "_blank", `width=${window.screen.width},height=${window.screen.height}`);
     printWindow.document.open();
     printWindow.document.write(`
       <html>

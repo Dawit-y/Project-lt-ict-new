@@ -5,7 +5,7 @@ import { useAccessToken } from "../../helpers/jwt-token-access/accessToken";
 import { getProjectDashboard } from "../../helpers/Project_Backend";
 //i18n
 import { withTranslation } from "react-i18next";
-
+import SupersetDashboard from "../../pages/Dashboard/SupersetDashboard";
 const Dashboard = () => {
   const accessToken = useAccessToken();
   const role = "Deputy";
@@ -51,20 +51,15 @@ const Dashboard = () => {
   //meta title
   return (
     <div className="page-content">
-      <div className="container-fluid">
+      <div className="container-fluid1">
         <div className="row">
-          {roleData.map((component, index) => (
+          {roleData.map((supersetPath, index) => (
             <div
               key={index}
-              className={component.class_name} // 3 columns, 4 units each (12 / 3 = 4)
             >
-              {component?.data ? (
-                <DashboardComponent
-                  dashboardType={component.dashboard_type}
-                  objectName={component.name}
-                  columnList={component.column_list}
-                  tableData={component.data}
-                />
+              {supersetPath ? (
+                <SupersetDashboard 
+                dashboardPath={supersetPath.superset_url} />
               ) : (
                 <div>Loading data...</div>
               )}
@@ -75,5 +70,4 @@ const Dashboard = () => {
     </div>
   );
 };
-
 export default withTranslation()(Dashboard);

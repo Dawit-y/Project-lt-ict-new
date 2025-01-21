@@ -58,7 +58,7 @@ const AddressStructureForProject = ({
             type="checkbox"
             onChange={handleCheckboxChange}
           />
-          <Label for="include">Include Sub Addresses</Label>
+          <Label for="include">{t('include_sub_address')}</Label>
         </Col>
       </>
 

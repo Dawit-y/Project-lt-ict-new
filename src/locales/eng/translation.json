@@ -1030,5 +1030,11 @@
   "new_task": "New Task",
   "home_page": "Home",
   "details": "Details",
-  "Project": "Project"
+  "Project": "Project",
+"data_created_date":"Data Created Date",
+"data_created_by":"Created By",
+"print":"Print",
+"print_tooltip":"Click here to print",
+"only_amharic":"Only amharic text is allowed",
+"include_sub_address":"Include Sub-Address"
 }

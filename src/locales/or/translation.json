@@ -1120,5 +1120,11 @@
   "new_task": "hojii haaraa",
   "home_page": "fuula jalqabaa",
   "details": "gadifageenyaan",
-  "Project": "Pirojektii"
+  "Project": "Pirojektii",
+    "data_created_date":"Guyyaa daataan uumame",
+"data_created_by":"Maqaa nama daataa uume",
+"print":"Maxxansi",
+"print_tooltip":"Maxxansi",
+"only_amharic":"afaan amaariffaan qofa barreessi",
+"include_sub_address":"Include Sub-Address"
 }

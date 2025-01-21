@@ -340,9 +340,7 @@ const UserRoleModel = (props) => {
         description={transaction.url_description}
         fields={[
           { label: "Role Name", key: "rol_name" },
-          { label: "Status", key: "url_status" },
-          { label: "Is Deletable", key: "is_deletable" },
-          { label: "Is Editable", key: "is_editable" },
+          { label: "Status", key: "url_status" }
         ]}
         footerText="Close"
       />

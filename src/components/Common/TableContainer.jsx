@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState, useRef } from "react";
 import { Row, Table, Button, Col } from "reactstrap";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-
+import {FOOTER_TEXT,COPYRIGHT_YEAR} from "../../constants/constantFile";
 import {
   useReactTable,
   getCoreRowModel,
@@ -14,6 +14,8 @@ import {
 
 import { rankItem } from "@tanstack/match-sorter-utils";
 import ExportToExcel from "../../components/Common/ExportToExcel";
+import PrintHtmlPage from "../../components/Common/PrintHtmlPage";
+
 import ExportToPDF from "./ExportToPdf";
 
 // Column Filter
@@ -91,6 +93,7 @@ const TableContainer = ({
   isJobListGlobalFilter,
   isExcelExport = false,
   isPdfExport = false,
+  isPrint = true,
   excludeKey = [],
   tableName = "",
 }) => {
@@ -99,7 +102,6 @@ const TableContainer = ({
   const { t } = useTranslation();
   const pageIndexRef = useRef(0); // Store the page index
   const [pageSize, setPageSize] = useState(10);
-
   const fuzzyFilter = (row, columnId, value, addMeta) => {
     const itemRank = rankItem(row.getValue(columnId), value);
     addMeta({ itemRank });
@@ -229,10 +231,18 @@ const TableContainer = ({
                 excludeKey={excludeKey}
               />
             )}
+            {isPrint && (
+            <PrintHtmlPage
+                tableData={data}
+                tablename={tableName}
+                excludeKey={excludeKey}
+              />
+          )}
           </div>
         </Col>
       </Row>
       <div className={divClassName ? divClassName : "table-responsive"}>
+      <div id='printable-content'>
         <Table
           hover
           className={`${tableClass} table-sm table-bordered table-striped`}
@@ -304,7 +314,7 @@ const TableContainer = ({
             )}
           </tbody>
         </Table>
-
+        </div>
         {isPagination && (
           <Row>
             <Col sm={12} md={5}>

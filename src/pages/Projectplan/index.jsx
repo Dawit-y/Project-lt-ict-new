@@ -9,6 +9,7 @@ import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
 import GanttChart from "../GanttChart/index.jsx";
+import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import {
   useFetchProjectPlans,
   useSearchProjectPlans,
@@ -80,11 +81,6 @@ const ProjectPlanModel = () => {
   const { data, isLoading, error, isError, refetch } =
     useFetchProjectPlans(param);
   const { data: budgetYearData } = useFetchBudgetYears();
-  const budgetYearOptions = createSelectOptions(
-    budgetYearData?.data || [],
-    "bdy_id",
-    "bdy_name"
-  );
   const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
   const project = useFetchProject(id, userId);
@@ -92,7 +88,14 @@ const ProjectPlanModel = () => {
   const addProjectPlan = useAddProjectPlan();
   const updateProjectPlan = useUpdateProjectPlan();
   const deleteProjectPlan = useDeleteProjectPlan();
-
+  const budgetYearMap = useMemo(() => {
+    return (
+      budgetYearData?.data?.reduce((acc, budget_year) => {
+        acc[budget_year.bdy_id] = budget_year.bdy_name;
+        return acc;
+      }, {}) || {}
+    );
+  }, [budgetYearData]);
   //START CRUD
   const handleAddProjectPlan = async (data) => {
     try {
@@ -323,7 +326,7 @@ const ProjectPlanModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdy_name, 30) || "-"}
+              {budgetYearMap[cellProps.row.original.pld_budget_year_id] || ""}
             </span>
           );
         },
@@ -459,10 +462,23 @@ const ProjectPlanModel = () => {
 
   return (
     <React.Fragment>
-      <ProjectPlanModal
+      <DynamicDetailsModal
         isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
+        toggle={toggleViewModal} // Function to close the modal
+        data={transaction} // Pass transaction as data to the modal
+        title={t('project_payment')}
+        description={transaction.pld_description}
+        dateInEC={transaction.prp_payment_date_gc}
+        dateInGC={transaction.prp_payment_date_gc}
+        fields={[
+          { label: t('pld_name'), key: "pld_name" },
+          { label: t('pld_budget_year_id'), key: "prp_type", value:budgetYearMap[transaction.pld_budget_year_id]},
+          { label: t('prp_payment_percentage'), key: "prp_payment_percentage" },
+          { label: t('pld_start_date_gc'), key: "pld_start_date_gc" },
+          { label: t('pld_end_date_gc'), key: "pld_end_date_gc" },
+          { label: t('pld_create_time'), key: "pld_create_time" }
+        ]}
+        footerText={t('close')}
       />
       <DeleteModal
         show={deleteModal}
@@ -586,10 +602,10 @@ const ProjectPlanModel = () => {
                           : false
                       }
                     >
-                      <option value={null}>Select Project Category</option>
-                      {budgetYearOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {t(`${option.label}`)}
+                      <option value={null}>{t("select_one")}</option>
+                      {budgetYearData?.data?.map((data) => (
+                        <option key={data.bdy_id} value={data.bdy_id}>
+                          {data.bdy_name}
                         </option>
                       ))}
                     </Input>

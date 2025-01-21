@@ -71,6 +71,7 @@ const RolesModel = () => {
       toast.success(t('add_success'), {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
       toast.success(t('add_failure'), {
         autoClose: 2000,
@@ -123,7 +124,7 @@ const RolesModel = () => {
       is_editable: (roles && roles.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      rol_name: alphanumericValidation(3, 20, true).test(
+      rol_name: alphanumericValidation(3, 40, true).test(
         "unique-role-id",
         t("Already exists"),
         (value) => {
@@ -420,7 +421,7 @@ const RolesModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={40}
                     />
                     {validation.touched.rol_name &&
                     validation.errors.rol_name ? (
@@ -444,7 +445,7 @@ const RolesModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={50}
+                      maxLength={250}
                     />
                     {validation.touched.rol_description &&
                     validation.errors.rol_description ? (
@@ -493,7 +494,6 @@ const RolesModel = () => {
           </Modal>
         </div>
       </div>
-
       {showCanvas && (
         <RightOffCanvas
           handleClick={handleClick}
