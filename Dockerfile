@@ -15,7 +15,7 @@ RUN useradd -m -s /bin/bash jenkins && \
     echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 # Create a Docker group and add Jenkins to it
-ARG DOCKER_GID=998  # Change this to match your host's Docker GID
+ARG DOCKER_GID=988  # Change this to match your host's Docker GID
 RUN groupadd -g ${DOCKER_GID} docker && \
     usermod -aG docker jenkins
 
