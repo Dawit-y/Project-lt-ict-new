@@ -43,7 +43,7 @@ pipeline {
     // --------------------------
     stages {
 
-        /*
+      
         stage('Clean Workspace and Pull') {
             steps {
                 script {
@@ -81,7 +81,7 @@ pipeline {
                 }
             }
         }
-        */
+       
 
         stage('SSL') {
             steps {
