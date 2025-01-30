@@ -17,9 +17,9 @@ pipeline {
         REGISTRY_CREDENTIALS = 'dockerhub-credentials'
         
         // Environment file + Ports
-        ENV_FILE_PATH      = '/home/testthree/pms_files/dev-frontend.env'
-     SSL_CERTIFICATE    = '/home/testthree/certs/fullchain.pem'
-        SSL_CERTIFICATE_KEY = '/home/testthree/certs/privkey.pem'
+        ENV_FILE_PATH      = '/home/pms_files/dev-frontend.env'
+     SSL_CERTIFICATE    = '/home/certs/fullchain.pem'
+        SSL_CERTIFICATE_KEY = '/home/certs/privkey.pem'
 
         PORT_EXT       = '1212'
         PORT_INT       = '80'
