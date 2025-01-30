@@ -17,7 +17,7 @@ pipeline {
         REGISTRY_CREDENTIALS = 'dockerhub-credentials'
         
         // Environment file + Ports
-        ENV_FILE_PATH        = '/home/pms_files/dev-frontend.env'
+        ENV_FILE_PATH        = '/var/jenkins_home/pms_files/dev-frontend.env'
         SSL_CERTIFICATE      = '/home/certs/fullchain.pem'
         SSL_CERTIFICATE_KEY  = '/home/certs/privkey.pem'
 
