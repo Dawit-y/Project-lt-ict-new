@@ -14,7 +14,7 @@ pipeline {
         DOCKER_REGISTRY_URL      = 'https://index.docker.io/v1/'
 
         // PROD .env file on Jenkins and container path
-        PROD_ENV_FILE_PATH       = '/home/testthree/pms_files/prod-frontend.env'
+        PROD_ENV_FILE_PATH       = '/var/jenkins_home/pms_files/prod-frontend.env'
         PROD_ENV_CONTAINER_PATH  = '/app/.env'
 
         // PROD container name + port settings
