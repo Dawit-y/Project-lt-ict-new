@@ -3,10 +3,6 @@ FROM node:16.20-alpine
 # 1) Update and install Nginx
 RUN apk update && apk add --no-cache nginx
 
-ARG DOCKER_GID=988 
-RUN groupadd -for docker -g ${DOCKER_GID} && \
-    usermod -aG docker jenkins
-    
 # Explicitly create necessary directories (if needed)
 RUN mkdir -p /etc/nginx/conf.d /usr/share/nginx/html
 
@@ -18,8 +14,7 @@ COPY package*.json ./
 
 RUN npm install --legacy-peer-deps
 
-
-#  4) Copy the rest of your source code (including .env, src, etc.)
+# 4) Copy the rest of your source code (including .env, src, etc.)
 COPY . .
 
 # 5) Build the React/Vite app (outputs to /app/dist)
