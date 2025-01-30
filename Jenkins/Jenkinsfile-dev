@@ -6,26 +6,29 @@ pipeline {
     // --------------------------
     environment {
         // Node
-        NODE_VERSION       = '16.20.2'
-        NODE_OPTIONS       = '--max-old-space-size=4096'
+        NODE_VERSION         = '16.20.2'
+        NODE_OPTIONS         = '--max-old-space-size=4096'
         
         // Docker
-        DOCKER_IMAGE       = 'otecpms/react-app-devx'
-        DOCKER_TAG         = 'latest'
-        FULL_DOCKER_IMAGE  = "${DOCKER_IMAGE}:${DOCKER_TAG}"
-        REGISTRY_URL       = 'https://registry.hub.docker.com'
+        DOCKER_IMAGE         = 'otecpms/react-app-devx'
+        DOCKER_TAG           = 'latest'
+        FULL_DOCKER_IMAGE    = "${DOCKER_IMAGE}:${DOCKER_TAG}"
+        REGISTRY_URL         = 'https://registry.hub.docker.com'
         REGISTRY_CREDENTIALS = 'dockerhub-credentials'
         
         // Environment file + Ports
-        ENV_FILE_PATH      = '/home/pms_files/dev-frontend.env'
-     SSL_CERTIFICATE    = '/home/certs/fullchain.pem'
-        SSL_CERTIFICATE_KEY = '/home/certs/privkey.pem'
+        ENV_FILE_PATH        = '/home/pms_files/dev-frontend.env'
+        SSL_CERTIFICATE      = '/home/certs/fullchain.pem'
+        SSL_CERTIFICATE_KEY  = '/home/certs/privkey.pem'
 
-        PORT_EXT       = '1212'
-        PORT_INT       = '80'
+        PORT_EXT             = '1212'
+        PORT_INT             = '80'
         
         // Container name
-        CONTAINER_NAME     = 'react-app-devx'
+        CONTAINER_NAME       = 'react-app-devx'
+
+        // Enable BuildKit
+        DOCKER_BUILDKIT      = '1'
     }
 
     // --------------------------
@@ -80,22 +83,23 @@ pipeline {
         }
         */
 
-    stage('SSL') {
+        stage('SSL') {
             steps {
                 script {
-                    // Create a local directory for SSL certificates (in the workspace) so we avoid permission issues
+                    // Create a local directory for SSL certificates (in the workspace) to avoid permission issues
                     sh """
                         echo "Preparing to copy SSL certificate files..."
-                      #  mkdir -p certs_ssl
-                       # cp ${SSL_CERTIFICATE} certs_ssl/fullchain.pem
-                       # cp ${SSL_CERTIFICATE_KEY} certs_ssl/privkey.pem
+                        # Uncomment and adjust the following lines if needed
+                        # mkdir -p certs_ssl
+                        # cp ${SSL_CERTIFICATE} certs_ssl/fullchain.pem
+                        # cp ${SSL_CERTIFICATE_KEY} certs_ssl/privkey.pem
                         echo "SSL certificate files copied successfully to certs_copy."
                     """
                 }
             }
         }
 
-        stage('Copying environment file') {
+        stage('Copying Environment File') {
             steps {
                 script {
                     sh """
@@ -110,9 +114,11 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // If your Dockerfile is named "Dockerfile" in the root directory,
-                    // you can simply do: docker.build("${FULL_DOCKER_IMAGE}")
-                    docker.build("${FULL_DOCKER_IMAGE}", "-f Dockerfile .")
+                    // Initialize Buildx (if not already)
+                    sh 'docker buildx create --use || true'
+
+                    // Build the Docker image using Buildx
+                    sh "docker buildx build --tag ${FULL_DOCKER_IMAGE} --load ."
                 }
             }
         }
@@ -120,10 +126,10 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    // Use docker.withRegistry to authenticate and push the image
+                    // Authenticate and push the Docker image
                     docker.withRegistry("${REGISTRY_URL}", "${REGISTRY_CREDENTIALS}") {
                         docker.image("${FULL_DOCKER_IMAGE}").push()
-                        // Push with "latest" tag for convenience if needed
+                        // Push with "latest" tag
                         docker.image("${FULL_DOCKER_IMAGE}").push('latest')
                     }
                 }
@@ -174,4 +180,4 @@ pipeline {
             echo 'Build or deployment failed.'
         }
     }
-}
+} 
