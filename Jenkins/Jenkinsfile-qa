@@ -13,7 +13,7 @@ pipeline {
        
 
         // QA .env file on Jenkins
-        QA_ENV_FILE_PATH       = '/home/testthree/pms_files/qa-frontend.env'
+        QA_ENV_FILE_PATH       = '/var/jenkins_home/pms_files/qa-frontend.env'
         QA_ENV_CONTAINER_PATH  = '/app/.env'
 
         // QA container name + ports
