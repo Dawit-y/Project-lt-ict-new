@@ -1,98 +1,32 @@
-# Use the official Jenkins LTS image as the base
-FROM jenkins/jenkins:lts
+# Use your project's base image (modify as needed)
+FROM ubuntu:latest 
 
-# Switch to root to perform installations
-USER root
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    openjdk-11-jdk \
+    curl \
+    git \
+    wget \
+    sudo \
+    docker.io  # Install Docker CLI inside the container
 
-# --------------------------
-# 1. Install System Dependencies
-# --------------------------
-RUN apt-get update && \
-    apt-get install -y \
-        apt-transport-https \
-        ca-certificates \
-        curl \
-        gnupg \
-        lsb-release \
-        software-properties-common \
-        supervisor \
-        nginx \
-        nodejs \
-        npm && \
-    rm -rf /var/lib/apt/lists/*
+# Add a Jenkins user
+RUN useradd -m -s /bin/bash jenkins && \
+    echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-# --------------------------
-# 2. Add Docker’s Official GPG Key
-# --------------------------
-RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
-
-# --------------------------
-# 3. Set Up the Stable Docker Repository
-# --------------------------
-RUN add-apt-repository \
-   "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/debian \
-   $(lsb_release -cs) \
-   stable"
-
-# --------------------------
-# 4. Install Docker CE
-# --------------------------
-RUN apt-get update && \
-    apt-get install -y docker-ce docker-ce-cli containerd.io && \
-    rm -rf /var/lib/apt/lists/*
-
-# --------------------------
-# 5. Install Docker Buildx
-# --------------------------
-ENV DOCKER_BUILDX_VERSION v0.10.3
-
-RUN mkdir -p /usr/lib/docker/cli-plugins && \
-    curl -SL https://github.com/docker/buildx/releases/download/${DOCKER_BUILDX_VERSION}/buildx-${DOCKER_BUILDX_VERSION}.linux-amd64 -o /usr/lib/docker/cli-plugins/docker-buildx && \
-    chmod +x /usr/lib/docker/cli-plugins/docker-buildx
-
-# Verify Buildx installation
-RUN docker buildx version
-
-# --------------------------
-# 6. Configure Docker Group and Permissions
-# --------------------------
-# Replace 988 with your host's Docker group GID
-ARG DOCKER_GID=988
-RUN groupadd -for docker -g ${DOCKER_GID} && \
+# Create a Docker group and add Jenkins to it
+ARG DOCKER_GID=998  # Change this to match your host's Docker GID
+RUN groupadd -g ${DOCKER_GID} docker && \
     usermod -aG docker jenkins
 
-# --------------------------
-# 7. Set Up Supervisor Configuration
-# --------------------------
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# --------------------------
-# 8. Set Up Nginx Configuration
-# --------------------------
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# --------------------------
-# 9. Install Application Dependencies and Build
-# --------------------------
-WORKDIR /app
-COPY package*.json ./
-RUN npm install --legacy-peer-deps
-COPY . .
-RUN npm run build
-RUN rm -rf /usr/share/nginx/html/*
-RUN cp -r dist/* /usr/share/nginx/html/
-
-# --------------------------
-# 10. Expose Ports
-# --------------------------
-EXPOSE 8080 50000 80
-
-# --------------------------
-# 11. Switch Back to Jenkins User
-# --------------------------
+# Set Jenkins as the default user
 USER jenkins
 
-# --------------------------
-# 12. Start Supervisor
-# --------------------------
-CMD ["/usr/bin/supervisord"]
+# Set working directory (modify as per your project)
+WORKDIR /home/jenkins
+
+# Expose the Jenkins web interface port
+EXPOSE 8080
+
+# Start Jenkins (modify if running another service)
+CMD ["java", "-jar", "/usr/share/jenkins/jenkins.war"]
