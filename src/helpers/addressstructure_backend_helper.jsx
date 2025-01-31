@@ -1,8 +1,8 @@
-import { post } from "./api_Lists";
+import { post, get } from "./api_Lists";
 
 const apiUrl = import.meta.env.VITE_BASE_API_URL;
-// const GET_ADDRESS_STRUCTURE = "address_structure/listgrid";
 const GET_ADDRESS_STRUCTURE = "address_structure/listaddress";
+// const GET_ADDRESS_STRUCTURE = "address_structure/listgrid";
 const ADD_ADDRESS_STRUCTURE = "address_structure/insertgrid";
 const UPDATE_ADDRESS_STRUCTURE = "address_structure/updategrid";
 const DELETE_ADDRESS_STRUCTURE = "address_structure/deletegrid";

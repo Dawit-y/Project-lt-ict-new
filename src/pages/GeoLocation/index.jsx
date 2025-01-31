@@ -1,4 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect } from "react";
+import PropTypes from "prop-types";
 import { Button, Spinner } from "reactstrap";
 import { useUpdateProject, useFetchProject } from "../../queries/project_query";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -34,7 +35,7 @@ const MapClickHandler = ({ onMapClick }) => {
   return null;
 };
 
-function GeoLocation({ passedId, isActive }) {
+const GeoLocation = ({ passedId, isActive }) => {
   const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
   const project = useFetchProject(passedId, userId);
@@ -137,6 +138,10 @@ function GeoLocation({ passedId, isActive }) {
       </div>
     </>
   );
-}
+};
+
+GeoLocation.propTypes = {
+  preGlobalFilteredRows: PropTypes.any,
+};
 
 export default GeoLocation;

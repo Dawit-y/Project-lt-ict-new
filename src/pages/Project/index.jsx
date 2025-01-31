@@ -17,7 +17,6 @@ import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import { AgGridReact } from "ag-grid-react";
-/*import "ag-grid-community/styles/ag-grid.css";*/
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "./ag-grid.css";
 import {
@@ -32,7 +31,7 @@ import { useFetchSectorInformations } from "../../queries/sectorinformation_quer
 import { useFetchDepartments } from "../../queries/department_query";
 import { useTranslation } from "react-i18next";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
-import ProjectDocument from "../../pages/Projectdocument/index";
+import ProjectDocument from "../../pages/Projectdocument/FileManager/index";
 import ProjectPayment from "../../pages/Projectpayment";
 import ProjectStakeholder from "../../pages/Projectstakeholder";
 import Projectcontractor from "../../pages/Projectcontractor";
@@ -81,6 +80,7 @@ import SearchForProject from "../../components/Common/SearchForProject";
 import ExportToExcel from "../../components/Common/ExportToExcel";
 import ExportToPDF from "../../components/Common/ExportToPdf";
 import PrintPage from "../../components/Common/PrintPage";
+
 const ProjectModel = () => {
   document.title = " Project";
   const [projectMetaData, setProjectMetaData] = useState([]);
@@ -629,7 +629,7 @@ const ProjectModel = () => {
     ];
     // Add actions column based on privileges
     if (1 == 1) {
-     baseColumnDefs.push({
+      baseColumnDefs.push({
         headerName: t("actions"),
         field: "actions",
         flex: 2,
@@ -637,18 +637,22 @@ const ProjectModel = () => {
           const { is_editable, is_deletable } = params.data || {};
           return (
             <div className="action-icons">
-              {(searchData?.previledge?.is_role_editable==1 && params.data.is_editable==1) && (
-                <Link
-                  to="#"
-                  className="text-success me-2"
-                  onClick={() => handleProjectClick(params.data)}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    {t("edit")}
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+              {searchData?.previledge?.is_role_editable == 1 &&
+                params.data.is_editable == 1 && (
+                  <Link
+                    to="#"
+                    className="text-success me-2"
+                    onClick={() => handleProjectClick(params.data)}
+                  >
+                    <i
+                      className="mdi mdi-pencil font-size-18"
+                      id="edittooltip"
+                    />
+                    <UncontrolledTooltip placement="top" target="edittooltip">
+                      {t("edit")}
+                    </UncontrolledTooltip>
+                  </Link>
+                )}
               {Object.keys(dynamicComponents).length > 0 && (
                 <Link
                   to="#"
@@ -678,6 +682,7 @@ const ProjectModel = () => {
     }
     return baseColumnDefs;
   }, [data, handleProjectClick, onClickDelete, t]);
+
   function renderConfiguration(params) {
     const { prj_id } = params.data || {};
     return (
@@ -797,10 +802,10 @@ const ProjectModel = () => {
                       md="6"
                       className="text-md-end d-flex align-items-center justify-content-end gap-2"
                     >
-                      {(searchData?.previledge?.is_role_can_add==1) && (
-                      <Button color="success" onClick={handleProjectClicks}>
-                        {t("add")}
-                      </Button>
+                      {searchData?.previledge?.is_role_can_add == 1 && (
+                        <Button color="success" onClick={handleProjectClicks}>
+                          {t("add")}
+                        </Button>
                       )}
                       <ExportToExcel
                         tableData={searchData?.data || []}
@@ -819,7 +824,7 @@ const ProjectModel = () => {
                         gridRef={gridRef}
                         columnDefs={columnDefs}
                         columnsToIgnore="3"
-                      /> 
+                      />
                     </Col>
                   </Row>
                   <div style={{ height: "600px" }}>

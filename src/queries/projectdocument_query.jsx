@@ -9,7 +9,7 @@ import {
 const PROJECT_DOCUMENT_QUERY_KEY = ["project_document"];
 
 // Fetch project_documents
-export const useFetchProjectDocuments = (param = {}, isActive) => {
+export const useFetchProjectDocuments = (param, isActive) => {
   return useQuery({
     queryKey: [...PROJECT_DOCUMENT_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectDocument(param),
@@ -22,9 +22,11 @@ export const useFetchProjectDocuments = (param = {}, isActive) => {
 };
 
 //search project_documents
-export const useSearchProjectDocuments = (searchParams) => {
+export const useSearchProjectDocuments = (searchParams = {}) => {
   return useQuery({
-    queryKey: searchParams ? ["projectDocuments", searchParams] : undefined,
+    queryKey: searchParams
+      ? [...PROJECT_DOCUMENT_QUERY_KEY, "search", searchParams]
+      : undefined,
     queryFn: () => getProjectDocument(searchParams),
     enabled: !!searchParams,
     staleTime: 1000 * 60 * 2,

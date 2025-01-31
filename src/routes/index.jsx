@@ -109,7 +109,9 @@ const ProjectPlan = lazy(() => import("../pages/Projectplan/index"));
 const ProjectSupplimentary = lazy(() =>
   import("../pages/Projectsupplimentary/index")
 );
-const SupersetDashboard = lazy(() => import("../pages/Dashboard/SupersetDashboard"));
+const SupersetDashboard = lazy(() =>
+  import("../pages/Dashboard/SupersetDashboard")
+);
 const ProjectVariation = lazy(() => import("../pages/Projectvariation/index"));
 import EmailInformation from "../pages/Emailinformation/index";
 import EmailTemplate from "../pages/Emailtemplate/index";

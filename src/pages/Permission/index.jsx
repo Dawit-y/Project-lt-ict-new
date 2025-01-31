@@ -34,7 +34,7 @@ import {
 } from "reactstrap";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { toast } from "react-toastify";
-import { alphanumericValidation} from '../../utils/Validation/validation';
+import { alphanumericValidation } from "../../utils/Validation/validation";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -138,7 +138,7 @@ const PermissionModel = (props) => {
       pem_delete: Yup.number().required(t("pem_delete")),
       pem_show: Yup.number().required(t("pem_show")),
       pem_search: Yup.number().required(t("pem_search")),
-      pem_description: alphanumericValidation(3,425,false),
+      pem_description: alphanumericValidation(3, 425, false),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -164,7 +164,7 @@ const PermissionModel = (props) => {
           is_editable: values.is_editable,
         };
         // update Permission
-        handleUpdatePermission(updatePermission);        
+        handleUpdatePermission(updatePermission);
       } else {
         const newPermission = {
           pem_id: values.pem_id,

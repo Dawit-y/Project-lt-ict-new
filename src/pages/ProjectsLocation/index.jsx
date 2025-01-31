@@ -58,6 +58,7 @@ const ProjectsLocation = () => {
     ?.map((project) => ({
       id: project.prj_id,
       name: project.prj_name,
+      code: project.prj_code,
       ...parseGeoLocation(project.prj_geo_location),
     }))
     .filter((location) => location.latitude && location.longitude);
@@ -152,6 +153,7 @@ const ProjectsLocation = () => {
                     {hoveredMarker === marker.id && (
                       <Popup>
                         <h6>{marker.name}</h6>
+                        <h6>{marker.code}</h6>
                       </Popup>
                     )}
                   </Marker>

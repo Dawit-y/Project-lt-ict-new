@@ -49,14 +49,6 @@ export const useDeleteFolder = () => {
   return useMutation({
     mutationFn: (id) => deleteAddressStructure(id),
     onSuccess: (deletedId, variable) => {
-      // queryClient.setQueryData(["folders"], (oldData) => {
-      //   if (!oldData) return oldData;
-      //   const updatedData = deleteFolder(oldData?.data, variable);
-      //   return {
-      //     ...oldData,
-      //     data: updatedData,
-      //   };
-      // });
       queryClient.invalidateQueries({ queryKey: ["folders"] });
     },
   });
@@ -97,6 +89,47 @@ const buildTree = (data) => {
   oromia.forEach(assignLevels);
   return oromia;
 };
+
+// const buildTree = (data) => {
+//   const map = {};
+//   const result = [];
+
+//   data.forEach((item) => {
+//     map[item.id] = { ...item, children: [] }; // Initialize the node with an empty children array
+//   });
+
+//   data.forEach((item) => {
+//     if (item.rootId === null) {
+//       // If the rootId is null, it's a root node
+//       result.push(map[item.id]);
+//     } else {
+//       // Add the item to its parent's children array
+//       if (map[item.rootId]) {
+//         map[item.rootId].children.push(map[item.id]);
+//       }
+//     }
+//   });
+
+//   const assignLevels = (node) => {
+//     if (node.children.length === 0 && node.rootId !== 1) {
+//       node.level = "woreda";
+//     } else {
+//       const hasGrandChildren = node.children.some(
+//         (child) => child.children.length > 0
+//       );
+
+//       if (hasGrandChildren) {
+//         node.level = "region";
+//       } else {
+//         node.level = "zone";
+//       }
+//       node.children.forEach(assignLevels);
+//     }
+//   };
+
+//   result.forEach(assignLevels);
+//   return result;
+// };
 
 const addSubFolder = (tree, parentId, newFolder) => {
   return tree.map((node) => {

@@ -130,6 +130,7 @@ const AdvancedSearch = ({
       setAdditionalParams({});
     }
   };
+
   const isButtonDisabled = () => {
     // Check if params have any valid values
     const hasParamsValue = Object.values(params).some((value) => {
@@ -149,11 +150,17 @@ const AdvancedSearch = ({
 
     const hasAdditionalParamsValue = () => {
       if (additionalParams) {
-        const firstKey = Object.keys(additionalParams)[0];
-        if (!firstKey) return false;
-        const value = additionalParams[firstKey];
-        return value != null && value !== "";
+        const keys = Object.keys(additionalParams);
+
+        if (keys.length === 1 && keys[0] === "include") {
+          return false;
+        }
+
+        return keys.some(
+          (key) => additionalParams[key] != null && additionalParams[key] !== ""
+        );
       }
+      return false;
     };
 
     return !(

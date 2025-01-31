@@ -1,10 +1,6 @@
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import {
-  Modal,
-  ModalBody,
-  ModalHeader,
-} from "reactstrap";
+import { Modal, ModalBody, ModalHeader } from "reactstrap";
 
 import {
   TabWrapper,
@@ -23,17 +19,35 @@ const ProjectHandoverModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction } = props;
   const handoverId = transaction?.prh_id;
-  const param = { prd_owner_type_id: PAGE_ID.PROJ_HANDOVER, prd_owner_id: handoverId };
+  const param = {
+    prd_owner_type_id: PAGE_ID.PROJ_HANDOVER,
+    prd_owner_id: handoverId,
+  };
 
   const { data, isLoading } = useSearchProjectDocuments(
     handoverId ? param : null
   );
-  const keysToRemove = ["prh_update_time","is_role_editable","is_role_deletable","prh_handover_date_ec","is_deletable", "is_editable", "prh_project_id","prh_id","prh_status","prh_create_time","prh_delete_time","prh_created_by"];
+  const keysToRemove = [
+    "prh_update_time",
+    "is_role_editable",
+    "is_role_deletable",
+    "prh_handover_date_ec",
+    "is_deletable",
+    "is_editable",
+    "prh_project_id",
+    "prh_id",
+    "prh_status",
+    "prh_create_time",
+    "prh_delete_time",
+    "prh_created_by",
+  ];
   const tabs = [
     {
       id: "details",
       label: "Details",
-      content: <DetailsView details={transaction} keysToRemove={keysToRemove} />,
+      content: (
+        <DetailsView details={transaction} keysToRemove={keysToRemove} />
+      ),
     },
     {
       id: "pdf",

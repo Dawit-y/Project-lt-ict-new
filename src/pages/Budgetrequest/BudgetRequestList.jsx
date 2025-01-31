@@ -44,6 +44,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import AddressStructureForProject from "../Project/AddressStructureForProject";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -52,13 +53,12 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const statusClasses = {
-  Approved: "success",
-  Rejected: "danger",
-  Requested: "secondary",
-};
-import AddressStructureForProject from "../Project/AddressStructureForProject";
-import { setIn } from "formik";
+const statusClasses = new Map([
+  ["Approved", "success"],
+  ["Rejected", "danger"],
+  ["Requested", "secondary"],
+]);
+
 const BudgetRequestListModel = () => {
   //  get passed data from tab
 
@@ -212,7 +212,9 @@ const BudgetRequestListModel = () => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          const badgeClass = statusClasses[params.value] || "secondary";
+          const status = params.value?.trim();
+          const badgeClass = statusClasses.get(status) || "secondary";
+
           return (
             <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
               {params.value}

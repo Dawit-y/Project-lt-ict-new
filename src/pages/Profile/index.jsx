@@ -21,6 +21,7 @@ import axios from "axios";
 
 // Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb";
+import { RiLockPasswordFill } from "react-icons/ri";
 
 // Import mini card widgets
 import MiniCards from "./mini-card";
@@ -98,118 +99,6 @@ const UsersProfile = () => {
 
   return (
     <React.Fragment>
-      <div className="page-content">
-        <Container fluid>
-          {/* Render Breadcrumbs */}
-          <Breadcrumbs title="Contacts" breadcrumbItem="Profile" />
-
-          <Row>
-            <Col xl="4">
-              <Card className="overflow-hidden">
-                <div className="bg-primary-subtle"></div>
-                {userProfile && userProfile.user ? (
-                  <CardBody className="pt-0">
-                    <Row>
-                      <Col>
-                        <div className="d-flex justify-content-center">
-                          <div className="avatar-xl profile-user-wid mb-2">
-                            <img
-                              src={
-                                userProfile.user.usr_picture === "" ||
-                                userProfile.user.usr_picture.length < 2
-                                  ? "https://i.pinimg.com/236x/58/79/29/5879293da8bd698f308f19b15d3aba9a.jpg"
-                                  : userProfile.user.usr_picture
-                              }
-                              alt="User Profile"
-                              className="img-thumbnail rounded-circle mt-3"
-                            />
-                          </div>
-                        </div>
-                        <h5 className="font-size-15 text-truncate text-center">
-                          {userProfile.user.usr_full_name === ""
-                            ? "Unkonwn User"
-                            : userProfile.user.usr_full_name}
-                        </h5>
-                        <p className="text-muted mb-0 text-truncate text-center mb-2">
-                          {userProfile.user.usr_department_id === ""
-                            ? "Unkonwn Department"
-                            : userProfile.user.usr_department_id}
-                        </p>
-                        <Card>
-                          <CardBody>
-                            <CardTitle className="mb-4">
-                              Personal Information
-                            </CardTitle>
-                            <p className="text-muted mb-4">
-                              {userProfile.user.usr_description === ""
-                                ? "No Description"
-                                : userProfile.user.usr_description}
-                            </p>
-                            <div className="table-responsive">
-                              <Table className="table-nowrap mb-0">
-                                <tbody>
-                                  <tr>
-                                    <th scope="row">Full Name :</th>
-                                    <td>
-                                      {userProfile.user.usr_full_name === ""
-                                        ? "-"
-                                        : userProfile.user.usr_full_name}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <th scope="row">Mobile :</th>
-                                    <td>
-                                      {userProfile.user.usr_phone_number === ""
-                                        ? "-"
-                                        : userProfile.user.usr_phone_number}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <th scope="row">E-mail :</th>
-                                    <td>
-                                      {userProfile.user.usr_email === ""
-                                        ? "-"
-                                        : userProfile.user.usr_email}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <th scope="row">Profile Created :</th>
-                                    <td>
-                                      {userProfile.user.usr_create_time !== ""
-                                        ? formatDate(
-                                            userProfile.user.usr_create_time
-                                          )
-                                        : "-"}
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </Table>
-                            </div>
-                          </CardBody>
-                        </Card>
-                      </Col>
-                      <div className="d-flex flex-wrap gap-2">
-                        <Button
-                          type="button"
-                          color="primary "
-                          onClick={() => {
-                            tog_backdrop();
-                          }}
-                        >
-                          <i className="mdi mdi-pencil font-size-16"></i> Edit
-                        </Button>
-                      </div>
-                    </Row>
-                  </CardBody>
-                ) : (
-                  <h1>No users found</h1>
-                )}
-              </Card>
-            </Col>
-          </Row>
-        </Container>
-      </div>
-
       <Modal
         isOpen={modal_backdrop}
         toggle={() => {
@@ -280,6 +169,129 @@ const UsersProfile = () => {
           </Button>
         </ModalFooter>
       </Modal>
+      <div className="page-content">
+        <Container>
+          {/* Render Breadcrumbs */}
+          <Breadcrumbs title="Contacts" breadcrumbItem="Profile" />
+          <Row className="d-flex align-items-center justify-content-center">
+            <Col xl="10">
+              <Card className="overflow-hidden">
+                <div className="bg-primary-subtle"></div>
+                {userProfile && userProfile.user ? (
+                  <CardBody className="">
+                    <Row>
+                      <Col>
+                        <Row>
+                          <Col xl={8}>
+                            <div className="d-flex justify-content-center">
+                              <div className="avatar-xl profile-user-wid mb-2">
+                                <img
+                                  src={
+                                    userProfile.user.usr_picture === "" ||
+                                    userProfile.user.usr_picture.length < 2
+                                      ? "https://i.pinimg.com/236x/58/79/29/5879293da8bd698f308f19b15d3aba9a.jpg"
+                                      : userProfile.user.usr_picture
+                                  }
+                                  alt="User Profile"
+                                  className="img-thumbnail rounded-circle mt-3"
+                                />
+                              </div>
+                            </div>
+                            <h5 className="font-size-15 text-truncate text-center mt-4">
+                              {userProfile.user.usr_full_name === ""
+                                ? "Unkonwn User"
+                                : userProfile.user.usr_full_name}
+                            </h5>
+                            <p className="text-muted mb-0 text-truncate text-center mb-2">
+                              {userProfile.user.usr_department_id === ""
+                                ? "Unkonwn Department"
+                                : userProfile.user.usr_department_id}
+                            </p>
+                          </Col>
+                          <Col xl={4}>
+                            <div className="d-flex flex-column flex-wrap gap-2">
+                              <Button outline type="button" color="success">
+                                <i className="mdi mdi-pencil font-size-16 me-2"></i>
+                                {"Edit"}
+                              </Button>
+                              <Button
+                                outline
+                                type="button"
+                                color="primary"
+                                onClick={() => {
+                                  tog_backdrop();
+                                }}
+                              >
+                                <RiLockPasswordFill className="me-2" />
+                                {"Reset Password"}
+                              </Button>
+                            </div>
+                          </Col>
+                        </Row>
+
+                        <Card>
+                          <CardBody>
+                            <CardTitle className="mb-4">
+                              Personal Information
+                            </CardTitle>
+                            <p className="text-muted mb-4">
+                              {userProfile.user.usr_description === ""
+                                ? "No Description"
+                                : userProfile.user.usr_description}
+                            </p>
+                            <div className="table-responsive">
+                              <Table className="table-nowrap mb-0">
+                                <tbody>
+                                  <tr>
+                                    <th scope="row">Full Name :</th>
+                                    <td>
+                                      {userProfile.user.usr_full_name === ""
+                                        ? "-"
+                                        : userProfile.user.usr_full_name}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">Mobile :</th>
+                                    <td>
+                                      {userProfile.user.usr_phone_number === ""
+                                        ? "-"
+                                        : userProfile.user.usr_phone_number}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">E-mail :</th>
+                                    <td>
+                                      {userProfile.user.usr_email === ""
+                                        ? "-"
+                                        : userProfile.user.usr_email}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">Profile Created :</th>
+                                    <td>
+                                      {userProfile.user.usr_create_time !== ""
+                                        ? formatDate(
+                                            userProfile.user.usr_create_time
+                                          )
+                                        : "-"}
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </Table>
+                            </div>
+                          </CardBody>
+                        </Card>
+                      </Col>
+                    </Row>
+                  </CardBody>
+                ) : (
+                  <h1>No users found</h1>
+                )}
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      </div>
     </React.Fragment>
   );
 };

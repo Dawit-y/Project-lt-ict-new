@@ -44,7 +44,12 @@ export const addProjectDocument = async (objectName) => {
 export const updateProjectDocument = (objectName) =>
   post(
     `${apiUrl}` + UPDATE_PROJECT_DOCUMENT + `?prd_id=${objectName?.prd_id}`,
-    objectName
+    objectName,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
   );
 
 // delete objectNames

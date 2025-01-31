@@ -77,8 +77,11 @@ export const DetailsView = ({ details, keysToRemove }) => {
     keysToRemove.forEach((key) => delete newObj[key]); // Remove the specified keys
     return newObj;
   };
+  let newTransaction = details;
+  if (keysToRemove && keysToRemove?.length > 0) {
+    newTransaction = removeKeys(details, keysToRemove); // Replace with keys to remove
+  }
 
-  const newTransaction = removeKeys(details, keysToRemove); // Replace with keys to remove
   return (
     <Table>
       <tbody>
@@ -199,6 +202,7 @@ export const PDFPreview = ({ filePath, fileSize }) => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
+              minHeight: "400px",
             }}
           >
             <Document
@@ -216,7 +220,7 @@ export const PDFPreview = ({ filePath, fileSize }) => {
               />
             </Document>
           </div>
-          <Row className="align-items-center">
+          <Row className="align-items-center mt-3">
             <Col className="d-flex align-items-center justify-content-start">
               <Button
                 disabled={pageNumber <= 1}

@@ -16,7 +16,11 @@ import {
   useDeleteProjectHandover,
   useUpdateProjectHandover,
 } from "../../queries/projecthandover_query";
-import { useAddProjectDocument } from "../../queries/projectdocument_query";
+import {
+  useAddProjectDocument,
+  useUpdateProjectDocument,
+  useSearchProjectDocuments,
+} from "../../queries/projectdocument_query";
 import ProjectHandoverModal from "./ProjectHandoverModal";
 import { useTranslation } from "react-i18next";
 import { PAGE_ID } from "../../constants/constantFile";
@@ -38,7 +42,7 @@ import {
   FormGroup,
   Badge,
   InputGroup,
-  InputGroupText
+  InputGroupText,
 } from "reactstrap";
 import {
   alphanumericValidation,
@@ -47,9 +51,6 @@ import {
 } from "../../utils/Validation/validation";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import "flatpickr/dist/themes/material_blue.css";
-import Flatpickr from "react-flatpickr";
-import { formatDate } from "../../utils/commonMethods";
 import FileUploadField from "../../components/Common/FileUploadField";
 
 const truncateText = (text, maxLength) => {
@@ -78,11 +79,23 @@ const ProjectHandoverModel = (props) => {
     param,
     isActive
   );
+  const docParam = {
+    prd_owner_type_id: PAGE_ID.PROJ_HANDOVER,
+    prd_owner_id: projectHandover?.prh_id,
+  };
+
+  const { data: handoverDocument, refetch: handoverDocRefetch } =
+    useSearchProjectDocuments(projectHandover?.prh_id ? docParam : null);
+
+  useEffect(() => {
+    handoverDocRefetch();
+  }, [projectHandover]);
 
   const addProjectHandover = useAddProjectHandover();
   const updateProjectHandover = useUpdateProjectHandover();
   const deleteProjectHandover = useDeleteProjectHandover();
   const addProjectDocument = useAddProjectDocument();
+  const updateProjectDocument = useUpdateProjectDocument();
   //START CRUD
   const handleAddProjectHandover = async (
     newProjectHandover,
@@ -93,31 +106,43 @@ const ProjectHandoverModel = (props) => {
       const handoverId = response?.data?.prh_id;
       handoverDocumentData["prd_owner_id"] = handoverId;
       await addProjectDocument.mutateAsync(handoverDocumentData);
-     toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
-     validation.resetForm();
+      validation.resetForm();
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
     toggle();
   };
-
-  const handleUpdateProjectHandover = async (data) => {
+  const handleUpdateProjectHandover = async (
+    updateData,
+    handoverDocumentData
+  ) => {
     try {
-      await updateProjectHandover.mutateAsync(data);
-     toast.success(t('update_success'), {
-        autoClose: 2000,
-      });
-     validation.resetForm();
+      const documentId = handoverDocument?.data?.[0]?.prd_id;
+      if (!documentId) {
+        toast.error(t("update_failure"), { autoClose: 2000 });
+        return;
+      }
+      const updatedDocumentData = {
+        ...handoverDocumentData,
+        prd_id: documentId,
+      };
+      await Promise.all([
+        updateProjectHandover.mutateAsync(updateData),
+        updateProjectDocument.mutateAsync(updatedDocumentData),
+      ]);
+
+      toast.success(t("update_success"), { autoClose: 2000 });
+      validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
-        autoClose: 2000,
-      });
+      toast.error(t("update_failure"), { autoClose: 2000 });
+    } finally {
+      toggle();
     }
-    toggle();
   };
 
   const handleDeleteProjectHandover = async () => {
@@ -125,11 +150,11 @@ const ProjectHandoverModel = (props) => {
       try {
         const id = projectHandover.prh_id;
         await deleteProjectHandover.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t('delete_failure'), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -151,37 +176,54 @@ const ProjectHandoverModel = (props) => {
       prh_status: (projectHandover && projectHandover.prh_status) || "",
       is_deletable: (projectHandover && projectHandover.is_deletable) || 1,
       is_editable: (projectHandover && projectHandover.is_editable) || 1,
-      prd_name: (projectHandover && projectHandover.prd_name) || "",
+      prd_name:
+        (handoverDocument && handoverDocument?.data?.[0]?.prd_name) || "",
+      prd_file:
+        (handoverDocument && handoverDocument?.data?.[0]?.prd_file) || "",
       prd_document_type_id:
-        (projectHandover && projectHandover.prd_document_type_id) || "",
+        (handoverDocument &&
+          handoverDocument?.data?.[0]?.prd_document_type_id) ||
+        "",
     },
 
     validationSchema: Yup.object({
       //prh_project_id: Yup.string().required(t("prh_project_id")),
       // prh_handover_date_ec: Yup.string().required(t("prh_handover_date_ec")),
       prh_handover_date_gc: Yup.string().required(t("prh_handover_date_gc")),
-      prh_description: alphanumericValidation(3,425,false),
+      prh_description: alphanumericValidation(3, 425, false),
       //prh_status: Yup.string().required(t("prh_status")),
       prd_document_type_id: Yup.string().required(t("prd_document_type_id")),
-      prd_name: alphanumericValidation(3,20,true),
+      prd_name: alphanumericValidation(3, 20, true),
       prd_file: Yup.string().required(t("prd_file")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
+        const handoverDocumentData = {
+          prd_owner_id: projectHandover.prh_id,
+          prd_owner_type_id: PAGE_ID.PROJ_HANDOVER,
+          prd_project_id: passedId,
+          prd_document_type_id: values.prd_document_type_id,
+          prd_name: values.prd_name,
+          prd_file: values.prd_file,
+          prd_file_path: values.prd_file_path,
+          prd_size: values.prd_size,
+          prd_file_extension: values.prd_file_extension,
+        };
+
         const updateProjectHandover = {
           prh_id: projectHandover?.prh_id,
-          // prh_project_id: values.prh_project_id,
           prh_handover_date_ec: values.prh_handover_date_ec,
           prh_handover_date_gc: values.prh_handover_date_gc,
           prh_description: values.prh_description,
           prh_status: values.prh_status,
-          is_deletable: values.is_deletable,
-          is_editable: values.is_editable,
         };
-        // update ProjectHandover
-        handleUpdateProjectHandover(updateProjectHandover); 
+
+        handleUpdateProjectHandover(
+          updateProjectHandover,
+          handoverDocumentData
+        );
       } else {
         const newProjectHandover = {
           prh_project_id: passedId,
@@ -200,7 +242,6 @@ const ProjectHandoverModel = (props) => {
           prd_size: values.prd_size,
           prd_file_extension: values.prd_file_extension,
         };
-        // save new ProjectHandover
         handleAddProjectHandover(newProjectHandover, handoverDocumentData);
       }
     },
@@ -228,7 +269,7 @@ const ProjectHandoverModel = (props) => {
 
   const handleProjectHandoverClick = (arg) => {
     const projectHandover = arg;
-    // console.log("handleProjectHandoverClick", projectHandover);
+    // fetch handover document data
     setProjectHandover({
       prh_id: projectHandover.prh_id,
       prh_project_id: projectHandover.prh_project_id,
@@ -435,7 +476,7 @@ const ProjectHandoverModel = (props) => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add==1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleProjectHandoverClicks}
                       isPagination={true}
@@ -469,11 +510,11 @@ const ProjectHandoverModel = (props) => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                      <DatePicker 
+                    <DatePicker
                       isRequired="true"
                       validation={validation}
                       componentId="prh_handover_date_gc"
-                      />
+                    />
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("prh_description")}</Label>
