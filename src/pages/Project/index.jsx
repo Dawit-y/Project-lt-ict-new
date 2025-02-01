@@ -112,7 +112,7 @@ const ProjectModel = () => {
   } = useProjectContext();
 
   const tabMapping = {
-    1: { label: t("project_document"), component: ProjectDocument },
+    54: { label: t("project_document"), component: ProjectDocument },
     44: { label: t("project_contractor"), component: Projectcontractor },
     26: { label: t("project_payment"), component: ProjectPayment },
     53: { label: t("project_stakeholder"), component: ProjectStakeholder },

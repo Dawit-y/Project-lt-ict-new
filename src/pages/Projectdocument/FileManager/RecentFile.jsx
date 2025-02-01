@@ -98,7 +98,7 @@ const RecentFile = props => {
               </tr>
             </thead>
             <tbody>
-              {(recentfile).map((item, key) => (
+              {(files).map((item, key) => (
                 <tr key={key}>
                   <td><Link to="#" className="text-dark fw-medium"><i className={item.icon}></i> {item.file}</Link></td>
                   <td>{item.date}</td>

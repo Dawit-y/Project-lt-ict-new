@@ -13,7 +13,11 @@ import Spinners from "../../components/Common/Spinner";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 
 import {
   useFetchDocumentTypes,
@@ -80,12 +84,12 @@ const DocumentTypeModel = () => {
   const handleAddDocumentType = async (data) => {
     try {
       await addDocumentType.mutateAsync(data);
-  toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
-  validation.resetForm();
+      validation.resetForm();
     } catch (error) {
-      toast.error(t('add_failure'), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -95,12 +99,12 @@ const DocumentTypeModel = () => {
   const handleUpdateDocumentType = async (data) => {
     try {
       await updateDocumentType.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('update_failure'), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -111,11 +115,11 @@ const DocumentTypeModel = () => {
       try {
         const id = documentType.pdt_id;
         await deleteDocumentType.mutateAsync(id);
-      toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-      toast.error(t('delete_failure'), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -144,17 +148,20 @@ const DocumentTypeModel = () => {
     },
 
     validationSchema: Yup.object({
-      pdt_doc_name_or: alphanumericValidation(2,100,true)
-        .test("unique-pdt_doc_name_or", t("Already exists"), (value) => {
+      pdt_doc_name_or: alphanumericValidation(2, 100, true).test(
+        "unique-pdt_doc_name_or",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) =>
               item.pdt_doc_name_or == value &&
               item.pdt_id !== documentType?.pdt_id
           );
-        }),
+        }
+      ),
       pdt_doc_name_am: Yup.string().required(t("pdt_doc_name_am")),
-      pdt_doc_name_en: alphanumericValidation(2,100,true),
-      pdt_description: alphanumericValidation(3,425,false)
+      pdt_doc_name_en: alphanumericValidation(2, 100, true),
+      pdt_description: alphanumericValidation(3, 425, false),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -336,8 +343,8 @@ const DocumentTypeModel = () => {
       },
     ];
     if (
-  data?.previledge?.is_role_editable==1 ||
- data?.previledge?.is_role_deletable==1
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -347,7 +354,7 @@ const DocumentTypeModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-                {cellProps.row.original.is_editable==1 && (     
+              {cellProps.row.original.is_editable == 1 && (
                 <Link
                   to="#"
                   className="text-success"
@@ -363,7 +370,7 @@ const DocumentTypeModel = () => {
                 </Link>
               )}
 
-                {cellProps.row.original.is_deletable==1 && (
+              {cellProps.row.original.is_deletable == 1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -389,7 +396,7 @@ const DocumentTypeModel = () => {
 
     return baseColumns;
   }, [handleDocumentTypeClick, toggleViewModal, onClickDelete]);
- if (isError) {
+  if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -436,7 +443,7 @@ const DocumentTypeModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add==1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleDocumentTypeClicks}
                       isPagination={true}
@@ -469,7 +476,10 @@ const DocumentTypeModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pdt_doc_name_or")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pdt_doc_name_or")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pdt_doc_name_or"
                       type="text"
@@ -493,7 +503,10 @@ const DocumentTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pdt_doc_name_am")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pdt_doc_name_am")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pdt_doc_name_am"
                       type="text"
@@ -517,7 +530,10 @@ const DocumentTypeModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pdt_doc_name_en")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pdt_doc_name_en")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pdt_doc_name_en"
                       type="text"

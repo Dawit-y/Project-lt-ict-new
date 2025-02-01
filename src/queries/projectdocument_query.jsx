@@ -20,22 +20,26 @@ export const useFetchProjectDocuments = (param, isActive) => {
     enabled: isActive,
   });
 };
+const createQueryKey = (searchParams) => {
+  if (!searchParams) {
+    return [...PROJECT_DOCUMENT_QUERY_KEY, "search"];
+  }
+  const serializedParams = JSON.stringify(searchParams);
+  return [...PROJECT_DOCUMENT_QUERY_KEY, "search", serializedParams];
+};
 
-//search project_documents
-export const useSearchProjectDocuments = (searchParams = {}) => {
+// Search project documents
+export const useSearchProjectDocuments = (searchParams = null) => {
   return useQuery({
-    queryKey: searchParams
-      ? [...PROJECT_DOCUMENT_QUERY_KEY, "search", searchParams]
-      : undefined,
+    queryKey: createQueryKey(searchParams),
     queryFn: () => getProjectDocument(searchParams),
-    enabled: !!searchParams,
+    enabled: !!searchParams, 
     staleTime: 1000 * 60 * 2,
     cacheTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
 };
-
 // Add project_documents
 export const useAddProjectDocument = () => {
   const queryClient = useQueryClient();

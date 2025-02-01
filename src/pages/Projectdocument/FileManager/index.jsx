@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
-import TableContainer from "../../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
@@ -18,6 +16,7 @@ import {
   useUpdateProjectDocument,
   useDeleteProjectDocument,
 } from "../../../queries/projectdocument_query";
+import { useFetchDocumentTypes } from "../../../queries/documenttype_query";
 import ProjectDocumentModal from "../ProjectDocumentModal";
 import { useTranslation } from "react-i18next";
 
@@ -41,7 +40,7 @@ import FetchErrorHandler from "../../../components/Common/FetchErrorHandler";
 import FileUploadField from "../../../components/Common/FileUploadField";
 import { toast } from "react-toastify";
 import FileList from "./FileList";
-import { PAGE_ID } from "../../../constants/constantFile";
+
 
 const Index = (props) => {
   const { passedId, isActive } = props;
@@ -51,17 +50,18 @@ const Index = (props) => {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [searchParams, setSearchParams] = useState({});
+  const [searchParams, setSearchParams] = useState({ project_id: passedId });
 
   const [projectDocument, setProjectDocument] = useState(null);
-  const [selectedTab, setSelectedTab] = useState("1");
-
+  const [selectedDocumentTypeId, setSelectedDocumentTypeId] = useState(null);
   const { data, isLoading, isError, error, refetch } = useFetchProjectDocuments(
     param,
     isActive
   );
   const { data: searchedDocs, isLoading: isSearchLoading } =
     useSearchProjectDocuments(searchParams);
+  const { data: docTypeData } = useFetchDocumentTypes();
+
   const addProjectDocument = useAddProjectDocument();
   const updateProjectDocument = useUpdateProjectDocument();
   const deleteProjectDocument = useDeleteProjectDocument();
@@ -181,12 +181,6 @@ const Index = (props) => {
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-
-  useEffect(() => {
-    if (selectedTab == "2") {
-      setSearchParams({ prd_owner_type_id: PAGE_ID.PROJ_HANDOVER });
-    }
-  }, [selectedTab]);
 
   useEffect(() => {
     setProjectDocument(data);
@@ -359,7 +353,7 @@ const Index = (props) => {
           <div className="d-xl-flex">
             <div className="w-100">
               <div className="d-md-flex">
-                {/* FileRightBar  */}
+                {/* FileRightBar */}
                 <Card
                   className="filemanager-sidebar me-md-2"
                   style={{ minHeight: "500px" }}
@@ -369,8 +363,7 @@ const Index = (props) => {
                       <div className="mb-4">
                         <div className="mb-3">
                           <Button
-                            className="btn 
-                                  btn-light w-100"
+                            className="btn btn-light w-100"
                             type="button"
                             onClick={toggle}
                           >
@@ -381,7 +374,7 @@ const Index = (props) => {
                           <li>
                             <div
                               className={`${
-                                selectedTab == "1"
+                                selectedDocumentTypeId === null
                                   ? "border border-info-subtle"
                                   : ""
                               }`}
@@ -389,71 +382,67 @@ const Index = (props) => {
                               <Link
                                 className="text-body fw-medium py-1 d-flex align-items-center"
                                 to="#"
-                                onClick={() => setSelectedTab("1")}
+                                onClick={() => {
+                                  setSearchParams({ project_id: passedId });
+                                  setSelectedDocumentTypeId(null);
+                                }} // Reset search params
                               >
-                                <i className="mdi mdi-folder font-size-16 text-warning me-2"></i>{" "}
-                                All Documents{" "}
+                                <i className="mdi mdi-folder font-size-16 text-warning me-2"></i>
+                                All Documents
                               </Link>
                             </div>
                           </li>
-                          <li>
-                            <div
-                              className={`${
-                                selectedTab == "2"
-                                  ? "border border-info-subtle"
-                                  : ""
-                              }`}
-                            >
-                              <Link
-                                className="text-body fw-medium py-1 d-flex align-items-center"
-                                to="#"
-                                onClick={() => setSelectedTab("2")}
+                          {docTypeData?.data?.map((type) => (
+                            <li key={type.pdt_id}>
+                              <div
+                                className={`${
+                                  selectedDocumentTypeId === type.pdt_id
+                                    ? "border border-info-subtle"
+                                    : ""
+                                }`}
                               >
-                                <i className="mdi mdi-folder font-size-16 text-warning me-2"></i>{" "}
-                                Handover Documents{" "}
-                              </Link>
-                            </div>
-                          </li>
+                                <Link
+                                  className="text-body fw-medium py-1 d-flex align-items-center"
+                                  to="#"
+                                  onClick={() => {
+                                    setSelectedDocumentTypeId(type.pdt_id);
+                                    setSearchParams({
+                                      project_id: passedId,
+                                      prd_document_type_id: type.pdt_id,
+                                    });
+                                  }}
+                                >
+                                  <i className="mdi mdi-folder font-size-16 text-warning me-2"></i>
+                                  {type.pdt_doc_name_or}
+                                </Link>
+                              </div>
+                            </li>
+                          ))}
                         </ul>
                       </div>
                     </div>
                   </CardBody>
                 </Card>
+
+                {/* Main Content */}
                 <div className="w-100 h-100">
                   <Card style={{ minHeight: "500px" }}>
                     <CardBody>
-                      {selectedTab == "1" &&
-                        (isLoading ? (
-                          <Spinners />
-                        ) : (
-                          <FileList
-                            files={data?.data || []}
-                            edit={handleProjectDocumentClick}
-                            isDeleteLoading={deleteProjectDocument.isPending}
-                            handleDeleteProjectDocument={
-                              handleDeleteProjectDocument
-                            }
-                            deleteModal={deleteModal}
-                            setDeleteModal={setDeleteModal}
-                            onClickDelete={onClickDelete}
-                          />
-                        ))}
-                      {selectedTab == "2" &&
-                        (isSearchLoading ? (
-                          <Spinners />
-                        ) : (
-                          <FileList
-                            files={searchedDocs?.data || []}
-                            edit={handleProjectDocumentClick}
-                            isDeleteLoading={deleteProjectDocument.isPending}
-                            handleDeleteProjectDocument={
-                              handleDeleteProjectDocument
-                            }
-                            deleteModal={deleteModal}
-                            setDeleteModal={setDeleteModal}
-                            onClickDelete={onClickDelete}
-                          />
-                        ))}
+                      {isSearchLoading || isLoading ? (
+                        <Spinners />
+                      ) : (
+                        <FileList
+                          files={searchedDocs?.data || data?.data || []}
+                          edit={handleProjectDocumentClick}
+                          isDeleteLoading={deleteProjectDocument.isPending}
+                          handleDeleteProjectDocument={
+                            handleDeleteProjectDocument
+                          }
+                          deleteModal={deleteModal}
+                          setDeleteModal={setDeleteModal}
+                          onClickDelete={onClickDelete}
+                        />
+                      )}
                     </CardBody>
                   </Card>
                 </div>

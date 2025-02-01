@@ -10,7 +10,15 @@ const DELETE_PROJECT_DOCUMENT = "project_document/deletegrid";
 
 // get Projects
 export const getProjectDocument = async (params = {}) => {
-  const queryString = new URLSearchParams(params).toString();
+  const safeParams = params || {};
+
+  // Clean up the params object by removing null or undefined values
+  const cleanedParams = Object.fromEntries(
+    Object.entries(safeParams).filter(([_, value]) => value != null)
+  );
+
+  // Convert the cleaned params to a query string
+  const queryString = new URLSearchParams(cleanedParams).toString();
   const url = queryString
     ? `${GET_PROJECT_DOCUMENT}?${queryString}`
     : GET_PROJECT_DOCUMENT;
