@@ -18,20 +18,9 @@ import {
 } from "reactstrap";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import axios from "axios";
-
-// Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb";
+import UpdateModal from "./UpdateModal";
 import { RiLockPasswordFill } from "react-icons/ri";
-
-// Import mini card widgets
-import MiniCards from "./mini-card";
-
-// Import Images
-import profile1 from "/src/assets/images/profile-img.png";
-import { ToastContainer } from "react-toastify";
-
-// Import charts
-import ApexRevenue from "./ApexRevenue";
 import { toast } from "react-toastify";
 
 const UsersProfile = () => {
@@ -56,9 +45,14 @@ const UsersProfile = () => {
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
   const [passwordShown, setPasswordShown] = useState(false);
+  const [updateModal, setUpdateModal] = useState(false);
 
   const tog_backdrop = () => {
     setModal_backdrop(!modal_backdrop);
+  };
+
+  const toggleUpdateModal = () => {
+    setUpdateModal(!updateModal);
   };
 
   const togglePasswordVisibility = () => {
@@ -99,6 +93,11 @@ const UsersProfile = () => {
 
   return (
     <React.Fragment>
+      <UpdateModal
+        profile={userProfile?.user}
+        modal={updateModal}
+        toggle={toggleUpdateModal}
+      />
       <Modal
         isOpen={modal_backdrop}
         toggle={() => {
@@ -210,7 +209,12 @@ const UsersProfile = () => {
                           </Col>
                           <Col xl={4}>
                             <div className="d-flex flex-column flex-wrap gap-2">
-                              <Button outline type="button" color="success">
+                              <Button
+                                outline
+                                type="button"
+                                color="success"
+                                onClick={() => toggleUpdateModal()}
+                              >
                                 <i className="mdi mdi-pencil font-size-16 me-2"></i>
                                 {"Edit"}
                               </Button>
