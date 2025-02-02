@@ -6,6 +6,8 @@ import {
   deleteUsers,
   changeUserStatus,
   changePassword,
+  updateProfile,
+  getUser,
 } from "../helpers/users_backend_helper";
 
 const USERS_QUERY_KEY = ["users"];
@@ -23,15 +25,28 @@ export const useFetchUserss = () => {
 };
 
 //search users
+export const useFetchUser = (searchParams = {}) => {
+  return useQuery({
+    queryKey: [...USERS_QUERY_KEY, "detail", searchParams],
+    queryFn: () => getUser(searchParams),
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    enabled: Object.keys(searchParams).length > 0,
+  });
+};
+
+//search users
 export const useSearchUserss = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...USERS_QUERY_KEY, searchParams],
+    queryKey: [...USERS_QUERY_KEY, "search", searchParams],
     queryFn: () => getUsers(searchParams),
     staleTime: 0,
     gcTime: 0,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: searchParams.length > 0,
+    enabled: Object.keys(searchParams).length > 0,
   });
 };
 
@@ -60,6 +75,28 @@ export const useUpdateUsers = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateUsers,
+    onSuccess: (updatedUsers) => {
+      queryClient.setQueryData(USERS_QUERY_KEY, (oldData) => {
+        if (!oldData) return;
+
+        return {
+          ...oldData,
+          data: oldData.data.map((UsersData) =>
+            UsersData.usr_id === updatedUsers.data.usr_id
+              ? { ...UsersData, ...updatedUsers.data }
+              : UsersData
+          ),
+        };
+      });
+    },
+  });
+};
+
+// Update users
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateProfile,
     onSuccess: (updatedUsers) => {
       queryClient.setQueryData(USERS_QUERY_KEY, (oldData) => {
         if (!oldData) return;

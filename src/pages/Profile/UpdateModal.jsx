@@ -15,7 +15,7 @@ import {
   FormFeedback,
   Spinner,
 } from "reactstrap";
-import { useUpdateUsers, useSearchUserss } from "../../queries/users_query";
+import { useUpdateProfile } from "../../queries/users_query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
@@ -26,14 +26,14 @@ import {
   phoneValidation,
 } from "../../utils/Validation/validation";
 
-const UpdateModal = ({ modal, toggle, profile }) => {
+const UpdateModal = ({ modal, toggle, profile, refetch }) => {
   const { t } = useTranslation();
-  const { data } = useSearchUserss({ usr_id: 6 });
-  console.log(data);
-  const updateUsers = useUpdateUsers();
+
+  const updateUsers = useUpdateProfile();
   const handleUpdateUsers = async (data) => {
     try {
       await updateUsers.mutateAsync(data);
+      await refetch();
       toast.success(t("update_success"), {
         autoClose: 2000,
       });
@@ -47,9 +47,7 @@ const UpdateModal = ({ modal, toggle, profile }) => {
   };
   // validation
   const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
-
     initialValues: {
       usr_full_name: (profile && profile.usr_full_name) || "",
       usr_phone_number: (profile && profile.usr_phone_number) || "",
@@ -68,6 +66,7 @@ const UpdateModal = ({ modal, toggle, profile }) => {
         usr_email: profile?.usr_email,
         usr_full_name: values.usr_full_name,
         usr_phone_number: values.usr_phone_number,
+        usr_picture: values.usr_picture,
       };
       handleUpdateUsers(updateUsers);
     },

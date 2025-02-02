@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardBody,
@@ -16,12 +16,16 @@ import {
   Form,
   Input,
 } from "reactstrap";
+import Spinners from "../../components/Common/Spinner";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import axios from "axios";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import UpdateModal from "./UpdateModal";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { toast } from "react-toastify";
+import { useFetchUser } from "../../queries/users_query";
+
+const API_URL = import.meta.env.VITE_BASE_API_FILE;
 
 const UsersProfile = () => {
   document.title = "Profile | PMS";
@@ -29,6 +33,14 @@ const UsersProfile = () => {
   const storedUser = sessionStorage.getItem("authUser");
   const Users = storedUser ? JSON.parse(storedUser) : null; // Handle null case
   const [userProfile, setUserProfile] = useState(Users); // Set state directly to Users
+  const [profile, setProfile] = useState({});
+  const { data, isLoading, refetch } = useFetchUser({
+    id: userProfile?.user?.usr_id,
+  });
+
+  useEffect(() => {
+    setProfile(data?.data[0]);
+  }, [data]);
 
   const formatDate = (dateString) => {
     const parsedDate = parseISO(dateString); // Parse the string into a Date object
@@ -75,7 +87,6 @@ const UsersProfile = () => {
         `${import.meta.env.VITE_BASE_API_URL}user/change_password`,
         data
       );
-      console.log(response);
       setMessage("Password changed successfully!");
       toast.success(`Password changed successfully!`, {
         autoClose: 2000,
@@ -87,16 +98,16 @@ const UsersProfile = () => {
         autoClose: 2000,
       });
       setMessage("Error changing password. Please try again.");
-      console.error("Error changing password:", error);
     }
   };
 
   return (
     <React.Fragment>
       <UpdateModal
-        profile={userProfile?.user}
+        profile={profile}
         modal={updateModal}
         toggle={toggleUpdateModal}
+        refetch={refetch}
       />
       <Modal
         isOpen={modal_backdrop}
@@ -176,7 +187,9 @@ const UsersProfile = () => {
             <Col xl="10">
               <Card className="overflow-hidden">
                 <div className="bg-primary-subtle"></div>
-                {userProfile && userProfile.user ? (
+                {isLoading ? (
+                  <Spinners />
+                ) : (
                   <CardBody className="">
                     <Row>
                       <Col>
@@ -185,26 +198,26 @@ const UsersProfile = () => {
                             <div className="d-flex justify-content-center">
                               <div className="avatar-xl profile-user-wid mb-2">
                                 <img
-                                  src={
-                                    userProfile.user.usr_picture === "" ||
-                                    userProfile.user.usr_picture.length < 2
-                                      ? "https://i.pinimg.com/236x/58/79/29/5879293da8bd698f308f19b15d3aba9a.jpg"
-                                      : userProfile.user.usr_picture
-                                  }
+                                  src={`${API_URL}/public/uploads/pictures/${profile?.usr_picture}`}
                                   alt="User Profile"
                                   className="img-thumbnail rounded-circle mt-3"
+                                  onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src =
+                                      "https://i.pinimg.com/236x/58/79/29/5879293da8bd698f308f19b15d3aba9a.jpg";
+                                  }}
                                 />
                               </div>
                             </div>
                             <h5 className="font-size-15 text-truncate text-center mt-4">
-                              {userProfile.user.usr_full_name === ""
+                              {profile?.usr_full_name === ""
                                 ? "Unkonwn User"
-                                : userProfile.user.usr_full_name}
+                                : profile?.usr_full_name}
                             </h5>
                             <p className="text-muted mb-0 text-truncate text-center mb-2">
-                              {userProfile.user.usr_department_id === ""
+                              {profile?.usr_department_id === ""
                                 ? "Unkonwn Department"
-                                : userProfile.user.usr_department_id}
+                                : profile?.usr_department_id}
                             </p>
                           </Col>
                           <Col xl={4}>
@@ -239,9 +252,9 @@ const UsersProfile = () => {
                               Personal Information
                             </CardTitle>
                             <p className="text-muted mb-4">
-                              {userProfile.user.usr_description === ""
+                              {profile?.usr_description === ""
                                 ? "No Description"
-                                : userProfile.user.usr_description}
+                                : profile?.usr_description}
                             </p>
                             <div className="table-responsive">
                               <Table className="table-nowrap mb-0">
@@ -249,35 +262,35 @@ const UsersProfile = () => {
                                   <tr>
                                     <th scope="row">Full Name :</th>
                                     <td>
-                                      {userProfile.user.usr_full_name === ""
+                                      {profile?.usr_full_name === ""
                                         ? "-"
-                                        : userProfile.user.usr_full_name}
+                                        : profile?.usr_full_name}
                                     </td>
                                   </tr>
                                   <tr>
                                     <th scope="row">Mobile :</th>
                                     <td>
-                                      {userProfile.user.usr_phone_number === ""
+                                      {profile?.usr_phone_number === ""
                                         ? "-"
-                                        : userProfile.user.usr_phone_number}
+                                        : profile?.usr_phone_number}
                                     </td>
                                   </tr>
                                   <tr>
                                     <th scope="row">E-mail :</th>
                                     <td>
-                                      {userProfile.user.usr_email === ""
+                                      {profile?.usr_email === ""
                                         ? "-"
-                                        : userProfile.user.usr_email}
+                                        : profile?.usr_email}
                                     </td>
                                   </tr>
                                   <tr>
                                     <th scope="row">Profile Created :</th>
                                     <td>
-                                      {userProfile.user.usr_create_time !== ""
-                                        ? formatDate(
-                                            userProfile.user.usr_create_time
-                                          )
-                                        : "-"}
+                                      <td>
+                                        {profile?.usr_create_time
+                                          ? formatDate(profile.usr_create_time)
+                                          : "-"}
+                                      </td>
                                     </td>
                                   </tr>
                                 </tbody>
@@ -288,8 +301,6 @@ const UsersProfile = () => {
                       </Col>
                     </Row>
                   </CardBody>
-                ) : (
-                  <h1>No users found</h1>
                 )}
               </Card>
             </Col>
