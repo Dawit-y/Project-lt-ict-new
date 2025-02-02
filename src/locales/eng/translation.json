@@ -289,7 +289,7 @@
   "prj_department_id": "Department",
   "project_contractor": "Project Contractor",
   "cni_id": "Id",
-  "cni_name": "Name",
+  "cni_name": "Contractor Name",
   "cni_tin_num": "TIN Number",
   "cni_contractor_type_id": "Contractor Type",
   "cni_vat_num": "VAT Number",

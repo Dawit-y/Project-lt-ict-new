@@ -144,7 +144,8 @@ const BudgetYearModel = () => {
 			is_editable: (budgetYear && budgetYear.is_editable) || 1,
 		},
 		validationSchema: Yup.object({
-			bdy_name: numberValidation(2017, 2040, true).test(
+			bdy_name: numberValidation(2017, 2040, true),
+			/*.test(
 				"unique-bdy_name",
 				t("Already exists"),
 				(value) => {
@@ -153,7 +154,7 @@ const BudgetYearModel = () => {
 						item.bdy_name == value && item.bdy_id !== budgetYear?.bdy_id
 						);
 				}
-				),
+				),*/
 			bdy_description: alphanumericValidation(3, 425, false),
 		}),
 

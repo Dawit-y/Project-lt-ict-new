@@ -408,6 +408,7 @@ const RolesModel = () => {
                 <Row>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("rol_name")}</Label>
+                    <span className="text-danger">*</span>
                     <Input
                       name="rol_name"
                       type="text"

@@ -5,7 +5,27 @@ import { useTranslation } from "react-i18next";
 
 const ExportToPDF = ({ tableData, tablename, excludeKey = [] }) => {
   const { t } = useTranslation();
+  const headerText = tablename; // Custom header text
+    const footerText = "Prepared by: ____"; // Custom footer text
 
+     // Function to add header and footer
+    const addHeaderFooter = (doc) => {
+      const pageCount = doc.internal.getNumberOfPages();
+
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+
+        // Add header
+        doc.setFontSize(12);
+        doc.text(headerText, 14, 10);
+
+        // Add footer
+        const pageSize = doc.internal.pageSize;
+        const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+        doc.setFontSize(10);
+        doc.text(footerText, 14, pageHeight - 10);
+      }
+    };
   const handleExportToPDF = () => {
     if (!tableData || tableData.length === 0) {
       return;
@@ -25,8 +45,8 @@ const ExportToPDF = ({ tableData, tablename, excludeKey = [] }) => {
       orientation: "landscape",
     });
 
-    const title = tablename || "Table Data";
-    doc.text(title, 14, 10);
+    //const title = tablename || "Table Data";
+    //doc.text(title, 14, 10);
 
     let startY = 20;
 
@@ -58,7 +78,7 @@ const ExportToPDF = ({ tableData, tablename, excludeKey = [] }) => {
 
       startY = doc.lastAutoTable.finalY + 10;
     });
-
+addHeaderFooter(doc);
     doc.save(`${tablename || "table_data"}.pdf`);
   };
 

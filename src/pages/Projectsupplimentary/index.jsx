@@ -66,7 +66,7 @@ import Flatpickr from "react-flatpickr";
 import { formatDate } from "../../utils/commonMethods";
 
 const ProjectSupplimentaryModel = (props) => {
-  const { passedId, isActive } = props;
+  const { passedId, isActive, projectName } = props;
   const param = { prs_project_id: passedId };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
@@ -455,6 +455,7 @@ const ProjectSupplimentaryModel = (props) => {
   return (
     <React.Fragment>
       <DynamicDetailsModal
+        projectName={projectName}
         isOpen={modal1}
         toggle={toggleViewModal} // Function to close the modal
         data={transaction} // Pass transaction as data to the modal

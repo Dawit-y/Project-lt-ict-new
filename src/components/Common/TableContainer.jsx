@@ -242,7 +242,7 @@ const TableContainer = ({
         </Col>
       </Row>
       <div className={divClassName ? divClassName : "table-responsive"}>
-      <div id='printable-content'>
+      <div id='printable-table'>
         <Table
           hover
           className={`${tableClass} table-sm table-bordered table-striped`}

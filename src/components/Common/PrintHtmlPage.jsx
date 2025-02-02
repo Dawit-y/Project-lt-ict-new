@@ -14,7 +14,7 @@ const PrintHtmlPage = ({ tableData, tablename, excludeKey = [], columnsToIgnore=
     const button = event.currentTarget;
     //const printableElement = button.closest("#printable-content");
     //const modalContent = printableElement.innerHTML;
-    const modalContent = document.getElementById("printable-content").innerHTML;
+    const modalContent = document.getElementById("printable-table").innerHTML;
     const printWindow = window.open("", "_blank", `width=${window.screen.width},height=${window.screen.height}`);
     printWindow.document.open();
     printWindow.document.write(`

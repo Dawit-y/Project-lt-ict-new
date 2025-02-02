@@ -60,7 +60,6 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-
 const ContractorTypeModel = () => {
   //meta title
   document.title = " ContractorType";

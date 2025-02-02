@@ -111,7 +111,7 @@ const GanttChart = ({ pld_id, name, startDate, endDate }) => {
           gantt.config.end_date = newEndDate.toISOString();
           gantt.config.scales = [{ unit: "week", step: 1, format: "%d %M" }];
           gantt.config.date_format = "%Y-%m-%d %H:%i";
-
+         
           // Lightbox sections with translations
           gantt.config.lightbox.sections = [
             {
