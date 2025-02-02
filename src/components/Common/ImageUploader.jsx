@@ -40,7 +40,7 @@ const ImageUploader = ({ validation }) => {
           <CardSubtitle className="mb-3">
             Attach or upload your image file here!
           </CardSubtitle>
-          <Form>
+          <>
             <Dropzone
               maxSize={MAX_SIZE_BYTES}
               accept={{ "image/*": [] }}
@@ -109,7 +109,7 @@ const ImageUploader = ({ validation }) => {
                 </Card>
               ))}
             </div>
-          </Form>
+          </>
         </CardBody>
       </Card>
 

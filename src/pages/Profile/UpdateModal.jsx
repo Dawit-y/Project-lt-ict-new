@@ -15,7 +15,7 @@ import {
   FormFeedback,
   Spinner,
 } from "reactstrap";
-import { useUpdateUsers } from "../../queries/users_query";
+import { useUpdateUsers, useSearchUserss } from "../../queries/users_query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
@@ -28,6 +28,8 @@ import {
 
 const UpdateModal = ({ modal, toggle, profile }) => {
   const { t } = useTranslation();
+  const { data } = useSearchUserss({ usr_id: 6 });
+  console.log(data);
   const updateUsers = useUpdateUsers();
   const handleUpdateUsers = async (data) => {
     try {
@@ -85,7 +87,7 @@ const UpdateModal = ({ modal, toggle, profile }) => {
             }}
           >
             <Row>
-              <Col className="col-md-4 mb-3">
+              <Col className="col-md-6 mb-3">
                 <Label>
                   {t("usr_full_name")} <span className="text-danger">*</span>
                 </Label>
@@ -111,7 +113,7 @@ const UpdateModal = ({ modal, toggle, profile }) => {
                   </FormFeedback>
                 ) : null}
               </Col>
-              <Col className="col-md-4 mb-3">
+              <Col className="col-md-6 mb-3">
                 <Label>
                   Phone Number <span className="text-danger">*</span>
                 </Label>

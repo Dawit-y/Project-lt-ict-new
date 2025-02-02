@@ -11,6 +11,9 @@ import {
   Row,
   UncontrolledDropdown,
   Table,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
 } from "reactstrap";
 import ProjectDocumentModal from "../ProjectDocumentModal";
 import DeleteModal from "../../../components/Common/DeleteModal";
@@ -33,10 +36,15 @@ const FileList = ({
   setDeleteModal,
   isDeleteLoading,
   onClickDelete,
+  isGridView,
+  setIsGridView,
 }) => {
   const [modal1, setModal1] = useState(false);
   const [details, setDetails] = useState({});
-  const [isGridView, setIsGridView] = useState(true); // State for view mode
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const itemsPerPage = 9;
 
   const toggleViewModal = () => setModal1(!modal1);
 
@@ -74,6 +82,23 @@ const FileList = ({
     }
   };
 
+  // Filter files based on search query
+  const filteredFiles = files.filter((file) =>
+    file.prd_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentFiles = filteredFiles.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
+
   return (
     <React.Fragment>
       <ProjectDocumentModal
@@ -102,6 +127,8 @@ const FileList = ({
                     type="text"
                     className="form-control bg-light border-light rounded"
                     placeholder="Search..."
+                    value={searchQuery}
+                    onChange={handleSearchChange}
                   />
                   <i className="bx bx-search-alt search-icon"></i>
                 </div>
@@ -109,23 +136,28 @@ const FileList = ({
               <BsFillGrid1X2Fill
                 size={24}
                 className="cursor-pointer"
-                onClick={toggleViewMode} // Toggle view mode on click
+                onClick={toggleViewMode}
               />
             </Form>
           </Col>
         </Row>
       </div>
       <div>
-        {files.length > 0 ? (
+        {filteredFiles.length > 0 ? (
           isGridView ? (
-            // Grid View
             <Row>
-              {files.map((file, key) => {
+              {currentFiles.map((file, key) => {
                 const { icon, color } = getFileIcon(file?.prd_file_extension);
 
                 return (
                   <Col xl={4} sm={6} key={key}>
-                    <Card className="shadow-none border">
+                    <Card
+                      className="shadow-none border"
+                      onDoubleClick={() => {
+                        setDetails(file);
+                        toggleViewModal();
+                      }}
+                    >
                       <CardBody className="p-3">
                         <div>
                           <div className="float-end ms-2">
@@ -194,10 +226,13 @@ const FileList = ({
             </Row>
           ) : (
             // List View
-            <div className="table-responsive">
+            <div className="table-responsive" style={{ minHeight: "400px" }}>
               <Table
                 className="table align-middle table-nowrap table-hover mb-0"
-                style={{ tableLayout: "fixed" }}
+                style={{
+                  tableLayout: "fixed",
+                  width: "100%",
+                }}
               >
                 <thead>
                   <tr>
@@ -208,29 +243,63 @@ const FileList = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {files.map((file, key) => {
+                  {currentFiles.map((file, key) => {
                     const { icon, color } = getFileIcon(
                       file?.prd_file_extension
                     );
 
                     return (
-                      <tr key={key} style={{ height: "30px" }}>
-                        <td>
+                      <tr
+                        key={key}
+                        style={{
+                          height: "30px",
+                        }}
+                        onDoubleClick={() => {
+                          setDetails(file);
+                          toggleViewModal();
+                        }}
+                      >
+                        <td
+                          style={{
+                            height: "30px",
+                            verticalAlign: "middle",
+                            padding: "0.5rem",
+                          }}
+                        >
                           <Link to="#" className="text-dark fw-medium">
                             <i className={`${icon} ${color} me-2`}></i>
                             {file?.prd_name}
                           </Link>
                         </td>
-                        <td>
+                        <td
+                          style={{
+                            height: "30px",
+                            verticalAlign: "middle",
+                            padding: "0.5rem",
+                          }}
+                        >
                           {
                             new Date(file?.prd_update_time)
                               .toISOString()
                               .split("T")[0]
                           }
                         </td>
-
-                        <td>{formatFileSize(file?.prd_size)}</td>
-                        <td>
+                        <td
+                          style={{
+                            height: "30px",
+                            verticalAlign: "middle",
+                            padding: "0.5rem",
+                          }}
+                        >
+                          {formatFileSize(file?.prd_size)}
+                        </td>
+                        <td
+                          style={{
+                            height: "30px",
+                            verticalAlign: "middle",
+                            padding: "0.5rem",
+                          }}
+                        >
                           <UncontrolledDropdown>
                             <DropdownToggle
                               tag="a"
@@ -277,6 +346,47 @@ const FileList = ({
           <div className="text-center p-4">
             <p className="text-muted">No files available.</p>
           </div>
+        )}
+
+        {/* Pagination */}
+        {filteredFiles.length > itemsPerPage && (
+          <Row className="mt-4">
+            <Col>
+              <Pagination className="pagination pagination-rounded justify-content-center">
+                <PaginationItem disabled={currentPage === 1}>
+                  <PaginationLink
+                    previous
+                    onClick={() => paginate(currentPage - 1)}
+                  />
+                </PaginationItem>
+                {[
+                  ...Array(
+                    Math.ceil(filteredFiles.length / itemsPerPage)
+                  ).keys(),
+                ].map((number) => (
+                  <PaginationItem
+                    key={number + 1}
+                    active={number + 1 === currentPage}
+                  >
+                    <PaginationLink onClick={() => paginate(number + 1)}>
+                      {number + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem
+                  disabled={
+                    currentPage ===
+                    Math.ceil(filteredFiles.length / itemsPerPage)
+                  }
+                >
+                  <PaginationLink
+                    next
+                    onClick={() => paginate(currentPage + 1)}
+                  />
+                </PaginationItem>
+              </Pagination>
+            </Col>
+          </Row>
         )}
       </div>
     </React.Fragment>

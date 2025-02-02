@@ -105,7 +105,7 @@ const UsersProfile = () => {
         }}
         backdrop={"static"}
         id="staticBackdrop"
-        centered="true"
+        centered={true}
       >
         <ModalHeader
           toggle={() => {

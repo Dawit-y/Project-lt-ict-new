@@ -6,9 +6,6 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../../components/Common/Spinner";
-
-import Breadcrumbs from "../../../components/Common/Breadcrumb";
-import DeleteModal from "../../../components/Common/DeleteModal";
 import {
   useFetchProjectDocuments,
   useSearchProjectDocuments,
@@ -17,7 +14,6 @@ import {
   useDeleteProjectDocument,
 } from "../../../queries/projectdocument_query";
 import { useFetchDocumentTypes } from "../../../queries/documenttype_query";
-import ProjectDocumentModal from "../ProjectDocumentModal";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -41,7 +37,6 @@ import FileUploadField from "../../../components/Common/FileUploadField";
 import { toast } from "react-toastify";
 import FileList from "./FileList";
 
-
 const Index = (props) => {
   const { passedId, isActive } = props;
   const param = { project_id: passedId };
@@ -50,6 +45,7 @@ const Index = (props) => {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [isGridView, setIsGridView] = useState(true);
   const [searchParams, setSearchParams] = useState({ project_id: passedId });
 
   const [projectDocument, setProjectDocument] = useState(null);
@@ -363,7 +359,8 @@ const Index = (props) => {
                       <div className="mb-4">
                         <div className="mb-3">
                           <Button
-                            className="btn btn-light w-100"
+                            className="btn btn-primary w-100"
+                            color="info-subtle"
                             type="button"
                             onClick={toggle}
                           >
@@ -441,6 +438,8 @@ const Index = (props) => {
                           deleteModal={deleteModal}
                           setDeleteModal={setDeleteModal}
                           onClickDelete={onClickDelete}
+                          isGridView={isGridView}
+                          setIsGridView={setIsGridView}
                         />
                       )}
                     </CardBody>
