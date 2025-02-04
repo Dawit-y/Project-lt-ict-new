@@ -122,7 +122,18 @@ pipeline {
                 }
             }
         }
-
+ stage('Push Docker Image') {
+            steps {
+                script {
+                    // Authenticate and push the Docker image
+                    docker.withRegistry("${REGISTRY_URL}", "${REGISTRY_CREDENTIALS}") {
+                        docker.image("${FULL_DOCKER_IMAGE}").push()
+                        // Push with "latest" tag
+                        docker.image("${FULL_DOCKER_IMAGE}").push('latest')
+                    }
+                }
+            }
+        }
         stage('Deploy to Server') {
             steps {
                 script {

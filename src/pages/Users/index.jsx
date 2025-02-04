@@ -12,7 +12,6 @@ import CascadingDropdownsearch from "../../components/Common/CascadingDropdowns2
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 // pages
 import UserRoles from "../../pages/Userrole/index";
-
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
@@ -24,6 +23,7 @@ import {
   alphanumericValidation,
   amountValidation,
   numberValidation,
+  dropdownValidation
 } from "../../utils/Validation/validation";
 import {
   useFetchUserss,
@@ -32,12 +32,10 @@ import {
   useDeleteUsers,
   useUpdateUsers,
 } from "../../queries/users_query";
-
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import { useFetchDepartments } from "../../queries/department_query";
 import UsersModal from "./UsersModal";
 import { useTranslation } from "react-i18next";
-
 import {
   Button,
   Col,
@@ -60,7 +58,6 @@ import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import { createSelectOptions } from "../../utils/commonMethods";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import ImageUploader from "../../components/Common/ImageUploader";
-
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -78,7 +75,6 @@ const statusText = {
 const UsersModel = () => {
   //meta title
   document.title = " Users";
-
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -87,43 +83,38 @@ const UsersModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-
-  const { data, isLoading, error, isError, refetch } = useFetchUserss();
+  const { data, isLoading, error, isError, refetch } = useState(null);
   const { data: sectorInformationData } = useFetchSectorInformations();
   const sectorInformationOptions = createSelectOptions(
     sectorInformationData?.data || [],
     "sci_id",
     "sci_name_en"
-  );
+    );
   const sectorInformationMap = useMemo(() => {
     return (
       sectorInformationData?.data?.reduce((acc, sector) => {
         acc[sector.sci_id] = sector.sci_name_en;
         return acc;
       }, {}) || {}
-    );
+      );
   }, [sectorInformationData]);
   const { data: departmentData } = useFetchDepartments();
   const departmentOptions = createSelectOptions(
     departmentData?.data || [],
     "dep_id",
     "dep_name_en"
-  );
-
+    );
   const addUsers = useAddUsers();
   const updateUsers = useUpdateUsers();
   const deleteUsers = useDeleteUsers();
   const [users, setUsers] = useState(null);
   const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
-
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
-
   const [userMetaData, setUserData] = useState({});
   const [showCanvas, setShowCanvas] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
   };
@@ -136,13 +127,12 @@ const UsersModel = () => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t("add_failure"), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
     toggle();
   };
-
   const handleUpdateUsers = async (data) => {
     try {
       await updateUsers.mutateAsync(data);
@@ -151,7 +141,7 @@ const UsersModel = () => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t("update_failure"), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -166,14 +156,13 @@ const UsersModel = () => {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t("delete_failure"), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
       setDeleteModal(false);
     }
   };
-
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
@@ -183,7 +172,6 @@ const UsersModel = () => {
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
-
     initialValues: {
       usr_email: (users && users.usr_email) || "",
       usr_password: (users && users.usr_password) || "",
@@ -203,42 +191,41 @@ const UsersModel = () => {
       usr_description: (users && users.usr_description) || "",
       usr_status: (users && users.usr_status) || "",
       usr_department_id: (users && users.usr_department_id) || "",
-
       is_deletable: (users && users.is_deletable) || 1,
       is_editable: (users && users.is_editable) || 1,
     },
     validationSchema: Yup.object({
       usr_email: Yup.string()
-        .required(t("usr_email"))
-        .email(t("Invalid email format"))
-        .test("unique-usr_email", t("Already exists"), (value) => {
-          return !data?.data.some(
-            (item) => item.usr_email === value && item.usr_id !== users?.usr_id
+      .required(t("usr_email"))
+      .email(t("Invalid email format"))
+      .test("unique-usr_email", t("Already exists"), (value) => {
+        return !data?.data.some(
+          (item) => item.usr_email === value && item.usr_id !== users?.usr_id
           );
-        }),
+      }),
       usr_password: Yup.string()
-        .required(t("usr_password"))
-        .min(8, t("Password must be at least 8 characters"))
-        .matches(
-          /[a-z]/,
-          t("Password must contain at least one lowercase letter")
+      .required(t("usr_password"))
+      .min(8, t("Password must be at least 8 characters"))
+      .matches(
+        /[a-z]/,
+        t("Password must contain at least one lowercase letter")
         )
-        .matches(
-          /[A-Z]/,
-          t("Password must contain at least one uppercase letter")
+      .matches(
+        /[A-Z]/,
+        t("Password must contain at least one uppercase letter")
         )
-        .matches(/\d/, t("Password must contain at least one number"))
-        .matches(
-          /[@$!%*?&#]/,
-          t("Password must contain at least one special character")
+      .matches(/\d/, t("Password must contain at least one number"))
+      .matches(
+        /[@$!%*?&#]/,
+        t("Password must contain at least one special character")
         ),
       usr_full_name: alphanumericValidation(3, 50, true),
       usr_phone_number: phoneValidation(true),
-      usr_sector_id: Yup.string().required(t("usr_sector_id")),
-      usr_department_id: Yup.string().required(t("usr_department_id")),
+      usr_sector_id: dropdownValidation(1, 100, false),
+      usr_department_id: dropdownValidation(1, 100, false),
       usr_region_id: Yup.number().required(t("usr_region_id")),
-      usr_zone_id: Yup.number().required(t("usr_zone_id")),
-      usr_woreda_id: Yup.number().required(t("usr_woreda_id")),
+     // usr_zone_id: Yup.number().required(t("usr_zone_id")),
+      //usr_woreda_id: Yup.number().required(t("usr_woreda_id")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -265,7 +252,6 @@ const UsersModel = () => {
           usr_description: values.usr_description,
           usr_status: values.usr_status,
           usr_department_id: Number(values.usr_department_id),
-
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -291,7 +277,6 @@ const UsersModel = () => {
           usr_description: values.usr_description,
           usr_status: values.usr_status,
           usr_department_id: Number(values.usr_department_id),
-
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -326,99 +311,90 @@ const UsersModel = () => {
       }
     },
   });
-  const [transaction, setTransaction] = useState({});
-  const toggleViewModal = () => setModal1(!modal1);
-
-  useEffect(() => {
+const [transaction, setTransaction] = useState({});
+const toggleViewModal = () => setModal1(!modal1);
+useEffect(() => {
+  setUsers(data);
+}, [data]);
+useEffect(() => {
+  if (!isEmpty(data) && !!isEdit) {
     setUsers(data);
-  }, [data]);
-
-  useEffect(() => {
-    if (!isEmpty(data) && !!isEdit) {
-      setUsers(data);
-      setIsEdit(false);
-    }
-  }, [data]);
-
-  const toggle = () => {
-    if (modal) {
-      setModal(false);
-      setIsDuplicateModalOpen(false);
-      setUsers(null);
-    } else {
-      setModal(true);
-    }
-  };
-
-  const handleUsersClick = (arg) => {
-    const users = arg;
-    setUsers({
-      usr_id: users.usr_id,
-      usr_email: users.usr_email,
-      usr_password: users.usr_password,
-      usr_full_name: users.usr_full_name,
-      usr_phone_number: users.usr_phone_number,
-      usr_role_id: Number(users.usr_role_id),
-      usr_region_id: Number(users.usr_region_id),
-      usr_zone_id: Number(users.usr_zone_id),
-      usr_woreda_id: Number(users.usr_woreda_id),
-      usr_sector_id: Number(users.usr_sector_id),
-      usr_is_active: users.usr_is_active,
-      usr_picture: users.usr_picture,
-      usr_last_logged_in: users.usr_last_logged_in,
-      usr_ip: users.usr_ip,
-      usr_remember_token: users.usr_remember_token,
-      usr_notified: users.usr_notified,
-      usr_description: users.usr_description,
-      usr_status: users.usr_status,
-      usr_department_id: Number(users.usr_department_id),
-      is_deletable: users.is_deletable,
-      is_editable: users.is_editable,
-    });
+    setIsEdit(false);
+  }
+}, [data]);
+const toggle = () => {
+  if (modal) {
+    setModal(false);
+    setIsDuplicateModalOpen(false);
+    setUsers(null);
+  } else {
+    setModal(true);
+  }
+};
+const handleUsersClick = (arg) => {
+  const users = arg;
+  setUsers({
+    usr_id: users.usr_id,
+    usr_email: users.usr_email,
+    usr_password: users.usr_password,
+    usr_full_name: users.usr_full_name,
+    usr_phone_number: users.usr_phone_number,
+    usr_role_id: Number(users.usr_role_id),
+    usr_region_id: Number(users.usr_region_id),
+    usr_zone_id: Number(users.usr_zone_id),
+    usr_woreda_id: Number(users.usr_woreda_id),
+    usr_sector_id: Number(users.usr_sector_id),
+    usr_is_active: users.usr_is_active,
+    usr_picture: users.usr_picture,
+    usr_last_logged_in: users.usr_last_logged_in,
+    usr_ip: users.usr_ip,
+    usr_remember_token: users.usr_remember_token,
+    usr_notified: users.usr_notified,
+    usr_description: users.usr_description,
+    usr_status: users.usr_status,
+    usr_department_id: Number(users.usr_department_id),
+    is_deletable: users.is_deletable,
+    is_editable: users.is_editable,
+  });
     //setSelectedDepartment(users.usr_department_id);
     //setSelectedSector(users.usr_sector_id);
-    setIsEdit(true);
-
-    toggle();
-  };
-  const handleUsersDuplicateClick = (arg) => {
-    const users = arg;
-    setUsers({
-      usr_id: users.usr_id,
-      usr_email: "",
-      usr_password: users.usr_password,
-      usr_full_name: users.usr_full_name,
-      usr_phone_number: users.usr_phone_number,
-      usr_role_id: Number(users.usr_role_id),
-      usr_region_id: Number(users.usr_region_id),
-      usr_woreda_id: Number(users.usr_woreda_id),
-      usr_sector_id: Number(users.usr_sector_id),
-      usr_is_active: users.usr_is_active,
-      usr_picture: users.usr_picture,
-      usr_last_logged_in: users.usr_last_logged_in,
-      usr_ip: users.usr_ip,
-      usr_remember_token: users.usr_remember_token,
-      usr_notified: users.usr_notified,
-      usr_description: users.usr_description,
-      usr_status: users.usr_status,
-      usr_department_id: Number(users.usr_department_id),
-
-      is_deletable: users.is_deletable,
-      is_editable: users.is_editable,
-    });
-
-    setIsDuplicateModalOpen(true);
-
-    toggle();
-  };
+  setIsEdit(true);
+  toggle();
+};
+const handleUsersDuplicateClick = (arg) => {
+  const users = arg;
+  setUsers({
+    usr_id: users.usr_id,
+    usr_email: "",
+    usr_password: users.usr_password,
+    usr_full_name: users.usr_full_name,
+    usr_phone_number: users.usr_phone_number,
+    usr_role_id: Number(users.usr_role_id),
+    usr_region_id: Number(users.usr_region_id),
+    usr_woreda_id: Number(users.usr_woreda_id),
+    usr_sector_id: Number(users.usr_sector_id),
+    usr_is_active: users.usr_is_active,
+    usr_picture: users.usr_picture,
+    usr_last_logged_in: users.usr_last_logged_in,
+    usr_ip: users.usr_ip,
+    usr_remember_token: users.usr_remember_token,
+    usr_notified: users.usr_notified,
+    usr_description: users.usr_description,
+    usr_status: users.usr_status,
+    usr_department_id: Number(users.usr_department_id),
+    is_deletable: users.is_deletable,
+    is_editable: users.is_editable,
+  });
+  setIsDuplicateModalOpen(true);
+  toggle();
+};
   //delete projects
-  const [deleteModal, setDeleteModal] = useState(false);
-
-  const onClickDelete = (users) => {
-    setUsers(users);
-    setDeleteModal(true);
-  };
-  const handleClick = (data) => {
+const [deleteModal, setDeleteModal] = useState(false);
+const onClickDelete = (users) => {
+  setUsers(users);
+  setDeleteModal(true);
+};
+const handleClick = (data) => {
     setShowCanvas(!showCanvas); // Toggle canvas visibility
     // setProjectMetaData(data);
     setUserData(data);
@@ -430,47 +406,47 @@ const UsersModel = () => {
   };
   const columnDefs = useMemo(() => {
     const baseColumns = [
-      {
-        headerName: t("s_n"),
-        valueGetter: "node.rowIndex + 1",
-        flex: 1,
-      },
-      {
-        headerName: t("usr_email"),
-        field: "usr_email",
-        sortable: true,
-        filter: false,
-        flex: 4,
-        cellRenderer: (params) =>
-          truncateText(params.data.usr_email, 30) || "-",
-      },
-      {
-        headerName: t("usr_full_name"),
-        field: "usr_full_name",
-        sortable: true,
-        filter: false,
-        flex: 4,
-        cellRenderer: (params) =>
-          truncateText(params.data.usr_full_name, 30) || "-",
-      },
-      {
-        headerName: t("usr_phone_number"),
-        field: "usr_phone_number",
-        sortable: true,
-        filter: false,
-        flex: 3,
-        cellRenderer: (params) =>
-          truncateText(params.data.usr_phone_number, 30) || "-",
-      },
-      {
-        headerName: t("usr_sector_id"),
-        field: "sector_name",
-        sortable: true,
-        filter: false,
-        flex: 3,
-        cellRenderer: (params) =>
-          sectorInformationMap[params.data.usr_sector_id],
-      },
+    {
+      headerName: t("s_n"),
+      valueGetter: "node.rowIndex + 1",
+      flex: 1,
+    },
+    {
+      headerName: t("usr_email"),
+      field: "usr_email",
+      sortable: true,
+      filter: false,
+      flex: 4,
+      cellRenderer: (params) =>
+      truncateText(params.data.usr_email, 30) || "-",
+    },
+    {
+      headerName: t("usr_full_name"),
+      field: "usr_full_name",
+      sortable: true,
+      filter: false,
+      flex: 4,
+      cellRenderer: (params) =>
+      truncateText(params.data.usr_full_name, 30) || "-",
+    },
+    {
+      headerName: t("usr_phone_number"),
+      field: "usr_phone_number",
+      sortable: true,
+      filter: false,
+      flex: 3,
+      cellRenderer: (params) =>
+      truncateText(params.data.usr_phone_number, 30) || "-",
+    },
+    {
+      headerName: t("usr_sector_id"),
+      field: "sector_name",
+      sortable: true,
+      filter: false,
+      flex: 3,
+      cellRenderer: (params) =>
+      sectorInformationMap[params.data.usr_sector_id],
+    },
       /*   {
         headerName: t("usr_is_active"),
         field: "usr_is_active",
@@ -487,32 +463,32 @@ const UsersModel = () => {
           );
         },
       },*/
-      {
-        headerName: t("view_detail"),
-        flex: 2,
-        sortable: true,
-        filter: false,
-        cellRenderer: (params) => (
-          <Button
-            type="button"
-            color="primary"
-            className="btn-sm"
-            onClick={() => {
-              const userdata = params.data;
-              toggleViewModal(userdata);
-              setTransaction(userdata);
-            }}
-          >
-            {t("view_detail")}
-          </Button>
+    {
+      headerName: t("view_detail"),
+      flex: 2,
+      sortable: true,
+      filter: false,
+      cellRenderer: (params) => (
+        <Button
+        type="button"
+        color="primary"
+        className="btn-sm"
+        onClick={() => {
+          const userdata = params.data;
+          toggleViewModal(userdata);
+          setTransaction(userdata);
+        }}
+        >
+        {t("view_detail")}
+        </Button>
         ),
-      },
+    },
     ];
     if (
       /*data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable*/
       1 == 1
-    ) {
+      ) {
       baseColumns.push({
         headerName: t("Action"),
         sortable: true,
@@ -520,472 +496,468 @@ const UsersModel = () => {
         flex: 2,
         cellRenderer: (params) => (
           <div className="d-flex gap-3">
-            {(params.data?.is_editable || params.data?.is_role_editable) && (
-              <Link
-                to="#"
-                className="text-success"
-                onClick={() => {
-                  handleUsersClick(params.data);
-                }}
-              >
-                <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                <UncontrolledTooltip placement="top" target="edittooltip">
-                  Edit
-                </UncontrolledTooltip>
-              </Link>
+          {(params.data?.is_editable || params.data?.is_role_editable) && (
+            <Link
+            to="#"
+            className="text-success"
+            onClick={() => {
+              handleUsersClick(params.data);
+            }}
+            >
+            <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+            <UncontrolledTooltip placement="top" target="edittooltip">
+            Edit
+            </UncontrolledTooltip>
+            </Link>
             )}
             {/* add view project  */}
-            {params.data?.is_editable || params.data?.is_role_editable ? (
-              <Link
-                to="#"
-                className="text-secondary ms-2"
-                onClick={() => handleClick(params.data)}
-              >
-                <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
-                <UncontrolledTooltip placement="top" target="viewtooltip">
-                  View
-                </UncontrolledTooltip>
-              </Link>
+          {params.data?.is_editable || params.data?.is_role_editable ? (
+            <Link
+            to="#"
+            className="text-secondary ms-2"
+            onClick={() => handleClick(params.data)}
+            >
+            <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
+            <UncontrolledTooltip placement="top" target="viewtooltip">
+            View
+            </UncontrolledTooltip>
+            </Link>
             ) : (
-              ""
+            ""
             )}
             {/* added duplicat  */}
             {/* Add duplicate project icon */}
             {(params.data?.is_editable || params.data?.is_role_editable) && (
               <Link
-                to="#"
-                className="text-primary"
-                onClick={() => {
-                  handleUsersDuplicateClick(params.data);
-                }}
+              to="#"
+              className="text-primary"
+              onClick={() => {
+                handleUsersDuplicateClick(params.data);
+              }}
               >
-                <i
-                  className="mdi mdi-content-duplicate font-size-18"
-                  id="duplicateTooltip"
-                />
-                <UncontrolledTooltip placement="top" target="duplicateTooltip">
-                  Duplicate
-                </UncontrolledTooltip>
+              <i
+              className="mdi mdi-content-duplicate font-size-18"
+              id="duplicateTooltip"
+              />
+              <UncontrolledTooltip placement="top" target="duplicateTooltip">
+              Duplicate
+              </UncontrolledTooltip>
               </Link>
-            )}
+              )}
             {/* End of duplicate project icon */}
-          </div>
-        ),
+            </div>
+            ),
       });
-    }
-    return baseColumns;
-  }, [
-    handleUsersClick,
-    toggleViewModal,
-    onClickDelete,
-    handleUsersDuplicateClick,
-  ]);
-
-  // When selection changes, update selectedRows
-  const onSelectionChanged = () => {
-    const selectedNodes = gridRef.current.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
-    setSelectedRows(selectedData);
-  };
-  // Filter by marked rows
-  const filterMarked = () => {
-    if (gridRef.current) {
-      gridRef.current.api.setRowData(selectedRows);
-    }
-  };
-
-  console.log(validation.errors);
-
-  if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
   }
-  return (
-    <React.Fragment>
-      <UsersModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      />
-      <div className="page-content">
-        <div className="container-fluid">
-          <Breadcrumbs title={t("users")} breadcrumbItem={t("users")} />
-          <AdvancedSearch
-            searchHook={useSearchUserss}
-            textSearchKeys={["usr_email","usr_phone_number"]}
-            dropdownSearchKeys={[]}
-            checkboxSearchKeys={[]}
-            Component={CascadingDropdownsearch}
-            component_params={{
-              dropdown1name: "usr_region_id",
-              dropdown2name: "usr_zone_id",
-              dropdown3name: "usr_woreda_id",
-            }}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          />
-          {isLoading || isSearchLoading ? (
-            <Spinners top={"top-60"} />
-          ) : (
-            <div
-              className="ag-theme-alpine"
-              style={{ height: "100%", width: "100%" }}
-            >
+  return baseColumns;
+}, [
+  handleUsersClick,
+  toggleViewModal,
+  onClickDelete,
+  handleUsersDuplicateClick,
+  ]);
+  // When selection changes, update selectedRows
+const onSelectionChanged = () => {
+  const selectedNodes = gridRef.current.api.getSelectedNodes();
+  const selectedData = selectedNodes.map((node) => node.data);
+  setSelectedRows(selectedData);
+};
+  // Filter by marked rows
+const filterMarked = () => {
+  if (gridRef.current) {
+    gridRef.current.api.setRowData(selectedRows);
+  }
+};
+console.log(validation.errors);
+if (isError) {
+  return <FetchErrorHandler error={error} refetch={refetch} />;
+}
+return (
+  <React.Fragment>
+  <UsersModal
+  isOpen={modal1}
+  toggle={toggleViewModal}
+  transaction={transaction}
+  />
+  <div className="page-content">
+  <div className="container-fluid">
+  <Breadcrumbs title={t("users")} breadcrumbItem={t("users")} />
+  <AdvancedSearch
+  searchHook={useSearchUserss}
+  textSearchKeys={["usr_email","usr_phone_number"]}
+  dropdownSearchKeys={[
+        {
+          key: "usr_sector_id",
+          options: sectorInformationOptions,
+        }
+      ]}  
+  checkboxSearchKeys={[]}
+  Component={CascadingDropdownsearch}
+  component_params={{
+    dropdown1name: "usr_region_id",
+    dropdown2name: "usr_zone_id",
+    dropdown3name: "usr_woreda_id",
+  }}
+  onSearchResult={handleSearchResults}
+  setIsSearchLoading={setIsSearchLoading}
+  setSearchResults={setSearchResults}
+  setShowSearchResult={setShowSearchResult}
+  />
+  {isLoading || isSearchLoading ? (
+    <Spinners top={"top-60"} />
+    ) : (
+    <div
+    className="ag-theme-alpine"
+    style={{ height: "100%", width: "100%" }}
+    >
               {/* Row for search input and buttons */}
-              <Row className="mb-3">
-                <Col sm="12" md="6">
+    <Row className="mb-3">
+    <Col sm="12" md="6">
                   {/* Search Input for  Filter */}
-                  <Input
-                    type="text"
-                    placeholder="Search..."
-                    onChange={(e) => setQuickFilterText(e.target.value)}
-                    className="mb-2"
-                  />
-                </Col>
-                <Col sm="12" md="6" className="text-md-end">
-                  <Button color="success" onClick={handleUsersClicks}>
-                    {t("add")}
-                  </Button>
-                </Col>
-              </Row>
-
+    <Input
+    type="text"
+    placeholder="Search..."
+    onChange={(e) => setQuickFilterText(e.target.value)}
+    className="mb-2"
+    />
+    </Col>
+    <Col sm="12" md="6" className="text-md-end">
+    <Button color="success" onClick={handleUsersClicks}>
+    {t("add")}
+    </Button>
+    </Col>
+    </Row>
               {/* AG Grid */}
-              <div style={{ minHeight: "600px" }}>
-                <AgGridReact
-                  ref={gridRef}
-                  rowData={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
-                  columnDefs={columnDefs}
-                  pagination={true}
-                  paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                  paginationPageSize={20}
-                  quickFilterText={quickFilterText}
-                  onSelectionChanged={onSelectionChanged}
+    <div style={{ minHeight: "600px" }}>
+    <AgGridReact
+    ref={gridRef}
+    rowData={
+      showSearchResult ? searchResults?.data : data?.data || []
+    }
+    columnDefs={columnDefs}
+    pagination={true}
+    paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+    paginationPageSize={20}
+    quickFilterText={quickFilterText}
+    onSelectionChanged={onSelectionChanged}
                   rowHeight={30} // Set the row height here
                   animateRows={true} // Enables row animations
                   domLayout="autoHeight" // Auto-size the grid to fit content
                   onGridReady={(params) => {
                     params.api.sizeColumnsToFit(); // Size columns to fit the grid width
                   }}
-                />
-              </div>
-            </div>
-          )}
-          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-            <ModalHeader toggle={toggle} tag="h4">
-              {isDuplicateModalOpen ? (
-                t("Duplicate ") + " " + t("users")
-              ) : (
-                <div>
-                  {!!isEdit
-                    ? t("edit") + " " + t("users")
-                    : t("add") + " " + t("users")}
-                </div>
-              )}
-            </ModalHeader>
-            <ModalBody>
-              <Form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  validation.handleSubmit();
-                  return false;
-                }}
-              >
-                <Row>
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("usr_email")} <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="usr_email"
-                      type="text"
-                      placeholder={t("usr_email")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.usr_email || ""}
-                      invalid={
-                        validation.touched.usr_email &&
-                        validation.errors.usr_email
-                          ? true
-                          : false
-                      }
-                      maxLength={30}
-                    />
-                    {validation.touched.usr_email &&
-                    validation.errors.usr_email ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.usr_email}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("usr_password")} <span className="text-danger">*</span>
-                    </Label>
-                    <InputGroup>
-                      <Input
-                        name="usr_password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder={t("usr_password")}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_password || ""}
-                        invalid={
-                          validation.touched.usr_password &&
-                          validation.errors.usr_password
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      <InputGroupText
-                        onClick={togglePasswordVisibility}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {showPassword ? <FaEyeSlash /> : <FaEye />}
-                      </InputGroupText>
-                      {validation.touched.usr_password &&
-                      validation.errors.usr_password ? (
-                        <FormFeedback type="invalid">
-                          {validation.errors.usr_password}
-                        </FormFeedback>
-                      ) : null}
-                    </InputGroup>
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("usr_full_name")}{" "}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="usr_full_name"
-                      type="text"
-                      placeholder={t("usr_full_name")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.usr_full_name || ""}
-                      invalid={
-                        validation.touched.usr_full_name &&
-                        validation.errors.usr_full_name
-                          ? true
-                          : false
-                      }
-                      maxLength={30}
-                    />
-                    {validation.touched.usr_full_name &&
-                    validation.errors.usr_full_name ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.usr_full_name}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      Phone Number <span className="text-danger">*</span>
-                    </Label>
-                    <InputGroup>
-                      <InputGroupText>{"+251"}</InputGroupText>
-                      <Input
-                        name="usr_phone_number"
-                        type="text"
-                        placeholder="Enter phone number"
-                        onChange={(e) => {
-                          const inputValue = e.target.value;
-                          let formattedValue = inputValue.replace(/^0/, "");
-                          formattedValue = formattedValue.replace(/[^\d]/g, "");
-                          formattedValue = formattedValue.substring(0, 9);
-                          validation.setFieldValue(
-                            "usr_phone_number",
-                            formattedValue
-                          );
-                        }}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_phone_number}
-                        invalid={
-                          validation.touched.usr_phone_number &&
-                          !!validation.errors.usr_phone_number
-                        }
-                      />
-                      {validation.touched.usr_phone_number &&
-                      validation.errors.usr_phone_number ? (
-                        <FormFeedback type="invalid">
-                          {validation.errors.usr_phone_number}
-                        </FormFeedback>
-                      ) : null}
-                    </InputGroup>
-                  </Col>
-
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("usr_sector_id")}{" "}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="usr_sector_id"
-                      type="select"
-                      className="form-select"
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.usr_sector_id || ""}
-                      invalid={
-                        validation.touched.usr_sector_id &&
-                        validation.errors.usr_sector_id
-                          ? true
-                          : false
-                      }
-                    >
-                      <option value={null}>Select Sector Information</option>
-                      {sectorInformationOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {t(`${option.label}`)}
-                        </option>
-                      ))}
-                    </Input>
-                    {validation.touched.usr_sector_id &&
-                    validation.errors.usr_sector_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.usr_sector_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("usr_department_id")}{" "}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="usr_department_id"
-                      type="select"
-                      className="form-select"
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.usr_department_id || ""}
-                      invalid={
-                        validation.touched.usr_department_id &&
-                        validation.errors.usr_department_id
-                          ? true
-                          : false
-                      }
-                    >
-                      <option value={null}>Select Department</option>
-                      {departmentOptions.map((option) => (
-                        <option key={option.value} value={Number(option.value)}>
-                          {t(option.label)}
-                        </option>
-                      ))}
-                    </Input>
-                    {validation.touched.usr_department_id &&
-                    validation.errors.usr_department_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.usr_department_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-
-                  <Col className="col-md-4 mb-3">
-                    <Label>{t("usr_description")}</Label>
-                    <Input
-                      name="usr_description"
-                      type="textarea"
-                      rows={9}
-                      placeholder={t("usr_description")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.usr_description || ""}
-                      invalid={
-                        validation.touched.usr_description &&
-                        validation.errors.usr_description
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.usr_description &&
-                    validation.errors.usr_description ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.usr_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-8 mb-3">
-                    <CascadingDropdowns
-                      validation={validation}
-                      dropdown1name="usr_region_id"
-                      dropdown2name="usr_zone_id"
-                      dropdown3name="usr_woreda_id"
-                      isEdit={isEdit}
-                      required={true}
-                    />
-                  </Col>
-                  <ImageUploader validation={validation} />
-                </Row>
-                <Row>
-                  <Col>
-                    <div className="text-end">
-                      {addUsers.isPending || updateUsers.isPending ? (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addUsers.isPending ||
-                            updateUsers.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          <Spinner size={"sm"} color="light" className="me-2" />
-                          {t("Save")}
-                        </Button>
-                      ) : (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addUsers.isPending ||
-                            updateUsers.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          {isDuplicateModalOpen ? (
-                            <div>{t("Save Duplicate")}</div>
-                          ) : (
-                            <div>{t("Save")}</div>
-                          )}
-                        </Button>
-                      )}
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
-            </ModalBody>
-            {isDuplicateModalOpen ? (
-              <ModalFooter>
-                <div className="text-center text-warning mb-4">
-                  {t(
-                    "This entry contains duplicate information. Please review and modify the form to avoid duplicates. If you still wish to proceed, click Save to add this user as a new entry."
+                  />
+                  </div>
+                  </div>
                   )}
-                </div>
-              </ModalFooter>
-            ) : null}
-          </Modal>
-        </div>
+    <Modal isOpen={modal} toggle={toggle} className="modal-xl">
+    <ModalHeader toggle={toggle} tag="h4">
+    {isDuplicateModalOpen ? (
+      t("Duplicate ") + " " + t("users")
+      ) : (
+      <div>
+      {!!isEdit
+      ? t("edit") + " " + t("users")
+      : t("add") + " " + t("users")}
       </div>
-      {showCanvas && (
-        <RightOffCanvas
+      )}
+      </ModalHeader>
+      <ModalBody>
+      <Form
+      onSubmit={(e) => {
+        e.preventDefault();
+        validation.handleSubmit();
+        return false;
+      }}
+      >
+      <Row>
+      <Col className="col-md-4 mb-3">
+      <Label>
+      {t("usr_email")} <span className="text-danger">*</span>
+      </Label>
+      <Input
+      name="usr_email"
+      type="text"
+      placeholder={t("usr_email")}
+      onChange={validation.handleChange}
+      onBlur={validation.handleBlur}
+      value={validation.values.usr_email || ""}
+      invalid={
+        validation.touched.usr_email &&
+        validation.errors.usr_email
+        ? true
+        : false
+      }
+      maxLength={30}
+      />
+      {validation.touched.usr_email &&
+      validation.errors.usr_email ? (
+        <FormFeedback type="invalid">
+        {validation.errors.usr_email}
+        </FormFeedback>
+        ) : null}
+      </Col>
+      <Col className="col-md-4 mb-3">
+      <Label>
+      {t("usr_password")} <span className="text-danger">*</span>
+      </Label>
+      <InputGroup>
+      <Input
+      name="usr_password"
+      type={showPassword ? "text" : "password"}
+      placeholder={t("usr_password")}
+      onChange={validation.handleChange}
+      onBlur={validation.handleBlur}
+      value={validation.values.usr_password || ""}
+      invalid={
+        validation.touched.usr_password &&
+        validation.errors.usr_password
+        ? true
+        : false
+      }
+      maxLength={20}
+      />
+      <InputGroupText
+      onClick={togglePasswordVisibility}
+      style={{ cursor: "pointer" }}
+      >
+      {showPassword ? <FaEyeSlash /> : <FaEye />}
+      </InputGroupText>
+      {validation.touched.usr_password &&
+      validation.errors.usr_password ? (
+        <FormFeedback type="invalid">
+        {validation.errors.usr_password}
+        </FormFeedback>
+        ) : null}
+      </InputGroup>
+      </Col>
+      <Col className="col-md-4 mb-3">
+      <Label>
+      {t("usr_full_name")}{" "}
+      <span className="text-danger">*</span>
+      </Label>
+      <Input
+      name="usr_full_name"
+      type="text"
+      placeholder={t("usr_full_name")}
+      onChange={validation.handleChange}
+      onBlur={validation.handleBlur}
+      value={validation.values.usr_full_name || ""}
+      invalid={
+        validation.touched.usr_full_name &&
+        validation.errors.usr_full_name
+        ? true
+        : false
+      }
+      maxLength={30}
+      />
+      {validation.touched.usr_full_name &&
+      validation.errors.usr_full_name ? (
+        <FormFeedback type="invalid">
+        {validation.errors.usr_full_name}
+        </FormFeedback>
+        ) : null}
+      </Col>
+      <Col className="col-md-4 mb-3">
+      <Label>
+      Phone Number <span className="text-danger">*</span>
+      </Label>
+      <InputGroup>
+      <InputGroupText>{"+251"}</InputGroupText>
+      <Input
+      name="usr_phone_number"
+      type="text"
+      placeholder="Enter phone number"
+      onChange={(e) => {
+        const inputValue = e.target.value;
+        let formattedValue = inputValue.replace(/^0/, "");
+        formattedValue = formattedValue.replace(/[^\d]/g, "");
+        formattedValue = formattedValue.substring(0, 9);
+        validation.setFieldValue(
+          "usr_phone_number",
+          formattedValue
+          );
+      }}
+      onBlur={validation.handleBlur}
+      value={validation.values.usr_phone_number}
+      invalid={
+        validation.touched.usr_phone_number &&
+        !!validation.errors.usr_phone_number
+      }
+      />
+      {validation.touched.usr_phone_number &&
+      validation.errors.usr_phone_number ? (
+        <FormFeedback type="invalid">
+        {validation.errors.usr_phone_number}
+        </FormFeedback>
+        ) : null}
+      </InputGroup>
+      </Col>
+      <Col className="col-md-4 mb-3">
+      <Label>
+      {t("usr_sector_id")}{" "}
+      </Label>
+      <Input
+      name="usr_sector_id"
+      type="select"
+      className="form-select"
+      onChange={validation.handleChange}
+      onBlur={validation.handleBlur}
+      value={validation.values.usr_sector_id || ""}
+      invalid={
+        validation.touched.usr_sector_id &&
+        validation.errors.usr_sector_id
+        ? true
+        : false
+      }
+      >
+      <option value="">{t("select_one")}</option>
+      {sectorInformationOptions.map((option) => (
+        <option key={option.value} value={option.value}>
+        {t(`${option.label}`)}
+        </option>
+        ))}
+      </Input>
+      {validation.touched.usr_sector_id &&
+      validation.errors.usr_sector_id ? (
+        <FormFeedback type="invalid">
+        {validation.errors.usr_sector_id}
+        </FormFeedback>
+        ) : null}
+      </Col>
+      <Col className="col-md-4 mb-3">
+      <Label>
+      {t("usr_department_id")}{" "}
+      </Label>
+      <Input
+      name="usr_department_id"
+      type="select"
+      className="form-select"
+      onChange={validation.handleChange}
+      onBlur={validation.handleBlur}
+      value={validation.values.usr_department_id || ""}
+      invalid={
+        validation.touched.usr_department_id &&
+        validation.errors.usr_department_id
+        ? true
+        : false
+      }
+      >
+      <option value="">{t("select_one")}</option>
+      {departmentOptions.map((option) => (
+        <option key={option.value} value={Number(option.value)}>
+        {t(option.label)}
+        </option>
+        ))}
+      </Input>
+      {validation.touched.usr_department_id &&
+      validation.errors.usr_department_id ? (
+        <FormFeedback type="invalid">
+        {validation.errors.usr_department_id}
+        </FormFeedback>
+        ) : null}
+      </Col>
+      <Col className="col-md-4 mb-3">
+      <Label>{t("usr_description")}</Label>
+      <Input
+      name="usr_description"
+      type="textarea"
+      rows={9}
+      placeholder={t("usr_description")}
+      onChange={validation.handleChange}
+      onBlur={validation.handleBlur}
+      value={validation.values.usr_description || ""}
+      invalid={
+        validation.touched.usr_description &&
+        validation.errors.usr_description
+        ? true
+        : false
+      }
+      maxLength={20}
+      />
+      {validation.touched.usr_description &&
+      validation.errors.usr_description ? (
+        <FormFeedback type="invalid">
+        {validation.errors.usr_description}
+        </FormFeedback>
+        ) : null}
+      </Col>
+      <Col className="col-md-8 mb-3">
+      <CascadingDropdowns
+      validation={validation}
+      dropdown1name="usr_region_id"
+      dropdown2name="usr_zone_id"
+      dropdown3name="usr_woreda_id"
+      isEdit={isEdit}
+      required={true}
+      />
+      </Col>
+      <ImageUploader validation={validation} />
+      </Row>
+      <Row>
+      <Col>
+      <div className="text-end">
+      {addUsers.isPending || updateUsers.isPending ? (
+        <Button
+        color="success"
+        type="submit"
+        className="save-user"
+        disabled={
+          addUsers.isPending ||
+          updateUsers.isPending ||
+          !validation.dirty
+        }
+        >
+        <Spinner size={"sm"} color="light" className="me-2" />
+        {t("Save")}
+        </Button>
+        ) : (
+        <Button
+        color="success"
+        type="submit"
+        className="save-user"
+        disabled={
+          addUsers.isPending ||
+          updateUsers.isPending ||
+          !validation.dirty
+        }
+        >
+        {isDuplicateModalOpen ? (
+          <div>{t("Save Duplicate")}</div>
+          ) : (
+          <div>{t("Save")}</div>
+          )}
+          </Button>
+          )}
+        </div>
+        </Col>
+        </Row>
+        </Form>
+        </ModalBody>
+        {isDuplicateModalOpen ? (
+          <ModalFooter>
+          <div className="text-center text-warning mb-4">
+          {t(
+            "This entry contains duplicate information. Please review and modify the form to avoid duplicates. If you still wish to proceed, click Save to add this user as a new entry."
+            )}
+          </div>
+          </ModalFooter>
+          ) : null}
+        </Modal>
+        </div>
+        </div>
+        {showCanvas && (
+          <RightOffCanvas
           handleClick={handleClick}
           showCanvas={showCanvas}
           canvasWidth={84}
           name={userMetaData.usr_name || "UserRoles"}
           id={userMetaData.usr_id}
           components={{ "User Roles": UserRoles }}
-        />
-      )}
-    </React.Fragment>
-  );
+          />
+          )}
+        </React.Fragment>
+        );
 };
 UsersModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

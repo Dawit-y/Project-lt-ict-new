@@ -6,7 +6,7 @@ import {
   ModalHeader,
   Table,
   ModalFooter,
-  Button,
+  Button
 } from "reactstrap";
 
 const modalStyle = {

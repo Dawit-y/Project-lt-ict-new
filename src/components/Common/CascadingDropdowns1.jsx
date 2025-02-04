@@ -69,7 +69,7 @@ const CascadingDropdowns1 = ({
       {/* Region Dropdown */}
       <FormGroup>
         <Label for={dropdown1name}>
-          {t("dep_available_at_region")}{" "}
+          {t("region")}{" "}
           {required && <span className="text-danger">*</span>}
         </Label>
         <Input
@@ -99,8 +99,7 @@ const CascadingDropdowns1 = ({
       {/* Zone Dropdown */}
       <FormGroup>
         <Label for={dropdown2name}>
-          {t("dep_available_at_zone")}
-          {required && <span className="text-danger">*</span>}
+          {t("zone")}
         </Label>
         <Input
           type="select"
@@ -139,8 +138,7 @@ const CascadingDropdowns1 = ({
       {/* Woreda Dropdown */}
       <FormGroup>
         <Label for={dropdown3name}>
-          {t("dep_available_at_woreda")}
-          {required && <span className="text-danger">*</span>}
+          {t("woreda")}
         </Label>
         <Input
           type="select"

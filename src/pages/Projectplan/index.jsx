@@ -366,7 +366,7 @@ const ProjectPlanModel = () => {
           return (
             <Button
               type="button"
-              color="primary"
+              color="soft-primary"
               className="btn-sm"
               onClick={() => {
                 const data = cellProps.row.original;
@@ -387,13 +387,13 @@ const ProjectPlanModel = () => {
           return (
             <Button
               type="button"
-              color="primary"
+              color="soft-primary"
               className="btn-sm"
               onClick={() => {
                 setProjectPlanSelected(cellProps.row.original);
               }}
             >
-              {t("view_gannt")}
+              {t("view_gannt")} <i class="fa fa-arrow-down ml-2"></i>
             </Button>
           );
         },
@@ -574,7 +574,7 @@ const ProjectPlanModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={200}
                     />
                     {validation.touched.pld_name &&
                     validation.errors.pld_name ? (

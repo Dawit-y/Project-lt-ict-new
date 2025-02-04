@@ -19,6 +19,20 @@ export const alphanumericValidation = (minLength, maxLength, isRequired = true) 
   }
   return schema;
 };
+
+export const onlyAmharicValidation = (minLength, maxLength, isRequired = true) => {
+  const { t } = useTranslation();
+  let schema = Yup.string()
+    .matches(/^[\u1200-\u137F\s.,;!?@#$%^&*()_+\-=[\]{}|:'"<>\\/`~]+$/, t("only_amharic"))
+    .min(minLength, `${t('val_min_length')}: ${minLength}`)
+    .max(maxLength, `${t('val_max_length')}: ${maxLength}`)
+
+  if (isRequired) {
+    schema = schema.required(t('val_required'));
+  }
+  return schema;
+};
+
 export const phoneValidation = (isRequired = true) => {
   const { t } = useTranslation();
   let schema = Yup.string()

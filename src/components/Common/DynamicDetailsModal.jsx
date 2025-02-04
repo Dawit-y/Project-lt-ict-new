@@ -28,6 +28,7 @@ const DynamicDetailsModal = (props) => {
     modalClassName,
     dateInGC,
     dateInEC,
+    projectName
   } = props;
   const renderTableRows = () => {
     // Ensure that fields is an array and data (transaction) is an object
@@ -51,6 +52,49 @@ const DynamicDetailsModal = (props) => {
     }
     return null; // Return null if fields or data are not valid
   };
+    const printDetail = () => {
+    const modalContent = document.getElementById("printable-detail").innerHTML;
+    const printWindow = window.open("", "_blank", `width=${window.screen.width},height=${window.screen.height}`);
+    printWindow.document.open();
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>${t("Print Details")}</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              margin: 20px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+            }
+            table, th, td {
+              border: 1px solid #ddd;
+            }
+            th, td {
+              padding: 8px;
+              text-align: left;
+            }
+            th {
+              background-color: #f4f4f4;
+            }
+            @media print{
+              button{
+                display:none;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          ${modalContent}
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+    printWindow.close();
+  };
   return (
     <Modal
       isOpen={isOpen}
@@ -62,8 +106,8 @@ const DynamicDetailsModal = (props) => {
       toggle={toggle}
       style={modalStyle}
     >
-      <div className={modalClassName || "modal-xl"}>
-        <ModalHeader toggle={toggle}>{t(title)}</ModalHeader>
+      <div className={modalClassName || "modal-xl"} id="printable-detail">
+        <ModalHeader toggle={toggle}>{t(title)} - {projectName}</ModalHeader>
         <ModalBody>
           <div className="d-flex">
             <div className="flex-grow-1 overflow-hidden">
@@ -104,6 +148,9 @@ const DynamicDetailsModal = (props) => {
           </Row>
         </ModalBody>
         <ModalFooter>
+        <Button onClick={printDetail} className="btn btn-success me-2">
+            <i className="fa fa-print" />
+          </Button>
           <Button type="button" color="secondary" onClick={toggle}>
             {t(footerText || "Close")}
           </Button>

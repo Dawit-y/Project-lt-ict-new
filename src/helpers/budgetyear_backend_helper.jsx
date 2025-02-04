@@ -17,23 +17,8 @@ export const getBudgetYear = async () => {
   }
 };
 // add Projects
-export const addBudgetYear = async (objectName) => {
-  try {
-    const response = await axios.post(
-      `${apiUrl}` + ADD_BUDGET_YEAR,
-      objectName,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Failed to update grid:", error);
-    throw error;
-  }
-};
+export const addBudgetYear = async (objectName) =>
+  post(`${apiUrl}` + ADD_BUDGET_YEAR, objectName);
 // update objectNames
 export const updateBudgetYear = (objectName) =>
   post(

@@ -52,7 +52,7 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-
+import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 const ProjectContractorModel = (props) => {
   const { passedId, isActive } = props;
   const param = { cni_project_id: passedId };
@@ -553,10 +553,34 @@ const ProjectContractorModel = (props) => {
 
   return (
     <React.Fragment>
-      <ProjectContractorModal
+      <DynamicDetailsModal
         isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
+        toggle={toggleViewModal} // Function to close the modal
+        data={transaction} // Pass transaction as data to the modal
+        title={t('project_contractor')}
+        description={transaction.cni_description}
+        
+        fields={[
+         /* { label: t('prp_type'), key: "prp_type", value:paymentCategoryMap[transaction.prp_type]},*/
+          { label: t('cni_name'), key: "cni_name" },
+          { label: t('cni_tin_num'), key: "cni_tin_num" },
+          { label: t('cni_vat_num'), key: "cni_vat_num" },
+          { label: t('cni_total_contract_price'), key: "cni_total_contract_price" },
+          { label: t('cni_contract_start_date_gc'), key: "cni_contract_start_date_gc" },
+          { label: t('cni_contract_end_date_gc'), key: "cni_contract_end_date_gc" },
+          { label: t('cni_contact_person'), key: "cni_contact_person" },
+          { label: t('cni_phone_number'), key: "cni_phone_number" },
+          { label: t('cni_address'), key: "cni_address" },
+           { label: t('cni_email'), key: "cni_email" },
+            { label: t('cni_website'), key: "cni_website" },
+            { label: t('cni_procrument_method'), key: "cni_procrument_method" },
+            { label: t('cni_bid_invitation_date'), key: "cni_bid_invitation_date" },
+            { label: t('cni_bid_opening_date'), key: "cni_bid_opening_date" },
+            { label: t('cni_bid_award_date'), key: "cni_bid_award_date" },
+            { label: t('cni_bid_contract_signing_date'), key: "cni_bid_contract_signing_date" },
+          //{ label: t('prp_payment_percentage'), key: "prp_status" },
+        ]}
+        footerText={t('close')}
       />
       <DeleteModal
         show={deleteModal}

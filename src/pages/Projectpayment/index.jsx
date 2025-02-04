@@ -45,8 +45,6 @@ import {
 import { toast } from "react-toastify";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import Flatpickr from "react-flatpickr";
-import { formatDate } from "../../utils/commonMethods";
-
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -349,7 +347,7 @@ const paymentCategoryMap = useMemo(() => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
+      data?.previledge?.is_role_editable ||
       data?.previledge?.is_role_deletable
     ) {
       baseColumns.push({
@@ -371,7 +369,7 @@ const paymentCategoryMap = useMemo(() => {
                 >
                   <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
                   <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
+                    {t("edit")}
                   </UncontrolledTooltip>
                 </Link>
               )}

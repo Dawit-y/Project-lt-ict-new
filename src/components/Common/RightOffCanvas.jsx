@@ -118,7 +118,8 @@ const RightOffCanvas = ({
                     <TabPane key={navItem} tabId={navItem}>
                       {React.createElement(components[navItem], {
                         passedId: id,
-                        isActive: activeTab1 === navItem, 
+                        isActive: activeTab1 === navItem,
+                        projectName:name 
                       })}
                     </TabPane>
                   ))}
