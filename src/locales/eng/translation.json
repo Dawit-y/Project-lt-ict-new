@@ -64,6 +64,7 @@
   "User Grid": "User Grid",
   "User List": "User List",
   "Profile": "Profile",
+  "personal_information": "Personal Information",
   "Authentication": "Authentication",
   "Login": "Login",
   "Register": "Register",
@@ -338,6 +339,7 @@
   "prd_document_type_id": "Document Type",
   "prd_name": "Name",
   "prd_file_path": "File Path",
+  "prd_file": "Document File",
   "prd_size": "Size",
   "prd_file_extension": "File Extension",
   "prd_uploaded_date": "Uploaded Date",
@@ -1031,10 +1033,11 @@
   "home_page": "Home",
   "details": "Details",
   "Project": "Project",
-"data_created_date":"Data Created Date",
-"data_created_by":"Created By",
-"print":"Print",
-"print_tooltip":"Click here to print",
-"only_amharic":"Only amharic text is allowed",
-"include_sub_address":"Include Sub-Address"
+  "data_created_date": "Data Created Date",
+  "data_created_by": "Created By",
+  "print": "Print",
+  "print_tooltip": "Click here to print",
+  "only_amharic": "Only amharic text is allowed",
+  "include_sub_address": "Include Sub-Address",
+  "notifications": "Notifications"
 }

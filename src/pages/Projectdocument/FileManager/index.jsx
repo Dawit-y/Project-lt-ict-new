@@ -130,7 +130,7 @@ const Index = (props) => {
     },
 
     validationSchema: Yup.object({
-      prd_file: Yup.string().required(t("prd_file")),
+      prd_file: !isEdit && Yup.string().required(t("prd_file")),
       prd_document_type_id: Yup.string().required(t("prd_document_type_id")),
       prd_name: Yup.string().required(t("prd_name")),
     }),
@@ -231,7 +231,6 @@ const Index = (props) => {
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
   return (
     <React.Fragment>
       <Modal isOpen={modal} toggle={toggle} className="modal-xl">

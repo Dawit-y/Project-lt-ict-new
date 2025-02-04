@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useMemo } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,16 +8,28 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+} from "reactstrap";
+import { DetailsView } from "../../components/Common/DetailViewWrapper";
+import { parseISO, format } from "date-fns";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+  width: "100%",
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return "-";
+  return format(parseISO(dateString), "PP");
 };
 
 const RolesModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction } = props;
+
+  const updatedTransaction = {
+    ...transaction,
+    rol_create_time: formatDate(transaction?.rol_create_time),
+    rol_update_time: formatDate(transaction?.rol_update_time),
+  };
 
   return (
     <Modal
@@ -33,31 +45,22 @@ const RolesModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('rol_name')}: <span className="text-primary">{transaction.rol_name}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('rol_description')}: <span className="text-primary">{transaction.rol_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('rol_status')}: <span className="text-primary">{transaction.rol_status}</span>
-          </p>
-          </tr>
-
-          {transaction.is_deletable === 1 && (
-            <p className="text-danger">data is deletable</p>
-          )}
-          
-          {transaction.is_editable === 1 && (
-            <p className="text-success">Editable</p>
-          )}
+          <DetailsView
+            details={updatedTransaction}
+            keysToRemove={[
+              "rol_id",
+              "rol_delete_time",
+              "rol_created_by",
+              "rol_status",
+              "is_editable",
+              "is_deletable",
+              "total_count",
+            ]}
+          />
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

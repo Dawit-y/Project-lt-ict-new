@@ -16,7 +16,6 @@ import {
 } from "../../queries/user_role_query.jsx";
 import { useFetchRoles } from "../../queries/roles_query.jsx";
 import { useTranslation } from "react-i18next";
-
 import {
   Button,
   Col,
@@ -31,6 +30,7 @@ import {
   Label,
   InputGroup,
 } from "reactstrap";
+import UserRoleModal from "./UserRoleModal.jsx";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import {
   alphanumericValidation,
@@ -332,17 +332,10 @@ const UserRoleModel = (props) => {
 
   return (
     <React.Fragment>
-      <DynamicDetailsModal
+      <UserRoleModal
         isOpen={modal1}
-        toggle={toggleViewModal} // Function to close the modal
-        data={transaction} // Pass transaction as data to the modal
-        title="View User Role Details"
-        description={transaction.url_description}
-        fields={[
-          { label: "Role Name", key: "rol_name" },
-          { label: "Status", key: "url_status" }
-        ]}
-        footerText="Close"
+        toggle={toggleViewModal}
+        transaction={transaction}
       />
       <DeleteModal
         show={deleteModal}
@@ -362,7 +355,6 @@ const UserRoleModel = (props) => {
           isCustomPageSize={true}
           handleUserClick={handleUserRoleClicks}
           isPagination={true}
-          // SearchPlaceholder="26 records..."
           SearchPlaceholder={t("filter_placeholder")}
           buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
           buttonName={t("add") + " " + t("user_role")}

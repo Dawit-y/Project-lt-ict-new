@@ -7,8 +7,6 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-//import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
   useFetchPermissions,
@@ -43,9 +41,10 @@ const truncateText = (text, maxLength) => {
 };
 
 const PermissionModel = (props) => {
+  document.title = " Permission";
+
   const { passedId, isActive } = props;
   const param = { pem_role_id: passedId };
-  document.title = " Permission";
 
   const { t } = useTranslation();
   const [selectedItem, setSelectedItem] = useState(null);
@@ -62,7 +61,7 @@ const PermissionModel = (props) => {
   const addPermission = useAddPermission();
   const updatePermission = useUpdatePermission();
   const deletePermission = useDeletePermission();
-  const handleAddPermission = async (newPermission, handoverDocumentData) => {
+  const handleAddPermission = async (newPermission) => {
     try {
       await addPermission.mutateAsync(newPermission);
       toast.success(`Data added successfully`, {
@@ -159,7 +158,7 @@ const PermissionModel = (props) => {
           pem_show: values.pem_show,
           pem_search: values.pem_search,
           pem_description: values.pem_description,
-          pem_status: values.pem_status,
+          pem_status: 1,
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };

@@ -148,11 +148,11 @@ const FileUploadField = ({ validation }) => {
 
       <Col className="col-12">
         <Card>
-          <CardBody>
+          <>
             <CardSubtitle className="mb-3">
               Attach or upload your PDF file here!
             </CardSubtitle>
-            <Form>
+            <>
               <Dropzone
                 maxSize={MAX_SIZE_BYTES}
                 accept={{ "application/pdf": [] }}
@@ -180,7 +180,13 @@ const FileUploadField = ({ validation }) => {
                 }}
               >
                 {({ getRootProps, getInputProps }) => (
-                  <div className="dropzone">
+                  <div
+                    className={`dropzone ${
+                      validation.touched.prd_file && validation.errors.prd_file
+                        ? "border border-danger"
+                        : ""
+                    }`}
+                  >
                     <div
                       className="dz-message needsclick mt-2"
                       {...getRootProps()}
@@ -228,9 +234,15 @@ const FileUploadField = ({ validation }) => {
                   ))}
                 </div>
               )}
-            </Form>
-          </CardBody>
+            </>
+          </>
         </Card>
+
+        {validation.touched.prd_file && validation.errors.prd_file && (
+          <div className="text-danger small mt-1">
+            {validation.errors.prd_file}
+          </div>
+        )}
 
         {fileErrors && fileErrors?.length > 0 && (
           <ul>

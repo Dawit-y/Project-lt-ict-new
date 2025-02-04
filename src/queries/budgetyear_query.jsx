@@ -22,7 +22,6 @@ export const useFetchBudgetYears = () => {
 
 //search budget_year
 export const useSearchBudgetYears = (searchParams = {}) => {
-  console.log("BUDGETYEAR " + searchParams);
   return useQuery({
     queryKey: [...BUDGET_YEAR_QUERY_KEY, searchParams],
     queryFn: () => getBudgetYear(searchParams),

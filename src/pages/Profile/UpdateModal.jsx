@@ -114,7 +114,7 @@ const UpdateModal = ({ modal, toggle, profile, refetch }) => {
               </Col>
               <Col className="col-md-6 mb-3">
                 <Label>
-                  Phone Number <span className="text-danger">*</span>
+                  {t("usr_phone_number")} <span className="text-danger">*</span>
                 </Label>
                 <InputGroup>
                   <InputGroupText>{"+251"}</InputGroupText>

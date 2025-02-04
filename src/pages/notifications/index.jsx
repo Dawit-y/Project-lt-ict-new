@@ -8,7 +8,6 @@ import { Spinner } from "reactstrap";
 const Notifications = () => {
   const { t } = useTranslation();
   const { data, isLoading, error, isError, refetch } = useFetchNotifications();
-  console.log("nots", data);
   const notifications = data?.data || [];
 
   const formatDate = (dateString) => {

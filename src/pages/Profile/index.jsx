@@ -24,12 +24,14 @@ import UpdateModal from "./UpdateModal";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { toast } from "react-toastify";
 import { useFetchUser } from "../../queries/users_query";
+import { useTranslation } from "react-i18next";
 
 const API_URL = import.meta.env.VITE_BASE_API_FILE;
 
 const UsersProfile = () => {
   document.title = "Profile | PMS";
 
+  const { t } = useTranslation();
   const storedUser = sessionStorage.getItem("authUser");
   const Users = storedUser ? JSON.parse(storedUser) : null; // Handle null case
   const [userProfile, setUserProfile] = useState(Users); // Set state directly to Users
@@ -123,7 +125,7 @@ const UsersProfile = () => {
             tog_backdrop();
           }}
         >
-          Edit Password
+          {t("edit")} Password
         </ModalHeader>
         <ModalBody>
           <Form>
@@ -172,10 +174,10 @@ const UsersProfile = () => {
               setModal_backdrop(false);
             }}
           >
-            Close
+            {t("close")}
           </Button>
           <Button type="button" color="success" onClick={handlePasswordChange}>
-            Edit
+            {t("edit")}
           </Button>
         </ModalFooter>
       </Modal>
@@ -249,7 +251,7 @@ const UsersProfile = () => {
                         <Card>
                           <CardBody>
                             <CardTitle className="mb-4">
-                              Personal Information
+                              {t("personal_information")}
                             </CardTitle>
                             <p className="text-muted mb-4">
                               {profile?.usr_description === ""
@@ -260,7 +262,7 @@ const UsersProfile = () => {
                               <Table className="table-nowrap mb-0">
                                 <tbody>
                                   <tr>
-                                    <th scope="row">Full Name :</th>
+                                    <th scope="row">{t("usr_full_name")}: </th>
                                     <td>
                                       {profile?.usr_full_name === ""
                                         ? "-"
@@ -268,7 +270,9 @@ const UsersProfile = () => {
                                     </td>
                                   </tr>
                                   <tr>
-                                    <th scope="row">Mobile :</th>
+                                    <th scope="row">
+                                      {t("usr_phone_number")}:
+                                    </th>
                                     <td>
                                       {profile?.usr_phone_number === ""
                                         ? "-"
@@ -276,7 +280,7 @@ const UsersProfile = () => {
                                     </td>
                                   </tr>
                                   <tr>
-                                    <th scope="row">E-mail :</th>
+                                    <th scope="row">{t("usr_email")}: </th>
                                     <td>
                                       {profile?.usr_email === ""
                                         ? "-"
@@ -284,13 +288,11 @@ const UsersProfile = () => {
                                     </td>
                                   </tr>
                                   <tr>
-                                    <th scope="row">Profile Created :</th>
+                                    <th scope="row">{t("usr_create_time")}:</th>
                                     <td>
-                                      <td>
-                                        {profile?.usr_create_time
-                                          ? formatDate(profile.usr_create_time)
-                                          : "-"}
-                                      </td>
+                                      {profile?.usr_create_time
+                                        ? formatDate(profile.usr_create_time)
+                                        : "-"}
                                     </td>
                                   </tr>
                                 </tbody>
