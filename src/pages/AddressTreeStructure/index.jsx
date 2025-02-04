@@ -42,7 +42,11 @@ const App_tree = () => {
   const [errors, setErrors] = useState({});
   const [deleteModal, setDeleteModal] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
-  const [renameValue, setRenameValue] = useState("");
+  const [renameValue, setRenameValue] = useState({
+    add_name_or: "",
+    add_name_am: "",
+    add_name_en: "",
+  });
   const [descendants, setDescendants] = useState([]);
   const { t } = useTranslation();
 
@@ -78,7 +82,12 @@ const App_tree = () => {
   useEffect(() => {
     if (selectedNode) {
       setDescendants(getDescendants(selectedNode));
-      setRenameValue(selectedNode.name || "");
+      setRenameValue({
+        add_name_or: selectedNode?.name ?? "",
+        add_name_am: selectedNode?.add_name_am ?? "",
+        add_name_en: selectedNode?.add_name_en ?? "",
+      });
+
       resetForm();
     }
   }, [selectedNode]);
@@ -86,6 +95,12 @@ const App_tree = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormInputs((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const handleRenameChange = (e) => {
+    const { name, value } = e.target;
+    setRenameValue((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
@@ -158,7 +173,9 @@ const App_tree = () => {
     try {
       await updateFolder.mutateAsync({
         add_id: selectedNode.id,
-        add_name_or: renameValue,
+        add_name_or: renameValue.add_name_or,
+        add_name_am: renameValue.add_name_am,
+        add_name_en: renameValue.add_name_en,
       });
       toast.success(t("Data updated successfully"), { autoClose: 2000 });
       resetForm();
@@ -383,10 +400,8 @@ const App_tree = () => {
                                   <Input
                                     name="add_name_or"
                                     type="text"
-                                    value={renameValue}
-                                    onChange={(e) =>
-                                      setRenameValue(e.target.value)
-                                    }
+                                    value={renameValue.add_name_or}
+                                    onChange={handleRenameChange}
                                   />
                                 </Col>
                                 <Col className="col-md-12 mb-3">
@@ -394,8 +409,8 @@ const App_tree = () => {
                                   <Input
                                     name="add_name_am"
                                     type="text"
-                                    value={formInputs.add_name_am}
-                                    onChange={handleInputChange}
+                                    value={renameValue.add_name_am}
+                                    onChange={handleRenameChange}
                                   />
                                 </Col>
                                 <Col className="col-md-12 mb-3">
@@ -403,8 +418,8 @@ const App_tree = () => {
                                   <Input
                                     name="add_name_en"
                                     type="text"
-                                    value={formInputs.add_name_en}
-                                    onChange={handleInputChange}
+                                    value={renameValue.add_name_en}
+                                    onChange={handleRenameChange}
                                   />
                                 </Col>
                               </Row>
