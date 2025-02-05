@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios"; // Axios for API requests
-import DashboardComponent from "./Dashboardcomp";
 import { useAccessToken } from "../../helpers/jwt-token-access/accessToken";
 import { getProjectDashboard } from "../../helpers/Project_Backend";
-//i18n
 import { withTranslation } from "react-i18next";
 import SupersetDashboard from "../../pages/Dashboard/SupersetDashboard";
+
 const Dashboard = () => {
+  document.title = "Project Management System";
+  
   const accessToken = useAccessToken();
   const role = "Deputy";
   const [data, setData] = useState(null);
@@ -54,12 +54,9 @@ const Dashboard = () => {
       <div className="container-fluid1">
         <div className="row">
           {roleData.map((supersetPath, index) => (
-            <div
-              key={index}
-            >
+            <div key={index}>
               {supersetPath ? (
-                <SupersetDashboard 
-                dashboardPath={supersetPath.superset_url} />
+                <SupersetDashboard dashboardPath={supersetPath.superset_url} />
               ) : (
                 <div>Loading data...</div>
               )}

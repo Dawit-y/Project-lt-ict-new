@@ -1,5 +1,5 @@
 import React from "react";
-import { LiaRedoAltSolid } from "react-icons/lia";
+import { FaRedo } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
 
 class ErrorBoundary extends React.Component {
@@ -46,7 +46,7 @@ class ErrorBoundary extends React.Component {
               onClick={this.resetErrorBoundary}
               className="btn btn-secondary"
             >
-              <LiaRedoAltSolid />
+              <FaRedo />
               <span className="ms-2">{"Try again"}</span>
             </button>
           </div>

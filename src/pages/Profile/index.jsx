@@ -21,7 +21,7 @@ import { formatDistanceToNow, parseISO } from "date-fns";
 import axios from "axios";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import UpdateModal from "./UpdateModal";
-import { RiLockPasswordFill } from "react-icons/ri";
+import { FaLock } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useFetchUser } from "../../queries/users_query";
 import { useTranslation } from "react-i18next";
@@ -231,7 +231,7 @@ const UsersProfile = () => {
                                 onClick={() => toggleUpdateModal()}
                               >
                                 <i className="mdi mdi-pencil font-size-16 me-2"></i>
-                                {"Edit"}
+                                {t("edit")}
                               </Button>
                               <Button
                                 outline
@@ -241,8 +241,8 @@ const UsersProfile = () => {
                                   tog_backdrop();
                                 }}
                               >
-                                <RiLockPasswordFill className="me-2" />
-                                {"Reset Password"}
+                                <FaLock className="me-2" />
+                                {t("reset_password")}
                               </Button>
                             </div>
                           </Col>

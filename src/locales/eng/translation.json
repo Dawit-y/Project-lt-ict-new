@@ -1039,5 +1039,6 @@
   "print_tooltip": "Click here to print",
   "only_amharic": "Only amharic text is allowed",
   "include_sub_address": "Include Sub-Address",
-  "notifications": "Notifications"
+  "notifications": "Notifications",
+  "reset_password": "Reset Password"
 }

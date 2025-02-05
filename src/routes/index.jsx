@@ -54,7 +54,6 @@ const AccessLog = lazy(() => import("../pages/Accesslog/index"));
 const CascadingDropdowns = lazy(() =>
   import("../components/Common/CascadingDropdowns")
 );
-const Dashboardcard = lazy(() => import("../Dashboards/Pie"));
 const Notifications = lazy(() => import("../pages/notifications"));
 
 const ProjectOverview = lazy(() => import("../pages/Project/ProjectOverview"));
@@ -113,15 +112,19 @@ const SupersetDashboard = lazy(() =>
   import("../pages/Dashboard/SupersetDashboard")
 );
 const ProjectVariation = lazy(() => import("../pages/Projectvariation/index"));
-import EmailInformation from "../pages/Emailinformation/index";
-import EmailTemplate from "../pages/Emailtemplate/index";
-import SmsInformation from "../pages/Smsinformation/index";
-import SmsTemplate from "../pages/Smstemplate/index";
-import BudgetRequestAmount from "../pages/Budgetrequestamount/index";
-import BudgetRequestTask from "../pages/Budgetrequesttask/index";
-import BudgetExSource from "../pages/Budgetexsource/index";
-import BudgetExipDetail from "../pages/Budgetexipdetail/index";
-import PaymentCategory from "../pages/Paymentcategory/index";
+const EmailInformation = lazy(() => import("../pages/Emailinformation/index"));
+const EmailTemplate = lazy(() => import("../pages/Emailtemplate/index"));
+const SmsInformation = lazy(() => import("../pages/Smsinformation/index"));
+const SmsTemplate = lazy(() => import("../pages/Smstemplate/index"));
+const BudgetRequestAmount = lazy(() =>
+  import("../pages/Budgetrequestamount/index")
+);
+const BudgetRequestTask = lazy(() =>
+  import("../pages/Budgetrequesttask/index")
+);
+const BudgetExSource = lazy(() => import("../pages/Budgetexsource/index"));
+const BudgetExipDetail = lazy(() => import("../pages/Budgetexipdetail/index"));
+const PaymentCategory = lazy(() => import("../pages/Paymentcategory/index"));
 
 const authProtectedRoutes = [
   { path: "/supersetdashboard", component: <SupersetDashboard /> },
@@ -153,7 +156,6 @@ const authProtectedRoutes = [
   { path: "/budget_month", component: <BudgetMonth /> },
   { path: "/project_supplimentary", component: <ProjectSupplimentary /> },
   { path: "/project_variation", component: <ProjectVariation /> },
-  { path: "/dash", components: <Dashboardcard /> },
   { path: "/dashboard", component: <Dashboard /> },
   { path: "/Project-Tree", component: <ProjectsTreeView /> },
   { path: "/address_structure", component: <AddressStructure /> },

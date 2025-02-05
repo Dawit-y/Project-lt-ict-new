@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { LiaRedoAltSolid } from "react-icons/lia";
+import { FaRedo } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 const FetchErrorHandler = ({ error, refetch }) => {
@@ -35,7 +35,7 @@ const FetchErrorHandler = ({ error, refetch }) => {
           {t("Error occurred while fetching")}
         </h6>
         <button onClick={handleRefetch} className="btn btn-secondary">
-          <LiaRedoAltSolid />
+          <FaRedo />
           <span className="ms-2">{t("Retry")}</span>
         </button>
       </div>

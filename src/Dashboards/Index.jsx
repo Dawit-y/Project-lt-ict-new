@@ -5,7 +5,6 @@ import axios from "axios"; // Axios for API requests
 // import DashboardComponent from "../pages/Dashboard/Dashboardcomp";
 import WelcomeComp from "../pages/Dashboard/WelcomeComp";
 import accessToken from "../helpers/jwt-token-access/accessToken";
-import { del, get, post, put } from "../helpers/api_Lists";
 
 const Index = ({ role }) => {
   const [data, setData] = useState(null);
