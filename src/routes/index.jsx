@@ -11,8 +11,6 @@ const ProjectPaymentList = lazy(() =>
 );
 const ProjectsTreeView = lazy(() => import("../pages/ProjectStatusTree/index"));
 const Logout = lazy(() => import("../pages/Authentication/Logout"));
-const Register = lazy(() => import("../pages/Authentication/Register"));
-const ForgetPwd = lazy(() => import("../pages/Authentication/ForgetPassword"));
 
 const AddressStructure = lazy(() =>
   import("../pages/AddressTreeStructure/index.jsx")
@@ -251,9 +249,6 @@ const authProtectedRoutes = [
 const publicRoutes = [
   { path: "/logout", component: <Logout /> },
   { path: "/login", component: <Login /> },
-  { path: "/forgot-password", component: <ForgetPwd /> },
-  { path: "/register", component: <Register /> },
-  { path: "/gantt", component: <Gantty /> },
 ];
 
 export { authProtectedRoutes, publicRoutes };
