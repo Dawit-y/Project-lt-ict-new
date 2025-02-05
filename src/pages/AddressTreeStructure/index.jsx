@@ -223,7 +223,10 @@ const App_tree = () => {
         <div className="container-fluid">
           <Breadcrumbs title={t("address_tree_Search")} />
           <div className="d-flex vh-100">
-            <div className="w-30 p-3 bg-white border-end overflow-auto shadow-sm">
+            <div
+              className="w-30 p-3 bg-white border-end overflow-auto shadow-sm"
+              style={{ minWidth: "300px" }}
+            >
               <h4 className="mb-2 text-secondary">
                 {t("address_tree_Search")}
               </h4>
