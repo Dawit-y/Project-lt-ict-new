@@ -44,6 +44,11 @@ import ProjectPerformanceModel from "../Projectperformance";
 import ProjectSupplimentaryModel from "../Projectsupplimentary";
 import ProjectVariationModel from "../Projectvariation";
 import ProjectBudgetPlan from "../../pages/Projectbudgetplan/index";
+
+import ProposalRequestModel from "../../pages/Proposalrequest";
+import ConversationInformationModel from "../../pages/Conversationinformation";
+import RequestInformationModel from "../../pages/Requestinformation";
+
 import {
   Button,
   Col,
@@ -127,6 +132,10 @@ const ProjectModel = () => {
       component: ProjectSupplimentaryModel,
     },
     40: { label: t("project_variation"), component: ProjectVariationModel },
+    58: { label: t("proposal_request"), component: ProposalRequestModel },
+    57: { label: t("conversation_information"), component: ConversationInformationModel },
+    59: { label: t("request_information"), component: RequestInformationModel }
+
     //46: { label: t('project_supplimentary'), component: ProjectBudgetPlan },
   };
   const [isAddressLoading, setIsAddressLoading] = useState(false);

@@ -3,9 +3,9 @@ import { Navigate } from "react-router-dom";
 
 import Dashboard from "../pages/Dashboard/index";
 import Login from "../pages/Authentication/Login";
+const UsersProfile = lazy(() => import("../pages/Profile"));
 import ProjectProvider from "../context/ProjectContext";
 
-const UsersProfile = lazy(() => import("../pages/Profile"));
 const ProjectPaymentList = lazy(() =>
   import("../pages/Projectpayment/ProjectPaymentList")
 );
@@ -101,6 +101,7 @@ const ProjectBudgetPlanList = lazy(() =>
 const ProjectBudgetPlan = lazy(() =>
   import("../pages/Projectbudgetplan/index")
 );
+
 const BudgetMonth = lazy(() => import("../pages/Budgetmonth/index"));
 const ProjectPlan = lazy(() => import("../pages/Projectplan/index"));
 const ProjectSupplimentary = lazy(() =>
@@ -124,7 +125,22 @@ const BudgetExSource = lazy(() => import("../pages/Budgetexsource/index"));
 const BudgetExipDetail = lazy(() => import("../pages/Budgetexipdetail/index"));
 const PaymentCategory = lazy(() => import("../pages/Paymentcategory/index"));
 
+const ConversationInformation = lazy(() => import("../pages/Conversationinformation/index"));
+const RequestInformation = lazy(() => import("../pages/Requestinformation/index"));
+const RequestStatus = lazy(() => import("../pages/Requeststatus/index"));
+const ProposalRequest = lazy(() => import("../pages/Proposalrequest/index"));
+const RequestCategory = lazy(() => import("../pages/Requestcategory/index"));
+
+const ConversationInformationList = lazy(() => import("../pages/Conversationinformation/ConversationInformationList"));
+const RequestInformationList = lazy(() => import("../pages/Requestinformation/RequestInformationList"));
+const ProposalRequestList = lazy(() => import("../pages/Proposalrequest/ProposalRequestList"));
+
 const authProtectedRoutes = [
+  {path: '/conversation_information', component: <ConversationInformation/> },
+ {path: '/request_information', component: <RequestInformation/> },
+ {path: '/request_status', component: <RequestStatus/> },
+ {path: '/proposal_request', component: <ProposalRequest/> },
+ {path: '/request_category', component: <RequestCategory/> },
   { path: "/supersetdashboard", component: <SupersetDashboard /> },
   { path: "/expenditure_code", component: <ExpenditureCode /> },
   { path: "/project_employee", component: <ProjectEmployee /> },
@@ -132,6 +148,11 @@ const authProtectedRoutes = [
   { path: "/project_performance", component: <ProjectPerformance /> },
   { path: "/project_performance_list", component: <ProjectPerformanceList /> },
   { path: "/project_handover_list", component: <ProjectHandoverList /> },
+
+  { path: "/conversation_information_list", component: <ConversationInformationList /> },
+  { path: "/request_information_list", component: <RequestInformationList /> },
+  { path: "/proposal_request_list", component: <ProposalRequestList /> },
+
   {
     path: "/project_budget_expenditure_list",
     component: <ProjectBudgetExpenditureList />,
