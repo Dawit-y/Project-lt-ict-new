@@ -9,21 +9,22 @@ import {
 const REQUEST_INFORMATION_QUERY_KEY = ["requestinformation"];
 
 // Fetch request_information
-export const useFetchRequestInformations = () => {
+export const useFetchRequestInformations = (param = {}, isActive) => {
   return useQuery({
-    queryKey: REQUEST_INFORMATION_QUERY_KEY,
+    queryKey: [...REQUEST_INFORMATION_QUERY_KEY, "fetch", param],
     queryFn: () => getRequestInformation(),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: isActive,
   });
 };
 
 //search request_information
 export const useSearchRequestInformations = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...REQUEST_INFORMATION_QUERY_KEY, searchParams],
+    queryKey: [...REQUEST_INFORMATION_QUERY_KEY, "search", searchParams],
     queryFn: () => getRequestInformation(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
@@ -40,16 +41,26 @@ export const useAddRequestInformation = () => {
   return useMutation({
     mutationFn: addRequestInformation,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( REQUEST_INFORMATION_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
+      // Get all queries matching the REQUEST_INFORMATION_QUERY_KEY
+      const queries = queryClient.getQueriesData({
+        queryKey: REQUEST_INFORMATION_QUERY_KEY,
+      });
+
+      // Prepare the new data to be added
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      // Update each query's cached data
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        });
       });
     },
   });
@@ -58,20 +69,32 @@ export const useAddRequestInformation = () => {
 // Update request_information
 export const useUpdateRequestInformation = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updateRequestInformation,
     onSuccess: (updatedRequestInformation) => {
-      queryClient.setQueryData(REQUEST_INFORMATION_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
+      // Get all queries matching the REQUEST_INFORMATION_QUERY_KEY
+      const queries = queryClient.getQueriesData({
+        queryKey: REQUEST_INFORMATION_QUERY_KEY,
+      });
 
-        return {
-          ...oldData,
-          data: oldData.data.map((RequestInformationData) =>
-            RequestInformationData.rqi_id === updatedRequestInformation.data.rqi_id
-              ? { ...RequestInformationData, ...updatedRequestInformation.data }
-              : RequestInformationData
-          ),
-        };
+      // Update each query's cached data
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((RequestInformationData) =>
+              RequestInformationData.rqi_id ===
+              updatedRequestInformation.data.rqi_id
+                ? {
+                    ...RequestInformationData,
+                    ...updatedRequestInformation.data,
+                  }
+                : RequestInformationData
+            ),
+          };
+        });
       });
     },
   });
@@ -80,17 +103,28 @@ export const useUpdateRequestInformation = () => {
 // Delete request_information
 export const useDeleteRequestInformation = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteRequestInformation,
     onSuccess: (deletedData) => {
-      queryClient.setQueryData(REQUEST_INFORMATION_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (RequestInformationData) => RequestInformationData.rqi_id !== parseInt(deletedData.deleted_id)
-          ),
-        };
+      // Get all queries matching the REQUEST_INFORMATION_QUERY_KEY
+      const queries = queryClient.getQueriesData({
+        queryKey: REQUEST_INFORMATION_QUERY_KEY,
+      });
+
+      // Update each query's cached data
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (RequestInformationData) =>
+                RequestInformationData.rqi_id !==
+                parseInt(deletedData.deleted_id)
+            ),
+          };
+        });
       });
     },
   });

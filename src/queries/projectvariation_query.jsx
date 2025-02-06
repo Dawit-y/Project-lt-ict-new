@@ -34,6 +34,7 @@ export const useSearchProjectVariations = (searchParams = {}) => {
   });
 };
 
+
 // Add project_variation
 export const useAddProjectVariation = () => {
   const queryClient = useQueryClient();

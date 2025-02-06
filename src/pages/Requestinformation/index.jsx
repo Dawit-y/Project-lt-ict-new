@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -9,8 +8,6 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-//import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
   useFetchRequestInformations,
@@ -19,10 +16,11 @@ import {
   useDeleteRequestInformation,
   useUpdateRequestInformation,
 } from "../../queries/requestinformation_query";
+import { useFetchRequestStatuss } from "../../queries/requeststatus_query";
+import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
 import RequestInformationModal from "./RequestInformationModal";
 import { useTranslation } from "react-i18next";
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
+import { createSelectOptions } from "../../utils/commonMethods";
 import {
   Button,
   Col,
@@ -37,22 +35,24 @@ import {
   Label,
   Card,
   CardBody,
-  FormGroup,
-  Badge,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import DatePicker from "../../components/Common/DatePicker";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-const RequestInformationModel = () => {
-  //meta title
-  document.title = " RequestInformation";
+
+const RequestInformationModel = (props) => {
+  document.title = " Request Information";
+
+  const { passedId, isActive } = props;
+  const param = { project_id: passedId };
+
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -62,8 +62,23 @@ const RequestInformationModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
+
   const { data, isLoading, error, isError, refetch } =
-    useFetchRequestInformations();
+    useFetchRequestInformations(param, isActive);
+
+  const { data: statusData } = useFetchRequestStatuss();
+  const statusOptions = createSelectOptions(
+    statusData?.data || [],
+    "rqs_id",
+    "rqs_name_or"
+  );
+  const { data: categoryData } = useFetchRequestCategorys();
+  const categoryOptions = createSelectOptions(
+    categoryData?.data || [],
+    "rqc_id",
+    "rqc_name_or"
+  );
+
   const addRequestInformation = useAddRequestInformation();
   const updateRequestInformation = useUpdateRequestInformation();
   const deleteRequestInformation = useDeleteRequestInformation();
@@ -76,7 +91,7 @@ const RequestInformationModel = () => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t("add_failure"), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -90,7 +105,7 @@ const RequestInformationModel = () => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t("update_failure"), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -105,7 +120,7 @@ const RequestInformationModel = () => {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t("delete_failure"), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -142,15 +157,11 @@ const RequestInformationModel = () => {
     },
     validationSchema: Yup.object({
       rqi_title: Yup.string().required(t("rqi_title")),
-      rqi_object_id: Yup.string().required(t("rqi_object_id")),
       rqi_request_status_id: Yup.string().required(t("rqi_request_status_id")),
       rqi_request_category_id: Yup.string().required(
         t("rqi_request_category_id")
       ),
-      rqi_request_date_et: Yup.string().required(t("rqi_request_date_et")),
       rqi_request_date_gc: Yup.string().required(t("rqi_request_date_gc")),
-      rqi_description: Yup.string().required(t("rqi_description")),
-      rqi_status: Yup.string().required(t("rqi_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -159,13 +170,13 @@ const RequestInformationModel = () => {
         const updateRequestInformation = {
           rqi_id: requestInformation ? requestInformation.rqi_id : 0,
           rqi_title: values.rqi_title,
-          rqi_object_id: values.rqi_object_id,
+          rqi_object_id: passedId,
           rqi_request_status_id: values.rqi_request_status_id,
           rqi_request_category_id: values.rqi_request_category_id,
           rqi_request_date_et: values.rqi_request_date_et,
           rqi_request_date_gc: values.rqi_request_date_gc,
           rqi_description: values.rqi_description,
-          rqi_status: values.rqi_status,
+          rqi_status: 0,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -175,13 +186,13 @@ const RequestInformationModel = () => {
       } else {
         const newRequestInformation = {
           rqi_title: values.rqi_title,
-          rqi_object_id: values.rqi_object_id,
+          rqi_object_id: passedId,
           rqi_request_status_id: values.rqi_request_status_id,
           rqi_request_category_id: values.rqi_request_category_id,
           rqi_request_date_et: values.rqi_request_date_et,
           rqi_request_date_gc: values.rqi_request_date_gc,
           rqi_description: values.rqi_description,
-          rqi_status: values.rqi_status,
+          rqi_status: 0,
         };
         // save new RequestInformation
         handleAddRequestInformation(newRequestInformation);
@@ -262,19 +273,6 @@ const RequestInformationModel = () => {
       },
       {
         header: "",
-        accessorKey: "rqi_object_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rqi_object_id, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
         accessorKey: "rqi_request_status_id",
         enableColumnFilter: false,
         enableSorting: true,
@@ -303,20 +301,7 @@ const RequestInformationModel = () => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "rqi_request_date_et",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rqi_request_date_et, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
+
       {
         header: "",
         accessorKey: "rqi_request_date_gc",
@@ -327,32 +312,6 @@ const RequestInformationModel = () => {
             <span>
               {truncateText(cellProps.row.original.rqi_request_date_gc, 30) ||
                 "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "rqi_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rqi_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "rqi_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rqi_status, 30) || "-"}
             </span>
           );
         },
@@ -392,7 +351,8 @@ const RequestInformationModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable == 1 && (
+              {(cellProps.row.original.is_editable == 1 ||
+                cellProps.row.original.is_role_editable == 1) && (
                 <Link
                   to="#"
                   className="text-success"
@@ -407,7 +367,8 @@ const RequestInformationModel = () => {
                   </UncontrolledTooltip>
                 </Link>
               )}
-              {cellProps.row.original.is_deletable == 1 && (
+              {(cellProps.row.original.is_deletable == 1 ||
+                cellProps.row.original.is_role_deletable == 1) && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -432,6 +393,11 @@ const RequestInformationModel = () => {
     }
     return baseColumns;
   }, [handleRequestInformationClick, toggleViewModal, onClickDelete]);
+
+  if (isError) {
+    <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <RequestInformationModal
@@ -446,38 +412,6 @@ const RequestInformationModel = () => {
         isLoading={deleteRequestInformation.isPending}
       />
 
-      <Breadcrumbs
-        title={t("request_information")}
-        breadcrumbItem={t("request_information")}
-      />
-      <AdvancedSearch
-        searchHook={useSearchRequestInformations}
-        textSearchKeys={["dep_name_am", "dep_name_en", "dep_name_or"]}
-        dropdownSearchKeys={[
-          {
-            key: "example",
-            options: [
-              { value: "Freelance", label: "Example1" },
-              { value: "Full Time", label: "Example2" },
-              { value: "Part Time", label: "Example3" },
-              { value: "Internship", label: "Example4" },
-            ],
-          },
-        ]}
-        checkboxSearchKeys={[
-          {
-            key: "example1",
-            options: [
-              { value: "Engineering", label: "Example1" },
-              { value: "Science", label: "Example2" },
-            ],
-          },
-        ]}
-        onSearchResult={handleSearchResults}
-        setIsSearchLoading={setIsSearchLoading}
-        setSearchResults={setSearchResults}
-        setShowSearchResult={setShowSearchResult}
-      />
       {isLoading || isSearchLoading ? (
         <Spinners />
       ) : (
@@ -546,7 +480,7 @@ const RequestInformationModel = () => {
                   </FormFeedback>
                 ) : null}
               </Col>
-              <Col className="col-md-6 mb-3">
+              {/* <Col className="col-md-6 mb-3">
                 <Label>{t("rqi_object_id")}</Label>
                 <Input
                   name="rqi_object_id"
@@ -569,13 +503,16 @@ const RequestInformationModel = () => {
                     {validation.errors.rqi_object_id}
                   </FormFeedback>
                 ) : null}
-              </Col>
+              </Col> */}
               <Col className="col-md-6 mb-3">
-                <Label>{t("rqi_request_status_id")}</Label>
+                <Label>
+                  {t("rqi_request_status_id")}
+                  <span className="text-danger">*</span>
+                </Label>
                 <Input
                   name="rqi_request_status_id"
-                  type="text"
-                  placeholder={t("rqi_request_status_id")}
+                  type="select"
+                  className="form-select"
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
                   value={validation.values.rqi_request_status_id || ""}
@@ -585,8 +522,14 @@ const RequestInformationModel = () => {
                       ? true
                       : false
                   }
-                  maxLength={20}
-                />
+                >
+                  <option value={null}>{t("select request status")}</option>
+                  {statusOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {t(`${option.label}`)}
+                    </option>
+                  ))}
+                </Input>
                 {validation.touched.rqi_request_status_id &&
                 validation.errors.rqi_request_status_id ? (
                   <FormFeedback type="invalid">
@@ -594,12 +537,16 @@ const RequestInformationModel = () => {
                   </FormFeedback>
                 ) : null}
               </Col>
+
               <Col className="col-md-6 mb-3">
-                <Label>{t("rqi_request_category_id")}</Label>
+                <Label>
+                  {t("rqi_request_category_id")}
+                  <span className="text-danger">*</span>
+                </Label>
                 <Input
                   name="rqi_request_category_id"
-                  type="text"
-                  placeholder={t("rqi_request_category_id")}
+                  type="select"
+                  className="form-select"
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
                   value={validation.values.rqi_request_category_id || ""}
@@ -609,8 +556,14 @@ const RequestInformationModel = () => {
                       ? true
                       : false
                   }
-                  maxLength={20}
-                />
+                >
+                  <option value={null}>{t("select request category")}</option>
+                  {categoryOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {t(`${option.label}`)}
+                    </option>
+                  ))}
+                </Input>
                 {validation.touched.rqi_request_category_id &&
                 validation.errors.rqi_request_category_id ? (
                   <FormFeedback type="invalid">
@@ -618,59 +571,21 @@ const RequestInformationModel = () => {
                   </FormFeedback>
                 ) : null}
               </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>{t("rqi_request_date_et")}</Label>
-                <Input
-                  name="rqi_request_date_et"
-                  type="text"
-                  placeholder={t("rqi_request_date_et")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.rqi_request_date_et || ""}
-                  invalid={
-                    validation.touched.rqi_request_date_et &&
-                    validation.errors.rqi_request_date_et
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
-                />
-                {validation.touched.rqi_request_date_et &&
-                validation.errors.rqi_request_date_et ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.rqi_request_date_et}
-                  </FormFeedback>
-                ) : null}
-              </Col>
+
               <Col className="col-md-6 mb-3">
                 <Label>{t("rqi_request_date_gc")}</Label>
-                <Input
-                  name="rqi_request_date_gc"
-                  type="text"
-                  placeholder={t("rqi_request_date_gc")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.rqi_request_date_gc || ""}
-                  invalid={
-                    validation.touched.rqi_request_date_gc &&
-                    validation.errors.rqi_request_date_gc
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
+                <DatePicker
+                  validation={validation}
+                  componentId={"rqi_request_date_gc"}
+                  isRequired={true}
                 />
-                {validation.touched.rqi_request_date_gc &&
-                validation.errors.rqi_request_date_gc ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.rqi_request_date_gc}
-                  </FormFeedback>
-                ) : null}
               </Col>
-              <Col className="col-md-6 mb-3">
+              <Col className="col-md-12 mb-3">
                 <Label>{t("rqi_description")}</Label>
                 <Input
                   name="rqi_description"
-                  type="text"
+                  type="textarea"
+                  rows={5}
                   placeholder={t("rqi_description")}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
@@ -681,36 +596,11 @@ const RequestInformationModel = () => {
                       ? true
                       : false
                   }
-                  maxLength={20}
                 />
                 {validation.touched.rqi_description &&
                 validation.errors.rqi_description ? (
                   <FormFeedback type="invalid">
                     {validation.errors.rqi_description}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>{t("rqi_status")}</Label>
-                <Input
-                  name="rqi_status"
-                  type="text"
-                  placeholder={t("rqi_status")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.rqi_status || ""}
-                  invalid={
-                    validation.touched.rqi_status &&
-                    validation.errors.rqi_status
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
-                />
-                {validation.touched.rqi_status &&
-                validation.errors.rqi_status ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.rqi_status}
                   </FormFeedback>
                 ) : null}
               </Col>
@@ -753,8 +643,6 @@ const RequestInformationModel = () => {
           </Form>
         </ModalBody>
       </Modal>
-
-      <ToastContainer />
     </React.Fragment>
   );
 };

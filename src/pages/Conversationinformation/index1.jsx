@@ -1,16 +1,14 @@
 import React from "react";
 import { Container, Card, CardBody, Col, Row } from "reactstrap";
-
-//Import Breadcrumb
-import Breadcrumbs from "../../components/Common/Breadcrumb";
-
-// import images
 import avtar1 from "../../assets/images/users/avatar-2.jpg";
 
-const Conversation = () => {
+const Conversation = (props) => {
+
+  const { passedId, isActive } = props;
+  const param = { emp_project_id: passedId };
+
   return (
     <React.Fragment>
-      <Breadcrumbs title="Project" breadcrumbItem="Conversations" />
       <Row>
         <Col lg={12}>
           <Card>

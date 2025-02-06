@@ -40,7 +40,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -62,20 +62,21 @@ const RequestCategoryModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useFetchRequestCategorys();
+  const { data, isLoading, error, isError, refetch } =
+    useFetchRequestCategorys();
   const addRequestCategory = useAddRequestCategory();
   const updateRequestCategory = useUpdateRequestCategory();
   const deleteRequestCategory = useDeleteRequestCategory();
-//START CRUD
+  //START CRUD
   const handleAddRequestCategory = async (data) => {
     try {
       await addRequestCategory.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.success(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -84,12 +85,12 @@ const RequestCategoryModel = () => {
   const handleUpdateRequestCategory = async (data) => {
     try {
       await updateRequestCategory.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
+      toast.success(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -100,11 +101,11 @@ const RequestCategoryModel = () => {
       try {
         const id = requestCategory.rqc_id;
         await deleteRequestCategory.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t('delete_failure'), {
+        toast.success(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -113,62 +114,57 @@ const RequestCategoryModel = () => {
   };
   //END CRUD
   //START FOREIGN CALLS
-  
-  
+
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
     initialValues: {
-     rqc_name_or:(requestCategory && requestCategory.rqc_name_or) || "", 
-rqc_name_am:(requestCategory && requestCategory.rqc_name_am) || "", 
-rqc_name_en:(requestCategory && requestCategory.rqc_name_en) || "", 
-rqc_description:(requestCategory && requestCategory.rqc_description) || "", 
-rqc_status:(requestCategory && requestCategory.rqc_status) || "", 
+      rqc_name_or: (requestCategory && requestCategory.rqc_name_or) || "",
+      rqc_name_am: (requestCategory && requestCategory.rqc_name_am) || "",
+      rqc_name_en: (requestCategory && requestCategory.rqc_name_en) || "",
+      rqc_description:
+        (requestCategory && requestCategory.rqc_description) || "",
+      rqc_status: (requestCategory && requestCategory.rqc_status) || "",
 
-     is_deletable: (requestCategory && requestCategory.is_deletable) || 1,
-     is_editable: (requestCategory && requestCategory.is_editable) || 1
-   },
-   validationSchema: Yup.object({
-    rqc_name_or: Yup.string().required(t('rqc_name_or')),
-rqc_name_am: Yup.string().required(t('rqc_name_am')),
-rqc_name_en: Yup.string().required(t('rqc_name_en')),
-rqc_description: Yup.string().required(t('rqc_description')),
-rqc_status: Yup.string().required(t('rqc_status')),
+      is_deletable: (requestCategory && requestCategory.is_deletable) || 1,
+      is_editable: (requestCategory && requestCategory.is_editable) || 1,
+    },
+    validationSchema: Yup.object({
+      rqc_name_or: Yup.string().required(t("rqc_name_or")),
+      rqc_name_am: Yup.string().required(t("rqc_name_am")),
+      rqc_name_en: Yup.string().required(t("rqc_name_en")),
+    }),
+    validateOnBlur: true,
+    validateOnChange: false,
+    onSubmit: (values) => {
+      if (isEdit) {
+        const updateRequestCategory = {
+          rqc_id: requestCategory?.rqc_id,
+          rqc_name_or: values.rqc_name_or,
+          rqc_name_am: values.rqc_name_am,
+          rqc_name_en: values.rqc_name_en,
+          rqc_description: values.rqc_description,
+          rqc_status: values.rqc_status,
 
-  }),
-   validateOnBlur: true,
-   validateOnChange: false,
-   onSubmit: (values) => {
-    if (isEdit) {
-      const updateRequestCategory = {
-        rqc_id: requestCategory ? requestCategory.rqc_id : 0,
-        rqc_id:requestCategory.rqc_id, 
-rqc_name_or:values.rqc_name_or, 
-rqc_name_am:values.rqc_name_am, 
-rqc_name_en:values.rqc_name_en, 
-rqc_description:values.rqc_description, 
-rqc_status:values.rqc_status, 
-
-        is_deletable: values.is_deletable,
-        is_editable: values.is_editable,
-      };
+          is_deletable: values.is_deletable,
+          is_editable: values.is_editable,
+        };
         // update RequestCategory
-      handleUpdateRequestCategory(updateRequestCategory);
-    } else {
-      const newRequestCategory = {
-        rqc_name_or:values.rqc_name_or, 
-rqc_name_am:values.rqc_name_am, 
-rqc_name_en:values.rqc_name_en, 
-rqc_description:values.rqc_description, 
-rqc_status:values.rqc_status, 
-
-      };
+        handleUpdateRequestCategory(updateRequestCategory);
+      } else {
+        const newRequestCategory = {
+          rqc_name_or: values.rqc_name_or,
+          rqc_name_am: values.rqc_name_am,
+          rqc_name_en: values.rqc_name_en,
+          rqc_description: values.rqc_description,
+          rqc_status: values.rqc_status,
+        };
         // save new RequestCategory
-      handleAddRequestCategory(newRequestCategory);
-    }
-  },
-});
+        handleAddRequestCategory(newRequestCategory);
+      }
+    },
+  });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
   // Fetch RequestCategory on component mount
@@ -193,12 +189,12 @@ rqc_status:values.rqc_status,
     const requestCategory = arg;
     // console.log("handleRequestCategoryClick", requestCategory);
     setRequestCategory({
-      rqc_id:requestCategory.rqc_id, 
-rqc_name_or:requestCategory.rqc_name_or, 
-rqc_name_am:requestCategory.rqc_name_am, 
-rqc_name_en:requestCategory.rqc_name_en, 
-rqc_description:requestCategory.rqc_description, 
-rqc_status:requestCategory.rqc_status, 
+      rqc_id: requestCategory.rqc_id,
+      rqc_name_or: requestCategory.rqc_name_or,
+      rqc_name_am: requestCategory.rqc_name_am,
+      rqc_name_en: requestCategory.rqc_name_en,
+      rqc_description: requestCategory.rqc_description,
+      rqc_status: requestCategory.rqc_status,
 
       is_deletable: requestCategory.is_deletable,
       is_editable: requestCategory.is_editable,
@@ -216,8 +212,8 @@ rqc_status:requestCategory.rqc_status,
     setIsEdit(false);
     setRequestCategory("");
     toggle();
-  }
-  ;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -226,75 +222,44 @@ rqc_status:requestCategory.rqc_status,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'rqc_name_or',
+        header: "",
+        accessorKey: "rqc_name_or",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rqc_name_or, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.rqc_name_or, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'rqc_name_am',
+      },
+      {
+        header: "",
+        accessorKey: "rqc_name_am",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rqc_name_am, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.rqc_name_am, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'rqc_name_en',
+      },
+      {
+        header: "",
+        accessorKey: "rqc_name_en",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rqc_name_en, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.rqc_name_en, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'rqc_description',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rqc_description, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'rqc_status',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rqc_status, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
+      },
 
       {
         header: t("view_detail"),
@@ -303,25 +268,25 @@ rqc_status:requestCategory.rqc_status,
         cell: (cellProps) => {
           return (
             <Button
-            type="button"
-            color="primary"
-            className="btn-sm"
-            onClick={() => {
-              const data = cellProps.row.original;
-              toggleViewModal(data);
-              setTransaction(cellProps.row.original);
-            }}
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                const data = cellProps.row.original;
+                toggleViewModal(data);
+                setTransaction(cellProps.row.original);
+              }}
             >
-            {t("view_detail")}
+              {t("view_detail")}
             </Button>
-            );
+          );
         },
       },
-      ];
+    ];
     if (
-      data?.previledge?.is_role_editable==1 ||
-      data?.previledge?.is_role_deletable==1
-      ) {
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
+    ) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -330,275 +295,257 @@ rqc_status:requestCategory.rqc_status,
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-            {cellProps.row.original.is_editable==1 && (
-              <Link
-              to="#"
-              className="text-success"
-              onClick={() => {
-                const data = cellProps.row.original;                    
-                handleRequestCategoryClick(data);
-              }}
-              >
-              <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-              <UncontrolledTooltip placement="top" target="edittooltip">
-              Edit
-              </UncontrolledTooltip>
-              </Link>
+              {cellProps.row.original.is_editable == 1 && (
+                <Link
+                  to="#"
+                  className="text-success"
+                  onClick={() => {
+                    const data = cellProps.row.original;
+                    handleRequestCategoryClick(data);
+                  }}
+                >
+                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                  <UncontrolledTooltip placement="top" target="edittooltip">
+                    Edit
+                  </UncontrolledTooltip>
+                </Link>
               )}
-            {cellProps.row.original.is_deletable==1 && (
-              <Link
-              to="#"
-              className="text-danger"
-              onClick={() => {
-                const data = cellProps.row.original;
-                onClickDelete(data);
-              }}
-              >
-              <i
-              className="mdi mdi-delete font-size-18"
-              id="deletetooltip"
-              />
-              <UncontrolledTooltip placement="top" target="deletetooltip">
-              Delete
-              </UncontrolledTooltip>
-              </Link>
+              {cellProps.row.original.is_deletable == 1 && (
+                <Link
+                  to="#"
+                  className="text-danger"
+                  onClick={() => {
+                    const data = cellProps.row.original;
+                    onClickDelete(data);
+                  }}
+                >
+                  <i
+                    className="mdi mdi-delete font-size-18"
+                    id="deletetooltip"
+                  />
+                  <UncontrolledTooltip placement="top" target="deletetooltip">
+                    Delete
+                  </UncontrolledTooltip>
+                </Link>
               )}
             </div>
-            );
+          );
         },
       });
+    }
+    return baseColumns;
+  }, [handleRequestCategoryClick, toggleViewModal, onClickDelete]);
+
+  if (isError) {
+    <FetchErrorHandler error={error} refetch={refetch} />;
   }
-  return baseColumns;
-}, [handleRequestCategoryClick, toggleViewModal, onClickDelete]);
+
   return (
     <React.Fragment>
-    <RequestCategoryModal
-    isOpen={modal1}
-    toggle={toggleViewModal}
-    transaction={transaction}
-    />
-    <DeleteModal
-    show={deleteModal}
-    onDeleteClick={handleDeleteRequestCategory}
-    onCloseClick={() => setDeleteModal(false)}
-    isLoading={deleteRequestCategory.isPending}
-    />
-    <div className="page-content">
-    <div className="container-fluid">
-    <Breadcrumbs
-    title={t("request_category")}
-    breadcrumbItem={t("request_category")}
-    />
-    {isLoading || isSearchLoading ? (
-      <Spinners />
-      ) : (
-      <Row>
-      <Col xs="12">
-      <Card>
-      <CardBody>
-      <TableContainer
-      columns={columns}
-      data={
-        showSearchResult
-        ? searchResults?.data
-        : data?.data || []
-      }
-      isGlobalFilter={true}
-      isAddButton={data?.previledge?.is_role_can_add==1}
-      isCustomPageSize={true}
-      handleUserClick={handleRequestCategoryClicks}
-      isPagination={true}
-                      // SearchPlaceholder="26 records..."
-      SearchPlaceholder={26 + " " + t("Results") + "..."}
-      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-      buttonName={t("add")}
-      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-      theadClass="table-light"
-      pagination="pagination"
-      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+      <RequestCategoryModal
+        isOpen={modal1}
+        toggle={toggleViewModal}
+        transaction={transaction}
       />
-      </CardBody>
-      </Card>
-      </Col>
-      </Row>
-      )}
-      <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-      <ModalHeader toggle={toggle} tag="h4">
-      {!!isEdit ? (t("edit") + " "+t("request_category")) : (t("add") +" "+t("request_category"))}
-      </ModalHeader>
-      <ModalBody>
-      <Form
-      onSubmit={(e) => {
-        e.preventDefault();
-        validation.handleSubmit();
-        return false;
-      }}
-      >
-      <Row>
-      <Col className='col-md-6 mb-3'>
-                      <Label>{t('rqc_name_or')}</Label>
-                      <Input
-                        name='rqc_name_or'
-                        type='text'
-                        placeholder={t('rqc_name_or')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.rqc_name_or || ''}
-                        invalid={
-                          validation.touched.rqc_name_or &&
-                          validation.errors.rqc_name_or
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.rqc_name_or &&
-                      validation.errors.rqc_name_or ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.rqc_name_or}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('rqc_name_am')}</Label>
-                      <Input
-                        name='rqc_name_am'
-                        type='text'
-                        placeholder={t('rqc_name_am')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.rqc_name_am || ''}
-                        invalid={
-                          validation.touched.rqc_name_am &&
-                          validation.errors.rqc_name_am
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.rqc_name_am &&
-                      validation.errors.rqc_name_am ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.rqc_name_am}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('rqc_name_en')}</Label>
-                      <Input
-                        name='rqc_name_en'
-                        type='text'
-                        placeholder={t('rqc_name_en')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.rqc_name_en || ''}
-                        invalid={
-                          validation.touched.rqc_name_en &&
-                          validation.errors.rqc_name_en
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.rqc_name_en &&
-                      validation.errors.rqc_name_en ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.rqc_name_en}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('rqc_description')}</Label>
-                      <Input
-                        name='rqc_description'
-                        type='text'
-                        placeholder={t('rqc_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.rqc_description || ''}
-                        invalid={
-                          validation.touched.rqc_description &&
-                          validation.errors.rqc_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.rqc_description &&
-                      validation.errors.rqc_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.rqc_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('rqc_status')}</Label>
-                      <Input
-                        name='rqc_status'
-                        type='text'
-                        placeholder={t('rqc_status')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.rqc_status || ''}
-                        invalid={
-                          validation.touched.rqc_status &&
-                          validation.errors.rqc_status
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.rqc_status &&
-                      validation.errors.rqc_status ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.rqc_status}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-                
-      </Row>
-      <Row>
-      <Col>
-      <div className="text-end">
-      {addRequestCategory.isPending || updateRequestCategory.isPending ? (
-        <Button
-        color="success"
-        type="submit"
-        className="save-user"
-        disabled={
-          addRequestCategory.isPending ||
-          updateRequestCategory.isPending ||
-          !validation.dirty
-        }
-        >
-        <Spinner size={"sm"} color="light" className="me-2" />
-        {t("Save")}
-        </Button>
-        ) : (
-        <Button
-        color="success"
-        type="submit"
-        className="save-user"
-        disabled={
-          addRequestCategory.isPending ||
-          updateRequestCategory.isPending ||
-          !validation.dirty
-        }
-        >
-        {t("Save")}
-        </Button>
-        )}
+      <DeleteModal
+        show={deleteModal}
+        onDeleteClick={handleDeleteRequestCategory}
+        onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteRequestCategory.isPending}
+      />
+      <div className="page-content">
+        <div className="container-fluid">
+          <Breadcrumbs
+            title={t("request_category")}
+            breadcrumbItem={t("request_category")}
+          />
+          {isLoading || isSearchLoading ? (
+            <Spinners />
+          ) : (
+            <Row>
+              <Col xs="12">
+                <Card>
+                  <CardBody>
+                    <TableContainer
+                      columns={columns}
+                      data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
+                      isGlobalFilter={true}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
+                      isCustomPageSize={true}
+                      handleUserClick={handleRequestCategoryClicks}
+                      isPagination={true}
+                      // SearchPlaceholder="26 records..."
+                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                      buttonName={t("add")}
+                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                      theadClass="table-light"
+                      pagination="pagination"
+                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                    />
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          )}
+          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
+            <ModalHeader toggle={toggle} tag="h4">
+              {!!isEdit
+                ? t("edit") + " " + t("request_category")
+                : t("add") + " " + t("request_category")}
+            </ModalHeader>
+            <ModalBody>
+              <Form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  validation.handleSubmit();
+                  return false;
+                }}
+              >
+                <Row>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("rqc_name_or")}</Label>
+                    <Input
+                      name="rqc_name_or"
+                      type="text"
+                      placeholder={t("rqc_name_or")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.rqc_name_or || ""}
+                      invalid={
+                        validation.touched.rqc_name_or &&
+                        validation.errors.rqc_name_or
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.rqc_name_or &&
+                    validation.errors.rqc_name_or ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.rqc_name_or}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("rqc_name_am")}</Label>
+                    <Input
+                      name="rqc_name_am"
+                      type="text"
+                      placeholder={t("rqc_name_am")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.rqc_name_am || ""}
+                      invalid={
+                        validation.touched.rqc_name_am &&
+                        validation.errors.rqc_name_am
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.rqc_name_am &&
+                    validation.errors.rqc_name_am ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.rqc_name_am}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("rqc_name_en")}</Label>
+                    <Input
+                      name="rqc_name_en"
+                      type="text"
+                      placeholder={t("rqc_name_en")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.rqc_name_en || ""}
+                      invalid={
+                        validation.touched.rqc_name_en &&
+                        validation.errors.rqc_name_en
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.rqc_name_en &&
+                    validation.errors.rqc_name_en ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.rqc_name_en}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("rqc_description")}</Label>
+                    <Input
+                      name="rqc_description"
+                      type="textarea"
+                      rows={5}
+                      placeholder={t("rqc_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.rqc_description || ""}
+                      invalid={
+                        validation.touched.rqc_description &&
+                        validation.errors.rqc_description
+                          ? true
+                          : false
+                      }
+                    />
+                    {validation.touched.rqc_description &&
+                    validation.errors.rqc_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.rqc_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <div className="text-end">
+                      {addRequestCategory.isPending ||
+                      updateRequestCategory.isPending ? (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addRequestCategory.isPending ||
+                            updateRequestCategory.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          <Spinner size={"sm"} color="light" className="me-2" />
+                          {t("Save")}
+                        </Button>
+                      ) : (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addRequestCategory.isPending ||
+                            updateRequestCategory.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          {t("Save")}
+                        </Button>
+                      )}
+                    </div>
+                  </Col>
+                </Row>
+              </Form>
+            </ModalBody>
+          </Modal>
         </div>
-        </Col>
-        </Row>
-        </Form>
-        </ModalBody>
-        </Modal>
-        </div>
-        </div>
-        <ToastContainer />
-        </React.Fragment>
-        );
+      </div>
+    </React.Fragment>
+  );
 };
 RequestCategoryModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

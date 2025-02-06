@@ -9,7 +9,7 @@ import {
 const PROJECT_STAKEHOLDER_QUERY_KEY = ["projectstakeholder"];
 
 // Fetch project_stakeholder
-export const useFetchProjectStakeholders = (param = {},isActive) => {
+export const useFetchProjectStakeholders = (param = {}, isActive) => {
   return useQuery({
     queryKey: [...PROJECT_STAKEHOLDER_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectStakeholder(param),
@@ -17,14 +17,14 @@ export const useFetchProjectStakeholders = (param = {},isActive) => {
     meta: { persist: true },
     refetchOnWindowFocus: true,
     refetchOnMount: true,
-    enabled: isActive
+    enabled: isActive,
   });
 };
 
 //search project_stakeholder
 export const useSearchProjectStakeholders = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...PROJECT_STAKEHOLDER_QUERY_KEY, searchParams],
+    queryKey: [...PROJECT_STAKEHOLDER_QUERY_KEY, "search", searchParams],
     queryFn: () => getProjectStakeholder(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,

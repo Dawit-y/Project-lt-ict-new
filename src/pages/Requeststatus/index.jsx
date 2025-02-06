@@ -40,7 +40,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -51,8 +51,8 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 const RequestStatusModel = () => {
-  //meta title
-  document.title = " RequestStatus";
+  document.title = " Request Status";
+
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -62,20 +62,21 @@ const RequestStatusModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
+
   const { data, isLoading, error, isError, refetch } = useFetchRequestStatuss();
   const addRequestStatus = useAddRequestStatus();
   const updateRequestStatus = useUpdateRequestStatus();
   const deleteRequestStatus = useDeleteRequestStatus();
-//START CRUD
+  //START CRUD
   const handleAddRequestStatus = async (data) => {
     try {
       await addRequestStatus.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.success(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -84,12 +85,12 @@ const RequestStatusModel = () => {
   const handleUpdateRequestStatus = async (data) => {
     try {
       await updateRequestStatus.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
+      toast.success(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -100,11 +101,11 @@ const RequestStatusModel = () => {
       try {
         const id = requestStatus.rqs_id;
         await deleteRequestStatus.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t('delete_failure'), {
+        toast.success(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -113,62 +114,54 @@ const RequestStatusModel = () => {
   };
   //END CRUD
   //START FOREIGN CALLS
-  
-  
+
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
     initialValues: {
-     rqs_name_or:(requestStatus && requestStatus.rqs_name_or) || "", 
-rqs_name_am:(requestStatus && requestStatus.rqs_name_am) || "", 
-rqs_name_en:(requestStatus && requestStatus.rqs_name_en) || "", 
-rqs_description:(requestStatus && requestStatus.rqs_description) || "", 
-rqs_status:(requestStatus && requestStatus.rqs_status) || "", 
-
-     is_deletable: (requestStatus && requestStatus.is_deletable) || 1,
-     is_editable: (requestStatus && requestStatus.is_editable) || 1
-   },
-   validationSchema: Yup.object({
-    rqs_name_or: Yup.string().required(t('rqs_name_or')),
-rqs_name_am: Yup.string().required(t('rqs_name_am')),
-rqs_name_en: Yup.string().required(t('rqs_name_en')),
-rqs_description: Yup.string().required(t('rqs_description')),
-rqs_status: Yup.string().required(t('rqs_status')),
-
-  }),
-   validateOnBlur: true,
-   validateOnChange: false,
-   onSubmit: (values) => {
-    if (isEdit) {
-      const updateRequestStatus = {
-        rqs_id: requestStatus ? requestStatus.rqs_id : 0,
-        rqs_id:requestStatus.rqs_id, 
-rqs_name_or:values.rqs_name_or, 
-rqs_name_am:values.rqs_name_am, 
-rqs_name_en:values.rqs_name_en, 
-rqs_description:values.rqs_description, 
-rqs_status:values.rqs_status, 
-
-        is_deletable: values.is_deletable,
-        is_editable: values.is_editable,
-      };
+      rqs_name_or: (requestStatus && requestStatus.rqs_name_or) || "",
+      rqs_name_am: (requestStatus && requestStatus.rqs_name_am) || "",
+      rqs_name_en: (requestStatus && requestStatus.rqs_name_en) || "",
+      rqs_description: (requestStatus && requestStatus.rqs_description) || "",
+      rqs_status: (requestStatus && requestStatus.rqs_status) || "",
+      is_deletable: (requestStatus && requestStatus.is_deletable) || 1,
+      is_editable: (requestStatus && requestStatus.is_editable) || 1,
+    },
+    validationSchema: Yup.object({
+      rqs_name_or: Yup.string().required(t("rqs_name_or")),
+      rqs_name_am: Yup.string().required(t("rqs_name_am")),
+      rqs_name_en: Yup.string().required(t("rqs_name_en")),
+    }),
+    validateOnBlur: true,
+    validateOnChange: false,
+    onSubmit: (values) => {
+      if (isEdit) {
+        const updateRequestStatus = {
+          rqs_id: requestStatus?.rqs_id,
+          rqs_name_or: values.rqs_name_or,
+          rqs_name_am: values.rqs_name_am,
+          rqs_name_en: values.rqs_name_en,
+          rqs_description: values.rqs_description,
+          rqs_status: values.rqs_status,
+          is_deletable: values.is_deletable,
+          is_editable: values.is_editable,
+        };
         // update RequestStatus
-      handleUpdateRequestStatus(updateRequestStatus);
-    } else {
-      const newRequestStatus = {
-        rqs_name_or:values.rqs_name_or, 
-rqs_name_am:values.rqs_name_am, 
-rqs_name_en:values.rqs_name_en, 
-rqs_description:values.rqs_description, 
-rqs_status:values.rqs_status, 
-
-      };
+        handleUpdateRequestStatus(updateRequestStatus);
+      } else {
+        const newRequestStatus = {
+          rqs_name_or: values.rqs_name_or,
+          rqs_name_am: values.rqs_name_am,
+          rqs_name_en: values.rqs_name_en,
+          rqs_description: values.rqs_description,
+          rqs_status: values.rqs_status,
+        };
         // save new RequestStatus
-      handleAddRequestStatus(newRequestStatus);
-    }
-  },
-});
+        handleAddRequestStatus(newRequestStatus);
+      }
+    },
+  });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
   // Fetch RequestStatus on component mount
@@ -191,14 +184,13 @@ rqs_status:values.rqs_status,
   };
   const handleRequestStatusClick = (arg) => {
     const requestStatus = arg;
-    // console.log("handleRequestStatusClick", requestStatus);
     setRequestStatus({
-      rqs_id:requestStatus.rqs_id, 
-rqs_name_or:requestStatus.rqs_name_or, 
-rqs_name_am:requestStatus.rqs_name_am, 
-rqs_name_en:requestStatus.rqs_name_en, 
-rqs_description:requestStatus.rqs_description, 
-rqs_status:requestStatus.rqs_status, 
+      rqs_id: requestStatus.rqs_id,
+      rqs_name_or: requestStatus.rqs_name_or,
+      rqs_name_am: requestStatus.rqs_name_am,
+      rqs_name_en: requestStatus.rqs_name_en,
+      rqs_description: requestStatus.rqs_description,
+      rqs_status: requestStatus.rqs_status,
 
       is_deletable: requestStatus.is_deletable,
       is_editable: requestStatus.is_editable,
@@ -216,8 +208,8 @@ rqs_status:requestStatus.rqs_status,
     setIsEdit(false);
     setRequestStatus("");
     toggle();
-  }
-  ;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -226,75 +218,44 @@ rqs_status:requestStatus.rqs_status,
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'rqs_name_or',
+        header: "",
+        accessorKey: "rqs_name_or",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rqs_name_or, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.rqs_name_or, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'rqs_name_am',
+      },
+      {
+        header: "",
+        accessorKey: "rqs_name_am",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rqs_name_am, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.rqs_name_am, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'rqs_name_en',
+      },
+      {
+        header: "",
+        accessorKey: "rqs_name_en",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rqs_name_en, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.rqs_name_en, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'rqs_description',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rqs_description, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-{
-        header: '',
-        accessorKey: 'rqs_status',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rqs_status, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
+      },
 
       {
         header: t("view_detail"),
@@ -303,25 +264,25 @@ rqs_status:requestStatus.rqs_status,
         cell: (cellProps) => {
           return (
             <Button
-            type="button"
-            color="primary"
-            className="btn-sm"
-            onClick={() => {
-              const data = cellProps.row.original;
-              toggleViewModal(data);
-              setTransaction(cellProps.row.original);
-            }}
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                const data = cellProps.row.original;
+                toggleViewModal(data);
+                setTransaction(cellProps.row.original);
+              }}
             >
-            {t("view_detail")}
+              {t("view_detail")}
             </Button>
-            );
+          );
         },
       },
-      ];
+    ];
     if (
-      data?.previledge?.is_role_editable==1 ||
-      data?.previledge?.is_role_deletable==1
-      ) {
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
+    ) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -330,275 +291,257 @@ rqs_status:requestStatus.rqs_status,
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-            {cellProps.row.original.is_editable==1 && (
-              <Link
-              to="#"
-              className="text-success"
-              onClick={() => {
-                const data = cellProps.row.original;                    
-                handleRequestStatusClick(data);
-              }}
-              >
-              <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-              <UncontrolledTooltip placement="top" target="edittooltip">
-              Edit
-              </UncontrolledTooltip>
-              </Link>
+              {cellProps.row.original.is_editable == 1 && (
+                <Link
+                  to="#"
+                  className="text-success"
+                  onClick={() => {
+                    const data = cellProps.row.original;
+                    handleRequestStatusClick(data);
+                  }}
+                >
+                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                  <UncontrolledTooltip placement="top" target="edittooltip">
+                    Edit
+                  </UncontrolledTooltip>
+                </Link>
               )}
-            {cellProps.row.original.is_deletable==1 && (
-              <Link
-              to="#"
-              className="text-danger"
-              onClick={() => {
-                const data = cellProps.row.original;
-                onClickDelete(data);
-              }}
-              >
-              <i
-              className="mdi mdi-delete font-size-18"
-              id="deletetooltip"
-              />
-              <UncontrolledTooltip placement="top" target="deletetooltip">
-              Delete
-              </UncontrolledTooltip>
-              </Link>
+              {cellProps.row.original.is_deletable == 1 && (
+                <Link
+                  to="#"
+                  className="text-danger"
+                  onClick={() => {
+                    const data = cellProps.row.original;
+                    onClickDelete(data);
+                  }}
+                >
+                  <i
+                    className="mdi mdi-delete font-size-18"
+                    id="deletetooltip"
+                  />
+                  <UncontrolledTooltip placement="top" target="deletetooltip">
+                    Delete
+                  </UncontrolledTooltip>
+                </Link>
               )}
             </div>
-            );
+          );
         },
       });
+    }
+    return baseColumns;
+  }, [handleRequestStatusClick, toggleViewModal, onClickDelete]);
+
+  if (isError) {
+    <FetchErrorHandler error={error} refetch={refetch} />;
   }
-  return baseColumns;
-}, [handleRequestStatusClick, toggleViewModal, onClickDelete]);
+
   return (
     <React.Fragment>
-    <RequestStatusModal
-    isOpen={modal1}
-    toggle={toggleViewModal}
-    transaction={transaction}
-    />
-    <DeleteModal
-    show={deleteModal}
-    onDeleteClick={handleDeleteRequestStatus}
-    onCloseClick={() => setDeleteModal(false)}
-    isLoading={deleteRequestStatus.isPending}
-    />
-    <div className="page-content">
-    <div className="container-fluid">
-    <Breadcrumbs
-    title={t("request_status")}
-    breadcrumbItem={t("request_status")}
-    />
-    {isLoading || isSearchLoading ? (
-      <Spinners />
-      ) : (
-      <Row>
-      <Col xs="12">
-      <Card>
-      <CardBody>
-      <TableContainer
-      columns={columns}
-      data={
-        showSearchResult
-        ? searchResults?.data
-        : data?.data || []
-      }
-      isGlobalFilter={true}
-      isAddButton={data?.previledge?.is_role_can_add==1}
-      isCustomPageSize={true}
-      handleUserClick={handleRequestStatusClicks}
-      isPagination={true}
-                      // SearchPlaceholder="26 records..."
-      SearchPlaceholder={26 + " " + t("Results") + "..."}
-      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-      buttonName={t("add")}
-      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-      theadClass="table-light"
-      pagination="pagination"
-      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+      <RequestStatusModal
+        isOpen={modal1}
+        toggle={toggleViewModal}
+        transaction={transaction}
       />
-      </CardBody>
-      </Card>
-      </Col>
-      </Row>
-      )}
-      <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-      <ModalHeader toggle={toggle} tag="h4">
-      {!!isEdit ? (t("edit") + " "+t("request_status")) : (t("add") +" "+t("request_status"))}
-      </ModalHeader>
-      <ModalBody>
-      <Form
-      onSubmit={(e) => {
-        e.preventDefault();
-        validation.handleSubmit();
-        return false;
-      }}
-      >
-      <Row>
-      <Col className='col-md-6 mb-3'>
-                      <Label>{t('rqs_name_or')}</Label>
-                      <Input
-                        name='rqs_name_or'
-                        type='text'
-                        placeholder={t('rqs_name_or')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.rqs_name_or || ''}
-                        invalid={
-                          validation.touched.rqs_name_or &&
-                          validation.errors.rqs_name_or
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.rqs_name_or &&
-                      validation.errors.rqs_name_or ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.rqs_name_or}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('rqs_name_am')}</Label>
-                      <Input
-                        name='rqs_name_am'
-                        type='text'
-                        placeholder={t('rqs_name_am')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.rqs_name_am || ''}
-                        invalid={
-                          validation.touched.rqs_name_am &&
-                          validation.errors.rqs_name_am
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.rqs_name_am &&
-                      validation.errors.rqs_name_am ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.rqs_name_am}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('rqs_name_en')}</Label>
-                      <Input
-                        name='rqs_name_en'
-                        type='text'
-                        placeholder={t('rqs_name_en')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.rqs_name_en || ''}
-                        invalid={
-                          validation.touched.rqs_name_en &&
-                          validation.errors.rqs_name_en
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.rqs_name_en &&
-                      validation.errors.rqs_name_en ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.rqs_name_en}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('rqs_description')}</Label>
-                      <Input
-                        name='rqs_description'
-                        type='text'
-                        placeholder={t('rqs_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.rqs_description || ''}
-                        invalid={
-                          validation.touched.rqs_description &&
-                          validation.errors.rqs_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.rqs_description &&
-                      validation.errors.rqs_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.rqs_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('rqs_status')}</Label>
-                      <Input
-                        name='rqs_status'
-                        type='text'
-                        placeholder={t('rqs_status')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.rqs_status || ''}
-                        invalid={
-                          validation.touched.rqs_status &&
-                          validation.errors.rqs_status
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.rqs_status &&
-                      validation.errors.rqs_status ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.rqs_status}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-                
-      </Row>
-      <Row>
-      <Col>
-      <div className="text-end">
-      {addRequestStatus.isPending || updateRequestStatus.isPending ? (
-        <Button
-        color="success"
-        type="submit"
-        className="save-user"
-        disabled={
-          addRequestStatus.isPending ||
-          updateRequestStatus.isPending ||
-          !validation.dirty
-        }
-        >
-        <Spinner size={"sm"} color="light" className="me-2" />
-        {t("Save")}
-        </Button>
-        ) : (
-        <Button
-        color="success"
-        type="submit"
-        className="save-user"
-        disabled={
-          addRequestStatus.isPending ||
-          updateRequestStatus.isPending ||
-          !validation.dirty
-        }
-        >
-        {t("Save")}
-        </Button>
-        )}
+      <DeleteModal
+        show={deleteModal}
+        onDeleteClick={handleDeleteRequestStatus}
+        onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteRequestStatus.isPending}
+      />
+      <div className="page-content">
+        <div className="container-fluid">
+          <Breadcrumbs
+            title={t("request_status")}
+            breadcrumbItem={t("request_status")}
+          />
+          {isLoading || isSearchLoading ? (
+            <Spinners />
+          ) : (
+            <Row>
+              <Col xs="12">
+                <Card>
+                  <CardBody>
+                    <TableContainer
+                      columns={columns}
+                      data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
+                      isGlobalFilter={true}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
+                      isCustomPageSize={true}
+                      handleUserClick={handleRequestStatusClicks}
+                      isPagination={true}
+                      // SearchPlaceholder="26 records..."
+                      SearchPlaceholder={26 + " " + t("Results") + "..."}
+                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                      buttonName={t("add")}
+                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                      theadClass="table-light"
+                      pagination="pagination"
+                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                    />
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          )}
+          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
+            <ModalHeader toggle={toggle} tag="h4">
+              {!!isEdit
+                ? t("edit") + " " + t("request_status")
+                : t("add") + " " + t("request_status")}
+            </ModalHeader>
+            <ModalBody>
+              <Form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  validation.handleSubmit();
+                  return false;
+                }}
+              >
+                <Row>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("rqs_name_or")}</Label>
+                    <Input
+                      name="rqs_name_or"
+                      type="text"
+                      placeholder={t("rqs_name_or")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.rqs_name_or || ""}
+                      invalid={
+                        validation.touched.rqs_name_or &&
+                        validation.errors.rqs_name_or
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.rqs_name_or &&
+                    validation.errors.rqs_name_or ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.rqs_name_or}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("rqs_name_am")}</Label>
+                    <Input
+                      name="rqs_name_am"
+                      type="text"
+                      placeholder={t("rqs_name_am")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.rqs_name_am || ""}
+                      invalid={
+                        validation.touched.rqs_name_am &&
+                        validation.errors.rqs_name_am
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.rqs_name_am &&
+                    validation.errors.rqs_name_am ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.rqs_name_am}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("rqs_name_en")}</Label>
+                    <Input
+                      name="rqs_name_en"
+                      type="text"
+                      placeholder={t("rqs_name_en")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.rqs_name_en || ""}
+                      invalid={
+                        validation.touched.rqs_name_en &&
+                        validation.errors.rqs_name_en
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.rqs_name_en &&
+                    validation.errors.rqs_name_en ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.rqs_name_en}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("rqs_description")}</Label>
+                    <Input
+                      name="rqs_description"
+                      rows={5}
+                      type="textarea"
+                      placeholder={t("rqs_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.rqs_description || ""}
+                      invalid={
+                        validation.touched.rqs_description &&
+                        validation.errors.rqs_description
+                          ? true
+                          : false
+                      }
+                    />
+                    {validation.touched.rqs_description &&
+                    validation.errors.rqs_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.rqs_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <div className="text-end">
+                      {addRequestStatus.isPending ||
+                      updateRequestStatus.isPending ? (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addRequestStatus.isPending ||
+                            updateRequestStatus.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          <Spinner size={"sm"} color="light" className="me-2" />
+                          {t("Save")}
+                        </Button>
+                      ) : (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addRequestStatus.isPending ||
+                            updateRequestStatus.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          {t("Save")}
+                        </Button>
+                      )}
+                    </div>
+                  </Col>
+                </Row>
+              </Form>
+            </ModalBody>
+          </Modal>
         </div>
-        </Col>
-        </Row>
-        </Form>
-        </ModalBody>
-        </Modal>
-        </div>
-        </div>
-        <ToastContainer />
-        </React.Fragment>
-        );
+      </div>
+    </React.Fragment>
+  );
 };
 RequestStatusModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,
