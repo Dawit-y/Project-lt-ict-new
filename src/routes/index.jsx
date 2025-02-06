@@ -3,9 +3,9 @@ import { Navigate } from "react-router-dom";
 
 import Dashboard from "../pages/Dashboard/index";
 import Login from "../pages/Authentication/Login";
-import UsersProfile from "../pages/Profile";
 import ProjectProvider from "../context/ProjectContext";
 
+const UsersProfile = lazy(() => import("../pages/Profile"));
 const ProjectPaymentList = lazy(() =>
   import("../pages/Projectpayment/ProjectPaymentList")
 );

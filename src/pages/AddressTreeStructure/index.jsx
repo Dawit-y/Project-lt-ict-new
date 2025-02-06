@@ -33,6 +33,7 @@ import { toast } from "react-toastify";
 
 const App_tree = () => {
   document.title = "Regional Address Structure";
+
   const [selectedNode, setSelectedNode] = useState(null);
   const [formInputs, setFormInputs] = useState({
     add_name_or: "",
@@ -48,10 +49,12 @@ const App_tree = () => {
     add_name_en: "",
   });
   const [descendants, setDescendants] = useState([]);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  console.log("currentLanguage", i18n.language);
 
   const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
+
   const { data, isLoading, isError, error, refetch } = useFetchFolders(userId);
   const addFolder = useAddFolder();
   const updateFolder = useRenameFolder();

@@ -2,8 +2,11 @@ import { useState, useRef, memo } from "react";
 import { Collapse } from "reactstrap";
 import { FaChevronDown, FaChevronRight } from "react-icons/fa";
 import { HiOutlineFolder } from "react-icons/hi";
+import { useTranslation } from "react-i18next";
 
 const TreeNode = ({ node, onNodeClick, level = 0 }) => {
+  const { i18n } = useTranslation();
+  const lang = i18n.language;
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => setIsExpanded(!isExpanded);
   const nodeRef = useRef();
@@ -75,7 +78,13 @@ const TreeNode = ({ node, onNodeClick, level = 0 }) => {
           <span className="me-3"></span>
         )}
         <HiOutlineFolder className="text-warning mx-1" />
-        <span>{node.name}</span>
+        <span>
+          {lang === "en" && node.add_name_en
+            ? node.add_name_en
+            : lang === "am" && node.add_name_am
+            ? node.add_name_am
+            : node.name}
+        </span>
       </div>
 
       {/* Collapse for child nodes */}

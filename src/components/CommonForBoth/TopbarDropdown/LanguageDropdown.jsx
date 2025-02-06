@@ -34,7 +34,7 @@ const LanguageDropdown = () => {
   };
 
   return (
-    <div style={{ zIndex: "999999999999" }}>
+    <div>
       <Dropdown isOpen={menu} toggle={toggle} className="d-inline-block">
         <DropdownToggle className="btn header-item " tag="button">
           <img
