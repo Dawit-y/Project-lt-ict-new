@@ -47,6 +47,7 @@ import ProjectBudgetPlan from "../../pages/Projectbudgetplan/index";
 
 import ProposalRequestModel from "../../pages/Proposalrequest";
 import ConversationInformationModel from "../../pages/Conversationinformation";
+import Conversation from "../Conversationinformation/index1";
 import RequestInformationModel from "../../pages/Requestinformation";
 
 import {
@@ -133,8 +134,8 @@ const ProjectModel = () => {
     },
     40: { label: t("project_variation"), component: ProjectVariationModel },
     58: { label: t("proposal_request"), component: ProposalRequestModel },
-    57: { label: t("conversation_information"), component: ConversationInformationModel },
-    59: { label: t("request_information"), component: RequestInformationModel }
+    57: { label: t("conversation_information"), component: Conversation },
+    59: { label: t("request_information"), component: RequestInformationModel },
 
     //46: { label: t('project_supplimentary'), component: ProjectBudgetPlan },
   };
