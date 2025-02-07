@@ -1,12 +1,8 @@
 import React from "react";
-import { Container, Card, CardBody, Col, Row } from "reactstrap";
+import { Form, Label, Input, Card, CardBody, Col, Row } from "reactstrap";
 import avtar1 from "../../assets/images/users/avatar-2.jpg";
 
 const Conversation = (props) => {
-
-  const { passedId, isActive } = props;
-  const param = { emp_project_id: passedId };
-
   return (
     <React.Fragment>
       <Row>
@@ -17,11 +13,36 @@ const Conversation = (props) => {
                 <div className="col-xl-8">
                   <div>
                     <div>
+                      <div className="">
+                        <h5 className="font-size-16 mb-3">Leave a Message</h5>
+
+                        <Form
+                          onSubmit={(event) => event.preventDefault()}
+                          className="mb-3"
+                        >
+                          <div className="mb-3">
+                            <textarea
+                              className="form-control"
+                              id="commentmessage-input"
+                              placeholder="Your message..."
+                              rows="3"
+                            ></textarea>
+                          </div>
+
+                          <div className="text-end">
+                            <button
+                              type="submit"
+                              className="btn btn-success w-sm"
+                            >
+                              Submit
+                            </button>
+                          </div>
+                        </Form>
+                      </div>
                       <h5 className="font-size-15">
                         <i className="bx bx-message-dots text-muted align-middle me-1"></i>{" "}
                         Conversations :
                       </h5>
-
                       <div>
                         <div className="d-flex py-3">
                           <div className="flex-shrink-0 me-3">

@@ -38,6 +38,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { createSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import DatePicker from "../../components/Common/DatePicker";
+import { alphanumericValidation } from "../../utils/Validation/validation";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -73,12 +74,30 @@ const ProposalRequestModel = (props) => {
     "rqs_id",
     "rqs_name_or"
   );
+  const statusMap = useMemo(() => {
+    return (
+      statusData?.data?.reduce((acc, year) => {
+        acc[year.rqs_id] = year.rqs_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [statusData]);
+
   const { data: categoryData } = useFetchRequestCategorys();
   const categoryOptions = createSelectOptions(
     categoryData?.data || [],
     "rqc_id",
     "rqc_name_or"
   );
+
+  const categoryMap = useMemo(() => {
+    return (
+      categoryData?.data?.reduce((acc, year) => {
+        acc[year.rqc_id] = year.rqc_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [categoryData]);
 
   const addProposalRequest = useAddProposalRequest();
   const updateProposalRequest = useUpdateProposalRequest();
@@ -151,7 +170,7 @@ const ProposalRequestModel = (props) => {
       is_editable: (proposalRequest && proposalRequest.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      prr_title: Yup.string().required(t("prr_title")),
+      prr_title: alphanumericValidation(2, 100, true),
       prr_request_status_id: Yup.string().required(t("prr_request_status_id")),
       prr_request_category_id: Yup.string().required(
         t("prr_request_category_id")
@@ -264,19 +283,7 @@ const ProposalRequestModel = (props) => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "prr_project_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prr_project_id, 30) || "-"}
-            </span>
-          );
-        },
-      },
+
       {
         header: "",
         accessorKey: "prr_request_status_id",
@@ -285,8 +292,9 @@ const ProposalRequestModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.prr_request_status_id, 30) ||
-                "-"}
+              {/* {truncateText(cellProps.row.original.prr_request_status_id, 30) ||
+                "-"} */}
+              {statusMap[cellProps.row.original.prr_request_status_id] || ""}
             </span>
           );
         },
@@ -299,10 +307,12 @@ const ProposalRequestModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
+              {/* {truncateText(
                 cellProps.row.original.prr_request_category_id,
                 30
-              ) || "-"}
+              ) || "-"} */}
+              {categoryMap[cellProps.row.original.prr_request_category_id] ||
+                ""}
             </span>
           );
         },
@@ -452,7 +462,10 @@ const ProposalRequestModel = (props) => {
           >
             <Row>
               <Col className="col-md-6 mb-3">
-                <Label>{t("prr_title")}</Label>
+                <Label>
+                  {t("prr_title")}
+                  <span className="text-danger">*</span>
+                </Label>
                 <Input
                   name="prr_title"
                   type="text"

@@ -44,6 +44,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { alphanumericValidation } from "../../utils/Validation/validation";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -129,9 +130,9 @@ const RequestStatusModel = () => {
       is_editable: (requestStatus && requestStatus.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      rqs_name_or: Yup.string().required(t("rqs_name_or")),
-      rqs_name_am: Yup.string().required(t("rqs_name_am")),
-      rqs_name_en: Yup.string().required(t("rqs_name_en")),
+      rqs_name_or: alphanumericValidation(2, 100, true),
+      rqs_name_am: alphanumericValidation(2, 100, true),
+      rqs_name_en: alphanumericValidation(2, 100, true),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -404,7 +405,10 @@ const RequestStatusModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("rqs_name_or")}</Label>
+                    <Label>
+                      {t("rqs_name_or")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="rqs_name_or"
                       type="text"
@@ -428,7 +432,10 @@ const RequestStatusModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("rqs_name_am")}</Label>
+                    <Label>
+                      {t("rqs_name_am")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="rqs_name_am"
                       type="text"
@@ -452,7 +459,10 @@ const RequestStatusModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("rqs_name_en")}</Label>
+                    <Label>
+                      {t("rqs_name_en")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="rqs_name_en"
                       type="text"

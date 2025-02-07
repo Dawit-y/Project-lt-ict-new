@@ -39,6 +39,7 @@ import {
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import DatePicker from "../../components/Common/DatePicker";
+import { alphanumericValidation } from "../../utils/Validation/validation";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -72,12 +73,30 @@ const RequestInformationModel = (props) => {
     "rqs_id",
     "rqs_name_or"
   );
+  const statusMap = useMemo(() => {
+    return (
+      statusData?.data?.reduce((acc, year) => {
+        acc[year.rqs_id] = year.rqs_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [statusData]);
+
   const { data: categoryData } = useFetchRequestCategorys();
   const categoryOptions = createSelectOptions(
     categoryData?.data || [],
     "rqc_id",
     "rqc_name_or"
   );
+
+  const categoryMap = useMemo(() => {
+    return (
+      categoryData?.data?.reduce((acc, year) => {
+        acc[year.rqc_id] = year.rqc_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [categoryData]);
 
   const addRequestInformation = useAddRequestInformation();
   const updateRequestInformation = useUpdateRequestInformation();
@@ -156,7 +175,7 @@ const RequestInformationModel = (props) => {
       is_editable: (requestInformation && requestInformation.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      rqi_title: Yup.string().required(t("rqi_title")),
+      rqi_title: alphanumericValidation(2, 100, true),
       rqi_request_status_id: Yup.string().required(t("rqi_request_status_id")),
       rqi_request_category_id: Yup.string().required(
         t("rqi_request_category_id")
@@ -279,8 +298,7 @@ const RequestInformationModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rqi_request_status_id, 30) ||
-                "-"}
+              {statusMap[cellProps.row.original.rqi_request_status_id] || ""}
             </span>
           );
         },
@@ -293,10 +311,8 @@ const RequestInformationModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
-                cellProps.row.original.rqi_request_category_id,
-                30
-              ) || "-"}
+              {categoryMap[cellProps.row.original.rqi_request_category_id] ||
+                ""}
             </span>
           );
         },
@@ -459,7 +475,9 @@ const RequestInformationModel = (props) => {
           >
             <Row>
               <Col className="col-md-6 mb-3">
-                <Label>{t("rqi_title")}</Label>
+                <Label>
+                  {t("rqi_title")} <span className="text-danger">*</span>
+                </Label>
                 <Input
                   name="rqi_title"
                   type="text"
