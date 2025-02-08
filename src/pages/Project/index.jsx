@@ -134,7 +134,10 @@ const ProjectModel = () => {
     },
     40: { label: t("project_variation"), component: ProjectVariationModel },
     58: { label: t("proposal_request"), component: ProposalRequestModel },
-    57: { label: t("conversation_information"), component: Conversation },
+    57: {
+      label: t("conversation_information"),
+      component: Conversation,
+    },
     59: { label: t("request_information"), component: RequestInformationModel },
 
     //46: { label: t('project_supplimentary'), component: ProjectBudgetPlan },
