@@ -168,6 +168,24 @@ const ProjectModel = () => {
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
 
+  const rowData = useMemo(() => {
+    return showSearchResult ? searchData?.data : data?.data || [];
+  }, [showSearchResult, searchData?.data, data?.data]);
+
+  const searchConfig = useMemo(
+    () => ({
+      params,
+      projectParams,
+      showSearchResult,
+    }),
+    [params, projectParams, showSearchResult]
+  );
+
+  const handleSearch = useCallback((searchResults) => {
+    setSearchResults(searchResults);
+    setShowSearchResult(true);
+  }, []);
+
   const handleAddProject = async (data) => {
     try {
       await addProject.mutateAsync(data);
@@ -451,18 +469,20 @@ const ProjectModel = () => {
       setModal(true);
     }
   };
+
   const handleNodeSelect = useCallback(
     (node) => {
       if (node.level === "region") {
         setPrjLocationRegionId(node.id);
-        setPrjLocationZoneId(null); // Clear dependent states
+        setPrjLocationZoneId(null);
         setPrjLocationWoredaId(null);
       } else if (node.level === "zone") {
         setPrjLocationZoneId(node.id);
-        setPrjLocationWoredaId(null); // Clear dependent state
+        setPrjLocationWoredaId(null);
       } else if (node.level === "woreda") {
         setPrjLocationWoredaId(node.id);
       }
+
       if (showSearchResult) {
         setShowSearchResult(false);
       }
@@ -475,6 +495,7 @@ const ProjectModel = () => {
       setShowSearchResult,
     ]
   );
+
   const handleClick = (data) => {
     setShowCanvas(!showCanvas); // Toggle canvas visibility
     setProjectMetaData(data);
@@ -741,14 +762,14 @@ const ProjectModel = () => {
     resizable: true,
     flex: 1,
   };
-  const onGridReady = (params) => {
+  const onGridReady = useCallback((params) => {
     params.api.sizeColumnsToFit();
-  };
-  const onSelectionChanged = () => {
+  }, []);
+  const onSelectionChanged = useCallback(() => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
     const selectedData = selectedNodes.map((node) => node.data);
     setSelectedRows(selectedData);
-  };
+  }, []);
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -780,90 +801,81 @@ const ProjectModel = () => {
                   },
                 ]}
                 checkboxSearchKeys={[]}
-                additionalParams={projectParams}
+                additionalParams={searchConfig.projectParams}
                 setAdditionalParams={setProjectParams}
-                setSearchResults={setSearchResults}
+                setSearchResults={handleSearch}
                 setShowSearchResult={setShowSearchResult}
-                params={params}
+                params={searchConfig.params}
                 setParams={setParams}
                 searchParams={searchParams}
                 setSearchParams={setSearchParams}
               />
-              {isLoading || isSearchLoading || isAddressLoading ? (
-                <div
-                  style={{ minHeight: "350px" }}
-                  className="d-flex justify-content-center align-items-center"
-                >
-                  <Spinner color="primary" />
-                </div>
-              ) : (
-                <div
-                  className="ag-theme-alpine"
-                  style={{ height: "100%", width: "100%" }}
-                >
-                  <Row className="mb-3">
-                    <Col sm="12" md="6">
-                      <Input
-                        type="text"
-                        placeholder={t("Search") + "..."}
-                        onChange={(e) => setQuickFilterText(e.target.value)}
-                        className="mb-2"
-                      />
-                    </Col>
-                    <Col
-                      sm="12"
-                      md="6"
-                      className="text-md-end d-flex align-items-center justify-content-end gap-2"
-                    >
-                      {searchData?.previledge?.is_role_can_add == 1 && (
-                        <Button color="success" onClick={handleProjectClicks}>
-                          {t("add")}
-                        </Button>
-                      )}
-                      <ExportToExcel
-                        tableData={searchData?.data || []}
-                        tablename={"projects"}
-                        excludeKey={["is_editable", "is_deletable"]}
-                      />
-                      <ExportToPDF
-                        tableData={searchData?.data || []}
-                        tablename={"projects"}
-                        excludeKey={["is_editable", "is_deletable"]}
-                      />
-                      <PrintPage
-                        tableData={searchData?.data || []}
-                        tablename={t("Projects")}
-                        excludeKey={["is_editable", "is_deletable"]}
-                        gridRef={gridRef}
-                        columnDefs={columnDefs}
-                        columnsToIgnore="3"
-                      />
-                    </Col>
-                  </Row>
-                  <div style={{ height: "600px" }}>
-                    <AgGridReact
-                      rowStyle={{ overflow: "visible" }}
-                      ref={gridRef}
-                      rowData={
-                        showSearchResult ? searchData?.data : data?.data || []
-                      }
-                      columnDefs={columnDefs}
-                      pagination={true}
-                      paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                      paginationPageSize={10}
-                      quickFilterText={quickFilterText}
-                      onSelectionChanged={onSelectionChanged}
-                      rowHeight={32} // Set the row height here
-                      animateRows={true} // Enables row animations
-                      domLayout="autoHeight" // Auto-size the grid to fit content
-                      onGridReady={(params) => {
-                        params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                      }}
-                      localeText={localeText} // Dynamically translated texts
+
+              <div
+                className="ag-theme-alpine"
+                style={{ height: "100%", width: "100%" }}
+              >
+                <Row className="mb-3">
+                  <Col sm="12" md="6">
+                    <Input
+                      type="text"
+                      placeholder={t("Search") + "..."}
+                      onChange={(e) => setQuickFilterText(e.target.value)}
+                      className="mb-2"
                     />
-                  </div>
+                  </Col>
+                  <Col
+                    sm="12"
+                    md="6"
+                    className="text-md-end d-flex align-items-center justify-content-end gap-2"
+                  >
+                    {searchData?.previledge?.is_role_can_add == 1 && (
+                      <Button color="success" onClick={handleProjectClicks}>
+                        {t("add")}
+                      </Button>
+                    )}
+                    <ExportToExcel
+                      tableData={searchData?.data || []}
+                      tablename={"projects"}
+                      excludeKey={["is_editable", "is_deletable"]}
+                    />
+                    <ExportToPDF
+                      tableData={searchData?.data || []}
+                      tablename={"projects"}
+                      excludeKey={["is_editable", "is_deletable"]}
+                    />
+                    <PrintPage
+                      tableData={searchData?.data || []}
+                      tablename={t("Projects")}
+                      excludeKey={["is_editable", "is_deletable"]}
+                      gridRef={gridRef}
+                      columnDefs={columnDefs}
+                      columnsToIgnore="3"
+                    />
+                  </Col>
+                </Row>
+                <div style={{ height: "600px" }}>
+                  <AgGridReact
+                    rowStyle={{ overflow: "visible" }}
+                    ref={gridRef}
+                    rowData={rowData}
+                    immutableData={true}
+                    getRowId={(params) => params.data.prj_id}
+                    columnDefs={columnDefs}
+                    pagination={true}
+                    paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+                    paginationPageSize={10}
+                    quickFilterText={quickFilterText}
+                    onSelectionChanged={onSelectionChanged}
+                    rowHeight={32} // Set the row height here
+                    animateRows={true} // Enables row animations
+                    domLayout="autoHeight" // Auto-size the grid to fit content
+                    onGridReady={onGridReady}
+                    localeText={localeText} // Dynamically translated texts
+                  />
                 </div>
-              )}
+              </div>
+
               <Modal isOpen={modal} toggle={toggle} className="modal-xl">
                 <ModalHeader toggle={toggle} tag="h4">
                   {!!isEdit
