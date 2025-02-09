@@ -135,10 +135,10 @@ pipeline {
                         fi
 
                         # Run the newly committed PROD image (using the versioned tag)
-                            docker run -d --name ${PROD_CONTAINER_NAME} \
-    -p ${PROD_PORT_EXT}:${PROD_PORT_INT} \
-    ${env.VERSIONED_PROD_IMAGE} \
-    /bin/sh -c "echo 'types { application/javascript mjs; }' > /etc/nginx/conf.d/mjs.conf && nginx -g 'daemon off;'"
+                           docker run -d --name ${PROD_CONTAINER_NAME} \\
+                            -p ${PROD_PORT_EXT}:${PROD_PORT_INT} \\
+                            ${env.VERSIONED_PROD_IMAGE} \\
+                            nginx -g "daemon off;"
 
                         echo "PROD container is now running on port ${PROD_PORT_EXT}."
                     """
