@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -8,7 +7,6 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
@@ -19,7 +17,6 @@ import {
 } from "../../queries/projectdocument_query";
 import ProjectDocumentModal from "./ProjectDocumentModal";
 import { useTranslation } from "react-i18next";
-
 import {
   Button,
   Col,
@@ -92,6 +89,7 @@ const ProjectDocumentModel = (props) => {
     }
     toggle();
   };
+  
   const handleDeleteProjectDocument = async () => {
     if (projectDocument && projectDocument.prd_id) {
       try {
@@ -434,10 +432,6 @@ const ProjectDocumentModel = (props) => {
             breadcrumbItem={t("project_document")}
           />
         )}
-        {/* <Breadcrumbs
-            title={t("project_document")}
-            breadcrumbItem={t("project_document")}
-          /> */}
         {isLoading || searchLoading ? (
           <Spinners />
         ) : (

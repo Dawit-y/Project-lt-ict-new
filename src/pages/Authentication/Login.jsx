@@ -35,6 +35,7 @@ const Login = () => {
 
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const togglePasswordVisibility = () =>
     setShowPassword((prevState) => !prevState);
@@ -45,7 +46,15 @@ const Login = () => {
       sessionStorage.setItem("authUser", JSON.stringify(data));
       localStorage.setItem("I18N_LANGUAGE", "en");
       localStorage.setItem("i18nextLng", "en");
+      setErrorMessage(null)
       navigate("/dashboard");
+    },
+    onError: (error) => {
+      if (error.response?.status === 401) {
+        setErrorMessage("Incorrect email or password. Please try again.");
+      } else {
+        setErrorMessage("Something went wrong. Please try again later.");
+      }
     },
   });
 
@@ -85,8 +94,8 @@ const Login = () => {
                 </Row>
               </div>
               <CardBody className="pt-0 mt-2">
-                {mutation.isError && (
-                  <Alert color="danger">{mutation.error.message}</Alert>
+                {errorMessage && (
+                  <Alert color="danger">{errorMessage}</Alert>
                 )}
                 <Form onSubmit={validation.handleSubmit}>
                   <div className="mb-3">
