@@ -363,7 +363,7 @@ const Index = (props) => {
                             type="button"
                             onClick={toggle}
                           >
-                            <i className="mdi mdi-plus me-1"></i> Create New
+                            <i className="mdi mdi-plus me-1"></i>{t("create_new")}
                           </Button>
                         </div>
                         <ul className="list-unstyled categories-list">

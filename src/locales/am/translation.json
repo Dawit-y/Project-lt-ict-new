@@ -1242,5 +1242,12 @@
 	"conversation_information_list": "Conversation List",
 	"proposal_request_list": "Proposal Request List",
 	"request_information_list": "Request Information List",
-	"attach_files": "ፋይሎችን ማያያዝ"
+	"attach_files": "ፋይሎችን ማያያዝ",
+	"documents": "ሰነዶች",
+	"open": "ክፈት",
+	"no_files_available": "ምንም ፋይሎች የሉም።",
+	"name": "ስም",
+	"date_modified": "የተሻሻለበት ቀን",
+	"size": "መጠን",
+	"create_new": "አዲስ ፍጠር"
 }

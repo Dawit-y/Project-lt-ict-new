@@ -10,22 +10,21 @@ import { withTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import withRouter from "../../Common/withRouter";
 
+const truncateText = (text, maxLength) => {
+  if (typeof text !== "string") {
+    return text;
+  }
+  return text.length <= maxLength
+    ? text
+    : `${text.substring(0, maxLength)}...`;
+};
+
 const ProfileMenu = (props) => {
-  // Declare a new state variable, which we'll call "menu"
   const [menu, setMenu] = useState(false);
 
   const storedUser = sessionStorage.getItem("authUser");
   const User = storedUser ? JSON.parse(storedUser) : null; // Handle null case
   const [userProfile, setUserProfile] = useState(User); // Set state directly to Users
-
-  const truncateText = (text, maxLength) => {
-    if (typeof text !== "string") {
-      return text;
-    }
-    return text.length <= maxLength
-      ? text
-      : `${text.substring(0, maxLength)}...`;
-  };
 
   const userInitial = userProfile.user.usr_full_name
     ? userProfile.user.usr_full_name.charAt(0).toUpperCase()
@@ -44,7 +43,7 @@ const ProfileMenu = (props) => {
           tag="button"
         >
           <span className="d-none d-xl-inline-block ms-2">
-            {truncateText(userProfile.user.usr_full_name, 6) ||
+            {truncateText(userProfile.user.usr_full_name, 10) ||
               userProfile.user.usr_email}
           </span>
           <i className="mdi mdi-chevron-down d-none d-xl-inline-block ms-1" />

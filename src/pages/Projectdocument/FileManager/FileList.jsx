@@ -18,6 +18,7 @@ import {
 import ProjectDocumentModal from "../ProjectDocumentModal";
 import DeleteModal from "../../../components/Common/DeleteModal";
 import { BsFillGrid1X2Fill } from "react-icons/bs";
+import { useTranslation } from "react-i18next";
 
 const formatFileSize = (bytes) => {
   if (isNaN(bytes) || bytes < 0) return "0 KB";
@@ -39,6 +40,7 @@ const FileList = ({
   isGridView,
   setIsGridView,
 }) => {
+  const { t } = useTranslation()
   const [modal1, setModal1] = useState(false);
   const [details, setDetails] = useState({});
 
@@ -116,7 +118,7 @@ const FileList = ({
         <Row className="mb-3">
           <Col xl={3} sm={6}>
             <div className="mt-2">
-              <h5>Documents</h5>
+              <h5>{t("documents")}</h5>
             </div>
           </Col>
           <Col xl={9} sm={6}>
@@ -176,10 +178,10 @@ const FileList = ({
                                     toggleViewModal();
                                   }}
                                 >
-                                  Open
+                                  {t("open")}
                                 </DropdownItem>
                                 <DropdownItem to="#" onClick={() => edit(file)}>
-                                  Edit
+                                  {t("edit")}
                                 </DropdownItem>
                                 <div className="dropdown-divider"></div>
                                 <DropdownItem
@@ -187,7 +189,7 @@ const FileList = ({
                                   className="text-danger"
                                   onClick={() => onClickDelete(file)}
                                 >
-                                  Delete
+                                  {t("delete")}
                                 </DropdownItem>
                               </DropdownMenu>
                             </UncontrolledDropdown>
@@ -236,10 +238,10 @@ const FileList = ({
               >
                 <thead>
                   <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Date Modified</th>
-                    <th scope="col">Size</th>
-                    <th scope="col">Actions</th>
+                    <th scope="col">{t("name")}</th>
+                    <th scope="col">{t("date_modified")}</th>
+                    <th scope="col">{t("size")}</th>
+                    <th scope="col">{t("actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -319,10 +321,10 @@ const FileList = ({
                                   toggleViewModal();
                                 }}
                               >
-                                Open
+                                {t("open")}
                               </DropdownItem>
                               <DropdownItem to="#" onClick={() => edit(file)}>
-                                Edit
+                                {t("edit")}
                               </DropdownItem>
                               <div className="dropdown-divider"></div>
                               <DropdownItem
@@ -330,7 +332,7 @@ const FileList = ({
                                 className="text-danger"
                                 onClick={() => onClickDelete(file)}
                               >
-                                Delete
+                                {t("delete")}
                               </DropdownItem>
                             </DropdownMenu>
                           </UncontrolledDropdown>
@@ -344,7 +346,7 @@ const FileList = ({
           )
         ) : (
           <div className="text-center p-4">
-            <p className="text-muted">No files available.</p>
+            <p className="text-muted">{t("no_files_availaible")}</p>
           </div>
         )}
 

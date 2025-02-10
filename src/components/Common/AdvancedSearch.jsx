@@ -48,14 +48,14 @@ const AdvancedSearch = ({
 
   const initialValues = component_params
     ? Object.keys(component_params).reduce((acc, key) => {
-        acc[component_params[key]] = ""; // Default value for form fields
-        return acc;
-      }, {})
+      acc[component_params[key]] = ""; // Default value for form fields
+      return acc;
+    }, {})
     : {};
   // Initialize useFormik with dynamically generated initialValues
   const validation = useFormik({
     initialValues,
-    onSubmit: (values) => {},
+    onSubmit: (values) => { },
   });
   // Handle updates for all input types
   const handleSearchKey = (key, value, type = "text") => {

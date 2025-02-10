@@ -1224,5 +1224,12 @@
 	"conversation_information_list": "Conversation List",
 	"proposal_request_list": "Proposal Request List",
 	"request_information_list": "Request Information List",
-	"attach_files": "faayiloota walitti qabsiisi"
+	"attach_files": "faayiloota walitti qabsiisi",
+	"documents": "Dokumantii",
+	"open": "Bani",
+	"no_files_available": "Faayilota hin jiru.",
+	"name": "Maqaa",
+	"date_modified": "Guyyaa Fooyya'ee",
+	"size": "Gatii",
+	"create_new": "haaraa uumuu"
 }

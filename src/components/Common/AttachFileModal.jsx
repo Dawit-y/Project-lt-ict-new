@@ -11,6 +11,7 @@ import { toast } from 'react-toastify'
 import TableContainer from './TableContainer'
 import Spinners from './Spinner'
 import FetchErrorHandler from './FetchErrorHandler'
+import ProjectDocumentModal from '../../pages/Projectdocument/ProjectDocumentModal'
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -161,6 +162,10 @@ const AttachFile = ({ isOpen, toggle, ownerTypeId, ownerId, projectId, isActive 
     },
   });
 
+  const [modal1, setModal1] = useState(false)
+  const [details, setDetails] = useState({})
+  const toggleViewModal = () => setModal1(!modal1);
+
   const toggleForm = () => {
     if (modal) {
       setModal(false);
@@ -269,6 +274,26 @@ const AttachFile = ({ isOpen, toggle, ownerTypeId, ownerId, projectId, isActive 
           );
         },
       },
+      {
+        header: t("view_detail"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                toggleViewModal();
+                setDetails(cellProps.row.original);
+              }}
+            >
+              {t("view_detail")}
+            </Button>
+          );
+        },
+      },
     ];
     if (
       data?.previledge?.is_role_editable &&
@@ -333,6 +358,11 @@ const AttachFile = ({ isOpen, toggle, ownerTypeId, ownerId, projectId, isActive 
 
   return (
     <>
+      <ProjectDocumentModal
+        isOpen={modal1}
+        toggle={toggleViewModal}
+        transaction={details}
+      />
       <DeleteModal
         show={deleteModal}
         onDeleteClick={handleDeleteProjectDocument}

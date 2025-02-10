@@ -328,7 +328,6 @@ const ProjectDocumentModel = (props) => {
           );
         },
       },
-
       {
         header: t("view_detail"),
         enableColumnFilter: false,
