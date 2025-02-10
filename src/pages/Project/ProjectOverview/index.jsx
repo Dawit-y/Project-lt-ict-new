@@ -21,6 +21,7 @@ import { useFetchProjectStakeholders } from "../../../queries/projectstakeholder
 
 const ProjectsOverview = (props) => {
   document.title = "Overview | Project";
+  
   const { id } = useParams();
   const projectId = Number(id);
 
@@ -79,7 +80,7 @@ const ProjectsOverview = (props) => {
                             center={position}
                             zoom={16}
                             scrollWheelZoom={true}
-                            style={{ height: "400px", width: "100%" }}
+                            style={{ height: "400px", width: "100%", zIndex: 1 }}
                           >
                             <TileLayer
                               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

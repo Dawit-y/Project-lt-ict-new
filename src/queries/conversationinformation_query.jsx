@@ -9,21 +9,22 @@ import {
 const CONVERSATION_INFORMATION_QUERY_KEY = ["conversationinformation"];
 
 // Fetch conversation_information
-export const useFetchConversationInformations = () => {
+export const useFetchConversationInformations = (param = {}, isActive) => {
   return useQuery({
-    queryKey: CONVERSATION_INFORMATION_QUERY_KEY,
-    queryFn: () => getConversationInformation(),
+    queryKey: [...CONVERSATION_INFORMATION_QUERY_KEY, "fetch", param],
+    queryFn: () => getConversationInformation(param),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: isActive
   });
 };
 
 //search conversation_information
 export const useSearchConversationInformations = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...CONVERSATION_INFORMATION_QUERY_KEY, searchParams],
+    queryKey: [...CONVERSATION_INFORMATION_QUERY_KEY, "search", searchParams],
     queryFn: () => getConversationInformation(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
@@ -40,16 +41,26 @@ export const useAddConversationInformation = () => {
   return useMutation({
     mutationFn: addConversationInformation,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( CONVERSATION_INFORMATION_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
+      // Get all queries matching the CONVERSATION_INFORMATION_QUERY_KEY
+      const queries = queryClient.getQueriesData({
+        queryKey: CONVERSATION_INFORMATION_QUERY_KEY,
+      });
+
+      // Prepare the new data to be added
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      // Update each query's cached data
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        });
       });
     },
   });
@@ -58,20 +69,29 @@ export const useAddConversationInformation = () => {
 // Update conversation_information
 export const useUpdateConversationInformation = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updateConversationInformation,
     onSuccess: (updatedConversationInformation) => {
-      queryClient.setQueryData(CONVERSATION_INFORMATION_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
+      // Get all queries matching the CONVERSATION_INFORMATION_QUERY_KEY
+      const queries = queryClient.getQueriesData({
+        queryKey: CONVERSATION_INFORMATION_QUERY_KEY,
+      });
 
-        return {
-          ...oldData,
-          data: oldData.data.map((ConversationInformationData) =>
-            ConversationInformationData.cvi_id === updatedConversationInformation.data.cvi_id
-              ? { ...ConversationInformationData, ...updatedConversationInformation.data }
-              : ConversationInformationData
-          ),
-        };
+      // Update each query's cached data
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((ConversationInformationData) =>
+              ConversationInformationData.cvi_id ===
+                updatedConversationInformation.data.cvi_id
+                ? { ...ConversationInformationData, ...updatedConversationInformation.data }
+                : ConversationInformationData
+            ),
+          };
+        });
       });
     },
   });
@@ -80,17 +100,28 @@ export const useUpdateConversationInformation = () => {
 // Delete conversation_information
 export const useDeleteConversationInformation = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteConversationInformation,
     onSuccess: (deletedData) => {
-      queryClient.setQueryData(CONVERSATION_INFORMATION_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (ConversationInformationData) => ConversationInformationData.cvi_id !== parseInt(deletedData.deleted_id)
-          ),
-        };
+      // Get all queries matching the CONVERSATION_INFORMATION_QUERY_KEY
+      const queries = queryClient.getQueriesData({
+        queryKey: CONVERSATION_INFORMATION_QUERY_KEY,
+      });
+
+      // Update each query's cached data
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (ConversationInformationData) =>
+                ConversationInformationData.cvi_id !==
+                parseInt(deletedData.deleted_id)
+            ),
+          };
+        });
       });
     },
   });

@@ -15,6 +15,7 @@ import {
   useUpdateProjectHandover,
 } from "../../queries/projecthandover_query";
 import ProjectHandoverModal from "./ProjectHandoverModal";
+import ConvInfoModal from "../Conversationinformation/ConvInfoModal"
 import { useTranslation } from "react-i18next";
 import { PAGE_ID } from "../../constants/constantFile";
 import DatePicker from "../../components/Common/DatePicker";
@@ -59,6 +60,7 @@ const ProjectHandoverModel = (props) => {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [fileModal, setFileModal] = useState(false)
+  const [convModal, setConvModal] = useState(false)
   const [isEdit, setIsEdit] = useState(false);
   const [projectHandover, setProjectHandover] = useState(null);
 
@@ -176,6 +178,7 @@ const ProjectHandoverModel = (props) => {
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
   const toggleFileModal = () => setFileModal(!fileModal);
+  const toggleConvModal = () => setConvModal(!convModal);
 
   useEffect(() => {
     setProjectHandover(data?.data);
@@ -298,6 +301,26 @@ const ProjectHandoverModel = (props) => {
           );
         },
       },
+      {
+        header: t("Message"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                toggleConvModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("Message")}
+            </Button>
+          );
+        },
+      },
     ];
     if (
       data?.previledge?.is_role_editable ||
@@ -370,10 +393,15 @@ const ProjectHandoverModel = (props) => {
       <AttachFileModal
         isOpen={fileModal}
         toggle={toggleFileModal}
-        ownerTypeId={PAGE_ID.PROJ_HANDOVER}
         projectId={passedId}
+        ownerTypeId={PAGE_ID.PROJ_HANDOVER}
         ownerId={transaction?.prh_id}
-        isActive={isActive}
+      />
+      <ConvInfoModal
+        isOpen={convModal}
+        toggle={toggleConvModal}
+        ownerTypeId={PAGE_ID.PROJ_HANDOVER}
+        ownerId={transaction?.prh_id ?? null}
       />
       <DeleteModal
         show={deleteModal}

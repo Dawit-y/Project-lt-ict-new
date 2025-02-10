@@ -55,7 +55,7 @@ const Index = (props) => {
     isActive
   );
   const { data: searchedDocs, isLoading: isSearchLoading } =
-    useSearchProjectDocuments(searchParams);
+    useSearchProjectDocuments(searchParams, isActive);
   const { data: docTypeData } = useFetchDocumentTypes();
 
   const addProjectDocument = useAddProjectDocument();
@@ -271,7 +271,7 @@ const Index = (props) => {
                   <option value={0}>{t("Inactive")}</option>
                 </Input>
                 {validation.touched.prd_status &&
-                validation.errors.prd_status ? (
+                  validation.errors.prd_status ? (
                   <FormFeedback type="invalid">
                     {validation.errors.prd_status}
                   </FormFeedback>
@@ -290,14 +290,14 @@ const Index = (props) => {
                   value={validation.values.prd_description || ""}
                   invalid={
                     validation.touched.prd_description &&
-                    validation.errors.prd_description
+                      validation.errors.prd_description
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.prd_description &&
-                validation.errors.prd_description ? (
+                  validation.errors.prd_description ? (
                   <FormFeedback type="invalid">
                     {validation.errors.prd_description}
                   </FormFeedback>
@@ -308,7 +308,7 @@ const Index = (props) => {
                 <Col>
                   <div className="text-end">
                     {addProjectDocument.isPending ||
-                    updateProjectDocument.isPending ? (
+                      updateProjectDocument.isPending ? (
                       <Button
                         color="success"
                         type="submit"
@@ -369,11 +369,10 @@ const Index = (props) => {
                         <ul className="list-unstyled categories-list">
                           <li>
                             <div
-                              className={`${
-                                selectedDocumentTypeId === null
+                              className={`${selectedDocumentTypeId === null
                                   ? "border border-info-subtle"
                                   : ""
-                              }`}
+                                }`}
                             >
                               <Link
                                 className="text-body fw-medium py-1 d-flex align-items-center"
@@ -391,11 +390,10 @@ const Index = (props) => {
                           {docTypeData?.data?.map((type) => (
                             <li key={type.pdt_id}>
                               <div
-                                className={`${
-                                  selectedDocumentTypeId === type.pdt_id
+                                className={`${selectedDocumentTypeId === type.pdt_id
                                     ? "border border-info-subtle"
                                     : ""
-                                }`}
+                                  }`}
                               >
                                 <Link
                                   className="text-body fw-medium py-1 d-flex align-items-center"

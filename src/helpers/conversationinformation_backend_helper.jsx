@@ -1,4 +1,4 @@
-import { post} from "./api_Lists";
+import { post } from "./api_Lists";
 
 const apiUrl = import.meta.env.VITE_BASE_API_URL;
 const GET_CONVERSATION_INFORMATION = "conversation_information/listgrid";
@@ -7,9 +7,15 @@ const UPDATE_CONVERSATION_INFORMATION = "conversation_information/updategrid";
 const DELETE_CONVERSATION_INFORMATION = "conversation_information/deletegrid";
 // get conversation_information
 export const getConversationInformation = async (params = {}) => {
-  const queryString = new URLSearchParams(params).toString();
+  const safeParams = params || {};
+  // Clean up the params object by removing null or undefined values
+  const cleanedParams = Object.fromEntries(
+    Object.entries(safeParams).filter(([_, value]) => value != null)
+  );
+  // Convert the cleaned params to a query string
+  const queryString = new URLSearchParams(cleanedParams).toString();
   const url = queryString ? `${GET_CONVERSATION_INFORMATION}?${queryString}` : GET_CONVERSATION_INFORMATION;
-   try {
+  try {
     const response = await post(url);
     return response;
   } catch (error) {
@@ -23,8 +29,8 @@ export const addConversationInformation = async (objectName) =>
 
 // update conversation_information
 export const updateConversationInformation = (objectName) =>
-post(`${apiUrl}`+UPDATE_CONVERSATION_INFORMATION +`?cvi_id=${objectName?.cvi_id}`, objectName);
+  post(`${apiUrl}` + UPDATE_CONVERSATION_INFORMATION + `?cvi_id=${objectName?.cvi_id}`, objectName);
 
 // delete  conversation_information
 export const deleteConversationInformation = (objectName) =>
-  post(`${apiUrl}`+DELETE_CONVERSATION_INFORMATION+`?cvi_id=${objectName}`);
+  post(`${apiUrl}` + DELETE_CONVERSATION_INFORMATION + `?cvi_id=${objectName}`);

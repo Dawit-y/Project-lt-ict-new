@@ -29,11 +29,11 @@ const createQueryKey = (searchParams) => {
 };
 
 // Search project documents
-export const useSearchProjectDocuments = (searchParams = null) => {
+export const useSearchProjectDocuments = (searchParams = null, isActive = false) => {
   return useQuery({
-    queryKey: createQueryKey(searchParams),
+    queryKey: [...PROJECT_DOCUMENT_QUERY_KEY, "search", searchParams],
     queryFn: () => getProjectDocument(searchParams),
-    enabled: !!searchParams, 
+    enabled: !!searchParams && isActive,
     staleTime: 1000 * 60 * 2,
     cacheTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,

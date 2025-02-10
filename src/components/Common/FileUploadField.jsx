@@ -16,7 +16,7 @@ import { useFetchDocumentTypes } from "../../queries/documenttype_query";
 import { createSelectOptions } from "../../utils/commonMethods";
 import { useTranslation } from "react-i18next";
 
-const MAX_SIZE_MB = 5;
+const MAX_SIZE_MB = 75;
 const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
 const FileUploadField = ({ validation }) => {
@@ -74,13 +74,12 @@ const FileUploadField = ({ validation }) => {
         errorMessages: errors.map((e) =>
           e.code === "file-too-large"
             ? `File is too large (${(file.size / (1024 * 1024)).toFixed(
-                2
-              )} MB). Max size allowed is ${MAX_SIZE_MB} MB.`
+              2
+            )} MB). Max size allowed is ${MAX_SIZE_MB} MB.`
             : e.message
         ),
       };
     });
-
     setFileErrors(errors);
   };
   return (
@@ -100,7 +99,7 @@ const FileUploadField = ({ validation }) => {
           value={validation.values.prd_document_type_id || ""}
           invalid={
             validation.touched.prd_document_type_id &&
-            validation.errors.prd_document_type_id
+              validation.errors.prd_document_type_id
               ? true
               : false
           }
@@ -113,7 +112,7 @@ const FileUploadField = ({ validation }) => {
           ))}
         </Input>
         {validation.touched.prd_document_type_id &&
-        validation.errors.prd_document_type_id ? (
+          validation.errors.prd_document_type_id ? (
           <FormFeedback type="invalid">
             {validation.errors.prd_document_type_id}
           </FormFeedback>
@@ -157,8 +156,7 @@ const FileUploadField = ({ validation }) => {
                 maxSize={MAX_SIZE_BYTES}
                 accept={{ "application/pdf": [] }}
                 onDrop={(acceptedFiles, rejectedFiles) => {
-                  const maxSize = 5 * 1024 * 1024; // 5 MB limit
-
+                  const maxSize = MAX_SIZE_BYTES
                   const validFiles = acceptedFiles.filter(
                     (file) => file.size <= maxSize
                   );
@@ -181,11 +179,10 @@ const FileUploadField = ({ validation }) => {
               >
                 {({ getRootProps, getInputProps }) => (
                   <div
-                    className={`dropzone ${
-                      validation.touched.prd_file && validation.errors.prd_file
-                        ? "border border-danger"
-                        : ""
-                    }`}
+                    className={`dropzone ${validation.touched.prd_file && validation.errors.prd_file
+                      ? "border border-danger"
+                      : ""
+                      }`}
                   >
                     <div
                       className="dz-message needsclick mt-2"

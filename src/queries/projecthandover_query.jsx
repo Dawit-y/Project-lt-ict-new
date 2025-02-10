@@ -13,7 +13,8 @@ export const useFetchProjectHandovers = (param = {}, isActive) => {
   return useQuery({
     queryKey: [...PROJECT_HANDOVER_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectHandover(param),
-    staleTime: 0,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 20,
     meta: { persist: true },
     refetchOnWindowFocus: true,
     refetchOnMount: true,

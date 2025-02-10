@@ -19,7 +19,7 @@ import {
 import { useFetchStakeholderTypes } from "../../queries/stakeholdertype_query";
 import ProjectStakeholderModal from "./ProjectStakeholderModal";
 import { useTranslation } from "react-i18next";
-import { phoneValidation,alphanumericValidation,amountValidation,numberValidation,dropdownValidation } from '../../utils/Validation/validation';
+import { phoneValidation, alphanumericValidation, amountValidation, numberValidation, dropdownValidation } from '../../utils/Validation/validation';
 import {
   Button,
   Col,
@@ -112,7 +112,7 @@ const ProjectStakeholderModel = (props) => {
       setDeleteModal(false);
     }
   };
-const stakeholderTypeMap = useMemo(() => {
+  const stakeholderTypeMap = useMemo(() => {
     return (
       stakeholderTypeData?.data?.reduce((acc, stakehlder_type) => {
         acc[stakehlder_type.sht_id] = stakehlder_type.sht_type_name_or;
@@ -147,7 +147,7 @@ const stakeholderTypeMap = useMemo(() => {
     validationSchema: Yup.object({
       // psh_project_id: Yup.string().required(t("psh_project_id")),
       psh_name: alphanumericValidation(3, 200, true),
-      psh_stakeholder_type: dropdownValidation(1,300,true),
+      psh_stakeholder_type: dropdownValidation(1, 300, true),
       psh_representative_name: alphanumericValidation(3, 200, true),
       psh_representative_phone: phoneValidation(true),
       psh_role: alphanumericValidation(3, 425, false),
@@ -173,7 +173,7 @@ const stakeholderTypeMap = useMemo(() => {
           is_editable: values.is_editable,
         };
         handleUpdateProjectStakeholder(updateProjectStakeholder);
-        
+
       } else {
         const newProjectStakeholder = {
           psh_project_id: values.psh_project_id,
@@ -422,13 +422,13 @@ const stakeholderTypeMap = useMemo(() => {
             />
           )}
           {isLoading ? (
-            <Spinners />
+            <Spinners top={"top-70"} />
           ) : (
             <TableContainer
               columns={columns}
               data={data?.data || []}
               isGlobalFilter={true}
-              isAddButton={data?.previledge?.is_role_can_add==1}
+              isAddButton={data?.previledge?.is_role_can_add == 1}
               isCustomPageSize={true}
               handleUserClick={handleProjectStakeholderClicks}
               isPagination={true}
@@ -470,14 +470,14 @@ const stakeholderTypeMap = useMemo(() => {
                       value={validation.values.psh_name || ""}
                       invalid={
                         validation.touched.psh_name &&
-                        validation.errors.psh_name
+                          validation.errors.psh_name
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.psh_name &&
-                    validation.errors.psh_name ? (
+                      validation.errors.psh_name ? (
                       <FormFeedback type="invalid">
                         {validation.errors.psh_name}
                       </FormFeedback>
@@ -497,12 +497,12 @@ const stakeholderTypeMap = useMemo(() => {
                       value={validation.values.psh_stakeholder_type || ""}
                       invalid={
                         validation.touched.psh_stakeholder_type &&
-                        validation.errors.psh_stakeholder_type
+                          validation.errors.psh_stakeholder_type
                           ? true
                           : false
                       }
                     >
-                    <option value="">{t('select_one')}</option>
+                      <option value="">{t('select_one')}</option>
                       {stakeholderTypeData?.data?.map((data) => (
                         <option key={data.sht_id} value={data.sht_id}>
                           {data.sht_type_name_or}
@@ -517,7 +517,7 @@ const stakeholderTypeMap = useMemo(() => {
                       ))}
                     </Input>
                     {validation.touched.psh_stakeholder_type &&
-                    validation.errors.psh_stakeholder_type ? (
+                      validation.errors.psh_stakeholder_type ? (
                       <FormFeedback type="invalid">
                         {validation.errors.psh_stakeholder_type}
                       </FormFeedback>
@@ -537,14 +537,14 @@ const stakeholderTypeMap = useMemo(() => {
                       value={validation.values.psh_representative_name || ""}
                       invalid={
                         validation.touched.psh_representative_name &&
-                        validation.errors.psh_representative_name
+                          validation.errors.psh_representative_name
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.psh_representative_name &&
-                    validation.errors.psh_representative_name ? (
+                      validation.errors.psh_representative_name ? (
                       <FormFeedback type="invalid">
                         {validation.errors.psh_representative_name}
                       </FormFeedback>
@@ -564,14 +564,14 @@ const stakeholderTypeMap = useMemo(() => {
                       value={validation.values.psh_representative_phone || ""}
                       invalid={
                         validation.touched.psh_representative_phone &&
-                        validation.errors.psh_representative_phone
+                          validation.errors.psh_representative_phone
                           ? true
                           : false
                       }
                       maxLength={24}
                     />
                     {validation.touched.psh_representative_phone &&
-                    validation.errors.psh_representative_phone ? (
+                      validation.errors.psh_representative_phone ? (
                       <FormFeedback type="invalid">
                         {validation.errors.psh_representative_phone}
                       </FormFeedback>
@@ -588,14 +588,14 @@ const stakeholderTypeMap = useMemo(() => {
                       value={validation.values.psh_role || ""}
                       invalid={
                         validation.touched.psh_role &&
-                        validation.errors.psh_role
+                          validation.errors.psh_role
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.psh_role &&
-                    validation.errors.psh_role ? (
+                      validation.errors.psh_role ? (
                       <FormFeedback type="invalid">
                         {validation.errors.psh_role}
                       </FormFeedback>
@@ -612,14 +612,14 @@ const stakeholderTypeMap = useMemo(() => {
                       value={validation.values.psh_description || ""}
                       invalid={
                         validation.touched.psh_description &&
-                        validation.errors.psh_description
+                          validation.errors.psh_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.psh_description &&
-                    validation.errors.psh_description ? (
+                      validation.errors.psh_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.psh_description}
                       </FormFeedback>
@@ -630,7 +630,7 @@ const stakeholderTypeMap = useMemo(() => {
                   <Col>
                     <div className="text-end">
                       {addProjectStakeholder.isPending ||
-                      updateProjectStakeholder.isPending ? (
+                        updateProjectStakeholder.isPending ? (
                         <Button
                           color="success"
                           type="submit"

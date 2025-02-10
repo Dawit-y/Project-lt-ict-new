@@ -860,7 +860,7 @@ const ProjectModel = () => {
                     ref={gridRef}
                     rowData={rowData}
                     immutableData={true}
-                    getRowId={(params) => params.data.prj_id}
+                    getRowId={(params) => String(params.data.prj_id)}
                     columnDefs={columnDefs}
                     pagination={true}
                     paginationPageSizeSelector={[10, 20, 30, 40, 50]}
@@ -913,14 +913,14 @@ const ProjectModel = () => {
                           }
                           invalid={
                             validation.touched.prj_location_description &&
-                            validation.errors.prj_location_description
+                              validation.errors.prj_location_description
                               ? true
                               : false
                           }
                           maxLength={200}
                         />
                         {validation.touched.prj_location_description &&
-                        validation.errors.prj_location_description ? (
+                          validation.errors.prj_location_description ? (
                           <FormFeedback type="invalid">
                             {validation.errors.prj_location_description}
                           </FormFeedback>
@@ -940,14 +940,14 @@ const ProjectModel = () => {
                           value={validation.values.prj_name || ""}
                           invalid={
                             validation.touched.prj_name &&
-                            validation.errors.prj_name
+                              validation.errors.prj_name
                               ? true
                               : false
                           }
                           maxLength={200}
                         />
                         {validation.touched.prj_name &&
-                        validation.errors.prj_name ? (
+                          validation.errors.prj_name ? (
                           <FormFeedback type="invalid">
                             {validation.errors.prj_name}
                           </FormFeedback>
@@ -967,14 +967,14 @@ const ProjectModel = () => {
                           value={validation.values.prj_name_am || ""}
                           invalid={
                             validation.touched.prj_name_am &&
-                            validation.errors.prj_name_am
+                              validation.errors.prj_name_am
                               ? true
                               : false
                           }
                           maxLength={200}
                         />
                         {validation.touched.prj_name_am &&
-                        validation.errors.prj_name_am ? (
+                          validation.errors.prj_name_am ? (
                           <FormFeedback type="invalid">
                             {validation.errors.prj_name_am}
                           </FormFeedback>
@@ -994,14 +994,14 @@ const ProjectModel = () => {
                           value={validation.values.prj_name_en || ""}
                           invalid={
                             validation.touched.prj_name_en &&
-                            validation.errors.prj_name_en
+                              validation.errors.prj_name_en
                               ? true
                               : false
                           }
                           maxLength={200}
                         />
                         {validation.touched.prj_name_en &&
-                        validation.errors.prj_name_en ? (
+                          validation.errors.prj_name_en ? (
                           <FormFeedback type="invalid">
                             {validation.errors.prj_name_en}
                           </FormFeedback>
@@ -1021,14 +1021,14 @@ const ProjectModel = () => {
                           value={validation.values.prj_code || ""}
                           invalid={
                             validation.touched.prj_code &&
-                            validation.errors.prj_code
+                              validation.errors.prj_code
                               ? true
                               : false
                           }
                           maxLength={20}
                         />
                         {validation.touched.prj_code &&
-                        validation.errors.prj_code ? (
+                          validation.errors.prj_code ? (
                           <FormFeedback type="invalid">
                             {validation.errors.prj_code}
                           </FormFeedback>
@@ -1050,7 +1050,7 @@ const ProjectModel = () => {
                           }
                           invalid={
                             validation.touched.prj_project_category_id &&
-                            validation.errors.prj_project_category_id
+                              validation.errors.prj_project_category_id
                               ? true
                               : false
                           }
@@ -1065,7 +1065,7 @@ const ProjectModel = () => {
                           ))}
                         </Input>
                         {validation.touched.prj_project_category_id &&
-                        validation.errors.prj_project_category_id ? (
+                          validation.errors.prj_project_category_id ? (
                           <FormFeedback type="invalid">
                             {validation.errors.prj_project_category_id}
                           </FormFeedback>
@@ -1091,13 +1091,13 @@ const ProjectModel = () => {
                           }
                           invalid={
                             validation.touched.prj_total_estimate_budget &&
-                            validation.errors.prj_total_estimate_budget
+                              validation.errors.prj_total_estimate_budget
                               ? true
                               : false
                           }
                         />
                         {validation.touched.prj_total_estimate_budget &&
-                        validation.errors.prj_total_estimate_budget ? (
+                          validation.errors.prj_total_estimate_budget ? (
                           <FormFeedback type="invalid">
                             {validation.errors.prj_total_estimate_budget}
                           </FormFeedback>
@@ -1117,14 +1117,14 @@ const ProjectModel = () => {
                           }
                           invalid={
                             validation.touched.prj_total_actual_budget &&
-                            validation.errors.prj_total_actual_budget
+                              validation.errors.prj_total_actual_budget
                               ? true
                               : false
                           }
                           maxLength={20}
                         />
                         {validation.touched.prj_total_actual_budget &&
-                        validation.errors.prj_total_actual_budget ? (
+                          validation.errors.prj_total_actual_budget ? (
                           <FormFeedback type="invalid">
                             {validation.errors.prj_total_actual_budget}
                           </FormFeedback>
@@ -1145,7 +1145,7 @@ const ProjectModel = () => {
                           value={validation.values.prj_sector_id || ""}
                           invalid={
                             validation.touched.prj_sector_id &&
-                            validation.errors.prj_sector_id
+                              validation.errors.prj_sector_id
                               ? true
                               : false
                           }
@@ -1158,7 +1158,7 @@ const ProjectModel = () => {
                           ))}
                         </Input>
                         {validation.touched.prj_sector_id &&
-                        validation.errors.prj_sector_id ? (
+                          validation.errors.prj_sector_id ? (
                           <FormFeedback type="invalid">
                             {validation.errors.prj_sector_id}
                           </FormFeedback>
@@ -1178,7 +1178,7 @@ const ProjectModel = () => {
                           value={validation.values.prj_department_id || ""}
                           invalid={
                             validation.touched.prj_department_id &&
-                            validation.errors.prj_department_id
+                              validation.errors.prj_department_id
                               ? true
                               : false
                           }
@@ -1193,7 +1193,7 @@ const ProjectModel = () => {
                           ))}
                         </Input>
                         {validation.touched.prj_department_id &&
-                        validation.errors.prj_department_id ? (
+                          validation.errors.prj_department_id ? (
                           <FormFeedback type="invalid">
                             {validation.errors.prj_department_id}
                           </FormFeedback>
@@ -1210,13 +1210,13 @@ const ProjectModel = () => {
                           value={validation.values.prj_urban_ben_number || ""}
                           invalid={
                             validation.touched.prj_urban_ben_number &&
-                            validation.errors.prj_urban_ben_number
+                              validation.errors.prj_urban_ben_number
                               ? true
                               : false
                           }
                         />
                         {validation.touched.prj_urban_ben_number &&
-                        validation.errors.prj_urban_ben_number ? (
+                          validation.errors.prj_urban_ben_number ? (
                           <FormFeedback type="invalid">
                             {validation.errors.prj_urban_ben_number}
                           </FormFeedback>
@@ -1233,13 +1233,13 @@ const ProjectModel = () => {
                           value={validation.values.prj_rural_ben_number || ""}
                           invalid={
                             validation.touched.prj_rural_ben_number &&
-                            validation.errors.prj_rural_ben_number
+                              validation.errors.prj_rural_ben_number
                               ? true
                               : false
                           }
                         />
                         {validation.touched.prj_rural_ben_number &&
-                        validation.errors.prj_rural_ben_number ? (
+                          validation.errors.prj_rural_ben_number ? (
                           <FormFeedback type="invalid">
                             {validation.errors.prj_rural_ben_number}
                           </FormFeedback>
@@ -1256,14 +1256,14 @@ const ProjectModel = () => {
                           value={validation.values.prj_outcome || ""}
                           invalid={
                             validation.touched.prj_outcome &&
-                            validation.errors.prj_outcome
+                              validation.errors.prj_outcome
                               ? true
                               : false
                           }
                           maxLength={200}
                         />
                         {validation.touched.prj_outcome &&
-                        validation.errors.prj_outcome ? (
+                          validation.errors.prj_outcome ? (
                           <FormFeedback type="invalid">
                             {validation.errors.prj_outcome}
                           </FormFeedback>
@@ -1280,14 +1280,14 @@ const ProjectModel = () => {
                           value={validation.values.prj_remark || ""}
                           invalid={
                             validation.touched.prj_remark &&
-                            validation.errors.prj_remark
+                              validation.errors.prj_remark
                               ? true
                               : false
                           }
                           maxLength={200}
                         />
                         {validation.touched.prj_remark &&
-                        validation.errors.prj_remark ? (
+                          validation.errors.prj_remark ? (
                           <FormFeedback type="invalid">
                             {validation.errors.prj_remark}
                           </FormFeedback>

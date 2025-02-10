@@ -12,10 +12,7 @@ import {
   Spinner,
 } from "reactstrap";
 import { formatDistanceToNow, parseISO } from "date-fns";
-
 import { toast } from "react-toastify";
-import { isEmpty } from "lodash";
-import avtar1 from "../../assets/images/users/avatar-2.jpg";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import {
@@ -28,13 +25,9 @@ const Conversation = (props) => {
   const [conversationInformation, setConversationInformation] = useState(null);
   const { data } = useFetchConversationInformations();
   const { t } = useTranslation();
+
   useEffect(() => {
     setConversationInformation(data);
-  }, [data]);
-  useEffect(() => {
-    if (!isEmpty(data)) {
-      setConversationInformation(data);
-    }
   }, [data]);
 
   const handleAddConversationInformation = async (data) => {
@@ -52,7 +45,6 @@ const Conversation = (props) => {
   };
   const addConversationInformation = useAddConversationInformation();
   const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
     initialValues: {
       cvi_title:
@@ -85,7 +77,6 @@ const Conversation = (props) => {
     },
     validationSchema: Yup.object({
       cvi_title: Yup.string().required(t("cvi_title")),
-
       cvi_description: Yup.string().required(t("cvi_description")),
     }),
     validateOnBlur: true,
@@ -108,9 +99,8 @@ const Conversation = (props) => {
     return formatDistanceToNow(parseISO(timestamp), { addSuffix: true });
   };
 
-  // console.log("datataaaaaaaaaaaa");
-  // console.log(data.data);
-  const comments = data.data;
+  const comments = data?.data || []
+
   return (
     <React.Fragment>
       <Row>
@@ -142,13 +132,13 @@ const Conversation = (props) => {
                               value={validation.values.cvi_title || ""}
                               invalid={
                                 validation.touched.cvi_title &&
-                                validation.errors.cvi_title
+                                  validation.errors.cvi_title
                                   ? true
                                   : false
                               }
                             />
                             {validation.touched.cvi_title &&
-                            validation.errors.cvi_title ? (
+                              validation.errors.cvi_title ? (
                               <FormFeedback type="invalid">
                                 {validation.errors.cvi_title}
                               </FormFeedback>
@@ -169,13 +159,13 @@ const Conversation = (props) => {
                               value={validation.values.cvi_description || ""}
                               invalid={
                                 validation.touched.cvi_description &&
-                                validation.errors.cvi_description
+                                  validation.errors.cvi_description
                                   ? true
                                   : false
                               }
                             ></textarea>
                             {validation.touched.cvi_description &&
-                            validation.errors.cvi_description ? (
+                              validation.errors.cvi_description ? (
                               <FormFeedback type="invalid">
                                 {validation.errors.cvi_description}
                               </FormFeedback>
@@ -222,7 +212,7 @@ const Conversation = (props) => {
                       </div>
                       <h5 className="font-size-15">
                         <i className="bx bx-message-dots text-muted align-middle me-1"></i>{" "}
-                        Conversations :
+                        Conversations
                       </h5>
                       {/* <div>
 

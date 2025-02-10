@@ -29,15 +29,15 @@ const formatFileSize = (bytes) => {
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 };
 
-const AttachFile = ({ isOpen, toggle, ownerTypeId, ownerId, projectId, isActive }) => {
-  const [projectDocument, setProjectDocument] = useState()
+const AttachFile = ({ isOpen, toggle, ownerTypeId, ownerId, projectId }) => {
+  const [projectDocument, setProjectDocument] = useState(null)
   const [modal, setModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
 
   const param = { project_id: projectId, prd_owner_type_id: ownerTypeId, prd_owner_id: ownerId }
   const { data, isLoading, isError, error, refetch } = useFetchProjectDocuments(
     param,
-    isActive
+    isOpen
   );
   const addProjectDocument = useAddProjectDocument();
   const updateProjectDocument = useUpdateProjectDocument();

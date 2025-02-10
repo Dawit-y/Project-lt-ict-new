@@ -13,7 +13,8 @@ export const useFetchProjectSupplimentarys = (param = {}, isActive) => {
   return useQuery({
     queryKey: [...PROJECT_SUPPLIMENTARY_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectSupplimentary(param),
-    staleTime: 0,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 60,
     meta: { persist: true },
     refetchOnWindowFocus: true,
     refetchOnMount: true,

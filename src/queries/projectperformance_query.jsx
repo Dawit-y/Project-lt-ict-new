@@ -13,7 +13,7 @@ export const useFetchProjectPerformances = (param = {}, isActive) => {
   return useQuery({
     queryKey: [...PROJECT_PERFORMANCE_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectPerformance(param),
-   staleTime: 0,
+    staleTime: 0,
     meta: { persist: false },
     refetchOnWindowFocus: false,
     refetchOnMount: false,

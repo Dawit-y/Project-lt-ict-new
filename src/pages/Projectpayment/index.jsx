@@ -73,7 +73,7 @@ const ProjectPaymentModel = (props) => {
   const addProjectPayment = useAddProjectPayment();
   const updateProjectPayment = useUpdateProjectPayment();
   const deleteProjectPayment = useDeleteProjectPayment();
-const { data: paymentCategoryData } = useFetchPaymentCategorys();
+  const { data: paymentCategoryData } = useFetchPaymentCategorys();
   const handleAddProjectPayment = async (newProjectPayment) => {
     try {
       await addProjectPayment.mutateAsync(newProjectPayment);
@@ -108,19 +108,19 @@ const { data: paymentCategoryData } = useFetchPaymentCategorys();
       try {
         const id = projectPayment.prp_id;
         await deleteProjectPayment.mutateAsync(id);
-         toast.success(t('delete_success'), {
+        toast.success(t('delete_success'), {
           autoClose: 2000,
         });
-         validation.resetForm();
+        validation.resetForm();
       } catch (error) {
-         toast.success(t('delete_failure'), {
+        toast.success(t('delete_failure'), {
           autoClose: 2000,
         });
       }
       setDeleteModal(false);
     }
   };
-const paymentCategoryMap = useMemo(() => {
+  const paymentCategoryMap = useMemo(() => {
     return (
       paymentCategoryData?.data?.reduce((acc, payment_category) => {
         acc[payment_category.pyc_id] = payment_category.pyc_name_or;
@@ -152,8 +152,8 @@ const paymentCategoryMap = useMemo(() => {
 
     validationSchema: Yup.object({
       // prp_project_id: Yup.string().required(t("prp_project_id")),
-      prp_type: numberValidation(1,10,true)
-      .test("unique-role-id", t("Already exists"), (value) => {
+      prp_type: numberValidation(1, 10, true)
+        .test("unique-role-id", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.prp_type == value && item.prp_id !== projectPayment?.prp_id
@@ -161,9 +161,9 @@ const paymentCategoryMap = useMemo(() => {
         }),
       // prp_payment_date_et: Yup.string().required(t("prp_payment_date_et")),
       prp_payment_date_gc: Yup.string().required(t("prp_payment_date_gc")),
-      prp_payment_amount: amountValidation(1,10000000000,true),
-      prp_payment_percentage: amountValidation(1,100,true),
-      prp_description: alphanumericValidation(3,425,false)
+      prp_payment_amount: amountValidation(1, 10000000000, true),
+      prp_payment_percentage: amountValidation(1, 100, true),
+      prp_description: alphanumericValidation(3, 425, false)
       //prp_status: Yup.string().required(t("prp_status")),
     }),
     validateOnBlur: true,
@@ -184,7 +184,7 @@ const paymentCategoryMap = useMemo(() => {
           is_editable: values.is_editable,
         };
         // update ProjectPayment
-        handleUpdateProjectPayment(updateProjectPayment);        
+        handleUpdateProjectPayment(updateProjectPayment);
       } else {
         const newProjectPayment = {
           prp_project_id: passedId,
@@ -417,7 +417,7 @@ const paymentCategoryMap = useMemo(() => {
         dateInEC={transaction.prp_payment_date_et}
         dateInGC={transaction.prp_payment_date_gc}
         fields={[
-          { label: t('prp_type'), key: "prp_type", value:paymentCategoryMap[transaction.prp_type]},
+          { label: t('prp_type'), key: "prp_type", value: paymentCategoryMap[transaction.prp_type] },
           { label: t('prp_payment_amount'), key: "prp_payment_amount" },
           { label: t('prp_payment_percentage'), key: "prp_payment_percentage" },
           //{ label: t('prp_payment_percentage'), key: "prp_status" },
@@ -440,13 +440,13 @@ const paymentCategoryMap = useMemo(() => {
           )}
 
           {isLoading || searchLoading ? (
-            <Spinners />
+            <Spinners top={"top-70"} />
           ) : (
             <TableContainer
               columns={columns}
               data={showSearchResults ? results : data?.data || []}
               isGlobalFilter={true}
-              isAddButton={data?.previledge?.is_role_can_add==1}
+              isAddButton={data?.previledge?.is_role_can_add == 1}
               isCustomPageSize={true}
               handleUserClick={handleProjectPaymentClicks}
               isPagination={true}
@@ -474,7 +474,7 @@ const paymentCategoryMap = useMemo(() => {
                 }}
               >
                 <Row>
-                <Col className="col-md-6 mb-3">
+                  <Col className="col-md-6 mb-3">
                     <Label>{t("prp_type")}<span className="text-danger">*</span></Label>
                     <Input
                       name="prp_type"
@@ -485,7 +485,7 @@ const paymentCategoryMap = useMemo(() => {
                       value={validation.values.prp_type || ""}
                       invalid={
                         validation.touched.prp_type &&
-                        validation.errors.prp_type
+                          validation.errors.prp_type
                           ? true
                           : false
                       }
@@ -499,19 +499,19 @@ const paymentCategoryMap = useMemo(() => {
                       ))}
                     </Input>
                     {validation.touched.prp_type &&
-                    validation.errors.prp_type ? (
+                      validation.errors.prp_type ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_type}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                   <Col className="col-md-6 mb-3">
-                  <DatePicker 
+                  <Col className="col-md-6 mb-3">
+                    <DatePicker
                       isRequired="true"
                       validation={validation}
                       componentId="prp_payment_date_gc"
-                      />
-                      </Col>
+                    />
+                  </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>
                       {t("prp_payment_amount")}
@@ -527,14 +527,14 @@ const paymentCategoryMap = useMemo(() => {
                       value={validation.values.prp_payment_amount || ""}
                       invalid={
                         validation.touched.prp_payment_amount &&
-                        validation.errors.prp_payment_amount
+                          validation.errors.prp_payment_amount
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prp_payment_amount &&
-                    validation.errors.prp_payment_amount ? (
+                      validation.errors.prp_payment_amount ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_payment_amount}
                       </FormFeedback>
@@ -562,7 +562,7 @@ const paymentCategoryMap = useMemo(() => {
                         value={validation.values.prp_payment_percentage || ""}
                         invalid={
                           validation.touched.prp_payment_percentage &&
-                          validation.errors.prp_payment_percentage
+                            validation.errors.prp_payment_percentage
                             ? true
                             : false
                         }
@@ -573,7 +573,7 @@ const paymentCategoryMap = useMemo(() => {
                       </span>
                     </div>
                     {validation.touched.prp_payment_percentage &&
-                    validation.errors.prp_payment_percentage ? (
+                      validation.errors.prp_payment_percentage ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_payment_percentage}
                       </FormFeedback>
@@ -591,13 +591,13 @@ const paymentCategoryMap = useMemo(() => {
                       value={validation.values.prp_description || ""}
                       invalid={
                         validation.touched.prp_description &&
-                        validation.errors.prp_description
+                          validation.errors.prp_description
                           ? true
                           : false
                       }
                     />
                     {validation.touched.prp_description &&
-                    validation.errors.prp_description ? (
+                      validation.errors.prp_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_description}
                       </FormFeedback>
@@ -614,7 +614,7 @@ const paymentCategoryMap = useMemo(() => {
                       value={validation.values.prp_status || ""}
                       invalid={
                         validation.touched.prp_status &&
-                        validation.errors.prp_status
+                          validation.errors.prp_status
                           ? true
                           : false
                       }
@@ -624,7 +624,7 @@ const paymentCategoryMap = useMemo(() => {
                       <option value="1">{t("active")}</option>
                     </Input>
                     {validation.touched.prp_status &&
-                    validation.errors.prp_status ? (
+                      validation.errors.prp_status ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_status}
                       </FormFeedback>
@@ -635,7 +635,7 @@ const paymentCategoryMap = useMemo(() => {
                   <Col>
                     <div className="text-end">
                       {addProjectPayment.isPending ||
-                      updateProjectPayment.isPending ? (
+                        updateProjectPayment.isPending ? (
                         <Button
                           color="success"
                           type="submit"
