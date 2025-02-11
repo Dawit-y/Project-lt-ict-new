@@ -619,7 +619,7 @@ const ActionModal = (props) => {
         style={modalStyle}
       >
         <div className="modal-xl">
-          <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
+          <ModalHeader toggle={toggle}>{t("Take Action")}</ModalHeader>
           <ModalBody>
             <Row>
               <Col xl={12}>

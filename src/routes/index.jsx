@@ -41,6 +41,9 @@ const Department = lazy(() => import("../pages/Department/index"));
 const BudgetRequestListModel = lazy(() =>
   import("../pages/Budgetrequest/BudgetRequestList")
 );
+const ApproverBudgetRequestList = lazy(() =>
+  import("../pages/Budgetrequest/ApproverBudgetRequestList")
+);
 const BudgetRequest = lazy(() => import("../pages/Budgetrequest/index"));
 const BudgetSource = lazy(() => import("../pages/Budgetsource/index"));
 const BudgetYear = lazy(() => import("../pages/Budgetyear/index"));
@@ -136,11 +139,11 @@ const RequestInformationList = lazy(() => import("../pages/Requestinformation/Re
 const ProposalRequestList = lazy(() => import("../pages/Proposalrequest/ProposalRequestList"));
 
 const authProtectedRoutes = [
-  {path: '/conversation_information', component: <ConversationInformation/> },
- {path: '/request_information', component: <RequestInformation/> },
- {path: '/request_status', component: <RequestStatus/> },
- {path: '/proposal_request', component: <ProposalRequest/> },
- {path: '/request_category', component: <RequestCategory/> },
+  { path: '/conversation_information', component: <ConversationInformation /> },
+  { path: '/request_information', component: <RequestInformation /> },
+  { path: '/request_status', component: <RequestStatus /> },
+  { path: '/proposal_request', component: <ProposalRequest /> },
+  { path: '/request_category', component: <RequestCategory /> },
   { path: "/supersetdashboard", component: <SupersetDashboard /> },
   { path: "/expenditure_code", component: <ExpenditureCode /> },
   { path: "/project_employee", component: <ProjectEmployee /> },
@@ -180,7 +183,7 @@ const authProtectedRoutes = [
   { path: "/address_structure", component: <AddressStructure /> },
   { path: "/department", component: <Department /> },
   { path: "/budget_request", component: <BudgetRequestListModel /> },
-  //{ path: "/project_budget_expenditure",component: <ProjectBudgetExpenditure />},
+  { path: "/budget_request_approval", component: <ApproverBudgetRequestList /> },
   { path: "/budget_source", component: <BudgetSource /> },
   { path: "/budget_year", component: <BudgetYear /> },
   {

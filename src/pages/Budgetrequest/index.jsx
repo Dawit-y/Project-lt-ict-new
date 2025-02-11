@@ -10,7 +10,6 @@ import Spinners from "../../components/Common/Spinner";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-
 import {
   useFetchBudgetRequests,
   useAddBudgetRequest,
@@ -42,20 +41,21 @@ import {
   InputGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "flatpickr/dist/themes/material_blue.css";
-import Flatpickr from "react-flatpickr";
-import { formatDate } from "../../utils/commonMethods";
+import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import ProjectDetailColapse from "../Project/ProjectDetailColapse";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import ActionModal from "./ActionModal";
+import AttachFileModal from "../../components/Common/AttachFileModal";
+import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal"
 import {
   alphanumericValidation,
   amountValidation,
   numberValidation,
 } from "../../utils/Validation/validation";
 import DatePicker from "../../components/Common/DatePicker";
+import { PAGE_ID } from "../../constants/constantFile";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -76,6 +76,8 @@ const BudgetRequestModel = () => {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [actionModal, setActionModal] = useState(false);
+  const [fileModal, setFileModal] = useState(false)
+  const [convModal, setConvModal] = useState(false)
   const [isEdit, setIsEdit] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [budgetRequest, setBudgetRequest] = useState(null);
@@ -86,15 +88,18 @@ const BudgetRequestModel = () => {
 
   const [budgetRequestMetaData, setBudgetRequestMetaData] = useState([]);
   const [showCanvas, setShowCanvas] = useState(false);
+
   const { data, isLoading, isError, error, refetch } =
     useFetchBudgetRequests(param);
   const { data: budgetYearData } = useFetchBudgetYears();
   const addBudgetRequest = useAddBudgetRequest();
   const updateBudgetRequest = useUpdateBudgetRequest();
   const deleteBudgetRequest = useDeleteBudgetRequest();
+
   const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
   const project = useFetchProject(id, userId);
+
   const handleAddBudgetRequest = async (data) => {
     try {
       await addBudgetRequest.mutateAsync(data);
@@ -129,7 +134,6 @@ const BudgetRequestModel = () => {
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
-
     initialValues: {
       bdr_budget_year_id:
         (budgetRequest && budgetRequest.bdr_budget_year_id) || "",
@@ -192,6 +196,8 @@ const BudgetRequestModel = () => {
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
   const toggleActionModal = () => setActionModal(!actionModal);
+  const toggleFileModal = () => setFileModal(!fileModal);
+  const toggleConvModal = () => setConvModal(!convModal);
 
   const budgetYearMap = useMemo(() => {
     return (
@@ -274,14 +280,9 @@ const BudgetRequestModel = () => {
     setBudgetRequest("");
     toggle();
   };
-  const handleSearchResults = ({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
-  };
 
   const handleClick = (data) => {
-    setShowCanvas(!showCanvas); // Toggle canvas visibility
+    setShowCanvas(!showCanvas);
     setBudgetRequestMetaData(data);
   };
 
@@ -393,8 +394,47 @@ const BudgetRequestModel = () => {
           );
         },
       },
+      {
+        header: t("attach_files"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                toggleFileModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("attach_files")}
+            </Button>
+          );
+        },
+      },
+      {
+        header: t("Message"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                toggleConvModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("Message")}
+            </Button>
+          );
+        },
+      },
     ];
-
     if (
       data?.previledge?.is_role_editable &&
       data?.previledge?.is_role_deletable &&
@@ -410,41 +450,40 @@ const BudgetRequestModel = () => {
             <div className="d-flex gap-3">
               {(cellProps.row.original?.is_editable ||
                 cellProps.row.original?.is_role_editable) && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleBudgetRequestClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+                  <Link
+                    to="#"
+                    className="text-success"
+                    onClick={() => {
+                      const data = cellProps.row.original;
+                      handleBudgetRequestClick(data);
+                    }}
+                  >
+                    <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                    <UncontrolledTooltip placement="top" target="edittooltip">
+                      Edit
+                    </UncontrolledTooltip>
+                  </Link>
+                )}
 
               {(cellProps.row.original?.is_deletable ||
                 cellProps.row.original?.is_role_deletable) && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-
+                  <Link
+                    to="#"
+                    className="text-danger"
+                    onClick={() => {
+                      const data = cellProps.row.original;
+                      onClickDelete(data);
+                    }}
+                  >
+                    <i
+                      className="mdi mdi-delete font-size-18"
+                      id="deletetooltip"
+                    />
+                    <UncontrolledTooltip placement="top" target="deletetooltip">
+                      Delete
+                    </UncontrolledTooltip>
+                  </Link>
+                )}
               <Link
                 to="#"
                 className="text-secondary me-2"
@@ -503,13 +542,25 @@ const BudgetRequestModel = () => {
         toggle={toggleActionModal}
         data={transaction}
       />
+      <AttachFileModal
+        isOpen={fileModal}
+        toggle={toggleFileModal}
+        projectId={id}
+        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+        ownerId={transaction?.bdr_id}
+      />
+      <ConvInfoModal
+        isOpen={convModal}
+        toggle={toggleConvModal}
+        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+        ownerId={transaction?.bdr_id ?? null}
+      />
       <DeleteModal
         show={deleteModal}
         onDeleteClick={handleDeleteBudgetRequest}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteBudgetRequest.isPending}
       />
-
       <div className="page-content">
         <div className="container-fluid">
           <Breadcrumbs
@@ -536,7 +587,6 @@ const BudgetRequestModel = () => {
                       isCustomPageSize={true}
                       handleUserClick={handleBudgetRequestClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
                       SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add")}
@@ -579,7 +629,7 @@ const BudgetRequestModel = () => {
                       value={validation.values.bdr_budget_year_id || ""}
                       invalid={
                         validation.touched.bdr_budget_year_id &&
-                        validation.errors.bdr_budget_year_id
+                          validation.errors.bdr_budget_year_id
                           ? true
                           : false
                       }
@@ -593,7 +643,7 @@ const BudgetRequestModel = () => {
                       ))}
                     </Input>
                     {validation.touched.bdr_budget_year_id &&
-                    validation.errors.bdr_budget_year_id ? (
+                      validation.errors.bdr_budget_year_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.bdr_budget_year_id}
                       </FormFeedback>
@@ -613,14 +663,14 @@ const BudgetRequestModel = () => {
                       value={validation.values.bdr_requested_amount || ""}
                       invalid={
                         validation.touched.bdr_requested_amount &&
-                        validation.errors.bdr_requested_amount
+                          validation.errors.bdr_requested_amount
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.bdr_requested_amount &&
-                    validation.errors.bdr_requested_amount ? (
+                      validation.errors.bdr_requested_amount ? (
                       <FormFeedback type="invalid">
                         {validation.errors.bdr_requested_amount}
                       </FormFeedback>
@@ -717,14 +767,14 @@ const BudgetRequestModel = () => {
                       value={validation.values.bdr_description || ""}
                       invalid={
                         validation.touched.bdr_description &&
-                        validation.errors.bdr_description
+                          validation.errors.bdr_description
                           ? true
                           : false
                       }
                       maxLength={200}
                     />
                     {validation.touched.bdr_description &&
-                    validation.errors.bdr_description ? (
+                      validation.errors.bdr_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.bdr_description}
                       </FormFeedback>
@@ -761,7 +811,7 @@ const BudgetRequestModel = () => {
                   <Col>
                     <div className="text-end">
                       {addBudgetRequest.isPending ||
-                      updateBudgetRequest.isPending ? (
+                        updateBudgetRequest.isPending ? (
                         <Button
                           color="success"
                           type="submit"

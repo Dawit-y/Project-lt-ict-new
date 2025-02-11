@@ -29,7 +29,7 @@ const formatFileSize = (bytes) => {
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 };
 
-const AttachFile = ({ isOpen, toggle, ownerTypeId, ownerId, projectId }) => {
+const AttachFileModal = ({ isOpen, toggle, ownerTypeId, ownerId, projectId }) => {
   const [projectDocument, setProjectDocument] = useState(null)
   const [modal, setModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -465,4 +465,4 @@ const AttachFile = ({ isOpen, toggle, ownerTypeId, ownerId, projectId }) => {
   )
 }
 
-export default AttachFile
+export default AttachFileModal

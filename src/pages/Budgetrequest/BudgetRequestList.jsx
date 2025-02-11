@@ -45,6 +45,9 @@ import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import AddressStructureForProject from "../Project/AddressStructureForProject";
+import AttachFileModal from "../../components/Common/AttachFileModal"
+import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal"
+import { PAGE_ID } from "../../constants/constantFile";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -72,6 +75,8 @@ const BudgetRequestListModel = () => {
 
   const [budgetRequestMetaData, setBudgetRequestMetaData] = useState({});
   const [showCanvas, setShowCanvas] = useState(false);
+  const [fileModal, setFileModal] = useState(false)
+  const [convModal, setConvModal] = useState(false)
 
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -120,6 +125,8 @@ const BudgetRequestListModel = () => {
   };
 
   const toggleViewModal = () => setModal1(!modal1);
+  const toggleFileModal = () => setFileModal(!fileModal);
+  const toggleConvModal = () => setConvModal(!convModal);
 
   const columnDefs = useMemo(() => {
     const baseColumnDefs = [
@@ -223,8 +230,8 @@ const BudgetRequestListModel = () => {
         },
       },
       {
-        headerName: t("take_action"),
-        field: "take_action",
+        headerName: t("attach_files"),
+        field: "attach_files",
         cellRenderer: (params) => {
           return (
             <Button
@@ -232,12 +239,30 @@ const BudgetRequestListModel = () => {
               color="primary"
               className="btn-sm"
               onClick={() => {
-                const data = params.data;
-                toggleViewModal(data);
-                setTransaction(data);
+                toggleFileModal();
+                setTransaction(params.data);
               }}
             >
-              {t("take_action")}
+              {t("attach_files")}
+            </Button>
+          );
+        },
+      },
+      {
+        headerName: t("Message"),
+        field: "Message",
+        cellRenderer: (params) => {
+          return (
+            <Button
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                toggleConvModal();
+                setTransaction(params.data);
+              }}
+            >
+              {t("Message")}
             </Button>
           );
         },
@@ -326,11 +351,18 @@ const BudgetRequestListModel = () => {
   }
   return (
     <React.Fragment>
-      <BudgetRequestListModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-        budgetYearMap={budgetYearMap}
+      <AttachFileModal
+        isOpen={fileModal}
+        toggle={toggleFileModal}
+        projectId={transaction?.bdr_project_id}
+        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+        ownerId={transaction?.bdr_id}
+      />
+      <ConvInfoModal
+        isOpen={convModal}
+        toggle={toggleConvModal}
+        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+        ownerId={transaction?.bdr_id ?? null}
       />
       <div className="page-content">
         <div className="">

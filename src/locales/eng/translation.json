@@ -351,6 +351,7 @@
 	"prd_status": "Status",
 
 	"budget_request": "Budget Request",
+	"budget_request_approval": "Budget Request Approval",
 	"bdr_id": "Id",
 	"bdr_budget_year_id": "Budget Year",
 	"bdr_requested_amount": "Requested Amount",
