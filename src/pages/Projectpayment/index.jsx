@@ -45,6 +45,7 @@ import {
 import { toast } from "react-toastify";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import Flatpickr from "react-flatpickr";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;

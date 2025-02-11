@@ -948,7 +948,7 @@ const UsersModel = () => {
           handleClick={handleClick}
           showCanvas={showCanvas}
           canvasWidth={84}
-          name={userMetaData.usr_name || "UserRoles"}
+          name={userMetaData.usr_name || "User Roles"}
           id={userMetaData.usr_id}
           components={{ "User Roles": UserRoles }}
         />

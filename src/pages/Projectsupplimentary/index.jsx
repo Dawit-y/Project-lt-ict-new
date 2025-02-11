@@ -1,17 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-
-//import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
   alphanumericValidation,
@@ -25,12 +20,8 @@ import {
   useDeleteProjectSupplimentary,
   useUpdateProjectSupplimentary,
 } from "../../queries/projectsupplimentary_query";
-import ProjectSupplimentaryModal from "./ProjectSupplimentaryModal";
 import { useTranslation } from "react-i18next";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
 import {
   Button,
   Col,
@@ -50,20 +41,16 @@ import {
   InputGroup,
   InputGroupText,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import DatePicker from "../../components/Common/DatePicker";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-import "flatpickr/dist/themes/material_blue.css";
-import Flatpickr from "react-flatpickr";
-import { formatDate } from "../../utils/commonMethods";
 
 const ProjectSupplimentaryModel = (props) => {
   const { passedId, isActive, projectName } = props;
@@ -177,13 +164,13 @@ const ProjectSupplimentaryModel = (props) => {
       //prs_project_id: Yup.string().required(t("prs_project_id")),
       //prs_requested_date_ec: Yup.string().required(t("prs_requested_date_ec")),
       prs_requested_date_gc: Yup.string().required(t("prs_requested_date_gc"))
-      .test(
-      'is-before-end-date',
-      'request date must be earlier than or equal to the released date',
-      function (value) {
-        const { prs_released_date_gc } = this.parent; // Access other fields in the form
-        return !prs_released_date_gc || !value || new Date(value) <= new Date(prs_released_date_gc);
-      }),
+        .test(
+          'is-before-end-date',
+          'request date must be earlier than or equal to the released date',
+          function (value) {
+            const { prs_released_date_gc } = this.parent; // Access other fields in the form
+            return !prs_released_date_gc || !value || new Date(value) <= new Date(prs_released_date_gc);
+          }),
       prs_released_date_gc: Yup.string()
         .required(t("prs_released_date_gc"))
         .test("unique-prj_name", t("Already exists"), (value) => {
@@ -260,7 +247,6 @@ const ProjectSupplimentaryModel = (props) => {
 
   const handleProjectSupplimentaryClick = (arg) => {
     const projectSupplimentary = arg;
-    // console.log("handleProjectSupplimentaryClick", projectSupplimentary);
     setProjectSupplimentary({
       prs_id: projectSupplimentary.prs_id,
       prs_requested_amount: projectSupplimentary.prs_requested_amount,
@@ -272,7 +258,6 @@ const ProjectSupplimentaryModel = (props) => {
       prs_released_date_gc: projectSupplimentary.prs_released_date_gc,
       prs_description: projectSupplimentary.prs_description,
       prs_status: projectSupplimentary.prs_status,
-
       is_deletable: projectSupplimentary.is_deletable,
       is_editable: projectSupplimentary.is_editable,
     });
@@ -297,6 +282,7 @@ const ProjectSupplimentaryModel = (props) => {
     setSearchError(error);
     setShowSearchResult(true);
   };
+
   //START UNCHANGED
   const columns = useMemo(() => {
     const baseColumns = [
@@ -405,40 +391,40 @@ const ProjectSupplimentaryModel = (props) => {
             <div className="d-flex gap-3">
               {(cellProps.row.original?.is_editable ||
                 cellProps.row.original?.is_role_editable) && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleProjectSupplimentaryClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+                  <Link
+                    to="#"
+                    className="text-success"
+                    onClick={() => {
+                      const data = cellProps.row.original;
+                      handleProjectSupplimentaryClick(data);
+                    }}
+                  >
+                    <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                    <UncontrolledTooltip placement="top" target="edittooltip">
+                      Edit
+                    </UncontrolledTooltip>
+                  </Link>
+                )}
 
               {(cellProps.row.original?.is_deletable ||
                 cellProps.row.original?.is_role_deletable) && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+                  <Link
+                    to="#"
+                    className="text-danger"
+                    onClick={() => {
+                      const data = cellProps.row.original;
+                      onClickDelete(data);
+                    }}
+                  >
+                    <i
+                      className="mdi mdi-delete font-size-18"
+                      id="deletetooltip"
+                    />
+                    <UncontrolledTooltip placement="top" target="deletetooltip">
+                      Delete
+                    </UncontrolledTooltip>
+                  </Link>
+                )}
             </div>
           );
         },
@@ -477,38 +463,6 @@ const ProjectSupplimentaryModel = (props) => {
       />
       <>
         <div className="container-fluid1">
-          {/* <Breadcrumbs
-            title={t("project_supplimentary")}
-            breadcrumbItem={t("project_supplimentary")}
-          />
-          <AdvancedSearch
-            searchHook={useSearchProjectSupplimentarys}
-            textSearchKeys={["dep_name_am", "dep_name_en", "dep_name_or"]}
-            dropdownSearchKeys={[
-              {
-                key: "example",
-                options: [
-                  { value: "Freelance", label: "Example1" },
-                  { value: "Full Time", label: "Example2" },
-                  { value: "Part Time", label: "Example3" },
-                  { value: "Internship", label: "Example4" },
-                ],
-              },
-            ]}
-            checkboxSearchKeys={[
-              {
-                key: "example1",
-                options: [
-                  { value: "Engineering", label: "Example1" },
-                  { value: "Science", label: "Example2" },
-                ],
-              },
-            ]}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          /> */}
           {isLoading || isSearchLoading ? (
             <Spinners top={isActive ? "top-70" : ""} />
           ) : (
@@ -524,7 +478,7 @@ const ProjectSupplimentaryModel = (props) => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add==1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleProjectSupplimentaryClicks}
                       isPagination={true}
@@ -571,14 +525,14 @@ const ProjectSupplimentaryModel = (props) => {
                       value={validation.values.prs_requested_amount || ""}
                       invalid={
                         validation.touched.prs_requested_amount &&
-                        validation.errors.prs_requested_amount
+                          validation.errors.prs_requested_amount
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prs_requested_amount &&
-                    validation.errors.prs_requested_amount ? (
+                      validation.errors.prs_requested_amount ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_requested_amount}
                       </FormFeedback>
@@ -598,32 +552,32 @@ const ProjectSupplimentaryModel = (props) => {
                       value={validation.values.prs_released_amount || ""}
                       invalid={
                         validation.touched.prs_released_amount &&
-                        validation.errors.prs_released_amount
+                          validation.errors.prs_released_amount
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prs_released_amount &&
-                    validation.errors.prs_released_amount ? (
+                      validation.errors.prs_released_amount ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_released_amount}
                       </FormFeedback>
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <DatePicker 
+                    <DatePicker
                       isRequired="true"
                       validation={validation}
                       componentId="prs_requested_date_gc"
-                      />
+                    />
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <DatePicker 
+                    <DatePicker
                       isRequired="true"
                       validation={validation}
                       componentId="prs_released_date_gc"
-                      />
+                    />
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("prs_description")}</Label>
@@ -636,14 +590,14 @@ const ProjectSupplimentaryModel = (props) => {
                       value={validation.values.prs_description || ""}
                       invalid={
                         validation.touched.prs_description &&
-                        validation.errors.prs_description
+                          validation.errors.prs_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.prs_description &&
-                    validation.errors.prs_description ? (
+                      validation.errors.prs_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_description}
                       </FormFeedback>
@@ -654,7 +608,7 @@ const ProjectSupplimentaryModel = (props) => {
                   <Col>
                     <div className="text-end">
                       {addProjectSupplimentary.isPending ||
-                      updateProjectSupplimentary.isPending ? (
+                        updateProjectSupplimentary.isPending ? (
                         <Button
                           color="success"
                           type="submit"
