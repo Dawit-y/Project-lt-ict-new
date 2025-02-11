@@ -49,6 +49,8 @@ const RightOffCanvas = ({
   canvasWidth,
   name,
   id,
+  status = null,
+  startDate = null,
   components,
 }) => {
   const [activeTab1, setActiveTab1] = useState(Object.keys(components)[0]); // Default to the first nav item key
@@ -119,7 +121,9 @@ const RightOffCanvas = ({
                       {React.createElement(components[navItem], {
                         passedId: id,
                         isActive: activeTab1 === navItem,
-                        projectName:name 
+                        projectName: name,
+                        status: status,
+                        startDate: startDate
                       })}
                     </TabPane>
                   ))}

@@ -1,5 +1,7 @@
 import * as Yup from 'yup';
 import { useTranslation } from "react-i18next";
+import { PAGE_ID } from '../../constants/constantFile';
+
 /**
  * Reusable alphanumeric validation schema.
  * @param {number} minLength - Minimum length of the string.
@@ -58,6 +60,7 @@ export const amountValidation = (minLength, maxLength, isRequired = true) => {
   }
   return schema;
 };
+
 export const numberValidation = (minLength, maxLength, isRequired = true) => {
   const { t } = useTranslation();
   let schema = Yup.number()
@@ -69,6 +72,7 @@ export const numberValidation = (minLength, maxLength, isRequired = true) => {
   }
   return schema;
 };
+
 export const dropdownValidation = (minLength, maxLength, isRequired = true) => {
   const { t } = useTranslation();
   let schema = Yup.number()
@@ -79,4 +83,50 @@ export const dropdownValidation = (minLength, maxLength, isRequired = true) => {
     schema = schema.required("This field is required");
   }
   return schema;
+};
+
+// planned : 1
+// started : 2
+// completed: 4
+
+export const checkProjectStatus = (pageId, status) => {
+  switch (pageId) {
+    case PAGE_ID.PROJ_PAYMENT:
+      switch (status) {
+        case 4:
+          return "Cannot request payment for a completed project.";
+        case 1:
+          return "Cannot request payment for a project in the planning phase.";
+        case 2:
+          return true;
+        default:
+          return `Invalid project status: ${status}`;
+      }
+    case PAGE_ID.PROJ_DOCUMENT:
+      switch (status) {
+        case 4:
+          return "Cannot upload documents for a completed project.";
+        case 1:
+          return true;
+        case 2:
+          return true; 
+        default:
+          return `Invalid project status: ${status}`;
+      }
+
+    case PAGE_ID.PROJ_HANDOVER:
+      switch (status) {
+        case 4:
+          return "Cannot initiate handover for a completed project.";
+        case 1:
+          return "Cannot initiate handover for a project in the planning phase.";
+        case 2:
+          return true; 
+        default:
+          return `Invalid project status: ${status}`;
+      }
+
+    default:
+      return `Invalid page: ${pageId}`;
+  }
 };

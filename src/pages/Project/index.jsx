@@ -1346,6 +1346,8 @@ const ProjectModel = () => {
           canvasWidth={84}
           name={projectMetaData.prj_name}
           id={projectMetaData.prj_id}
+          status={projectMetaData?.prj_project_status_id}
+          startDate={projectMetaData?.prj_start_date_gc}
           components={dynamicComponents}
         />
       )}

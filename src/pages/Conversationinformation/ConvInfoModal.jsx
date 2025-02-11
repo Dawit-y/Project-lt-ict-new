@@ -31,7 +31,6 @@ const Conversation = (props) => {
   const param = { cvi_object_type_id: ownerTypeId, cvi_object_id: ownerId }
   const [conversationInformation, setConversationInformation] = useState(null);
   const { data, isLoading, isError, error, refetch } = useFetchConversationInformations(param, isOpen);
-  console.log(data)
   const { t } = useTranslation();
 
   useEffect(() => {

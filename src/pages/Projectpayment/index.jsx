@@ -35,16 +35,12 @@ import {
   Input,
   FormFeedback,
   Label,
-  Card,
-  CardBody,
-  FormGroup,
-  InputGroup,
-  Badge,
-  InputGroupText
 } from "reactstrap";
 import { toast } from "react-toastify";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
-import Flatpickr from "react-flatpickr";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { PAGE_ID } from "../../constants/constantFile";
+import { useStatusCheck } from "../../hooks/useStatusCheck";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -54,7 +50,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectPaymentModel = (props) => {
-  const { passedId, isActive } = props;
+  const { passedId, isActive, status, startDate } = props;
   const param = { project_id: passedId };
   const { t } = useTranslation();
 
@@ -66,6 +62,7 @@ const ProjectPaymentModel = (props) => {
   const [searchLoading, setSearchLoading] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
 
+  const performStatusCheck = useStatusCheck(PAGE_ID.PROJ_PAYMENT, status);
   const { data, isLoading, error, isError, refetch } = useFetchProjectPayments(
     param,
     isActive
@@ -82,7 +79,7 @@ const ProjectPaymentModel = (props) => {
         autoClose: 2000,
       });
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.error(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -97,7 +94,7 @@ const ProjectPaymentModel = (props) => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
+      toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -114,7 +111,7 @@ const ProjectPaymentModel = (props) => {
         });
         validation.resetForm();
       } catch (error) {
-        toast.success(t('delete_failure'), {
+        toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -225,8 +222,8 @@ const ProjectPaymentModel = (props) => {
     }
   };
   const handleProjectPaymentClick = (arg) => {
+    if (!performStatusCheck()) return;
     const projectPayment = arg;
-    // console.log("handleProjectPaymentClick", projectPayment);
     setProjectPayment({
       prp_id: projectPayment.prp_id,
       prp_project_id: projectPayment.prp_project_id,
@@ -247,22 +244,15 @@ const ProjectPaymentModel = (props) => {
   //delete projects
   const [deleteModal, setDeleteModal] = useState(false);
   const onClickDelete = (projectPayment) => {
+    if (!performStatusCheck()) return;
     setProjectPayment(projectPayment);
     setDeleteModal(true);
   };
   const handleProjectPaymentClicks = () => {
+    if (!performStatusCheck()) return;
     setIsEdit(false);
     setProjectPayment("");
     toggle();
-  };
-  const handleSearch = () => {
-    setSearchLoading(true); // Set loading to true when search is initiated// Update filtered data with search results
-    setShowSearchResults(true); // Show search results
-    setSearchLoading(false);
-  };
-
-  const handleClearSearch = () => {
-    setShowSearchResults(false);
   };
 
   const columns = useMemo(() => {
@@ -401,12 +391,10 @@ const ProjectPaymentModel = (props) => {
     return baseColumns;
   }, [handleProjectPaymentClick, toggleViewModal, onClickDelete]);
 
-  const project_status = [
-    { label: "select Status name", value: "" },
-    { label: "Active", value: 1 },
-    { label: "Inactive", value: 0 },
-  ];
-  const dropdawntotal = [project_status];
+  if (isError) {
+    <FetchErrorHandler error={error} refetch={refetch} />
+  }
+
   return (
     <React.Fragment>
       <DynamicDetailsModal
@@ -511,6 +499,7 @@ const ProjectPaymentModel = (props) => {
                       isRequired="true"
                       validation={validation}
                       componentId="prp_payment_date_gc"
+                      minDate={startDate}
                     />
                   </Col>
                   <Col className="col-md-6 mb-3">
