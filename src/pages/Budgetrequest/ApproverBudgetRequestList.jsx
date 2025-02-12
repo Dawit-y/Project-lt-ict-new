@@ -13,11 +13,9 @@ import {
   Input,
   Badge,
 } from "reactstrap";
-
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 import BudgetRequestAnalysis from "./BudgetRequestAnalysis";
 import {
   useFetchBudgetRequests,
@@ -29,7 +27,6 @@ import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import AddressStructureForProject from "../Project/AddressStructureForProject";
-import ActionModal from "./ActionModal"
 import AttachFileModal from "../../components/Common/AttachFileModal"
 import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal"
 import { PAGE_ID } from "../../constants/constantFile";
@@ -48,7 +45,7 @@ const statusClasses = new Map([
 ]);
 
 const ApproverBudgetRequestList = () => {
-  document.title = " BudgetRequest";
+  document.title = " Budget Request List | PMS";
 
   const { t } = useTranslation();
   const [modal1, setModal1] = useState(false);
@@ -58,7 +55,6 @@ const ApproverBudgetRequestList = () => {
 
   const [budgetRequestMetaData, setBudgetRequestMetaData] = useState({});
   const [showCanvas, setShowCanvas] = useState(false);
-  const [actionModal, setActionModal] = useState(false);
   const [fileModal, setFileModal] = useState(false)
   const [convModal, setConvModal] = useState(false)
 
@@ -109,9 +105,55 @@ const ApproverBudgetRequestList = () => {
   };
 
   const toggleViewModal = () => setModal1(!modal1);
-  const toggleActionModal = () => setActionModal(!actionModal);
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
+
+
+  // When selection changes, update selectedRows
+  const onSelectionChanged = () => {
+    const selectedNodes = gridRef.current.api.getSelectedNodes();
+    const selectedData = selectedNodes.map((node) => node.data);
+    setSelectedRows(selectedData);
+  };
+  // Filter by marked rows
+  const filterMarked = () => {
+    if (gridRef.current) {
+      gridRef.current.api.setRowData(selectedRows);
+    }
+  };
+  // Clear the filter and show all rows again
+  const clearFilter = () => {
+    gridRef.current.api.setRowData(showSearchResults ? results : data);
+  };
+
+  useEffect(() => {
+    setProjectParams({
+      ...(prjLocationRegionId && {
+        prj_location_region_id: prjLocationRegionId,
+      }),
+      ...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
+      ...(prjLocationWoredaId && {
+        prj_location_woreda_id: prjLocationWoredaId,
+      }),
+      ...(include === 1 && { include }),
+    });
+  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
+
+  const handleNodeSelect = (node) => {
+    if (node.level === "region") {
+      setPrjLocationRegionId(node.id);
+      setPrjLocationZoneId(null); // Clear dependent states
+      setPrjLocationWoredaId(null);
+    } else if (node.level === "zone") {
+      setPrjLocationZoneId(node.id);
+      setPrjLocationWoredaId(null); // Clear dependent state
+    } else if (node.level === "woreda") {
+      setPrjLocationWoredaId(node.id);
+    }
+    if (showSearchResult) {
+      setShowSearchResult(false);
+    }
+  };
 
   const columnDefs = useMemo(() => {
     const baseColumnDefs = [
@@ -235,34 +277,14 @@ const ApproverBudgetRequestList = () => {
         },
       },
       {
-        headerName: t("action"),
-        field: "take_action",
-        cellRenderer: (params) => {
-          return (
-            <div
-              className="action-icons"
-            >
-              <Link
-                className="text-secondary ms-2"
-                onClick={() => {
-                  const data = params.data
-                  toggleActionModal();
-                  setTransaction(data);
-                }}>
-                <i className="mdi mdi-cog font-size-18" id="viewtooltip" />
-              </Link>
-            </div>
-          );
-        },
-      },
-      {
         headerName: t("attach_files"),
         field: "attach_files",
         cellRenderer: (params) => {
           return (
             <Button
+              outline
               type="button"
-              color="primary"
+              color="success"
               className="btn-sm"
               onClick={() => {
                 toggleFileModal();
@@ -280,6 +302,7 @@ const ApproverBudgetRequestList = () => {
         cellRenderer: (params) => {
           return (
             <Button
+              outline
               type="button"
               color="primary"
               className="btn-sm"
@@ -327,52 +350,6 @@ const ApproverBudgetRequestList = () => {
     return baseColumnDefs;
   }, []);
 
-  // When selection changes, update selectedRows
-  const onSelectionChanged = () => {
-    const selectedNodes = gridRef.current.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
-    setSelectedRows(selectedData);
-  };
-  // Filter by marked rows
-  const filterMarked = () => {
-    if (gridRef.current) {
-      gridRef.current.api.setRowData(selectedRows);
-    }
-  };
-  // Clear the filter and show all rows again
-  const clearFilter = () => {
-    gridRef.current.api.setRowData(showSearchResults ? results : data);
-  };
-
-  useEffect(() => {
-    setProjectParams({
-      ...(prjLocationRegionId && {
-        prj_location_region_id: prjLocationRegionId,
-      }),
-      ...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
-      ...(prjLocationWoredaId && {
-        prj_location_woreda_id: prjLocationWoredaId,
-      }),
-      ...(include === 1 && { include }),
-    });
-  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
-
-  const handleNodeSelect = (node) => {
-    if (node.level === "region") {
-      setPrjLocationRegionId(node.id);
-      setPrjLocationZoneId(null); // Clear dependent states
-      setPrjLocationWoredaId(null);
-    } else if (node.level === "zone") {
-      setPrjLocationZoneId(node.id);
-      setPrjLocationWoredaId(null); // Clear dependent state
-    } else if (node.level === "woreda") {
-      setPrjLocationWoredaId(node.id);
-    }
-    if (showSearchResult) {
-      setShowSearchResult(false);
-    }
-  };
-
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
@@ -397,11 +374,6 @@ const ApproverBudgetRequestList = () => {
         toggle={toggleConvModal}
         ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
         ownerId={transaction?.bdr_id ?? null}
-      />
-      <ActionModal
-        isOpen={actionModal}
-        toggle={toggleActionModal}
-        data={transaction}
       />
       <div className="page-content">
         <div className="">
@@ -471,9 +443,9 @@ const ApproverBudgetRequestList = () => {
                         rowHeight={30}
                         animateRows={true}
                         domLayout="autoHeight" // Auto-size the grid to fit content
-                        onGridReady={(params) => {
-                          params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                        }}
+                      // onGridReady={(params) => {
+                      //   params.api.sizeColumnsToFit(); // Size columns to fit the grid width
+                      // }}
                       />
                     </div>
                     <BudgetRequestAnalysis
@@ -490,29 +462,6 @@ const ApproverBudgetRequestList = () => {
           </div>
         </div>
       </div>
-      {/* {showCanvas && (
-        <RightOffCanvas
-          handleClick={handleEyeClick}
-          showCanvas={showCanvas}
-          canvasWidth={84}
-          name={"Detail"}
-          id={budgetRequestMetaData.bdr_project_id}
-          components={{
-            Documents: ProjectDocument,
-            Payments: ProjectPayment,
-            Stakeholder: ProjectStakeholder,
-            Contractor: Projectcontractor,
-            "Budget Request": Budgetrequest,
-            "Geo Location": GeoLocation,
-            "Budget Expenditures": ProjectBudgetExpenditureModel,
-            Employees: ProjectEmployeeModel,
-            Handover: ProjectHandoverModel,
-            Performance: ProjectPerformanceModel,
-            Supplementary: ProjectSupplimentaryModel,
-            Variations: ProjectVariationModel,
-          }}
-        />
-      )} */}
     </React.Fragment>
   );
 };

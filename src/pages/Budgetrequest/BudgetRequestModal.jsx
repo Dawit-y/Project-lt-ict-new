@@ -9,10 +9,10 @@ import {
   ModalHeader,
   Table,
 } from "reactstrap"
+import { DetailsView } from "../../components/Common/DetailViewWrapper";
 
 const modalStyle = {
   width: '100%',
-  height: '100%',
 };
 
 const BudgetRequestModal = (props) => {
@@ -33,35 +33,25 @@ const BudgetRequestModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('bdr_budget_year_id')}: <span className="text-primary">{transaction.bdr_budget_year_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bdr_requested_amount')}: <span className="text-primary">{transaction.bdr_requested_amount}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bdr_released_amount')}: <span className="text-primary">{transaction.bdr_released_amount}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bdr_requested_date_gc')}: <span className="text-primary">{transaction.bdr_requested_date_gc}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bdr_released_date_gc')}: <span className="text-primary">{transaction.bdr_released_date_gc}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bdr_description')}: <span className="text-primary">{transaction.bdr_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bdr_status')}: <span className="text-primary">{transaction.bdr_request_status}</span>
-          </p>
-          </tr>
+          <DetailsView
+            details={transaction}
+            keysToRemove={
+              [
+                "bdr_id",
+                "bdr_project_id",
+                "bdr_released_date_ec",
+                "bdr_requested_date_ec",
+                "bdr_create_time",
+                "bdr_update_time",
+                "bdr_delete_time",
+                "bdr_action_remark",
+                "bdr_status",
+                "bdr_created_by",
+                "is_editable",
+                "is_deletable"
+              ]
+            }
+          />
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>

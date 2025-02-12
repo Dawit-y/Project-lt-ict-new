@@ -74,7 +74,7 @@ const BudgetRequestAnalysis = ({ data }) => {
 
   return (
     <React.Fragment>
-      <Row className="justify-content-center mt-4">
+      <Row className="justify-content-center mt-2">
         <Col xl="12" lg="12" md="12">
           <Card>
             <CardBody>

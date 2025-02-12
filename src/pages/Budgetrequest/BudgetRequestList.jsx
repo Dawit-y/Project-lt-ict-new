@@ -2,25 +2,12 @@ import React, { useEffect, useMemo, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import Spinners from "../../components/Common/Spinner";
-//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
-
-import BudgetRequestListModal from "./BudgetRequestListModal";
-import ProjectDocument from "../../pages/Projectdocument/index";
-import ProjectPayment from "../../pages/Projectpayment";
-import ProjectStakeholder from "../../pages/Projectstakeholder";
-import Projectcontractor from "../../pages/Projectcontractor";
-import Budgetrequest from "../../pages/Budgetrequest";
-import GeoLocation from "../../pages/GeoLocation";
-import ProjectBudgetExpenditureModel from "../Projectbudgetexpenditure";
-import ProjectEmployeeModel from "../../pages/Projectemployee";
-import ProjectHandoverModel from "../Projecthandover";
-import ProjectPerformanceModel from "../Projectperformance";
-import ProjectSupplimentaryModel from "../Projectsupplimentary";
-import ProjectVariationModel from "../Projectvariation";
+import BudgetRequestAmount from "../Budgetrequestamount/index";
+import BudgetRequestTask from "../Budgetrequesttask/index";
+import BudgetExSource from "../Budgetexsource/index";
 import { useTranslation } from "react-i18next";
-
 import {
   Button,
   Col,
@@ -29,19 +16,15 @@ import {
   Input,
   Badge,
 } from "reactstrap";
-
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 import BudgetRequestAnalysis from "./BudgetRequestAnalysis";
 import {
   useFetchBudgetRequests,
   useSearchBudgetRequests,
 } from "../../queries/budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import AddressStructureForProject from "../Project/AddressStructureForProject";
@@ -63,12 +46,9 @@ const statusClasses = new Map([
 ]);
 
 const BudgetRequestListModel = () => {
-  //  get passed data from tab
-
-  document.title = " BudgetRequest";
+  document.title = " Budget Request List | PMS";
 
   const { t } = useTranslation();
-  const [modal1, setModal1] = useState(false);
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
@@ -119,14 +99,49 @@ const BudgetRequestListModel = () => {
     setShowSearchResult(true);
   };
 
-  const handleEyeClick = (data) => {
+  const handleClick = (data) => {
     setShowCanvas(!showCanvas);
     setBudgetRequestMetaData(data);
   };
 
-  const toggleViewModal = () => setModal1(!modal1);
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
+
+  // When selection changes, update selectedRows
+  const onSelectionChanged = () => {
+    const selectedNodes = gridRef.current.api.getSelectedNodes();
+    const selectedData = selectedNodes.map((node) => node.data);
+    setSelectedRows(selectedData);
+  };
+
+  useEffect(() => {
+    setProjectParams({
+      ...(prjLocationRegionId && {
+        prj_location_region_id: prjLocationRegionId,
+      }),
+      ...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
+      ...(prjLocationWoredaId && {
+        prj_location_woreda_id: prjLocationWoredaId,
+      }),
+      ...(include === 1 && { include }),
+    });
+  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
+
+  const handleNodeSelect = (node) => {
+    if (node.level === "region") {
+      setPrjLocationRegionId(node.id);
+      setPrjLocationZoneId(null); // Clear dependent states
+      setPrjLocationWoredaId(null);
+    } else if (node.level === "zone") {
+      setPrjLocationZoneId(node.id);
+      setPrjLocationWoredaId(null); // Clear dependent state
+    } else if (node.level === "woreda") {
+      setPrjLocationWoredaId(node.id);
+    }
+    if (showSearchResult) {
+      setShowSearchResult(false);
+    }
+  };
 
   const columnDefs = useMemo(() => {
     const baseColumnDefs = [
@@ -235,8 +250,9 @@ const BudgetRequestListModel = () => {
         cellRenderer: (params) => {
           return (
             <Button
+              outline
               type="button"
-              color="primary"
+              color="success"
               className="btn-sm"
               onClick={() => {
                 toggleFileModal();
@@ -254,6 +270,7 @@ const BudgetRequestListModel = () => {
         cellRenderer: (params) => {
           return (
             <Button
+              outline
               type="button"
               color="primary"
               className="btn-sm"
@@ -270,8 +287,7 @@ const BudgetRequestListModel = () => {
     ];
 
     if (
-      data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable
+      1 == 1
     ) {
       baseColumnDefs.push({
         headerName: t("view_detail"),
@@ -282,7 +298,7 @@ const BudgetRequestListModel = () => {
               <Link
                 to="#"
                 className="text-secondary"
-                onClick={() => handleEyeClick(params.data)}
+                onClick={() => handleClick(params.data)}
               >
                 <i className="mdi mdi-eye font-size-18 ms-2" id="viewtooltip" />
                 <UncontrolledTooltip placement="top" target="viewtooltip">
@@ -300,55 +316,10 @@ const BudgetRequestListModel = () => {
     return baseColumnDefs;
   }, []);
 
-  // When selection changes, update selectedRows
-  const onSelectionChanged = () => {
-    const selectedNodes = gridRef.current.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
-    setSelectedRows(selectedData);
-  };
-  // Filter by marked rows
-  const filterMarked = () => {
-    if (gridRef.current) {
-      gridRef.current.api.setRowData(selectedRows);
-    }
-  };
-  // Clear the filter and show all rows again
-  const clearFilter = () => {
-    gridRef.current.api.setRowData(showSearchResults ? results : data);
-  };
-
-  useEffect(() => {
-    setProjectParams({
-      ...(prjLocationRegionId && {
-        prj_location_region_id: prjLocationRegionId,
-      }),
-      ...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
-      ...(prjLocationWoredaId && {
-        prj_location_woreda_id: prjLocationWoredaId,
-      }),
-      ...(include === 1 && { include }),
-    });
-  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
-
-  const handleNodeSelect = (node) => {
-    if (node.level === "region") {
-      setPrjLocationRegionId(node.id);
-      setPrjLocationZoneId(null); // Clear dependent states
-      setPrjLocationWoredaId(null);
-    } else if (node.level === "zone") {
-      setPrjLocationZoneId(node.id);
-      setPrjLocationWoredaId(null); // Clear dependent state
-    } else if (node.level === "woreda") {
-      setPrjLocationWoredaId(node.id);
-    }
-    if (showSearchResult) {
-      setShowSearchResult(false);
-    }
-  };
-
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
+
   return (
     <React.Fragment>
       <AttachFileModal
@@ -415,7 +386,7 @@ const BudgetRequestListModel = () => {
                       </Col>
                     </Row>
                     {/* AG Grid */}
-                    <div style={{ height: "600px" }}>
+                    <div style={{}}>
                       <AgGridReact
                         ref={gridRef}
                         rowData={
@@ -431,10 +402,10 @@ const BudgetRequestListModel = () => {
                         onSelectionChanged={onSelectionChanged}
                         rowHeight={30}
                         animateRows={true}
-                        domLayout="autoHeight" // Auto-size the grid to fit content
-                        onGridReady={(params) => {
-                          params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                        }}
+                        domLayout="autoHeight"
+                      // onGridReady={(params) => {
+                      //   params.api.sizeColumnsToFit();
+                      // }}
                       />
                     </div>
                     <BudgetRequestAnalysis
@@ -453,24 +424,15 @@ const BudgetRequestListModel = () => {
       </div>
       {showCanvas && (
         <RightOffCanvas
-          handleClick={handleEyeClick}
+          handleClick={handleClick}
           showCanvas={showCanvas}
           canvasWidth={84}
-          name={"Detail"}
-          id={budgetRequestMetaData.bdr_project_id}
+          name={t("budget_request")}
+          id={budgetRequestMetaData.bdr_id}
           components={{
-            Documents: ProjectDocument,
-            Payments: ProjectPayment,
-            Stakeholder: ProjectStakeholder,
-            Contractor: Projectcontractor,
-            "Budget Request": Budgetrequest,
-            "Geo Location": GeoLocation,
-            "Budget Expenditures": ProjectBudgetExpenditureModel,
-            Employees: ProjectEmployeeModel,
-            Handover: ProjectHandoverModel,
-            Performance: ProjectPerformanceModel,
-            Supplementary: ProjectSupplimentaryModel,
-            Variations: ProjectVariationModel,
+            [t("budget_request_amount")]: BudgetRequestAmount,
+            [t("budget_request_task")]: BudgetRequestTask,
+            [t("budget_ex_source")]: BudgetExSource,
           }}
         />
       )}

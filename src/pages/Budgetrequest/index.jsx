@@ -401,8 +401,9 @@ const BudgetRequestModel = () => {
         cell: (cellProps) => {
           return (
             <Button
+              outline
               type="button"
-              color="primary"
+              color="success"
               className="btn-sm"
               onClick={() => {
                 toggleFileModal();
@@ -421,6 +422,7 @@ const BudgetRequestModel = () => {
         cell: (cellProps) => {
           return (
             <Button
+              outline
               type="button"
               color="primary"
               className="btn-sm"
@@ -575,7 +577,6 @@ const BudgetRequestModel = () => {
                 data={project?.data?.data || []}
                 isExpanded={isExpanded}
               />
-              {/* TableContainer for displaying data */}
               <Col lg={12}>
                 <Card>
                   <CardBody>
