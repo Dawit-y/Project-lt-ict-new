@@ -46,6 +46,13 @@ const modalStyle = {
   width: "100%",
 };
 
+const truncateText = (text, maxLength) => {
+  if (typeof text !== "string") {
+    return text;
+  }
+  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+};
+
 const ApproverBudgetRequestListModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction, budgetYearMap = {} } = props;

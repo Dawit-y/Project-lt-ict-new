@@ -66,6 +66,11 @@ const BudgetRequestAmountModel = ({ passedId, isActive }) => {
   const addBudgetRequestAmount = useAddBudgetRequestAmount();
   const updateBudgetRequestAmount = useUpdateBudgetRequestAmount();
   const deleteBudgetRequestAmount = useDeleteBudgetRequestAmount();
+
+  const today = new Date();
+  const formattedDate = today.getFullYear() + '/' +
+    String(today.getMonth() + 1).padStart(2, '0') + '/' +
+    String(today.getDate()).padStart(2, '0');
   //START CRUD
   const handleAddBudgetRequestAmount = async (data) => {
     try {
@@ -75,7 +80,7 @@ const BudgetRequestAmountModel = ({ passedId, isActive }) => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t("add_failure"), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -89,7 +94,7 @@ const BudgetRequestAmountModel = ({ passedId, isActive }) => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t("update_failure"), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -104,7 +109,7 @@ const BudgetRequestAmountModel = ({ passedId, isActive }) => {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t("delete_failure"), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -275,7 +280,7 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
           bra_source_other_requested: values.bra_source_other_requested,
           bra_source_other_approved: values.bra_source_other_approved,
           bra_source_other_code: values.bra_source_other_code,
-          bra_requested_date: values.bra_requested_date,
+          bra_requested_date: formattedDate,
           bra_approved_date: values.bra_approved_date,
           bra_description: values.bra_description,
           bra_status: values.bra_status,
@@ -614,7 +619,7 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
       },
     ];
     if (
-      1==1
+      1 == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -686,26 +691,26 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
       {isLoading || isSearchLoading ? (
         <Spinners />
       ) : (
-                <TableContainer
-                  columns={columns}
-                  data={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
-                  isGlobalFilter={true}
-                  isAddButton={true}
-                  //sAddButton={data?.previledge?.is_role_can_add==1}
-                  isCustomPageSize={true}
-                  handleUserClick={handleBudgetRequestAmountClicks}
-                  isPagination={true}
-                  // SearchPlaceholder="26 records..."
-                  SearchPlaceholder={t("filter_placeholder")}
-                  buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                  buttonName={t("add")}
-                  tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                  theadClass="table-light"
-                  pagination="pagination"
-                  paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                />
+        <TableContainer
+          columns={columns}
+          data={
+            showSearchResult ? searchResults?.data : data?.data || []
+          }
+          isGlobalFilter={true}
+          isAddButton={true}
+          //sAddButton={data?.previledge?.is_role_can_add==1}
+          isCustomPageSize={true}
+          handleUserClick={handleBudgetRequestAmountClicks}
+          isPagination={true}
+          // SearchPlaceholder="26 records..."
+          SearchPlaceholder={t("filter_placeholder")}
+          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+          buttonName={t("add")}
+          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+          theadClass="table-light"
+          pagination="pagination"
+          paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+        />
       )}
       <Modal isOpen={modal} toggle={toggle} className="modal-xl">
         <ModalHeader toggle={toggle} tag="h4">
@@ -733,14 +738,14 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   value={validation.values.bra_expenditure_code_id || ""}
                   invalid={
                     validation.touched.bra_expenditure_code_id &&
-                    validation.errors.bra_expenditure_code_id
+                      validation.errors.bra_expenditure_code_id
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.bra_expenditure_code_id &&
-                validation.errors.bra_expenditure_code_id ? (
+                  validation.errors.bra_expenditure_code_id ? (
                   <FormFeedback type="invalid">
                     {validation.errors.bra_expenditure_code_id}
                   </FormFeedback>
@@ -757,14 +762,14 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   value={validation.values.bra_current_year_expense || ""}
                   invalid={
                     validation.touched.bra_current_year_expense &&
-                    validation.errors.bra_current_year_expense
+                      validation.errors.bra_current_year_expense
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.bra_current_year_expense &&
-                validation.errors.bra_current_year_expense ? (
+                  validation.errors.bra_current_year_expense ? (
                   <FormFeedback type="invalid">
                     {validation.errors.bra_current_year_expense}
                   </FormFeedback>
@@ -781,14 +786,14 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   value={validation.values.bra_requested_amount || ""}
                   invalid={
                     validation.touched.bra_requested_amount &&
-                    validation.errors.bra_requested_amount
+                      validation.errors.bra_requested_amount
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.bra_requested_amount &&
-                validation.errors.bra_requested_amount ? (
+                  validation.errors.bra_requested_amount ? (
                   <FormFeedback type="invalid">
                     {validation.errors.bra_requested_amount}
                   </FormFeedback>
@@ -808,14 +813,14 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   }
                   invalid={
                     validation.touched.bra_source_government_requested &&
-                    validation.errors.bra_source_government_requested
+                      validation.errors.bra_source_government_requested
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.bra_source_government_requested &&
-                validation.errors.bra_source_government_requested ? (
+                  validation.errors.bra_source_government_requested ? (
                   <FormFeedback type="invalid">
                     {validation.errors.bra_source_government_requested}
                   </FormFeedback>
@@ -833,14 +838,14 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   value={validation.values.bra_source_internal_requested || ""}
                   invalid={
                     validation.touched.bra_source_internal_requested &&
-                    validation.errors.bra_source_internal_requested
+                      validation.errors.bra_source_internal_requested
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.bra_source_internal_requested &&
-                validation.errors.bra_source_internal_requested ? (
+                  validation.errors.bra_source_internal_requested ? (
                   <FormFeedback type="invalid">
                     {validation.errors.bra_source_internal_requested}
                   </FormFeedback>
@@ -858,14 +863,14 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   value={validation.values.bra_source_support_requested || ""}
                   invalid={
                     validation.touched.bra_source_support_requested &&
-                    validation.errors.bra_source_support_requested
+                      validation.errors.bra_source_support_requested
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.bra_source_support_requested &&
-                validation.errors.bra_source_support_requested ? (
+                  validation.errors.bra_source_support_requested ? (
                   <FormFeedback type="invalid">
                     {validation.errors.bra_source_support_requested}
                   </FormFeedback>
@@ -883,14 +888,14 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   value={validation.values.bra_source_support_code || ""}
                   invalid={
                     validation.touched.bra_source_support_code &&
-                    validation.errors.bra_source_support_code
+                      validation.errors.bra_source_support_code
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.bra_source_support_code &&
-                validation.errors.bra_source_support_code ? (
+                  validation.errors.bra_source_support_code ? (
                   <FormFeedback type="invalid">
                     {validation.errors.bra_source_support_code}
                   </FormFeedback>
@@ -907,14 +912,14 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   value={validation.values.bra_source_credit_requested || ""}
                   invalid={
                     validation.touched.bra_source_credit_requested &&
-                    validation.errors.bra_source_credit_requested
+                      validation.errors.bra_source_credit_requested
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.bra_source_credit_requested &&
-                validation.errors.bra_source_credit_requested ? (
+                  validation.errors.bra_source_credit_requested ? (
                   <FormFeedback type="invalid">
                     {validation.errors.bra_source_credit_requested}
                   </FormFeedback>
@@ -932,14 +937,14 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   value={validation.values.bra_source_credit_code || ""}
                   invalid={
                     validation.touched.bra_source_credit_code &&
-                    validation.errors.bra_source_credit_code
+                      validation.errors.bra_source_credit_code
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.bra_source_credit_code &&
-                validation.errors.bra_source_credit_code ? (
+                  validation.errors.bra_source_credit_code ? (
                   <FormFeedback type="invalid">
                     {validation.errors.bra_source_credit_code}
                   </FormFeedback>
@@ -957,14 +962,14 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
                   value={validation.values.bra_description || ""}
                   invalid={
                     validation.touched.bra_description &&
-                    validation.errors.bra_description
+                      validation.errors.bra_description
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.bra_description &&
-                validation.errors.bra_description ? (
+                  validation.errors.bra_description ? (
                   <FormFeedback type="invalid">
                     {validation.errors.bra_description}
                   </FormFeedback>
@@ -975,7 +980,7 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
               <Col>
                 <div className="text-end">
                   {addBudgetRequestAmount.isPending ||
-                  updateBudgetRequestAmount.isPending ? (
+                    updateBudgetRequestAmount.isPending ? (
                     <Button
                       color="success"
                       type="submit"
