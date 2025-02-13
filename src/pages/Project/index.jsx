@@ -43,10 +43,7 @@ import ProjectHandoverModel from "../Projecthandover";
 import ProjectPerformanceModel from "../Projectperformance";
 import ProjectSupplimentaryModel from "../Projectsupplimentary";
 import ProjectVariationModel from "../Projectvariation";
-import ProjectBudgetPlan from "../../pages/Projectbudgetplan/index";
-
 import ProposalRequestModel from "../../pages/Proposalrequest";
-import ConversationInformationModel from "../../pages/Conversationinformation";
 import Conversation from "../Conversationinformation/index1";
 import RequestInformationModel from "../../pages/Requestinformation";
 
@@ -75,9 +72,7 @@ import {
   amountValidation,
   numberValidation,
 } from "../../utils/Validation/validation";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import { toast } from "react-toastify";
 import { createSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import AddressStructureForProject from "./AddressStructureForProject";
@@ -231,8 +226,16 @@ const ProjectModel = () => {
       setDeleteModal(false);
     }
   };
+  const [allowedTabs, setAllowedTabs] = useState(searchData?.allowedTabs || []);
 
-  const allowedTabs = searchData?.allowedTabs || [];
+  useEffect(() => {
+    if (projectMetaData?.prj_project_status_id <= 4) {
+      setAllowedTabs([54, 37]);
+    } else {
+      setAllowedTabs(searchData?.allowedTabs || []);
+    }
+  }, [projectMetaData?.prj_project_status_id, searchData]);
+
   const dynamicComponents = allowedTabs.reduce((acc, tabIndex) => {
     const tab = tabMapping[tabIndex];
     if (tab) {
@@ -448,9 +451,7 @@ const ProjectModel = () => {
       }
     },
   });
-  const [transaction, setTransaction] = useState({});
-  const toggleViewModal = () => setModal1(!modal1);
-  // Fetch Project on component mount
+
   useEffect(() => {
     setProject(data);
   }, [data]);
@@ -461,6 +462,7 @@ const ProjectModel = () => {
       setIsEdit(false);
     }
   }, [data]);
+
   const toggle = () => {
     if (modal) {
       setModal(false);
@@ -497,12 +499,11 @@ const ProjectModel = () => {
   );
 
   const handleClick = (data) => {
-    setShowCanvas(!showCanvas); // Toggle canvas visibility
+    setShowCanvas(!showCanvas);
     setProjectMetaData(data);
   };
   const handleProjectClick = (arg) => {
     const project = arg;
-    // console.log("handleProjectClick", project);
     setProject({
       prj_id: project.prj_id,
       prj_name: project.prj_name,

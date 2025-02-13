@@ -5,6 +5,7 @@ import {
   addProjectPerformance,
   deleteProjectPerformance,
 } from "../helpers/projectperformance_backend_helper";
+import { PROJECT_QUERY_KEY } from "./project_query";
 
 const PROJECT_PERFORMANCE_QUERY_KEY = ["projectperformance"];
 
@@ -13,7 +14,8 @@ export const useFetchProjectPerformances = (param = {}, isActive) => {
   return useQuery({
     queryKey: [...PROJECT_PERFORMANCE_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectPerformance(param),
-    staleTime: 0,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
     meta: { persist: false },
     refetchOnWindowFocus: false,
     refetchOnMount: false,

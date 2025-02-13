@@ -1,16 +1,12 @@
-import React, { useEffect, useMemo, useState, useLayoutEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-
-//import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
   alphanumericValidation,
@@ -27,10 +23,6 @@ import {
 import ProjectEmployeeModal from "./ProjectEmployeeModal";
 import { useTranslation } from "react-i18next";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-import "flatpickr/dist/themes/material_blue.css";
-import Flatpickr from "react-flatpickr";
 import {
   Button,
   Col,
@@ -45,24 +37,21 @@ import {
   Label,
   Card,
   CardBody,
-  FormGroup,
-  Badge,
-  InputGroup,
-  InputGroupText,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import { formatDate } from "../../utils/commonMethods";
+import DatePicker from "../../components/Common/DatePicker";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
+
 const ProjectEmployeeModel = (props) => {
-  const { passedId, isActive } = props;
+  const { passedId, isActive, startDate } = props;
   const param = { emp_project_id: passedId };
 
   const { t } = useTranslation();
@@ -130,12 +119,9 @@ const ProjectEmployeeModel = (props) => {
       setDeleteModal(false);
     }
   };
-  //END CRUD
-  //START FOREIGN CALLS
 
   // validation
   const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
     initialValues: {
       emp_id_no: (projectEmployee && projectEmployee.emp_id_no) || "",
@@ -180,13 +166,13 @@ const ProjectEmployeeModel = (props) => {
       //emp_project_id: Yup.string().required(t("emp_project_id")),
       //emp_start_date_ec: Yup.string().required(t("emp_start_date_ec")),
       emp_start_date_gc: Yup.string().required(t("emp_start_date_gc"))
-      .test(
-      'is-before-end-date',
-      'start date must be earlier than or equal to end date',
-      function (value) {
-        const { emp_end_date_gc } = this.parent; // Access other fields in the form
-        return !emp_end_date_gc || !value || new Date(value) <= new Date(emp_end_date_gc);
-      }),
+        .test(
+          'is-before-end-date',
+          'start date must be earlier than or equal to end date',
+          function (value) {
+            const { emp_end_date_gc } = this.parent; // Access other fields in the form
+            return !emp_end_date_gc || !value || new Date(value) <= new Date(emp_end_date_gc);
+          }),
       // emp_end_date_ec: Yup.string().required(t("emp_end_date_ec")),
       emp_end_date_gc: Yup.string().required(t("emp_end_date_gc")),
       emp_address: alphanumericValidation(3, 425, false),
@@ -280,7 +266,6 @@ const ProjectEmployeeModel = (props) => {
       emp_address: projectEmployee.emp_address,
       emp_description: projectEmployee.emp_description,
       emp_current_status: projectEmployee.emp_current_status,
-
       is_deletable: projectEmployee.is_deletable,
       is_editable: projectEmployee.is_editable,
     });
@@ -436,40 +421,40 @@ const ProjectEmployeeModel = (props) => {
             <div className="d-flex gap-3">
               {(cellProps.row.original?.is_editable ||
                 cellProps.row.original?.is_role_editable) && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleProjectEmployeeClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+                  <Link
+                    to="#"
+                    className="text-success"
+                    onClick={() => {
+                      const data = cellProps.row.original;
+                      handleProjectEmployeeClick(data);
+                    }}
+                  >
+                    <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                    <UncontrolledTooltip placement="top" target="edittooltip">
+                      Edit
+                    </UncontrolledTooltip>
+                  </Link>
+                )}
 
               {(cellProps.row.original?.is_deletable ||
                 cellProps.row.original?.is_role_deletable) && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+                  <Link
+                    to="#"
+                    className="text-danger"
+                    onClick={() => {
+                      const data = cellProps.row.original;
+                      onClickDelete(data);
+                    }}
+                  >
+                    <i
+                      className="mdi mdi-delete font-size-18"
+                      id="deletetooltip"
+                    />
+                    <UncontrolledTooltip placement="top" target="deletetooltip">
+                      Delete
+                    </UncontrolledTooltip>
+                  </Link>
+                )}
             </div>
           );
         },
@@ -512,38 +497,6 @@ const ProjectEmployeeModel = (props) => {
       />
       <>
         <div className="container-fluid1">
-          {/* <Breadcrumbs
-            title={t("project_employee")}
-            breadcrumbItem={t("project_employee")}
-          />
-          <AdvancedSearch
-            searchHook={useSearchProjectEmployees}
-            textSearchKeys={["dep_name_am", "dep_name_en", "dep_name_or"]}
-            dropdownSearchKeys={[
-              {
-                key: "example",
-                options: [
-                  { value: "Freelance", label: "Example1" },
-                  { value: "Full Time", label: "Example2" },
-                  { value: "Part Time", label: "Example3" },
-                  { value: "Internship", label: "Example4" },
-                ],
-              },
-            ]}
-            checkboxSearchKeys={[
-              {
-                key: "example1",
-                options: [
-                  { value: "Engineering", label: "Example1" },
-                  { value: "Science", label: "Example2" },
-                ],
-              },
-            ]}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          /> */}
           {isLoading || isSearchLoading ? (
             <Spinners top={isActive ? "top-70" : ""} />
           ) : (
@@ -559,7 +512,7 @@ const ProjectEmployeeModel = (props) => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add==1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleProjectEmployeeClicks}
                       isPagination={true}
@@ -604,14 +557,14 @@ const ProjectEmployeeModel = (props) => {
                       value={validation.values.emp_id_no || ""}
                       invalid={
                         validation.touched.emp_id_no &&
-                        validation.errors.emp_id_no
+                          validation.errors.emp_id_no
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.emp_id_no &&
-                    validation.errors.emp_id_no ? (
+                      validation.errors.emp_id_no ? (
                       <FormFeedback type="invalid">
                         {validation.errors.emp_id_no}
                       </FormFeedback>
@@ -631,14 +584,14 @@ const ProjectEmployeeModel = (props) => {
                       value={validation.values.emp_full_name || ""}
                       invalid={
                         validation.touched.emp_full_name &&
-                        validation.errors.emp_full_name
+                          validation.errors.emp_full_name
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.emp_full_name &&
-                    validation.errors.emp_full_name ? (
+                      validation.errors.emp_full_name ? (
                       <FormFeedback type="invalid">
                         {validation.errors.emp_full_name}
                       </FormFeedback>
@@ -655,14 +608,14 @@ const ProjectEmployeeModel = (props) => {
                       value={validation.values.emp_email || ""}
                       invalid={
                         validation.touched.emp_email &&
-                        validation.errors.emp_email
+                          validation.errors.emp_email
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.emp_email &&
-                    validation.errors.emp_email ? (
+                      validation.errors.emp_email ? (
                       <FormFeedback type="invalid">
                         {validation.errors.emp_email}
                       </FormFeedback>
@@ -682,14 +635,14 @@ const ProjectEmployeeModel = (props) => {
                       value={validation.values.emp_phone_num || ""}
                       invalid={
                         validation.touched.emp_phone_num &&
-                        validation.errors.emp_phone_num
+                          validation.errors.emp_phone_num
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.emp_phone_num &&
-                    validation.errors.emp_phone_num ? (
+                      validation.errors.emp_phone_num ? (
                       <FormFeedback type="invalid">
                         {validation.errors.emp_phone_num}
                       </FormFeedback>
@@ -709,107 +662,34 @@ const ProjectEmployeeModel = (props) => {
                       value={validation.values.emp_role || ""}
                       invalid={
                         validation.touched.emp_role &&
-                        validation.errors.emp_role
+                          validation.errors.emp_role
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.emp_role &&
-                    validation.errors.emp_role ? (
+                      validation.errors.emp_role ? (
                       <FormFeedback type="invalid">
                         {validation.errors.emp_role}
                       </FormFeedback>
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("emp_start_date_gc")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <InputGroup>
-                      <div
-                        className={`d-flex w-100 ${
-                          validation.touched.emp_start_date_gc &&
-                          validation.errors.emp_start_date_gc
-                            ? "border border-danger rounded"
-                            : ""
-                        }`}
-                      >
-                        <Flatpickr
-                          id="DataPicker"
-                          className="form-control"
-                          name="emp_start_date_gc"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
-                            enableTime: false,
-                          }}
-                          value={validation.values.emp_start_date_gc || ""}
-                          onChange={(date) => {
-                            const formatedDate = formatDate(date[0]);
-                            validation.setFieldValue(
-                              "emp_start_date_gc",
-                              formatedDate
-                            ); // Set value in Formik
-                          }}
-                          onBlur={validation.handleBlur}
-                        />
-                        <InputGroupText>
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </InputGroupText>
-                      </div>
-                      {validation.touched.emp_start_date_gc &&
-                        validation.errors.emp_start_date_gc && (
-                          <div className="text-danger small mt-1">
-                            {validation.errors.emp_start_date_gc}
-                          </div>
-                        )}
-                    </InputGroup>
+                    <DatePicker
+                      isRequired={true}
+                      componentId={"emp_start_date_gc"}
+                      validation={validation}
+                      minDate={startDate}
+                    />
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("emp_end_date_gc")}</Label>
-                    <InputGroup>
-                      <div
-                        className={`d-flex w-100 ${
-                          validation.touched.emp_end_date_gc &&
-                          validation.errors.emp_end_date_gc
-                            ? "border border-danger rounded"
-                            : ""
-                        }`}
-                      >
-                        <Flatpickr
-                          id="DataPicker"
-                          className="form-control"
-                          name="emp_end_date_gc"
-                          options={{
-                            altInput: true,
-                            altFormat: "Y/m/d",
-                            dateFormat: "Y/m/d",
-                            enableTime: false,
-                          }}
-                          value={validation.values.emp_end_date_gc || ""}
-                          onChange={(date) => {
-                            const formatedDate = formatDate(date[0]);
-                            validation.setFieldValue(
-                              "emp_end_date_gc",
-                              formatedDate
-                            ); // Set value in Formik
-                          }}
-                          onBlur={validation.handleBlur}
-                        />
-                        <InputGroupText>
-                          <i className="fa fa-calendar" aria-hidden="true" />
-                        </InputGroupText>
-                      </div>
-                      {validation.touched.emp_end_date_gc &&
-                        validation.errors.emp_end_date_gc && (
-                          <div className="text-danger small mt-1">
-                            {validation.errors.emp_end_date_gc}
-                          </div>
-                        )}
-                    </InputGroup>
+                    <DatePicker
+                      isRequired={true}
+                      componentId={"emp_end_date_gc"}
+                      validation={validation}
+                      minDate={startDate}
+                    />
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("emp_address")}</Label>
@@ -822,14 +702,14 @@ const ProjectEmployeeModel = (props) => {
                       value={validation.values.emp_address || ""}
                       invalid={
                         validation.touched.emp_address &&
-                        validation.errors.emp_address
+                          validation.errors.emp_address
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.emp_address &&
-                    validation.errors.emp_address ? (
+                      validation.errors.emp_address ? (
                       <FormFeedback type="invalid">
                         {validation.errors.emp_address}
                       </FormFeedback>
@@ -846,14 +726,14 @@ const ProjectEmployeeModel = (props) => {
                       value={validation.values.emp_description || ""}
                       invalid={
                         validation.touched.emp_description &&
-                        validation.errors.emp_description
+                          validation.errors.emp_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.emp_description &&
-                    validation.errors.emp_description ? (
+                      validation.errors.emp_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.emp_description}
                       </FormFeedback>
@@ -864,7 +744,7 @@ const ProjectEmployeeModel = (props) => {
                   <Col>
                     <div className="text-end">
                       {addProjectEmployee.isPending ||
-                      updateProjectEmployee.isPending ? (
+                        updateProjectEmployee.isPending ? (
                         <Button
                           color="success"
                           type="submit"

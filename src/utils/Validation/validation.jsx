@@ -38,7 +38,7 @@ export const onlyAmharicValidation = (minLength, maxLength, isRequired = true) =
 export const phoneValidation = (isRequired = true) => {
   const { t } = useTranslation();
   let schema = Yup.string()
-  .matches(/^[79]\d{8}$/, t("val_phone_number"))
+    .matches(/^[79]\d{8}$/, t("val_phone_number"))
   if (isRequired) {
     schema = schema.required(t('val_required'));
   }
@@ -85,43 +85,57 @@ export const dropdownValidation = (minLength, maxLength, isRequired = true) => {
   return schema;
 };
 
-// planned : 1
-// started : 2
-// completed: 4
+
+// These statuses are received from the backend. verify with the backend before making any modifications.
+// const statuses = {
+//   1: "Draft",
+//   2: "Requested",
+//   3: "Request Accepted",
+//   4: "Request Rejected",
+//   5: "New",
+//   6: "On-Progress",
+//   7: "Completed",
+//   8: "Not-Known"
+// };
 
 export const checkProjectStatus = (pageId, status) => {
   switch (pageId) {
     case PAGE_ID.PROJ_PAYMENT:
       switch (status) {
+        case 1: // Draft
+          return "Cannot modify payment for a project in draft status.";
         case 4:
-          return "Cannot request payment for a completed project.";
-        case 1:
-          return "Cannot request payment for a project in the planning phase.";
-        case 2:
+          return "Cannot modify payment for a project in rejected status."
+        case 7: // Completed
+          return "Cannot modify payment for a completed project.";
+        case 5: // New
+        case 6: // On-Progress
           return true;
         default:
           return `Invalid project status: ${status}`;
       }
+
     case PAGE_ID.PROJ_DOCUMENT:
       switch (status) {
-        case 4:
-          return "Cannot upload documents for a completed project.";
-        case 1:
+        case 7: // Completed
+          return "Cannot modify documents for a completed project.";
+        case 1: // Draft
+        case 5: // New
+        case 6: // On-Progress
           return true;
-        case 2:
-          return true; 
         default:
           return `Invalid project status: ${status}`;
       }
 
     case PAGE_ID.PROJ_HANDOVER:
       switch (status) {
-        case 4:
-          return "Cannot initiate handover for a completed project.";
-        case 1:
-          return "Cannot initiate handover for a project in the planning phase.";
-        case 2:
-          return true; 
+        case 7: // Completed
+          return "Cannot modify handover for a completed project.";
+        case 1: // Draft
+          return "Cannot modify handover for a project in draft status.";
+        case 5: // New
+        case 6: // On-Progress
+          return true;
         default:
           return `Invalid project status: ${status}`;
       }

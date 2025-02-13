@@ -48,6 +48,7 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { createSelectOptions } from "../../utils/commonMethods";
 import { formatDate } from "../../utils/commonMethods";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
+import DatePicker from "../../components/Common/DatePicker";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -57,7 +58,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectContractorModel = (props) => {
-  const { passedId, isActive } = props;
+  const { passedId, isActive, startDate } = props;
   const param = { cni_project_id: passedId };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
@@ -940,368 +941,55 @@ const ProjectContractorModel = (props) => {
                       <Collapse isOpen={isExpanded}>
                         <CardBody>
                           <Row>
-                            <>
-                              <Col className="col-md-4 mb-3">
-                                <FormGroup>
-                                  <Label>
-                                    {t("cni_contract_start_date_gc")}
-                                    <span className="text-danger">*</span>
-                                  </Label>
-                                  <InputGroup>
-                                    <Flatpickr
-                                      id="DataPicker"
-                                      className={`form-control ${validation.touched.cni_contract_start_date_gc &&
-                                        validation.errors.cni_contract_start_date_gc
-                                        ? "is-invalid"
-                                        : ""
-                                        }`}
-                                      name="cni_contract_start_date_gc"
-                                      options={{
-                                        altInput: true,
-                                        altFormat: "Y/m/d",
-                                        dateFormat: "Y/m/d",
-                                        enableTime: false,
-                                        defaultDate: new Date(), // Set today's date as default
-                                      }}
-                                      value={
-                                        validation.values.cni_contract_start_date_gc || ""
-                                      }
-                                      onChange={(date) => {
-                                        const formatedDate = formatDate(date[0]);
-                                        validation.setFieldValue(
-                                          "cni_contract_start_date_gc",
-                                          formatedDate
-                                        ); // Set value in Formik
-                                      }}
-                                      onBlur={validation.handleBlur}
-                                    />
-
-                                    <Button
-                                      type="button"
-                                      className="btn btn-outline-secondary"
-                                      disabled
-                                    >
-                                      <i className="fa fa-calendar" aria-hidden="true" />
-                                    </Button>
-                                  </InputGroup>
-                                  {validation.touched.cni_contract_start_date_gc &&
-                                    validation.errors.cni_contract_start_date_gc ? (
-                                    <FormFeedback>
-                                      {validation.errors.cni_contract_start_date_gc}
-                                    </FormFeedback>
-                                  ) : null}
-                                </FormGroup>
-                              </Col>
-
-                              <Col className="col-md-4 mb-3">
-                                <FormGroup>
-                                  <Label>{t("cni_contract_end_date_gc")}</Label>
-                                  <InputGroup>
-                                    <Flatpickr
-                                      id="DataPicker"
-                                      className={`form-control ${validation.touched.cni_contract_end_date_gc &&
-                                        validation.errors.cni_contract_end_date_gc
-                                        ? "is-invalid"
-                                        : ""
-                                        }`}
-                                      name="cni_contract_end_date_gc"
-                                      options={{
-                                        altInput: true,
-                                        altFormat: "Y/m/d",
-                                        dateFormat: "Y/m/d",
-                                        enableTime: false,
-                                        defaultDate: new Date(), // Set today's date as default
-                                      }}
-                                      value={
-                                        validation.values.cni_contract_end_date_gc || ""
-                                      }
-                                      onChange={(date) => {
-                                        const formatedDate = formatDate(date[0]);
-                                        validation.setFieldValue(
-                                          "cni_contract_end_date_gc",
-                                          formatedDate
-                                        ); // Set value in Formik
-                                      }}
-                                      onBlur={validation.handleBlur}
-                                    />
-
-                                    <Button
-                                      type="button"
-                                      className="btn btn-outline-secondary"
-                                      disabled
-                                    >
-                                      <i className="fa fa-calendar" aria-hidden="true" />
-                                    </Button>
-                                  </InputGroup>
-                                  {validation.touched.cni_contract_end_date_gc &&
-                                    validation.errors.cni_contract_end_date_gc ? (
-                                    <FormFeedback>
-                                      {validation.errors.cni_contract_end_date_gc}
-                                    </FormFeedback>
-                                  ) : null}
-                                </FormGroup>
-                              </Col>
-
-                              <Col className="col-md-4 mb-3">
-                                <FormGroup>
-                                  <Label>{t("cni_bid_invitation_date")}</Label>
-                                  <InputGroup>
-                                    <Flatpickr
-                                      id="DataPicker"
-                                      className={`form-control ${validation.touched.cni_bid_invitation_date &&
-                                        validation.errors.cni_bid_invitation_date
-                                        ? "is-invalid"
-                                        : ""
-                                        }`}
-                                      name="cni_bid_invitation_date"
-                                      options={{
-                                        altInput: true,
-                                        altFormat: "Y/m/d",
-                                        dateFormat: "Y/m/d",
-                                        enableTime: false,
-                                        defaultDate: new Date(), // Set today's date as default
-                                      }}
-                                      value={
-                                        validation.values.cni_bid_invitation_date || ""
-                                      }
-                                      onChange={(date) => {
-                                        const formatedDate = formatDate(date[0]);
-                                        validation.setFieldValue(
-                                          "cni_bid_invitation_date",
-                                          formatedDate
-                                        ); // Set value in Formik
-                                      }}
-                                      onBlur={validation.handleBlur}
-                                    />
-
-                                    <Button
-                                      type="button"
-                                      className="btn btn-outline-secondary"
-                                      disabled
-                                    >
-                                      <i
-                                        className="fa fa-calendar"
-                                        aria-hidden="true"
-                                      />
-                                    </Button>
-                                  </InputGroup>
-                                  {validation.touched.cni_bid_invitation_date &&
-                                    validation.errors.cni_bid_invitation_date ? (
-                                    <FormFeedback>
-                                      {validation.errors.cni_bid_invitation_date}
-                                    </FormFeedback>
-                                  ) : null}
-                                </FormGroup>
-                              </Col>
-
-                              <Col className="col-md-4 mb-3">
-                                <FormGroup>
-                                  <Label>{t("cni_bid_opening_date")}</Label>
-                                  <InputGroup>
-                                    <Flatpickr
-                                      id="DataPicker"
-                                      className={`form-control ${validation.touched.cni_bid_opening_date &&
-                                        validation.errors.cni_bid_opening_date
-                                        ? "is-invalid"
-                                        : ""
-                                        }`}
-                                      name="cni_bid_opening_date"
-                                      options={{
-                                        altInput: true,
-                                        altFormat: "Y/m/d",
-                                        dateFormat: "Y/m/d",
-                                        enableTime: false,
-                                        defaultDate: new Date(), // Set today's date as default
-                                      }}
-                                      value={
-                                        validation.values.cni_bid_opening_date || ""
-                                      }
-                                      onChange={(date) => {
-                                        const formatedDate = formatDate(date[0]);
-                                        validation.setFieldValue(
-                                          "cni_bid_opening_date",
-                                          formatedDate
-                                        ); // Set value in Formik
-                                      }}
-                                      onBlur={validation.handleBlur}
-                                    />
-
-                                    <Button
-                                      type="button"
-                                      className="btn btn-outline-secondary"
-                                      disabled
-                                    >
-                                      <i
-                                        className="fa fa-calendar"
-                                        aria-hidden="true"
-                                      />
-                                    </Button>
-                                  </InputGroup>
-                                  {validation.touched.cni_bid_opening_date &&
-                                    validation.errors.cni_bid_opening_date ? (
-                                    <FormFeedback>
-                                      {validation.errors.cni_bid_opening_date}
-                                    </FormFeedback>
-                                  ) : null}
-                                </FormGroup>
-                              </Col>
-
-                              <Col className="col-md-4 mb-3">
-                                <FormGroup>
-                                  <Label>{t("cni_bid_evaluation_date")}</Label>
-                                  <InputGroup>
-                                    <Flatpickr
-                                      id="DataPicker"
-                                      className={`form-control ${validation.touched.cni_bid_evaluation_date &&
-                                        validation.errors.cni_bid_evaluation_date
-                                        ? "is-invalid"
-                                        : ""
-                                        }`}
-                                      name="cni_bid_evaluation_date"
-                                      options={{
-                                        altInput: true,
-                                        altFormat: "Y/m/d",
-                                        dateFormat: "Y/m/d",
-                                        enableTime: false,
-                                        defaultDate: new Date(), // Set today's date as default
-                                      }}
-                                      value={
-                                        validation.values.cni_bid_evaluation_date || ""
-                                      }
-                                      onChange={(date) => {
-                                        const formatedDate = formatDate(date[0]);
-                                        validation.setFieldValue(
-                                          "cni_bid_evaluation_date",
-                                          formatedDate
-                                        ); // Set value in Formik
-                                      }}
-                                      onBlur={validation.handleBlur}
-                                    />
-
-                                    <Button
-                                      type="button"
-                                      className="btn btn-outline-secondary"
-                                      disabled
-                                    >
-                                      <i
-                                        className="fa fa-calendar"
-                                        aria-hidden="true"
-                                      />
-                                    </Button>
-                                  </InputGroup>
-                                  {validation.touched.cni_bid_evaluation_date &&
-                                    validation.errors.cni_bid_evaluation_date ? (
-                                    <FormFeedback>
-                                      {validation.errors.cni_bid_evaluation_date}
-                                    </FormFeedback>
-                                  ) : null}
-                                </FormGroup>
-                              </Col>
-
-                              <Col className="col-md-4 mb-3">
-                                <FormGroup>
-                                  <Label>{t("cni_bid_award_date")}</Label>
-                                  <InputGroup>
-                                    <Flatpickr
-                                      id="DataPicker"
-                                      className={`form-control ${validation.touched.cni_bid_award_date &&
-                                        validation.errors.cni_bid_award_date
-                                        ? "is-invalid"
-                                        : ""
-                                        }`}
-                                      name="cni_bid_award_date"
-                                      options={{
-                                        altInput: true,
-                                        altFormat: "Y/m/d",
-                                        dateFormat: "Y/m/d",
-                                        enableTime: false,
-                                        defaultDate: new Date(), // Set today's date as default
-                                      }}
-                                      value={validation.values.cni_bid_award_date || ""}
-                                      onChange={(date) => {
-                                        const formatedDate = formatDate(date[0]);
-                                        validation.setFieldValue(
-                                          "cni_bid_award_date",
-                                          formatedDate
-                                        ); // Set value in Formik
-                                      }}
-                                      onBlur={validation.handleBlur}
-                                    />
-
-                                    <Button
-                                      type="button"
-                                      className="btn btn-outline-secondary"
-                                      disabled
-                                    >
-                                      <i
-                                        className="fa fa-calendar"
-                                        aria-hidden="true"
-                                      />
-                                    </Button>
-                                  </InputGroup>
-                                  {validation.touched.cni_bid_award_date &&
-                                    validation.errors.cni_bid_award_date ? (
-                                    <FormFeedback>
-                                      {validation.errors.cni_bid_award_date}
-                                    </FormFeedback>
-                                  ) : null}
-                                </FormGroup>
-                              </Col>
-
-                              <Col className="col-md-4 mb-3">
-                                <FormGroup>
-                                  <Label>{t("cni_bid_contract_signing_date")}</Label>
-                                  <InputGroup>
-                                    <Flatpickr
-                                      id="DataPicker"
-                                      className={`form-control ${validation.touched
-                                        .cni_bid_contract_signing_date &&
-                                        validation.errors.cni_bid_contract_signing_date
-                                        ? "is-invalid"
-                                        : ""
-                                        }`}
-                                      name="cni_bid_contract_signing_date"
-                                      options={{
-                                        altInput: true,
-                                        altFormat: "Y/m/d",
-                                        dateFormat: "Y/m/d",
-                                        enableTime: false,
-                                        defaultDate: new Date(), // Set today's date as default
-                                      }}
-                                      value={
-                                        validation.values
-                                          .cni_bid_contract_signing_date || ""
-                                      }
-                                      onChange={(date) => {
-                                        const formatedDate = formatDate(date[0]);
-                                        validation.setFieldValue(
-                                          "cni_bid_contract_signing_date",
-                                          formatedDate
-                                        ); // Set value in Formik
-                                      }}
-                                      onBlur={validation.handleBlur}
-                                    />
-
-                                    <Button
-                                      type="button"
-                                      className="btn btn-outline-secondary"
-                                      disabled
-                                    >
-                                      <i
-                                        className="fa fa-calendar"
-                                        aria-hidden="true"
-                                      />
-                                    </Button>
-                                  </InputGroup>
-                                  {validation.touched.cni_bid_contract_signing_date &&
-                                    validation.errors.cni_bid_contract_signing_date ? (
-                                    <FormFeedback>
-                                      {validation.errors.cni_bid_contract_signing_date}
-                                    </FormFeedback>
-                                  ) : null}
-                                </FormGroup>
-                              </Col>
-                            </>
+                            <Col className="col-md-4 mb-3">
+                              <DatePicker
+                                isRequired={true}
+                                componentId={"cni_contract_start_date_gc"}
+                                validation={validation}
+                                minDate={startDate} />
+                            </Col>
+                            <Col className="col-md-4 mb-3">
+                              <DatePicker
+                                isRequired={true}
+                                componentId={"cni_contract_end_date_gc"}
+                                validation={validation}
+                                minDate={startDate} />
+                            </Col>
+                            <Col className="col-md-4 mb-3">
+                              <DatePicker
+                                isRequired={true}
+                                componentId={"cni_bid_invitation_date"}
+                                validation={validation}
+                                minDate={startDate} />
+                            </Col>
+                            <Col className="col-md-4 mb-3">
+                              <DatePicker
+                                isRequired={true}
+                                componentId={"cni_bid_opening_date"}
+                                validation={validation}
+                                minDate={startDate} />
+                            </Col>
+                            <Col className="col-md-4 mb-3">
+                              <DatePicker
+                                isRequired={true}
+                                componentId={"cni_bid_evaluation_date"}
+                                validation={validation}
+                                minDate={startDate} />
+                            </Col>
+                            <Col className="col-md-4 mb-3">
+                              <DatePicker
+                                isRequired={true}
+                                componentId={"cni_bid_award_date"}
+                                validation={validation}
+                                minDate={startDate} />
+                            </Col>
+                            <Col className="col-md-4 mb-3">
+                              <DatePicker
+                                isRequired={true}
+                                componentId={"cni_bid_contract_signing_date"}
+                                validation={validation}
+                                minDate={startDate} />
+                            </Col>
                           </Row>
                         </CardBody>
                       </Collapse>

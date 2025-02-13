@@ -53,7 +53,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectHandoverModel = (props) => {
-  const { passedId, isActive } = props;
+  const { passedId, isActive, startDate } = props;
   const param = { prh_project_id: passedId };
 
   const { t } = useTranslation();
@@ -463,6 +463,7 @@ const ProjectHandoverModel = (props) => {
                       isRequired="true"
                       validation={validation}
                       componentId="prh_handover_date_gc"
+                      startDate={startDate}
                     />
                   </Col>
                   <Col className="col-md-6 mb-3">

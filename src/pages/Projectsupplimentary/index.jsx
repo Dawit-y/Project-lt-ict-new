@@ -53,7 +53,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectSupplimentaryModel = (props) => {
-  const { passedId, isActive, projectName } = props;
+  const { passedId, isActive, projectName, startDate } = props;
   const param = { prs_project_id: passedId };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
@@ -482,7 +482,6 @@ const ProjectSupplimentaryModel = (props) => {
                       isCustomPageSize={true}
                       handleUserClick={handleProjectSupplimentaryClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
                       SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add")}
@@ -570,6 +569,7 @@ const ProjectSupplimentaryModel = (props) => {
                       isRequired="true"
                       validation={validation}
                       componentId="prs_requested_date_gc"
+                      minDate={startDate}
                     />
                   </Col>
                   <Col className="col-md-6 mb-3">
@@ -577,6 +577,7 @@ const ProjectSupplimentaryModel = (props) => {
                       isRequired="true"
                       validation={validation}
                       componentId="prs_released_date_gc"
+                      minDate={startDate}
                     />
                   </Col>
                   <Col className="col-md-6 mb-3">

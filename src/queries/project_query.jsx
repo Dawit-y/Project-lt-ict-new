@@ -7,7 +7,7 @@ import {
   deleteProject,
 } from "../helpers/project_backend_helper";
 
-const PROJECT_QUERY_KEY = ["project"];
+export const PROJECT_QUERY_KEY = ["project"];
 
 // Fetch project
 export const useFetchProjects = () => {

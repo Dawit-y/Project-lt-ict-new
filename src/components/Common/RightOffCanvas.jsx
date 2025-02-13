@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Col,
   Card,
@@ -53,7 +53,12 @@ const RightOffCanvas = ({
   startDate = null,
   components,
 }) => {
-  const [activeTab1, setActiveTab1] = useState(Object.keys(components)[0]); // Default to the first nav item key
+  const [activeTab1, setActiveTab1] = useState(Object.keys(components)[0]);
+  useEffect(() => {
+    if (Object.keys(components).length > 0) {
+      setActiveTab1(Object.keys(components)[0]);
+    }
+  }, [components]);
 
   const toggle1 = (tab) => {
     if (activeTab1 !== tab) {

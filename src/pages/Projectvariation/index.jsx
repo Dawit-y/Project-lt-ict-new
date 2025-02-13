@@ -1,15 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { isEmpty } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
-
 import {
   useFetchProjectVariations,
   useAddProjectVariation,
@@ -19,7 +17,7 @@ import {
 import ProjectVariationModal from "./ProjectVariationModal";
 import { useTranslation } from "react-i18next";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import { alphanumericValidation, amountValidation, numberValidation } from '../../utils/Validation/validation';
 import {
   Button,
   Col,
@@ -34,26 +32,20 @@ import {
   Label,
   Card,
   CardBody,
-  FormGroup,
-  Badge,
-  InputGroup,
-  InputGroupText
 } from "reactstrap";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import "flatpickr/dist/themes/material_blue.css";
-import Flatpickr from "react-flatpickr";
-import { formatDate } from "../../utils/commonMethods";
+import DatePicker from "../../components/Common/DatePicker";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-import DatePicker from "../../components/Common/DatePicker";
+
 const ProjectVariationModel = (props) => {
-  const { passedId, isActive } = props;
+  const { passedId, isActive, startDate } = props;
   const param = { prv_project_id: passedId };
 
   const { t } = useTranslation();
@@ -80,7 +72,7 @@ const ProjectVariationModel = (props) => {
       toast.success(t('add_success'), {
         autoClose: 2000,
       });
-        validation.resetForm();
+      validation.resetForm();
     } catch (error) {
       toast.success(t('add_failure'), {
         autoClose: 2000,
@@ -91,12 +83,12 @@ const ProjectVariationModel = (props) => {
   const handleUpdateProjectVariation = async (data) => {
     try {
       await updateProjectVariation.mutateAsync(data);
-       toast.success(t('update_success'), {
+      toast.success(t('update_success'), {
         autoClose: 2000,
       });
-        validation.resetForm();
+      validation.resetForm();
     } catch (error) {
-       toast.success(t('update_failure'), {
+      toast.success(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -107,11 +99,11 @@ const ProjectVariationModel = (props) => {
       try {
         const id = projectVariation.prv_id;
         await deleteProjectVariation.mutateAsync(id);
-         toast.success(t('delete_success'), {
+        toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-         toast.success(t('delete_success'), {
+        toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       }
@@ -150,20 +142,20 @@ const ProjectVariationModel = (props) => {
     },
 
     validationSchema: Yup.object({
-      prv_requested_amount: amountValidation(1000,100000000, true),
-      prv_released_amount: amountValidation(1000,100000000, true),
-     // prv_project_id: Yup.string().required(t("prv_project_id")),
+      prv_requested_amount: amountValidation(1000, 100000000, true),
+      prv_released_amount: amountValidation(1000, 100000000, true),
+      // prv_project_id: Yup.string().required(t("prv_project_id")),
       //prv_requested_date_ec: Yup.string().required(t("prv_requested_date_ec")),
       prv_requested_date_gc: Yup.string().required(t("prv_requested_date_gc"))
-      .test(
-      'is-before-end-date',
-      'request date must be earlier than or equal to the released date',
-      function (value) {
-        const { prv_released_date_gc } = this.parent; // Access other fields in the form
-        return !prv_released_date_gc || !value || new Date(value) <= new Date(prv_released_date_gc);
-      }),
-     prv_released_date_gc: Yup.string().required(t("prv_released_date_gc")),
-      prv_description: alphanumericValidation(3,425,false),
+        .test(
+          'is-before-end-date',
+          'request date must be earlier than or equal to the released date',
+          function (value) {
+            const { prv_released_date_gc } = this.parent; // Access other fields in the form
+            return !prv_released_date_gc || !value || new Date(value) <= new Date(prv_released_date_gc);
+          }),
+      prv_released_date_gc: Yup.string().required(t("prv_released_date_gc")),
+      prv_description: alphanumericValidation(3, 425, false),
       //prv_status: Yup.string().required(t("prv_status")),
     }),
     validateOnBlur: true,
@@ -199,7 +191,7 @@ const ProjectVariationModel = (props) => {
           prv_status: values.prv_status,
         };
         // save new ProjectVariation
-        handleAddProjectVariation(newProjectVariation);      
+        handleAddProjectVariation(newProjectVariation);
       }
     },
   });
@@ -227,7 +219,6 @@ const ProjectVariationModel = (props) => {
 
   const handleProjectVariationClick = (arg) => {
     const projectVariation = arg;
-    // console.log("handleProjectVariationClick", projectVariation);
     setProjectVariation({
       prv_id: projectVariation.prv_id,
       prv_requested_amount: projectVariation.prv_requested_amount,
@@ -373,40 +364,40 @@ const ProjectVariationModel = (props) => {
             <div className="d-flex gap-3">
               {(cellProps.row.original?.is_editable ||
                 cellProps.row.original?.is_role_editable) && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleProjectVariationClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+                  <Link
+                    to="#"
+                    className="text-success"
+                    onClick={() => {
+                      const data = cellProps.row.original;
+                      handleProjectVariationClick(data);
+                    }}
+                  >
+                    <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                    <UncontrolledTooltip placement="top" target="edittooltip">
+                      Edit
+                    </UncontrolledTooltip>
+                  </Link>
+                )}
 
               {(cellProps.row.original?.is_deletable ||
                 cellProps.row.original?.is_role_deletable) && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+                  <Link
+                    to="#"
+                    className="text-danger"
+                    onClick={() => {
+                      const data = cellProps.row.original;
+                      onClickDelete(data);
+                    }}
+                  >
+                    <i
+                      className="mdi mdi-delete font-size-18"
+                      id="deletetooltip"
+                    />
+                    <UncontrolledTooltip placement="top" target="deletetooltip">
+                      Delete
+                    </UncontrolledTooltip>
+                  </Link>
+                )}
             </div>
           );
         },
@@ -427,7 +418,7 @@ const ProjectVariationModel = (props) => {
         toggle={toggleViewModal} // Function to close the modal
         data={transaction} // Pass transaction as data to the modal
         title={t('project_variation')}
-        description={transaction.prv_description}      
+        description={transaction.prv_description}
         fields={[
           { label: t('prv_requested_date_gc'), key: "prv_requested_date_gc" },
           { label: t('prv_released_date_gc'), key: "prv_released_date_gc" },
@@ -444,38 +435,6 @@ const ProjectVariationModel = (props) => {
       />
       <>
         <div className="container-fluid1">
-          {/* <Breadcrumbs
-            title={t("project_variation")}
-            breadcrumbItem={t("project_variation")}
-          />
-          <AdvancedSearch
-            searchHook={useSearchProjectVariations}
-            textSearchKeys={["dep_name_am", "dep_name_en", "dep_name_or"]}
-            dropdownSearchKeys={[
-              {
-                key: "example",
-                options: [
-                  { value: "Freelance", label: "Example1" },
-                  { value: "Full Time", label: "Example2" },
-                  { value: "Part Time", label: "Example3" },
-                  { value: "Internship", label: "Example4" },
-                ],
-              },
-            ]}
-            checkboxSearchKeys={[
-              {
-                key: "example1",
-                options: [
-                  { value: "Engineering", label: "Example1" },
-                  { value: "Science", label: "Example2" },
-                ],
-              },
-            ]}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          /> */}
           {isLoading || isSearchLoading ? (
             <Spinners top={isActive ? "top-70" : ""} />
           ) : (
@@ -491,11 +450,10 @@ const ProjectVariationModel = (props) => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add==1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleProjectVariationClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
                       SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add")}
@@ -535,14 +493,14 @@ const ProjectVariationModel = (props) => {
                       value={validation.values.prv_requested_amount || ""}
                       invalid={
                         validation.touched.prv_requested_amount &&
-                        validation.errors.prv_requested_amount
+                          validation.errors.prv_requested_amount
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prv_requested_amount &&
-                    validation.errors.prv_requested_amount ? (
+                      validation.errors.prv_requested_amount ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prv_requested_amount}
                       </FormFeedback>
@@ -559,32 +517,34 @@ const ProjectVariationModel = (props) => {
                       value={validation.values.prv_released_amount || ""}
                       invalid={
                         validation.touched.prv_released_amount &&
-                        validation.errors.prv_released_amount
+                          validation.errors.prv_released_amount
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prv_released_amount &&
-                    validation.errors.prv_released_amount ? (
+                      validation.errors.prv_released_amount ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prv_released_amount}
                       </FormFeedback>
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                 <DatePicker 
+                    <DatePicker
                       isRequired="true"
                       validation={validation}
                       componentId="prv_requested_date_gc"
-                      />
+                      minDate={startDate}
+                    />
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <DatePicker 
+                    <DatePicker
                       isRequired="true"
                       validation={validation}
                       componentId="prv_released_date_gc"
-                      />
+                      minDate={startDate}
+                    />
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("prv_description")}</Label>
@@ -597,14 +557,14 @@ const ProjectVariationModel = (props) => {
                       value={validation.values.prv_description || ""}
                       invalid={
                         validation.touched.prv_description &&
-                        validation.errors.prv_description
+                          validation.errors.prv_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.prv_description &&
-                    validation.errors.prv_description ? (
+                      validation.errors.prv_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prv_description}
                       </FormFeedback>
@@ -615,7 +575,7 @@ const ProjectVariationModel = (props) => {
                   <Col>
                     <div className="text-end">
                       {addProjectVariation.isPending ||
-                      updateProjectVariation.isPending ? (
+                        updateProjectVariation.isPending ? (
                         <Button
                           color="success"
                           type="submit"
