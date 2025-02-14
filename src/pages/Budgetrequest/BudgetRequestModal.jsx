@@ -8,8 +8,13 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
+  Col
 } from "reactstrap"
 import { DetailsView } from "../../components/Common/DetailViewWrapper";
+import PrintMultipleTables from "../../components/Common/PrintMultipleTables";
+import { useFetchBudgetExSources } from "../../queries/budgetexsource_query";
+import { useFetchBudgetRequestAmounts } from "../../queries/budgetrequestamount_query";
+import { useFetchBudgetRequestTasks } from "../../queries/budgetrequesttask_query";
 
 const modalStyle = {
   width: '100%',
@@ -18,6 +23,10 @@ const modalStyle = {
 const BudgetRequestModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction } = props;
+  const id = transaction.bdr_id
+  const brAmounts = useFetchBudgetRequestAmounts({ budget_request_id: id }, isOpen)
+  const brTasks = useFetchBudgetRequestTasks({ budget_request_id: id }, isOpen)
+  const brExSources = useFetchBudgetExSources({ budget_request_id: id }, isOpen)
 
   return (
     <Modal
@@ -54,9 +63,33 @@ const BudgetRequestModal = (props) => {
           />
         </ModalBody>
         <ModalFooter>
-          <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
-          </Button>
+          <Col className="d-flex align-items-center justify-content-end gap-2">
+            <PrintMultipleTables
+              title="budget_request"
+              tables={
+                [
+                  {
+                    tablename: "Amounts",
+                    data: brAmounts?.data?.data || [],
+                    excludeKey: ["is_editble", "is_deletable"],
+                  },
+                  {
+                    tablename: "Tasks",
+                    data: brTasks?.data?.data || [],
+                    excludeKey: ["is_editble", "is_deletable"],
+                  },
+                  {
+                    tablename: "External Sources",
+                    data: brExSources?.data?.data || [],
+                    excludeKey: ["is_editble", "is_deletable"],
+                  },
+
+                ]}
+            />
+            <Button type="button" color="secondary" onClick={toggle}>
+              {t('Close')}
+            </Button>
+          </Col>
         </ModalFooter>
       </div>
     </Modal>

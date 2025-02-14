@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState, useRef } from "react";
 import { Row, Table, Button, Col } from "reactstrap";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import {FOOTER_TEXT,COPYRIGHT_YEAR} from "../../constants/constantFile";
+import { FOOTER_TEXT, COPYRIGHT_YEAR } from "../../constants/constantFile";
 import {
   useReactTable,
   getCoreRowModel,
@@ -11,11 +11,11 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-
+import { UncontrolledTooltip } from "reactstrap";
 import { rankItem } from "@tanstack/match-sorter-utils";
 import ExportToExcel from "../../components/Common/ExportToExcel";
 import PrintHtmlPage from "../../components/Common/PrintHtmlPage";
-
+import { FaInfoCircle } from "react-icons/fa";
 import ExportToPDF from "./ExportToPdf";
 
 // Column Filter
@@ -96,6 +96,7 @@ const TableContainer = ({
   isPrint = true,
   excludeKey = [],
   tableName = "",
+  infoIcon = false
 }) => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -232,88 +233,94 @@ const TableContainer = ({
               />
             )}
             {isPrint && (
-            <PrintHtmlPage
+              <PrintHtmlPage
                 tableData={data}
                 tablename={tableName}
                 excludeKey={excludeKey}
               />
-          )}
+            )}
+            {infoIcon &&
+              <div>
+                <FaInfoCircle size={36} color="#50a5f1" id="info" />
+                <UncontrolledTooltip placement="top" target="info">
+                  Sample Info
+                </UncontrolledTooltip>
+              </div>}
           </div>
         </Col>
       </Row>
       <div className={divClassName ? divClassName : "table-responsive"}>
-      <div id='printable-table'>
-        <Table
-          hover
-          className={`${tableClass} table-sm table-bordered table-striped`}
-          bordered={isBordered}
-        >
-          <thead className={theadClass}>
-            {getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                <th>{t("S.N")}</th>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    colSpan={header.colSpan}
-                    className={`${
-                      header.column.columnDef.enableSorting
+        <div id='printable-table'>
+          <Table
+            hover
+            className={`${tableClass} table-sm table-bordered table-striped`}
+            bordered={isBordered}
+          >
+            <thead className={theadClass}>
+              {getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  <th>{t("S.N")}</th>
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      className={`${header.column.columnDef.enableSorting
                         ? "sorting sorting_desc"
                         : ""
-                    }`}
-                  >
-                    {header.isPlaceholder ? null : (
-                      <Fragment>
-                        <div
-                          {...{
-                            className: header.column.getCanSort()
-                              ? "cursor-pointer select-none"
-                              : "",
-                            onClick: header.column.getToggleSortingHandler(),
-                          }}
-                        >
-                          {flexRender(t(header.id), header.getContext())}
-                          {{
-                            asc: "",
-                            desc: "",
-                          }[header.column.getIsSorted()] ?? null}
-                        </div>
-                        {header.column.getCanFilter() ? (
-                          <div>
-                            <Filter column={header.column} table={table} />
+                        }`}
+                    >
+                      {header.isPlaceholder ? null : (
+                        <Fragment>
+                          <div
+                            {...{
+                              className: header.column.getCanSort()
+                                ? "cursor-pointer select-none"
+                                : "",
+                              onClick: header.column.getToggleSortingHandler(),
+                            }}
+                          >
+                            {flexRender(t(header.id), header.getContext())}
+                            {{
+                              asc: "",
+                              desc: "",
+                            }[header.column.getIsSorted()] ?? null}
                           </div>
-                        ) : null}
-                      </Fragment>
-                    )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody style={{ height: "auto" }}>
-            {data.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length + 2} className="text-center py-5">
-                  No data available
-                </td>
-              </tr>
-            ) : (
-              getRowModel().rows.map((row) => (
-                <tr key={row.id}>
-                  <td>{Number(row.id) + 1}</td>
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
+                          {header.column.getCanFilter() ? (
+                            <div>
+                              <Filter column={header.column} table={table} />
+                            </div>
+                          ) : null}
+                        </Fragment>
                       )}
-                    </td>
+                    </th>
                   ))}
                 </tr>
-              ))
-            )}
-          </tbody>
-        </Table>
+              ))}
+            </thead>
+            <tbody style={{ height: "auto" }}>
+              {data.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length + 2} className="text-center py-5">
+                    No data available
+                  </td>
+                </tr>
+              ) : (
+                getRowModel().rows.map((row) => (
+                  <tr key={row.id}>
+                    <td>{Number(row.id) + 1}</td>
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </Table>
         </div>
         {isPagination && (
           <Row>
@@ -321,9 +328,8 @@ const TableContainer = ({
               <div className="dataTables_info">
                 {paginationState.pageSize > data.length
                   ? `${t("Showing")} ${data.length} of ${data.length}`
-                  : `${t("Showing")} ${paginationState.pageSize} of ${
-                      data.length
-                    }`}
+                  : `${t("Showing")} ${paginationState.pageSize} of ${data.length
+                  }`}
               </div>
             </Col>
             <Col sm={12} md={7}>
@@ -331,9 +337,8 @@ const TableContainer = ({
                 <ul className={pagination}>
                   {/* Previous Button */}
                   <li
-                    className={`paginate_button page-item previous ${
-                      !getCanPreviousPage() ? "disabled" : ""
-                    }`}
+                    className={`paginate_button page-item previous ${!getCanPreviousPage() ? "disabled" : ""
+                      }`}
                   >
                     <Link to="#" className="page-link" onClick={handlePrevious}>
                       <i className="mdi mdi-chevron-left"></i>
@@ -344,9 +349,8 @@ const TableContainer = ({
                   {visiblePageNumbers.map((item) => (
                     <li
                       key={item}
-                      className={`paginate_button page-item ${
-                        currentPage === item ? "active" : ""
-                      }`}
+                      className={`paginate_button page-item ${currentPage === item ? "active" : ""
+                        }`}
                     >
                       <Link
                         to="#"
@@ -363,9 +367,8 @@ const TableContainer = ({
 
                   {/* Next Button */}
                   <li
-                    className={`paginate_button page-item next ${
-                      !getCanNextPage() ? "disabled" : ""
-                    }`}
+                    className={`paginate_button page-item next ${!getCanNextPage() ? "disabled" : ""
+                      }`}
                   >
                     <Link to="#" className="page-link" onClick={handleNext}>
                       <i className="mdi mdi-chevron-right"></i>

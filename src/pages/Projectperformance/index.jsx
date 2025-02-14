@@ -147,13 +147,25 @@ const ProjectPerformanceModel = (props) => {
 
     validationSchema: Yup.object({
       // prp_project_id: Yup.string().required(t('prp_project_id')),
-      prp_project_status_id: numberValidation(1, 20, true),
-      prp_budget_year_id: numberValidation(1, 20, true),
-      prp_budget_month_id: numberValidation(1, 20, true)
-        .test("unique-role-id", t("Already exists"), (value) => {
+      prp_project_status_id: numberValidation(1, 20, true)
+        .test("unique-status-id", t("Status already exists for the selected budget"), function (value) {
+          const { prp_budget_year_id, prp_budget_month_id } = this.parent;
+          if (!data?.data) return true;
           return !data?.data.some(
             (item) =>
-              item.prp_budget_month_id == value && item.prp_budget_year_id == projectPerformance?.prp_budget_year_id && item.prp_id !== projectPerformance?.prp_id
+              item.prp_project_status_id === value &&
+              item.prp_budget_year_id === prp_budget_year_id &&
+              item.prp_budget_month_id === prp_budget_month_id &&
+              item.prp_id !== projectPerformance.prp_id
+          );
+        }),
+      prp_budget_year_id: numberValidation(1, 20, true),
+      prp_budget_month_id: numberValidation(1, 20, true)
+        .test("unique-month-id", t("Already exists."), function (value) {
+          const { prp_budget_year_id } = this.parent;
+          return !data?.data.some(
+            (item) =>
+              item.prp_budget_month_id == value && item.prp_budget_year_id == prp_budget_year_id && item.prp_id !== projectPerformance?.prp_id
           );
         }),
       //prp_record_date_ec: Yup.string().required(t('prp_record_date_ec')),
@@ -166,7 +178,7 @@ const ProjectPerformanceModel = (props) => {
       //prp_termination_reason_id: Yup.string().required(t('prp_termination_reason_id')),
     }),
     validateOnBlur: true,
-    validateOnChange: false,
+    validateOnChange: true,
     onSubmit: (values) => {
       if (isEdit) {
         const updateProjectPerformance = {
@@ -209,6 +221,7 @@ const ProjectPerformanceModel = (props) => {
       }
     },
   });
+  console.log(validation.errors)
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
 

@@ -1,14 +1,14 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import {FOOTER_TEXT,COPYRIGHT_YEAR} from "../../constants/constantFile";
+import { FOOTER_TEXT, COPYRIGHT_YEAR } from "../../constants/constantFile";
 import {
   UncontrolledTooltip
 } from "reactstrap";
-const PrintHtmlPage = ({ tableData, tablename, excludeKey = [], columnsToIgnore=2 }) => {
+
+const PrintHtmlPage = ({ tableData, tablename, excludeKey = [], columnsToIgnore = 2 }) => {
   const { t } = useTranslation();
- //START PRINT
+  
   const printPage = (event) => {
-    console.log(event);
     const customHeader = getCustomHeader();
     const customFooter = getCustomFooter();
     const button = event.currentTarget;
@@ -99,7 +99,7 @@ const PrintHtmlPage = ({ tableData, tablename, excludeKey = [], columnsToIgnore=
     printWindow.print();
     printWindow.close();
   };
-    // Function to generate custom header
+  // Function to generate custom header
   const getCustomHeader = () => {
     return `
     <div style="text-align: center; margin-bottom: 20px;">
@@ -116,20 +116,20 @@ const PrintHtmlPage = ({ tableData, tablename, excludeKey = [], columnsToIgnore=
     </div>
     `;
   };
-//END PRINT
+  //END PRINT
   return (
     <div id="print-cont">
-    <button
-    className="btn btn-soft-primary"
-    onClick={printPage}
-    disabled={!tableData || tableData.length === 0}
-    >
-    {t("print")}
-    <UncontrolledTooltip placement="top" target="print-cont">
-                    {t("print_tooltip")}
-    </UncontrolledTooltip>
-    </button>
+      <button
+        className="btn btn-soft-primary"
+        onClick={printPage}
+        disabled={!tableData || tableData.length === 0}
+      >
+        {t("print")}
+        <UncontrolledTooltip placement="top" target="print-cont">
+          {t("print_tooltip")}
+        </UncontrolledTooltip>
+      </button>
     </div>
-    );
+  );
 };
 export default PrintHtmlPage;

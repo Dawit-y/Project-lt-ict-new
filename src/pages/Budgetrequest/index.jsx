@@ -436,7 +436,7 @@ const BudgetRequestModel = () => {
       },
     ];
     if (
-     1==1
+      1 == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -462,7 +462,6 @@ const BudgetRequestModel = () => {
                     </UncontrolledTooltip>
                   </Link>
                 )}
-
               {(cellProps.row.original?.is_deletable ||
                 cellProps.row.original?.is_role_deletable) && (
                   <Link
@@ -591,6 +590,7 @@ const BudgetRequestModel = () => {
                       theadClass="table-light"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                      infoIcon={true}
                     />
                   </CardBody>
                 </Card>
