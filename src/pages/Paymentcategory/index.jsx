@@ -82,7 +82,7 @@ const PaymentCategoryModel = () => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t("add_failure"), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -96,7 +96,7 @@ const PaymentCategoryModel = () => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t("update_failure"), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -111,7 +111,7 @@ const PaymentCategoryModel = () => {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t("delete_failure"), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -132,7 +132,9 @@ const PaymentCategoryModel = () => {
       pyc_name_en: (paymentCategory && paymentCategory.pyc_name_en) || "",
       pyc_description:
         (paymentCategory && paymentCategory.pyc_description) || "",
-      pyc_status: (paymentCategory && paymentCategory.pyc_status) || "",
+      //pyc_status: (paymentCategory && paymentCategory.pyc_status) || "",
+       pyc_status:
+        (paymentCategory && paymentCategory.pyc_status) || false,
 
       is_deletable: (paymentCategory && paymentCategory.is_deletable) || 1,
       is_editable: (paymentCategory && paymentCategory.is_editable) || 1,
@@ -154,7 +156,7 @@ const PaymentCategoryModel = () => {
           pyc_name_am: values.pyc_name_am,
           pyc_name_en: values.pyc_name_en,
           pyc_description: values.pyc_description,
-          pyc_status: values.pyc_status,
+          pyc_status: values.pyc_status ? 1 : 0,
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -166,7 +168,7 @@ const PaymentCategoryModel = () => {
           pyc_name_am: values.pyc_name_am,
           pyc_name_en: values.pyc_name_en,
           pyc_description: values.pyc_description,
-          pyc_status: values.pyc_status,
+          pyc_status: values.pyc_status ? 1 : 0,
         };
         // save new PaymentCategory
         handleAddPaymentCategory(newPaymentCategory);
@@ -204,8 +206,7 @@ const PaymentCategoryModel = () => {
       pyc_name_am: paymentCategory.pyc_name_am,
       pyc_name_en: paymentCategory.pyc_name_en,
       pyc_description: paymentCategory.pyc_description,
-      pyc_status: paymentCategory.pyc_status,
-
+      pyc_status: paymentCategory.pyc_status === 1,
       is_deletable: paymentCategory.is_deletable,
       is_editable: paymentCategory.is_editable,
     });
@@ -268,6 +269,21 @@ const PaymentCategoryModel = () => {
           return (
             <span>
               {truncateText(cellProps.row.original.pyc_name_en, 30) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: t('is_deleted'),        
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span className={cellProps.row.original.pyc_status === 1 ? "btn btn-sm btn-soft-danger" : ""}>
+              {cellProps.row.original.pyc_status == 1
+                ? t("yes")
+                : t("no")
+              }
             </span>
           );
         },
@@ -488,6 +504,34 @@ const PaymentCategoryModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
+                  <Col className="col-md-6 col-xl-4 mb-3">
+                  <div className="form-check mb-4">
+                      <Label className="me-1" for="pyc_status">
+                        {t("is_deleted")}
+                      </Label>
+                      <Input
+                        id="pyc_status"
+                        name="pyc_status"
+                        type="checkbox"
+                        placeholder={t("is_deleted")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.pyc_status}
+                        invalid={
+                          validation.touched.pyc_status &&
+                          validation.errors.pyc_status
+                            ? true
+                            : false
+                        }
+                      />
+                      {validation.touched.pyc_status &&
+                      validation.errors.pyc_status ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.pyc_status}
+                        </FormFeedback>
+                      ) : null}
+                      </div>
+                    </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("pyc_description")}</Label>
                     <Input

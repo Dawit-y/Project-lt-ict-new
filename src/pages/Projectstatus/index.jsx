@@ -84,7 +84,7 @@ const ProjectStatusModel = () => {
       });
     validation.resetForm();
     } catch (error) {
-     toast.success(t('add_failure'), {
+     toast.error(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -99,7 +99,7 @@ const ProjectStatusModel = () => {
       });
      validation.resetForm();
     } catch (error) {
-     toast.success(t('update_failure'), {
+     toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -114,7 +114,7 @@ const ProjectStatusModel = () => {
         autoClose: 2000,
       });
       } catch (error) {
-       toast.success(t('delete_failure'), {
+       toast.error(t('delete_failure'), {
         autoClose: 2000,
       });
       }

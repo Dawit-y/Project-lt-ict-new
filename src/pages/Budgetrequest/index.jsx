@@ -363,12 +363,10 @@ const BudgetRequestModel = () => {
         enableSorting: false,
         enableColumnFilter: false,
         cell: (cellProps) => {
-          const status = cellProps.row.original.bdr_request_status?.trim();
-          const badgeClass = statusClasses.get(status) || "secondary";
-
+          const badgeClass = cellProps.row.original.color_code;
           return (
             <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
-              {cellProps.row.original.bdr_request_status}
+              {cellProps.row.original.status_name}
             </Badge>
           );
         },
@@ -438,9 +436,7 @@ const BudgetRequestModel = () => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable &&
-      project?.data?.request_role == "requester"
+     1==1
     ) {
       baseColumns.push({
         header: t("Action"),

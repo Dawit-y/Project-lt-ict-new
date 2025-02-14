@@ -135,7 +135,7 @@ const ProjectCategoryModel = () => {
       pct_code: (projectCategory && projectCategory.pct_code) || "",
       pct_description:
         (projectCategory && projectCategory.pct_description) || "",
-      pct_status: (projectCategory && projectCategory.pct_status) || "",
+      pct_status: (projectCategory && projectCategory.pct_status) || false,
       is_deletable: (projectCategory && projectCategory.is_deletable) || 1,
       is_editable: (projectCategory && projectCategory.is_editable) || 1,
     },
@@ -167,7 +167,7 @@ const ProjectCategoryModel = () => {
           pct_name_en: values.pct_name_en,
           pct_code: values.pct_code,
           pct_description: values.pct_description,
-          pct_status: values.pct_status,
+          pct_status: values.pct_status ? 1 : 0,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -181,7 +181,7 @@ const ProjectCategoryModel = () => {
           pct_name_en: values.pct_name_en,
           pct_code: values.pct_code,
           pct_description: values.pct_description,
-          pct_status: values.pct_status,
+          pct_status: values.pct_status ? 1 : 0,
         };
         // save new ProjectCategory
         handleAddProjectCategory(newProjectCategory);
@@ -220,7 +220,7 @@ const ProjectCategoryModel = () => {
       pct_name_en: projectCategory.pct_name_en,
       pct_code: projectCategory.pct_code,
       pct_description: projectCategory.pct_description,
-      pct_status: projectCategory.pct_status,
+      pct_status: projectCategory.pct_status === 1,
 
       is_deletable: projectCategory.is_deletable,
       is_editable: projectCategory.is_editable,
@@ -301,20 +301,21 @@ const ProjectCategoryModel = () => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "pct_description",
+     {
+        header: t('is_deleted'),        
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
-            <span>
-              {truncateText(cellProps.row.original.pct_description, 30) || "-"}
+            <span className={cellProps.row.original.pct_status === 1 ? "btn btn-sm btn-soft-danger" : ""}>
+              {cellProps.row.original.pct_status == 1
+                ? t("yes")
+                : t("no")
+              }
             </span>
           );
         },
       },
-
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -365,7 +366,7 @@ const ProjectCategoryModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable == 1 && (
+              {cellProps.row.original.is_deletable == 9 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -575,6 +576,34 @@ const ProjectCategoryModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
+                   <Col className="col-md-6 mb-3">
+                  <div className="form-check mb-4">
+                      <Label className="me-1" for="pct_status">
+                        {t("is_deleted")}
+                      </Label>
+                      <Input
+                        id="pct_status"
+                        name="pct_status"
+                        type="checkbox"
+                        placeholder={t("is_deleted")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.pct_status}
+                        invalid={
+                          validation.touched.pct_status &&
+                          validation.errors.pct_status
+                            ? true
+                            : false
+                        }
+                      />
+                      {validation.touched.pct_status &&
+                      validation.errors.pct_status ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.pct_status}
+                        </FormFeedback>
+                      ) : null}
+                      </div>
+                    </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("pct_description")}</Label>
                     <Input

@@ -117,9 +117,10 @@ export const PDFPreview = ({ filePath, fileSize }) => {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageDimensions, setPageDimensions] = useState({});
   const [goToPage, setGoToPage] = useState("");
-
+//() => `${API_URL}/public/uploads/projectfiles/${filePath}`,
+   //() => `${API_URL}uploads/projectfiles/${filePath}`,
   const fullPath = useMemo(
-    () => `${API_URL}/public/uploads/projectfiles/${filePath}`,
+    () => `${API_URL}uploads/projectfiles/${filePath}`,
     [filePath]
   );
 

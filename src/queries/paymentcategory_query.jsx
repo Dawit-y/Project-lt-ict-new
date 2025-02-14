@@ -25,10 +25,9 @@ export const useSearchPaymentCategorys = (searchParams = {}) => {
     queryKey: [...PAYMENT_CATEGORY_QUERY_KEY, searchParams],
     queryFn: () => getPaymentCategory(searchParams),
     staleTime: 1000 * 60 * 2,
-    gcTime: 1000 * 60 * 5,
+    meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: searchParams.length > 0,
   });
 };
 // Add payment_category

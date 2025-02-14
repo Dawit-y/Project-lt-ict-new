@@ -1108,12 +1108,14 @@
 	"conversation_information_list": "Conversation List",
 	"proposal_request_list": "Proposal Request List",
 	"request_information_list": "Request Information List",
-	"attach_files": "Attach Files",
+	"attach_files": "Files",
 	"documents" : "Documnets",
 	"open" : "Open",
 	"no_files_availaible": "No Files Available.",
 	"name" : "Name",
 	"date_modified" : "Date Modified",
 	"size" : "Size",
-	"create_new" : "Create New"
+	"create_new" : "Create New",
+  "Message":"Message",
+  "budget_request_approval":"Budget Request Approval"
 }

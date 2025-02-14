@@ -4,6 +4,8 @@ import {
   addBudgetRequest,
   updateBudgetRequest,
   deleteBudgetRequest,
+  getBudgetRequestforApproval,
+  updateBudgetRequestApproval
 } from "../helpers/budgetrequest_backend_helper";
 
 const BUDGET_REQUESTS_QUERY_KEY = ["budgetrequest"];
@@ -33,6 +35,44 @@ export const useSearchBudgetRequests = (searchParams = {}) => {
   });
 };
 
+export const useSearchBudgetRequestforApproval = (searchParams = {}) => {
+  return useQuery({
+    queryKey: [...BUDGET_REQUESTS_QUERY_KEY, searchParams],
+    queryFn: () => getBudgetRequestforApproval(searchParams),
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    enabled: searchParams.length > 0,
+  });
+};
+
+export const useUpdateBudgetRequestApproval = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateBudgetRequestApproval,
+    onSuccess: (updatedBudgetRequest, variables) => {
+      const allQueries = queryClient
+        .getQueriesData({ queryKey: BUDGET_REQUESTS_QUERY_KEY })
+        .map(([key, data]) => ({ key, data }));
+
+      allQueries.forEach(({ key }) => {
+        queryClient.setQueryData(key, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((BudgetRequestData) =>
+              BudgetRequestData.bdr_id === updatedBudgetRequest.data.bdr_id
+                ? { ...BudgetRequestData, ...updatedBudgetRequest.data }
+                : BudgetRequestData
+            ),
+          };
+        });
+      });
+    },
+  });
+};
 // Add budget_year
 // export const useAddBudgetRequest = () => {
 //   const queryClient = useQueryClient();

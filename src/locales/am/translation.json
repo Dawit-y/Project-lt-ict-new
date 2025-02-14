@@ -1249,5 +1249,8 @@
 	"name": "ስም",
 	"date_modified": "የተሻሻለበት ቀን",
 	"size": "መጠን",
-	"create_new": "አዲስ ፍጠር"
+	"create_new": "አዲስ ፍጠር",
+  "take_action": "አጽድቅ",
+  "Message":"መለዕክት",
+  "budget_request_approval":"የበጀት ጥያቄ ማጽደቂያ"
 }

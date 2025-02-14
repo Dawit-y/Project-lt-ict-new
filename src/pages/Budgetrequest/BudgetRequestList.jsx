@@ -126,7 +126,6 @@ const BudgetRequestListModel = () => {
       ...(include === 1 && { include }),
     });
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
-
   const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
@@ -142,7 +141,6 @@ const BudgetRequestListModel = () => {
       setShowSearchResult(false);
     }
   };
-
   const columnDefs = useMemo(() => {
     const baseColumnDefs = [
       {
@@ -151,13 +149,14 @@ const BudgetRequestListModel = () => {
         valueGetter: (params) => params.node.rowIndex + 1,
         sortable: false,
         filter: false,
-        width: 60,
+        flex: .5,
       },
       {
         headerName: t("bdr_budget_year_id"),
         field: "bdy_name",
         sortable: true,
         filter: true,
+        flex: 1,
         cellRenderer: (params) => {
           return truncateText(params.data.bdy_name, 30) || "-";
         },
@@ -167,6 +166,7 @@ const BudgetRequestListModel = () => {
         field: "prj_name",
         sortable: true,
         filter: true,
+        flex: 2,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_name, 30) || "-";
         },
@@ -176,6 +176,7 @@ const BudgetRequestListModel = () => {
         field: "prj_code",
         sortable: true,
         filter: true,
+        flex: 1.5,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_code, 30) || "-";
         },
@@ -185,6 +186,7 @@ const BudgetRequestListModel = () => {
         field: "bdr_requested_amount",
         sortable: true,
         filter: true,
+        flex: 1.2,
         valueFormatter: (params) => {
           if (params.value != null) {
             return new Intl.NumberFormat("en-US", {
@@ -200,6 +202,7 @@ const BudgetRequestListModel = () => {
         field: "bdr_released_amount",
         sortable: true,
         filter: true,
+        flex: 1.2,
         valueFormatter: (params) => {
           if (params.value != null) {
             return new Intl.NumberFormat("en-US", {
@@ -214,6 +217,7 @@ const BudgetRequestListModel = () => {
         headerName: t("bdr_requested_date_gc"),
         field: "bdr_requested_date_gc",
         sortable: true,
+        flex: 1,
         filter: "agDateColumnFilter",
         cellRenderer: (params) => {
           return truncateText(params.data.bdr_requested_date_gc, 30) || "-";
@@ -223,6 +227,7 @@ const BudgetRequestListModel = () => {
         headerName: t("bdr_released_date_gc"),
         field: "bdr_released_date_gc",
         sortable: true,
+        flex: 1,
         filter: "agDateColumnFilter",
         cellRenderer: (params) => {
           return truncateText(params.data.bdr_released_date_gc, 30) || "-";
@@ -233,13 +238,12 @@ const BudgetRequestListModel = () => {
         field: "bdr_request_status",
         sortable: true,
         filter: true,
+        flex: 1,
         cellRenderer: (params) => {
-          const status = params.value?.trim();
-          const badgeClass = statusClasses.get(status) || "secondary";
-
+          const badgeClass = params.data.color_code;
           return (
             <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
-              {params.value}
+              {params.data.status_name}
             </Badge>
           );
         },
@@ -247,6 +251,7 @@ const BudgetRequestListModel = () => {
       {
         headerName: t("attach_files"),
         field: "attach_files",
+        flex: 1,
         cellRenderer: (params) => {
           return (
             <Button
@@ -267,6 +272,7 @@ const BudgetRequestListModel = () => {
       {
         headerName: t("Message"),
         field: "Message",
+        flex: 1,
         cellRenderer: (params) => {
           return (
             <Button
@@ -285,13 +291,13 @@ const BudgetRequestListModel = () => {
         },
       },
     ];
-
     if (
       1 == 1
     ) {
       baseColumnDefs.push({
         headerName: t("view_detail"),
         field: "view_detail",
+        flex: .5,
         cellRenderer: (params) => (
           <div className="d-flex gap-3">
             {params.data.is_editable ? (
@@ -300,7 +306,7 @@ const BudgetRequestListModel = () => {
                 className="text-secondary"
                 onClick={() => handleClick(params.data)}
               >
-                <i className="mdi mdi-eye font-size-18 ms-2" id="viewtooltip" />
+                <i className="mdi mdi-cog font-size-18 ms-2" id="viewtooltip" />
                 <UncontrolledTooltip placement="top" target="viewtooltip">
                   View
                 </UncontrolledTooltip>
@@ -312,14 +318,11 @@ const BudgetRequestListModel = () => {
         ),
       });
     }
-
     return baseColumnDefs;
   }, []);
-
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
   return (
     <React.Fragment>
       <AttachFileModal
@@ -408,13 +411,13 @@ const BudgetRequestListModel = () => {
                       // }}
                       />
                     </div>
-                    <BudgetRequestAnalysis
+                    {/*<BudgetRequestAnalysis
                       data={
                         showSearchResult
                           ? searchResults?.data
                           : data?.data || []
                       }
-                    />
+                    />*/}
                   </div>
                 </>
               )}

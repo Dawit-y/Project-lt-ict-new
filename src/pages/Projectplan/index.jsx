@@ -105,7 +105,7 @@ const ProjectPlanModel = () => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t("add_failure"), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -120,7 +120,7 @@ const ProjectPlanModel = () => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t("update_failure"), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -138,7 +138,7 @@ const ProjectPlanModel = () => {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t("delete_failure"), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -646,7 +646,7 @@ const ProjectPlanModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={425}
                     />
                     {validation.touched.pld_description &&
                     validation.errors.pld_description ? (

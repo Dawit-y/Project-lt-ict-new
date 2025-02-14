@@ -18,8 +18,7 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import BudgetRequestAnalysis from "./BudgetRequestAnalysis";
 import {
-  useFetchBudgetRequests,
-  useSearchBudgetRequests,
+  useSearchBudgetRequestforApproval,
 } from "../../queries/budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { ToastContainer, toast } from "react-toastify";
@@ -164,12 +163,14 @@ const ApproverBudgetRequestList = () => {
         sortable: false,
         filter: false,
         width: 60,
+        flex:.5
       },
       {
         headerName: t("bdr_budget_year_id"),
         field: "bdy_name",
         sortable: true,
         filter: true,
+        flex:1,
         cellRenderer: (params) => {
           return truncateText(params.data.bdy_name, 30) || "-";
         },
@@ -179,6 +180,7 @@ const ApproverBudgetRequestList = () => {
         field: "prj_name",
         sortable: true,
         filter: true,
+        flex:2,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_name, 30) || "-";
         },
@@ -188,6 +190,7 @@ const ApproverBudgetRequestList = () => {
         field: "prj_code",
         sortable: true,
         filter: true,
+        flex:1.5,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_code, 30) || "-";
         },
@@ -197,6 +200,7 @@ const ApproverBudgetRequestList = () => {
         field: "bdr_requested_amount",
         sortable: true,
         filter: true,
+         flex: 1.2,
         valueFormatter: (params) => {
           if (params.value != null) {
             return new Intl.NumberFormat("en-US", {
@@ -212,6 +216,7 @@ const ApproverBudgetRequestList = () => {
         field: "bdr_released_amount",
         sortable: true,
         filter: true,
+        flex: 1.2,
         valueFormatter: (params) => {
           if (params.value != null) {
             return new Intl.NumberFormat("en-US", {
@@ -227,6 +232,7 @@ const ApproverBudgetRequestList = () => {
         field: "bdr_requested_date_gc",
         sortable: true,
         filter: "agDateColumnFilter",
+        flex: 1,
         cellRenderer: (params) => {
           return truncateText(params.data.bdr_requested_date_gc, 30) || "-";
         },
@@ -236,22 +242,22 @@ const ApproverBudgetRequestList = () => {
         field: "bdr_released_date_gc",
         sortable: true,
         filter: "agDateColumnFilter",
+        flex: 1,
         cellRenderer: (params) => {
           return truncateText(params.data.bdr_released_date_gc, 30) || "-";
         },
       },
-      {
+     {
         headerName: t("bdr_request_status"),
         field: "bdr_request_status",
         sortable: true,
         filter: true,
+        flex: 1,
         cellRenderer: (params) => {
-          const status = params.value?.trim();
-          const badgeClass = statusClasses.get(status) || "secondary";
-
+          const badgeClass = params.data.color_code;
           return (
             <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
-              {params.value}
+              {params.data.status_name}
             </Badge>
           );
         },
@@ -259,6 +265,7 @@ const ApproverBudgetRequestList = () => {
       {
         headerName: t("take_action"),
         field: "take_action",
+        flex: 1,
         cellRenderer: (params) => {
           return (
             <Button
@@ -279,6 +286,7 @@ const ApproverBudgetRequestList = () => {
       {
         headerName: t("attach_files"),
         field: "attach_files",
+        flex: 1,
         cellRenderer: (params) => {
           return (
             <Button
@@ -299,6 +307,7 @@ const ApproverBudgetRequestList = () => {
       {
         headerName: t("Message"),
         field: "Message",
+        flex: 1,
         cellRenderer: (params) => {
           return (
             <Button
@@ -326,6 +335,7 @@ const ApproverBudgetRequestList = () => {
       baseColumnDefs.push({
         headerName: t("view_detail"),
         field: "view_detail",
+        flex: 1,
         cellRenderer: (params) => (
           <div className="d-flex gap-3">
             {params.data.is_editable ? (
@@ -389,7 +399,7 @@ const ApproverBudgetRequestList = () => {
             />
             <div className="w-100">
               <AdvancedSearch
-                searchHook={useSearchBudgetRequests}
+                searchHook={useSearchBudgetRequestforApproval}
                 dateSearchKeys={["budget_request_date"]}
                 textSearchKeys={["prj_name", "prj_code"]}
                 dropdownSearchKeys={[
@@ -426,7 +436,7 @@ const ApproverBudgetRequestList = () => {
                       </Col>
                     </Row>
                     {/* AG Grid */}
-                    <div style={{ height: "600px" }}>
+                    <div style={{ height: "600px",zoom:"90%" }}>
                       <AgGridReact
                         ref={gridRef}
                         rowData={
@@ -443,18 +453,8 @@ const ApproverBudgetRequestList = () => {
                         rowHeight={30}
                         animateRows={true}
                         domLayout="autoHeight" // Auto-size the grid to fit content
-                      // onGridReady={(params) => {
-                      //   params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                      // }}
                       />
                     </div>
-                    <BudgetRequestAnalysis
-                      data={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                    />
                   </div>
                 </>
               )}
@@ -468,5 +468,4 @@ const ApproverBudgetRequestList = () => {
 ApproverBudgetRequestList.propTypes = {
   preGlobalFilteredRows: PropTypes.any,
 };
-
 export default ApproverBudgetRequestList;

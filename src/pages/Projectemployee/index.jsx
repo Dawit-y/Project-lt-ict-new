@@ -12,6 +12,7 @@ import {
   alphanumericValidation,
   amountValidation,
   numberValidation,
+  phoneValidation
 } from "../../utils/Validation/validation";
 import {
   useFetchProjectEmployees,
@@ -37,6 +38,8 @@ import {
   Label,
   Card,
   CardBody,
+  InputGroup,
+InputGroupText
 } from "reactstrap";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -82,7 +85,7 @@ const ProjectEmployeeModel = (props) => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t("add_failure"), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -97,7 +100,7 @@ const ProjectEmployeeModel = (props) => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t("update_failure"), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -112,14 +115,13 @@ const ProjectEmployeeModel = (props) => {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t("delete_failure"), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
       setDeleteModal(false);
     }
   };
-
   // validation
   const validation = useFormik({
     enableReinitialize: true,
@@ -161,7 +163,7 @@ const ProjectEmployeeModel = (props) => {
       emp_email: alphanumericValidation(5, 50, false).email(
         "ivalid email address"
       ),
-      emp_phone_num: alphanumericValidation(10, 24, true),
+      emp_phone_num: phoneValidation(true),
       emp_role: alphanumericValidation(3, 425, true),
       //emp_project_id: Yup.string().required(t("emp_project_id")),
       //emp_start_date_ec: Yup.string().required(t("emp_start_date_ec")),
@@ -174,7 +176,7 @@ const ProjectEmployeeModel = (props) => {
             return !emp_end_date_gc || !value || new Date(value) <= new Date(emp_end_date_gc);
           }),
       // emp_end_date_ec: Yup.string().required(t("emp_end_date_ec")),
-      emp_end_date_gc: Yup.string().required(t("emp_end_date_gc")),
+      //emp_end_date_gc: Yup.string().required(t("emp_end_date_gc")),
       emp_address: alphanumericValidation(3, 425, false),
       emp_description: alphanumericValidation(3, 425, false),
       //emp_current_status: Yup.string().required(t("emp_current_status")),
@@ -622,32 +624,37 @@ const ProjectEmployeeModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("emp_phone_num")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="emp_phone_num"
-                      type="text"
-                      placeholder={t("emp_phone_num")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.emp_phone_num || ""}
-                      invalid={
-                        validation.touched.emp_phone_num &&
-                          validation.errors.emp_phone_num
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.emp_phone_num &&
+                  <InputGroup>
+                      <InputGroupText>{"+251"}</InputGroupText>
+                      <Input
+                        name="emp_phone_num"
+                        type="text"
+                        placeholder="Enter phone number"
+                        onChange={(e) => {
+                          const inputValue = e.target.value;
+                          let formattedValue = inputValue.replace(/^0/, "");
+                          formattedValue = formattedValue.replace(/[^\d]/g, "");
+                          formattedValue = formattedValue.substring(0, 9);
+                          validation.setFieldValue(
+                            "emp_phone_num",
+                            formattedValue
+                          );
+                        }}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.emp_phone_num}
+                        invalid={
+                          validation.touched.emp_phone_num &&
+                          !!validation.errors.emp_phone_num
+                        }
+                      />
+                      {validation.touched.emp_phone_num &&
                       validation.errors.emp_phone_num ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.emp_phone_num}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                        <FormFeedback type="invalid">
+                          {validation.errors.emp_phone_num}
+                        </FormFeedback>
+                      ) : null}
+                    </InputGroup>
+                    </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>
                       {t("emp_role")}

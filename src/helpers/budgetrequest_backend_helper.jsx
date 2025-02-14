@@ -6,7 +6,8 @@ const GET_BUDGET_REQUEST = "budget_request/listgrid";
 const ADD_BUDGET_REQUEST = "budget_request/insertgrid";
 const UPDATE_BUDGET_REQUEST = "budget_request/updategrid";
 const DELETE_BUDGET_REQUEST = "budget_request/deletegrid";
-
+const GET_BUDGET_REQUEST_APPROVAL = "budget_request_approval/listgrid";
+const UPDATE_BUDGET_REQUEST_APPROVAL = "budget_request_approval/updategrid";
 export const getBudgetRequest = async (params) => {
   const queryString = new URLSearchParams(params).toString();
   const url = queryString
@@ -31,6 +32,7 @@ post(`${apiUrl}`+UPDATE_BUDGET_REQUEST +`?bdr_id=${objectName?.bdr_id}`, objectN
 // delete  project_budget_request
 export const deleteBudgetRequest = (objectName) =>
   post(`${apiUrl}`+DELETE_BUDGET_REQUEST+`?bdr_id=${objectName}`);
+
 export const getBudgetRequestList = async (params) => {
   const queryString = new URLSearchParams(params).toString();
   const url = queryString
@@ -43,3 +45,20 @@ export const getBudgetRequestList = async (params) => {
     console.log(error);
   }
 };
+
+//START APPROVAL
+export const getBudgetRequestforApproval = async (params) => {
+  const queryString = new URLSearchParams(params).toString();
+  const url = queryString
+    ? `${GET_BUDGET_REQUEST_APPROVAL}?${queryString}`
+    : GET_BUDGET_REQUEST_APPROVAL;
+  try {
+    const response = await post(url);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+// update project_budget_request
+export const updateBudgetRequestApproval = (objectName) =>
+post(`${apiUrl}`+UPDATE_BUDGET_REQUEST_APPROVAL +`?bdr_id=${objectName?.bdr_id}`, objectName);

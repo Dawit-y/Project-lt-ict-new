@@ -30,8 +30,8 @@ import { useFormik } from "formik";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/material_blue.css";
 import { formatDate } from "../../utils/commonMethods";
-import { useUpdateBudgetRequest } from "../../queries/budget_request_query";
-import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
+import { useUpdateBudgetRequestApproval } from "../../queries/budget_request_query";
+import { useFetchRequestStatuss } from "../../queries/requeststatus_query";
 import { toast } from "react-toastify";
 import { createSelectOptions } from "../../utils/commonMethods";
 import { TabWrapper } from "../../components/Common/DetailViewWrapper";
@@ -45,7 +45,6 @@ import { useFetchBudgetExSources } from "../../queries/budgetexsource_query";
 const modalStyle = {
   width: "100%",
 };
-
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -56,9 +55,9 @@ const truncateText = (text, maxLength) => {
 const ApproverBudgetRequestListModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction, budgetYearMap = {} } = props;
-  const { mutateAsync, isPending } = useUpdateBudgetRequest();
-  const { data: statusData } = useFetchProjectStatuss()
-  const statusOptions = createSelectOptions(statusData?.data || [], "prs_id", "prs_status_name_or")
+  const { mutateAsync, isPending } = useUpdateBudgetRequestApproval();
+  const { data: statusData } = useFetchRequestStatuss()
+  const statusOptions = createSelectOptions(statusData?.data || [], "rqs_id", "rqs_name_en")
 
   const getStatusOption = (value) =>
     statusOptions.find((option) => option.value === value) || null;
@@ -66,11 +65,11 @@ const ApproverBudgetRequestListModal = (props) => {
   const handleUpdateBudgetRequest = async (data) => {
     try {
       await mutateAsync(data);
-      toast.success(`data updated successfully`, {
+       toast.success(t("add_success"), {
         autoClose: 2000,
       });
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+       toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }

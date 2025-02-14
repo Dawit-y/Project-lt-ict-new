@@ -32,6 +32,8 @@ import {
   Input,
   FormFeedback,
   Label,
+  InputGroup,
+  InputGroupText
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -70,12 +72,12 @@ const ProjectStakeholderModel = (props) => {
   const handleAddProjectStakeholder = async (data) => {
     try {
       await addProjectStakeholder.mutateAsync(data);
-      toast.success(`Data added successfully`, {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error("Failed to add data", {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -85,12 +87,12 @@ const ProjectStakeholderModel = (props) => {
   const handleUpdateProjectStakeholder = async (data) => {
     try {
       await updateProjectStakeholder.mutateAsync(data);
-      toast.success(`data updated successfully`, {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(`Failed to update Data`, {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -101,11 +103,11 @@ const ProjectStakeholderModel = (props) => {
       try {
         const id = projectStakeholder.emp_id;
         await deleteProjectStakeholder.mutateAsync(id);
-        toast.success(`Data deleted successfully`, {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(`Failed to delete Data`, {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -474,7 +476,7 @@ const ProjectStakeholderModel = (props) => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={200}
                     />
                     {validation.touched.psh_name &&
                       validation.errors.psh_name ? (
@@ -555,27 +557,36 @@ const ProjectStakeholderModel = (props) => {
                       {t("psh_representative_phone")}
                       <span className="text-danger">*</span>
                     </Label>
-                    <Input
-                      name="psh_representative_phone"
-                      type="text"
-                      placeholder={t("psh_representative_phone")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.psh_representative_phone || ""}
-                      invalid={
-                        validation.touched.psh_representative_phone &&
-                          validation.errors.psh_representative_phone
-                          ? true
-                          : false
-                      }
-                      maxLength={24}
-                    />
-                    {validation.touched.psh_representative_phone &&
+                   <InputGroup>
+                      <InputGroupText>{"+251"}</InputGroupText>
+                      <Input
+                        name="psh_representative_phone"
+                        type="text"
+                        placeholder="Enter phone number"
+                        onChange={(e) => {
+                          const inputValue = e.target.value;
+                          let formattedValue = inputValue.replace(/^0/, "");
+                          formattedValue = formattedValue.replace(/[^\d]/g, "");
+                          formattedValue = formattedValue.substring(0, 9);
+                          validation.setFieldValue(
+                            "psh_representative_phone",
+                            formattedValue
+                          );
+                        }}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.psh_representative_phone}
+                        invalid={
+                          validation.touched.psh_representative_phone &&
+                          !!validation.errors.psh_representative_phone
+                        }
+                      />
+                      {validation.touched.psh_representative_phone &&
                       validation.errors.psh_representative_phone ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.psh_representative_phone}
-                      </FormFeedback>
-                    ) : null}
+                        <FormFeedback type="invalid">
+                          {validation.errors.psh_representative_phone}
+                        </FormFeedback>
+                      ) : null}
+                    </InputGroup>
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("psh_role")}</Label>

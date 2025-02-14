@@ -36,6 +36,12 @@ const StatisticalReport = () => {
     { name: "budget_source_stat", url: "uuuu" },
     { name: "budget_contractor_stat", url: "uuuu" },
     { name: "project_payment_stat", url: "uuuu" },
+    { name: "project_performance_stat", url: "uuuu" },
+    { name: "project_stakeholder_stat", url: "uuuu" },
+    { name: "project_supplimentary_stat", url: "uuuu" },
+    { name: "project_variation_stat", url: "uuuu" },
+    { name: "project_handover_stat", url: "uuuu" },
+    { name: "project_document_stat", url: "uuuu" },
   ]);
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -196,6 +202,70 @@ const StatisticalReport = () => {
         woreda: "prj_location_woreda_id",
       },
       reportTypeIndex: 7,
+    },
+
+     project_performance_stat: {
+      textKeys: ["prj_name", "prj_code"],
+      //dateKeys: ["payment_date"],
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      reportTypeIndex: 8,
+    },
+
+ project_stakeholder_stat: {
+      textKeys: ["prj_name", "prj_code"],
+      //dateKeys: ["payment_date"],
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      reportTypeIndex: 9,
+    },
+
+project_supplimentary_stat: {
+      textKeys: ["prj_name", "prj_code"],
+      dateKeys: ["payment_date"],
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      reportTypeIndex: 10,
+    },
+
+project_variation_stat: {
+      textKeys: ["prj_name", "prj_code"],
+      dateKeys: ["payment_date"],
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      reportTypeIndex: 11,
+    },
+project_handover_stat: {
+      textKeys: ["prj_name", "prj_code"],
+      //dateKeys: ["payment_date"],
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      reportTypeIndex: 12,
+    },
+project_document_stat: {
+      textKeys: ["prj_name", "prj_code"],
+      //dateKeys: ["payment_date"],
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      reportTypeIndex: 13,
     },
     /* users: {
       textKeys: ["usr_phone_number", "usr_full_name", "sector_name"],
