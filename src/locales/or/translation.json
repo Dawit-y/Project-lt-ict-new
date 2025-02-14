@@ -186,7 +186,7 @@
 	"prs_id": "ID",
 	"prs_order_number": "Lakk. Sajoo",
 	"prs_spare_column": "Gara Teessoo",
-	"prs_status": "Haala",
+	"prs_status": "Haala Pirojektii",
 	"prs_status_name": "Jalqabame",
 	"prs_update_time": "Yeroo Haaromsaa",
 	"prs_status_name_en": "Ingiliffa",
@@ -1234,5 +1234,8 @@
 	"create_new": "haaraa uumuu",
   "take_action": "Raggaasi",
   "Message":"Message",
-  "budget_request_approval":"Gaaffii Baajataa Raggaasu"
+  "budget_request_approval":"Gaaffii Baajataa Raggaasu",
+  "is_deleted":"Kan Balleeffame",
+  "yes":"Eyyee",
+  "no":"Lakki"
 }

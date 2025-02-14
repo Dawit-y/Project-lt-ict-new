@@ -133,10 +133,9 @@ const ProjectPerformanceModel = (props) => {
       prp_record_date_gc:
         (projectPerformance && projectPerformance.prp_record_date_gc) || "",
       prp_total_budget_used:
-        (projectPerformance && projectPerformance.prp_total_budget_used) || "",
+        (projectPerformance && projectPerformance.prp_total_budget_used) || "0",
       prp_physical_performance:
-        (projectPerformance && projectPerformance.prp_physical_performance) ||
-        "",
+        (projectPerformance && projectPerformance.prp_physical_performance) || "0",
       prp_description:
         (projectPerformance && projectPerformance.prp_description) || "",
       prp_status: (projectPerformance && projectPerformance.prp_status) || "",
@@ -170,8 +169,8 @@ const ProjectPerformanceModel = (props) => {
         }),
       //prp_record_date_ec: Yup.string().required(t('prp_record_date_ec')),
       prp_record_date_gc: Yup.date().required(t("val_required")).typeError("Invalid date format"),
-      prp_total_budget_used: amountValidation(1, 10000000000, true),
-      prp_physical_performance: amountValidation(1, 100, true),
+      prp_total_budget_used: amountValidation(0, 10000000000, true),
+      prp_physical_performance: amountValidation(0, 100, true),
       prp_description: alphanumericValidation(3, 425, false)
       // prp_status: Yup.string().required(t('prp_status')),
       //prp_created_date: Yup.string().required(t('prp_created_date')),

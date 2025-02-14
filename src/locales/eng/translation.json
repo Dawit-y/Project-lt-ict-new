@@ -167,7 +167,7 @@
 	"prs_id": "ID",
 	"prs_order_number": "Order Number",
 	"prs_spare_column": "Spare Column",
-	"prs_status": "Status",
+	"prs_status": "Project Status",
 	"prs_status_name": "Started",
 	"prs_update_time": "Update Time",
 	"prs_status_name_en": "Status Name in English",
@@ -683,7 +683,7 @@
 	"prs_update_time": "Update Time",
 	"prs_delete_time": "Delete Time",
 	"prs_created_by": "Created By",
-	"prs_status": "Status",
+	"prs_status": "Project Status",
 	"project_variation": "Project Variation",
 	"prv_id": "Id",
 	"prv_requested_amount": "Requested Amount",
@@ -1117,5 +1117,8 @@
 	"size" : "Size",
 	"create_new" : "Create New",
   "Message":"Message",
-  "budget_request_approval":"Budget Request Approval"
+  "budget_request_approval":"Budget Request Approval",
+  "is_deleted":"Is Deleted",
+  "yes":"Yes",
+  "no":"No"
 }

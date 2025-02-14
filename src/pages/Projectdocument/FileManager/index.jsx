@@ -344,7 +344,6 @@ const Index = (props) => {
         </ModalBody>
       </Modal>
       <div className="">
-        <Container>
           <div className="d-xl-flex">
             <div className="w-100">
               <div className="d-md-flex">
@@ -419,8 +418,8 @@ const Index = (props) => {
                 </Card>
 
                 {/* Main Content */}
-                <div className="w-100 h-100">
-                  <Card style={{ minHeight: "500px" }}>
+                <div className="w-100 h-100" style={{ minHeight: "500px" }}>
+                  <Card >
                     <CardBody>
                       {isSearchLoading || isLoading ? (
                         <Spinners />
@@ -445,7 +444,6 @@ const Index = (props) => {
               </div>
             </div>
           </div>
-        </Container>
       </div>
     </React.Fragment>
   );

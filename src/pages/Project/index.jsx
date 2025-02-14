@@ -66,6 +66,7 @@ import {
   DropdownMenu,
   DropdownToggle,
   UncontrolledDropdown,
+  Badge
 } from "reactstrap";
 import {
   alphanumericValidation,
@@ -628,6 +629,21 @@ const ProjectModel = () => {
         flex: 3,
         valueFormatter: (params) =>
           params.node.footer ? t("Total") : params.value, // Display "Total" for footer
+      },
+      {
+        headerName: t("prs_status"),
+        field: "bdr_request_status",
+        sortable: true,
+        filter: true,
+        flex: 2,
+        cellRenderer: (params) => {
+          const badgeClass = params.data.color_code;
+          return (
+            <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
+              {params.data.status_name}
+            </Badge>
+          );
+        },
       },
       {
         field: "prj_total_estimate_budget",

@@ -16,11 +16,26 @@ const modalStyle = {
 const ProjectDocumentModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction } = props;
+  const keysToRemove = [
+    "prd_document_type_id",
+    "prd_update_time",
+    "is_deletable",
+    "is_editable",
+    "prd_project_id",
+    "prd_id",
+    "prd_status",
+    "total_count",
+    "prd_delete_time",
+    "prd_uploaded_date",
+    "prd_description",
+    "prd_size",
+    "prd_create_time"
+  ];
   const tabs = [
     {
       id: "details",
       label: "Details",
-      content: <DetailsView details={transaction} />,
+      content: <DetailsView details={transaction} keysToRemove={keysToRemove} />,
     },
     {
       id: "pdf",

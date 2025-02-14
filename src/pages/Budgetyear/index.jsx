@@ -139,7 +139,7 @@ const BudgetYearModel = () => {
 			bdy_name: (budgetYear && budgetYear.bdy_name) || "",
 			bdy_code: (budgetYear && budgetYear.bdy_code) || "",
 			bdy_description: (budgetYear && budgetYear.bdy_description) || "",
-			bdy_status: (budgetYear && budgetYear.bdy_status) || "",
+			bdy_status: (budgetYear && budgetYear.bdy_status) || false,
 			is_deletable: (budgetYear && budgetYear.is_deletable) || 1,
 			is_editable: (budgetYear && budgetYear.is_editable) || 1,
 		},
@@ -167,7 +167,7 @@ const BudgetYearModel = () => {
 					bdy_name: values.bdy_name,
 					bdy_code: values.bdy_code,
 					bdy_description: values.bdy_description,
-					bdy_status: values.bdy_status,
+					bdy_status: values.bdy_status ? 1 : 0,
 
 					is_deletable: values.is_deletable,
 					is_editable: values.is_editable,
@@ -179,7 +179,7 @@ const BudgetYearModel = () => {
 					bdy_name: values.bdy_name,
 					bdy_code: values.bdy_code,
 					bdy_description: values.bdy_description,
-					bdy_status: values.bdy_status,
+					bdy_status: values.bdy_status ? 1 : 0,
 					is_deletable: 1,
 					is_editable: 1,
 				};
@@ -218,8 +218,7 @@ const BudgetYearModel = () => {
 			bdy_name: budgetYear.bdy_name,
 			bdy_code: budgetYear.bdy_code,
 			bdy_description: budgetYear.bdy_description,
-			bdy_status: budgetYear.bdy_status,
-
+			bdy_status: budgetYear.bdy_status === 1,
 			is_deletable: budgetYear.is_deletable,
 			is_editable: budgetYear.is_editable,
 		});
@@ -274,18 +273,20 @@ const BudgetYearModel = () => {
 			},
 		},
 		{
-			header: "",
-			accessorKey: "bdy_description",
-			enableColumnFilter: false,
-			enableSorting: true,
-			cell: (cellProps) => {
-				return (
-					<span>
-					{truncateText(cellProps.row.original.bdy_description, 30) || "-"}
-					</span>
-					);
-			},
-		},
+        header: t('is_deleted'),        
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span className={cellProps.row.original.bdy_status === 1 ? "btn btn-sm btn-soft-danger" : ""}>
+              {cellProps.row.original.bdy_status == 1
+                ? t("yes")
+                : t("no")
+              }
+            </span>
+          );
+        },
+      },
 		{
 			header: t("view_detail"),
 			enableColumnFilter: false,
@@ -498,6 +499,34 @@ const BudgetYearModel = () => {
 				</FormFeedback>
 				) : null}
 			</Col>
+			<Col className="col-md-6 mb-3">
+                  <div className="form-check mb-4">
+                      <Label className="me-1" for="bdy_status">
+                        {t("is_deleted")}
+                      </Label>
+                      <Input
+                        id="bdy_status"
+                        name="bdy_status"
+                        type="checkbox"
+                        placeholder={t("is_deleted")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.bdy_status}
+                        invalid={
+                          validation.touched.bdy_status &&
+                          validation.errors.bdy_status
+                            ? true
+                            : false
+                        }
+                      />
+                      {validation.touched.bdy_status &&
+                      validation.errors.bdy_status ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.bdy_status}
+                        </FormFeedback>
+                      ) : null}
+                      </div>
+                    </Col>
 			<Col className="col-md-6 mb-3">
 			<Label>{t("bdy_description")}</Label>
 			<Input

@@ -181,7 +181,7 @@
 	"prs_id": "መታወቂያ",
 	"prs_order_number": "ተከተልቷል ቁጥር",
 	"prs_spare_column": "ባዶ አምድ",
-	"prs_status": "ሁኔታ",
+	"prs_status": "የፕሮጀክት ሁኔታ",
 	"prs_status_name": "የተጀመረ",
 	"prs_update_time": "የዘመን ጊዜ",
 	"prs_status_name_en": "እንግሊዝኛ",
@@ -708,7 +708,7 @@
 	"prs_update_time": "Update Time",
 	"prs_delete_time": "Delete Time",
 	"prs_created_by": "Created By",
-	"prs_status": "ሁኔታ",
+	"prs_status": "የፕሮጀክት ሁኔታ",
 	"project_variation": "የፕሮጀክት ልዩነት",
 	"prv_id": "Id",
 	"prv_requested_amount": "የተጠየቀ መጠን",
@@ -1252,5 +1252,8 @@
 	"create_new": "አዲስ ፍጠር",
   "take_action": "አጽድቅ",
   "Message":"መለዕክት",
-  "budget_request_approval":"የበጀት ጥያቄ ማጽደቂያ"
+  "budget_request_approval":"የበጀት ጥያቄ",
+  "is_deleted":"የጠፋ",
+  "yes":"አዎን",
+  "no":"አይ"
 }

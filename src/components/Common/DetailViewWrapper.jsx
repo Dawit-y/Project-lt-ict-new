@@ -20,7 +20,7 @@ import { Button } from "reactstrap";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import { useTranslation } from "react-i18next";
-
+import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
   import.meta.url
@@ -83,23 +83,50 @@ export const DetailsView = ({ details, keysToRemove }) => {
   }
 
   return (
+    <div>
+    <div className="d-flex mt-2">
+            <div className="flex-grow-1 overflow-hidden mt-2">
+              <h5 className="text-truncate font-size-15">{t("prd_description")}</h5>
+              <p className="text-muted">{newTransaction.prd_description || "-"}</p>
+            </div>
+          </div>
+          <h5 className="font-size-15 mt-4">{t("view_details")}</h5>
+          <div className="text-muted mt-4">
     <Table>
       <tbody>
+      <tr key="-1">
+            <th>
+              {t('prd_size')}:
+            </th>
+            <td>
+              {bytesToReadableSize(details.prd_size)}
+            </td>
+          </tr>
         {Object.entries(newTransaction).map(([key, value]) => (
           <tr key={key}>
+            <th>
+              {t(`${key}`)}:
+            </th>
             <td>
-              <strong>{t(`${key}`)}:</strong>
-            </td>
-            <td>
-              <span className="text-primary">{value}</span>
+              {value}
             </td>
           </tr>
         ))}
+         <Col sm="12" xs="12">
+                <div className="mt-4 text-center">
+                  <h5 className="font-size-14">
+                    <i className="bx bx-calendar-check me-1 text-primary" />{" "}
+                    {t('prd_create_time')}
+                  </h5>
+                  <p className="text-muted mb-0">{details.prd_create_time}</p>
+                </div>
+              </Col>
       </tbody>
     </Table>
+    </div>
+    </div>
   );
 };
-
 DetailsView.propTypes = {
   details: PropTypes.object.isRequired,
 };
@@ -111,7 +138,15 @@ const pdfViewerStyle = {
   justifyContent: "center",
   alignItems: "center",
 };
+ const bytesToReadableSize = (bytes) => {
+  if (isNaN(bytes) || bytes < 0) return "0 KB";
+  const mb = bytes / (1024 * 1024); // Convert to MB
+  const kb = bytes / 1024; // Convert to KB
 
+  return mb >= 1 
+    ? `${mb.toFixed(2)} MB` 
+    : `${kb.toFixed(2)} KB`;
+};
 export const PDFPreview = ({ filePath, fileSize }) => {
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
@@ -189,7 +224,7 @@ export const PDFPreview = ({ filePath, fileSize }) => {
             className="btn btn-success"
             target="_blank"
             rel="noopener noreferrer"
-            href={`${API_URL}/public/uploads/projectfiles/${filePath}`}
+            href={`${API_URL}uploads/projectfiles/${filePath}`}
           >
             Download
           </a>
