@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  populateBudgetYear,
   getBudgetYear,
   updateBudgetYear,
   addBudgetYear,
@@ -30,6 +31,18 @@ export const useSearchBudgetYears = (searchParams = {}) => {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     enabled: searchParams.length > 0,
+  });
+};
+
+//for populating dropdown
+export const usePopulateBudgetYears = (searchParams = {}) => {
+  return useQuery({
+    queryKey: [...BUDGET_YEAR_QUERY_KEY, searchParams],
+    queryFn: () => populateBudgetYear(searchParams),
+    staleTime: 1000 * 60 * 5,
+    meta: { persist: true },
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 };
 
