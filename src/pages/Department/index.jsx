@@ -45,7 +45,6 @@ import {
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import DetailModal from "../../components/Common/DetailModal";
 
@@ -485,16 +484,6 @@ const DepartmentModel = () => {
           <Breadcrumbs
             title={t("department")}
             breadcrumbItem={t("department")}
-          />
-          <AdvancedSearch
-            searchHook={useSearchDepartments}
-            textSearchKeys={["dep_name_or", "dep_name_am", "dep_name_en"]}
-            dropdownSearchKeys={[]}
-            checkboxSearchKeys={[]}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
           />
           {isLoading || isSearchLoading ? (
             <Spinners />

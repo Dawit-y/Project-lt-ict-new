@@ -51,7 +51,6 @@ import {
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const truncateText = (text, maxLength) => {
@@ -336,31 +335,11 @@ const BudgetYearModel = () => {
 							</UncontrolledTooltip>
 							</Link>
 							)}
-
-						{cellProps.row.original.is_deletable == 1 && (
-							<Link
-							to="#"
-							className="text-danger"
-							onClick={() => {
-								const data = cellProps.row.original;
-								onClickDelete(data);
-							}}
-							>
-							<i
-							className="mdi mdi-delete font-size-18"
-							id="deletetooltip"
-							/>
-							<UncontrolledTooltip placement="top" target="deletetooltip">
-							Delete
-							</UncontrolledTooltip>
-							</Link>
-							)}
 						</div>
 						);
 				},
 			});
 	}
-
 	return baseColumns;
 }, [handleBudgetYearClick, toggleViewModal, onClickDelete]);
 	if (isError) {
@@ -384,16 +363,6 @@ const BudgetYearModel = () => {
 		<Breadcrumbs
 		title={t("budget_year")}
 		breadcrumbItem={t("budget_year")}
-		/>
-		<AdvancedSearch
-		searchHook={useSearchBudgetYears}
-		textSearchKeys={["bdy_name", "bdy_code"]}
-		dropdownSearchKeys={[]}
-		checkboxSearchKeys={[]}
-		onSearchResult={handleSearchResults}
-		setIsSearchLoading={setIsSearchLoading}
-		setSearchResults={setSearchResults}
-		setShowSearchResult={setShowSearchResult}
 		/>
 		{isLoading || isSearchLoading ? (
 			<Spinners />

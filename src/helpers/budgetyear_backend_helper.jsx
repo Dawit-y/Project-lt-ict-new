@@ -7,10 +7,20 @@ const GET_BUDGET_YEAR = "budget_year/listgrid";
 const ADD_BUDGET_YEAR = "budget_year/insertgrid";
 const UPDATE_BUDGET_YEAR = "budget_year/updategrid";
 const DELETE_BUDGET_YEAR = "budget_year/deletegrid";
+const POPULATE_BUDGET_YEAR = "budget_year/listdropdown";
 // get Projects
 export const getBudgetYear = async () => {
   try {
     const response = await post(apiUrl + GET_BUDGET_YEAR);
+    return response;
+  } catch (error) {
+    console.log(error); // Handle any errors
+  }
+};
+// get Projects
+export const populateBudgetYear = async () => {
+  try {
+    const response = await post(apiUrl + POPULATE_BUDGET_YEAR);
     return response;
   } catch (error) {
     console.log(error); // Handle any errors

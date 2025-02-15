@@ -16,7 +16,7 @@ import {
   useUpdateProjectPerformance,
 } from "../../queries/projectperformance_query";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
-import { useFetchBudgetYears } from "../../queries/budgetyear_query";
+import { usePopulateBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
 import ProjectPerformanceModal from "./ProjectPerformanceModal";
 import { useTranslation } from "react-i18next";
@@ -66,7 +66,7 @@ const ProjectPerformanceModel = (props) => {
 
   const { data, isLoading, error, isError, refetch } =
     useFetchProjectPerformances(param, isActive);
-  const { data: budgetYearData } = useFetchBudgetYears();
+  const { data: budgetYearData } = usePopulateBudgetYears();
   const { data: budgetMonthData } = useFetchBudgetMonths();
   const { data: projectStatusData } = useFetchProjectStatuss();
   const addProjectPerformance = useAddProjectPerformance();
