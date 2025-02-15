@@ -10,7 +10,7 @@ import { withTranslation } from "react-i18next";
 
 import { connect } from "react-redux";
 
-const SIDEDATA_CACHE_KEY = "sidedata_cache";
+export const SIDEDATA_CACHE_KEY = "sidedata_cache";
 const Navbar = (props) => {
   const [activeMenuIndex, setActiveMenuIndex] = useState(null); // Track active menu
 

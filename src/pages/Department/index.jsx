@@ -472,7 +472,7 @@ const DepartmentModel = () => {
         isOpen={modal1}
         toggle={toggleViewModal}
         details={transaction}
-        excludeKey={["dep_id","is_editable", "is_deletable","dep_create_time","dep_update_time","dep_status","dep_created_by","dep_delete_time"]}
+        excludeKey={["dep_id", "is_editable", "is_deletable", "dep_create_time", "dep_update_time", "dep_status", "dep_created_by", "dep_delete_time"]}
       />
       <DeleteModal
         show={deleteModal}
@@ -559,14 +559,14 @@ const DepartmentModel = () => {
                       value={validation.values.dep_name_or || ""}
                       invalid={
                         validation.touched.dep_name_or &&
-                        validation.errors.dep_name_or
+                          validation.errors.dep_name_or
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.dep_name_or &&
-                    validation.errors.dep_name_or ? (
+                      validation.errors.dep_name_or ? (
                       <FormFeedback type="invalid">
                         {validation.errors.dep_name_or}
                       </FormFeedback>
@@ -586,14 +586,14 @@ const DepartmentModel = () => {
                       value={validation.values.dep_name_am || ""}
                       invalid={
                         validation.touched.dep_name_am &&
-                        validation.errors.dep_name_am
+                          validation.errors.dep_name_am
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.dep_name_am &&
-                    validation.errors.dep_name_am ? (
+                      validation.errors.dep_name_am ? (
                       <FormFeedback type="invalid">
                         {validation.errors.dep_name_am}
                       </FormFeedback>
@@ -613,14 +613,14 @@ const DepartmentModel = () => {
                       value={validation.values.dep_name_en || ""}
                       invalid={
                         validation.touched.dep_name_en &&
-                        validation.errors.dep_name_en
+                          validation.errors.dep_name_en
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.dep_name_en &&
-                    validation.errors.dep_name_en ? (
+                      validation.errors.dep_name_en ? (
                       <FormFeedback type="invalid">
                         {validation.errors.dep_name_en}
                       </FormFeedback>
@@ -637,14 +637,14 @@ const DepartmentModel = () => {
                       value={validation.values.dep_code || ""}
                       invalid={
                         validation.touched.dep_code &&
-                        validation.errors.dep_code
+                          validation.errors.dep_code
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.dep_code &&
-                    validation.errors.dep_code ? (
+                      validation.errors.dep_code ? (
                       <FormFeedback type="invalid">
                         {validation.errors.dep_code}
                       </FormFeedback>
@@ -665,13 +665,13 @@ const DepartmentModel = () => {
                         checked={validation.values.dep_available_at_region}
                         invalid={
                           validation.touched.dep_available_at_region &&
-                          validation.errors.dep_available_at_region
+                            validation.errors.dep_available_at_region
                             ? true
                             : false
                         }
                       />
                       {validation.touched.dep_available_at_region &&
-                      validation.errors.dep_available_at_region ? (
+                        validation.errors.dep_available_at_region ? (
                         <FormFeedback type="invalid">
                           {validation.errors.dep_available_at_region}
                         </FormFeedback>
@@ -691,13 +691,13 @@ const DepartmentModel = () => {
                         checked={validation.values.dep_available_at_zone}
                         invalid={
                           validation.touched.dep_available_at_zone &&
-                          validation.errors.dep_available_at_zone
+                            validation.errors.dep_available_at_zone
                             ? true
                             : false
                         }
                       />
                       {validation.touched.dep_available_at_zone &&
-                      validation.errors.dep_available_at_zone ? (
+                        validation.errors.dep_available_at_zone ? (
                         <FormFeedback type="invalid">
                           {validation.errors.dep_available_at_zone}
                         </FormFeedback>
@@ -717,13 +717,13 @@ const DepartmentModel = () => {
                         checked={validation.values.dep_available_at_woreda}
                         invalid={
                           validation.touched.dep_available_at_woreda &&
-                          validation.errors.dep_available_at_woreda
+                            validation.errors.dep_available_at_woreda
                             ? true
                             : false
                         }
                       />
                       {validation.touched.dep_available_at_woreda &&
-                      validation.errors.dep_available_at_woreda ? (
+                        validation.errors.dep_available_at_woreda ? (
                         <FormFeedback type="invalid">
                           {validation.errors.dep_available_at_woreda}
                         </FormFeedback>
@@ -742,14 +742,14 @@ const DepartmentModel = () => {
                       value={validation.values.dep_description || ""}
                       invalid={
                         validation.touched.dep_description &&
-                        validation.errors.dep_description
+                          validation.errors.dep_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.dep_description &&
-                    validation.errors.dep_description ? (
+                      validation.errors.dep_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.dep_description}
                       </FormFeedback>

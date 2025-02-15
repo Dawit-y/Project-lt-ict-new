@@ -1232,10 +1232,12 @@
 	"date_modified": "Guyyaa Fooyya'ee",
 	"size": "Gatii",
 	"create_new": "haaraa uumuu",
-  "take_action": "Raggaasi",
-  "Message":"Message",
-  "budget_request_approval":"Gaaffii Baajataa Raggaasu",
-  "is_deleted":"Kan Balleeffame",
-  "yes":"Eyyee",
-  "no":"Lakki"
+	"take_action": "Raggaasi",
+	"Message": "Message",
+	"budget_request_approval": "Gaaffii Baajataa Raggaasu",
+	"is_deleted": "Kan Balleeffame",
+	"yes": "Eyyee",
+	"no": "Lakki",
+	"Something went wrong": "Waan tokkotu dogoggora ta'e",
+	"try_again": "irra deebi'ii yaali"
 }

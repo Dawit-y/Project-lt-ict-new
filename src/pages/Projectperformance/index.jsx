@@ -220,7 +220,6 @@ const ProjectPerformanceModel = (props) => {
       }
     },
   });
-  console.log(validation.errors)
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
 

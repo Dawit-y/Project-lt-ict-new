@@ -19,6 +19,7 @@ import { useFormik } from "formik";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 import { formatDateHyphen } from "../../utils/commonMethods";
+import FetchErrorHandler from "./FetchErrorHandler"
 
 const AdvancedSearch = ({
   searchHook,
@@ -41,7 +42,7 @@ const AdvancedSearch = ({
   const toggle = () => setIsOpen(!isOpen);
   const [params, setParams] = useState({});
   const [searchParams, setSearchParams] = useState({});
-  const { refetch } = searchHook(searchParams);
+  const { refetch, isError, error } = searchHook(searchParams);
 
   const flatpickrStartRef = useRef(null);
   const flatpickrEndRef = useRef(null);
@@ -169,6 +170,10 @@ const AdvancedSearch = ({
       hasAdditionalParamsValue()
     );
   };
+
+  if (isError) {
+    <FetchErrorHandler error={error} refetch={refetch} />
+  }
 
   return (
     <React.Fragment>

@@ -1250,10 +1250,12 @@
 	"date_modified": "የተሻሻለበት ቀን",
 	"size": "መጠን",
 	"create_new": "አዲስ ፍጠር",
-  "take_action": "አጽድቅ",
-  "Message":"መለዕክት",
-  "budget_request_approval":"የበጀት ጥያቄ",
-  "is_deleted":"የጠፋ",
-  "yes":"አዎን",
-  "no":"አይ"
+	"take_action": "አጽድቅ",
+	"Message": "መለዕክት",
+	"budget_request_approval": "የበጀት ጥያቄ",
+	"is_deleted": "የጠፋ",
+	"yes": "አዎን",
+	"no": "አይ",
+	"Something went wrong": "የሆነ ችግር ተፈጥሯል።",
+	"try_again": "እንደገና ይሞክሩ"
 }

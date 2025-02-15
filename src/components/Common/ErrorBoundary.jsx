@@ -1,6 +1,8 @@
 import React from "react";
-import { FaRedo } from "react-icons/fa";
+import { FaRedo, FaExclamationCircle } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
+import { Card, CardBody } from "reactstrap"
+import { useTranslation } from "react-i18next";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -28,6 +30,7 @@ class ErrorBoundary extends React.Component {
   }
 
   render() {
+    const t = this.props.t
     if (this.state.hasError) {
       return (
         <div
@@ -38,18 +41,24 @@ class ErrorBoundary extends React.Component {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-          }}
-        >
-          <div className="d-flex flex-column">
-            <h6 className="text-danger mb-1">{"Something went wrong"}</h6>
-            <button
-              onClick={this.resetErrorBoundary}
-              className="btn btn-secondary"
-            >
-              <FaRedo />
-              <span className="ms-2">{"Try again"}</span>
-            </button>
-          </div>
+          }}>
+          <Card>
+            <CardBody className="text-center">
+              <FaExclamationCircle size={60} className="text-danger mb-3" />
+              <>
+                <h2 className="h4 text-danger mb-3">{t("Something went wrong")}</h2>
+              </>
+              <button
+                onClick={this.resetErrorBoundary}
+                className="btn btn-primary btn-lg"
+              >
+                <>
+                  <FaRedo />
+                  <span className="ms-2">{t("try_again")}</span>
+                </>
+              </button>
+            </CardBody>
+          </Card>
         </div>
       );
     }
@@ -59,5 +68,6 @@ class ErrorBoundary extends React.Component {
 
 export default function ErrorBoundaryWrapper(props) {
   const location = useLocation();
-  return <ErrorBoundary {...props} location={location} />;
+  const { t } = useTranslation()
+  return <ErrorBoundary {...props} location={location} t={t} />;
 }

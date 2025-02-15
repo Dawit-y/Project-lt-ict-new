@@ -3,6 +3,7 @@ import { Modal, ModalHeader, ModalBody, Button } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { publicRoutes } from "../../../routes/index";
+import { SIDEDATA_CACHE_KEY } from "../../../components/HorizontalLayout/Navbar";
 
 // Create the context
 export const SessionTimeoutContext = createContext();
@@ -21,6 +22,7 @@ export const SessionTimeoutProvider = ({ children }) => {
     setModal(true); // Show the modal
     // Clear the authentication token from localStorage to fully log out the user
     localStorage.removeItem("authUser");
+    localStorage.removeItem(SIDEDATA_CACHE_KEY)
   };
 
   // Start the inactivity timer (2 minutes)

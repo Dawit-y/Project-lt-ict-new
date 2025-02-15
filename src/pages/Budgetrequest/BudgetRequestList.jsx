@@ -31,6 +31,7 @@ import AddressStructureForProject from "../Project/AddressStructureForProject";
 import AttachFileModal from "../../components/Common/AttachFileModal"
 import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal"
 import { PAGE_ID } from "../../constants/constantFile";
+import BudgetRequestModal from "./BudgetRequestModal"
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -55,6 +56,7 @@ const BudgetRequestListModel = () => {
 
   const [budgetRequestMetaData, setBudgetRequestMetaData] = useState({});
   const [showCanvas, setShowCanvas] = useState(false);
+  const [modal1, setModal1] = useState(false);
   const [fileModal, setFileModal] = useState(false)
   const [convModal, setConvModal] = useState(false)
 
@@ -104,6 +106,7 @@ const BudgetRequestListModel = () => {
     setBudgetRequestMetaData(data);
   };
 
+  const toggleViewModal = () => setModal1(!modal1);
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
 
@@ -141,6 +144,7 @@ const BudgetRequestListModel = () => {
       setShowSearchResult(false);
     }
   };
+
   const columnDefs = useMemo(() => {
     const baseColumnDefs = [
       {
@@ -249,6 +253,28 @@ const BudgetRequestListModel = () => {
         },
       },
       {
+        headerName: t("view_detail"),
+        field: "view_detail",
+        flex: 1,
+        cellRenderer: (params) => {
+          return (
+            <Button
+
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                toggleViewModal();
+                console.log(params.data)
+                setTransaction(params.data);
+              }}
+            >
+              {t("view_detail")}
+            </Button>
+          );
+        },
+      },
+      {
         headerName: t("attach_files"),
         field: "attach_files",
         flex: 1,
@@ -320,11 +346,18 @@ const BudgetRequestListModel = () => {
     }
     return baseColumnDefs;
   }, []);
+  console.log("error", error)
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
+
   return (
     <React.Fragment>
+      <BudgetRequestModal
+        isOpen={modal1}
+        toggle={toggleViewModal}
+        transaction={transaction}
+      />
       <AttachFileModal
         isOpen={fileModal}
         toggle={toggleFileModal}

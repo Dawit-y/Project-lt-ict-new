@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -7,9 +7,10 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
-  Table,
-  Col
-} from "reactstrap"
+  Col,
+  Spinner,
+  Alert
+} from "reactstrap";
 import { DetailsView } from "../../components/Common/DetailViewWrapper";
 import PrintMultipleTables from "../../components/Common/PrintMultipleTables";
 import { useFetchBudgetExSources } from "../../queries/budgetexsource_query";
@@ -17,35 +18,38 @@ import { useFetchBudgetRequestAmounts } from "../../queries/budgetrequestamount_
 import { useFetchBudgetRequestTasks } from "../../queries/budgetrequesttask_query";
 
 const modalStyle = {
-  width: '100%',
+  width: "100%",
 };
 
-const BudgetRequestModal = (props) => {
+const BudgetRequestModal = ({ isOpen, toggle, transaction }) => {
   const { t } = useTranslation();
-  const { isOpen, toggle, transaction } = props;
-  const id = transaction.bdr_id
-  const brAmounts = useFetchBudgetRequestAmounts({ budget_request_id: id }, isOpen)
-  const brTasks = useFetchBudgetRequestTasks({ budget_request_id: id }, isOpen)
-  const brExSources = useFetchBudgetExSources({ budget_request_id: id }, isOpen)
+  const id = transaction?.bdr_id;
+
+  const brAmountsQuery = useFetchBudgetRequestAmounts({ budget_request_id: id }, isOpen);
+  const brTasksQuery = useFetchBudgetRequestTasks({ budget_request_id: id }, isOpen);
+  const brExSourcesQuery = useFetchBudgetExSources({ budget_request_id: id }, isOpen);
+
+  const isLoading =
+    brAmountsQuery.isLoading || brTasksQuery.isLoading || brExSourcesQuery.isLoading;
+  const isError =
+    brAmountsQuery.error || brTasksQuery.error || brExSourcesQuery.error;
 
   return (
-    <Modal
-      isOpen={isOpen}
-      role="dialog"
-      autoFocus={true}
-      centered={true}
-      className="modal-xl"
-      tabIndex="-1"
-      toggle={toggle}
-      style={modalStyle}
-    >
-      <div className="modal-xl">
-        <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
-        <ModalBody>
-          <DetailsView
-            details={transaction}
-            keysToRemove={
-              [
+    <Modal isOpen={isOpen} centered className="modal-xl" toggle={toggle} style={modalStyle}>
+      <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
+      <ModalBody>
+        {isLoading ? (
+          <div className="text-center">
+            <Spinner color="primary" />
+            <p>{t("Loading data...")}</p>
+          </div>
+        ) : isError ? (
+          <Alert color="danger">{t("Failed to load data. Please try again.")}</Alert>
+        ) : (
+          <>
+            <DetailsView
+              details={transaction}
+              keysToRemove={[
                 "bdr_id",
                 "bdr_project_id",
                 "bdr_released_date_ec",
@@ -57,47 +61,47 @@ const BudgetRequestModal = (props) => {
                 "bdr_status",
                 "bdr_created_by",
                 "is_editable",
-                "is_deletable"
-              ]
-            }
-          />
-        </ModalBody>
-        <ModalFooter>
-          <Col className="d-flex align-items-center justify-content-end gap-2">
+                "is_deletable",
+              ]}
+            />
+          </>
+        )}
+      </ModalBody>
+      <ModalFooter>
+        <Col className="d-flex align-items-center justify-content-end gap-2">
+          {!isLoading && !isError && (
             <PrintMultipleTables
               title="budget_request"
-              tables={
-                [
-                  {
-                    tablename: "Amounts",
-                    data: brAmounts?.data?.data || [],
-                    excludeKey: ["is_editble", "is_deletable"],
-                  },
-                  {
-                    tablename: "Tasks",
-                    data: brTasks?.data?.data || [],
-                    excludeKey: ["is_editble", "is_deletable"],
-                  },
-                  {
-                    tablename: "External Sources",
-                    data: brExSources?.data?.data || [],
-                    excludeKey: ["is_editble", "is_deletable"],
-                  },
-
-                ]}
+              tables={[
+                {
+                  tablename: "Amounts",
+                  data: brAmountsQuery.data?.data || [],
+                  excludeKey: ["is_editble", "is_deletable"],
+                },
+                {
+                  tablename: "Tasks",
+                  data: brTasksQuery.data?.data || [],
+                  excludeKey: ["is_editble", "is_deletable"],
+                },
+                {
+                  tablename: "External Sources",
+                  data: brExSourcesQuery.data?.data || [],
+                  excludeKey: ["is_editble", "is_deletable"],
+                },
+              ]}
             />
-            <Button type="button" color="secondary" onClick={toggle}>
-              {t('Close')}
-            </Button>
-          </Col>
-        </ModalFooter>
-      </div>
+          )}
+          <Button color="secondary" onClick={toggle}>{t("Close")}</Button>
+        </Col>
+      </ModalFooter>
     </Modal>
   );
 };
+
 BudgetRequestModal.propTypes = {
   toggle: PropTypes.func,
   isOpen: PropTypes.bool,
   transaction: PropTypes.object,
 };
+
 export default BudgetRequestModal;

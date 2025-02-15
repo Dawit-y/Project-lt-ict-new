@@ -2,23 +2,24 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { FOOTER_TEXT, COPYRIGHT_YEAR } from "../../constants/constantFile";
 import { UncontrolledTooltip } from "reactstrap";
+import { FaPrint } from "react-icons/fa";
 
 const PrintMultipleTables = ({ tables = [], columnsToIgnore = 2, title }) => {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
 
-    const printPage = () => {
-        const printWindow = window.open("", "_blank", `width=${window.screen.width},height=${window.screen.height}`);
-        printWindow.document.open();
+  const printPage = () => {
+    const printWindow = window.open("", "_blank", `width=${window.screen.width},height=${window.screen.height}`);
+    printWindow.document.open();
 
-        let tableContent = tables.map(({ tablename, data, excludeKey = [] }) => {
-            if (!data || data.length === 0) return "";
+    let tableContent = tables.map(({ tablename, data, excludeKey = [] }) => {
+      if (!data || data.length === 0) return "";
 
-            // Get table headers excluding specified keys and translate them
-            const headers = Object.keys(data[0])
-                .filter((key) => !excludeKey.includes(key))
-                .map((key) => t(key));
+      // Get table headers excluding specified keys and translate them
+      const headers = Object.keys(data[0])
+        .filter((key) => !excludeKey.includes(key))
+        .map((key) => t(key));
 
-            return `
+      return `
         <div style="margin-bottom: 20px;">
           <h2 style="text-align: start; font-size: 16px; font-weight: 900; font-family: 'Arial Black', sans-serif;">${t(tablename)}</h2>
           <table class="print-table">
@@ -29,18 +30,18 @@ const PrintMultipleTables = ({ tables = [], columnsToIgnore = 2, title }) => {
               ${data.map(row => `
                 <tr>
                   ${Object.keys(row)
-                    .filter((key) => !excludeKey.includes(key))
-                    .map(key => `<td>${row[key] || ""}</td>`)
-                    .join("")}
+          .filter((key) => !excludeKey.includes(key))
+          .map(key => `<td>${row[key] || ""}</td>`)
+          .join("")}
                 </tr>
               `).join("")}
             </tbody>
           </table>
         </div>
       `;
-        }).join("");
+    }).join("");
 
-        printWindow.document.write(`
+    printWindow.document.write(`
       <html>
       <head>
         <title>${t(`${title || "printed_data"}`)}</title>
@@ -89,38 +90,38 @@ const PrintMultipleTables = ({ tables = [], columnsToIgnore = 2, title }) => {
       </html>
     `);
 
-        printWindow.document.close();
-        printWindow.print();
-        printWindow.close();
-    };
+    printWindow.document.close();
+    printWindow.print();
+    printWindow.close();
+  };
 
-    const getCustomHeader = () => `
+  const getCustomHeader = () => `
     <div style="text-align: center; margin-bottom: 20px;">
       <h1 style="font-size: 18px;">${t(`${title || "Printed Data"}`)}</h1>
       <p style="font-size: 12px;">${t("date")}: ${new Date().toLocaleDateString()}</p>
     </div>
   `;
 
-    const getCustomFooter = () => `
+  const getCustomFooter = () => `
     <div class="footer">
       <p>© ${COPYRIGHT_YEAR} ${t(FOOTER_TEXT)}. ${t("All rights reserved.")}</p>
     </div>
   `;
 
-    return (
-        <div id="print-cont">
-            <button
-                className="btn btn-soft-primary"
-                onClick={printPage}
-                disabled={!tables || tables.length === 0}
-            >
-                {t("print")}
-                <UncontrolledTooltip placement="top" target="print-cont">
-                    {t("print_tooltip")}
-                </UncontrolledTooltip>
-            </button>
-        </div>
-    );
+  return (
+    <div id="print-cont">
+      <button
+        className="btn btn-soft-primary"
+        onClick={printPage}
+        disabled={!tables || tables.length === 0}
+      >
+        <FaPrint color="primary" className="me-1" /> {t("print")}
+        <UncontrolledTooltip placement="top" target="print-cont">
+          {t("print_tooltip")}
+        </UncontrolledTooltip>
+      </button>
+    </div>
+  );
 };
 
 export default PrintMultipleTables;

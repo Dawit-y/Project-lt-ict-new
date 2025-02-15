@@ -241,7 +241,7 @@ const TableContainer = ({
             )}
             {infoIcon &&
               <div>
-                <FaInfoCircle size={36} color="#50a5f1" id="info" />
+                <FaInfoCircle size={20} id="info" />
                 <UncontrolledTooltip placement="top" target="info">
                   Sample Info
                 </UncontrolledTooltip>

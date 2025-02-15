@@ -7,7 +7,7 @@ import {
   FaServer,
   FaLock,
 } from "react-icons/fa";
-import { Card, CardBody } from "reactstrap";
+import { Card, CardBody, Alert } from "reactstrap";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
 
@@ -129,9 +129,10 @@ const FetchErrorHandler = ({
       <Card>
         <CardBody className="text-center">
           {errorIcon}
-          <h2 className="h3 text-danger mb-3">{errorTitle}</h2>
-          <p className="lead text-muted mb-4">{errorMessage}</p>
-
+          <>
+            <h2 className="h3 text-danger mb-3">{errorTitle}</h2>
+            <p className="lead text-muted mb-4">{errorMessage}</p>
+          </>
           {shouldAllowRetry && (
             <button
               onClick={handleRefetch}

@@ -26,15 +26,20 @@ export const useFetchBudgetRequests = (params = {}) => {
 export const useSearchBudgetRequests = (searchParams = {}) => {
   return useQuery({
     queryKey: [...BUDGET_REQUESTS_QUERY_KEY, searchParams],
-    queryFn: () => getBudgetRequest(searchParams),
+    queryFn: () => {
+      // If searchParams is empty, return an empty result or handle it accordingly
+      if (Object.keys(searchParams).length === 0) {
+        return Promise.resolve([]); // or return null, or handle it as per your requirement
+      }
+      return getBudgetRequest(searchParams);
+    },
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: searchParams.length > 0,
+    enabled: true, // Always enable the query
   });
 };
-
 export const useSearchBudgetRequestforApproval = (searchParams = {}) => {
   return useQuery({
     queryKey: [...BUDGET_REQUESTS_QUERY_KEY, searchParams],

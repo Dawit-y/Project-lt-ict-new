@@ -29,6 +29,7 @@ import AddressStructureForProject from "../Project/AddressStructureForProject";
 import AttachFileModal from "../../components/Common/AttachFileModal"
 import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal"
 import { PAGE_ID } from "../../constants/constantFile";
+import BudgetRequestModal from "./BudgetRequestModal";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -53,6 +54,7 @@ const ApproverBudgetRequestList = () => {
   const gridRef = useRef(null);
 
   const [budgetRequestMetaData, setBudgetRequestMetaData] = useState({});
+  const [detailModal, setDetailModal] = useState(false)
   const [showCanvas, setShowCanvas] = useState(false);
   const [fileModal, setFileModal] = useState(false)
   const [convModal, setConvModal] = useState(false)
@@ -103,6 +105,7 @@ const ApproverBudgetRequestList = () => {
     setBudgetRequestMetaData(data);
   };
 
+  const toggleDetailModal = () => setDetailModal(!detailModal)
   const toggleViewModal = () => setModal1(!modal1);
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
@@ -163,14 +166,14 @@ const ApproverBudgetRequestList = () => {
         sortable: false,
         filter: false,
         width: 60,
-        flex:.5
+        flex: .5
       },
       {
         headerName: t("bdr_budget_year_id"),
         field: "bdy_name",
         sortable: true,
         filter: true,
-        flex:1,
+        flex: 1,
         cellRenderer: (params) => {
           return truncateText(params.data.bdy_name, 30) || "-";
         },
@@ -180,7 +183,7 @@ const ApproverBudgetRequestList = () => {
         field: "prj_name",
         sortable: true,
         filter: true,
-        flex:2,
+        flex: 2,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_name, 30) || "-";
         },
@@ -190,7 +193,7 @@ const ApproverBudgetRequestList = () => {
         field: "prj_code",
         sortable: true,
         filter: true,
-        flex:1.5,
+        flex: 1.5,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_code, 30) || "-";
         },
@@ -200,7 +203,7 @@ const ApproverBudgetRequestList = () => {
         field: "bdr_requested_amount",
         sortable: true,
         filter: true,
-         flex: 1.2,
+        flex: 1.2,
         valueFormatter: (params) => {
           if (params.value != null) {
             return new Intl.NumberFormat("en-US", {
@@ -247,7 +250,7 @@ const ApproverBudgetRequestList = () => {
           return truncateText(params.data.bdr_released_date_gc, 30) || "-";
         },
       },
-     {
+      {
         headerName: t("bdr_request_status"),
         field: "bdr_request_status",
         sortable: true,
@@ -259,6 +262,26 @@ const ApproverBudgetRequestList = () => {
             <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
               {params.data.status_name}
             </Badge>
+          );
+        },
+      },
+      {
+        headerName: t("view_detail"),
+        field: "view_detail",
+        flex: 1,
+        cellRenderer: (params) => {
+          return (
+            <Button
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                toggleDetailModal();
+                setTransaction(params.data);
+              }}
+            >
+              {t("view_detail")}
+            </Button>
           );
         },
       },
@@ -366,6 +389,11 @@ const ApproverBudgetRequestList = () => {
 
   return (
     <React.Fragment>
+      <BudgetRequestModal
+        isOpen={detailModal}
+        toggle={toggleDetailModal}
+        transaction={transaction}
+      />
       <ApproverBudgetRequestListModal
         isOpen={modal1}
         toggle={toggleViewModal}
@@ -436,7 +464,7 @@ const ApproverBudgetRequestList = () => {
                       </Col>
                     </Row>
                     {/* AG Grid */}
-                    <div style={{ height: "600px",zoom:"90%" }}>
+                    <div style={{ height: "600px", zoom: "90%" }}>
                       <AgGridReact
                         ref={gridRef}
                         rowData={
