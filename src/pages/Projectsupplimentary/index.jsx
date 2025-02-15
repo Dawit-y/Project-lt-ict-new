@@ -20,6 +20,7 @@ import {
   useDeleteProjectSupplimentary,
   useUpdateProjectSupplimentary,
 } from "../../queries/projectsupplimentary_query";
+import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
 import { useTranslation } from "react-i18next";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import {
@@ -68,10 +69,20 @@ const ProjectSupplimentaryModel = (props) => {
 
   const { data, isLoading, error, isError, refetch } =
     useFetchProjectSupplimentarys(param, isActive);
-
+  const { data: budgetYearData } = usePopulateBudgetYears();
+  const { data: bgYearsOptionsData } = useFetchBudgetYears();
   const addProjectSupplimentary = useAddProjectSupplimentary();
   const updateProjectSupplimentary = useUpdateProjectSupplimentary();
   const deleteProjectSupplimentary = useDeleteProjectSupplimentary();
+
+  const budgetYearMap = useMemo(() => {
+    return (
+      bgYearsOptionsData?.data?.reduce((acc, year) => {
+        acc[year.bdy_id] = year.bdy_name;
+        return acc;
+      }, {}) || {}
+    );
+  }, [bgYearsOptionsData]);
   //START CRUD
   const handleAddProjectSupplimentary = async (data) => {
     try {
@@ -130,6 +141,9 @@ const ProjectSupplimentaryModel = (props) => {
       prs_requested_amount:
         (projectSupplimentary && projectSupplimentary.prs_requested_amount) ||
         "",
+      prs_budget_year_id:
+        (projectSupplimentary && projectSupplimentary.prs_requested_amount) ||
+        "",
       prs_released_amount:
         (projectSupplimentary && projectSupplimentary.prs_released_amount) ||
         "",
@@ -161,6 +175,7 @@ const ProjectSupplimentaryModel = (props) => {
     validationSchema: Yup.object({
       prs_requested_amount: amountValidation(1000, 100000000, true),
       prs_released_amount: amountValidation(1000, 100000000, true),
+      prs_budget_year_id: numberValidation(1, 20, true),
       //prs_project_id: Yup.string().required(t("prs_project_id")),
       //prs_requested_date_ec: Yup.string().required(t("prs_requested_date_ec")),
       prs_requested_date_gc: Yup.string().required(t("prs_requested_date_gc"))
@@ -191,6 +206,7 @@ const ProjectSupplimentaryModel = (props) => {
       if (isEdit) {
         const updateProjectSupplimentary = {
           prs_id: projectSupplimentary?.prs_id,
+          prs_budget_year_id: parseInt(values.prs_budget_year_id),
           prs_requested_amount: values.prs_requested_amount,
           prs_released_amount: values.prs_released_amount,
           // prs_project_id: values.prs_project_id,
@@ -208,6 +224,7 @@ const ProjectSupplimentaryModel = (props) => {
         handleUpdateProjectSupplimentary(updateProjectSupplimentary);
       } else {
         const newProjectSupplimentary = {
+          prs_budget_year_id: parseInt(values.prs_budget_year_id),
           prs_requested_amount: values.prs_requested_amount,
           prs_released_amount: values.prs_released_amount,
           prs_project_id: passedId,
@@ -230,12 +247,14 @@ const ProjectSupplimentaryModel = (props) => {
   useEffect(() => {
     setProjectSupplimentary(data);
   }, [data]);
+
   useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setProjectSupplimentary(data);
       setIsEdit(false);
     }
   }, [data]);
+
   const toggle = () => {
     if (modal) {
       setModal(false);
@@ -249,6 +268,7 @@ const ProjectSupplimentaryModel = (props) => {
     const projectSupplimentary = arg;
     setProjectSupplimentary({
       prs_id: projectSupplimentary.prs_id,
+      prs_budget_year_id: projectSupplimentary.prs_budget_year_id,
       prs_requested_amount: projectSupplimentary.prs_requested_amount,
       prs_released_amount: projectSupplimentary.prs_released_amount,
       prs_project_id: projectSupplimentary.prs_project_id,
@@ -296,6 +316,19 @@ const ProjectSupplimentaryModel = (props) => {
             <span>
               {truncateText(cellProps.row.original.prs_requested_amount, 30) ||
                 "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "budget_year_id",
+        accessorKey: "prs_budget_year_id",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {budgetYearMap[cellProps.row.original.prs_budget_year_id] || "-"}
             </span>
           );
         },
@@ -510,6 +543,36 @@ const ProjectSupplimentaryModel = (props) => {
                 }}
               >
                 <Row>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prs_budget_year_id")}<span className="text-danger">*</span></Label>
+                    <Input
+                      name="prs_budget_year_id"
+                      type="select"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prs_budget_year_id || ""}
+                      invalid={
+                        validation.touched.prs_budget_year_id &&
+                          validation.errors.prs_budget_year_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    >
+                      <option value="">{t('select_one')}</option>
+                      {budgetYearData?.data?.map((data) => (
+                        <option key={data.bdy_id} value={data.bdy_id}>
+                          {data.bdy_name}
+                        </option>
+                      ))}
+                    </Input>
+                    {validation.touched.prs_budget_year_id &&
+                      validation.errors.prs_budget_year_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prs_budget_year_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>
                       {t("prs_requested_amount")}

@@ -16,7 +16,7 @@ import {
   useUpdateProjectPerformance,
 } from "../../queries/projectperformance_query";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
-import { usePopulateBudgetYears } from "../../queries/budgetyear_query";
+import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
 import ProjectPerformanceModal from "./ProjectPerformanceModal";
 import { useTranslation } from "react-i18next";
@@ -67,6 +67,7 @@ const ProjectPerformanceModel = (props) => {
   const { data, isLoading, error, isError, refetch } =
     useFetchProjectPerformances(param, isActive);
   const { data: budgetYearData } = usePopulateBudgetYears();
+  const { data: bgYearsOptionsData } = useFetchBudgetYears();
   const { data: budgetMonthData } = useFetchBudgetMonths();
   const { data: projectStatusData } = useFetchProjectStatuss();
   const addProjectPerformance = useAddProjectPerformance();
@@ -225,12 +226,12 @@ const ProjectPerformanceModel = (props) => {
 
   const budgetYearMap = useMemo(() => {
     return (
-      budgetYearData?.data?.reduce((acc, year) => {
+      bgYearsOptionsData?.data?.reduce((acc, year) => {
         acc[year.bdy_id] = year.bdy_name;
         return acc;
       }, {}) || {}
     );
-  }, [budgetYearData]);
+  }, [bgYearsOptionsData]);
   const projectStatusMap = useMemo(() => {
     return (
       projectStatusData?.data?.reduce((acc, project_status) => {
@@ -548,13 +549,11 @@ const ProjectPerformanceModel = (props) => {
                 }}
               >
                 <Row>
-
                   <Col className="col-md-6 mb-3">
                     <Label>{t("prp_budget_year_id")}<span className="text-danger">*</span></Label>
                     <Input
                       name="prp_budget_year_id"
                       type="select"
-                      placeholder={t("insert_status_name_amharic")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.prp_budget_year_id || ""}

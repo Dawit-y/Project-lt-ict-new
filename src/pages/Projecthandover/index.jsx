@@ -14,6 +14,7 @@ import {
   useDeleteProjectHandover,
   useUpdateProjectHandover,
 } from "../../queries/projecthandover_query";
+import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
 import ProjectHandoverModal from "./ProjectHandoverModal";
 import ConvInfoModal from "../Conversationinformation/ConvInfoModal"
 import { useTranslation } from "react-i18next";
@@ -73,11 +74,22 @@ const ProjectHandoverModel = (props) => {
     param,
     isActive
   );
+  const { data: budgetYearData } = usePopulateBudgetYears();
+  const { data: bgYearsOptionsData } = useFetchBudgetYears();
 
   const addProjectHandover = useAddProjectHandover();
   const updateProjectHandover = useUpdateProjectHandover();
   const deleteProjectHandover = useDeleteProjectHandover();
-  //START CRUD
+
+  const budgetYearMap = useMemo(() => {
+    return (
+      bgYearsOptionsData?.data?.reduce((acc, year) => {
+        acc[year.bdy_id] = year.bdy_name;
+        return acc;
+      }, {}) || {}
+    );
+  }, [bgYearsOptionsData]);
+
   const handleAddProjectHandover = async (
     newProjectHandover
   ) => {
@@ -129,6 +141,8 @@ const ProjectHandoverModel = (props) => {
     enableReinitialize: true,
     initialValues: {
       prh_project_id: (projectHandover && projectHandover.prh_project_id) || "",
+      prh_budget_year_id:
+        (projectHandover && projectHandover.prh_budget_year_id) || "",
       prh_handover_date_ec:
         (projectHandover && projectHandover.prh_handover_date_ec) ||
         "2017/04/07",
@@ -154,6 +168,7 @@ const ProjectHandoverModel = (props) => {
       if (isEdit) {
         const updateProjectHandover = {
           prh_id: projectHandover?.prh_id,
+          prh_budget_year_id: parseInt(values.prh_budget_year_id),
           prh_handover_date_ec: values.prh_handover_date_ec,
           prh_handover_date_gc: values.prh_handover_date_gc,
           prh_description: values.prh_description,
@@ -166,6 +181,7 @@ const ProjectHandoverModel = (props) => {
       } else {
         const newProjectHandover = {
           prh_project_id: passedId,
+          prh_budget_year_id: parseInt(values.prh_budget_year_id),
           prh_handover_date_ec: values.prh_handover_date_ec,
           prh_handover_date_gc: values.prh_handover_date_gc,
           prh_description: values.prh_description,
@@ -202,6 +218,7 @@ const ProjectHandoverModel = (props) => {
     const projectHandover = arg;
     setProjectHandover({
       prh_id: projectHandover.prh_id,
+      prh_budget_year_id: projectHandover.prh_budget_year_id,
       prh_project_id: projectHandover.prh_project_id,
       prh_handover_date_ec: projectHandover.prh_handover_date_ec,
       prh_handover_date_gc: projectHandover.prh_handover_date_gc,
@@ -234,6 +251,19 @@ const ProjectHandoverModel = (props) => {
   //START UNCHANGED
   const columns = useMemo(() => {
     const baseColumns = [
+      {
+        header: "",
+        accessorKey: "prh_budget_year_id",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {budgetYearMap[cellProps.row.original.prh_budget_year_id] || "-"}
+            </span>
+          );
+        },
+      },
       {
         header: "",
         accessorKey: "prh_handover_date_gc",
@@ -459,6 +489,36 @@ const ProjectHandoverModel = (props) => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
+                    <Label>{t("prh_budget_year_id")}<span className="text-danger">*</span></Label>
+                    <Input
+                      name="prh_budget_year_id"
+                      type="select"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prh_budget_year_id || ""}
+                      invalid={
+                        validation.touched.prh_budget_year_id &&
+                          validation.errors.prh_budget_year_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    >
+                      <option value="">{t('select_one')}</option>
+                      {budgetYearData?.data?.map((data) => (
+                        <option key={data.bdy_id} value={data.bdy_id}>
+                          {data.bdy_name}
+                        </option>
+                      ))}
+                    </Input>
+                    {validation.touched.prh_budget_year_id &&
+                      validation.errors.prh_budget_year_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prh_budget_year_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
                     <DatePicker
                       isRequired="true"
                       validation={validation}
@@ -466,11 +526,12 @@ const ProjectHandoverModel = (props) => {
                       startDate={startDate}
                     />
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-12 mb-3">
                     <Label>{t("prh_description")}</Label>
                     <Input
                       name="prh_description"
                       type="textarea"
+                      rows={4}
                       placeholder={t("prh_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -481,7 +542,6 @@ const ProjectHandoverModel = (props) => {
                           ? true
                           : false
                       }
-                      maxLength={20}
                     />
                     {validation.touched.prh_description &&
                       validation.errors.prh_description ? (

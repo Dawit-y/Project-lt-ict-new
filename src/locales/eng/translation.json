@@ -1122,5 +1122,8 @@
 	"yes": "Yes",
 	"no": "No",
 	"Something went wrong": "Something Went wrong",
-	"try_again": "Try Again"
+	"try_again": "Try Again",
+	"prv_budget_year_id": "Budget Year",
+	"prh_budget_year_id": "Budget Year",
+	"prs_budget_year_id": "Budget Year"
 }

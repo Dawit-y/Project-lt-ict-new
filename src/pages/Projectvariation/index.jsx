@@ -14,6 +14,7 @@ import {
   useDeleteProjectVariation,
   useUpdateProjectVariation,
 } from "../../queries/projectvariation_query";
+import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
 import ProjectVariationModal from "./ProjectVariationModal";
 import { useTranslation } from "react-i18next";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
@@ -61,10 +62,21 @@ const ProjectVariationModel = (props) => {
 
   const { data, isLoading, error, isError, refetch } =
     useFetchProjectVariations(param, isActive);
+  const { data: budgetYearData } = usePopulateBudgetYears();
+  const { data: bgYearsOptionsData } = useFetchBudgetYears();
 
   const addProjectVariation = useAddProjectVariation();
   const updateProjectVariation = useUpdateProjectVariation();
   const deleteProjectVariation = useDeleteProjectVariation();
+
+  const budgetYearMap = useMemo(() => {
+    return (
+      bgYearsOptionsData?.data?.reduce((acc, year) => {
+        acc[year.bdy_id] = year.bdy_name;
+        return acc;
+      }, {}) || {}
+    );
+  }, [bgYearsOptionsData]);
   //START CRUD
   const handleAddProjectVariation = async (data) => {
     try {
@@ -110,15 +122,13 @@ const ProjectVariationModel = (props) => {
       setDeleteModal(false);
     }
   };
-  //END CRUD
-  //START FOREIGN CALLS
 
   // validation
   const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
-
     initialValues: {
+      prv_budget_year_id:
+        (projectVariation && projectVariation.prv_budget_year_id) || "",
       prv_requested_amount:
         (projectVariation && projectVariation.prv_requested_amount) || "",
       prv_released_amount:
@@ -144,6 +154,7 @@ const ProjectVariationModel = (props) => {
     validationSchema: Yup.object({
       prv_requested_amount: amountValidation(1000, 100000000, true),
       prv_released_amount: amountValidation(1000, 100000000, true),
+      prv_budget_year_id: numberValidation(1, 20, true),
       // prv_project_id: Yup.string().required(t("prv_project_id")),
       //prv_requested_date_ec: Yup.string().required(t("prv_requested_date_ec")),
       prv_requested_date_gc: Yup.string().required(t("prv_requested_date_gc"))
@@ -166,6 +177,7 @@ const ProjectVariationModel = (props) => {
           prv_id: projectVariation ? projectVariation.prv_id : 0,
           prv_requested_amount: values.prv_requested_amount,
           prv_released_amount: values.prv_released_amount,
+          prv_budget_year_id: parseInt(values.prv_budget_year_id),
           //prv_project_id: values.prv_project_id,
           prv_requested_date_ec: values.prv_requested_date_ec,
           prv_requested_date_gc: values.prv_requested_date_gc,
@@ -182,6 +194,7 @@ const ProjectVariationModel = (props) => {
         const newProjectVariation = {
           prv_requested_amount: values.prv_requested_amount,
           prv_released_amount: values.prv_released_amount,
+          prv_budget_year_id: parseInt(values.prv_budget_year_id),
           prv_project_id: passedId,
           prv_requested_date_ec: values.prv_requested_date_ec,
           prv_requested_date_gc: values.prv_requested_date_gc,
@@ -222,6 +235,7 @@ const ProjectVariationModel = (props) => {
     setProjectVariation({
       prv_id: projectVariation.prv_id,
       prv_requested_amount: projectVariation.prv_requested_amount,
+      prv_budget_year_id: projectVariation.prv_budget_year_id,
       prv_released_amount: projectVariation.prv_released_amount,
       prv_project_id: projectVariation.prv_project_id,
       prv_requested_date_ec: projectVariation.prv_requested_date_ec,
@@ -255,9 +269,22 @@ const ProjectVariationModel = (props) => {
     setSearchError(error);
     setShowSearchResult(true);
   };
-  //START UNCHANGED
+
   const columns = useMemo(() => {
     const baseColumns = [
+      {
+        header: "",
+        accessorKey: "prv_budget_year_id",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {budgetYearMap[cellProps.row.original.prv_budget_year_id] || "-"}
+            </span>
+          );
+        },
+      },
       {
         header: "",
         accessorKey: "prv_requested_amount",
@@ -482,6 +509,36 @@ const ProjectVariationModel = (props) => {
                 }}
               >
                 <Row>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prv_budget_year_id")}<span className="text-danger">*</span></Label>
+                    <Input
+                      name="prv_budget_year_id"
+                      type="select"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prv_budget_year_id || ""}
+                      invalid={
+                        validation.touched.prv_budget_year_id &&
+                          validation.errors.prv_budget_year_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    >
+                      <option value="">{t('select_one')}</option>
+                      {budgetYearData?.data?.map((data) => (
+                        <option key={data.bdy_id} value={data.bdy_id}>
+                          {data.bdy_name}
+                        </option>
+                      ))}
+                    </Input>
+                    {validation.touched.prv_budget_year_id &&
+                      validation.errors.prv_budget_year_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prv_budget_year_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("prv_requested_amount")}<span className="text-danger">*</span></Label>
                     <Input

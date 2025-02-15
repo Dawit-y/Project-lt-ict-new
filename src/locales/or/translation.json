@@ -1239,5 +1239,8 @@
 	"yes": "Eyyee",
 	"no": "Lakki",
 	"Something went wrong": "Waan tokkotu dogoggora ta'e",
-	"try_again": "irra deebi'ii yaali"
+	"try_again": "irra deebi'ii yaali",
+	"prv_budget_year_id": "Bara Baajataa",
+	"prh_budget_year_id": "Bara Baajataa",
+	"prs_budget_year_id": "Bara Baajataa"
 }

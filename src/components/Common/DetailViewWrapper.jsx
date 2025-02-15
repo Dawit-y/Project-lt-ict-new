@@ -69,6 +69,7 @@ TabWrapper.propTypes = {
     })
   ).isRequired,
 };
+
 export const DetailsView = ({ details, keysToRemove }) => {
   const { t } = useTranslation();
 
@@ -102,12 +103,14 @@ export const DetailsView = ({ details, keysToRemove }) => {
               <th>{t("prd_size")}:</th>
               <td>{bytesToReadableSize(details.prd_size)}</td>
             </tr>
-            {Object.entries(newTransaction).map(([key, value]) => (
-              <tr key={key}>
-                <th>{t(key)}:</th>
-                <td>{value}</td>
-              </tr>
-            ))}
+            {Object.entries(newTransaction)
+              .filter(([key]) => key !== descriptionKey)
+              .map(([key, value]) => (
+                <tr key={key}>
+                  <th>{t(key)}:</th>
+                  <td>{value}</td>
+                </tr>
+              ))}
             <Col sm="12" xs="12">
               <div className="mt-4 text-center">
                 <h5 className="font-size-14">
@@ -136,6 +139,7 @@ const pdfViewerStyle = {
   justifyContent: "center",
   alignItems: "center",
 };
+
 const bytesToReadableSize = (bytes) => {
   if (isNaN(bytes) || bytes < 0) return "0 KB";
   const mb = bytes / (1024 * 1024); // Convert to MB

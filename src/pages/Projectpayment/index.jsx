@@ -16,6 +16,7 @@ import {
   useDeleteProjectPayment,
 } from "../../queries/projectpayment_query";
 import { useFetchPaymentCategorys } from "../../queries/paymentcategory_query";
+import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
 import {
   alphanumericValidation,
   amountValidation,
@@ -67,11 +68,23 @@ const ProjectPaymentModel = (props) => {
     param,
     isActive
   );
+  const { data: budgetYearData } = usePopulateBudgetYears();
+  const { data: bgYearsOptionsData } = useFetchBudgetYears();
 
   const addProjectPayment = useAddProjectPayment();
   const updateProjectPayment = useUpdateProjectPayment();
   const deleteProjectPayment = useDeleteProjectPayment();
   const { data: paymentCategoryData } = useFetchPaymentCategorys();
+
+  const budgetYearMap = useMemo(() => {
+    return (
+      bgYearsOptionsData?.data?.reduce((acc, year) => {
+        acc[year.bdy_id] = year.bdy_name;
+        return acc;
+      }, {}) || {}
+    );
+  }, [bgYearsOptionsData]);
+
   const handleAddProjectPayment = async (newProjectPayment) => {
     try {
       await addProjectPayment.mutateAsync(newProjectPayment);
@@ -126,13 +139,14 @@ const ProjectPaymentModel = (props) => {
       }, {}) || {}
     );
   }, [paymentCategoryData]);
-  // validation
+
   const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
     initialValues: {
       prp_project_id: passedId,
       prp_type: (projectPayment && projectPayment.prp_type) || "",
+      prp_budget_year_id:
+        (projectPayment && projectPayment.prp_budget_year_id) || "",
       prp_payment_date_et:
         (projectPayment && projectPayment.prp_payment_date_et) || "",
       prp_payment_date_gc:
@@ -157,6 +171,7 @@ const ProjectPaymentModel = (props) => {
               item.prp_type == value && item.prp_id !== projectPayment?.prp_id
           );
         }),
+      prp_budget_year_id: numberValidation(1, 20, true),
       // prp_payment_date_et: Yup.string().required(t("prp_payment_date_et")),
       prp_payment_date_gc: Yup.string().required(t("prp_payment_date_gc")),
       prp_payment_amount: amountValidation(1, 10000000000, true),
@@ -171,6 +186,7 @@ const ProjectPaymentModel = (props) => {
         const updateProjectPayment = {
           prp_id: projectPayment ? projectPayment.prp_id : 0,
           prp_project_id: values.prp_project_id,
+          prp_budget_year_id: parseInt(values.prp_budget_year_id),
           prp_type: values.prp_type,
           prp_payment_date_et: values.prp_payment_date_et,
           prp_payment_date_gc: values.prp_payment_date_gc,
@@ -187,6 +203,7 @@ const ProjectPaymentModel = (props) => {
         const newProjectPayment = {
           prp_project_id: passedId,
           prp_type: values.prp_type,
+          prp_budget_year_id: parseInt(values.prp_budget_year_id),
           prp_payment_date_et: values.prp_payment_date_et,
           prp_payment_date_gc: values.prp_payment_date_gc,
           prp_payment_amount: values.prp_payment_amount,
@@ -227,6 +244,7 @@ const ProjectPaymentModel = (props) => {
     setProjectPayment({
       prp_id: projectPayment.prp_id,
       prp_project_id: projectPayment.prp_project_id,
+      prp_budget_year_id: projectPayment.prp_budget_year_id,
       prp_type: projectPayment.prp_type,
       prp_payment_date_et: projectPayment.prp_payment_date_et,
       prp_payment_date_gc: projectPayment.prp_payment_date_gc,
@@ -257,6 +275,19 @@ const ProjectPaymentModel = (props) => {
 
   const columns = useMemo(() => {
     const baseColumns = [
+      {
+        header: "",
+        accessorKey: "prp_budget_year_id",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {budgetYearMap[cellProps.row.original.prp_budget_year_id] || ""}
+            </span>
+          );
+        },
+      },
       {
         header: "",
         accessorKey: "prp_type",
@@ -463,6 +494,36 @@ const ProjectPaymentModel = (props) => {
                 }}
               >
                 <Row>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prp_budget_year_id")}<span className="text-danger">*</span></Label>
+                    <Input
+                      name="prp_budget_year_id"
+                      type="select"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prp_budget_year_id || ""}
+                      invalid={
+                        validation.touched.prp_budget_year_id &&
+                          validation.errors.prp_budget_year_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    >
+                      <option value="">{t('select_one')}</option>
+                      {budgetYearData?.data?.map((data) => (
+                        <option key={data.bdy_id} value={data.bdy_id}>
+                          {data.bdy_name}
+                        </option>
+                      ))}
+                    </Input>
+                    {validation.touched.prp_budget_year_id &&
+                      validation.errors.prp_budget_year_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prp_budget_year_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("prp_type")}<span className="text-danger">*</span></Label>
                     <Input

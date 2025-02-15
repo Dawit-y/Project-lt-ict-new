@@ -1257,5 +1257,8 @@
 	"yes": "አዎን",
 	"no": "አይ",
 	"Something went wrong": "የሆነ ችግር ተፈጥሯል።",
-	"try_again": "እንደገና ይሞክሩ"
+	"try_again": "እንደገና ይሞክሩ",
+	"prv_budget_year_id": "የበጀት አመት",
+	"prh_budget_year_id": "የበጀት አመት",
+	"prs_budget_year_id": "የበጀት አመት"
 }

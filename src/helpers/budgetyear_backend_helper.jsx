@@ -14,7 +14,7 @@ export const getBudgetYear = async () => {
     const response = await post(apiUrl + GET_BUDGET_YEAR);
     return response;
   } catch (error) {
-    console.log(error); // Handle any errors
+    throw error
   }
 };
 // get Projects
@@ -23,7 +23,7 @@ export const populateBudgetYear = async () => {
     const response = await post(apiUrl + POPULATE_BUDGET_YEAR);
     return response;
   } catch (error) {
-    console.log(error); // Handle any errors
+    throw error
   }
 };
 // add Projects
@@ -61,4 +61,4 @@ export const fetchSearchResults = async (searchTerm, selectedFields) => {
   );
   return response.data.data;
 };
-export {};
+export { };

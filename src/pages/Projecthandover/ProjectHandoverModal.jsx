@@ -18,15 +18,7 @@ const modalStyle = {
 const ProjectHandoverModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction } = props;
-  const handoverId = transaction?.prh_id;
-  const param = {
-    prd_owner_type_id: PAGE_ID.PROJ_HANDOVER,
-    prd_owner_id: handoverId,
-  };
 
-  const { data, isLoading } = useSearchProjectDocuments(
-    handoverId ? param : null
-  );
   const keysToRemove = [
     "prh_update_time",
     "is_role_editable",
@@ -40,27 +32,6 @@ const ProjectHandoverModal = (props) => {
     "prh_create_time",
     "prh_delete_time",
     "prh_created_by",
-  ];
-  const tabs = [
-    {
-      id: "details",
-      label: "Details",
-      content: (
-        <DetailsView details={transaction} keysToRemove={keysToRemove} />
-      ),
-    },
-    {
-      id: "pdf",
-      label: "PDF Viewer",
-      content: isLoading ? (
-        <Spinners />
-      ) : (
-        <PDFPreview
-          filePath={data?.data[0]?.prd_file_path}
-          fileSize={data?.data[0]?.prd_size}
-        />
-      ),
-    },
   ];
 
   return (
@@ -77,7 +48,7 @@ const ProjectHandoverModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-          {isLoading ? <Spinners /> : <TabWrapper tabs={tabs} />}
+          {<DetailsView details={transaction} keysToRemove={keysToRemove} />}
         </ModalBody>
       </div>
     </Modal>
