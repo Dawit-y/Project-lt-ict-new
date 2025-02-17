@@ -20,28 +20,29 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import AddressStructureForProject from "../Project/AddressStructureForProject";
 const PlotlyRenderers = createPlotlyRenderers(Plot);
-
+import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useSearchDepartments } from "../../queries/department_query";
 import { useSearchUserss } from "../../queries/users_query";
 import { useSearchProjects } from "../../queries/project_query";
 import { useSearchStatisticalReport } from "../../queries/statisticalreport_query";
 import "./statistical.css";
+import { createSelectOptions } from "../../utils/commonMethods";
 const StatisticalReport = () => {
   const { t, i18n } = useTranslation();
   const [endpoints, setEndpoints] = useState([
-    { name: "project_stat", url: "uuuu" },
-    { name: "employee_stat", url: "uuuu" },
-    { name: "budget_plan_stat", url: "uuuu" },
-    { name: "budget_expenditure_stat", url: "uuuu" },
-    { name: "budget_source_stat", url: "uuuu" },
-    { name: "budget_contractor_stat", url: "uuuu" },
-    { name: "project_payment_stat", url: "uuuu" },
-    { name: "project_performance_stat", url: "uuuu" },
-    { name: "project_stakeholder_stat", url: "uuuu" },
-    { name: "project_supplimentary_stat", url: "uuuu" },
-    { name: "project_variation_stat", url: "uuuu" },
-    { name: "project_handover_stat", url: "uuuu" },
-    { name: "project_document_stat", url: "uuuu" },
+    { name: "project", url: "uuuu" },
+    { name: "project_employee", url: "uuuu" },
+    { name: "project_budget_plan", url: "uuuu" },
+    { name: "project_budget_expenditure", url: "uuuu" },
+    { name: "budget_source", url: "uuuu" },
+    { name: "project_contractor", url: "uuuu" },
+    { name: "project_payment", url: "uuuu" },
+    { name: "project_performance", url: "uuuu" },
+    { name: "project_stakeholder", url: "uuuu" },
+    { name: "project_supplimentary", url: "uuuu" },
+    { name: "project_variation", url: "uuuu" },
+    { name: "project_handover", url: "uuuu" },
+    { name: "project_document", url: "uuuu" },
   ]);
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -74,7 +75,12 @@ const StatisticalReport = () => {
   const [localizedRenderersUI, setLocalizedRenderersUI] = useState({});
   const [localizedAggregatorTemplates, setLocalizedAggregatorTemplates] =
     useState({});
-
+  const { data: budgetYearData } = useFetchBudgetYears();
+  const budgetYearOptions = createSelectOptions(
+    budgetYearData?.data || [],
+    "bdy_id",
+    "bdy_name"
+  );
   // Recalculate renderers and aggregators on language change
   useEffect(() => {
     // Create localized renderers
@@ -133,7 +139,7 @@ const StatisticalReport = () => {
 
   // Map for endpoints and their respective configurations
   const endpointConfigs = {
-    project_stat: {
+    project: {
       //textKeys: ["prj_name", "prj_code"],
       //dateKeys: ["prj_date"],
       locationParams: {
@@ -143,7 +149,7 @@ const StatisticalReport = () => {
       },
       reportTypeIndex: 1,
     },
-    employee_stat: {
+    project_employee: {
       textKeys: ["prj_name", "prj_code"],
       //dateKeys: ["prj_date"],
       locationParams: {
@@ -153,7 +159,7 @@ const StatisticalReport = () => {
       },
       reportTypeIndex: 2,
     },
-    budget_plan_stat: {
+    project_budget_plan: {
       textKeys: ["prj_name", "prj_code"],
       //dateKeys: ["prj_date"],
       locationParams: {
@@ -163,7 +169,7 @@ const StatisticalReport = () => {
       },
       reportTypeIndex: 3,
     },
-    budget_expenditure_stat: {
+    project_budget_expenditure: {
       textKeys: ["prj_name", "prj_code"],
       //dateKeys: ["prj_date"],
       locationParams: {
@@ -173,7 +179,7 @@ const StatisticalReport = () => {
       },
       reportTypeIndex: 4,
     },
-    budget_source_stat: {
+    budget_source: {
       textKeys: ["prj_name", "prj_code"],
       //dateKeys: ["prj_date"],
       locationParams: {
@@ -183,7 +189,7 @@ const StatisticalReport = () => {
       },
       reportTypeIndex: 5,
     },
-    budget_contractor_stat: {
+    project_contractor: {
       textKeys: ["prj_name", "prj_code"],
       //dateKeys: ["prj_date"],
       locationParams: {
@@ -193,7 +199,7 @@ const StatisticalReport = () => {
       },
       reportTypeIndex: 6,
     },
-    project_payment_stat: {
+    project_payment: {
       //textKeys: ["prj_name", "prj_code"],
       dateKeys: ["payment_date"],
       locationParams: {
@@ -204,7 +210,7 @@ const StatisticalReport = () => {
       reportTypeIndex: 7,
     },
 
-     project_performance_stat: {
+     project_performance: {
       textKeys: ["prj_name", "prj_code"],
       //dateKeys: ["payment_date"],
       locationParams: {
@@ -215,7 +221,7 @@ const StatisticalReport = () => {
       reportTypeIndex: 8,
     },
 
- project_stakeholder_stat: {
+ project_stakeholder: {
       textKeys: ["prj_name", "prj_code"],
       //dateKeys: ["payment_date"],
       locationParams: {
@@ -226,7 +232,7 @@ const StatisticalReport = () => {
       reportTypeIndex: 9,
     },
 
-project_supplimentary_stat: {
+project_supplimentary: {
       textKeys: ["prj_name", "prj_code"],
       dateKeys: ["payment_date"],
       locationParams: {
@@ -237,7 +243,7 @@ project_supplimentary_stat: {
       reportTypeIndex: 10,
     },
 
-project_variation_stat: {
+project_variation: {
       textKeys: ["prj_name", "prj_code"],
       dateKeys: ["payment_date"],
       locationParams: {
@@ -247,7 +253,7 @@ project_variation_stat: {
       },
       reportTypeIndex: 11,
     },
-project_handover_stat: {
+project_handover: {
       textKeys: ["prj_name", "prj_code"],
       //dateKeys: ["payment_date"],
       locationParams: {
@@ -257,7 +263,7 @@ project_handover_stat: {
       },
       reportTypeIndex: 12,
     },
-project_document_stat: {
+project_document: {
       textKeys: ["prj_name", "prj_code"],
       //dateKeys: ["payment_date"],
       locationParams: {
@@ -461,9 +467,7 @@ project_document_stat: {
                     )}
                   {searchResults && searchResults.length === 0 && (
                     <p>
-                      {t(
-                        "No data available for the selected endpoint please select related Address Structure and click Search button."
-                      )}
+                      {t("statistical_search")}
                     </p>
                   )}
                 </>

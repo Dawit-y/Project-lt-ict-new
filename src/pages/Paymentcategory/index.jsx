@@ -48,7 +48,6 @@ import {
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -338,7 +337,7 @@ const PaymentCategoryModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable == 1 && (
+              {cellProps.row.original.is_deletable == 9 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -411,6 +410,7 @@ const PaymentCategoryModel = () => {
                       theadClass="table-light"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                      divClassName="-"
                     />
                   </CardBody>
                 </Card>

@@ -97,7 +97,7 @@ export const DetailsView = ({ details, keysToRemove }) => {
       </div>
 
       <div className="text-muted mt-4">
-        <Table>
+        <Table className="table-sm">
           <tbody>
             <tr key="-1">
               <th>{t("prd_size")}:</th>

@@ -386,7 +386,7 @@
 
 	"budget_year": "Budget Year",
 	"bdy_id": "Id",
-	"bdy_name": "Name",
+	"bdy_name": "Budget Year",
 	"bdy_code": "Code",
 	"bdy_description": "Description",
 	"bdy_create_time": "Create Time",
@@ -1125,5 +1125,8 @@
 	"try_again": "Try Again",
 	"prv_budget_year_id": "Budget Year",
 	"prh_budget_year_id": "Budget Year",
-	"prs_budget_year_id": "Budget Year"
+	"prs_budget_year_id": "Budget Year",
+	"menu_report":"Reports",
+	"statistical_search":"No data available for the selected endpoint please select related Address Structure and click Search button.",
+	"project_plan_list":"Project Plan List"
 }

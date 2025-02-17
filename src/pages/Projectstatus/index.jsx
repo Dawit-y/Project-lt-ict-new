@@ -46,7 +46,6 @@ import {
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const truncateText = (text, maxLength) => {
@@ -375,7 +374,7 @@ const ProjectStatusModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
+              {cellProps.row.original.is_editable ==1  && (
                 <Link
                   to="#"
                   className="text-success"
@@ -391,7 +390,7 @@ const ProjectStatusModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable && (
+              {cellProps.row.original.is_deletable == 9 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -439,16 +438,6 @@ const ProjectStatusModel = () => {
             title={t("project_status")}
             breadcrumbItem={t("project_status")}
           />
-          <AdvancedSearch
-            searchHook={useSearchProjectStatuss}
-            textSearchKeys={["prs_status_name_or"]}
-            dropdownSearchKeys={[]}
-            checkboxSearchKeys={[]}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          />
           {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
@@ -475,6 +464,7 @@ const ProjectStatusModel = () => {
                       theadClass="table-light"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                      divClassName="-"
                     />
                   </CardBody>
                 </Card>

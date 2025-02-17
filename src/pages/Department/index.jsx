@@ -434,7 +434,7 @@ const DepartmentModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable == 1 && (
+              {cellProps.row.original.is_deletable == 9 && (
                 <Link
                   to="#"
                   className="text-danger"

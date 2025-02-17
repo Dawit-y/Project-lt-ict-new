@@ -51,7 +51,6 @@ import {
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const truncateText = (text, maxLength) => {
@@ -340,7 +339,7 @@ const SectorCategoryModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable == 1 && (
+              {cellProps.row.original.is_deletable == 9 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -388,16 +387,6 @@ const SectorCategoryModel = () => {
             title={t("sector_category")}
             breadcrumbItem={t("sector_category")}
           />
-          <AdvancedSearch
-            searchHook={useSearchSectorCategorys}
-            textSearchKeys={["psc_name", "psc_code"]}
-            dropdownSearchKeys={[]}
-            checkboxSearchKeys={[]}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          />
           {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
@@ -424,6 +413,7 @@ const SectorCategoryModel = () => {
                       theadClass="table-light"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                      divClassName="-"
                     />
                   </CardBody>
                 </Card>

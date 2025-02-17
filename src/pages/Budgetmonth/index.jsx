@@ -378,7 +378,7 @@ const handleSearchResults = ({ data, error }) => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable==1 && (
+              {cellProps.row.original.is_deletable == 9 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -450,6 +450,7 @@ const handleSearchResults = ({ data, error }) => {
                       theadClass="table-light"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                      divClassName="-"
                     />
                   </CardBody>
                 </Card>

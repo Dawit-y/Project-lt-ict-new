@@ -410,16 +410,6 @@ const BudgetSourceModel = () => {
             title={t("budget_source")}
             breadcrumbItem={t("budget_source")}
           />
-          <AdvancedSearch
-            searchHook={useSearchBudgetSources}
-            textSearchKeys={["pbs_name_or"]}
-            dropdownSearchKeys={[]}
-            checkboxSearchKeys={[]}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          />
           {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
@@ -446,6 +436,7 @@ const BudgetSourceModel = () => {
                       theadClass="table-light"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                      divClassName="-"
                     />
                   </CardBody>
                 </Card>

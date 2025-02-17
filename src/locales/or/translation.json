@@ -416,7 +416,7 @@
 
 	"budget_year": "Bara Baajataa",
 	"bdy_id": "Id",
-	"bdy_name": "Bara",
+	"bdy_name": "Bara Baajataa",
 	"bdy_code": "Koodii",
 	"bdy_description": "Ibsa",
 	"bdy_create_time": "Yeroo Uumame",
@@ -1242,5 +1242,8 @@
 	"try_again": "irra deebi'ii yaali",
 	"prv_budget_year_id": "Bara Baajataa",
 	"prh_budget_year_id": "Bara Baajataa",
-	"prs_budget_year_id": "Bara Baajataa"
+	"prs_budget_year_id": "Bara Baajataa",
+	"menu_report":"Riportiwwan",
+	"statistical_search":"Gosa riporti filadhaa ti 'Search' irra cuqaasaa",
+	"project_plan_list":"Karoora Pirojeektii"
 }

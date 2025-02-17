@@ -44,9 +44,7 @@ import {
   Badge,
 } from "reactstrap";
 import { toast } from "react-toastify";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -414,16 +412,6 @@ const ProjectCategoryModel = () => {
             title={t("project_category")}
             breadcrumbItem={t("project_category")}
           />
-          <AdvancedSearch
-            searchHook={useSearchProjectCategorys}
-            textSearchKeys={["pct_name_or"]}
-            dropdownSearchKeys={[]}
-            checkboxSearchKeys={[]}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          />
           {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
@@ -450,6 +438,7 @@ const ProjectCategoryModel = () => {
                       theadClass="table-light"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                      divClassName="-"
                     />
                   </CardBody>
                 </Card>

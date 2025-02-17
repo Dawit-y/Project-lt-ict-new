@@ -394,11 +394,12 @@ const AttachFileModal = ({ isOpen, toggle, ownerTypeId, ownerId, projectId }) =>
                 isPagination={true}
                 SearchPlaceholder={t("filter_placeholder")}
                 buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                buttonName={t("add") + " " + t("project_document")}
+                buttonName={t("add")}
                 tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                 theadClass="table-light"
                 pagination="pagination"
                 paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                divClassName="-"
               />
             )}
             <Modal isOpen={modal} toggle={toggleForm} className="modal-xl">

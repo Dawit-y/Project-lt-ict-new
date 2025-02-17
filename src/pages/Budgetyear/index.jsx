@@ -390,6 +390,7 @@ const BudgetYearModel = () => {
 			theadClass="table-light"
 			pagination="pagination"
 			paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+			divClassName="-"
 			/>
 			</CardBody>
 			</Card>

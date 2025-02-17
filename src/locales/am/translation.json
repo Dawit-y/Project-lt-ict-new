@@ -407,7 +407,7 @@
 
 	"budget_year": "የበጀት ዓመት",
 	"bdy_id": "መታወቂያ",
-	"bdy_name": "ስም",
+	"bdy_name": "የበጀት ዓመት",
 	"bdy_code": "ኮድ",
 	"bdy_description": "መግለጫ",
 	"bdy_create_time": "የመፍጠሪያ ጊዜ",
@@ -1260,5 +1260,8 @@
 	"try_again": "እንደገና ይሞክሩ",
 	"prv_budget_year_id": "የበጀት አመት",
 	"prh_budget_year_id": "የበጀት አመት",
-	"prs_budget_year_id": "የበጀት አመት"
+	"prs_budget_year_id": "የበጀት አመት",
+	"menu_report":"ሪፖርት",
+	"statistical_search":"የሪፖርት አይነት ይምረጡ እና 'Search' ላይ ክሊክ ያድርጉ",
+	"project_plan_list":"የፕሮጀክት እቅድ ዝርዝር"
 }
