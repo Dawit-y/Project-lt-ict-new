@@ -38,7 +38,7 @@ const MapClickHandler = ({ onMapClick }) => {
 const GeoLocation = ({ passedId, isActive }) => {
   const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
-  const project = useFetchProject(passedId, userId);
+  const project = useFetchProject(passedId, userId, true);
 
   const fetchedLocation = project?.data?.data?.prj_geo_location;
   const isValidLocation = fetchedLocation?.includes(",");

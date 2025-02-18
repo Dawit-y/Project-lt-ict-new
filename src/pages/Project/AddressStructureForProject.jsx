@@ -24,44 +24,44 @@ const AddressStructureForProject = ({
   if (isLoading) {
     return (
       <div
-      style={{ minHeight: "450px" }}
-      className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
+        style={{ minHeight: "450px" }}
+        className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
       >
-      <h4 className="mb-2 text-secondary">{t("address_tree_Search")}</h4>
-      <hr className="text-dark" />
-      <p>Loading...</p>
+        <h4 className="mb-2 text-secondary">{t("address_tree_Search")}</h4>
+        <hr className="text-dark" />
+        <p>Loading...</p>
       </div>
-      );
+    );
   }
   if (isError) {
     return <div>Error fetching address structure</div>;
   }
   return (
     <div
-    className="w-20 pe-2 flex-shrink-0 bg-white border-end overflow-auto shadow-sm col-sm-2"
-    style={{ minHeight: "450px" }}
+      className="w-20 pe-2 flex-shrink-0 bg-white border-end overflow-auto shadow-sm col-sm-2"
+      style={{ minHeight: "450px" }}
     >
-    <h4 className="mb-2 text-secondary p-2">{t("address_tree_Search")}</h4>
-    <hr className="text-dark" />
-    <>
-    <Col className="d-flex gap-2 ms-3">
-    <Input
-    id="include"
-    name="include"
-    type="checkbox"
-    onChange={handleCheckboxChange}
-    />
-    <Label for="include">{t('include_sub_address')}</Label>
-    </Col>
-    </>
-    {data.length > 0 ? (
-      data.map((node) => (
-        <TreeNode key={node.id} node={node} onNodeClick={onNodeSelect} />
+      <h4 className="mb-2 text-secondary p-2">{t("address_tree_Search")}</h4>
+      <hr className="text-dark" />
+      <>
+        <Col className="d-flex gap-2 ms-3">
+          <Input
+            id="include"
+            name="include"
+            type="checkbox"
+            onChange={handleCheckboxChange}
+          />
+          <Label for="include">{t('include_sub_address')}</Label>
+        </Col>
+      </>
+      {data.length > 0 ? (
+        data.map((node) => (
+          <TreeNode key={node.id} node={node} onNodeClick={onNodeSelect} />
         ))
       ) : (
-      <div>No address structure data available.</div>
+        <div>No address structure data available.</div>
       )}
-      </div>
-      );
+    </div>
+  );
 };
 export default memo(AddressStructureForProject);

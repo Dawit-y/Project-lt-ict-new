@@ -3,9 +3,9 @@ import { Navigate } from "react-router-dom";
 
 import Dashboard from "../pages/Dashboard/index";
 import Login from "../pages/Authentication/Login";
-const UsersProfile = lazy(() => import("../pages/Profile"));
 import ProjectProvider from "../context/ProjectContext";
 
+const UsersProfile = lazy(() => import("../pages/Profile"));
 const ProjectPaymentList = lazy(() =>
   import("../pages/Projectpayment/ProjectPaymentList")
 );
@@ -104,7 +104,7 @@ const ProjectBudgetPlanList = lazy(() =>
 const ProjectBudgetPlan = lazy(() =>
   import("../pages/Projectbudgetplan/index")
 );
-
+const ProjectPlanList = lazy(() => import("../pages/Projectplan/ProjectPlanList"));
 const BudgetMonth = lazy(() => import("../pages/Budgetmonth/index"));
 const ProjectPlan = lazy(() => import("../pages/Projectplan/index"));
 const ProjectSupplimentary = lazy(() =>
@@ -170,7 +170,6 @@ const authProtectedRoutes = [
     component: <ProjectSupplimentaryList />,
   },
   { path: "/project_employee_list", component: <ProjectEmployeeList /> },
-
   { path: "/project_stakeholder_list", component: <ProjectStakeholderList /> },
   { path: "/project_contractor_list", component: <ProjectContractorList /> },
   { path: "/project_budget_plan_list", component: <ProjectBudgetPlanList /> },
@@ -242,7 +241,7 @@ const authProtectedRoutes = [
       </ProjectProvider>
     ),
   },
-
+  { path: "/project_plan_list", component: <ProjectPlanList /> },
   { path: "/project_category", component: <ProjectCategory /> },
   { path: "/project_contractor", component: <ProjectContractor /> },
   { path: "/project_document", component: <ProjectDocument /> },

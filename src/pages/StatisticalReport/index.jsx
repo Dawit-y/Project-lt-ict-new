@@ -19,30 +19,29 @@ import { useTranslation } from "react-i18next";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import AddressStructureForProject from "../Project/AddressStructureForProject";
-const PlotlyRenderers = createPlotlyRenderers(Plot);
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
-import { useSearchDepartments } from "../../queries/department_query";
-import { useSearchUserss } from "../../queries/users_query";
-import { useSearchProjects } from "../../queries/project_query";
 import { useSearchStatisticalReport } from "../../queries/statisticalreport_query";
 import "./statistical.css";
 import { createSelectOptions } from "../../utils/commonMethods";
+
+const PlotlyRenderers = createPlotlyRenderers(Plot);
+
 const StatisticalReport = () => {
   const { t, i18n } = useTranslation();
   const [endpoints, setEndpoints] = useState([
-    { name: "project", url: "uuuu" },
-    { name: "project_employee", url: "uuuu" },
-    { name: "project_budget_plan", url: "uuuu" },
-    { name: "project_budget_expenditure", url: "uuuu" },
-    { name: "budget_source", url: "uuuu" },
-    { name: "project_contractor", url: "uuuu" },
-    { name: "project_payment", url: "uuuu" },
-    { name: "project_performance", url: "uuuu" },
-    { name: "project_stakeholder", url: "uuuu" },
-    { name: "project_supplimentary", url: "uuuu" },
-    { name: "project_variation", url: "uuuu" },
-    { name: "project_handover", url: "uuuu" },
-    { name: "project_document", url: "uuuu" },
+    { name: "project", url: "" },
+    { name: "project_employee", url: "" },
+    { name: "project_budget_plan", url: "" },
+    { name: "project_budget_expenditure", url: "" },
+    { name: "budget_source", url: "" },
+    { name: "project_contractor", url: "" },
+    { name: "project_payment", url: "" },
+    { name: "project_performance", url: "" },
+    { name: "project_stakeholder", url: "" },
+    { name: "project_supplimentary", url: "" },
+    { name: "project_variation", url: "" },
+    { name: "project_handover", url: "" },
+    { name: "project_document", url: "" },
   ]);
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -59,13 +58,8 @@ const StatisticalReport = () => {
   const [searchHook, setSearchHook] = useState(null);
   const [textSearchKeys, setTextSearchKeys] = useState([]);
   const [dateSearchKeys, setDateSearchKeys] = useState([]);
-
-  /* const [searchHook, setSearchHook] = useState(() => useSearchProjects); // Default hook
-  const [textSearchKeys, setTextSearchKeys] = useState([
-    "prj_name",
-    "prj_code",
-  ]);
-  const [dateSearchKeys, setDateSearchKeys] = useState(["prj_date"]);*/
+  const [dropdownSearchKeys, setDropdownSearchKeys] = useState([]);
+  const [include, setInclude] = useState(0)
 
   const [selectedEndpoint, setSelectedEndpoint] = useState("");
   const [data, setData] = useState([]);
@@ -81,7 +75,7 @@ const StatisticalReport = () => {
     "bdy_id",
     "bdy_name"
   );
-  // Recalculate renderers and aggregators on language change
+
   useEffect(() => {
     // Create localized renderers
     const localizedRenderers = Object.keys(TableRenderers).reduce(
@@ -95,7 +89,7 @@ const StatisticalReport = () => {
     // Create localized aggregators
     const localizedAggregatorTemplates = Object.entries(aggregators).reduce(
       (acc, [key, value]) => {
-        const localizedKey = t(key); // Translate key
+        const localizedKey = t(key);
         acc[localizedKey] = value;
         return acc;
       },
@@ -111,128 +105,129 @@ const StatisticalReport = () => {
     // Update localized state
     setLocalizedRenderersUI(localizedRenderers);
     setLocalizedAggregatorTemplates(localizedAggregatorTemplates);
-    // Reset pivot state when language changes
     setPivotState({});
-  }, [t, i18n.language]); // Re-run when language changes
-
-  /* const fetchData = async (endpoint) => {
-    setLoading(true);
-    try {
-      const response = await fetch(endpoint.url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ key: "value" }),
-      });
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
-      const result = await response.json();
-      setData(result.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    if (selectedEndpoint) fetchData(selectedEndpoint);
-  }, [selectedEndpoint]);*/
+  }, [t, i18n.language]); 
 
   // Map for endpoints and their respective configurations
   const endpointConfigs = {
     project: {
-      //textKeys: ["prj_name", "prj_code"],
-      //dateKeys: ["prj_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+      dropdownSearchKeys: [{
+        key: "prj_budget_year_id",
+        options: budgetYearOptions
+      }],
       reportTypeIndex: 1,
     },
     project_employee: {
       textKeys: ["prj_name", "prj_code"],
-      //dateKeys: ["prj_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+      dropdownSearchKeys: [{
+        key: "emp_budget_year_id",
+        options: budgetYearOptions
+      }],
       reportTypeIndex: 2,
     },
     project_budget_plan: {
       textKeys: ["prj_name", "prj_code"],
-      //dateKeys: ["prj_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+      dropdownSearchKeys: [{
+        key: "bpl_budget_year_id",
+        options: budgetYearOptions
+      }],
       reportTypeIndex: 3,
     },
     project_budget_expenditure: {
       textKeys: ["prj_name", "prj_code"],
-      //dateKeys: ["prj_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+      dropdownSearchKeys: [{
+        key: "pbe_budget_year_id",
+        options: budgetYearOptions
+      }],
       reportTypeIndex: 4,
     },
     budget_source: {
       textKeys: ["prj_name", "prj_code"],
-      //dateKeys: ["prj_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+      dropdownSearchKeys: [{
+        key: "pbs_budget_year_id",
+        options: budgetYearOptions
+      }],
       reportTypeIndex: 5,
     },
     project_contractor: {
       textKeys: ["prj_name", "prj_code"],
-      //dateKeys: ["prj_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+      dropdownSearchKeys: [{
+        key: "cni_budget_year_id",
+        options: budgetYearOptions
+      }],
       reportTypeIndex: 6,
     },
     project_payment: {
-      //textKeys: ["prj_name", "prj_code"],
       dateKeys: ["payment_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+      dropdownSearchKeys: [{
+        key: "prp_budget_year_id",
+        options: budgetYearOptions
+      }],
       reportTypeIndex: 7,
     },
 
-     project_performance: {
+    project_performance: {
       textKeys: ["prj_name", "prj_code"],
-      //dateKeys: ["payment_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+      dropdownSearchKeys: [{
+        key: "prp_budget_year_id",
+        options: budgetYearOptions
+      }],
       reportTypeIndex: 8,
     },
-
- project_stakeholder: {
+    project_stakeholder: {
       textKeys: ["prj_name", "prj_code"],
-      //dateKeys: ["payment_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+      dropdownSearchKeys: [{
+        key: "psh_budget_year_id",
+        options: budgetYearOptions
+      }],
       reportTypeIndex: 9,
     },
-
-project_supplimentary: {
+    project_supplimentary: {
       textKeys: ["prj_name", "prj_code"],
       dateKeys: ["payment_date"],
       locationParams: {
@@ -240,10 +235,14 @@ project_supplimentary: {
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+      dropdownSearchKeys: [{
+        key: "prs_budget_year_id",
+        options: budgetYearOptions
+      }],
       reportTypeIndex: 10,
     },
 
-project_variation: {
+    project_variation: {
       textKeys: ["prj_name", "prj_code"],
       dateKeys: ["payment_date"],
       locationParams: {
@@ -251,48 +250,38 @@ project_variation: {
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+      dropdownSearchKeys: [{
+        key: "prv_budget_year_id",
+        options: budgetYearOptions
+      }],
       reportTypeIndex: 11,
     },
-project_handover: {
-      textKeys: ["prj_name", "prj_code"],
-      //dateKeys: ["payment_date"],
+    project_handover: {
+      textKeys: ["prh_name", ""],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+      dropdownSearchKeys: [{
+        key: "prh_budget_year_id",
+        options: budgetYearOptions
+      }],
       reportTypeIndex: 12,
     },
-project_document: {
-      textKeys: ["prj_name", "prj_code"],
-      //dateKeys: ["payment_date"],
+    project_document: {
+      textKeys: ["prd_name"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+      dropdownSearchKeys: [{
+        key: "prd_budget_year_id",
+        options: budgetYearOptions
+      }],
       reportTypeIndex: 13,
     },
-    /* users: {
-      textKeys: ["usr_phone_number", "usr_full_name", "sector_name"],
-      dateKeys: [],
-      locationParams: {
-        region: "usr_region_id",
-        zone: "usr_zone_id",
-        woreda: "usr_woreda_id"       
-      },
-       reportTypeIndex:1
-    },
-    department: {
-      textKeys: ["dep_name_en", "dep_code"],
-      dateKeys: [],
-      locationParams: {
-        region: "dep_available_at_region",
-        zone: "dep_available_at_zone",
-        woreda: "dep_available_at_woreda"        
-      },
-      reportTypeIndex:2
-    }   */
   };
 
   // Handle dropdown selection
@@ -306,6 +295,7 @@ project_document: {
     if (config) {
       setSearchHook(() => config.hook);
       setTextSearchKeys(config.textKeys);
+      setDropdownSearchKeys(config.dropdownSearchKeys)
       setDateSearchKeys(config.dateKeys);
       setReportTypeId(config.reportTypeIndex);
     }
@@ -318,7 +308,6 @@ project_document: {
     setPivotState({});
     //setSelectedEndpoint(endpoint);
     setShowPivot(true);
-    //setSearchError(error);
     setSearchError(error);
     setShowSearchResult(true);
     setLoading(false);
@@ -339,14 +328,15 @@ project_document: {
     if (ReportTypeId) {
       updatedParams["report_type"] = ReportTypeId;
     }
-
-    setProjectParams(updatedParams);
+    const newParams = { ...updatedParams, ...(include === 1 && { include }) }
+    setProjectParams(newParams);
   }, [
     LocationRegionId,
     LocationZoneId,
     LocationWoredaId,
     ReportTypeId,
     locationParams,
+    include
   ]);
 
   // Handle node selection dynamically based on selected endpoint's location keys
@@ -394,6 +384,7 @@ project_document: {
           <AddressStructureForProject
             onNodeSelect={handleNodeSelect}
             setIsAddressLoading={setIsAddressLoading}
+            setInclude={setInclude}
           />
           <div className="w-100">
             <Row className="d-flex align-items-center justify-content-center">
@@ -425,7 +416,7 @@ project_document: {
                   searchHook={useSearchStatisticalReport}
                   textSearchKeys={textSearchKeys}
                   dateSearchKeys={dateSearchKeys}
-                  dropdownSearchKeys={[]}
+                  dropdownSearchKeys={dropdownSearchKeys}
                   checkboxSearchKeys={[]}
                   additionalParams={projectParams}
                   setAdditionalParams={setProjectParams}
@@ -480,3 +471,4 @@ project_document: {
   );
 };
 export default StatisticalReport;
+

@@ -2,7 +2,6 @@ import React, { useEffect, memo, useRef } from "react";
 import axios from "axios";
 import "dhtmlx-gantt/codebase/dhtmlxgantt.css";
 import gantt from "dhtmlx-gantt";
-import Spinners from "../../components/Common/Spinner";
 import { Button } from "reactstrap";
 import { useTranslation } from "react-i18next";
 
@@ -69,8 +68,12 @@ const isValidDate = (dateString) => {
   );
 };
 
-const GanttChart = ({ pld_id, name, startDate, endDate }) => {
-  const { t, i18n } = useTranslation();
+const isTaskReadonly = (projectStatusId) => {
+  return projectStatusId !== 5 && projectStatusId !== 6;
+};
+
+const GanttChart = ({ pld_id, name, startDate, endDate, projectStatusId, readOnly = false }) => {
+  const { t } = useTranslation();
   const ganttInitialized = useRef(false);
   const processorInitialized = useRef(false);
 
@@ -105,14 +108,13 @@ const GanttChart = ({ pld_id, name, startDate, endDate }) => {
             export_api: true,
           });
 
+          gantt.config.readonly = isTaskReadonly(projectStatusId) || readOnly
           gantt.config.row_height = 40;
           gantt.config.scale_height = 50;
           gantt.config.start_date = newStartDate.toISOString();
           gantt.config.end_date = newEndDate.toISOString();
           gantt.config.scales = [{ unit: "week", step: 1, format: "%d %M" }];
           gantt.config.date_format = "%Y-%m-%d %H:%i";
-         
-          // Lightbox sections with translations
           gantt.config.lightbox.sections = [
             {
               name: "text",
@@ -148,7 +150,6 @@ const GanttChart = ({ pld_id, name, startDate, endDate }) => {
               label: t("time"),
             },
           ];
-
           gantt.locale.labels.section_text = t("task_name");
           gantt.locale.labels.section_priority = t("priority");
           gantt.locale.labels.section_notes = t("description");

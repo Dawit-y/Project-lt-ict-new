@@ -23,7 +23,7 @@ export const useFetchProjects = () => {
 };
 
 // Fetch single project
-export const useFetchProject = (id, userId) => {
+export const useFetchProject = (id, userId, isActive = false) => {
   return useQuery({
     queryKey: [...PROJECT_QUERY_KEY, "detail", id, userId],
     queryFn: () => fetchProject(id),
@@ -31,6 +31,7 @@ export const useFetchProject = (id, userId) => {
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: !!id && !!userId && isActive,
   });
 };
 

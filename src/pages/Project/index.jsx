@@ -35,7 +35,6 @@ import ProjectDocument from "../../pages/Projectdocument/FileManager/index";
 import ProjectPayment from "../../pages/Projectpayment";
 import ProjectStakeholder from "../../pages/Projectstakeholder";
 import Projectcontractor from "../../pages/Projectcontractor";
-import Budgetrequest from "../../pages/Budgetrequest";
 import GeoLocation from "../../pages/GeoLocation";
 import ProjectBudgetExpenditureModel from "../Projectbudgetexpenditure";
 import ProjectEmployeeModel from "../../pages/Projectemployee";
@@ -46,6 +45,8 @@ import ProjectVariationModel from "../Projectvariation";
 import ProposalRequestModel from "../../pages/Proposalrequest";
 import Conversation from "../Conversationinformation/index1";
 import RequestInformationModel from "../../pages/Requestinformation";
+import BudgetRequestModel from "../../pages/BudgetRequest";
+import ProjectPlanModel from "../../pages/ProjectPlan";
 
 import {
   Button,
@@ -135,6 +136,9 @@ const ProjectModel = () => {
       component: Conversation,
     },
     59: { label: t("request_information"), component: RequestInformationModel },
+    34: { label: t("budget_request"), component: BudgetRequestModel },
+    61: { label: t("project_plan"), component: ProjectPlanModel },
+    39: { label: t("project_budget_expenditure"), component: ProjectBudgetExpenditureModel },
 
     //46: { label: t('project_supplimentary'), component: ProjectBudgetPlan },
   };

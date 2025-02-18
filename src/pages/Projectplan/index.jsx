@@ -50,6 +50,8 @@ import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import ProjectDetailColapse from "../Project/ProjectDetailColapse";
+import DatePicker from "../../components/Common/DatePicker";
+import Breadcrumb from "../../components/Common/Breadcrumb.jsx";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -57,8 +59,7 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-import DatePicker from "../../components/Common/DatePicker";
-import Breadcrumb from "../../components/Common/Breadcrumb.jsx";
+
 const ProjectPlanModel = () => {
   const location = useLocation();
   const id = Number(location.pathname.split("/")[2]);
@@ -81,9 +82,13 @@ const ProjectPlanModel = () => {
   const { data, isLoading, error, isError, refetch } =
     useFetchProjectPlans(param);
   const { data: budgetYearData } = useFetchBudgetYears();
+
   const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
-  const project = useFetchProject(id, userId);
+
+  const project = useFetchProject(id, userId, true);
+  const projectStartDate = project?.data?.data?.prj_start_date_gc || ""
+  const projectStatusId = project?.data?.data?.prj_project_status_id || ""
 
   const addProjectPlan = useAddProjectPlan();
   const updateProjectPlan = useUpdateProjectPlan();
@@ -413,40 +418,40 @@ const ProjectPlanModel = () => {
             <div className="d-flex gap-3">
               {(cellProps.row.original?.is_editable ||
                 cellProps.row.original?.is_role_editable) && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleProjectPlanClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+                  <Link
+                    to="#"
+                    className="text-success"
+                    onClick={() => {
+                      const data = cellProps.row.original;
+                      handleProjectPlanClick(data);
+                    }}
+                  >
+                    <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                    <UncontrolledTooltip placement="top" target="edittooltip">
+                      Edit
+                    </UncontrolledTooltip>
+                  </Link>
+                )}
 
               {(cellProps.row.original?.is_deletable ||
                 cellProps.row.original?.is_role_deletable) && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+                  <Link
+                    to="#"
+                    className="text-danger"
+                    onClick={() => {
+                      const data = cellProps.row.original;
+                      onClickDelete(data);
+                    }}
+                  >
+                    <i
+                      className="mdi mdi-delete font-size-18"
+                      id="deletetooltip"
+                    />
+                    <UncontrolledTooltip placement="top" target="deletetooltip">
+                      Delete
+                    </UncontrolledTooltip>
+                  </Link>
+                )}
             </div>
           );
         },
@@ -472,7 +477,7 @@ const ProjectPlanModel = () => {
         dateInGC={transaction.prp_payment_date_gc}
         fields={[
           { label: t('pld_name'), key: "pld_name" },
-          { label: t('pld_budget_year_id'), key: "prp_type", value:budgetYearMap[transaction.pld_budget_year_id]},
+          { label: t('pld_budget_year_id'), key: "prp_type", value: budgetYearMap[transaction.pld_budget_year_id] },
           { label: t('prp_payment_percentage'), key: "prp_payment_percentage" },
           { label: t('pld_start_date_gc'), key: "pld_start_date_gc" },
           { label: t('pld_end_date_gc'), key: "pld_end_date_gc" },
@@ -526,7 +531,7 @@ const ProjectPlanModel = () => {
               </Col>
               {projectPlanSelected && (
                 <div className="w-100">
-                  <Card className="container text-center my-3 py-2">
+                  <Card className="text-center my-3 py-2">
                     <h3>
                       {t("view_gannt")} : {projectPlanSelected.pld_name}
                     </h3>
@@ -538,6 +543,7 @@ const ProjectPlanModel = () => {
                       name={projectPlanSelected.pld_name}
                       startDate={projectPlanSelected.pld_start_date_gc}
                       endDate={projectPlanSelected.pld_end_date_gc}
+                      projectStatusId={projectStatusId}
                     />
                   </Col>
                 </div>
@@ -570,14 +576,14 @@ const ProjectPlanModel = () => {
                       value={validation.values.pld_name || ""}
                       invalid={
                         validation.touched.pld_name &&
-                        validation.errors.pld_name
+                          validation.errors.pld_name
                           ? true
                           : false
                       }
                       maxLength={200}
                     />
                     {validation.touched.pld_name &&
-                    validation.errors.pld_name ? (
+                      validation.errors.pld_name ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pld_name}
                       </FormFeedback>
@@ -597,7 +603,7 @@ const ProjectPlanModel = () => {
                       value={validation.values.pld_budget_year_id || ""}
                       invalid={
                         validation.touched.pld_budget_year_id &&
-                        validation.errors.pld_budget_year_id
+                          validation.errors.pld_budget_year_id
                           ? true
                           : false
                       }
@@ -610,7 +616,7 @@ const ProjectPlanModel = () => {
                       ))}
                     </Input>
                     {validation.touched.pld_budget_year_id &&
-                    validation.errors.pld_budget_year_id ? (
+                      validation.errors.pld_budget_year_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pld_budget_year_id}
                       </FormFeedback>
@@ -621,6 +627,7 @@ const ProjectPlanModel = () => {
                       isRequired="true"
                       validation={validation}
                       componentId="pld_start_date_gc"
+                      minDate={projectStartDate}
                     />
                   </Col>
                   <Col className="col-md-6 mb-3">
@@ -642,14 +649,14 @@ const ProjectPlanModel = () => {
                       value={validation.values.pld_description || ""}
                       invalid={
                         validation.touched.pld_description &&
-                        validation.errors.pld_description
+                          validation.errors.pld_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.pld_description &&
-                    validation.errors.pld_description ? (
+                      validation.errors.pld_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pld_description}
                       </FormFeedback>
@@ -660,7 +667,7 @@ const ProjectPlanModel = () => {
                   <Col>
                     <div className="text-end">
                       {addProjectPlan.isPending ||
-                      updateProjectPlan.isPending ? (
+                        updateProjectPlan.isPending ? (
                         <Button
                           color="success"
                           type="submit"

@@ -3,8 +3,6 @@ import Spinners from "../../components/Common/Spinner";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { useSearchProjectPlans } from "../../queries/projectplan_query";
 import { useTranslation } from "react-i18next";
@@ -12,6 +10,8 @@ import { Button, Col, Row, Input } from "reactstrap";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import AddressStructureForProject from "../Project/AddressStructureForProject";
+import GanttModal from "./GanttModal";
+import { useFetchBudgetYears } from "../../queries/budgetyear_query"
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -21,12 +21,10 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectPlanList = () => {
-  //meta title
-  document.title = " ProjectPlan";
+  document.title = "Project Plan List";
+
   const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
   const [projectPlan, setProjectPlan] = useState(null);
 
   const [searchResults, setSearchResults] = useState(null);
@@ -39,10 +37,23 @@ const ProjectPlanList = () => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
+
   const { data, isLoading, error, isError, refetch } = useState("");
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
+
+  const { data: budgetYearData } = useFetchBudgetYears();
+  const budgetYearMap = useMemo(() => {
+    return (
+      budgetYearData?.data?.reduce((acc, year) => {
+        acc[year.bdy_id] = year.bdy_name;
+        return acc;
+      }, {}) || {}
+    );
+  }, [budgetYearData]);
+
+  const toggleViewModal = () => setModal1(!modal1);
 
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
@@ -67,6 +78,7 @@ const ProjectPlanList = () => {
     setSearchError(error);
     setShowSearchResult(true);
   };
+
   useEffect(() => {
     setProjectParams({
       ...(prjLocationRegionId && {
@@ -79,6 +91,7 @@ const ProjectPlanList = () => {
       ...(include === 1 && { include }),
     });
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
+
   const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
@@ -92,143 +105,89 @@ const ProjectPlanList = () => {
     }
   };
 
-  //START UNCHANGED
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: "",
-        accessorKey: "pld_name",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pld_name, 30) || "-"}
-            </span>
-          );
+        headerName: t("pld_name"),
+        field: "pld_name",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => {
+          return truncateText(params.data.pld_name, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "pld_project_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pld_project_id, 30) || "-"}
-            </span>
-          );
+        headerName: t("pld_project_id"),
+        field: "pld_project_id",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => {
+          return truncateText(params.data.pld_project_id, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "pld_budget_year_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pld_budget_year_id, 30) ||
-                "-"}
-            </span>
-          );
+        headerName: t("pld_budget_year_id"),
+        field: "pld_budget_year_id",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => {
+          return budgetYearMap[params.data.pld_budget_year_id] || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "pld_start_date_ec",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pld_start_date_ec, 30) ||
-                "-"}
-            </span>
-          );
+        headerName: t("pld_start_date_gc"),
+        field: "pld_start_date_gc",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => {
+          return truncateText(params.data.pld_start_date_gc, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "pld_start_date_gc",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pld_start_date_gc, 30) ||
-                "-"}
-            </span>
-          );
+        headerName: t("pld_end_date_gc"),
+        field: "pld_end_date_gc",
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => {
+          return truncateText(params.data.pld_end_date_gc, 30) || "-";
         },
       },
       {
-        header: "",
-        accessorKey: "pld_end_date_ec",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
+        headerName: t("view_gantt"),
+        field: t("view_gantt"),
+        sortable: true,
+        filter: false,
+        cellRenderer: (params) => {
           return (
-            <span>
-              {truncateText(cellProps.row.original.pld_end_date_ec, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "pld_end_date_gc",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pld_end_date_gc, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "pld_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pld_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "pld_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pld_status, 30) || "-"}
-            </span>
-          );
+            <Button
+              outline
+              type="button"
+              color="primary"
+              size="sm"
+              onClick={() => {
+                setProjectPlan(params.data);
+                toggleViewModal()
+              }}
+            >
+              {t("view_gannt")}
+            </Button>
+          )
         },
       },
     ];
     return baseColumns;
-  });
+  }, [t]);
+
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
+
   return (
     <React.Fragment>
+      <GanttModal isOpen={modal1} toggle={toggleViewModal} projectPlan={projectPlan} />
       <div className="page-content">
         <div>
-          <Breadcrumbs
-            title={t("project")}
-            breadcrumbItem={t("Project Payment List")}
-          />
+          <Breadcrumbs />
           <div className="w-100 d-flex gap-2">
             <AddressStructureForProject
               onNodeSelect={handleNodeSelect}
@@ -238,25 +197,8 @@ const ProjectPlanList = () => {
             <div className="w-100">
               <AdvancedSearch
                 searchHook={useSearchProjectPlans}
-                textSearchKeys={["prj_name", "prj_code"]}
-                dateSearchKeys={["payment_date"]}
-                dropdownSearchKeys={[
-                  {
-                    key: "prp_type",
-                    options: [
-                      { value: "Advance", label: "Advance" },
-                      { value: "Interim", label: "Interim" },
-                      { value: "Final", label: "Final" },
-                    ],
-                  },
-                ]}
-                checkboxSearchKeys={[]}
-                Component={CascadingDropdowns}
-                component_params={{
-                  dropdown1name: "prj_location_region_id",
-                  dropdown2name: "prj_location_zone_id",
-                  dropdown3name: "prj_location_woreda_id",
-                }}
+                textSearchKeys={["pld_name"]}
+                dateSearchKeys={["pld_start_date_gc"]}
                 additionalParams={projectParams}
                 setAdditionalParams={setProjectParams}
                 onSearchResult={handleSearchResults}
@@ -271,10 +213,8 @@ const ProjectPlanList = () => {
                   className="ag-theme-alpine"
                   style={{ height: "100%", width: "100%" }}
                 >
-                  {/* Row for search input and buttons */}
                   <Row className="mb-3">
                     <Col sm="12" md="6">
-                      {/* Search Input for  Filter */}
                       <Input
                         type="text"
                         placeholder="Search..."
@@ -286,7 +226,6 @@ const ProjectPlanList = () => {
                     <Col sm="12" md="6" className="text-md-end"></Col>
                   </Row>
 
-                  {/* AG Grid */}
                   <div>
                     <AgGridReact
                       ref={gridRef}
@@ -295,7 +234,7 @@ const ProjectPlanList = () => {
                           ? searchResults?.data
                           : data?.data || []
                       }
-                      columnDefs={columnDefs}
+                      columnDefs={columns}
                       pagination={true}
                       paginationPageSizeSelector={[10, 20, 30, 40, 50]}
                       paginationPageSize={10}

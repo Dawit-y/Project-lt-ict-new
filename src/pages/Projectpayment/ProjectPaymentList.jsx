@@ -1,16 +1,13 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import Spinners from "../../components/Common/Spinner";
-//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { useTranslation } from "react-i18next";
 import { Button, Col, Row, Input } from "reactstrap";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
-//import PaymentAnalaysis from "./PaymentAnalaysis";
 import {
   useFetchProjectPayments,
   useSearchProjectPayments,
@@ -27,12 +24,14 @@ const ProjectPaymentList = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
+
   const [projectParams, setProjectParams] = useState({});
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
+
   const { data, isLoading, error, isError, refetch } = useState("");
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
@@ -104,6 +103,7 @@ const ProjectPaymentList = () => {
       setShowSearchResult(false);
     }
   };
+
   const columnDefs = useMemo(() => {
     const baseColumnDefs = [
       {
@@ -177,6 +177,7 @@ const ProjectPaymentList = () => {
     ];
     return baseColumnDefs;
   });
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -270,3 +271,4 @@ const ProjectPaymentList = () => {
   );
 };
 export default ProjectPaymentList;
+

@@ -98,7 +98,7 @@ const BudgetRequestModel = () => {
 
   const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
-  const project = useFetchProject(id, userId);
+  const project = useFetchProject(id, userId, true);
 
   const handleAddBudgetRequest = async (data) => {
     try {
