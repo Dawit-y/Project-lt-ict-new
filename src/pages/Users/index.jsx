@@ -203,7 +203,7 @@ const UsersModel = () => {
             (item) => item.usr_email === value && item.usr_id !== users?.usr_id
           );
         }),
-      usr_password: Yup.string()
+      usr_password: !isEdit && Yup.string()
         .required(t("usr_password"))
         .min(8, t("Password must be at least 8 characters"))
         .matches(
@@ -235,7 +235,7 @@ const UsersModel = () => {
           // usr_id: users ? users.usr_id : 0,
           usr_id: users?.usr_id,
           usr_email: values.usr_email,
-          usr_password: values.usr_password,
+          // usr_password: values.usr_password,
           usr_full_name: values.usr_full_name,
           usr_phone_number: values.usr_phone_number,
           usr_role_id: values.usr_role_id,
@@ -332,32 +332,30 @@ const UsersModel = () => {
     }
   };
   const handleUsersClick = (arg) => {
-    const users = arg;
+    const user = arg;
     setUsers({
-      usr_id: users.usr_id,
-      usr_email: users.usr_email,
-      usr_password: users.usr_password,
-      usr_full_name: users.usr_full_name,
-      usr_phone_number: users.usr_phone_number,
-      usr_role_id: Number(users.usr_role_id),
-      usr_region_id: Number(users.usr_region_id),
-      usr_zone_id: Number(users.usr_zone_id),
-      usr_woreda_id: Number(users.usr_woreda_id),
-      usr_sector_id: Number(users.usr_sector_id),
-      usr_is_active: users.usr_is_active,
-      usr_picture: users.usr_picture,
-      usr_last_logged_in: users.usr_last_logged_in,
-      usr_ip: users.usr_ip,
-      usr_remember_token: users.usr_remember_token,
-      usr_notified: users.usr_notified,
-      usr_description: users.usr_description,
-      usr_status: users.usr_status,
-      usr_department_id: Number(users.usr_department_id),
-      is_deletable: users.is_deletable,
-      is_editable: users.is_editable,
+      usr_id: user.usr_id,
+      usr_email: user.usr_email,
+      usr_password: user.usr_password,
+      usr_full_name: user.usr_full_name,
+      usr_phone_number: Number(user.usr_phone_number.toString().replace(/^(\+?251)/, "")),
+      usr_role_id: Number(user.usr_role_id),
+      usr_region_id: Number(user.usr_region_id),
+      usr_zone_id: Number(user.usr_zone_id),
+      usr_woreda_id: Number(user.usr_woreda_id),
+      usr_sector_id: Number(user.usr_sector_id),
+      usr_is_active: user.usr_is_active,
+      usr_picture: user.usr_picture,
+      usr_last_logged_in: user.usr_last_logged_in,
+      usr_ip: user.usr_ip,
+      usr_remember_token: user.usr_remember_token,
+      usr_notified: user.usr_notified,
+      usr_description: user.usr_description,
+      usr_status: user.usr_status,
+      usr_department_id: Number(user.usr_department_id),
+      is_deletable: user.is_deletable,
+      is_editable: user.is_editable,
     });
-    //setSelectedDepartment(users.usr_department_id);
-    //setSelectedSector(users.usr_sector_id);
     setIsEdit(true);
     toggle();
   };
@@ -497,18 +495,18 @@ const UsersModel = () => {
         cellRenderer: (params) => (
           <div className="d-flex gap-3">
             {(params.data?.is_editable || params.data?.is_role_editable) && (
-              <Link
-                to="#"
+              <Button
+                size="sm"
+                color="none"
                 className="text-success"
-                onClick={() => {
-                  handleUsersClick(params.data);
-                }}
+                onClick={() => handleUsersClick(params.data)}
+                type="button"
               >
                 <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
                 <UncontrolledTooltip placement="top" target="edittooltip">
                   Edit
                 </UncontrolledTooltip>
-              </Link>
+              </Button>
             )}
             {/* add view project  */}
             {params.data?.is_editable || params.data?.is_role_editable ? (
@@ -685,54 +683,55 @@ const UsersModel = () => {
                       value={validation.values.usr_email || ""}
                       invalid={
                         validation.touched.usr_email &&
-                        validation.errors.usr_email
+                          validation.errors.usr_email
                           ? true
                           : false
                       }
                       maxLength={30}
                     />
                     {validation.touched.usr_email &&
-                    validation.errors.usr_email ? (
+                      validation.errors.usr_email ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_email}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("usr_password")} <span className="text-danger">*</span>
-                    </Label>
-                    <InputGroup>
-                      <Input
-                        name="usr_password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder={t("usr_password")}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.usr_password || ""}
-                        invalid={
-                          validation.touched.usr_password &&
-                          validation.errors.usr_password
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      <InputGroupText
-                        onClick={togglePasswordVisibility}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {showPassword ? <FaEyeSlash /> : <FaEye />}
-                      </InputGroupText>
-                      {validation.touched.usr_password &&
-                      validation.errors.usr_password ? (
-                        <FormFeedback type="invalid">
-                          {validation.errors.usr_password}
-                        </FormFeedback>
-                      ) : null}
-                    </InputGroup>
-                  </Col>
-                  <Col className="col-md-4 mb-3">
+                  {!isEdit &&
+                    <Col className="col-md-4 mb-3">
+                      <Label>
+                        {t("usr_password")} <span className="text-danger">*</span>
+                      </Label>
+                      <InputGroup>
+                        <Input
+                          name="usr_password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder={t("usr_password")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.usr_password || ""}
+                          invalid={
+                            validation.touched.usr_password &&
+                              validation.errors.usr_password
+                              ? true
+                              : false
+                          }
+                          maxLength={20}
+                        />
+                        <InputGroupText
+                          onClick={togglePasswordVisibility}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {showPassword ? <FaEyeSlash /> : <FaEye />}
+                        </InputGroupText>
+                        {validation.touched.usr_password &&
+                          validation.errors.usr_password ? (
+                          <FormFeedback type="invalid">
+                            {validation.errors.usr_password}
+                          </FormFeedback>
+                        ) : null}
+                      </InputGroup>
+                    </Col>}
+                  <Col className={`${isEdit ? "col-md-8" : "col-md-4"} mb-3`}>
                     <Label>
                       {t("usr_full_name")}{" "}
                       <span className="text-danger">*</span>
@@ -746,14 +745,14 @@ const UsersModel = () => {
                       value={validation.values.usr_full_name || ""}
                       invalid={
                         validation.touched.usr_full_name &&
-                        validation.errors.usr_full_name
+                          validation.errors.usr_full_name
                           ? true
                           : false
                       }
                       maxLength={30}
                     />
                     {validation.touched.usr_full_name &&
-                    validation.errors.usr_full_name ? (
+                      validation.errors.usr_full_name ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_full_name}
                       </FormFeedback>
@@ -787,7 +786,7 @@ const UsersModel = () => {
                         }
                       />
                       {validation.touched.usr_phone_number &&
-                      validation.errors.usr_phone_number ? (
+                        validation.errors.usr_phone_number ? (
                         <FormFeedback type="invalid">
                           {validation.errors.usr_phone_number}
                         </FormFeedback>
@@ -805,7 +804,7 @@ const UsersModel = () => {
                       value={validation.values.usr_sector_id || ""}
                       invalid={
                         validation.touched.usr_sector_id &&
-                        validation.errors.usr_sector_id
+                          validation.errors.usr_sector_id
                           ? true
                           : false
                       }
@@ -818,7 +817,7 @@ const UsersModel = () => {
                       ))}
                     </Input>
                     {validation.touched.usr_sector_id &&
-                    validation.errors.usr_sector_id ? (
+                      validation.errors.usr_sector_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_sector_id}
                       </FormFeedback>
@@ -835,7 +834,7 @@ const UsersModel = () => {
                       value={validation.values.usr_department_id || ""}
                       invalid={
                         validation.touched.usr_department_id &&
-                        validation.errors.usr_department_id
+                          validation.errors.usr_department_id
                           ? true
                           : false
                       }
@@ -848,7 +847,7 @@ const UsersModel = () => {
                       ))}
                     </Input>
                     {validation.touched.usr_department_id &&
-                    validation.errors.usr_department_id ? (
+                      validation.errors.usr_department_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_department_id}
                       </FormFeedback>
@@ -866,14 +865,14 @@ const UsersModel = () => {
                       value={validation.values.usr_description || ""}
                       invalid={
                         validation.touched.usr_description &&
-                        validation.errors.usr_description
+                          validation.errors.usr_description
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_description &&
-                    validation.errors.usr_description ? (
+                      validation.errors.usr_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_description}
                       </FormFeedback>

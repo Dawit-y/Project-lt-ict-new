@@ -17,7 +17,8 @@ export const useFetchUserss = () => {
   return useQuery({
     queryKey: USERS_QUERY_KEY,
     queryFn: () => getUsers(),
-    staleTime: 0,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 6,
     meta: { persist: false },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
@@ -29,8 +30,8 @@ export const useFetchUser = (searchParams = {}) => {
   return useQuery({
     queryKey: [...USERS_QUERY_KEY, "detail", searchParams],
     queryFn: () => getUser(searchParams),
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 6,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     enabled: Object.keys(searchParams).length > 0,
@@ -42,8 +43,8 @@ export const useSearchUserss = (searchParams = {}) => {
   return useQuery({
     queryKey: [...USERS_QUERY_KEY, "search", searchParams],
     queryFn: () => getUsers(searchParams),
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 6,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     enabled: Object.keys(searchParams).length > 0,

@@ -75,7 +75,7 @@ import {
   numberValidation,
 } from "../../utils/Validation/validation";
 import { toast } from "react-toastify";
-import { createSelectOptions } from "../../utils/commonMethods";
+import { createSelectOptions, createMultiSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import AddressStructureForProject from "./AddressStructureForProject";
 import { useProjectContext } from "../../context/ProjectContext";
@@ -84,11 +84,19 @@ import ExportToExcel from "../../components/Common/ExportToExcel";
 import ExportToPDF from "../../components/Common/ExportToPdf";
 import PrintPage from "../../components/Common/PrintPage";
 
+const linkMapping = {
+  34: "budget_request",
+  61: "project_plan",
+  39: "project_budget_expenditure"
+};
+
 const ProjectModel = () => {
   document.title = " Project";
+
   const [projectMetaData, setProjectMetaData] = useState([]);
   const [showCanvas, setShowCanvas] = useState(false);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -136,20 +144,20 @@ const ProjectModel = () => {
       component: Conversation,
     },
     59: { label: t("request_information"), component: RequestInformationModel },
-    34: { label: t("budget_request"), component: BudgetRequestModel },
-    61: { label: t("project_plan"), component: ProjectPlanModel },
-    39: { label: t("project_budget_expenditure"), component: ProjectBudgetExpenditureModel },
-
     //46: { label: t('project_supplimentary'), component: ProjectBudgetPlan },
   };
   const [isAddressLoading, setIsAddressLoading] = useState(false);
 
   const { data, isLoading, error, isError, refetch } = useFetchProjects();
   const { data: projectCategoryData } = useFetchProjectCategorys();
-  const projectCategoryOptions = createSelectOptions(
+  const {
+    pct_name_en: projectCategoryOptionsEn,
+    pct_name_or: projectCategoryOptionsOr,
+    pct_name_am: projectCategoryOptionsAm,
+  } = createMultiSelectOptions(
     projectCategoryData?.data || [],
     "pct_id",
-    "pct_name_en"
+    ["pct_name_en", "pct_name_or", "pct_name_am"]
   );
   const { data: sectorInformationData } = useFetchSectorInformations();
   const sectorInformationOptions = createSelectOptions(
@@ -159,10 +167,14 @@ const ProjectModel = () => {
   );
 
   const { data: departmentData } = useFetchDepartments();
-  const departmentOptions = createSelectOptions(
+  const {
+    dep_name_en: departmentOptionsEn,
+    dep_name_or: departmentOptionsOr,
+    dep_name_am: departmentOptionsAm,
+  } = createMultiSelectOptions(
     departmentData?.data || [],
     "dep_id",
-    "dep_name_en"
+    ["dep_name_en", "dep_name_or", "dep_name_am"]
   );
   const addProject = useAddProject();
   const updateProject = useUpdateProject();
@@ -232,6 +244,7 @@ const ProjectModel = () => {
     }
   };
   const [allowedTabs, setAllowedTabs] = useState(searchData?.allowedTabs || []);
+  const allowedLinks = searchData?.allowedLinks || []
 
   useEffect(() => {
     if (projectMetaData?.prj_project_status_id <= 4) {
@@ -725,7 +738,7 @@ const ProjectModel = () => {
         },
       });
     }
-    if (1 == 1) {
+    if (allowedLinks.length > 0) {
       baseColumnDefs.push({
         headerName: "...",
         cellRenderer: renderConfiguration,
@@ -740,6 +753,7 @@ const ProjectModel = () => {
 
   function renderConfiguration(params) {
     const { prj_id } = params.data || {};
+    const filteredLinks = allowedLinks.filter(id => linkMapping[id]);
     return (
       <UncontrolledDropdown>
         <DropdownToggle
@@ -755,24 +769,15 @@ const ProjectModel = () => {
           style={{ position: "absolute", zIndex: 1050 }}
           aria-labelledby={`dropdownMenuButton${prj_id}`}
         >
-          <Link
-            to={`/Project/${prj_id}/budget_request`}
-            className="dropdown-item"
-          >
-            {t("budget_request")}
-          </Link>
-          <Link
-            to={`/Project/${prj_id}/budget_expenditure`}
-            className="dropdown-item"
-          >
-            {t("project_budget_expenditure")}
-          </Link>
-          <Link
-            to={`/Project/${prj_id}/project_plan`}
-            className="dropdown-item"
-          >
-            {t("project_plan")}
-          </Link>
+          {filteredLinks.map((linkId) => (
+            <Link
+              key={linkId}
+              to={`/Project/${prj_id}/${linkMapping[linkId]}`}
+              className="dropdown-item"
+            >
+              {t(linkMapping[linkId])}
+            </Link>
+          ))}
         </DropdownMenu>
       </UncontrolledDropdown>
     );
@@ -818,7 +823,12 @@ const ProjectModel = () => {
                 dropdownSearchKeys={[
                   {
                     key: "prj_project_category_id",
-                    options: projectCategoryOptions,
+                    options: lang === "en"
+                      ? projectCategoryOptionsEn
+                      : lang === "am"
+                        ? projectCategoryOptionsAm
+                        : projectCategoryOptionsOr
+                    ,
                   },
                 ]}
                 checkboxSearchKeys={[]}
@@ -1079,11 +1089,23 @@ const ProjectModel = () => {
                           <option value={null}>
                             {t("prj_select_category")}
                           </option>
-                          {projectCategoryOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {t(`${option.label}`)}
-                            </option>
-                          ))}
+                          {lang === "en"
+                            ? projectCategoryOptionsEn.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {t(`${option.label}`)}
+                              </option>
+                            ))
+                            : lang === "am"
+                              ? projectCategoryOptionsAm.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {t(`${option.label}`)}
+                                </option>
+                              ))
+                              : projectCategoryOptionsOr.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {t(`${option.label}`)}
+                                </option>
+                              ))}
                         </Input>
                         {validation.touched.prj_project_category_id &&
                           validation.errors.prj_project_category_id ? (
@@ -1151,40 +1173,6 @@ const ProjectModel = () => {
                           </FormFeedback>
                         ) : null}
                       </Col>
-
-                      <Col className="col-md-4 mb-3">
-                        <Label>
-                          {t("prj_sector_id")}
-                          <span className="text-danger">*</span>
-                        </Label>
-                        <Input
-                          name="prj_sector_id"
-                          type="select"
-                          className="form-select"
-                          onChange={validation.handleChange}
-                          onBlur={validation.handleBlur}
-                          value={validation.values.prj_sector_id || ""}
-                          invalid={
-                            validation.touched.prj_sector_id &&
-                              validation.errors.prj_sector_id
-                              ? true
-                              : false
-                          }
-                        >
-                          <option value={null}>{t("prj_select_Sector")}</option>
-                          {sectorInformationOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {t(`${option.label}`)}
-                            </option>
-                          ))}
-                        </Input>
-                        {validation.touched.prj_sector_id &&
-                          validation.errors.prj_sector_id ? (
-                          <FormFeedback type="invalid">
-                            {validation.errors.prj_sector_id}
-                          </FormFeedback>
-                        ) : null}
-                      </Col>
                       <Col className="col-md-4 mb-3">
                         <Label>
                           {t("prj_department_id")}
@@ -1207,11 +1195,23 @@ const ProjectModel = () => {
                           <option value={null}>
                             {t("prj_select_department")}
                           </option>
-                          {departmentOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {t(`${option.label}`)}
-                            </option>
-                          ))}
+                          {lang === "en"
+                            ? departmentOptionsEn.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {t(`${option.label}`)}
+                              </option>
+                            ))
+                            : lang === "am"
+                              ? departmentOptionsAm.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {t(`${option.label}`)}
+                                </option>
+                              ))
+                              : departmentOptionsOr.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {t(`${option.label}`)}
+                                </option>
+                              ))}
                         </Input>
                         {validation.touched.prj_department_id &&
                           validation.errors.prj_department_id ? (
