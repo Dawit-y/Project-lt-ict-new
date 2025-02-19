@@ -525,7 +525,7 @@ const UsersModel = () => {
             )}
             {/* added duplicat  */}
             {/* Add duplicate project icon */}
-            {(params.data?.is_editable==90 && params.data?.is_role_editable) && (
+            {(params.data?.is_editable == 90 && params.data?.is_role_editable) && (
               <Link
                 to="#"
                 className="text-primary"
@@ -824,7 +824,7 @@ const UsersModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("usr_department_id")} <span className="text-danger">*</span></Label>
+                    <Label>{t("Cluster Name")} <span className="text-danger">*</span></Label>
                     <Input
                       name="usr_department_id"
                       type="select"
