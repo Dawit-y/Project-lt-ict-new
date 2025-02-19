@@ -56,3 +56,18 @@ export const formatDateHyphen = (date) => {
 	const day = String(date.getDate()).padStart(2, "0");
 	return `${year}-${month}-${day}`;
 };
+
+export const convertToNumericValue = (amount) => {
+	if (!amount || typeof amount !== "string") {
+		console.warn("Invalid input: Amount must be a non-empty string");
+		return null;
+	}
+
+	const numericAmount = Number(amount.replace(/,/g, ""));
+	if (isNaN(numericAmount)) {
+		console.error("Invalid number input:", amount);
+		return null;
+	}
+
+	return numericAmount;
+};

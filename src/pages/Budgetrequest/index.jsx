@@ -37,8 +37,6 @@ import {
   Label,
   Card,
   CardBody,
-  FormGroup,
-  InputGroup,
   Badge,
 } from "reactstrap";
 import { toast } from "react-toastify";
@@ -50,11 +48,12 @@ import AttachFileModal from "../../components/Common/AttachFileModal";
 import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal"
 import {
   alphanumericValidation,
-  amountValidation,
-  numberValidation,
+  formattedAmountValidation
 } from "../../utils/Validation/validation";
 import DatePicker from "../../components/Common/DatePicker";
 import { PAGE_ID } from "../../constants/constantFile";
+import FormattedAmountField from "../../components/Common/FormattedAmountField";
+import { convertToNumericValue } from "../../utils/commonMethods";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -62,11 +61,6 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-const statusClasses = new Map([
-  ["Approved", "success"],
-  ["Rejected", "danger"],
-  ["Requested", "secondary"],
-]);
 
 const BudgetRequestModel = () => {
   const location = useLocation();
@@ -140,7 +134,6 @@ const BudgetRequestModel = () => {
         (budgetRequest && budgetRequest.bdr_budget_year_id) || "",
       bdr_requested_amount:
         (budgetRequest && budgetRequest.bdr_requested_amount) || "",
-
       bdr_project_id: id,
       bdr_requested_date_ec:
         (budgetRequest && budgetRequest.bdr_requested_date_ec) || "",
@@ -158,7 +151,7 @@ const BudgetRequestModel = () => {
 
     validationSchema: Yup.object({
       bdr_budget_year_id: Yup.string().required(t("bdr_budget_year_id")),
-      bdr_requested_amount: amountValidation(1000, 10000000000, true),
+      bdr_requested_amount: formattedAmountValidation(1000, 10000000000, true),
       bdr_requested_date_gc: Yup.string().required(t("bdr_requested_date_gc")),
       bdr_description: alphanumericValidation(3, 425, false),
     }),
@@ -169,7 +162,7 @@ const BudgetRequestModel = () => {
         const updatedBudgetRequest = {
           bdr_id: budgetRequest ? budgetRequest.bdr_id : 0,
           bdr_budget_year_id: parseInt(values.bdr_budget_year_id),
-          bdr_requested_amount: values.bdr_requested_amount,
+          bdr_requested_amount: convertToNumericValue(values.bdr_requested_amount),
           bdr_requested_date_ec: values.bdr_requested_date_ec,
           bdr_requested_date_gc: values.bdr_requested_date_gc,
           bdr_description: values.bdr_description,
@@ -177,19 +170,17 @@ const BudgetRequestModel = () => {
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
-        // update BudgetRequest
         handleUpdateBudgetRequest(updatedBudgetRequest);
       } else {
         const newBudgetRequest = {
           bdr_budget_year_id: parseInt(values.bdr_budget_year_id),
           bdr_project_id: id,
-          bdr_requested_amount: values.bdr_requested_amount,
+          bdr_requested_amount: convertToNumericValue(values.bdr_requested_amount),
           bdr_requested_date_ec: values.bdr_requested_date_ec,
           bdr_requested_date_gc: values.bdr_requested_date_gc,
           bdr_description: values.bdr_description,
           bdr_request_status: 1,
         };
-        // save new BudgetRequests
         handleAddBudgetRequest(newBudgetRequest);
       }
     },
@@ -200,7 +191,7 @@ const BudgetRequestModel = () => {
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
 
-const budgetYearMap = useMemo(() => {
+  const budgetYearMap = useMemo(() => {
     return (
       bgYearsOptionsData?.data?.reduce((acc, year) => {
         acc[year.bdy_id] = year.bdy_name;
@@ -231,23 +222,19 @@ const budgetYearMap = useMemo(() => {
 
   const handleBudgetRequestClick = (arg) => {
     const budgetRequest = arg;
-    // console.log("handleBudgetRequestClick", budgetRequest);
     setBudgetRequest({
       bdr_id: budgetRequest.bdr_id,
       bdr_budget_year_id: budgetRequest.bdr_budget_year_id,
-      bdr_requested_amount: budgetRequest.bdr_requested_amount,
+      bdr_requested_amount: Number(budgetRequest.bdr_requested_amount).toLocaleString(),
       bdr_project_id: budgetRequest.bdr_project_id,
       bdr_requested_date_ec: budgetRequest.bdr_requested_date_ec,
       bdr_requested_date_gc: budgetRequest.bdr_requested_date_gc,
       bdr_description: budgetRequest.bdr_description,
       bdr_request_status: budgetRequest.bdr_request_status,
-
       is_deletable: budgetRequest.is_deletable,
       is_editable: budgetRequest.is_editable,
     });
-
     setIsEdit(true);
-
     toggle();
   };
 
@@ -310,7 +297,7 @@ const budgetYearMap = useMemo(() => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdr_requested_amount, 30) ||
+              {truncateText(Number(cellProps.row.original.bdr_requested_amount).toLocaleString(), 30) ||
                 "-"}
             </span>
           );
@@ -324,7 +311,7 @@ const budgetYearMap = useMemo(() => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bdr_released_amount, 30) ||
+              {truncateText(Number(cellProps.row.original.bdr_released_amount).toLocaleString(), 30) ||
                 "-"}
             </span>
           );
@@ -463,38 +450,38 @@ const budgetYearMap = useMemo(() => {
                     </UncontrolledTooltip>
                   </Link>
                 )}
-              {(cellProps.row.original?.is_deletable==9 ||
-                cellProps.row.original?.is_role_deletable==9) && (
-                <div>
-                  <Link
-                    to="#"
-                    className="text-danger"
-                    onClick={() => {
-                      const data = cellProps.row.original;
-                      onClickDelete(data);
-                    }}
-                  >
-                    <i
-                      className="mdi mdi-delete font-size-18"
-                      id="deletetooltip"
-                    />
-                    <UncontrolledTooltip placement="top" target="deletetooltip">
-                      Delete
-                    </UncontrolledTooltip>
-                  </Link>
-               
-              <Link
-                to="#"
-                className="text-secondary me-2"
-                onClick={() => handleClick(cellProps.row.original)}
-              >
-                <i className="mdi mdi-cog font-size-18" id="viewtooltip" />
-                <UncontrolledTooltip placement="top" target="viewtooltip">
-                  Budget Request Detail
-                </UncontrolledTooltip>
-              </Link>
-              </div>
-               )}
+              {(cellProps.row.original?.is_deletable == 9 ||
+                cellProps.row.original?.is_role_deletable == 9) && (
+                  <div>
+                    <Link
+                      to="#"
+                      className="text-danger"
+                      onClick={() => {
+                        const data = cellProps.row.original;
+                        onClickDelete(data);
+                      }}
+                    >
+                      <i
+                        className="mdi mdi-delete font-size-18"
+                        id="deletetooltip"
+                      />
+                      <UncontrolledTooltip placement="top" target="deletetooltip">
+                        Delete
+                      </UncontrolledTooltip>
+                    </Link>
+
+                    <Link
+                      to="#"
+                      className="text-secondary me-2"
+                      onClick={() => handleClick(cellProps.row.original)}
+                    >
+                      <i className="mdi mdi-cog font-size-18" id="viewtooltip" />
+                      <UncontrolledTooltip placement="top" target="viewtooltip">
+                        Budget Request Detail
+                      </UncontrolledTooltip>
+                    </Link>
+                  </div>
+                )}
             </div>
           );
         },
@@ -651,31 +638,11 @@ const budgetYearMap = useMemo(() => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("bdr_requested_amount")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="bdr_requested_amount"
-                      type="text"
-                      placeholder={t("bdr_requested_amount")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bdr_requested_amount || ""}
-                      invalid={
-                        validation.touched.bdr_requested_amount &&
-                          validation.errors.bdr_requested_amount
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
+                    <FormattedAmountField
+                      validation={validation}
+                      fieldId={"bdr_requested_amount"}
+                      isRequired={true}
                     />
-                    {validation.touched.bdr_requested_amount &&
-                      validation.errors.bdr_requested_amount ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bdr_requested_amount}
-                      </FormFeedback>
-                    ) : null}
                   </Col>
                   {/* <Col className="col-md-6 mb-3">
                   <Label>{t("bdr_released_amount")}</Label>

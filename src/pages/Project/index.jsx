@@ -181,24 +181,6 @@ const ProjectModel = () => {
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
 
-  const rowData = useMemo(() => {
-    return showSearchResult ? searchData?.data : data?.data || [];
-  }, [showSearchResult, searchData?.data, data?.data]);
-
-  const searchConfig = useMemo(
-    () => ({
-      params,
-      projectParams,
-      showSearchResult,
-    }),
-    [params, projectParams, showSearchResult]
-  );
-
-  const handleSearch = useCallback((searchResults) => {
-    setSearchResults(searchResults);
-    setShowSearchResult(true);
-  }, []);
-
   const handleAddProject = async (data) => {
     try {
       await addProject.mutateAsync(data);
@@ -761,7 +743,7 @@ const ProjectModel = () => {
         </DropdownToggle>
         <DropdownMenu
           className="dropdown-menu"
-          style={{ position: "absolute", zIndex: 1050,right:200,left: -136}}
+          style={{ position: "absolute", zIndex: 9999 }}
           aria-labelledby={`dropdownMenuButton${prj_id}`}
         >
           {filteredLinks.map((linkId) => (
@@ -777,6 +759,24 @@ const ProjectModel = () => {
       </UncontrolledDropdown>
     );
   }
+  const rowData = useMemo(() => {
+    return showSearchResult ? searchData?.data : data?.data || [];
+  }, [showSearchResult, searchData?.data, data?.data]);
+
+  const searchConfig = useMemo(
+    () => ({
+      params,
+      projectParams,
+      showSearchResult,
+    }),
+    [params, projectParams, showSearchResult]
+  );
+
+  const handleSearch = useCallback((searchResults) => {
+    setSearchResults(searchResults);
+    setShowSearchResult(true);
+  }, []);
+
   const defaultColDef = {
     sortable: true,
     filter: true,
@@ -880,12 +880,12 @@ const ProjectModel = () => {
                     />
                   </Col>
                 </Row>
-                <div style={{ height: "600px" }}>
+                <div style={{ height: "500px", overflow: "visible" }}>
                   <AgGridReact
                     rowStyle={{ overflow: "visible" }}
                     ref={gridRef}
                     rowData={rowData}
-                    immutableData={true}
+                    // immutableData={true}
                     getRowId={(params) => String(params.data.prj_id)}
                     columnDefs={columnDefs}
                     pagination={true}
@@ -895,8 +895,10 @@ const ProjectModel = () => {
                     onSelectionChanged={onSelectionChanged}
                     rowHeight={32} // Set the row height here
                     animateRows={true} // Enables row animations
-                    domLayout="autoHeight" // Auto-size the grid to fit content
-                    onGridReady={onGridReady}
+                    domLayout="normal" // Auto-size the grid to fit content
+                    onGridReady={(params) => {
+                      params.api.sizeColumnsToFit(); // Size columns to fit the grid width
+                    }}
                     localeText={localeText} // Dynamically translated texts
                   />
                 </div>

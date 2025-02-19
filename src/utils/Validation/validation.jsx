@@ -56,7 +56,46 @@ export const amountValidation = (minLength, maxLength, isRequired = true) => {
       (value) => value === undefined || /^\d+(\.\d{1,2})?$/.test(value.toString())
     )
   if (isRequired) {
-    schema = schema.required("This field is required");
+    schema = schema.required(t("val_required"));
+  }
+  return schema;
+};
+
+export const formattedAmountValidation = (minLength, maxLength, isRequired = true) => {
+  const { t } = useTranslation();
+
+  let schema = Yup.mixed()
+    .test(
+      "is-numeric",
+      t("val_invalid_number"),
+      (value) => {
+        if (value === undefined || value === "") return true;
+        if (typeof value === "number") value = value.toString();
+        const cleanValue = value.replace(/,/g, "");
+        return /^\d+(\.\d{1,2})?$/.test(cleanValue);
+      }
+    )
+    .test(
+      "min-value",
+      `${t("val_min_amount")}: ${minLength}`,
+      (value) => {
+        if (value === undefined || value === "") return true;
+        const cleanValue = value.replace(/,/g, "");
+        return parseFloat(cleanValue) >= minLength;
+      }
+    )
+    .test(
+      "max-value",
+      `${t("val_max_amount")}: ${maxLength}`,
+      (value) => {
+        if (value === undefined || value === "") return true;
+        const cleanValue = value.replace(/,/g, "");
+        return parseFloat(cleanValue) <= maxLength;
+      }
+    );
+
+  if (isRequired) {
+    schema = schema.required(t("val_required"));
   }
   return schema;
 };
@@ -68,7 +107,7 @@ export const numberValidation = (minLength, maxLength, isRequired = true) => {
     .min(minLength, `${t('val_min_number')}: ${minLength}`)
     .max(maxLength, `${t('val_max_number')}: ${maxLength}`)
   if (isRequired) {
-    schema = schema.required("This field is required");
+    schema = schema.required(t("val_required"));
   }
   return schema;
 };
@@ -80,7 +119,7 @@ export const dropdownValidation = (minLength, maxLength, isRequired = true) => {
     .min(minLength, `${t('val_min_number')}: ${minLength}`)
     .max(maxLength, `${t('val_max_number')}: ${maxLength}`)
   if (isRequired) {
-    schema = schema.required("This field is required");
+    schema = schema.required(t("val_required"));
   }
   return schema;
 };

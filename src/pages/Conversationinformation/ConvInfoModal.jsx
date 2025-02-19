@@ -124,7 +124,7 @@ const Conversation = (props) => {
         toggle={toggle}
       >
         <div className="modal-xl">
-          <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
+          <ModalHeader toggle={toggle}>{t("View Messages")}</ModalHeader>
           <ModalBody>
             <Row>
               <Col lg={12}>

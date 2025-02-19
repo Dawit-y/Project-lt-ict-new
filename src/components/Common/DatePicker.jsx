@@ -1,22 +1,14 @@
-import PropTypes from "prop-types";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Spinner } from "reactstrap";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 import { formatDate } from "../../utils/commonMethods";
 import {
-  Form,
-  Input,
-  FormFeedback,
   Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
   InputGroup,
   InputGroupText,
 } from "reactstrap";
+
 const DatePicker = ({
   isRequired,
   validation,
@@ -55,7 +47,7 @@ const DatePicker = ({
             value={validation.values[componentId] || ""}
             onChange={(date) => {
               const formattedDate = formatDate(date[0]);
-              validation.setFieldValue("" + componentId + "", formattedDate); // Set value dynamically in Formik
+              validation.setFieldValue("" + componentId + "", formattedDate);
             }}
             onBlur={validation.handleBlur}
           />
@@ -72,4 +64,5 @@ const DatePicker = ({
     </React.Fragment>
   );
 };
+
 export default DatePicker;

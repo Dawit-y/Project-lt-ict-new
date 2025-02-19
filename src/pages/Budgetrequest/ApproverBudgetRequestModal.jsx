@@ -41,6 +41,7 @@ import { useFetchBudgetRequestAmounts } from "../../queries/budgetrequestamount_
 import TableContainer from "../../components/Common/TableContainer";
 import { useFetchBudgetRequestTasks } from "../../queries/budgetrequesttask_query";
 import { useFetchBudgetExSources } from "../../queries/budgetexsource_query";
+import DatePicker from "../../components/Common/DatePicker";
 
 const modalStyle = {
   width: "100%",
@@ -65,11 +66,11 @@ const ApproverBudgetRequestListModal = (props) => {
   const handleUpdateBudgetRequest = async (data) => {
     try {
       await mutateAsync(data);
-       toast.success(t("add_success"), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
     } catch (error) {
-       toast.error(t("add_failure"), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -204,37 +205,13 @@ const ApproverBudgetRequestListModal = (props) => {
                           )}
                       </FormGroup>
                     )}
-
                   <FormGroup>
-                    <Label>Action Date</Label>
-                    <InputGroup>
-                      <Flatpickr
-                        className={`form-control ${formik.touched.bdr_released_date_gc &&
-                          formik.errors.bdr_released_date_gc
-                          ? "is-invalid"
-                          : ""
-                          }`}
-                        name="bdr_released_date_gc"
-                        value={formik.values.bdr_released_date_gc}
-                        onChange={(date) =>
-                          formik.setFieldValue(
-                            "bdr_released_date_gc",
-                            formatDate(date[0])
-                          )
-                        }
-                        options={{
-                          altInput: true,
-                          altFormat: "Y/m/d",
-                          dateFormat: "Y/m/d",
-                        }}
-                      />
-                    </InputGroup>
-                    {formik.errors.bdr_released_date_gc &&
-                      formik.touched.bdr_released_date_gc && (
-                        <div className="text-danger">
-                          {formik.errors.bdr_released_date_gc}
-                        </div>
-                      )}
+                    <DatePicker
+                      isRequired={true}
+                      componentId={"bdr_released_date_gc"}
+                      validation={formik}
+                      minDate={transaction?.bdr_requested_date_gc}
+                    />
                   </FormGroup>
 
                   <FormGroup>
