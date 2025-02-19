@@ -17,23 +17,8 @@ export const getSectorCategory = async () => {
   }
 };
 // add Projects
-export const addSectorCategory = async (objectName) => {
-  try {
-    const response = await axios.post(
-      `${apiUrl}`+ADD_SECTOR_CATEGORY,
-      objectName,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Failed to update grid:", error);
-    throw error;
-  }
-};
+export const addSectorCategory = async (objectName) => 
+post(`${apiUrl}` + ADD_SECTOR_CATEGORY, objectName);
 // update objectNames
 export const updateSectorCategory = (objectName) =>
   post(`${apiUrl}`+UPDATE_SECTOR_CATEGORY +`?psc_delete_time=${objectName?.psc_delete_time}`, objectName);

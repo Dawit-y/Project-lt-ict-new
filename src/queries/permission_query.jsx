@@ -4,9 +4,13 @@ import {
   addPermission,
   updatePermission,
   deletePermission,
+  getRoleAssignedPermission,
+  getUserAssignedPermission
 } from "../helpers/permission_backend_helper";
 
 const PERMISSION_QUERY_KEY = ["permission"];
+const ROLE_ASSIGNED_PERMISSION_QUERY_KEY = ["assigned_permission"];
+const USER_ASSIGNED_PERMISSION_QUERY_KEY = ["user_assigned_permission"];
 
 // Fetch permission
 export const useFetchPermissions = (param = {}, isActive) => {
@@ -18,6 +22,30 @@ export const useFetchPermissions = (param = {}, isActive) => {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     enabled: isActive,
+  });
+};
+
+export const useFetchRoleAssignedPermissions = (param = {}, isActive) => {
+  return useQuery({
+    queryKey: [...ROLE_ASSIGNED_PERMISSION_QUERY_KEY, "fetch", param],
+    queryFn: () => getRoleAssignedPermission(param),
+    staleTime: 1000 * 60 * 5,
+    meta: { persist: true },
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    enabled: true,
+  });
+};
+
+export const useFetchUserAssignedPermissions = (param = {}, isActive) => {
+  return useQuery({
+    queryKey: [...USER_ASSIGNED_PERMISSION_QUERY_KEY, "fetch", param],
+    queryFn: () => getUserAssignedPermission(param),
+    staleTime: 1000 * 60 * 5,
+    meta: { persist: true },
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    enabled: true,
   });
 };
 

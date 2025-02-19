@@ -10,7 +10,7 @@ import {
   ModalHeader,
   Table,
 } from "reactstrap";
-import { useFetchPermissions } from "../../queries/permission_query";
+import { useFetchRoleAssignedPermissions } from "../../queries/permission_query";
 import TableContainer from "../../components/Common/TableContainer";
 import { DetailsView } from "../../components/Common/DetailViewWrapper";
 import Spinners from "../../components/Common/Spinner";
@@ -29,7 +29,7 @@ const UserRoleModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction } = props;
   const param = { pem_role_id: transaction.url_role_id };
-  const { data, isLoading, error, isError, refetch } = useFetchPermissions(
+  const { data, isLoading, error, isError, refetch } = useFetchRoleAssignedPermissions(
     param,
     !!transaction.url_role_id 
   );
@@ -177,6 +177,7 @@ const UserRoleModal = (props) => {
               theadClass="table-light"
               pagination="pagination"
               paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+              divClassName="-"
             />
           )}
         </ModalBody>

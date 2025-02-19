@@ -1245,5 +1245,13 @@
 	"prs_budget_year_id": "Bara Baajataa",
 	"menu_report":"Riportiwwan",
 	"statistical_search":"Gosa riporti filadhaa ti 'Search' irra cuqaasaa",
-	"project_plan_list":"Karoora Pirojeektii"
+	"project_plan_list":"Karoora Pirojeektii",
+	"pld_start_date_gc_start":"Guyyaa Jalqabaa",
+	"pld_start_date_gc_end":"Guyyaa Xumuraa",
+	"superset_list_report":"Reportiwwan Garaagara",
+	"zone_owner":"Godina - Abbaa Pirojekti",
+	"woreda_owner":"Aanaa - Abbaa Pirojekti",
+	"zone_location":"Godina - Bakka itti Argamu",
+	"woreda_location":"Aanaa - Bakka itti Argamu",
+	"status_name":"Haala Pirojektii"
 }

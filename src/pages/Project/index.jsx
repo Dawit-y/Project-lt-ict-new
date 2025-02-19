@@ -73,6 +73,7 @@ import {
   alphanumericValidation,
   amountValidation,
   numberValidation,
+  onlyAmharicValidation
 } from "../../utils/Validation/validation";
 import { toast } from "react-toastify";
 import { createSelectOptions, createMultiSelectOptions } from "../../utils/commonMethods";
@@ -172,7 +173,7 @@ const ProjectModel = () => {
     dep_name_or: departmentOptionsOr,
     dep_name_am: departmentOptionsAm,
   } = createMultiSelectOptions(
-    departmentData?.data || [],
+    (departmentData?.data || []).slice(1), // Remove the item at index 0
     "dep_id",
     ["dep_name_en", "dep_name_or", "dep_name_am"]
   );
@@ -201,7 +202,7 @@ const ProjectModel = () => {
   const handleAddProject = async (data) => {
     try {
       await addProject.mutateAsync(data);
-      toast.error(t("add_success"), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
@@ -216,7 +217,7 @@ const ProjectModel = () => {
   const handleUpdateProject = async (data) => {
     try {
       await updateProject.mutateAsync(data);
-      toast.error(t("update_success"), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
@@ -232,7 +233,7 @@ const ProjectModel = () => {
       try {
         const id = project.prj_id;
         await deleteProject.mutateAsync(id);
-        toast.error(t("delete_success"), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
@@ -322,14 +323,8 @@ const ProjectModel = () => {
           );
         }
       ),
-      prj_name_am: Yup.string()
-        .matches(
-          /^[\u1200-\u137F\s.,;!?@#$%^&*()_+\-=[\]{}|:'"<>\\/`~]+$/,
-          t("only_amharic")
-        )
-        .min(10, `${t("val_min_length")}`)
-        .max(100, `${t("val_max_length")}`)
-        .test("unique-prj_name_am", t("Already exists"), (value) => {
+      prj_name_am: onlyAmharicValidation(3, 200, true)
+      .test("unique-prj_name_am", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.prj_name_am == value && item.prj_id !== project?.prj_id
@@ -361,7 +356,7 @@ const ProjectModel = () => {
 
       prj_total_actual_budget: amountValidation(1000, 1000000000000, false),
       //prj_geo_location: Yup.string().required(t('prj_geo_location')),
-      prj_sector_id: Yup.string().required(t("prj_sector_id")),
+      //prj_sector_id: Yup.string().required(t("prj_sector_id")),
       prj_location_region_id: Yup.string().required(
         t("prj_location_region_id")
       ),
@@ -369,7 +364,7 @@ const ProjectModel = () => {
       prj_location_woreda_id: Yup.string().required(
         t("prj_location_woreda_id")
       ),
-      prj_department_id: Yup.string().required(t("prj_department_id")),
+      //prj_department_id: Yup.string().required(t("prj_department_id")),
       prj_urban_ben_number: numberValidation(10, 10000000, false),
       prj_rural_ben_number: numberValidation(10, 10000000, false),
       prj_location_description: alphanumericValidation(3, 425, false),
@@ -640,7 +635,7 @@ const ProjectModel = () => {
       },
       {
         field: "add_name_or",
-        headerName: t("add_name_or"),
+        headerName: t("prj_owner_zone_id"),
         sortable: true,
         filter: "agTextColumnFilter",
         flex: 3,
@@ -766,7 +761,7 @@ const ProjectModel = () => {
         </DropdownToggle>
         <DropdownMenu
           className="dropdown-menu"
-          style={{ position: "absolute", zIndex: 1050 }}
+          style={{ position: "absolute", zIndex: 1050,right:200,left: -136}}
           aria-labelledby={`dropdownMenuButton${prj_id}`}
         >
           {filteredLinks.map((linkId) => (

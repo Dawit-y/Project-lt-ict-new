@@ -25,7 +25,7 @@ export const alphanumericValidation = (minLength, maxLength, isRequired = true) 
 export const onlyAmharicValidation = (minLength, maxLength, isRequired = true) => {
   const { t } = useTranslation();
   let schema = Yup.string()
-    .matches(/^[\u1200-\u137F\s.,;!?@#$%^&*()_+\-=[\]{}|:'"<>\\/`~]+$/, t("only_amharic"))
+    .matches(/^[\u1200-\u137F0-9\s.,;!?@#$%^&*()_+\-=[\]{}|:'"<>\\/`~]+$/, t("only_amharic"))
     .min(minLength, `${t('val_min_length')}: ${minLength}`)
     .max(maxLength, `${t('val_max_length')}: ${maxLength}`)
 

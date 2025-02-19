@@ -57,7 +57,7 @@ import { ToastContainer, toast } from "react-toastify";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import { createSelectOptions } from "../../utils/commonMethods";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import ImageUploader from "../../components/Common/ImageUploader";
+//import ImageUploader from "../../components/Common/ImageUploader";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -221,8 +221,8 @@ const UsersModel = () => {
         ),
       usr_full_name: alphanumericValidation(3, 50, true),
       usr_phone_number: phoneValidation(true),
-      usr_sector_id: dropdownValidation(1, 100, false),
-      usr_department_id: dropdownValidation(1, 100, false),
+      usr_sector_id: dropdownValidation(1, 100, true),
+      usr_department_id: dropdownValidation(1, 100, true),
       usr_region_id: Yup.number().required(t("usr_region_id")),
       // usr_zone_id: Yup.number().required(t("usr_zone_id")),
       //usr_woreda_id: Yup.number().required(t("usr_woreda_id")),
@@ -525,7 +525,7 @@ const UsersModel = () => {
             )}
             {/* added duplicat  */}
             {/* Add duplicate project icon */}
-            {(params.data?.is_editable || params.data?.is_role_editable) && (
+            {(params.data?.is_editable==90 && params.data?.is_role_editable) && (
               <Link
                 to="#"
                 className="text-primary"
@@ -794,7 +794,7 @@ const UsersModel = () => {
                     </InputGroup>
                   </Col>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("usr_sector_id")} </Label>
+                    <Label>{t("usr_sector_id")} <span className="text-danger">*</span></Label>
                     <Input
                       name="usr_sector_id"
                       type="select"
@@ -824,7 +824,7 @@ const UsersModel = () => {
                     ) : null}
                   </Col>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("usr_department_id")} </Label>
+                    <Label>{t("usr_department_id")} <span className="text-danger">*</span></Label>
                     <Input
                       name="usr_department_id"
                       type="select"
@@ -888,7 +888,7 @@ const UsersModel = () => {
                       required={true}
                     />
                   </Col>
-                  <ImageUploader validation={validation} />
+                  {/*<ImageUploader validation={validation} />*/}
                 </Row>
                 <Row>
                   <Col>

@@ -17,23 +17,8 @@ export const getDocumentType = async () => {
   }
 };
 // add Projects
-export const addDocumentType = async (objectName) => {
-  try {
-    const response = await axios.post(
-      `${apiUrl}`+ADD_DOCUMENT_TYPE,
-      objectName,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Failed to update grid:", error);
-    throw error;
-  }
-};
+export const addDocumentType = async (objectName) =>
+   post(`${apiUrl}` + ADD_DOCUMENT_TYPE, objectName);
 // update objectNames
 export const updateDocumentType = (objectName) =>
   post(`${apiUrl}`+UPDATE_DOCUMENT_TYPE +`?pdt_id=${objectName?.pdt_id}`, objectName);

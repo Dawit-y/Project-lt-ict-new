@@ -17,23 +17,8 @@ export const getProjectStatus = async () => {
   }
 };
 // add Projects
-export const addProjectStatus = async (objectName) => {
-  try {
-    const response = await axios.post(
-      `${apiUrl}`+ADD_PROJECT_STATUS,
-      objectName,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Failed to update grid:", error);
-    throw error;
-  }
-};
+export const addProjectStatus = async (objectName) =>
+post(`${apiUrl}` + ADD_PROJECT_STATUS, objectName);
 // update objectNames
 export const updateProjectStatus = (objectName) =>
   post(`${apiUrl}`+UPDATE_PROJECT_STATUS +`?prs_id=${objectName?.prs_id}`, objectName);

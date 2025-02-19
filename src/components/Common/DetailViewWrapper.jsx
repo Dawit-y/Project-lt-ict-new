@@ -95,7 +95,6 @@ export const DetailsView = ({ details, keysToRemove }) => {
         <h5 className="text-truncate font-size-15">{t(descriptionKey || "description")}</h5>
         <p className="text-muted">{descriptionValue}</p>
       </div>
-
       <div className="text-muted mt-4">
         <Table className="table-sm">
           <tbody>

@@ -62,6 +62,8 @@ const BudgetRequestModal = ({ isOpen, toggle, transaction }) => {
                 "bdr_created_by",
                 "is_editable",
                 "is_deletable",
+                "color_code",
+                "bdr_request_status"
               ]}
             />
           </>

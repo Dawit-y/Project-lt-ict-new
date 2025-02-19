@@ -24,23 +24,8 @@ export const getProjectPayment = async (project_id_payment) => {
   }
 };
 // add Projects
-export const addProjectPayment = async (objectName) => {
-  try {
-    const response = await axios.post(
-      `${apiUrl}`+ADD_PROJECT_PAYMENT,
-      objectName,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Failed to update grid:", error);
-    throw error;
-  }
-};
+export const addProjectPayment = async (objectName) =>
+post(`${apiUrl}` + ADD_PROJECT_PAYMENT, objectName);
 // update objectNames
 export const updateProjectPayment = (objectName) =>
   post(`${apiUrl}`+UPDATE_PROJECT_PAYMENT +`?prp_id=${objectName?.prp_id}`, objectName);

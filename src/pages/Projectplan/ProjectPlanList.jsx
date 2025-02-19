@@ -108,21 +108,41 @@ const ProjectPlanList = () => {
   const columns = useMemo(() => {
     const baseColumns = [
       {
+        headerName: t("S.N"),
+        field: "sn",
+        valueGetter: (params) => params.node.rowIndex + 1,
+        sortable: false,
+        filter: false,
+        flex: .7,
+      },
+      {
         headerName: t("pld_name"),
         field: "pld_name",
         sortable: true,
         filter: false,
+        flex: 2,
         cellRenderer: (params) => {
           return truncateText(params.data.pld_name, 30) || "-";
         },
       },
       {
-        headerName: t("pld_project_id"),
-        field: "pld_project_id",
+        headerName: t("prj_name"),
+        field: "prj_name",
         sortable: true,
         filter: false,
+        flex: 2,
         cellRenderer: (params) => {
-          return truncateText(params.data.pld_project_id, 30) || "-";
+          return truncateText(params.data.prj_name, 30) || "-";
+        },
+      },
+      {
+        headerName: t("prj_code"),
+        field: "prj_code",
+        sortable: true,
+        filter: false,
+        flex: 2,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_code, 30) || "-";
         },
       },
       {
@@ -130,6 +150,7 @@ const ProjectPlanList = () => {
         field: "pld_budget_year_id",
         sortable: true,
         filter: false,
+        flex: 1,
         cellRenderer: (params) => {
           return budgetYearMap[params.data.pld_budget_year_id] || "-";
         },
@@ -139,6 +160,7 @@ const ProjectPlanList = () => {
         field: "pld_start_date_gc",
         sortable: true,
         filter: false,
+        flex: 1,
         cellRenderer: (params) => {
           return truncateText(params.data.pld_start_date_gc, 30) || "-";
         },
@@ -148,15 +170,17 @@ const ProjectPlanList = () => {
         field: "pld_end_date_gc",
         sortable: true,
         filter: false,
+        flex: 1,
         cellRenderer: (params) => {
           return truncateText(params.data.pld_end_date_gc, 30) || "-";
         },
       },
       {
-        headerName: t("view_gantt"),
-        field: t("view_gantt"),
+        headerName: t("view_gannt"),
+        field: t("view_gannt"),
         sortable: true,
         filter: false,
+        flex: 1,
         cellRenderer: (params) => {
           return (
             <Button

@@ -17,23 +17,8 @@ export const getStakeholderType = async () => {
   }
 };
 // add Projects
-export const addStakeholderType = async (objectName) => {
-  try {
-    const response = await axios.post(
-      `${apiUrl}`+ADD_STAKEHOLDER_TYPE,
-      objectName,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Failed to update grid:", error);
-    throw error;
-  }
-};
+export const addStakeholderType = async (objectName) =>
+post(`${apiUrl}` + ADD_STAKEHOLDER_TYPE, objectName);
 // update objectNames
 export const updateStakeholderType = (objectName) =>
   post(`${apiUrl}`+UPDATE_STAKEHOLDER_TYPE +`?sht_id=${objectName?.sht_id}`, objectName);

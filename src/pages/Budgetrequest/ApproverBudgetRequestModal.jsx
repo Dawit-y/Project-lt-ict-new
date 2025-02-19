@@ -98,7 +98,7 @@ const ApproverBudgetRequestListModal = (props) => {
       bdr_id: transaction.bdr_id || "",
       bdr_request_status: transaction.bdr_request_status || "",
       bdr_released_amount:
-        transaction.bdr_request_status === "Approved"
+        transaction.bdr_request_status == 2
           ? transaction.bdr_released_amount || ""
           : "",
       bdr_released_date_gc: transaction.bdr_released_date_gc || "",
@@ -179,8 +179,8 @@ const ApproverBudgetRequestListModal = (props) => {
                         </div>
                       )}
                   </FormGroup>
-                  {(formik.values.bdr_request_status === "Approved" ||
-                    (transaction.bdr_request_status === "Approved" &&
+                  {(formik.values.bdr_request_status === 2 ||
+                    (transaction.bdr_request_status === 2 &&
                       transaction.bdr_released_amount)) && (
                       <FormGroup>
                         <Label>Released Amount</Label>

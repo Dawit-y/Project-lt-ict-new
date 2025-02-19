@@ -41,7 +41,7 @@ const StatisticalReport = () => {
     { name: "project_supplimentary", url: "" },
     { name: "project_variation", url: "" },
     { name: "project_handover", url: "" },
-    { name: "project_document", url: "" },
+    { name: "budget_request", url: "" },
   ]);
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -269,7 +269,7 @@ const StatisticalReport = () => {
       }],
       reportTypeIndex: 12,
     },
-    project_document: {
+    budget_request: {
       textKeys: ["prd_name"],
       locationParams: {
         region: "prj_location_region_id",

@@ -432,8 +432,8 @@ const ProjectPerformanceModel = (props) => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {(cellProps.row.original?.is_editable ||
-                cellProps.row.original?.is_role_editable) && (
+              {(cellProps.row.original?.is_editable == 1 &&
+                cellProps.row.original?.is_role_editable ==1 ) && (
                   <Link
                     to="#"
                     className="text-success"
@@ -448,9 +448,8 @@ const ProjectPerformanceModel = (props) => {
                     </UncontrolledTooltip>
                   </Link>
                 )}
-
-              {(cellProps.row.original?.is_deletable ||
-                cellProps.row.original?.is_role_deletable) && (
+              {(cellProps.row.original?.is_deletable == 1 &&
+                cellProps.row.original?.is_role_deletable ==1) && (
                   <Link
                     to="#"
                     className="text-danger"

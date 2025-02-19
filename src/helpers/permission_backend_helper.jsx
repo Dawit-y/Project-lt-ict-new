@@ -4,10 +4,43 @@ const GET_PERMISSION = "permission/listgrid";
 const ADD_PERMISSION = "permission/insertgrid";
 const UPDATE_PERMISSION = "permission/updategrid";
 const DELETE_PERMISSION = "permission/deletegrid";
+const GET_ROLE_ASSIGNED_PERMISSION = "permission/listroleassignedpermission";
+const GET_USER_ASSIGNED_PERMISSION = "permission/listuserassignedpermission";
 
 export const getPermission = async (params = {}) => {
   const queryString = new URLSearchParams(params).toString();
   const url = queryString ? `${GET_PERMISSION}?${queryString}` : GET_PERMISSION;
+  try {
+    const response = await post(url);
+    return response;
+  } catch (error) {
+    console.log("Error in fetching data:", error);
+  }
+};
+
+export const getRoleAssignedPermission = async (params = {}) => {
+  const queryString = new URLSearchParams(params).toString();
+  const url = queryString ? `${GET_ROLE_ASSIGNED_PERMISSION}?${queryString}` : GET_PERMISSION;
+  try {
+    const response = await post(url);
+    return response;
+  } catch (error) {
+    console.log("Error in fetching data:", error);
+  }
+};
+export const getUserAssignedPermission = async (params = {}) => {
+  const queryString = new URLSearchParams(params).toString();
+  const url = queryString ? `${GET_USER_ASSIGNED_PERMISSION}?${queryString}` : GET_PERMISSION;
+  try {
+    const response = await post(url);
+    return response;
+  } catch (error) {
+    console.log("Error in fetching data:", error);
+  }
+};
+export const getAssignedPermission = async (params = {}) => {
+  const queryString = new URLSearchParams(params).toString();
+  const url = queryString ? `${GET_ROLE_ASSIGNED_PERMISSION}?${queryString}` : GET_PERMISSION;
   try {
     const response = await post(url);
     return response;

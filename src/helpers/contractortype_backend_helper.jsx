@@ -17,23 +17,8 @@ export const getContractorType = async () => {
   }
 };
 // add Projects
-export const addContractorType = async (objectName) => {
-  try {
-    const response = await axios.post(
-      `${apiUrl}`+ADD_CONTRACTOR_TYPE,
-      objectName,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Failed to update grid:", error);
-    throw error;
-  }
-};
+export const addContractorType = async (objectName) => 
+   post(`${apiUrl}` + ADD_CONTRACTOR_TYPE, objectName);
 // update objectNames
 export const updateContractorType = (objectName) =>
   post(`${apiUrl}`+UPDATE_CONTRACTOR_TYPE +`?cnt_id=${objectName?.cnt_id}`, objectName);

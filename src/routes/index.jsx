@@ -137,9 +137,12 @@ const RequestCategory = lazy(() => import("../pages/Requestcategory/index"));
 const ConversationInformationList = lazy(() => import("../pages/Conversationinformation/ConversationInformationList"));
 const RequestInformationList = lazy(() => import("../pages/Requestinformation/RequestInformationList"));
 const ProposalRequestList = lazy(() => import("../pages/Proposalrequest/ProposalRequestList"));
-
+const SupersetListReport = lazy(() =>
+  import("../pages/Report/SupersetListReport")
+);
 const authProtectedRoutes = [
   { path: '/conversation_information', component: <ConversationInformation /> },
+  { path: '/superset_list_report', component: <SupersetListReport /> },
   { path: '/request_information', component: <RequestInformation /> },
   { path: '/request_status', component: <RequestStatus /> },
   { path: '/proposal_request', component: <ProposalRequest /> },

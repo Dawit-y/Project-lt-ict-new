@@ -1263,5 +1263,13 @@
 	"prs_budget_year_id": "የበጀት አመት",
 	"menu_report":"ሪፖርት",
 	"statistical_search":"የሪፖርት አይነት ይምረጡ እና 'Search' ላይ ክሊክ ያድርጉ",
-	"project_plan_list":"የፕሮጀክት እቅድ ዝርዝር"
+	"project_plan_list":"የፕሮጀክት እቅድ ዝርዝር",
+	"pld_start_date_gc_start":"የመጀመሪያ ቀን",
+	"pld_start_date_gc_end":"የመጨረሻ ቀን",
+	"superset_list_report":"የተለያዩ ሪፖርቶች",
+	"zone_owner":"ባለቤት ዞን",
+	"woreda_owner":"ባለቤት ወረዳ",
+	"zone_location":"የሚገኝበት ዞን",
+	"woreda_location":"የሚገኝበት ወረዳ",
+	"status_name":"የፕሮጀክቱ አሁናዊ ሁኔታ"
 }

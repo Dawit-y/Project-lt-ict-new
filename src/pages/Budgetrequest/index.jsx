@@ -17,7 +17,7 @@ import {
   useDeleteBudgetRequest,
 } from "../../queries/budget_request_query";
 import { useFetchProject } from "../../queries/project_query";
-import { useFetchBudgetYears } from "../../queries/budgetyear_query";
+import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
 import BudgetRequestModal from "./BudgetRequestModal";
 import { useTranslation } from "react-i18next";
 import BudgetRequestAmount from "../Budgetrequestamount/index";
@@ -91,7 +91,8 @@ const BudgetRequestModel = () => {
 
   const { data, isLoading, isError, error, refetch } =
     useFetchBudgetRequests(param);
-  const { data: budgetYearData } = useFetchBudgetYears();
+  const { data: budgetYearData } = usePopulateBudgetYears();
+  const { data: bgYearsOptionsData } = useFetchBudgetYears();
   const addBudgetRequest = useAddBudgetRequest();
   const updateBudgetRequest = useUpdateBudgetRequest();
   const deleteBudgetRequest = useDeleteBudgetRequest();
@@ -186,7 +187,7 @@ const BudgetRequestModel = () => {
           bdr_requested_date_ec: values.bdr_requested_date_ec,
           bdr_requested_date_gc: values.bdr_requested_date_gc,
           bdr_description: values.bdr_description,
-          bdr_request_status: "Requested",
+          bdr_request_status: 1,
         };
         // save new BudgetRequests
         handleAddBudgetRequest(newBudgetRequest);
@@ -199,14 +200,14 @@ const BudgetRequestModel = () => {
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
 
-  const budgetYearMap = useMemo(() => {
+const budgetYearMap = useMemo(() => {
     return (
-      budgetYearData?.data?.reduce((acc, year) => {
+      bgYearsOptionsData?.data?.reduce((acc, year) => {
         acc[year.bdy_id] = year.bdy_name;
         return acc;
       }, {}) || {}
     );
-  }, [budgetYearData]);
+  }, [bgYearsOptionsData]);
 
   useEffect(() => {
     setBudgetRequest(data?.data);
@@ -462,8 +463,9 @@ const BudgetRequestModel = () => {
                     </UncontrolledTooltip>
                   </Link>
                 )}
-              {(cellProps.row.original?.is_deletable ||
-                cellProps.row.original?.is_role_deletable) && (
+              {(cellProps.row.original?.is_deletable==9 ||
+                cellProps.row.original?.is_role_deletable==9) && (
+                <div>
                   <Link
                     to="#"
                     className="text-danger"
@@ -480,7 +482,7 @@ const BudgetRequestModel = () => {
                       Delete
                     </UncontrolledTooltip>
                   </Link>
-                )}
+               
               <Link
                 to="#"
                 className="text-secondary me-2"
@@ -491,6 +493,8 @@ const BudgetRequestModel = () => {
                   Budget Request Detail
                 </UncontrolledTooltip>
               </Link>
+              </div>
+               )}
             </div>
           );
         },
@@ -579,7 +583,7 @@ const BudgetRequestModel = () => {
                       columns={columns}
                       data={data?.data}
                       isGlobalFilter={true}
-                      isAddButton={project?.data?.request_role == "requester"}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleBudgetRequestClicks}
                       isPagination={true}
