@@ -11,7 +11,7 @@ const USER_SECTOR_QUERY_KEY = ["usersector"];
 // Fetch user_sector
 export const useFetchUserSectors = (params = {}, isActive) => {
   return useQuery({
-    queryKey: USER_SECTOR_QUERY_KEY,
+    queryKey: [...USER_SECTOR_QUERY_KEY, "fetch", params],
     queryFn: () => getUserSector(params),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
@@ -24,7 +24,7 @@ export const useFetchUserSectors = (params = {}, isActive) => {
 //search user_sector
 export const useSearchUserSectors = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...USER_SECTOR_QUERY_KEY, searchParams],
+    queryKey: [...USER_SECTOR_QUERY_KEY, "search", searchParams],
     queryFn: () => getUserSector(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
@@ -41,7 +41,7 @@ export const useAddUserSector = () => {
   return useMutation({
     mutationFn: addUserSector,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( USER_SECTOR_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(USER_SECTOR_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,

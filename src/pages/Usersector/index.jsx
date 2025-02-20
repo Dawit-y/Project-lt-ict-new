@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { useAddUserSector, useFetchUserSectors } from "../../queries/usersector_query";
+import { useAddUserSector, useFetchUserSectors, useUpdateUserSector } from "../../queries/usersector_query";
 import { useFetchSectorCategorys } from "../../queries/sectorcategory_query";
 import { useTranslation } from "react-i18next";
 import { Button, Row, Form, Input, Label, FormGroup, Spinner, Container } from "reactstrap";
 import { toast } from "react-toastify";
 import { createSelectOptions } from "../../utils/commonMethods";
+import Spinners from "../../components/Common/Spinner"
 
 const UserSectorModel = ({ passedId, isActive }) => {
   const { t } = useTranslation();
@@ -16,6 +17,7 @@ const UserSectorModel = ({ passedId, isActive }) => {
   const { data: userSectorsData, isLoading: userSectorsLoading } = useFetchUserSectors({ usc_user_id: passedId }, isActive);
 
   const addUserSector = useAddUserSector();
+  const updateUserSector = useUpdateUserSector();
   const sectorOptions = createSelectOptions(sectorData?.data || [], "psc_id", "psc_name");
 
   const getUserSectorMap = () => {
@@ -45,18 +47,33 @@ const UserSectorModel = ({ passedId, isActive }) => {
     onSubmit: async (values) => {
       try {
         const payload = Object.entries(values.sectors).map(([id, checked]) => ({
-          usc_sector_id: id,
-          usc_user_id: passedId,
+          usc_sector_id: Number(id),
+          usc_user_id: Number(passedId),
           usc_status: checked ? 1 : 0,
         }));
-        await addUserSector.mutateAsync(payload);
-        toast.success(t("update_success"), {
-          autoClose: 2000,
+
+        const updates = [];
+        const inserts = [];
+
+        payload.forEach((sector) => {
+          if (initialSectors.hasOwnProperty(sector.usc_sector_id)) {
+            updates.push(sector);
+          } else if (sector.usc_status === 1) {
+            inserts.push(sector);
+          }
         });
+
+        if (updates.length > 0) {
+          await updateUserSector.mutateAsync(updates);
+        }
+
+        if (inserts.length > 0) {
+          await addUserSector.mutateAsync(inserts);
+        }
+
+        toast.success(t("update_success"), { autoClose: 2000 });
       } catch (error) {
-        toast.error(t("update_failure"), {
-          autoClose: 2000,
-        });
+        toast.error(t("update_failure"), { autoClose: 2000 });
       }
     },
   });
@@ -66,7 +83,7 @@ const UserSectorModel = ({ passedId, isActive }) => {
       <Form onSubmit={validation.handleSubmit} className="w-50 p-4 border rounded shadow bg-white">
         <Row className="d-flex flex-column align-items-center">
           {sectorLoading || userSectorsLoading ? (
-            <Spinner />
+            <Spinners />
           ) : (
             sectorOptions.map(({ value, label }) => (
               <FormGroup key={value} className="d-flex align-items-center gap-2 w-100">
@@ -88,8 +105,8 @@ const UserSectorModel = ({ passedId, isActive }) => {
           )}
         </Row>
         <div className="text-center mt-3">
-          <Button type="submit" color="success" disabled={addUserSector.isPending}>
-            {addUserSector.isPending && <Spinner size="sm" className="me-2" />}
+          <Button type="submit" color="success" disabled={addUserSector.isPending || updateUserSector.isPending}>
+            {(addUserSector.isPending || updateUserSector.isPending) && <Spinner size="sm" className="me-2" />}
             Submit
           </Button>
         </div>
