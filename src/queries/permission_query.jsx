@@ -33,7 +33,7 @@ export const useFetchRoleAssignedPermissions = (param = {}, isActive) => {
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: true,
+    enabled: isActive,
   });
 };
 
@@ -108,7 +108,7 @@ export const useUpdatePermission = () => {
             ...oldData,
             data: oldData.data.map((data) =>
               data?.pag_name.toString() ===
-              updatedData.data?.pag_name.toString()
+                updatedData.data?.pag_name.toString()
                 ? { ...data, ...updatedData.data }
                 : data
             ),

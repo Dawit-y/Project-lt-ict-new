@@ -12,6 +12,7 @@ import CascadingDropdownsearch from "../../components/Common/CascadingDropdowns2
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 // pages
 import UserRoles from "../../pages/Userrole/index";
+import UserSectorModel from "../Usersector";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
@@ -949,7 +950,7 @@ const UsersModel = () => {
           canvasWidth={84}
           name={userMetaData.usr_name || "User Roles"}
           id={userMetaData.usr_id}
-          components={{ "User Roles": UserRoles }}
+          components={{ "User Roles": UserRoles, "User Sector": UserSectorModel }}
         />
       )}
     </React.Fragment>

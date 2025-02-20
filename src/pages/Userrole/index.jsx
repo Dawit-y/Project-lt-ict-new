@@ -80,7 +80,7 @@ const UserRoleModel = (props) => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t("update_failure"), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -94,7 +94,7 @@ const UserRoleModel = (props) => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t("update_failure"), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -109,7 +109,7 @@ const UserRoleModel = (props) => {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t("delete_success"), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -343,7 +343,6 @@ const UserRoleModel = (props) => {
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteUserRole.isPending}
       />
-
       {isLoading ? (
         <Spinners />
       ) : (

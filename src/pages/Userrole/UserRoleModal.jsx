@@ -31,7 +31,7 @@ const UserRoleModal = (props) => {
   const param = { pem_role_id: transaction.url_role_id };
   const { data, isLoading, error, isError, refetch } = useFetchRoleAssignedPermissions(
     param,
-    !!transaction.url_role_id 
+    isOpen
   );
 
   const updatedTransaction = {
@@ -128,9 +128,9 @@ const UserRoleModal = (props) => {
     return baseColumns;
   }, []);
 
-  // if (isError) {
-  //   return <FetchErrorHandler error={error} refetch={refetch} />;
-  // }
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
 
   return (
     <Modal

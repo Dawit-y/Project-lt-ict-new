@@ -9,14 +9,15 @@ import {
 const USER_SECTOR_QUERY_KEY = ["usersector"];
 
 // Fetch user_sector
-export const useFetchUserSectors = () => {
+export const useFetchUserSectors = (params = {}, isActive) => {
   return useQuery({
     queryKey: USER_SECTOR_QUERY_KEY,
-    queryFn: () => getUserSector(),
+    queryFn: () => getUserSector(params),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: isActive
   });
 };
 
