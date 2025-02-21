@@ -1,31 +1,52 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { useAddUserSector, useFetchUserSectors, useUpdateUserSector } from "../../queries/usersector_query";
-import { useFetchSectorCategorys } from "../../queries/sectorcategory_query";
 import { useTranslation } from "react-i18next";
-import { Button, Row, Form, Input, Label, FormGroup, Spinner, Container } from "reactstrap";
+import { useAddUserSector, useFetchUserSectors, useUpdateUserSector } from "../../queries/usersector_query";
+import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
+import { Button, Row, Form, Input, Label, FormGroup, Spinner, Container, Col } from "reactstrap";
 import { toast } from "react-toastify";
-import { createSelectOptions } from "../../utils/commonMethods";
-import Spinners from "../../components/Common/Spinner"
+import { createMultiSelectOptions } from "../../utils/commonMethods";
+import Spinners from "../../components/Common/Spinner";
 
 const UserSectorModel = ({ passedId, isActive }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
 
-  const { data: sectorData, isLoading: sectorLoading } = useFetchSectorCategorys();
+  const { data: sectorData, isLoading: sectorLoading } = useFetchSectorInformations();
   const { data: userSectorsData, isLoading: userSectorsLoading } = useFetchUserSectors({ usc_user_id: passedId }, isActive);
-
   const addUserSector = useAddUserSector();
   const updateUserSector = useUpdateUserSector();
-  const sectorOptions = createSelectOptions(sectorData?.data || [], "psc_id", "psc_name");
+
+  const sectorOptions = useMemo(() => {
+    return createMultiSelectOptions(sectorData?.data || [], "sci_id", ["sci_name_en", "sci_name_or", "sci_name_am"]);
+  }, [sectorData]);
+
+  const getOptionsByLanguage = () => {
+    switch (lang) {
+      case "en":
+        return sectorOptions.sci_name_en;
+      case "am":
+        return sectorOptions.sci_name_am;
+      case "or":
+        return sectorOptions.sci_name_or;
+      default:
+        return sectorOptions.sci_name_en;
+    }
+  };
+
+  const [filterInput, setFilterInput] = useState("");
+
+  const filteredOptions = useMemo(() => {
+    return getOptionsByLanguage().filter(option => option.label.toLowerCase().includes(filterInput.toLowerCase()));
+  }, [filterInput, lang, sectorOptions]);
 
   const getUserSectorMap = () => {
-    if (!userSectorsData?.data) return {};
-    return userSectorsData.data.reduce((acc, sector) => {
+    return userSectorsData?.data?.reduce((acc, sector) => {
       acc[sector.usc_sector_id] = sector.usc_status === 1;
       return acc;
-    }, {});
+    }, {}) || {};
   };
 
   const [initialSectors, setInitialSectors] = useState({});
@@ -38,9 +59,7 @@ const UserSectorModel = ({ passedId, isActive }) => {
 
   const validation = useFormik({
     enableReinitialize: true,
-    initialValues: {
-      sectors: initialSectors,
-    },
+    initialValues: { sectors: initialSectors },
     validationSchema: Yup.object({
       sectors: Yup.object().required(),
     }),
@@ -52,26 +71,36 @@ const UserSectorModel = ({ passedId, isActive }) => {
           usc_status: checked ? 1 : 0,
         }));
 
-        const updates = [];
-        const inserts = [];
+        const userSectorMap = userSectorsData?.data?.reduce((acc, sector) => {
+          acc[sector.usc_sector_id] = sector;
+          return acc;
+        }, {}) || {};
 
-        payload.forEach((sector) => {
-          if (initialSectors.hasOwnProperty(sector.usc_sector_id)) {
-            updates.push(sector);
-          } else if (sector.usc_status === 1) {
-            inserts.push(sector);
-          }
-        });
+        const updates = payload
+          .filter(sector =>
+            userSectorMap[sector.usc_sector_id] &&
+            Boolean(userSectorMap[sector.usc_sector_id].usc_status) !== Boolean(sector.usc_status)
+          )
+          .map(sector => ({
+            ...sector,
+            usc_id: userSectorMap[sector.usc_sector_id]?.usc_id,
+          }));
 
-        if (updates.length > 0) {
-          await updateUserSector.mutateAsync(updates);
+        const inserts = payload.filter(
+          sector => !initialSectors.hasOwnProperty(sector.usc_sector_id) && sector.usc_status === 1
+        );
+
+        const updatePromise = updates.length > 0 ? updateUserSector.mutateAsync(updates) : Promise.resolve();
+        const insertPromise = inserts.length > 0 ? addUserSector.mutateAsync(inserts) : Promise.resolve();
+
+        const results = await Promise.allSettled([updatePromise, insertPromise]);
+
+        const failedOperations = results.filter(result => result.status === "rejected");
+        if (failedOperations.length > 0) {
+          toast.error(t("update_failure"), { autoClose: 2000 });
+        } else {
+          toast.success(t("update_success"), { autoClose: 2000 });
         }
-
-        if (inserts.length > 0) {
-          await addUserSector.mutateAsync(inserts);
-        }
-
-        toast.success(t("update_success"), { autoClose: 2000 });
       } catch (error) {
         toast.error(t("update_failure"), { autoClose: 2000 });
       }
@@ -80,28 +109,44 @@ const UserSectorModel = ({ passedId, isActive }) => {
 
   return (
     <Container className="d-flex justify-content-center align-items-center">
-      <Form onSubmit={validation.handleSubmit} className="w-50 p-4 border rounded shadow bg-white">
-        <Row className="d-flex flex-column align-items-center">
+      <Form onSubmit={validation.handleSubmit} className="w-75 p-4 border rounded shadow bg-white">
+        <Row className="d-flex flex-column align-items-center" style={{ minHeight: "300px" }}>
           {sectorLoading || userSectorsLoading ? (
             <Spinners />
           ) : (
-            sectorOptions.map(({ value, label }) => (
-              <FormGroup key={value} className="d-flex align-items-center gap-2 w-100">
-                <Label className="me-2 my-auto">{label}</Label>
-                <Input
-                  type="checkbox"
-                  className="form-check-input form-check-input-lg"
-                  checked={validation.values.sectors[value] || false}
-                  onChange={(e) =>
-                    validation.setFieldValue("sectors", {
-                      ...validation.values.sectors,
-                      [value]: e.target.checked,
-                    })
-                  }
-                  bsSize="lg"
-                />
-              </FormGroup>
-            ))
+            <>
+              <Row xl={12} className="mb-2 d-flex align-items-center justify-content-between">
+                <Col>
+                  <h5>{t("Select sectors")}</h5>
+                </Col>
+                <Col xl={6}>
+                  <Input
+                    name="filter"
+                    value={filterInput}
+                    onChange={(e) => setFilterInput(e.target.value)}
+                    placeholder={t("filter_placeholder")}
+                  />
+                </Col>
+              </Row>
+              <hr />
+              {filteredOptions.map(({ value, label }) => (
+                <FormGroup key={value} className="d-flex align-items-center gap-2 w-100">
+                  <Input
+                    id={`checkbox-${value}`}
+                    type="checkbox"
+                    className="form-check-input form-check-input-lg"
+                    checked={validation.values.sectors[value] || false}
+                    onChange={(e) =>
+                      validation.setFieldValue("sectors", {
+                        ...validation.values.sectors,
+                        [value]: e.target.checked,
+                      })
+                    }
+                  />
+                  <Label for={`checkbox-${value}`} className="me-2 my-auto">{`${label} - ${value}`}</Label>
+                </FormGroup>
+              ))}
+            </>
           )}
         </Row>
         <div className="text-center mt-3">
@@ -117,6 +162,7 @@ const UserSectorModel = ({ passedId, isActive }) => {
 
 UserSectorModel.propTypes = {
   passedId: PropTypes.number.isRequired,
+  isActive: PropTypes.bool,
 };
 
 export default UserSectorModel;

@@ -14,6 +14,7 @@ export const useFetchSectorInformations = () => {
     queryKey: SECTOR_INFORMATION_QUERY_KEY,
     queryFn: () => getSectorInformation(),
     staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
@@ -40,7 +41,7 @@ export const useAddSectorInformation = () => {
   return useMutation({
     mutationFn: addSectorInformation,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( SECTOR_INFORMATION_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(SECTOR_INFORMATION_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,

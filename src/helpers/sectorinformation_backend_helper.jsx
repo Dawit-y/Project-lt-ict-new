@@ -1,4 +1,4 @@
-import { post} from "./api_Lists";
+import { post } from "./api_Lists";
 
 const apiUrl = import.meta.env.VITE_BASE_API_URL;
 const GET_SECTOR_INFORMATION = "sector_information/listgrid";
@@ -9,7 +9,7 @@ const DELETE_SECTOR_INFORMATION = "sector_information/deletegrid";
 export const getSectorInformation = async (params = {}) => {
   const queryString = new URLSearchParams(params).toString();
   const url = queryString ? `${GET_SECTOR_INFORMATION}?${queryString}` : GET_SECTOR_INFORMATION;
-   try {
+  try {
     const response = await post(url);
     return response;
   } catch (error) {
@@ -23,8 +23,8 @@ export const addSectorInformation = async (objectName) =>
 
 // update sector_information
 export const updateSectorInformation = (objectName) =>
-post(`${apiUrl}`+UPDATE_SECTOR_INFORMATION +`?sci_id=${objectName?.sci_id}`, objectName);
+  post(`${apiUrl}` + UPDATE_SECTOR_INFORMATION + `?sci_id=${objectName?.sci_id}`, objectName);
 
 // delete  sector_information
 export const deleteSectorInformation = (objectName) =>
-  post(`${apiUrl}`+DELETE_SECTOR_INFORMATION+`?sci_id=${objectName}`);
+  post(`${apiUrl}` + DELETE_SECTOR_INFORMATION + `?sci_id=${objectName}`);
