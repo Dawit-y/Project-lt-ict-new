@@ -86,21 +86,13 @@ const UserSectorModel = ({ passedId, isActive }) => {
             usc_id: userSectorMap[sector.usc_sector_id]?.usc_id,
           }));
 
-        const inserts = payload.filter(
-          sector => !initialSectors.hasOwnProperty(sector.usc_sector_id) && sector.usc_status === 1
-        );
+        const inserts = payload
+          .filter(sector => !initialSectors.hasOwnProperty(sector.usc_sector_id) && sector.usc_status === 1)
+          .map(sector => ({ ...sector, usc_id: 0 }));
 
-        const updatePromise = updates.length > 0 ? updateUserSector.mutateAsync(updates) : Promise.resolve();
-        const insertPromise = inserts.length > 0 ? addUserSector.mutateAsync(inserts) : Promise.resolve();
-
-        const results = await Promise.allSettled([updatePromise, insertPromise]);
-
-        const failedOperations = results.filter(result => result.status === "rejected");
-        if (failedOperations.length > 0) {
-          toast.error(t("update_failure"), { autoClose: 2000 });
-        } else {
-          toast.success(t("update_success"), { autoClose: 2000 });
-        }
+        const allPayloads = [...updates, ...inserts]
+        if (allPayloads.length > 0) await updateUserSector.mutateAsync(allPayloads)
+        toast.success(t("update_success"), { autoClose: 2000 });
       } catch (error) {
         toast.error(t("update_failure"), { autoClose: 2000 });
       }
@@ -143,7 +135,7 @@ const UserSectorModel = ({ passedId, isActive }) => {
                       })
                     }
                   />
-                  <Label for={`checkbox-${value}`} className="me-2 my-auto">{`${label} - ${value}`}</Label>
+                  <Label for={`checkbox-${value}`} className="me-2 my-auto">{`${label}`}</Label>
                 </FormGroup>
               ))}
             </>
