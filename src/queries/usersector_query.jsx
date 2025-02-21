@@ -41,17 +41,7 @@ export const useAddUserSector = () => {
   return useMutation({
     mutationFn: addUserSector,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData(USER_SECTOR_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
-      });
+      queryClient.invalidateQueries({ queryKey: USER_SECTOR_QUERY_KEY })
     },
   });
 };
@@ -61,18 +51,7 @@ export const useUpdateUserSector = () => {
   return useMutation({
     mutationFn: updateUserSector,
     onSuccess: (updatedUserSector) => {
-      queryClient.setQueryData(USER_SECTOR_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-
-        return {
-          ...oldData,
-          data: oldData.data.map((UserSectorData) =>
-            UserSectorData.usc_id === updatedUserSector.data.usc_id
-              ? { ...UserSectorData, ...updatedUserSector.data }
-              : UserSectorData
-          ),
-        };
-      });
+      queryClient.invalidateQueries({ queryKey: USER_SECTOR_QUERY_KEY })
     },
   });
 };
@@ -82,15 +61,7 @@ export const useDeleteUserSector = () => {
   return useMutation({
     mutationFn: deleteUserSector,
     onSuccess: (deletedData) => {
-      queryClient.setQueryData(USER_SECTOR_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (UserSectorData) => UserSectorData.usc_id !== parseInt(deletedData.deleted_id)
-          ),
-        };
-      });
+      queryClient.invalidateQueries({ queryKey: USER_SECTOR_QUERY_KEY })
     },
   });
 };
