@@ -21,7 +21,7 @@ export const SessionTimeoutProvider = ({ children }) => {
     setIsSessionExpired(true);
     setModal(true); // Show the modal
     // Clear the authentication token from localStorage to fully log out the user
-    localStorage.removeItem("authUser");
+    sessionStorage.removeItem("authUser");
     localStorage.removeItem(SIDEDATA_CACHE_KEY)
   };
 

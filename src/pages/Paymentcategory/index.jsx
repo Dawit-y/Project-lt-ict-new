@@ -1,16 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-
-//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
@@ -46,18 +42,19 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
+
 const PaymentCategoryModel = () => {
-  //meta title
-  document.title = " PaymentCategory";
+  document.title = " Payment Category";
+
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -81,9 +78,9 @@ const PaymentCategoryModel = () => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t("add_failure"), {
-        autoClose: 2000,
-      });
+      if (!error.handledByMutationCache) {
+        toast.error(t("add_failure"), { autoClose: 2000 });
+      }
     }
     toggle();
   };
@@ -95,9 +92,9 @@ const PaymentCategoryModel = () => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t("update_failure"), {
-        autoClose: 2000,
-      });
+      if (!error.handledByMutationCache) {
+        toast.error(t("update_failure"), { autoClose: 2000 });
+      }
     }
     toggle();
   };
@@ -110,9 +107,9 @@ const PaymentCategoryModel = () => {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(t("delete_failure"), {
-          autoClose: 2000,
-        });
+        if (!error.handledByMutationCache) {
+          toast.error(t("delete_failure"), { autoClose: 2000 });
+        }
       }
       setDeleteModal(false);
     }
@@ -132,7 +129,7 @@ const PaymentCategoryModel = () => {
       pyc_description:
         (paymentCategory && paymentCategory.pyc_description) || "",
       //pyc_status: (paymentCategory && paymentCategory.pyc_status) || "",
-       pyc_status:
+      pyc_status:
         (paymentCategory && paymentCategory.pyc_status) || false,
 
       is_deletable: (paymentCategory && paymentCategory.is_deletable) || 1,
@@ -273,7 +270,7 @@ const PaymentCategoryModel = () => {
         },
       },
       {
-        header: t('is_deleted'),        
+        header: t('is_deleted'),
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
@@ -364,6 +361,10 @@ const PaymentCategoryModel = () => {
     return baseColumns;
   }, [handlePaymentCategoryClick, toggleViewModal, onClickDelete]);
 
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />
+  }
+
   return (
     <React.Fragment>
       <PaymentCategoryModal
@@ -443,14 +444,14 @@ const PaymentCategoryModel = () => {
                       value={validation.values.pyc_name_or || ""}
                       invalid={
                         validation.touched.pyc_name_or &&
-                        validation.errors.pyc_name_or
+                          validation.errors.pyc_name_or
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pyc_name_or &&
-                    validation.errors.pyc_name_or ? (
+                      validation.errors.pyc_name_or ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pyc_name_or}
                       </FormFeedback>
@@ -467,14 +468,14 @@ const PaymentCategoryModel = () => {
                       value={validation.values.pyc_name_am || ""}
                       invalid={
                         validation.touched.pyc_name_am &&
-                        validation.errors.pyc_name_am
+                          validation.errors.pyc_name_am
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pyc_name_am &&
-                    validation.errors.pyc_name_am ? (
+                      validation.errors.pyc_name_am ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pyc_name_am}
                       </FormFeedback>
@@ -491,21 +492,21 @@ const PaymentCategoryModel = () => {
                       value={validation.values.pyc_name_en || ""}
                       invalid={
                         validation.touched.pyc_name_en &&
-                        validation.errors.pyc_name_en
+                          validation.errors.pyc_name_en
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pyc_name_en &&
-                    validation.errors.pyc_name_en ? (
+                      validation.errors.pyc_name_en ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pyc_name_en}
                       </FormFeedback>
                     ) : null}
                   </Col>
                   <Col className="col-md-6 col-xl-4 mb-3">
-                  <div className="form-check mb-4">
+                    <div className="form-check mb-4">
                       <Label className="me-1" for="pyc_status">
                         {t("is_deleted")}
                       </Label>
@@ -519,19 +520,19 @@ const PaymentCategoryModel = () => {
                         checked={validation.values.pyc_status}
                         invalid={
                           validation.touched.pyc_status &&
-                          validation.errors.pyc_status
+                            validation.errors.pyc_status
                             ? true
                             : false
                         }
                       />
                       {validation.touched.pyc_status &&
-                      validation.errors.pyc_status ? (
+                        validation.errors.pyc_status ? (
                         <FormFeedback type="invalid">
                           {validation.errors.pyc_status}
                         </FormFeedback>
                       ) : null}
-                      </div>
-                    </Col>
+                    </div>
+                  </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("pyc_description")}</Label>
                     <Input
@@ -543,14 +544,14 @@ const PaymentCategoryModel = () => {
                       value={validation.values.pyc_description || ""}
                       invalid={
                         validation.touched.pyc_description &&
-                        validation.errors.pyc_description
+                          validation.errors.pyc_description
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pyc_description &&
-                    validation.errors.pyc_description ? (
+                      validation.errors.pyc_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pyc_description}
                       </FormFeedback>
@@ -561,7 +562,7 @@ const PaymentCategoryModel = () => {
                   <Col>
                     <div className="text-end">
                       {addPaymentCategory.isPending ||
-                      updatePaymentCategory.isPending ? (
+                        updatePaymentCategory.isPending ? (
                         <Button
                           color="success"
                           type="submit"
@@ -597,7 +598,6 @@ const PaymentCategoryModel = () => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
     </React.Fragment>
   );
 };
