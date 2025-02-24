@@ -1263,5 +1263,21 @@
 "usc_update_time":"Update Time",
 "usc_delete_time":"Delete Time",
 "usc_created_by":"Created By",
-"usc_status":"Status"
+"usc_status":"Status",
+"program_info":"Program Info",
+"pri_id":"Id",
+"pri_owner_region_id":"Owner Region Id",
+"pri_owner_zone_id":"Owner Zone Id",
+"pri_owner_woreda_id":"Owner Woreda Id",
+"pri_sector_id":"Sector Id",
+"pri_name_or":"Name Or",
+"pri_name_am":"Name Am",
+"pri_name_en":"Name En",
+"pri_program_code":"Program Code",
+"pri_description":"Description",
+"pri_create_time":"Create Time",
+"pri_update_time":"Update Time",
+"pri_delete_time":"Delete Time",
+"pri_created_by":"Created By",
+"pri_status":"Status"
 }
