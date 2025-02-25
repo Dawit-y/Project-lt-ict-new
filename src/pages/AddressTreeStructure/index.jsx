@@ -23,10 +23,10 @@ import { useTranslation } from "react-i18next";
 import TreeNode from "./TreeNode";
 import { LiaHandPointerSolid } from "react-icons/lia";
 import {
-  useFetchFolders,
-  useAddFolder,
-  useDeleteFolder,
-  useRenameFolder,
+  useFetchAddressStructures,
+  useAddAddressStructures,
+  useDeleteAddressStructures,
+  useUpdateAddressStructures,
 } from "../../queries/address_structure_query";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { toast } from "react-toastify";
@@ -50,15 +50,11 @@ const App_tree = () => {
   });
   const [descendants, setDescendants] = useState([]);
   const { t, i18n } = useTranslation();
-  console.log("currentLanguage", i18n.language);
 
-  const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
-
-  const { data, isLoading, isError, error, refetch } = useFetchFolders(userId);
-  const addFolder = useAddFolder();
-  const updateFolder = useRenameFolder();
-  const deleteFolder = useDeleteFolder();
+  const { data, isLoading, isError, error, refetch } = useFetchAddressStructures();
+  const addFolder = useAddAddressStructures();
+  const updateFolder = useUpdateAddressStructures();
+  const deleteFolder = useDeleteAddressStructures();
 
   const toggle = (tab) => {
     if (activeTab !== tab) {

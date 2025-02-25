@@ -1,10 +1,10 @@
 import { useState, useRef, memo } from "react";
 import { Collapse } from "reactstrap";
-import { FaChevronDown, FaChevronRight } from "react-icons/fa";
-import { HiOutlineFolder } from "react-icons/hi";
+import { FaChevronDown, FaChevronRight, FaFolder } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
-const TreeNode = ({ node, onNodeClick, level = 0 }) => {
+
+const TreeNode = ({ node, onNodeClick, level = 0, onNodeExpand }) => {
   const { i18n } = useTranslation();
   const lang = i18n.language;
   const [isExpanded, setIsExpanded] = useState(false);
@@ -17,6 +17,7 @@ const TreeNode = ({ node, onNodeClick, level = 0 }) => {
     });
     nodeRef.current.classList.add("bg-info-subtle");
     onNodeClick(node);
+    onNodeExpand(node);
   };
 
   return (
@@ -55,7 +56,6 @@ const TreeNode = ({ node, onNodeClick, level = 0 }) => {
         ref={nodeRef}
         onClick={() => {
           toggleExpand();
-          onNodeClick(node);
           handleClick();
         }}
         onDoubleClick={toggleExpand}
@@ -69,26 +69,45 @@ const TreeNode = ({ node, onNodeClick, level = 0 }) => {
         {node.children && node.children.length > 0 ? (
           <span onClick={toggleExpand} className="me-1">
             {isExpanded ? (
-              <FaChevronDown onClick={() => onNodeClick(node)} />
+              <FaChevronDown onClick={handleClick} />
             ) : (
-              <FaChevronRight onClick={() => onNodeClick(node)} />
+              <FaChevronRight onClick={handleClick} />
             )}
           </span>
         ) : (
-          <span className="me-3"></span>
+          <span className={`${node.level === "woreda"}`}></span>
         )}
-        <HiOutlineFolder className="text-warning mx-1" />
-        <span>
+        <span className="text-danger my-auto px-1" style={{ fontWeight: 900 }}>
+          {node.level.charAt(0).toUpperCase()}
+        </span>
+        <FaFolder
+          className="text-warning mx-1"
+          style={{
+            flexShrink: 0,
+            width: "15px",
+            height: "15px",
+          }}
+        />
+        <span
+          style={{
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: "150px",
+            display: "inline-block",
+            verticalAlign: "middle",
+          }}
+        >
           {lang === "en" && node.add_name_en
             ? node.add_name_en
             : lang === "am" && node.add_name_am
-            ? node.add_name_am
-            : node.name}
+              ? node.add_name_am
+              : node.name}
         </span>
       </div>
 
       {/* Collapse for child nodes */}
-      <Collapse isOpen={isExpanded} className="ms-2">
+      <Collapse isOpen={isExpanded} className={`ms-2`}>
         {node.children &&
           node.children.map((childNode) => (
             <TreeNode
@@ -96,6 +115,7 @@ const TreeNode = ({ node, onNodeClick, level = 0 }) => {
               node={childNode}
               onNodeClick={onNodeClick}
               level={level + 1}
+              onNodeExpand={onNodeExpand}
             />
           ))}
       </Collapse>

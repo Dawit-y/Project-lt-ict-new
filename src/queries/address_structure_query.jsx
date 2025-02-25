@@ -6,8 +6,11 @@ import {
   deleteAddressStructure,
 } from "../helpers/addressstructure_backend_helper";
 
+const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+const userId = storedUser?.user.usr_id;
+
 // Custom hook for fetching folders
-export const useFetchFolders = (userId) => {
+export const useFetchAddressStructures = () => {
   return useQuery({
     queryKey: ["folders", userId],
     queryFn: () => getAddressStructure(),
@@ -19,7 +22,7 @@ export const useFetchFolders = (userId) => {
 };
 
 // Custom hook for adding a folder
-export const useAddFolder = () => {
+export const useAddAddressStructures = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -31,7 +34,7 @@ export const useAddFolder = () => {
 };
 
 // Custom hook for renaming a folder
-export const useRenameFolder = () => {
+export const useUpdateAddressStructures = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -43,7 +46,7 @@ export const useRenameFolder = () => {
 };
 
 // Custom hook for deleting a folder
-export const useDeleteFolder = () => {
+export const useDeleteAddressStructures = () => {
   const queryClient = useQueryClient();
 
   return useMutation({

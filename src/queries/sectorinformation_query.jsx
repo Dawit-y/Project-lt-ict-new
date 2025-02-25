@@ -9,22 +9,22 @@ import {
 const SECTOR_INFORMATION_QUERY_KEY = ["sectorinformation"];
 
 // Fetch sector_information
-export const useFetchSectorInformations = () => {
+export const useFetchSectorInformations = (param = {}, isActive) => {
   return useQuery({
-    queryKey: SECTOR_INFORMATION_QUERY_KEY,
-    queryFn: () => getSectorInformation(),
+    queryKey: [...SECTOR_INFORMATION_QUERY_KEY, "fetch", param],
+    queryFn: () => getSectorInformation(param),
     staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 10,
     meta: { persist: true },
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    enabled: isActive,
   });
 };
 
-//search sector_information
+// Search sector_information
 export const useSearchSectorInformations = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...SECTOR_INFORMATION_QUERY_KEY, searchParams],
+    queryKey: [...SECTOR_INFORMATION_QUERY_KEY, "search", searchParams],
     queryFn: () => getSectorInformation(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
@@ -41,16 +41,23 @@ export const useAddSectorInformation = () => {
   return useMutation({
     mutationFn: addSectorInformation,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData(SECTOR_INFORMATION_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
+      const queries = queryClient.getQueriesData({
+        queryKey: SECTOR_INFORMATION_QUERY_KEY,
+      });
+
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        });
       });
     },
   });
@@ -61,18 +68,23 @@ export const useUpdateSectorInformation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateSectorInformation,
-    onSuccess: (updatedSectorInformation) => {
-      queryClient.setQueryData(SECTOR_INFORMATION_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
+    onSuccess: (updatedData) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: SECTOR_INFORMATION_QUERY_KEY,
+      });
 
-        return {
-          ...oldData,
-          data: oldData.data.map((SectorInformationData) =>
-            SectorInformationData.sci_id === updatedSectorInformation.data.sci_id
-              ? { ...SectorInformationData, ...updatedSectorInformation.data }
-              : SectorInformationData
-          ),
-        };
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((data) =>
+              data.sci_id === updatedData.data.sci_id
+                ? { ...data, ...updatedData.data }
+                : data
+            ),
+          };
+        });
       });
     },
   });
@@ -84,14 +96,20 @@ export const useDeleteSectorInformation = () => {
   return useMutation({
     mutationFn: deleteSectorInformation,
     onSuccess: (deletedData) => {
-      queryClient.setQueryData(SECTOR_INFORMATION_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (SectorInformationData) => SectorInformationData.sci_id !== parseInt(deletedData.deleted_id)
-          ),
-        };
+      const queries = queryClient.getQueriesData({
+        queryKey: SECTOR_INFORMATION_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (data) => data.sci_id !== parseInt(deletedData.deleted_id)
+            ),
+          };
+        });
       });
     },
   });

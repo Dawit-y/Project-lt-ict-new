@@ -2,7 +2,7 @@ import { useEffect, useState, memo } from "react";
 import { post } from "../../helpers/api_Lists";
 import TreeNode from "../AddressTreeStructure/TreeNode";
 import { useTranslation } from "react-i18next";
-import { useFetchFolders } from "../../queries/address_structure_query";
+import { useFetchAddressStructures } from "../../queries/address_structure_query";
 import { Col, Input, Label, Row } from "reactstrap";
 const AddressStructureForProject = ({
   onNodeSelect,
@@ -10,9 +10,7 @@ const AddressStructureForProject = ({
   setInclude,
 }) => {
   const { t } = useTranslation();
-  const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
-  const { data, isLoading, isError, error, refetch } = useFetchFolders(userId);
+  const { data, isLoading, isError, error, refetch } = useFetchAddressStructures();
   const handleCheckboxChange = (e) => {
     if (setInclude) {
       setInclude(e.target.checked ? 1 : 0);

@@ -78,7 +78,7 @@ import {
 import { toast } from "react-toastify";
 import { createSelectOptions, createMultiSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import AddressStructureForProject from "./AddressStructureForProject";
+import AddressStructureForProject from "./TreeForProject";
 import { useProjectContext } from "../../context/ProjectContext";
 import SearchForProject from "../../components/Common/SearchForProject";
 import ExportToExcel from "../../components/Common/ExportToExcel";
@@ -306,7 +306,7 @@ const ProjectModel = () => {
         }
       ),
       prj_name_am: onlyAmharicValidation(3, 200, true)
-      .test("unique-prj_name_am", t("Already exists"), (value) => {
+        .test("unique-prj_name_am", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.prj_name_am == value && item.prj_id !== project?.prj_id
