@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -9,8 +8,6 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-//import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
   useFetchProgramInfos,
@@ -21,8 +18,6 @@ import {
 } from "../../queries/programinfo_query";
 import ProgramInfoModal from "./ProgramInfoModal";
 import { useTranslation } from "react-i18next";
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
 import {
   Button,
   Col,
@@ -40,19 +35,25 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-const ProgramInfoModel = () => {
-  //meta title
-  document.title = " ProgramInfo";
+
+const ProgramInfoModel = ({ node }) => {
+  const { region_id, zone_id, woreda_id, s_id } = node
+  const params = {
+    pri_owner_region_id: region_id,
+    pri_owner_zone_id: zone_id,
+    pri_owner_woreda_id: woreda_id,
+    pri_sector_id: s_id
+  }
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -62,7 +63,10 @@ const ProgramInfoModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useFetchProgramInfos();
+
+  const { data, isLoading, error, isError, refetch } =
+    useFetchProgramInfos(params, Object.keys(params).length > 0);
+  console.log("data", data)
   const addProgramInfo = useAddProgramInfo();
   const updateProgramInfo = useUpdateProgramInfo();
   const deleteProgramInfo = useDeleteProgramInfo();
@@ -111,19 +115,15 @@ const ProgramInfoModel = () => {
       setDeleteModal(false);
     }
   };
-  //END CRUD
-  //START FOREIGN CALLS
 
-
-  // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
     initialValues: {
-      pri_owner_region_id: (programInfo && programInfo.pri_owner_region_id) || "",
-      pri_owner_zone_id: (programInfo && programInfo.pri_owner_zone_id) || "",
-      pri_owner_woreda_id: (programInfo && programInfo.pri_owner_woreda_id) || "",
-      pri_sector_id: (programInfo && programInfo.pri_sector_id) || "",
+      pri_owner_region_id: (region_id && parseInt(region_id)) || "",
+      pri_owner_zone_id: (zone_id && parseInt(zone_id)) || "",
+      pri_owner_woreda_id: (woreda_id && parseInt(woreda_id)) || "",
+      pri_sector_id: (s_id && parseInt(s_id)) || "",
       pri_name_or: (programInfo && programInfo.pri_name_or) || "",
       pri_name_am: (programInfo && programInfo.pri_name_am) || "",
       pri_name_en: (programInfo && programInfo.pri_name_en) || "",
@@ -135,17 +135,15 @@ const ProgramInfoModel = () => {
       is_editable: (programInfo && programInfo.is_editable) || 1
     },
     validationSchema: Yup.object({
-      pri_owner_region_id: Yup.string().required(t('pri_owner_region_id')),
-      pri_owner_zone_id: Yup.string().required(t('pri_owner_zone_id')),
-      pri_owner_woreda_id: Yup.string().required(t('pri_owner_woreda_id')),
-      pri_sector_id: Yup.string().required(t('pri_sector_id')),
+      pri_owner_region_id: Yup.number().required(t('pri_owner_region_id')),
+      pri_owner_zone_id: Yup.number().required(t('pri_owner_zone_id')),
+      pri_owner_woreda_id: Yup.number().required(t('pri_owner_woreda_id')),
+      pri_sector_id: Yup.number().required(t('pri_sector_id')),
       pri_name_or: Yup.string().required(t('pri_name_or')),
       pri_name_am: Yup.string().required(t('pri_name_am')),
       pri_name_en: Yup.string().required(t('pri_name_en')),
       pri_program_code: Yup.string().required(t('pri_program_code')),
-      pri_description: Yup.string().required(t('pri_description')),
-      pri_status: Yup.string().required(t('pri_status')),
-
+      pri_description: Yup.string()
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -153,10 +151,10 @@ const ProgramInfoModel = () => {
       if (isEdit) {
         const updateProgramInfo = {
           pri_id: programInfo?.pri_id,
-          pri_owner_region_id: values.pri_owner_region_id,
-          pri_owner_zone_id: values.pri_owner_zone_id,
-          pri_owner_woreda_id: values.pri_owner_woreda_id,
-          pri_sector_id: values.pri_sector_id,
+          pri_owner_region_id: parseInt(region_id),
+          pri_owner_zone_id: parseInt(zone_id),
+          pri_owner_woreda_id: parseInt(woreda_id),
+          pri_sector_id: parseInt(s_id),
           pri_name_or: values.pri_name_or,
           pri_name_am: values.pri_name_am,
           pri_name_en: values.pri_name_en,
@@ -171,10 +169,10 @@ const ProgramInfoModel = () => {
         handleUpdateProgramInfo(updateProgramInfo);
       } else {
         const newProgramInfo = {
-          pri_owner_region_id: values.pri_owner_region_id,
-          pri_owner_zone_id: values.pri_owner_zone_id,
-          pri_owner_woreda_id: values.pri_owner_woreda_id,
-          pri_sector_id: values.pri_sector_id,
+          pri_owner_region_id: parseInt(region_id),
+          pri_owner_zone_id: parseInt(zone_id),
+          pri_owner_woreda_id: parseInt(woreda_id),
+          pri_sector_id: parseInt(s_id),
           pri_name_or: values.pri_name_or,
           pri_name_am: values.pri_name_am,
           pri_name_en: values.pri_name_en,
@@ -213,10 +211,6 @@ const ProgramInfoModel = () => {
     // console.log("handleProgramInfoClick", programInfo);
     setProgramInfo({
       pri_id: programInfo.pri_id,
-      pri_owner_region_id: programInfo.pri_owner_region_id,
-      pri_owner_zone_id: programInfo.pri_owner_zone_id,
-      pri_owner_woreda_id: programInfo.pri_owner_woreda_id,
-      pri_sector_id: programInfo.pri_sector_id,
       pri_name_or: programInfo.pri_name_or,
       pri_name_am: programInfo.pri_name_am,
       pri_name_en: programInfo.pri_name_en,
@@ -464,8 +458,9 @@ const ProgramInfoModel = () => {
     }
     return baseColumns;
   }, [handleProgramInfoClick, toggleViewModal, onClickDelete]);
+
   return (
-    <React.Fragment>
+    <div className="w-90">
       <ProgramInfoModal
         isOpen={modal1}
         toggle={toggleViewModal}
@@ -477,40 +472,8 @@ const ProgramInfoModel = () => {
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteProgramInfo.isPending}
       />
-      <div className="page-content">
-        <div className="container-fluid">
-          <Breadcrumbs
-            title={t("program_info")}
-            breadcrumbItem={t("program_info")}
-          />
-          <AdvancedSearch
-            searchHook={useSearchProgramInfos}
-            textSearchKeys={["dep_name_am", "dep_name_en", "dep_name_or"]}
-            dropdownSearchKeys={[
-              {
-                key: "example",
-                options: [
-                  { value: "Freelance", label: "Example1" },
-                  { value: "Full Time", label: "Example2" },
-                  { value: "Part Time", label: "Example3" },
-                  { value: "Internship", label: "Example4" },
-                ],
-              },
-            ]}
-            checkboxSearchKeys={[
-              {
-                key: "example1",
-                options: [
-                  { value: "Engineering", label: "Example1" },
-                  { value: "Science", label: "Example2" },
-                ],
-              },
-            ]}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          />
+      <div className="">
+        <div className="">
           {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
@@ -526,11 +489,10 @@ const ProgramInfoModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add == 1}
+                      isAddButton={true}
                       isCustomPageSize={true}
                       handleUserClick={handleProgramInfoClicks}
                       isPagination={true}
-                      // SearchPlaceholder="26 records..."
                       SearchPlaceholder={26 + " " + t("Results") + "..."}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={t("add")}
@@ -557,102 +519,6 @@ const ProgramInfoModel = () => {
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('pri_owner_region_id')}</Label>
-                    <Input
-                      name='pri_owner_region_id'
-                      type='text'
-                      placeholder={t('pri_owner_region_id')}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pri_owner_region_id || ''}
-                      invalid={
-                        validation.touched.pri_owner_region_id &&
-                          validation.errors.pri_owner_region_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pri_owner_region_id &&
-                      validation.errors.pri_owner_region_id ? (
-                      <FormFeedback type='invalid'>
-                        {validation.errors.pri_owner_region_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('pri_owner_zone_id')}</Label>
-                    <Input
-                      name='pri_owner_zone_id'
-                      type='text'
-                      placeholder={t('pri_owner_zone_id')}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pri_owner_zone_id || ''}
-                      invalid={
-                        validation.touched.pri_owner_zone_id &&
-                          validation.errors.pri_owner_zone_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pri_owner_zone_id &&
-                      validation.errors.pri_owner_zone_id ? (
-                      <FormFeedback type='invalid'>
-                        {validation.errors.pri_owner_zone_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('pri_owner_woreda_id')}</Label>
-                    <Input
-                      name='pri_owner_woreda_id'
-                      type='text'
-                      placeholder={t('pri_owner_woreda_id')}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pri_owner_woreda_id || ''}
-                      invalid={
-                        validation.touched.pri_owner_woreda_id &&
-                          validation.errors.pri_owner_woreda_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pri_owner_woreda_id &&
-                      validation.errors.pri_owner_woreda_id ? (
-                      <FormFeedback type='invalid'>
-                        {validation.errors.pri_owner_woreda_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('pri_sector_id')}</Label>
-                    <Input
-                      name='pri_sector_id'
-                      type='text'
-                      placeholder={t('pri_sector_id')}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pri_sector_id || ''}
-                      invalid={
-                        validation.touched.pri_sector_id &&
-                          validation.errors.pri_sector_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pri_sector_id &&
-                      validation.errors.pri_sector_id ? (
-                      <FormFeedback type='invalid'>
-                        {validation.errors.pri_sector_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
                   <Col className='col-md-6 mb-3'>
                     <Label>{t('pri_name_or')}</Label>
                     <Input
@@ -749,11 +615,12 @@ const ProgramInfoModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
+                  <Col className='col-md-12 mb-3'>
                     <Label>{t('pri_description')}</Label>
                     <Input
                       name='pri_description'
-                      type='text'
+                      type='textarea'
+                      rows={4}
                       placeholder={t('pri_description')}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -773,31 +640,6 @@ const ProgramInfoModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('pri_status')}</Label>
-                    <Input
-                      name='pri_status'
-                      type='text'
-                      placeholder={t('pri_status')}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pri_status || ''}
-                      invalid={
-                        validation.touched.pri_status &&
-                          validation.errors.pri_status
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pri_status &&
-                      validation.errors.pri_status ? (
-                      <FormFeedback type='invalid'>
-                        {validation.errors.pri_status}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-
                 </Row>
                 <Row>
                   <Col>
@@ -838,8 +680,7 @@ const ProgramInfoModel = () => {
           </Modal>
         </div>
       </div>
-      <ToastContainer />
-    </React.Fragment>
+    </div>
   );
 };
 ProgramInfoModel.propTypes = {

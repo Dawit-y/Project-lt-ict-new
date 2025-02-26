@@ -1,13 +1,13 @@
 .ag-cell {
-  display: flex !important;
-  align-items: center !important;
-  font-size: 13px !important;
-  font-weight: 400 !important;
-  overflow: visible;
+	display: flex !important;
+	align-items: center !important;
+	font-size: 13px !important;
+	font-weight: 400 !important;
+	overflow: visible;
 }
 .ag-row.ag-row-no-focus.ag-row-level-0.ag-row-position-absolute {
-  z-index: 0;
+	z-index: 0;
 }
 .ag-row-focus {
-  z-index: 999;
+	z-index: 999;
 }

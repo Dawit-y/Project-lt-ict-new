@@ -13,9 +13,14 @@ const ProjectProvider = ({ children }) => {
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   const [projectParams, setProjectParams] = useState({});
-  const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
-  const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
-  const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
+  const [selectedLocations, setSelectedLocations] = useState({
+    region: null,
+    zone: null,
+    woreda: null,
+    cluster: null,
+    sector: null,
+    program: null,
+  });
   const [include, setInclude] = useState(0);
 
   const [params, setParams] = useState({});
@@ -46,16 +51,16 @@ const ProjectProvider = ({ children }) => {
 
   useEffect(() => {
     setProjectParams({
-      ...(prjLocationRegionId && {
-        prj_location_region_id: prjLocationRegionId,
-      }),
-      ...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
-      ...(prjLocationWoredaId && {
-        prj_location_woreda_id: prjLocationWoredaId,
-      }),
-      ...(include === 1 && { include: include }),
+      ...(selectedLocations.region && { prj_location_region_id: selectedLocations.region }),
+      ...(selectedLocations.zone && { prj_location_zone_id: selectedLocations.zone }),
+      ...(selectedLocations.woreda && { prj_location_woreda_id: selectedLocations.woreda }),
+      ...(selectedLocations.cluster && { prj_location_cluster_id: selectedLocations.cluster }),
+      ...(selectedLocations.sector && { prj_location_sector_id: selectedLocations.sector }),
+      ...(selectedLocations.program && { prj_location_program_id: selectedLocations.program }),
+      ...(include === 1 && { include }),
     });
-  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
+  }, [selectedLocations, include]);
+
 
   if (isSrError) {
     return <FetchErrorHandler error={srError} refetch={search} />;
@@ -74,12 +79,7 @@ const ProjectProvider = ({ children }) => {
         setShowSearchResult,
         projectParams,
         setProjectParams,
-        prjLocationRegionId,
-        setPrjLocationRegionId,
-        prjLocationZoneId,
-        setPrjLocationZoneId,
-        prjLocationWoredaId,
-        setPrjLocationWoredaId,
+        setSelectedLocations,
         params,
         setParams,
         searchParams,

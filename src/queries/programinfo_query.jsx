@@ -41,24 +41,7 @@ export const useAddProgramInfo = () => {
   return useMutation({
     mutationFn: addProgramInfo,
     onSuccess: (newDataResponse) => {
-      const queries = queryClient.getQueriesData({
-        queryKey: PROGRAM_INFO_QUERY_KEY,
-      });
-
-      const newData = {
-        ...newDataResponse.data,
-        ...newDataResponse.previledge,
-      };
-
-      queries.forEach(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: [newData, ...oldData.data],
-          };
-        });
-      });
+      queryClient.invalidateQueries({ queryKey: PROGRAM_INFO_QUERY_KEY })
     },
   });
 };
@@ -69,23 +52,7 @@ export const useUpdateProgramInfo = () => {
   return useMutation({
     mutationFn: updateProgramInfo,
     onSuccess: (updatedData) => {
-      const queries = queryClient.getQueriesData({
-        queryKey: PROGRAM_INFO_QUERY_KEY,
-      });
-
-      queries.forEach(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: oldData.data.map((data) =>
-              data.pri_id === updatedData.data.pri_id
-                ? { ...data, ...updatedData.data }
-                : data
-            ),
-          };
-        });
-      });
+      queryClient.invalidateQueries({ queryKey: PROGRAM_INFO_QUERY_KEY })
     },
   });
 };
@@ -96,21 +63,7 @@ export const useDeleteProgramInfo = () => {
   return useMutation({
     mutationFn: deleteProgramInfo,
     onSuccess: (deletedData) => {
-      const queries = queryClient.getQueriesData({
-        queryKey: PROGRAM_INFO_QUERY_KEY,
-      });
-
-      queries.forEach(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: oldData.data.filter(
-              (data) => data.pri_id !== parseInt(deletedData.deleted_id)
-            ),
-          };
-        });
-      });
+      queryClient.invalidateQueries({ queryKey: PROGRAM_INFO_QUERY_KEY })
     },
   });
 };

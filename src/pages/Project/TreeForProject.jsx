@@ -122,8 +122,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
         const { id, region_id, zone_id, woreda_id, s_id } = selectedSector
         const formatedProgram = programData?.data.map((s) => ({
           ...s,
-          id: `${region_id}_${zone_id}_${woreda_id}_${s_id}_${s.pri_id}_program`,
-          s_id: s.pri_id,
+          id: `${s.pri_id}_program`,
           name: s.pri_name_or,
           region_id: region_id,
           zone_id: zone_id,
@@ -167,17 +166,22 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
     });
   };
 
+  const handleCheckboxChange = (e) => {
+    if (setInclude) {
+      setInclude(e.target.checked ? 1 : 0);
+    }
+  };
 
   return (
     <Card className="border shadow-sm" style={{ minWidth: '300px' }}>
       <CardBody className="p-3">
-        <h5 className="text-secondary">Address Structure</h5>
+        <h5 className="text-secondary">{t("address_tree_Search")}</h5>
         <hr />
         <Col className="d-flex align-items-center gap-2 mb-3">
-          <Input id="include" name="include" type="checkbox" />
-          <Label for="include" className="mb-0">Include Sub-address</Label>
+          <Input id="include" name="include" type="checkbox" onChange={handleCheckboxChange} />
+          <Label for="include" className="mb-0">{t('include_sub_address')}</Label>
         </Col>
-        <div className="border rounded p-2 bg-light overflow-auto" style={{ minHeight: "350px" }}>
+        <div className="border rounded p-2 overflow-auto" style={{ minHeight: "350px" }}>
           {treeData.length > 0 && (
             <Tree
               initialData={treeData}
@@ -195,11 +199,28 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
                   dragHandle={dragHandle}
                   handleClusterClick={handleClusterClick}
                   handleSectorClick={handleSectorClick}
+                  onNodeSelect={onNodeSelect}
                 />
               )}
             </Tree>
           )}
         </div>
+        <style>
+          {`
+            /* Custom scrollbar */
+            div::-webkit-scrollbar {
+              width: 6px;
+              height: 6px;
+            }
+            div::-webkit-scrollbar-thumb {
+              background: rgba(0, 0, 0, 0.3);
+              border-radius: 3px;
+            }
+            div::-webkit-scrollbar-track {
+              background: rgba(0, 0, 0, 0.1);
+            }
+          `}
+        </style>
       </CardBody>
     </Card>
   );
@@ -207,7 +228,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
 
 export default AddressTree;
 
-function Node({ node, style, dragHandle, handleClusterClick, handleSectorClick }) {
+function Node({ node, style, dragHandle, handleClusterClick, handleSectorClick, onNodeSelect }) {
   if (!node?.data) return null;
   const isLeafNode = node.isLeaf;
   const icon = isLeafNode ? <FaFile /> : <FaFolder />;
@@ -215,6 +236,7 @@ function Node({ node, style, dragHandle, handleClusterClick, handleSectorClick }
 
   const handleNodeClick = (node) => {
     node.toggle();
+    onNodeSelect(node.data)
 
     if (node.data.level === "cluster") {
       handleClusterClick(node);
@@ -226,12 +248,12 @@ function Node({ node, style, dragHandle, handleClusterClick, handleSectorClick }
   return (
     <div
       onClick={() => handleNodeClick(node)}
-      style={style}
+      style={{ ...style, display: "flex" }}
       ref={dragHandle}
-      className={`${node.isSelected ? "bg-primary text-light" : "hover:bg-info-subtle"} py-1 rounded`}
+      className={`${node.isSelected ? "bg-info-subtle" : ""} py-1 rounded hover-zoom`}
     >
       {!isLeafNode && <span className="me-2">{chevronIcon}</span>}
-      <span className="me-2 text-warning">{icon}</span>
+      <span className="me-1 text-warning">{icon}</span>
       <span className="text-danger my-auto px-1" style={{ fontWeight: 900 }}>
         {node.data.level.charAt(0).toUpperCase()}
       </span>
@@ -240,7 +262,7 @@ function Node({ node, style, dragHandle, handleClusterClick, handleSectorClick }
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
-          maxWidth: "150px",
+          maxWidth: "100%",
           display: "inline-block",
           verticalAlign: "middle",
         }}>{node.data.name}</span>

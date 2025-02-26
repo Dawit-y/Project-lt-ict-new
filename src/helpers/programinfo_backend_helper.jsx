@@ -1,4 +1,4 @@
-import { post} from "./api_Lists";
+import { post } from "./api_Lists";
 
 const apiUrl = import.meta.env.VITE_BASE_API_URL;
 const GET_PROGRAM_INFO = "program_info/listgrid";
@@ -9,11 +9,11 @@ const DELETE_PROGRAM_INFO = "program_info/deletegrid";
 export const getProgramInfo = async (params = {}) => {
   const queryString = new URLSearchParams(params).toString();
   const url = queryString ? `${GET_PROGRAM_INFO}?${queryString}` : GET_PROGRAM_INFO;
-   try {
+  try {
     const response = await post(url);
     return response;
   } catch (error) {
-    console.log("Error in fetching data:", error);
+    throw error
   }
 };
 
@@ -23,8 +23,8 @@ export const addProgramInfo = async (objectName) =>
 
 // update program_info
 export const updateProgramInfo = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROGRAM_INFO +`?pri_id=${objectName?.pri_id}`, objectName);
+  post(`${apiUrl}` + UPDATE_PROGRAM_INFO + `?pri_id=${objectName?.pri_id}`, objectName);
 
 // delete  program_info
 export const deleteProgramInfo = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROGRAM_INFO+`?pri_id=${objectName}`);
+  post(`${apiUrl}` + DELETE_PROGRAM_INFO + `?pri_id=${objectName}`);
