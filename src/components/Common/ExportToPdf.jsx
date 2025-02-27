@@ -3,7 +3,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { useTranslation } from "react-i18next";
 
-const ExportToPDF = ({ tableData, tablename, excludeKey = [] }) => {
+const ExportToPDF = ({ tableData, tablename, includeKey = [] }) => {
   const { t } = useTranslation();
   const headerText = tablename; // Custom header text
     const footerText = "Prepared by: ____"; // Custom footer text
@@ -32,7 +32,7 @@ const ExportToPDF = ({ tableData, tablename, excludeKey = [] }) => {
     }
 
     const filteredKeys = Object.keys(tableData[0]).filter(
-      (key) => !excludeKey.includes(key)
+      (key) => includeKey.includes(key)
     );
 
     const chunkSize = 7;

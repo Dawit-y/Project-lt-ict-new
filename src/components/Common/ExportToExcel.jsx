@@ -1,7 +1,7 @@
 import React from "react";
 import * as XLSX from "xlsx";
 import { useTranslation } from "react-i18next";
-const ExportToExcel = ({ tableData, tablename, excludeKey = [] }) => {
+const ExportToExcel = ({ tableData, tablename, includeKey = [] }) => {
   const { t } = useTranslation();
   const handleExportToExcel = () => {
     if (!tableData || tableData.length === 0) {
@@ -9,7 +9,7 @@ const ExportToExcel = ({ tableData, tablename, excludeKey = [] }) => {
       return;
     }
     const filteredKeys = Object.keys(tableData[0]).filter(
-      (key) => !excludeKey.includes(key)
+      (key) => includeKey.includes(key)
       );
     const headers = filteredKeys.map((key) => t(key));
     const dataRows = tableData.map((row) =>

@@ -92,7 +92,8 @@ const AuthMiddleware = ({ children }) => {
       "/Project/:id",
       "/Project/:id/project_plan",
       "/Project/:id/budget_request",
-      "/Project/:id/budget_expenditure"
+      "/Project/:id/budget_expenditure",
+      "/projectdetail/:id",
     );
   }
 
@@ -119,11 +120,11 @@ const AuthMiddleware = ({ children }) => {
   }
 
   if (!authPaths.includes(currentPath) && !isProjectPath(currentPath)) {
-    return <Navigate to="/not_found" />;
+    //return <Navigate to="/not_found" />;
   }
 
   if (!allowedPaths.includes(currentPath) && !isProjectPath(currentPath)) {
-    return <Navigate to="/unauthorized" />;
+    //return <Navigate to="/unauthorized" />;
   }
 
   return <React.Fragment>{children}</React.Fragment>;

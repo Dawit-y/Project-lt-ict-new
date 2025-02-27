@@ -47,7 +47,7 @@ import Conversation from "../Conversationinformation/index1";
 import RequestInformationModel from "../../pages/Requestinformation";
 //import BudgetRequestModel from "../../pages/BudgetRequest";
 //import ProjectPlanModel from "../../pages/ProjectPlan";
-
+import { project_info } from "../../settings/printablecolumns";
 import {
   Button,
   Col,
@@ -863,12 +863,12 @@ const ProjectModel = () => {
                     <ExportToExcel
                       tableData={searchData?.data || []}
                       tablename={"projects"}
-                      excludeKey={["is_editable", "is_deletable"]}
+                      includeKey={project_info}
                     />
                     <ExportToPDF
                       tableData={searchData?.data || []}
                       tablename={"projects"}
-                      excludeKey={["is_editable", "is_deletable"]}
+                      includeKey={project_info}
                     />
                     <PrintPage
                       tableData={searchData?.data || []}
