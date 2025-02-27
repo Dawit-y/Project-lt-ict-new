@@ -153,7 +153,7 @@ const App = (props) => {
   return (
     <>
       {!isOnline && (
-        <NetworkAlert AlertMessage={<b>Oops! No internet connection.</b>} />
+        <NetworkAlert AlertMessage={<b>No internet connection.</b>} />
       )}
       <RouterProvider router={router} />
     </>

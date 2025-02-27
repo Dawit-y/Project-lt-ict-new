@@ -1,12 +1,12 @@
-import { useEffect, useState, memo } from "react";
+import { useEffect, useState, memo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useFetchAddressStructures } from "../../queries/address_structure_query";
 import { useFetchSectorCategorys } from "../../queries/sectorcategory_query";
 import { useSearchSectorInformations } from "../../queries/sectorinformation_query";
-import { useSearchProgramInfos } from "../../queries/programinfo_query";
+import { useSearchProgramInfos, useFetchProgramInfos } from "../../queries/programinfo_query";
 import { Tree } from "react-arborist";
 import { FaFolder, FaFile, FaChevronRight, FaChevronDown } from "react-icons/fa";
-import { Card, CardBody, Input, Label, Col } from "reactstrap";
+import { Card, CardBody, Input, Label, Col, Row } from "reactstrap";
 
 const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   const { t } = useTranslation();
@@ -17,9 +17,13 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   const [selectedCluster, setSelectedCluster] = useState({})
   const [selectedSector, setSelectedSector] = useState({})
 
+  const [searchTerm, setSearchTerm] = useState(null)
+
   const { data: cluster, isLoading: isClusterLoading } = useFetchSectorCategorys();
   const { isLoading: isSectorLoading, refetch: refetchSector } = useSearchSectorInformations(sectorParam);
-  const { isLoading: isProgramLoading, refetch: refetchProgram } = useSearchProgramInfos(programParam);
+  const { data: prData, isLoading: isProgramLoading, refetch: refetchProgram } =
+    useFetchProgramInfos(programParam, Object.keys(programParam).length > 0);
+
 
   useEffect(() => {
     setIsAddressLoading(isLoading || isClusterLoading || isSectorLoading || isProgramLoading);
@@ -79,7 +83,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
         const { id, region_id, zone_id, woreda_id, c_id } = selectedCluster
         const formatedSector = sectorData?.data.map((s) => ({
           ...s,
-          id: `${region_id}_${zone_id}_${woreda_id}_${c_id}_${s.sci_id}`,
+          id: `${s.sci_id}_sector`,
           s_id: s.sci_id,
           name: s.sci_name_or,
           region_id: region_id,
@@ -119,6 +123,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
     const fetchData = async () => {
       try {
         const { data: programData } = await refetchProgram();
+        console.log("refetched ", programData)
         const { id, region_id, zone_id, woreda_id, s_id } = selectedSector
         const formatedProgram = programData?.data.map((s) => ({
           ...s,
@@ -144,17 +149,56 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
     }
   }, [programParam]);
 
+  useEffect(() => {
+    console.log("prdata", prData);
+    if (!prData || !selectedSector.id) return;
 
-  // Function to update children of specific node
+    const { id, region_id, zone_id, woreda_id, s_id } = selectedSector;
+    const formattedProgram = prData?.data.map((s) => ({
+      ...s,
+      id: `${s.pri_id}_program`,
+      name: s.pri_name_or,
+      region_id: region_id,
+      zone_id: zone_id,
+      woreda_id: woreda_id,
+      level: "program",
+      children: [],
+    }));
+
+    console.log("formatted", formattedProgram);
+
+    setTreeData((prevTreeData) => updateNodeChildren(prevTreeData, id, 'sector', formattedProgram));
+  }, [prData]);
+
   const updateNodeChildren = (treeData, parentId, level, newChildren) => {
     return treeData.map((region) => {
       if (region.id === parentId && region.level === level) {
-        const existingChildIds = new Set(region.children.map((child) => child.id));
-        const filteredChildren = newChildren.filter((child) => !existingChildIds.has(child.id));
+        const existingChildrenMap = new Map(region.children.map((child) => [child.id, child]));
+
+        const newChildrenIds = new Set(newChildren.map((child) => child.id));
+
+        const updatedChildren = newChildren.map((newChild) => {
+          if (existingChildrenMap.has(newChild.id)) {
+            return {
+              ...existingChildrenMap.get(newChild.id),
+              ...newChild,
+            };
+          }
+          return newChild;
+        });
+
+        for (const [id, child] of existingChildrenMap) {
+          if (!newChildrenIds.has(id)) {
+            continue;
+          }
+          if (!newChildren.some((newChild) => newChild.id === id)) {
+            updatedChildren.push(child);
+          }
+        }
 
         return {
           ...region,
-          children: [...region.children, ...filteredChildren],
+          children: updatedChildren,
         };
       }
 
@@ -172,21 +216,31 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
     }
   };
 
+  const handleSearchTerm = (e) => {
+    setSearchTerm(e.target.value)
+  }
+
   return (
-    <Card className="border shadow-sm" style={{ minWidth: '300px' }}>
+    <Card className="border shadow-sm" style={{ minWidth: '400px' }}>
       <CardBody className="p-3">
         <h5 className="text-secondary">{t("address_tree_Search")}</h5>
         <hr />
-        <Col className="d-flex align-items-center gap-2 mb-3">
-          <Input id="include" name="include" type="checkbox" onChange={handleCheckboxChange} />
-          <Label for="include" className="mb-0">{t('include_sub_address')}</Label>
-        </Col>
+        <Row className="d-flex align-items-center justify-content-between mb-3">
+          <Col className="d-flex align-items-center gap-2 my-auto">
+            <Input className="" id="include" name="include" type="checkbox" onChange={handleCheckboxChange} />
+            <Label for="include" className="my-auto">{t('include_sub_address')}</Label>
+          </Col>
+          <Col>
+            <Input id="searchterm" name="searchterm" type="text" size={"sm"} placeholder="search" onChange={handleSearchTerm} />
+          </Col>
+        </Row>
         <div className="border rounded p-2 overflow-auto" style={{ minHeight: "350px" }}>
           {treeData.length > 0 && (
             <Tree
               initialData={treeData}
               openByDefault={false}
-              width={300}
+              searchTerm={searchTerm}
+              width={400}
               height={700}
               indent={24}
               rowHeight={36}
@@ -226,9 +280,8 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   );
 };
 
-export default AddressTree;
 
-function Node({ node, style, dragHandle, handleClusterClick, handleSectorClick, onNodeSelect }) {
+const Node = ({ node, style, dragHandle, handleClusterClick, handleSectorClick, onNodeSelect }) => {
   if (!node?.data) return null;
   const isLeafNode = node.isLeaf;
   const icon = isLeafNode ? <FaFile /> : <FaFolder />;
@@ -236,7 +289,7 @@ function Node({ node, style, dragHandle, handleClusterClick, handleSectorClick, 
 
   const handleNodeClick = (node) => {
     node.toggle();
-    onNodeSelect(node.data)
+    onNodeSelect(node.data);
 
     if (node.data.level === "cluster") {
       handleClusterClick(node);
@@ -265,7 +318,12 @@ function Node({ node, style, dragHandle, handleClusterClick, handleSectorClick, 
           maxWidth: "100%",
           display: "inline-block",
           verticalAlign: "middle",
-        }}>{node.data.name}</span>
+        }}
+      >
+        {node.data.name}
+      </span>
     </div>
   );
-}
+};
+
+export default AddressTree

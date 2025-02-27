@@ -7,8 +7,7 @@ import React, {
 } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { before, isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { isEmpty } from "lodash";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { CardBody, Spinner } from "reactstrap";
@@ -78,10 +77,6 @@ import { createSelectOptions, createMultiSelectOptions } from "../../utils/commo
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import AddressStructureForProject from "./TreeForProject";
 import { useProjectContext } from "../../context/ProjectContext";
-import SearchForProject from "../../components/Common/SearchForProject";
-import ExportToExcel from "../../components/Common/ExportToExcel";
-import ExportToPDF from "../../components/Common/ExportToPdf";
-import PrintPage from "../../components/Common/PrintPage";
 
 const linkMapping = {
   34: "budget_request",
@@ -124,7 +119,7 @@ const ProjectModel = () => {
   if (selectedNode.page == "project") {
     param = { program_id: selectedNode.data.pri_id }
   }
-
+  console.log("sel", selectedNode.data)
 
   const tabMapping = {
     54: { label: t("project_document"), component: ProjectDocument },
@@ -153,7 +148,7 @@ const ProjectModel = () => {
   const [isAddressLoading, setIsAddressLoading] = useState(false);
 
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjects(param, selectedNode.page == "project");
+    useFetchProjects(param);
   const { data: projectCategoryData } = useFetchProjectCategorys();
   const {
     pct_name_en: projectCategoryOptionsEn,
@@ -164,6 +159,7 @@ const ProjectModel = () => {
     "pct_id",
     ["pct_name_en", "pct_name_or", "pct_name_am"]
   );
+
   const { data: sectorInformationData } = useFetchSectorInformations();
   const sectorInformationOptions = createSelectOptions(
     sectorInformationData?.data || [],
@@ -338,23 +334,23 @@ const ProjectModel = () => {
       //prj_project_status_id: Yup.string().required(t('prj_project_status_id')),
       prj_project_category_id: numberValidation(1, 200, true),
       //prj_project_budget_source_id: Yup.string().required(t('prj_project_budget_source_id')),
-      prj_total_estimate_budget: amountValidation(1000, 1000000000000, true),
+      //prj_total_estimate_budget: amountValidation(1000, 1000000000000, true),
 
       prj_total_actual_budget: amountValidation(1000, 1000000000000, false),
       //prj_geo_location: Yup.string().required(t('prj_geo_location')),
       //prj_sector_id: Yup.string().required(t("prj_sector_id")),
-      prj_location_region_id: Yup.string().required(
-        t("prj_location_region_id")
-      ),
-      prj_location_zone_id: Yup.string().required(t("prj_location_zone_id")),
-      prj_location_woreda_id: Yup.string().required(
-        t("prj_location_woreda_id")
-      ),
+      // prj_location_region_id: Yup.string().required(
+      //   t("prj_location_region_id")
+      // ),
+      // prj_location_zone_id: Yup.string().required(t("prj_location_zone_id")),
+      // prj_location_woreda_id: Yup.string().required(
+      //   t("prj_location_woreda_id")
+      // ),
       //prj_department_id: Yup.string().required(t("prj_department_id")),
       prj_urban_ben_number: numberValidation(10, 10000000, false),
       prj_rural_ben_number: numberValidation(10, 10000000, false),
       prj_location_description: alphanumericValidation(3, 425, false),
-      prj_outcome: alphanumericValidation(3, 425, true),
+      //prj_outcome: alphanumericValidation(3, 425, true),
       prj_remark: alphanumericValidation(3, 425, false),
     }),
     validateOnBlur: true,
@@ -374,9 +370,9 @@ const ProjectModel = () => {
           prj_total_actual_budget: values.prj_total_actual_budget,
           prj_geo_location: values.prj_geo_location,
           prj_sector_id: values.prj_sector_id,
-          prj_location_region_id: values.prj_location_region_id,
-          prj_location_zone_id: values.prj_location_zone_id,
-          prj_location_woreda_id: values.prj_location_woreda_id,
+          prj_location_region_id: Number(selectedNode.data.pri_owner_region_id),
+          prj_location_zone_id: Number(selectedNode.data.pri_owner_zone_id),
+          prj_location_woreda_id: Number(selectedNode.data.pri_owner_woreda_id),
           prj_location_kebele_id: values.prj_location_kebele_id,
           prj_location_description: values.prj_location_description,
           prj_owner_region_id: values.prj_owner_region_id,
@@ -400,6 +396,7 @@ const ProjectModel = () => {
           prj_urban_ben_number: values.prj_urban_ben_number,
           prj_rural_ben_number: values.prj_rural_ben_number,
           prj_department_id: Number(values.prj_department_id),
+          prj_program_id: Number(selectedNode.data.pri_id),
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -418,9 +415,9 @@ const ProjectModel = () => {
           prj_total_actual_budget: values.prj_total_actual_budget,
           prj_geo_location: values.prj_geo_location,
           prj_sector_id: values.prj_sector_id,
-          prj_location_region_id: values.prj_location_region_id,
-          prj_location_zone_id: values.prj_location_zone_id,
-          prj_location_woreda_id: values.prj_location_woreda_id,
+          prj_location_region_id: Number(selectedNode.data.pri_owner_region_id),
+          prj_location_zone_id: Number(selectedNode.data.pri_owner_zone_id),
+          prj_location_woreda_id: Number(selectedNode.data.pri_owner_woreda_id),
           prj_location_kebele_id: values.prj_location_kebele_id,
           prj_location_description: values.prj_location_description,
           prj_owner_region_id: values.prj_owner_region_id,
@@ -444,13 +441,13 @@ const ProjectModel = () => {
           prj_urban_ben_number: values.prj_urban_ben_number,
           prj_rural_ben_number: values.prj_rural_ben_number,
           prj_department_id: Number(values.prj_department_id),
+          prj_program_id: Number(selectedNode.data.pri_id)
         };
         // save new Project
         handleAddProject(newProject);
       }
     },
   });
-
   useEffect(() => {
     setProject(data);
   }, [data]);
@@ -842,13 +839,13 @@ const ProjectModel = () => {
                       columns={columns}
                       data={data?.data || []}
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add == 1}
+                      isAddButton={true}
                       isCustomPageSize={true}
                       handleUserClick={handleProjectClicks}
                       isPagination={true}
                       SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("department")}
+                      buttonName={t("add") + " " + t("project")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -871,7 +868,7 @@ const ProjectModel = () => {
                           }}
                         >
                           <Row>
-                            <Col className="col-md-12 mb-3">
+                            {/* <Col className="col-md-12 mb-3">
                               <CascadingDropdowns
                                 validation={validation}
                                 dropdown1name="prj_location_region_id"
@@ -879,33 +876,7 @@ const ProjectModel = () => {
                                 dropdown3name="prj_location_woreda_id"
                                 isEdit={isEdit}
                               />
-                            </Col>
-                            <Col className="col-md-12 mb-3">
-                              <Label>{t("prj_location_description")}</Label>
-                              <Input
-                                name="prj_location_description"
-                                type="textarea"
-                                placeholder={t("prj_location_description")}
-                                onChange={validation.handleChange}
-                                onBlur={validation.handleBlur}
-                                value={
-                                  validation.values.prj_location_description || ""
-                                }
-                                invalid={
-                                  validation.touched.prj_location_description &&
-                                    validation.errors.prj_location_description
-                                    ? true
-                                    : false
-                                }
-                                maxLength={200}
-                              />
-                              {validation.touched.prj_location_description &&
-                                validation.errors.prj_location_description ? (
-                                <FormFeedback type="invalid">
-                                  {validation.errors.prj_location_description}
-                                </FormFeedback>
-                              ) : null}
-                            </Col>
+                            </Col> */}
                             <Col className="col-md-4 mb-3">
                               <Label>
                                 {t("prj_name")}
@@ -1260,6 +1231,32 @@ const ProjectModel = () => {
                                 validation.errors.prj_remark ? (
                                 <FormFeedback type="invalid">
                                   {validation.errors.prj_remark}
+                                </FormFeedback>
+                              ) : null}
+                            </Col>
+                            <Col className="col-md-12 mb-3">
+                              <Label>{t("prj_location_description")}</Label>
+                              <Input
+                                name="prj_location_description"
+                                type="textarea"
+                                placeholder={t("prj_location_description")}
+                                onChange={validation.handleChange}
+                                onBlur={validation.handleBlur}
+                                value={
+                                  validation.values.prj_location_description || ""
+                                }
+                                invalid={
+                                  validation.touched.prj_location_description &&
+                                    validation.errors.prj_location_description
+                                    ? true
+                                    : false
+                                }
+                                maxLength={200}
+                              />
+                              {validation.touched.prj_location_description &&
+                                validation.errors.prj_location_description ? (
+                                <FormFeedback type="invalid">
+                                  {validation.errors.prj_location_description}
                                 </FormFeedback>
                               ) : null}
                             </Col>

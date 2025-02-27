@@ -66,7 +66,7 @@ const ProgramInfoModel = ({ node }) => {
 
   const { data, isLoading, error, isError, refetch } =
     useFetchProgramInfos(params, Object.keys(params).length > 0);
-  console.log("data", data)
+  console.log("fetched on index", data)
   const addProgramInfo = useAddProgramInfo();
   const updateProgramInfo = useUpdateProgramInfo();
   const deleteProgramInfo = useDeleteProgramInfo();
@@ -79,7 +79,7 @@ const ProgramInfoModel = ({ node }) => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.error(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -93,7 +93,7 @@ const ProgramInfoModel = ({ node }) => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
+      toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -108,7 +108,7 @@ const ProgramInfoModel = ({ node }) => {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t('delete_failure'), {
+        toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -243,62 +243,62 @@ const ProgramInfoModel = ({ node }) => {
   //START UNCHANGED
   const columns = useMemo(() => {
     const baseColumns = [
-      {
-        header: '',
-        accessorKey: 'pri_owner_region_id',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pri_owner_region_id, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'pri_owner_zone_id',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pri_owner_zone_id, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'pri_owner_woreda_id',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pri_owner_woreda_id, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'pri_sector_id',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pri_sector_id, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
+      // {
+      //   header: '',
+      //   accessorKey: 'pri_owner_region_id',
+      //   enableColumnFilter: false,
+      //   enableSorting: true,
+      //   cell: (cellProps) => {
+      //     return (
+      //       <span>
+      //         {truncateText(cellProps.row.original.pri_owner_region_id, 30) ||
+      //           '-'}
+      //       </span>
+      //     );
+      //   },
+      // },
+      // {
+      //   header: '',
+      //   accessorKey: 'pri_owner_zone_id',
+      //   enableColumnFilter: false,
+      //   enableSorting: true,
+      //   cell: (cellProps) => {
+      //     return (
+      //       <span>
+      //         {truncateText(cellProps.row.original.pri_owner_zone_id, 30) ||
+      //           '-'}
+      //       </span>
+      //     );
+      //   },
+      // },
+      // {
+      //   header: '',
+      //   accessorKey: 'pri_owner_woreda_id',
+      //   enableColumnFilter: false,
+      //   enableSorting: true,
+      //   cell: (cellProps) => {
+      //     return (
+      //       <span>
+      //         {truncateText(cellProps.row.original.pri_owner_woreda_id, 30) ||
+      //           '-'}
+      //       </span>
+      //     );
+      //   },
+      // },
+      // {
+      //   header: '',
+      //   accessorKey: 'pri_sector_id',
+      //   enableColumnFilter: false,
+      //   enableSorting: true,
+      //   cell: (cellProps) => {
+      //     return (
+      //       <span>
+      //         {truncateText(cellProps.row.original.pri_sector_id, 30) ||
+      //           '-'}
+      //       </span>
+      //     );
+      //   },
+      // },
       {
         header: '',
         accessorKey: 'pri_name_or',
@@ -355,34 +355,34 @@ const ProgramInfoModel = ({ node }) => {
           );
         },
       },
-      {
-        header: '',
-        accessorKey: 'pri_description',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pri_description, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'pri_status',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pri_status, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
+      // {
+      //   header: '',
+      //   accessorKey: 'pri_description',
+      //   enableColumnFilter: false,
+      //   enableSorting: true,
+      //   cell: (cellProps) => {
+      //     return (
+      //       <span>
+      //         {truncateText(cellProps.row.original.pri_description, 30) ||
+      //           '-'}
+      //       </span>
+      //     );
+      //   },
+      // },
+      // {
+      //   header: '',
+      //   accessorKey: 'pri_status',
+      //   enableColumnFilter: false,
+      //   enableSorting: true,
+      //   cell: (cellProps) => {
+      //     return (
+      //       <span>
+      //         {truncateText(cellProps.row.original.pri_status, 30) ||
+      //           '-'}
+      //       </span>
+      //     );
+      //   },
+      // },
 
       {
         header: t("view_detail"),
@@ -458,6 +458,10 @@ const ProgramInfoModel = ({ node }) => {
     }
     return baseColumns;
   }, [handleProgramInfoClick, toggleViewModal, onClickDelete]);
+
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />
+  }
 
   return (
     <div className="w-90">
