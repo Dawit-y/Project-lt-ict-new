@@ -32,23 +32,23 @@ import AttachFileModal from "../../components/Common/AttachFileModal"
 import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal"
 import { PAGE_ID } from "../../constants/constantFile";
 import BudgetRequestModal from "./BudgetRequestModal"
-
+import ExportToExcel from "../../components/Common/ExportToExcel";
+import ExportToPDF from "../../components/Common/ExportToPdf";
+import PrintPage from "../../components/Common/PrintPage";
+import { budget_request } from "../../settings/printablecolumns";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-
 const statusClasses = new Map([
   ["Approved", "success"],
   ["Rejected", "danger"],
   ["Requested", "secondary"],
 ]);
-
 const BudgetRequestListModel = () => {
   document.title = " Budget Request List | PMS";
-
   const { t } = useTranslation();
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
@@ -420,6 +420,35 @@ const BudgetRequestListModel = () => {
                           className="mb-2"
                         />
                       </Col>
+                      <Col
+                    sm="12"
+                    md="6"
+                    className="text-md-end d-flex align-items-center justify-content-end gap-2"
+                  ><ExportToExcel
+                      tableData={showSearchResult
+                            ? searchResults?.data
+                            : data?.data || []}
+                      tablename={"projects"}
+                      excludeKey={["is_editable", "is_deletable"]}
+                    />
+                    <ExportToPDF
+                      tableData={showSearchResult
+                            ? searchResults?.data
+                            : data?.data || []}
+                      tablename={"projects"}
+                      includeKey={budget_request}
+                    />
+                    <PrintPage
+                      tableData={showSearchResult
+                            ? searchResults?.data
+                            : data?.data || []}
+                      tablename={t("Projects")}
+                      excludeKey={["is_editable", "is_deletable"]}
+                      gridRef={gridRef}
+                      columnDefs={columnDefs}
+                      columnsToIgnore="3"
+                    />
+                  </Col>
                     </Row>
                     {/* AG Grid */}
                     <div style={{}}>

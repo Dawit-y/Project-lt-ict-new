@@ -47,7 +47,7 @@ import RequestInformationModel from "../../pages/Requestinformation";
 import ProgramInfoModel from "../Programinfo";
 //import BudgetRequestModel from "../../pages/BudgetRequest";
 //import ProjectPlanModel from "../../pages/ProjectPlan";
-
+import { project_info } from "../../settings/printablecolumns";
 import {
   Button,
   Col,

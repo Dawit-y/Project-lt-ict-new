@@ -58,6 +58,7 @@ const CascadingDropdowns = lazy(() =>
 const Notifications = lazy(() => import("../pages/notifications"));
 
 const ProjectOverview = lazy(() => import("../pages/Project/ProjectOverview"));
+const ProjectDetail = lazy(() => import("../pages/Project/ProjectDetail"));
 const ProjectsLocation = lazy(() => import("../pages/ProjectsLocation"));
 const Gantty = lazy(() => import("../pages/GanttChart/index"));
 const StatisticalReport = lazy(() => import("../pages/StatisticalReport"));
@@ -220,6 +221,15 @@ const authProtectedRoutes = [
       </ProjectProvider>
     ),
   },
+  {
+    path: "/projectdetail/:id",
+    component: (
+      // <ProjectProvider>
+        <ProjectDetail />
+      /*</ProjectProvider>*/
+    ),
+  },
+  
   {
     path: "/Project/:id/project_plan",
     component: (
