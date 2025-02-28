@@ -51,7 +51,9 @@ const App_tree = () => {
   const [descendants, setDescendants] = useState([]);
   const { t, i18n } = useTranslation();
 
-  const { data, isLoading, isError, error, refetch } = useFetchAddressStructures();
+  const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+  const userId = storedUser?.user.usr_id;
+  const { data, isLoading, isError, error, refetch } = useFetchAddressStructures(userId);
   const addFolder = useAddAddressStructures();
   const updateFolder = useUpdateAddressStructures();
   const deleteFolder = useDeleteAddressStructures();

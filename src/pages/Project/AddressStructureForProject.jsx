@@ -10,7 +10,10 @@ const AddressStructureForProject = ({
   setInclude,
 }) => {
   const { t } = useTranslation();
-  const { data, isLoading, isError, error, refetch } = useFetchAddressStructures();
+
+  const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+  const userId = storedUser?.user.usr_id;
+  const { data, isLoading, isError, error, refetch } = useFetchAddressStructures(userId);
   const handleCheckboxChange = (e) => {
     if (setInclude) {
       setInclude(e.target.checked ? 1 : 0);

@@ -10,7 +10,9 @@ import { Card, CardBody, Input, Label, Col, Row } from "reactstrap";
 
 const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   const { t } = useTranslation();
-  const { data, isLoading } = useFetchAddressStructures();
+  const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+  const userId = storedUser?.user.usr_id;
+  const { data, isLoading } = useFetchAddressStructures(userId);
   const [treeData, setTreeData] = useState([]);
   const [sectorParam, setSectorParam] = useState({})
   const [programParam, setProgramParam] = useState({})
@@ -83,7 +85,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
         const { id, region_id, zone_id, woreda_id, c_id } = selectedCluster
         const formatedSector = sectorData?.data.map((s) => ({
           ...s,
-          id: `${s.sci_id}_sector`,
+          id: `${zone_id}_${s.sci_id}_sector`,
           s_id: s.sci_id,
           name: s.sci_name_or,
           region_id: region_id,
@@ -127,7 +129,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
         const { id, region_id, zone_id, woreda_id, s_id } = selectedSector
         const formatedProgram = programData?.data.map((s) => ({
           ...s,
-          id: `${s.pri_id}_program`,
+          id: `${zone_id}_${s.pri_id}_program`,
           name: s.pri_name_or,
           region_id: region_id,
           zone_id: zone_id,
@@ -150,7 +152,6 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   }, [programParam]);
 
   useEffect(() => {
-    console.log("prdata", prData);
     if (!prData || !selectedSector.id) return;
 
     const { id, region_id, zone_id, woreda_id, s_id } = selectedSector;
@@ -164,8 +165,6 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
       level: "program",
       children: [],
     }));
-
-    console.log("formatted", formattedProgram);
 
     setTreeData((prevTreeData) => updateNodeChildren(prevTreeData, id, 'sector', formattedProgram));
   }, [prData]);
@@ -240,7 +239,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
               initialData={treeData}
               openByDefault={false}
               searchTerm={searchTerm}
-              width={400}
+              width={500}
               height={700}
               indent={24}
               rowHeight={36}

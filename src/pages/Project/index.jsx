@@ -339,13 +339,13 @@ const ProjectModel = () => {
       prj_total_actual_budget: amountValidation(1000, 1000000000000, false),
       //prj_geo_location: Yup.string().required(t('prj_geo_location')),
       //prj_sector_id: Yup.string().required(t("prj_sector_id")),
-      // prj_location_region_id: Yup.string().required(
-      //   t("prj_location_region_id")
-      // ),
-      // prj_location_zone_id: Yup.string().required(t("prj_location_zone_id")),
-      // prj_location_woreda_id: Yup.string().required(
-      //   t("prj_location_woreda_id")
-      // ),
+      prj_location_region_id: Yup.string().required(
+        t("prj_location_region_id")
+      ),
+      prj_location_zone_id: Yup.string().required(t("prj_location_zone_id")),
+      prj_location_woreda_id: Yup.string().required(
+        t("prj_location_woreda_id")
+      ),
       //prj_department_id: Yup.string().required(t("prj_department_id")),
       prj_urban_ben_number: numberValidation(10, 10000000, false),
       prj_rural_ben_number: numberValidation(10, 10000000, false),
@@ -370,14 +370,14 @@ const ProjectModel = () => {
           prj_total_actual_budget: values.prj_total_actual_budget,
           prj_geo_location: values.prj_geo_location,
           prj_sector_id: values.prj_sector_id,
-          prj_location_region_id: Number(selectedNode.data.pri_owner_region_id),
-          prj_location_zone_id: Number(selectedNode.data.pri_owner_zone_id),
-          prj_location_woreda_id: Number(selectedNode.data.pri_owner_woreda_id),
+          prj_location_region_id: Number(values.prj_location_region_id),
+          prj_location_zone_id: Number(values.prj_location_zone_id),
+          prj_location_woreda_id: Number(values.prj_location_woreda_id),
           prj_location_kebele_id: values.prj_location_kebele_id,
           prj_location_description: values.prj_location_description,
-          prj_owner_region_id: values.prj_owner_region_id,
-          prj_owner_zone_id: values.prj_owner_zone_id,
-          prj_owner_woreda_id: values.prj_owner_woreda_id,
+          prj_owner_region_id: Number(selectedNode.data.pri_owner_region_id),
+          prj_owner_zone_id: Number(selectedNode.data.pri_owner_zone_id),
+          prj_owner_woreda_id: Number(selectedNode.data.pri_owner_woreda_id),
           prj_owner_kebele_id: values.prj_owner_kebele_id,
           prj_owner_description: values.prj_owner_description,
           prj_start_date_et: values.prj_start_date_et,
@@ -415,14 +415,14 @@ const ProjectModel = () => {
           prj_total_actual_budget: values.prj_total_actual_budget,
           prj_geo_location: values.prj_geo_location,
           prj_sector_id: values.prj_sector_id,
-          prj_location_region_id: Number(selectedNode.data.pri_owner_region_id),
-          prj_location_zone_id: Number(selectedNode.data.pri_owner_zone_id),
-          prj_location_woreda_id: Number(selectedNode.data.pri_owner_woreda_id),
+          prj_location_region_id: Number(values.prj_location_region_id),
+          prj_location_zone_id: Number(values.prj_location_zone_id),
+          prj_location_woreda_id: Number(values.prj_location_woreda_id),
           prj_location_kebele_id: values.prj_location_kebele_id,
           prj_location_description: values.prj_location_description,
-          prj_owner_region_id: values.prj_owner_region_id,
-          prj_owner_zone_id: values.prj_owner_zone_id,
-          prj_owner_woreda_id: values.prj_owner_woreda_id,
+          prj_owner_region_id: Number(selectedNode.data.pri_owner_region_id),
+          prj_owner_zone_id: Number(selectedNode.data.pri_owner_zone_id),
+          prj_owner_woreda_id: Number(selectedNode.data.pri_owner_woreda_id),
           prj_owner_kebele_id: values.prj_owner_kebele_id,
           prj_owner_description: values.prj_owner_description,
           prj_start_date_et: values.prj_start_date_et,
@@ -479,6 +479,8 @@ const ProjectModel = () => {
           newState = { page: "program", data: node };
         } else if (node.level === "program") {
           newState = { page: "project", data: node };
+        } else {
+          newState = { page: "", data: null }
         }
 
         return newState;
@@ -868,7 +870,7 @@ const ProjectModel = () => {
                           }}
                         >
                           <Row>
-                            {/* <Col className="col-md-12 mb-3">
+                            <Col className="col-md-12 mb-3">
                               <CascadingDropdowns
                                 validation={validation}
                                 dropdown1name="prj_location_region_id"
@@ -876,7 +878,33 @@ const ProjectModel = () => {
                                 dropdown3name="prj_location_woreda_id"
                                 isEdit={isEdit}
                               />
-                            </Col> */}
+                            </Col>
+                            <Col className="col-md-12 mb-3">
+                              <Label>{t("prj_location_description")}</Label>
+                              <Input
+                                name="prj_location_description"
+                                type="textarea"
+                                placeholder={t("prj_location_description")}
+                                onChange={validation.handleChange}
+                                onBlur={validation.handleBlur}
+                                value={
+                                  validation.values.prj_location_description || ""
+                                }
+                                invalid={
+                                  validation.touched.prj_location_description &&
+                                    validation.errors.prj_location_description
+                                    ? true
+                                    : false
+                                }
+                                maxLength={200}
+                              />
+                              {validation.touched.prj_location_description &&
+                                validation.errors.prj_location_description ? (
+                                <FormFeedback type="invalid">
+                                  {validation.errors.prj_location_description}
+                                </FormFeedback>
+                              ) : null}
+                            </Col>
                             <Col className="col-md-4 mb-3">
                               <Label>
                                 {t("prj_name")}
@@ -1231,32 +1259,6 @@ const ProjectModel = () => {
                                 validation.errors.prj_remark ? (
                                 <FormFeedback type="invalid">
                                   {validation.errors.prj_remark}
-                                </FormFeedback>
-                              ) : null}
-                            </Col>
-                            <Col className="col-md-12 mb-3">
-                              <Label>{t("prj_location_description")}</Label>
-                              <Input
-                                name="prj_location_description"
-                                type="textarea"
-                                placeholder={t("prj_location_description")}
-                                onChange={validation.handleChange}
-                                onBlur={validation.handleBlur}
-                                value={
-                                  validation.values.prj_location_description || ""
-                                }
-                                invalid={
-                                  validation.touched.prj_location_description &&
-                                    validation.errors.prj_location_description
-                                    ? true
-                                    : false
-                                }
-                                maxLength={200}
-                              />
-                              {validation.touched.prj_location_description &&
-                                validation.errors.prj_location_description ? (
-                                <FormFeedback type="invalid">
-                                  {validation.errors.prj_location_description}
                                 </FormFeedback>
                               ) : null}
                             </Col>

@@ -6,11 +6,8 @@ import {
   deleteAddressStructure,
 } from "../helpers/addressstructure_backend_helper";
 
-const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
-const userId = storedUser?.user.usr_id;
-
 // Custom hook for fetching folders
-export const useFetchAddressStructures = () => {
+export const useFetchAddressStructures = (userId) => {
   return useQuery({
     queryKey: ["folders", userId],
     queryFn: () => getAddressStructure(),
