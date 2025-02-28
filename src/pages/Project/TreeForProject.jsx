@@ -5,11 +5,12 @@ import { useFetchSectorCategorys } from "../../queries/sectorcategory_query";
 import { useSearchSectorInformations } from "../../queries/sectorinformation_query";
 import { useSearchProgramInfos, useFetchProgramInfos } from "../../queries/programinfo_query";
 import { Tree } from "react-arborist";
-import { FaFolder, FaFile, FaChevronRight, FaChevronDown } from "react-icons/fa";
-import { Card, CardBody, Input, Label, Col, Row } from "reactstrap";
+import { FaFolder, FaFile, FaChevronRight, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { Card, CardBody, Input, Label, Col, Row, Button } from "reactstrap";
 
 const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   const { t } = useTranslation();
+  const [treeRef, setTreeRef] = useState(null)
   const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
   const { data, isLoading } = useFetchAddressStructures(userId);
@@ -51,6 +52,9 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
                       id: `${region.id}_${zone.id}_${woreda.id}_${c.psc_id}`,
                       c_id: c.psc_id,
                       name: c.psc_name,
+                      add_name_en: c.psc_name,
+                      add_name_am: c.psc_name,
+                      add_name_or: c.psc_name,
                       region_id: region.id,
                       zone_id: zone.id,
                       woreda_id: woreda.id,
@@ -88,6 +92,9 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
           id: `${zone_id}_${s.sci_id}_sector`,
           s_id: s.sci_id,
           name: s.sci_name_or,
+          add_name_en: s.sci_name_en,
+          add_name_or: s.sci_name_or,
+          add_name_am: s.sci_name_am,
           region_id: region_id,
           zone_id: zone_id,
           woreda_id: woreda_id,
@@ -131,6 +138,9 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
           ...s,
           id: `${zone_id}_${s.pri_id}_program`,
           name: s.pri_name_or,
+          add_name_or: s.pri_name_or,
+          add_name_am: s.pri_name_am,
+          add_name_en: s.pri_name_en,
           region_id: region_id,
           zone_id: zone_id,
           woreda_id: woreda_id,
@@ -159,6 +169,9 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
       ...s,
       id: `${s.pri_id}_program`,
       name: s.pri_name_or,
+      add_name_or: s.pri_name_or,
+      add_name_am: s.pri_name_am,
+      add_name_en: s.pri_name_en,
       region_id: region_id,
       zone_id: zone_id,
       woreda_id: woreda_id,
@@ -229,8 +242,16 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
             <Input className="" id="include" name="include" type="checkbox" onChange={handleCheckboxChange} />
             <Label for="include" className="my-auto">{t('include_sub_address')}</Label>
           </Col>
-          <Col>
+          <Col className="d-flex gap-2" >
             <Input id="searchterm" name="searchterm" type="text" size={"sm"} placeholder="search" onChange={handleSearchTerm} />
+            <Button
+              onClick={() => {
+                onNodeSelect({})
+                treeRef?.closeAll()
+              }}
+              size="sm" outline color="secondary-subtle">
+              <FaChevronUp size={15} className="my-auto" />
+            </Button>
           </Col>
         </Row>
         <div className="border rounded p-2 overflow-auto" style={{ minHeight: "350px" }}>
@@ -239,6 +260,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
               initialData={treeData}
               openByDefault={false}
               searchTerm={searchTerm}
+              ref={(t) => setTreeRef(t)}
               width={500}
               height={700}
               indent={24}
@@ -282,6 +304,8 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
 
 const Node = ({ node, style, dragHandle, handleClusterClick, handleSectorClick, onNodeSelect }) => {
   if (!node?.data) return null;
+  const { i18n } = useTranslation();
+  const lang = i18n.language
   const isLeafNode = node.isLeaf;
   const icon = isLeafNode ? <FaFile /> : <FaFolder />;
   const chevronIcon = node.isOpen ? <FaChevronDown /> : <FaChevronRight />;
@@ -319,7 +343,11 @@ const Node = ({ node, style, dragHandle, handleClusterClick, handleSectorClick, 
           verticalAlign: "middle",
         }}
       >
-        {node.data.name}
+        {lang === "en" && node.data.add_name_en
+          ? node.data.add_name_en
+          : lang === "am" && node.data.add_name_am
+            ? node.data.add_name_am
+            : node.data.name}
       </span>
     </div>
   );
