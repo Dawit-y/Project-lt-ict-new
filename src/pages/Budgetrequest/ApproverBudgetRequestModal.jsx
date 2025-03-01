@@ -27,9 +27,6 @@ import {
 import Select from "react-select";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import Flatpickr from "react-flatpickr";
-import "flatpickr/dist/themes/material_blue.css";
-import { formatDate } from "../../utils/commonMethods";
 import { useUpdateBudgetRequestApproval } from "../../queries/budget_request_query";
 import { useFetchRequestStatuss } from "../../queries/requeststatus_query";
 import { toast } from "react-toastify";
@@ -42,6 +39,7 @@ import TableContainer from "../../components/Common/TableContainer";
 import { useFetchBudgetRequestTasks } from "../../queries/budgetrequesttask_query";
 import { useFetchBudgetExSources } from "../../queries/budgetexsource_query";
 import DatePicker from "../../components/Common/DatePicker";
+import RequestFollowupModel from "../Requestfollowup";
 
 const modalStyle = {
   width: "100%",
@@ -268,6 +266,11 @@ const ApproverBudgetRequestListModal = (props) => {
         <TakeActionForm data={transaction} />
       ),
     },
+    {
+      id: "request_followup",
+      label: `${t("request_follow_up")}`,
+      content: <RequestFollowupModel request={transaction} />
+    }
   ];
 
   return (

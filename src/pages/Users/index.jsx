@@ -8,6 +8,7 @@ import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns1";
 import CascadingDropdownsearch from "../../components/Common/CascadingDropdowns2";
+import CascadingDepartmentDropdowns from "./CascadingDepartmentDropdowns";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 // pages
@@ -58,6 +59,7 @@ import { ToastContainer, toast } from "react-toastify";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import { createSelectOptions } from "../../utils/commonMethods";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+
 //import ImageUploader from "../../components/Common/ImageUploader";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -824,7 +826,7 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-4 mb-3">
+                  {/* <Col className="col-md-4 mb-3">
                     <Label>{t("Cluster Name")} <span className="text-danger">*</span></Label>
                     <Input
                       name="usr_department_id"
@@ -853,13 +855,37 @@ const UsersModel = () => {
                         {validation.errors.usr_department_id}
                       </FormFeedback>
                     ) : null}
+                  </Col> */}
+
+                  <Col className="col-md-6 mb-3">
+                    <CascadingDropdowns
+                      validation={validation}
+                      dropdown1name="usr_region_id"
+                      dropdown2name="usr_zone_id"
+                      dropdown3name="usr_woreda_id"
+                      isEdit={isEdit}
+                      required={true}
+                    />
                   </Col>
-                  <Col className="col-md-4 mb-3">
+                  <Col className="col-md-6 mb-3">
+                    <CascadingDepartmentDropdowns
+                      validation={validation}
+                      dropdown1name="usr_department_id"
+                      dropdown2name="usr_directorate_id"
+                      dropdown3name="usr_team_id"
+                      dropdown4name="usr_officer_id"
+                      isEdit={isEdit}
+                      required={true}
+                    />
+                  </Col>
+                  {/*<ImageUploader validation={validation} />*/}
+
+                  <Col className="col-md-12 mb-3">
                     <Label>{t("usr_description")}</Label>
                     <Input
                       name="usr_description"
                       type="textarea"
-                      rows={9}
+                      rows={4}
                       placeholder={t("usr_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -879,17 +905,6 @@ const UsersModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-8 mb-3">
-                    <CascadingDropdowns
-                      validation={validation}
-                      dropdown1name="usr_region_id"
-                      dropdown2name="usr_zone_id"
-                      dropdown3name="usr_woreda_id"
-                      isEdit={isEdit}
-                      required={true}
-                    />
-                  </Col>
-                  {/*<ImageUploader validation={validation} />*/}
                 </Row>
                 <Row>
                   <Col>

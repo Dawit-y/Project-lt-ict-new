@@ -261,7 +261,6 @@ const authProtectedRoutes = [
   { path: "/project_payment", component: <ProjectPayment /> },
   { path: "/pages", component: <Pages /> },
   { path: "/permission", component: <Permission /> },
-  { path: "/dropdowns", component: <CascadingDropdowns /> },
   { path: "/notifications", component: <Notifications /> },
   { path: "/profile", component: <UsersProfile /> },
   { path: "/project_payment_list", component: <ProjectPaymentList /> },
