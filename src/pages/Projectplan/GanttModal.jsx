@@ -17,7 +17,7 @@ const GanttModal = (props) => {
   const { isOpen, toggle, projectPlan } = props;
 
   const projectId = projectPlan?.pld_project_id
-  const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+  const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
   const { data, isLoading, isError, error, refetch } = useFetchProject(projectId, userId, isOpen);
   const projectStatusId = data?.data?.prj_project_status_id || ""

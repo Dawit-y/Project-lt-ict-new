@@ -32,7 +32,7 @@ const UsersProfile = () => {
   document.title = "Profile | PMS";
 
   const { t } = useTranslation();
-  const storedUser = sessionStorage.getItem("authUser");
+  const storedUser = localStorage.getItem("authUser");
   const Users = storedUser ? JSON.parse(storedUser) : null; // Handle null case
   const [userProfile, setUserProfile] = useState(Users); // Set state directly to Users
   const [profile, setProfile] = useState({});
@@ -148,9 +148,8 @@ const UsersProfile = () => {
                   onChange={(e) => setNewPassword(e.target.value)}
                 />
                 <i
-                  className={`mdi ${
-                    passwordShown ? "mdi-eye-off" : "mdi-eye"
-                  } font-size-16`}
+                  className={`mdi ${passwordShown ? "mdi-eye-off" : "mdi-eye"
+                    } font-size-16`}
                   onClick={togglePasswordVisibility}
                   style={{
                     position: "absolute",

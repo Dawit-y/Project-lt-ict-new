@@ -43,7 +43,7 @@ const Login = () => {
   const mutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      sessionStorage.setItem("authUser", JSON.stringify(data));
+      localStorage.setItem("authUser", JSON.stringify(data));
       localStorage.setItem("I18N_LANGUAGE", "en");
       localStorage.setItem("i18nextLng", "en");
       setErrorMessage(null)

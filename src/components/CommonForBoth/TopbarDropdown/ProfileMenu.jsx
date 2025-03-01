@@ -22,7 +22,7 @@ const truncateText = (text, maxLength) => {
 const ProfileMenu = (props) => {
   const [menu, setMenu] = useState(false);
 
-  const storedUser = sessionStorage.getItem("authUser");
+  const storedUser = localStorage.getItem("authUser");
   const User = storedUser ? JSON.parse(storedUser) : null; // Handle null case
   const [userProfile, setUserProfile] = useState(User); // Set state directly to Users
 

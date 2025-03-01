@@ -11,7 +11,7 @@ const AddressStructureForProject = ({
 }) => {
   const { t } = useTranslation();
 
-  const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+  const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
   const { data, isLoading, isError, error, refetch } = useFetchAddressStructures(userId);
   const handleCheckboxChange = (e) => {

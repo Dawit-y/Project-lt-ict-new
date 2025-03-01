@@ -65,7 +65,7 @@ const RequestFollowupModel = ({ request }) => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  // const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+  // const storedUser = JSON.parse(localStorage.getItem("authUser"));
   // const depId = storedUser?.user.usr_department_id;
 
   const depId = 1

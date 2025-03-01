@@ -34,7 +34,7 @@ const ProjectsOverview = () => {
   const { id } = useParams();
   const projectId = Number(id);
 
-  const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+  const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
 
   const { data, isLoading } = useFetchProject(projectId, userId, true);

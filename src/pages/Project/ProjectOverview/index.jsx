@@ -21,11 +21,11 @@ import { useFetchProjectStakeholders } from "../../../queries/projectstakeholder
 
 const ProjectsOverview = (props) => {
   document.title = "Overview | Project";
-  
+
   const { id } = useParams();
   const projectId = Number(id);
 
-  const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+  const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
   const project = useFetchProject(projectId, userId, true);
   const documents = useFetchProjectDocuments({ project_id: projectId }, true);

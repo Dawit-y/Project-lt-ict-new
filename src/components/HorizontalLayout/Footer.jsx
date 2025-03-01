@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Container, Row, Col } from "reactstrap"
-import {FOOTER_TEXT,COPYRIGHT_YEAR} from "../../constants/constantFile";
+import { FOOTER_TEXT, COPYRIGHT_YEAR } from "../../constants/constantFile";
 const Footer = () => {
-  const storedUser = sessionStorage.getItem("authUser");
+  const storedUser = localStorage.getItem("authUser");
   const User = storedUser ? JSON.parse(storedUser) : null; // Handle null case
   const [userProfile, setUserProfile] = useState(User);
-  const userDetail=userProfile.user.user_detail;
+  const userDetail = userProfile.user.user_detail;
   return (
     <React.Fragment>
       <footer className="footer">

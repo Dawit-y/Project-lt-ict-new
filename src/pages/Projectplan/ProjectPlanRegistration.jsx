@@ -11,31 +11,31 @@ import DeleteModal from "../../components/Common/DeleteModal";
 import GanttChart from "../GanttChart/index.jsx";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import {
-    useFetchProjectPlans,
-    useAddProjectPlan,
-    useDeleteProjectPlan,
-    useUpdateProjectPlan,
+  useFetchProjectPlans,
+  useAddProjectPlan,
+  useDeleteProjectPlan,
+  useUpdateProjectPlan,
 } from "../../queries/projectplan_query";
 import { useFetchProject } from "../../queries/project_query";
 import { useTranslation } from "react-i18next";
 import {
-    Button,
-    Col,
-    Row,
-    UncontrolledTooltip,
-    Modal,
-    ModalHeader,
-    ModalBody,
-    Form,
-    Input,
-    FormFeedback,
-    Label,
-    Card,
-    CardBody,
+  Button,
+  Col,
+  Row,
+  UncontrolledTooltip,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  Form,
+  Input,
+  FormFeedback,
+  Label,
+  Card,
+  CardBody,
 } from "reactstrap";
 import {
-    alphanumericValidation,
-    numberValidation,
+  alphanumericValidation,
+  numberValidation,
 } from "../../utils/Validation/validation";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -74,7 +74,7 @@ const ProjectPlanModel = () => {
     useFetchProjectPlans(param);
   const { data: budgetYearData } = useFetchBudgetYears();
 
-  const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+  const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
 
   const project = useFetchProject(id, userId, true);
@@ -410,7 +410,7 @@ const ProjectPlanModel = () => {
               {(cellProps.row.original?.is_editable ||
                 cellProps.row.original?.is_role_editable) && (
                   <Link
-                 
+
                     className="text-success"
                     onClick={() => {
                       const data = cellProps.row.original;
@@ -482,206 +482,206 @@ const ProjectPlanModel = () => {
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteProjectPlan.isPending}
       />
-          {isLoading || isSearchLoading || project.isLoading ? (
-            <Spinners />
-          ) : (
-            <Row>
-              
-              {/* TableContainer for displaying data */}
+      {isLoading || isSearchLoading || project.isLoading ? (
+        <Spinners />
+      ) : (
+        <Row>
+
+          {/* TableContainer for displaying data */}
+          <Col lg={12}>
+            <TableContainer
+              columns={columns}
+              data={
+                showSearchResult
+                  ? searchResults?.data
+                  : data?.data || []
+              }
+              isGlobalFilter={true}
+              isAddButton={true}
+              isCustomPageSize={true}
+              handleUserClick={handleProjectPlanClicks}
+              isPagination={true}
+              SearchPlaceholder={t("filter_placeholder")}
+              buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+              buttonName={`${t("add")}`}
+              tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+              theadClass="table-light"
+              pagination="pagination"
+              paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+            />
+          </Col>
+          {projectPlanSelected && (
+            <div className="w-100">
+              <Card className="text-center my-3 py-2">
+                <h3>
+                  {t("view_gannt")} : {projectPlanSelected.pld_name}
+                </h3>
+              </Card>
               <Col lg={12}>
-                    <TableContainer
-                      columns={columns}
-                      data={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      isGlobalFilter={true}
-                      isAddButton={true}
-                      isCustomPageSize={true}
-                      handleUserClick={handleProjectPlanClicks}
-                      isPagination={true}
-                      SearchPlaceholder={t("filter_placeholder")}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={`${t("add")}`}
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                    />
+                <GanttChart
+                  key={rerenderKey}
+                  pld_id={projectPlanSelected.pld_id}
+                  name={projectPlanSelected.pld_name}
+                  startDate={projectPlanSelected.pld_start_date_gc}
+                  endDate={projectPlanSelected.pld_end_date_gc}
+                  projectStatusId={projectStatusId}
+                />
               </Col>
-              {projectPlanSelected && (
-                <div className="w-100">
-                  <Card className="text-center my-3 py-2">
-                    <h3>
-                      {t("view_gannt")} : {projectPlanSelected.pld_name}
-                    </h3>
-                  </Card>
-                  <Col lg={12}>
-                    <GanttChart
-                      key={rerenderKey}
-                      pld_id={projectPlanSelected.pld_id}
-                      name={projectPlanSelected.pld_name}
-                      startDate={projectPlanSelected.pld_start_date_gc}
-                      endDate={projectPlanSelected.pld_end_date_gc}
-                      projectStatusId={projectStatusId}
-                    />
-                  </Col>
-                </div>
-              )}
-            </Row>
+            </div>
           )}
-          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-            <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit
-                ? t("edit") + " " + t("project_plan")
-                : t("add") + " " + t("project_plan")}
-            </ModalHeader>
-            <ModalBody>
-              <Form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  validation.handleSubmit();
-                  return false;
-                }}
-              >
-                <Row>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pld_name")}</Label>
-                    <Input
-                      name="pld_name"
-                      type="text"
-                      placeholder={t("pld_name")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pld_name || ""}
-                      invalid={
-                        validation.touched.pld_name &&
-                          validation.errors.pld_name
-                          ? true
-                          : false
-                      }
-                      maxLength={200}
-                    />
-                    {validation.touched.pld_name &&
-                      validation.errors.pld_name ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pld_name}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pld_budget_year_id")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="pld_budget_year_id"
-                      type="select"
-                      className="form-select"
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pld_budget_year_id || ""}
-                      invalid={
-                        validation.touched.pld_budget_year_id &&
-                          validation.errors.pld_budget_year_id
-                          ? true
-                          : false
+        </Row>
+      )}
+      <Modal isOpen={modal} toggle={toggle} className="modal-xl">
+        <ModalHeader toggle={toggle} tag="h4">
+          {!!isEdit
+            ? t("edit") + " " + t("project_plan")
+            : t("add") + " " + t("project_plan")}
+        </ModalHeader>
+        <ModalBody>
+          <Form
+            onSubmit={(e) => {
+              e.preventDefault();
+              validation.handleSubmit();
+              return false;
+            }}
+          >
+            <Row>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("pld_name")}</Label>
+                <Input
+                  name="pld_name"
+                  type="text"
+                  placeholder={t("pld_name")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.pld_name || ""}
+                  invalid={
+                    validation.touched.pld_name &&
+                      validation.errors.pld_name
+                      ? true
+                      : false
+                  }
+                  maxLength={200}
+                />
+                {validation.touched.pld_name &&
+                  validation.errors.pld_name ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.pld_name}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>
+                  {t("pld_budget_year_id")}
+                  <span className="text-danger">*</span>
+                </Label>
+                <Input
+                  name="pld_budget_year_id"
+                  type="select"
+                  className="form-select"
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.pld_budget_year_id || ""}
+                  invalid={
+                    validation.touched.pld_budget_year_id &&
+                      validation.errors.pld_budget_year_id
+                      ? true
+                      : false
+                  }
+                >
+                  <option value={null}>{t("select_one")}</option>
+                  {budgetYearData?.data?.map((data) => (
+                    <option key={data.bdy_id} value={data.bdy_id}>
+                      {data.bdy_name}
+                    </option>
+                  ))}
+                </Input>
+                {validation.touched.pld_budget_year_id &&
+                  validation.errors.pld_budget_year_id ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.pld_budget_year_id}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <DatePicker
+                  isRequired="true"
+                  validation={validation}
+                  componentId="pld_start_date_gc"
+                  minDate={projectStartDate}
+                />
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <DatePicker
+                  isRequired="true"
+                  validation={validation}
+                  componentId="pld_end_date_gc"
+                  minDate={validation.values.pld_start_date_gc}
+                />
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("pld_description")}</Label>
+                <Input
+                  name="pld_description"
+                  type="textarea"
+                  placeholder={t("pld_description")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.pld_description || ""}
+                  invalid={
+                    validation.touched.pld_description &&
+                      validation.errors.pld_description
+                      ? true
+                      : false
+                  }
+                  maxLength={425}
+                />
+                {validation.touched.pld_description &&
+                  validation.errors.pld_description ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.pld_description}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <div className="text-end">
+                  {addProjectPlan.isPending ||
+                    updateProjectPlan.isPending ? (
+                    <Button
+                      color="success"
+                      type="submit"
+                      className="save-user"
+                      disabled={
+                        addProjectPlan.isPending ||
+                        updateProjectPlan.isPending ||
+                        !validation.dirty
                       }
                     >
-                      <option value={null}>{t("select_one")}</option>
-                      {budgetYearData?.data?.map((data) => (
-                        <option key={data.bdy_id} value={data.bdy_id}>
-                          {data.bdy_name}
-                        </option>
-                      ))}
-                    </Input>
-                    {validation.touched.pld_budget_year_id &&
-                      validation.errors.pld_budget_year_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pld_budget_year_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <DatePicker
-                      isRequired="true"
-                      validation={validation}
-                      componentId="pld_start_date_gc"
-                      minDate={projectStartDate}
-                    />
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <DatePicker
-                      isRequired="true"
-                      validation={validation}
-                      componentId="pld_end_date_gc"
-                      minDate={validation.values.pld_start_date_gc}
-                    />
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pld_description")}</Label>
-                    <Input
-                      name="pld_description"
-                      type="textarea"
-                      placeholder={t("pld_description")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pld_description || ""}
-                      invalid={
-                        validation.touched.pld_description &&
-                          validation.errors.pld_description
-                          ? true
-                          : false
+                      <Spinner size={"sm"} color="light" className="me-2" />
+                      {t("Save")}
+                    </Button>
+                  ) : (
+                    <Button
+                      color="success"
+                      type="submit"
+                      className="save-user"
+                      disabled={
+                        addProjectPlan.isPending ||
+                        updateProjectPlan.isPending ||
+                        !validation.dirty
                       }
-                      maxLength={425}
-                    />
-                    {validation.touched.pld_description &&
-                      validation.errors.pld_description ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pld_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <div className="text-end">
-                      {addProjectPlan.isPending ||
-                        updateProjectPlan.isPending ? (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addProjectPlan.isPending ||
-                            updateProjectPlan.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          <Spinner size={"sm"} color="light" className="me-2" />
-                          {t("Save")}
-                        </Button>
-                      ) : (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addProjectPlan.isPending ||
-                            updateProjectPlan.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          {t("Save")}
-                        </Button>
-                      )}
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
-            </ModalBody>
-          </Modal>
+                    >
+                      {t("Save")}
+                    </Button>
+                  )}
+                </div>
+              </Col>
+            </Row>
+          </Form>
+        </ModalBody>
+      </Modal>
     </React.Fragment>
   );
 };

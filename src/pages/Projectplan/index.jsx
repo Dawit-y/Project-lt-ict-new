@@ -83,7 +83,7 @@ const ProjectPlanModel = () => {
     useFetchProjectPlans(param);
   const { data: budgetYearData } = useFetchBudgetYears();
 
-  const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+  const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
 
   const project = useFetchProject(id, userId, true);

@@ -97,7 +97,7 @@ const AuthMiddleware = ({ children }) => {
     );
   }
 
-  const isAuthenticated = sessionStorage.getItem("authUser");
+  const isAuthenticated = localStorage.getItem("authUser");
 
   if (isLoading) {
     return (
@@ -169,7 +169,7 @@ export default AuthMiddleware;
 // const fetchSideData = async () => {
 //   console.log("fetch started");
 //   try {
-//     const storedUser = JSON.parse(sessionStorage.getItem("authUser"));
+//     const storedUser = JSON.parse(localStorage.getItem("authUser"));
 
 //     console.log("storedUser", storedUser);
 //     if (!storedUser || !storedUser.authorization) {
@@ -236,7 +236,7 @@ export default AuthMiddleware;
 //     );
 //   }
 
-//   const isAuthenticated = sessionStorage.getItem("authUser");
+//   const isAuthenticated = localStorage.getItem("authUser");
 
 //   if (isLoading) {
 //     return (
