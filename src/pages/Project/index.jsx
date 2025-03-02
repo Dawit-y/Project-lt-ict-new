@@ -113,13 +113,12 @@ const ProjectModel = () => {
     setInclude,
   } = useProjectContext();
 
-  const [selectedNode, setSelectedNode] = useState({ page: "", data: null });
-  const [selectedNodes, setSelectedNodes] = useState([]);
+  const [selectedPage, setSelectedPage] = useState({ page: "", data: null });
+  const [selectedNode, setSelectedNode] = useState(null)
   let param = {}
-  if (selectedNode.page == "project") {
-    param = { program_id: selectedNode.data.pri_id }
+  if (selectedPage.page == "project") {
+    param = { program_id: selectedPage.data.pri_id }
   }
-  console.log("sel", selectedNode.data)
 
   const tabMapping = {
     54: { label: t("project_document"), component: ProjectDocument },
@@ -375,9 +374,9 @@ const ProjectModel = () => {
           prj_location_woreda_id: Number(values.prj_location_woreda_id),
           prj_location_kebele_id: values.prj_location_kebele_id,
           prj_location_description: values.prj_location_description,
-          prj_owner_region_id: Number(selectedNode.data.pri_owner_region_id),
-          prj_owner_zone_id: Number(selectedNode.data.pri_owner_zone_id),
-          prj_owner_woreda_id: Number(selectedNode.data.pri_owner_woreda_id),
+          prj_owner_region_id: Number(selectedPage.data.pri_owner_region_id),
+          prj_owner_zone_id: Number(selectedPage.data.pri_owner_zone_id),
+          prj_owner_woreda_id: Number(selectedPage.data.pri_owner_woreda_id),
           prj_owner_kebele_id: values.prj_owner_kebele_id,
           prj_owner_description: values.prj_owner_description,
           prj_start_date_et: values.prj_start_date_et,
@@ -396,7 +395,7 @@ const ProjectModel = () => {
           prj_urban_ben_number: values.prj_urban_ben_number,
           prj_rural_ben_number: values.prj_rural_ben_number,
           prj_department_id: Number(values.prj_department_id),
-          prj_program_id: Number(selectedNode.data.pri_id),
+          prj_program_id: Number(selectedPage.data.pri_id),
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -420,9 +419,9 @@ const ProjectModel = () => {
           prj_location_woreda_id: Number(values.prj_location_woreda_id),
           prj_location_kebele_id: values.prj_location_kebele_id,
           prj_location_description: values.prj_location_description,
-          prj_owner_region_id: Number(selectedNode.data.pri_owner_region_id),
-          prj_owner_zone_id: Number(selectedNode.data.pri_owner_zone_id),
-          prj_owner_woreda_id: Number(selectedNode.data.pri_owner_woreda_id),
+          prj_owner_region_id: Number(selectedPage.data.pri_owner_region_id),
+          prj_owner_zone_id: Number(selectedPage.data.pri_owner_zone_id),
+          prj_owner_woreda_id: Number(selectedPage.data.pri_owner_woreda_id),
           prj_owner_kebele_id: values.prj_owner_kebele_id,
           prj_owner_description: values.prj_owner_description,
           prj_start_date_et: values.prj_start_date_et,
@@ -441,7 +440,7 @@ const ProjectModel = () => {
           prj_urban_ben_number: values.prj_urban_ben_number,
           prj_rural_ben_number: values.prj_rural_ben_number,
           prj_department_id: Number(values.prj_department_id),
-          prj_program_id: Number(selectedNode.data.pri_id)
+          prj_program_id: Number(selectedPage.data.pri_id)
         };
         // save new Project
         handleAddProject(newProject);
@@ -468,17 +467,38 @@ const ProjectModel = () => {
     }
   };
 
+  const [breadcrumb, setBreadcrumb] = useState([])
+  const getBreadcrumbPath = (node) => {
+    const breadcrumbArray = [];
+    while (node && node.data) {
+      breadcrumbArray.unshift(node.data);
+      if (node.data.name === "oromia") break;
+      node = node.parent;
+    }
+    setBreadcrumb((prev) =>
+      JSON.stringify(prev) !== JSON.stringify(breadcrumbArray) ? breadcrumbArray : prev
+    );
+  };
+
+  useEffect(() => {
+    if (selectedNode) {
+      getBreadcrumbPath(selectedNode);
+    }
+  }, [lang]);
+
   const levels = ["region", "zone", "woreda", "cluster", "sector", "program"];
 
   const handleNodeSelect = useCallback(
     (node) => {
-      setSelectedNode((prev) => {
+      setSelectedNode(node)
+      getBreadcrumbPath(node)
+      setSelectedPage((prev) => {
         let newState = { ...prev };
 
-        if (node.level === "sector") {
-          newState = { page: "program", data: node };
-        } else if (node.level === "program") {
-          newState = { page: "project", data: node };
+        if (node.data?.level === "sector") {
+          newState = { page: "program", data: node.data };
+        } else if (node.data?.level === "program") {
+          newState = { page: "project", data: node.data };
         } else {
           newState = { page: "", data: null }
         }
@@ -487,21 +507,12 @@ const ProjectModel = () => {
       });
       setSelectedLocations((prev) => {
         const newState = { ...prev };
-        const selectedIndex = levels.indexOf(node.level);
-        newState[node.level] = node.id;
+        const selectedIndex = levels.indexOf(node?.data?.level);
+        newState[node?.data?.level] = node.data?.id;
         levels.slice(selectedIndex + 1).forEach((level) => {
           newState[level] = null;
         });
         return newState;
-      });
-
-      setSelectedNodes((prev) => {
-        const levelIndex = prev.findIndex((item) => item.level === node.level);
-        if (levelIndex !== -1) {
-          return [...prev.slice(0, levelIndex), node];
-        } else {
-          return [...prev, node];
-        }
       });
 
       if (showSearchResult) {
@@ -763,23 +774,11 @@ const ProjectModel = () => {
     );
   }
 
-  const rowData = useMemo(() => {
-    return showSearchResult ? searchData?.data : data?.data || [];
-  }, [showSearchResult, searchData?.data, data?.data]);
-
-  const searchConfig = useMemo(
-    () => ({
-      params,
-      projectParams,
-      showSearchResult,
-    }),
-    [params, projectParams, showSearchResult]
-  );
-
-  const handleSearch = useCallback((searchResults) => {
-    setSearchResults(searchResults);
-    setShowSearchResult(true);
-  }, []);
+  const getTranslatedName = (node) => {
+    if (lang === "en" && node.add_name_en) return node.add_name_en;
+    if (lang === "am" && node.add_name_am) return node.add_name_am;
+    return node.name;
+  };
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -804,39 +803,16 @@ const ProjectModel = () => {
             <div className="w-100">
               <Card className="w-100 d-flex">
                 <CardBody>
-                  {selectedNodes.map((node, index) => (
-                    <span key={node.id} className="me-1">
-                      {node.name} {index < selectedNodes.length - 1 && <strong>{" > "}</strong>}
+                  {breadcrumb.map((node, index) => (
+                    <span key={index} className="me-1">
+                      {getTranslatedName(node)} {index < breadcrumb.length - 1 && <strong>{" > "}</strong>}
                     </span>
                   ))}
                 </CardBody>
               </Card>
-              {selectedNode.page === "project" ?
+              {selectedPage.page === "project" ?
                 <>
                   <div className="w-100">
-                    {/* <SearchForProject
-                      textSearchKeys={["prj_name", "prj_code"]}
-                      dropdownSearchKeys={[
-                        {
-                          key: "prj_project_category_id",
-                          options: lang === "en"
-                            ? projectCategoryOptionsEn
-                            : lang === "am"
-                              ? projectCategoryOptionsAm
-                              : projectCategoryOptionsOr
-                          ,
-                        },
-                      ]}
-                      checkboxSearchKeys={[]}
-                      additionalParams={searchConfig.projectParams}
-                      setAdditionalParams={setProjectParams}
-                      setSearchResults={handleSearch}
-                      setShowSearchResult={setShowSearchResult}
-                      params={searchConfig.params}
-                      setParams={setParams}
-                      searchParams={searchParams}
-                      setSearchParams={setSearchParams}
-                    /> */}
                     <TableContainer
                       columns={columns}
                       data={data?.data || []}
@@ -1307,7 +1283,7 @@ const ProjectModel = () => {
                   </div>
                 </>
                 :
-                selectedNode.page === "program" ? <ProgramInfoModel node={selectedNode.data} />
+                selectedPage.page === "program" ? <ProgramInfoModel node={selectedPage.data} />
                   : <div></div>}
             </div>
           </div>

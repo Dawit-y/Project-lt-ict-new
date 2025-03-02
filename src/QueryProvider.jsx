@@ -29,15 +29,15 @@ const queryClient = new QueryClient({
     },
   },
   queryCache: new QueryCache({
-    onError: (error) => {
-      const message = getErrorMessage(error);
-      toast.error(message);
-    },
+    // onError: (error) => {
+    //   const message = getErrorMessage(error);
+    //   toast.error(message);
+    // },
   }),
   mutationCache: new MutationCache({
-    onError: (error, _, __, mutation) => { 
+    onError: (error, _, __, mutation) => {
       if (!error.handledByMutationCache) {
-        error.handledByMutationCache = true; 
+        error.handledByMutationCache = true;
         const message = getErrorMessage(error);
         toast.error(message, { autoClose: 2000 });
       }

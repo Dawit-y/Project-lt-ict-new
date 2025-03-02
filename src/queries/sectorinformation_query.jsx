@@ -30,7 +30,7 @@ export const useSearchSectorInformations = (searchParams = {}) => {
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: searchParams.length > 0,
+    enabled: Object.keys(searchParams).length > 0
   });
 };
 

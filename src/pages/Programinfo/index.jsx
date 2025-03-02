@@ -66,7 +66,6 @@ const ProgramInfoModel = ({ node }) => {
 
   const { data, isLoading, error, isError, refetch } =
     useFetchProgramInfos(params, Object.keys(params).length > 0);
-  console.log("fetched on index", data)
   const addProgramInfo = useAddProgramInfo();
   const updateProgramInfo = useUpdateProgramInfo();
   const deleteProgramInfo = useDeleteProgramInfo();
@@ -208,7 +207,6 @@ const ProgramInfoModel = ({ node }) => {
   };
   const handleProgramInfoClick = (arg) => {
     const programInfo = arg;
-    // console.log("handleProgramInfoClick", programInfo);
     setProgramInfo({
       pri_id: programInfo.pri_id,
       pri_name_or: programInfo.pri_name_or,

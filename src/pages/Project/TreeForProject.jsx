@@ -1,4 +1,4 @@
-import { useEffect, useState, memo, useCallback } from "react";
+import { useEffect, useState, memo, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useFetchAddressStructures } from "../../queries/address_structure_query";
 import { useFetchSectorCategorys } from "../../queries/sectorcategory_query";
@@ -10,7 +10,7 @@ import { Card, CardBody, Input, Label, Col, Row, Button } from "reactstrap";
 
 const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   const { t } = useTranslation();
-  const [treeRef, setTreeRef] = useState(null)
+  const treeRef = useRef()
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
   const { data, isLoading } = useFetchAddressStructures(userId);
@@ -22,7 +22,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
 
   const [searchTerm, setSearchTerm] = useState(null)
 
-  const { data: cluster, isLoading: isClusterLoading } = useFetchSectorCategorys();
+  const { data: cluster, isLoading: isClusterLoading, refetch: refetchClusters } = useFetchSectorCategorys();
   const { isLoading: isSectorLoading, refetch: refetchSector } = useSearchSectorInformations(sectorParam);
   const { data: prData, isLoading: isProgramLoading, refetch: refetchProgram } =
     useFetchProgramInfos(programParam, Object.keys(programParam).length > 0);
@@ -75,9 +75,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   // Handle fetching sectors when cluster node is clicked
   const handleClusterClick = async (node) => {
     const { id, c_id } = node.data;
-
     if (node.children.length > 0) return;
-
     setSectorParam({ sector_category_id: c_id });
     setSelectedCluster(node.data);
   };
@@ -89,7 +87,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
         const { id, region_id, zone_id, woreda_id, c_id } = selectedCluster
         const formatedSector = sectorData?.data.map((s) => ({
           ...s,
-          id: `${zone_id}_${s.sci_id}_sector`,
+          id: `${woreda_id}_${s.sci_id}_sector`,
           s_id: s.sci_id,
           name: s.sci_name_or,
           add_name_en: s.sci_name_en,
@@ -118,7 +116,6 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   // Handle fetching programs when sector node is clicked
   const handleSectorClick = async (node) => {
     const { id, region_id, zone_id, woreda_id, s_id } = node.data;
-    if (node.children.length > 0) return;
     setProgramParam({
       pri_owner_region_id: region_id,
       pri_owner_zone_id: zone_id,
@@ -132,11 +129,10 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
     const fetchData = async () => {
       try {
         const { data: programData } = await refetchProgram();
-        console.log("refetched ", programData)
         const { id, region_id, zone_id, woreda_id, s_id } = selectedSector
-        const formatedProgram = programData?.data.map((s) => ({
+        const formatedProgram = programData?.data?.map((s) => ({
           ...s,
-          id: `${zone_id}_${s.pri_id}_program`,
+          id: `${woreda_id}_${s.pri_id}_program`,
           name: s.pri_name_or,
           add_name_or: s.pri_name_or,
           add_name_am: s.pri_name_am,
@@ -207,7 +203,6 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
             updatedChildren.push(child);
           }
         }
-
         return {
           ...region,
           children: updatedChildren,
@@ -243,11 +238,11 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
             <Label for="include" className="my-auto">{t('include_sub_address')}</Label>
           </Col>
           <Col className="d-flex gap-2" >
-            <Input id="searchterm" name="searchterm" type="text" size={"sm"} placeholder="search" onChange={handleSearchTerm} />
+            <Input id="searchterm" name="searchterm" type="text" bsSize="sm" placeholder="search" onChange={handleSearchTerm} />
             <Button
               onClick={() => {
-                onNodeSelect({})
-                treeRef?.closeAll()
+                onNodeSelect({ data: null })
+                treeRef.current?.closeAll()
               }}
               size="sm" outline color="secondary-subtle">
               <FaChevronUp size={15} className="my-auto" />
@@ -260,9 +255,9 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
               initialData={treeData}
               openByDefault={false}
               searchTerm={searchTerm}
-              ref={(t) => setTreeRef(t)}
+              ref={treeRef}
               width={500}
-              height={700}
+              height={800}
               indent={24}
               rowHeight={36}
               overscanCount={1}
@@ -312,8 +307,7 @@ const Node = ({ node, style, dragHandle, handleClusterClick, handleSectorClick, 
 
   const handleNodeClick = (node) => {
     node.toggle();
-    onNodeSelect(node.data);
-
+    onNodeSelect(node);
     if (node.data.level === "cluster") {
       handleClusterClick(node);
     } else if (node.data.level === "sector") {
@@ -328,8 +322,8 @@ const Node = ({ node, style, dragHandle, handleClusterClick, handleSectorClick, 
       ref={dragHandle}
       className={`${node.isSelected ? "bg-info-subtle" : ""} py-1 rounded hover-zoom`}
     >
-      {!isLeafNode && <span className="me-2">{chevronIcon}</span>}
-      <span className="me-1 text-warning">{icon}</span>
+      {!isLeafNode && node.data.level !== "program" && <span className="me-2 ps-2">{chevronIcon}</span>}
+      <span className={`${node.data.level === "program" ? "ms-4" : ""}  me-1 text-warning`}>{icon}</span>
       <span className="text-danger my-auto px-1" style={{ fontWeight: 900 }}>
         {node.data.level.charAt(0).toUpperCase()}
       </span>
