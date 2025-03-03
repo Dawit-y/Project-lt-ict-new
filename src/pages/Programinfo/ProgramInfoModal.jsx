@@ -33,23 +33,7 @@ const ProgramInfoModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('pri_owner_region_id')}: <span className="text-primary">{transaction.pri_owner_region_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pri_owner_zone_id')}: <span className="text-primary">{transaction.pri_owner_zone_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pri_owner_woreda_id')}: <span className="text-primary">{transaction.pri_owner_woreda_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pri_sector_id')}: <span className="text-primary">{transaction.pri_sector_id}</span>
-          </p>
-          </tr><tr>
+       <tr>
                     <p className="mb-2">
             {t('pri_name_or')}: <span className="text-primary">{transaction.pri_name_or}</span>
           </p>
@@ -69,19 +53,7 @@ const ProgramInfoModal = (props) => {
                     <p className="mb-2">
             {t('pri_description')}: <span className="text-primary">{transaction.pri_description}</span>
           </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pri_status')}: <span className="text-primary">{transaction.pri_status}</span>
-          </p>
           </tr>
-
-          {transaction.is_deletable === 1 && (
-            <p className="text-danger">data is deletable</p>
-          )}
-          
-          {transaction.is_editable === 1 && (
-            <p className="text-success">Editable</p>
-          )}
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>

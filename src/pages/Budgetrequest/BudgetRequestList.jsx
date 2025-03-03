@@ -228,13 +228,13 @@ const BudgetRequestListModel = () => {
         },
       },
       {
-        headerName: t("bdr_released_date_gc"),
-        field: "bdr_released_date_gc",
+        headerName: t("psc_sector_id"),
+        field: "sector_name",
         sortable: true,
         flex: 1,
         filter: "agDateColumnFilter",
         cellRenderer: (params) => {
-          return truncateText(params.data.bdr_released_date_gc, 30) || "-";
+          return truncateText(params.data.sector_name, 30) || "-";
         },
       },
       {
@@ -462,7 +462,7 @@ const BudgetRequestListModel = () => {
                         columnDefs={columnDefs}
                         pagination={true}
                         paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                        paginationPageSize={10}
+                        paginationPageSize={20}
                         quickFilterText={quickFilterText}
                         onSelectionChanged={onSelectionChanged}
                         rowHeight={30}

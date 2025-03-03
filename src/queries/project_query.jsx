@@ -5,6 +5,7 @@ import {
   updateProject,
   addProject,
   deleteProject,
+  getSearchProject
 } from "../helpers/project_backend_helper";
 
 export const PROJECT_QUERY_KEY = ["project"];
@@ -14,6 +15,17 @@ export const useFetchProjects = (param = {}) => {
   return useQuery({
     queryKey: [...PROJECT_QUERY_KEY, "fetch", param],
     queryFn: () => getProject(param),
+    staleTime: 1000 * 60 * 5,
+    meta: { persist: true },
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
+};
+
+export const useSearchOnlyProjects = (param = {}) => {
+  return useQuery({
+    queryKey: [...PROJECT_QUERY_KEY, "fetch", param],
+    queryFn: () => getSearchProject(param),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,

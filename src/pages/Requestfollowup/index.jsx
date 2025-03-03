@@ -36,6 +36,7 @@ import {
 } from "reactstrap";
 import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
+import { useFetchDepartments } from "../../queries/department_query";
 import { post } from "../../helpers/api_Lists";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -55,6 +56,7 @@ const fetchDepartmentsByParent = async (parentId) => {
 
 
 const RequestFollowupModel = ({ request }) => {
+  const param = { rqf_request_id: request.bdr_id };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -64,11 +66,28 @@ const RequestFollowupModel = ({ request }) => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-
-  // const storedUser = JSON.parse(localStorage.getItem("authUser"));
+  const { data: departmentOptionsData } = useFetchDepartments();
+  const departmentMap = useMemo(() => {
+    return (
+      departmentOptionsData?.data?.reduce((acc, department) => {
+        acc[department.dep_id] = department.dep_name_en;
+        return acc;
+      }, {}) || {}
+    );
+  }, [departmentOptionsData]);
+  const storedUser = JSON.parse(localStorage.getItem("authUser"));
   // const depId = storedUser?.user.usr_department_id;
 
-  const depId = 1
+  //const depId = 1
+  const user = storedUser?.user;
+const depId = user?.usr_officer_id > 0 
+  ? user.usr_officer_id 
+  : user?.usr_team_id > 0 
+    ? user.usr_team_id 
+    : user?.usr_directorate_id > 0 
+      ? user.usr_directorate_id 
+      : null; 
+
   const { data: subDepartments = [], isLoading: loadingSub } = useQuery({
     queryKey: ["subDepartments", depId],
     queryFn: () => fetchDepartmentsByParent(depId),
@@ -85,7 +104,7 @@ const RequestFollowupModel = ({ request }) => {
   }, [subDepartments]);
 
 
-  const { data, isLoading, error, isError, refetch } = useFetchRequestFollowups();
+  const { data, isLoading, error, isError, refetch } = useSearchRequestFollowups(param);
   const addRequestFollowup = useAddRequestFollowup();
   const updateRequestFollowup = useUpdateRequestFollowup();
   const deleteRequestFollowup = useDeleteRequestFollowup();
@@ -167,7 +186,7 @@ const RequestFollowupModel = ({ request }) => {
           rqf_id: requestFollowup?.rqf_id,
           rqf_request_id: request?.bdr_id,
           rqf_forwarding_dep_id: 1,
-          rqf_forwarded_to_dep_id: values.rqf_forwarded_to_dep_id,
+          rqf_forwarded_to_dep_id: Number(values.rqf_forwarded_to_dep_id),
           rqf_forwarding_date: values.rqf_forwarding_date,
           rqf_received_date: values.rqf_received_date,
           rqf_description: values.rqf_description,
@@ -178,8 +197,8 @@ const RequestFollowupModel = ({ request }) => {
       } else {
         const newRequestFollowup = {
           rqf_request_id: request?.bdr_id,
-          rqf_forwarding_dep_id: 1,
-          rqf_forwarded_to_dep_id: values.rqf_forwarded_to_dep_id,
+          rqf_forwarding_dep_id: depId,
+          rqf_forwarded_to_dep_id: Number(values.rqf_forwarded_to_dep_id),
           rqf_forwarding_date: values.rqf_forwarding_date,
           rqf_received_date: values.rqf_received_date,
           rqf_description: values.rqf_description,
@@ -248,7 +267,19 @@ const RequestFollowupModel = ({ request }) => {
   //START UNCHANGED
   const columns = useMemo(() => {
     const baseColumns = [
-
+      {
+        header: '',
+        accessorKey: 'rqf_forwarding_dep_id',
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {departmentMap[cellProps.row.original.rqf_forwarding_dep_id] || ""}
+            </span>
+          );
+        },
+      },
       {
         header: '',
         accessorKey: 'rqf_forwarded_to_dep_id',
@@ -257,7 +288,7 @@ const RequestFollowupModel = ({ request }) => {
         cell: (cellProps) => {
           return (
             <span>
-              {departmentsMap[cellProps.row.original.rqf_forwarded_to_dep_id]}
+              {departmentMap[cellProps.row.original.rqf_forwarded_to_dep_id] || ""}
             </span>
           );
         },
@@ -353,7 +384,7 @@ const RequestFollowupModel = ({ request }) => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable == 1 && (
+              {cellProps.row.original.rqf_forwarding_dep_id == depId && (
                 <Link
                   to="#"
                   className="text-success"
@@ -368,7 +399,7 @@ const RequestFollowupModel = ({ request }) => {
                   </UncontrolledTooltip>
                 </Link>
               )}
-              {cellProps.row.original.is_deletable == 1 && (
+              {cellProps.row.original.rqf_forwarding_dep_id == depId && (
                 <Link
                   to="#"
                   className="text-danger"

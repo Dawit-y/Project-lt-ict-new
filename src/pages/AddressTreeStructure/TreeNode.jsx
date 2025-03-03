@@ -4,7 +4,7 @@ import { FaChevronDown, FaChevronRight, FaFolder } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
 
-const TreeNode = ({ node, onNodeClick, level = 0, onNodeExpand }) => {
+const TreeNode = ({ node, onNodeClick, level = 0, onNodeExpand= () => {} }) => {
   const { i18n } = useTranslation();
   const lang = i18n.language;
   const [isExpanded, setIsExpanded] = useState(false);

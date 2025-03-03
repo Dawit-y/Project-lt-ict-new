@@ -15,7 +15,7 @@ const modalStyle = {
   height: '100%',
 };
 
-const DateSettingModal = (props) => {
+const CsoInfoModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction } = props;
 
@@ -35,25 +35,44 @@ const DateSettingModal = (props) => {
         <ModalBody>
         <tr>
                     <p className="mb-2">
-            {t('dts_parameter_name')}: <span className="text-primary">{transaction.dts_parameter_name}</span>
+            {t('cso_name')}: <span className="text-primary">{transaction.cso_name}</span>
           </p>
           </tr><tr>
                     <p className="mb-2">
-            {t('dts_parameter_code')}: <span className="text-primary">{transaction.dts_parameter_code}</span>
+            {t('cso_code')}: <span className="text-primary">{transaction.cso_code}</span>
           </p>
           </tr><tr>
                     <p className="mb-2">
-            {t('dts_start_date')}: <span className="text-primary">{transaction.dts_start_date}</span>
+            {t('cso_address')}: <span className="text-primary">{transaction.cso_address}</span>
           </p>
           </tr><tr>
                     <p className="mb-2">
-            {t('dts_end_date')}: <span className="text-primary">{transaction.dts_end_date}</span>
+            {t('cso_phone')}: <span className="text-primary">{transaction.cso_phone}</span>
           </p>
           </tr><tr>
                     <p className="mb-2">
-            {t('dts_description')}: <span className="text-primary">{transaction.dts_description}</span>
+            {t('cso_email')}: <span className="text-primary">{transaction.cso_email}</span>
           </p>
-          </tr>
+          </tr><tr>
+                    <p className="mb-2">
+            {t('cso_website')}: <span className="text-primary">{transaction.cso_website}</span>
+          </p>
+          </tr><tr>
+                    <p className="mb-2">
+            {t('cso_description')}: <span className="text-primary">{transaction.cso_description}</span>
+          </p>
+          </tr><tr>
+                    <td>@lang("form_lang.cso_status"):</td>
+                    <td>@if ($pms_cso_info_data->cso_status==1) @lang("form_lang.yes") @else @lang("form_lang.no") @endif</td>
+                    </tr>
+
+          {transaction.is_deletable === 1 && (
+            <p className="text-danger">data is deletable</p>
+          )}
+          
+          {transaction.is_editable === 1 && (
+            <p className="text-success">Editable</p>
+          )}
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
@@ -64,9 +83,9 @@ const DateSettingModal = (props) => {
     </Modal>
   );
 };
-DateSettingModal.propTypes = {
+CsoInfoModal.propTypes = {
   toggle: PropTypes.func,
   isOpen: PropTypes.bool,
   transaction: PropTypes.object,
 };
-export default DateSettingModal;
+export default CsoInfoModal;

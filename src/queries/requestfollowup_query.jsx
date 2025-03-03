@@ -14,9 +14,10 @@ export const useFetchRequestFollowups = () => {
     queryKey: REQUEST_FOLLOWUP_QUERY_KEY,
     queryFn: () => getRequestFollowup(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
+    meta: { persist: false },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: false
   });
 };
 
@@ -25,11 +26,11 @@ export const useSearchRequestFollowups = (searchParams = {}) => {
   return useQuery({
     queryKey: [...REQUEST_FOLLOWUP_QUERY_KEY, searchParams],
     queryFn: () => getRequestFollowup(searchParams),
-    staleTime: 1000 * 60 * 2,
-    gcTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    enabled: searchParams.length > 0,
+    staleTime:0,
+    gcTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    enabled: true,
   });
 };
 
@@ -37,19 +38,26 @@ export const useSearchRequestFollowups = (searchParams = {}) => {
 export const useAddRequestFollowup = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+return useMutation({
     mutationFn: addRequestFollowup,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( REQUEST_FOLLOWUP_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
+      const queries = queryClient.getQueriesData({
+        queryKey: REQUEST_FOLLOWUP_QUERY_KEY,
+      });
+
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        });
       });
     },
   });
@@ -57,20 +65,25 @@ export const useAddRequestFollowup = () => {
 // Update request_followup
 export const useUpdateRequestFollowup = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+ return useMutation({
     mutationFn: updateRequestFollowup,
-    onSuccess: (updatedRequestFollowup) => {
-      queryClient.setQueryData(REQUEST_FOLLOWUP_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
+    onSuccess: (updatedData) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: REQUEST_FOLLOWUP_QUERY_KEY,
+      });
 
-        return {
-          ...oldData,
-          data: oldData.data.map((RequestFollowupData) =>
-            RequestFollowupData.rqf_id === updatedRequestFollowup.data.rqf_id
-              ? { ...RequestFollowupData, ...updatedRequestFollowup.data }
-              : RequestFollowupData
-          ),
-        };
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((data) =>
+              data.rqf_id === updatedData.data.rqf_id
+                ? { ...data, ...updatedData.data }
+                : data
+            ),
+          };
+        });
       });
     },
   });

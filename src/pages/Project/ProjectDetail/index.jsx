@@ -24,14 +24,16 @@ const LazyComponents = {
   ProposalRequestModel: lazy(() => import("../../../pages/Proposalrequest")),
   Conversation: lazy(() => import("../../Conversationinformation/index1")),
   RequestInformationModel: lazy(() => import("../../../pages/Requestinformation")),
-  BudgetRequestModel: lazy(() => import("../../../pages/BudgetRequest/BudgetRequestRegistration")),
+  BudgetRequestModel: lazy(() => import("../../../pages/Budgetrequest/BudgetRequestRegistration")),
   ProjectPlanModel: lazy(() => import("../../../pages/Projectplan/ProjectPlanRegistration")),
 };
 
 const ProjectsOverview = () => {
   document.title = "Overview | Project";
 
-  const { id } = useParams();
+  //const { id } = useParams();
+  //const id = Number(location.pathname.split("/")[2].split("#")[0]);
+const id=65;
   const projectId = Number(id);
 
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
@@ -42,7 +44,6 @@ const ProjectsOverview = () => {
 
   // Memoized project name
   const projectName = useMemo(() => data?.data?.prj_name || "", [data]);
-
   // Tab configuration
   const tabMapping = useMemo(() => ({
     54: { label: t("project_document"), component: LazyComponents.ProjectDocument, path: "documents" },

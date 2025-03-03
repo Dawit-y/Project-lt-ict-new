@@ -44,12 +44,18 @@ import { ToastContainer,toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import DatePicker from "../../components/Common/DatePicker";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 const DateSettingModel = () => {
   //meta title
   document.title = " DateSetting";
@@ -75,7 +81,7 @@ const DateSettingModel = () => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.error(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -89,7 +95,7 @@ const DateSettingModel = () => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
+      toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -104,7 +110,7 @@ const DateSettingModel = () => {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t('delete_failure'), {
+        toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -131,13 +137,11 @@ dts_status:(dateSetting && dateSetting.dts_status) || "",
      is_editable: (dateSetting && dateSetting.is_editable) || 1
    },
    validationSchema: Yup.object({
-    dts_parameter_name: Yup.string().required(t('dts_parameter_name')),
-dts_parameter_code: Yup.string().required(t('dts_parameter_code')),
-dts_start_date: Yup.string().required(t('dts_start_date')),
-dts_end_date: Yup.string().required(t('dts_end_date')),
-dts_description: Yup.string().required(t('dts_description')),
-dts_status: Yup.string().required(t('dts_status')),
-
+    dts_parameter_name: alphanumericValidation(3, 425, true),
+dts_parameter_code: Yup.string().required(t("dts_parameter_code")),
+dts_start_date: Yup.string().required(t("dts_start_date")),
+dts_end_date: Yup.string().required(t("dts_end_date")),
+dts_description: alphanumericValidation(3, 425, false)
   }),
    validateOnBlur: true,
    validateOnChange: false,
@@ -299,22 +303,7 @@ dts_status:dateSetting.dts_status,
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'dts_status',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.dts_status, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-
+      },
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -364,24 +353,6 @@ dts_status:dateSetting.dts_status,
               </UncontrolledTooltip>
               </Link>
               )}
-            {cellProps.row.original.is_deletable==1 && (
-              <Link
-              to="#"
-              className="text-danger"
-              onClick={() => {
-                const data = cellProps.row.original;
-                onClickDelete(data);
-              }}
-              >
-              <i
-              className="mdi mdi-delete font-size-18"
-              id="deletetooltip"
-              />
-              <UncontrolledTooltip placement="top" target="deletetooltip">
-              Delete
-              </UncontrolledTooltip>
-              </Link>
-              )}
             </div>
             );
         },
@@ -408,34 +379,6 @@ dts_status:dateSetting.dts_status,
     title={t("date_setting")}
     breadcrumbItem={t("date_setting")}
     />
-    <AdvancedSearch
-    searchHook={useSearchDateSettings}
-    textSearchKeys={["dep_name_am", "dep_name_en", "dep_name_or"]}
-    dropdownSearchKeys={[
-    {
-      key: "example",
-      options: [
-        { value: "Freelance", label: "Example1" },
-        { value: "Full Time", label: "Example2" },
-        { value: "Part Time", label: "Example3" },
-        { value: "Internship", label: "Example4" },
-        ],
-    },
-    ]}
-    checkboxSearchKeys={[
-    {
-      key: "example1",
-      options: [
-        { value: "Engineering", label: "Example1" },
-        { value: "Science", label: "Example2" },
-        ],
-    },
-    ]}
-    onSearchResult={handleSearchResults}
-    setIsSearchLoading={setIsSearchLoading}
-    setSearchResults={setSearchResults}
-    setShowSearchResult={setShowSearchResult}
-    />
     {isLoading || isSearchLoading ? (
       <Spinners />
       ) : (
@@ -451,12 +394,10 @@ dts_status:dateSetting.dts_status,
         : data?.data || []
       }
       isGlobalFilter={true}
-      isAddButton={data?.previledge?.is_role_can_add==1}
+      isAddButton={false}
       isCustomPageSize={true}
       handleUserClick={handleDateSettingClicks}
-      isPagination={true}
-                      // SearchPlaceholder="26 records..."
-      SearchPlaceholder={26 + " " + t("Results") + "..."}
+      isPagination={true}    
       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
       buttonName={t("add")}
       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
@@ -531,58 +472,24 @@ dts_status:dateSetting.dts_status,
                       ) : null}
                     </Col> 
 <Col className='col-md-6 mb-3'>
-                      <Label>{t('dts_start_date')}</Label>
-                      <Input
-                        name='dts_start_date'
-                        type='text'
-                        placeholder={t('dts_start_date')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.dts_start_date || ''}
-                        invalid={
-                          validation.touched.dts_start_date &&
-                          validation.errors.dts_start_date
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.dts_start_date &&
-                      validation.errors.dts_start_date ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.dts_start_date}
-                        </FormFeedback>
-                      ) : null}
+<DatePicker
+                      isRequired="true"
+                      validation={validation}
+                      componentId="dts_start_date"
+                    />
                     </Col> 
 <Col className='col-md-6 mb-3'>
-                      <Label>{t('dts_end_date')}</Label>
-                      <Input
-                        name='dts_end_date'
-                        type='text'
-                        placeholder={t('dts_end_date')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.dts_end_date || ''}
-                        invalid={
-                          validation.touched.dts_end_date &&
-                          validation.errors.dts_end_date
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.dts_end_date &&
-                      validation.errors.dts_end_date ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.dts_end_date}
-                        </FormFeedback>
-                      ) : null}
+<DatePicker
+                      isRequired="true"
+                      validation={validation}
+                      componentId="dts_end_date"
+                    />
                     </Col> 
 <Col className='col-md-6 mb-3'>
                       <Label>{t('dts_description')}</Label>
                       <Input
                         name='dts_description'
-                        type='text'
+                        type='textarea'
                         placeholder={t('dts_description')}
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
@@ -601,32 +508,7 @@ dts_status:dateSetting.dts_status,
                           {validation.errors.dts_description}
                         </FormFeedback>
                       ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('dts_status')}</Label>
-                      <Input
-                        name='dts_status'
-                        type='text'
-                        placeholder={t('dts_status')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.dts_status || ''}
-                        invalid={
-                          validation.touched.dts_status &&
-                          validation.errors.dts_status
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.dts_status &&
-                      validation.errors.dts_status ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.dts_status}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-                
+                    </Col>
       </Row>
       <Row>
       <Col>

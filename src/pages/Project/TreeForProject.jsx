@@ -2,7 +2,7 @@ import { useEffect, useState, memo, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useFetchAddressStructures } from "../../queries/address_structure_query";
 import { useFetchSectorCategorys } from "../../queries/sectorcategory_query";
-import { useSearchSectorInformations } from "../../queries/sectorinformation_query";
+import { getUserSectorListTree } from "../../queries/usersector_query";
 import { useSearchProgramInfos, useFetchProgramInfos } from "../../queries/programinfo_query";
 import { Tree } from "react-arborist";
 import { FaFolder, FaFile, FaChevronRight, FaChevronDown, FaChevronUp } from "react-icons/fa";
@@ -23,7 +23,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   const [searchTerm, setSearchTerm] = useState(null)
 
   const { data: cluster, isLoading: isClusterLoading, refetch: refetchClusters } = useFetchSectorCategorys();
-  const { isLoading: isSectorLoading, refetch: refetchSector } = useSearchSectorInformations(sectorParam);
+  const { isLoading: isSectorLoading, refetch: refetchSector } = getUserSectorListTree(sectorParam);
   const { data: prData, isLoading: isProgramLoading, refetch: refetchProgram } =
     useFetchProgramInfos(programParam, Object.keys(programParam).length > 0);
 

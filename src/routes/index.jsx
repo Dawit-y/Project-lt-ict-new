@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 import Dashboard from "../pages/Dashboard/index";
 import Login from "../pages/Authentication/Login";
 import ProjectProvider from "../context/ProjectContext";
-
+import ProjectListProvider from "../context/ProjectListContext";
 const UsersProfile = lazy(() => import("../pages/Profile"));
 const ProjectPaymentList = lazy(() =>
   import("../pages/Projectpayment/ProjectPaymentList")
@@ -30,6 +30,8 @@ const SectorCategory = lazy(() => import("../pages/Sectorcategory/index"));
 const Users = lazy(() => import("../pages/Users/index"));
 const UserRole = lazy(() => import("../pages/Userrole/index"));
 const Roles = lazy(() => import("../pages/Roles/index"));
+const DateSetting = lazy(() => import("../pages/Datesetting/index"));
+const CSOInformation = lazy(() => import("../pages/Csoinfo/index"));
 const SectorInformation = lazy(() =>
   import("../pages/Sectorinformation/index")
 );
@@ -72,6 +74,8 @@ const ProjectHandover = lazy(() => import("../pages/Projecthandover/index"));
 const ProjectPerformance = lazy(() =>
   import("../pages/Projectperformance/index")
 );
+const ProjectList = lazy(() => import("../pages/Project/ProjectList"));
+
 const ProjectPerformanceList = lazy(() =>
   import("../pages/Projectperformance/ProjectPerformanceList")
 );
@@ -142,6 +146,8 @@ const SupersetListReport = lazy(() =>
   import("../pages/Report/SupersetListReport")
 );
 const authProtectedRoutes = [
+  { path: '/cso_information', component: <CSOInformation /> },
+  { path: '/date_setting', component: <DateSetting /> },
   { path: '/conversation_information', component: <ConversationInformation /> },
   { path: '/superset_list_report', component: <SupersetListReport /> },
   { path: '/request_information', component: <RequestInformation /> },
@@ -211,6 +217,14 @@ const authProtectedRoutes = [
       <ProjectProvider>
         <Project />
       </ProjectProvider>
+    ),
+  },
+  {
+    path: "/project_list",
+    component: (
+      <ProjectListProvider>
+        <ProjectList />
+      </ProjectListProvider>
     ),
   },
   {

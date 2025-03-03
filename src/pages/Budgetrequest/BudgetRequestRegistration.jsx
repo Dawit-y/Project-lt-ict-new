@@ -65,7 +65,7 @@ const truncateText = (text, maxLength) => {
 const BudgetRequestModel = () => {
   const location = useLocation();
   const id = Number(location.pathname.split("/")[2]);
-  const param = { project_id: id };
+  const param = { project_id: id,request_type:"single"};
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);

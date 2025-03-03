@@ -4,6 +4,7 @@ import {
   updateUserSector,
   addUserSector,
   deleteUserSector,
+  getUserSectorTree
 } from "../helpers/usersector_backend_helper";
 
 const USER_SECTOR_QUERY_KEY = ["usersector"];
@@ -26,6 +27,17 @@ export const useSearchUserSectors = (searchParams = {}) => {
   return useQuery({
     queryKey: [...USER_SECTOR_QUERY_KEY, "search", searchParams],
     queryFn: () => getUserSector(searchParams),
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    enabled: searchParams.length > 0,
+  });
+};
+export const getUserSectorListTree = (searchParams = {}) => {
+  return useQuery({
+    queryKey: [...USER_SECTOR_QUERY_KEY, "search", searchParams],
+    queryFn: () => getUserSectorTree(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,

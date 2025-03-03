@@ -196,6 +196,10 @@ const UsersModel = () => {
       usr_department_id: (users && users.usr_department_id) || "",
       is_deletable: (users && users.is_deletable) || 1,
       is_editable: (users && users.is_editable) || 1,
+
+usr_directorate_id: (users && users.usr_directorate_id) || "",
+usr_team_id: (users && users.usr_team_id) || "",
+usr_officer_id: (users && users.usr_officer_id) || ""
     },
     validationSchema: Yup.object({
       usr_email: Yup.string()
@@ -257,6 +261,9 @@ const UsersModel = () => {
           usr_department_id: Number(values.usr_department_id),
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
+          usr_directorate_id : Number(values.usr_directorate_id),
+          usr_team_id : Number(values.usr_team_id),
+          usr_officer_id : Number(values.usr_officer_id),
         };
         // update Users
         handleUpdateUsers(updateUsers);
@@ -282,6 +289,9 @@ const UsersModel = () => {
           usr_department_id: Number(values.usr_department_id),
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
+          usr_directorate_id : Number(values.usr_directorate_id),
+          usr_team_id : Number(values.usr_team_id),
+          usr_officer_id : Number(values.usr_officer_id),
         };
         // setSelectedDepartment(values.usr_department_id);
         // update Users
@@ -309,6 +319,9 @@ const UsersModel = () => {
           usr_department_id: Number(values.usr_department_id),
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
+           usr_directorate_id : Number(values.usr_directorate_id),
+          usr_team_id : Number(values.usr_team_id),
+          usr_officer_id : Number(values.usr_officer_id),
         };
         handleAddUsers(newUsers);
       }
@@ -336,6 +349,7 @@ const UsersModel = () => {
   };
   const handleUsersClick = (arg) => {
     const user = arg;
+    console.log(user);
     setUsers({
       usr_id: user.usr_id,
       usr_email: user.usr_email,
@@ -358,6 +372,9 @@ const UsersModel = () => {
       usr_department_id: Number(user.usr_department_id),
       is_deletable: user.is_deletable,
       is_editable: user.is_editable,
+      usr_directorate_id : Number(user.usr_directorate_id),
+          usr_team_id : Number(user.usr_team_id),
+          usr_officer_id : Number(user.usr_officer_id),
     });
     setIsEdit(true);
     toggle();

@@ -1279,5 +1279,6 @@
 "pri_update_time":"Update Time",
 "pri_delete_time":"Delete Time",
 "pri_created_by":"Created By",
-"pri_status":"Status"
+"pri_status":"Status",
+"project_list":"Pirojektoota"
 }

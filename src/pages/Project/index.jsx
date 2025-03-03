@@ -29,21 +29,6 @@ import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import { useFetchDepartments } from "../../queries/department_query";
 import { useTranslation } from "react-i18next";
-import RightOffCanvas from "../../components/Common/RightOffCanvas";
-import ProjectDocument from "../../pages/Projectdocument/FileManager/index";
-import ProjectPayment from "../../pages/Projectpayment";
-import ProjectStakeholder from "../../pages/Projectstakeholder";
-import Projectcontractor from "../../pages/Projectcontractor";
-import GeoLocation from "../../pages/GeoLocation";
-import ProjectBudgetExpenditureModel from "../Projectbudgetexpenditure";
-import ProjectEmployeeModel from "../../pages/Projectemployee";
-import ProjectHandoverModel from "../Projecthandover";
-import ProjectPerformanceModel from "../Projectperformance";
-import ProjectSupplimentaryModel from "../Projectsupplimentary";
-import ProjectVariationModel from "../Projectvariation";
-import ProposalRequestModel from "../../pages/Proposalrequest";
-import Conversation from "../Conversationinformation/index1";
-import RequestInformationModel from "../../pages/Requestinformation";
 import ProgramInfoModel from "../Programinfo";
 //import BudgetRequestModel from "../../pages/BudgetRequest";
 //import ProjectPlanModel from "../../pages/ProjectPlan";
@@ -77,12 +62,6 @@ import { createSelectOptions, createMultiSelectOptions } from "../../utils/commo
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import AddressStructureForProject from "./TreeForProject";
 import { useProjectContext } from "../../context/ProjectContext";
-
-const linkMapping = {
-  34: "budget_request",
-  61: "project_plan",
-  39: "project_budget_expenditure"
-};
 
 const ProjectModel = () => {
   document.title = "Projects";
@@ -119,35 +98,10 @@ const ProjectModel = () => {
   if (selectedPage.page == "project") {
     param = { program_id: selectedPage.data.pri_id }
   }
-
-  const tabMapping = {
-    54: { label: t("project_document"), component: ProjectDocument },
-    44: { label: t("project_contractor"), component: Projectcontractor },
-    26: { label: t("project_payment"), component: ProjectPayment },
-    53: { label: t("project_stakeholder"), component: ProjectStakeholder },
-    //5: { label: "Budget Request", component: Budgetrequest },
-    33: { label: t("prj_geo_location"), component: GeoLocation },
-    //7: { label: "Budget Expenditures", component: ProjectBudgetExpenditureModel },
-    43: { label: t("project_employee"), component: ProjectEmployeeModel },
-    38: { label: t("project_handover"), component: ProjectHandoverModel },
-    37: { label: t("project_performance"), component: ProjectPerformanceModel },
-    41: {
-      label: t("project_supplimentary"),
-      component: ProjectSupplimentaryModel,
-    },
-    40: { label: t("project_variation"), component: ProjectVariationModel },
-    58: { label: t("proposal_request"), component: ProposalRequestModel },
-    57: {
-      label: t("conversation_information"),
-      component: Conversation,
-    },
-    59: { label: t("request_information"), component: RequestInformationModel },
-    //46: { label: t('project_supplimentary'), component: ProjectBudgetPlan },
-  };
   const [isAddressLoading, setIsAddressLoading] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } =
-    useFetchProjects(param);
+const { data, isLoading, error, isError, refetch } =
+    useSearchProjects(param, Object.keys(param).length > 0);
   const { data: projectCategoryData } = useFetchProjectCategorys();
   const {
     pct_name_en: projectCategoryOptionsEn,
@@ -235,14 +189,6 @@ const ProjectModel = () => {
       setAllowedTabs(data?.allowedTabs || []);
     }
   }, [projectMetaData?.prj_project_status_id, data]);
-
-  const dynamicComponents = allowedTabs.reduce((acc, tabIndex) => {
-    const tab = tabMapping[tabIndex];
-    if (tab) {
-      acc[tab.label] = tab.component;
-    }
-    return acc;
-  }, {});
 
   // validation
   const validation = useFormik({
@@ -672,73 +618,15 @@ const ProjectModel = () => {
           }
           const { prj_id } = cellProps.row.original || {};
           return (
-            <Link to={`/Project/${prj_id}`}>
+            <Link to={`/Projectdetail/${prj_id}#budget_request`} target="_blank" >
               <Button type="button" className="btn-sm mb-1 default" outline>
                 <i className="fa fa-eye"></i>
               </Button>
             </Link>
           );
         },
-      },
+      }
     ];
-
-    // Add actions column based on privileges
-    if (1 == 1) {
-      baseColumns.push({
-        header: t("actions"),
-        accessorKey: "actions",
-        enableSorting: false,
-        enableColumnFilter: false,
-        cell: (cellProps) => {
-          const { is_editable, is_deletable } = cellProps.row.original || {};
-          return (
-            <div className="action-icons">
-              {searchData?.previledge?.is_role_editable == 1 &&
-                cellProps.row.original.is_editable == 1 && (
-                  <Link
-                    to="#"
-                    className="text-success me-2"
-                    onClick={() => handleProjectClick(cellProps.row.original)}
-                  >
-                    <i
-                      className="mdi mdi-pencil font-size-18"
-                      id="edittooltip"
-                    />
-                    <UncontrolledTooltip placement="top" target="edittooltip">
-                      {t("edit")}
-                    </UncontrolledTooltip>
-                  </Link>
-                )}
-              {Object.keys(dynamicComponents).length > 0 && (
-                <Link
-                  to="#"
-                  className="text-secondary me-2"
-                  onClick={() => handleClick(cellProps.row.original)}
-                >
-                  <i className="mdi mdi-cog font-size-18" id="viewtooltip" />
-                  <UncontrolledTooltip placement="top" target="viewtooltip">
-                    Project Detail
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-            </div>
-          );
-        },
-      });
-    }
-
-    if (allowedLinks.length > 0) {
-      baseColumns.push({
-        header: "...",
-        accessorKey: "configuration",
-        enableSorting: false,
-        enableColumnFilter: false,
-        cell: (cellProps) => {
-          return renderConfiguration(cellProps);
-        },
-      });
-    }
-
     return baseColumns;
   }, [data, handleProjectClick, onClickDelete, t]);
 
@@ -817,7 +705,7 @@ const ProjectModel = () => {
                       columns={columns}
                       data={data?.data || []}
                       isGlobalFilter={true}
-                      isAddButton={true}
+                      isAddButton={searchData?.previledge?.is_role_can_add==1}
                       isCustomPageSize={true}
                       handleUserClick={handleProjectClicks}
                       isPagination={true}
@@ -1289,18 +1177,6 @@ const ProjectModel = () => {
           </div>
         </div>
       </div>
-      {showCanvas && (
-        <RightOffCanvas
-          handleClick={handleClick}
-          showCanvas={showCanvas}
-          canvasWidth={84}
-          name={projectMetaData.prj_name}
-          id={projectMetaData.prj_id}
-          status={projectMetaData?.prj_project_status_id}
-          startDate={projectMetaData?.prj_start_date_gc}
-          components={dynamicComponents}
-        />
-      )}
     </React.Fragment>
   );
 };
