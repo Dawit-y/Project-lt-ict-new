@@ -18,7 +18,7 @@ import { aggregators } from "react-pivottable/Utilities";
 import { useTranslation } from "react-i18next";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import AddressStructureForProject from "../Project/AddressStructureForProject";
+import TreeForLists from "../../components/Common/TreeForLists";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useSearchStatisticalReport } from "../../queries/statisticalreport_query";
 import "./statistical.css";
@@ -106,7 +106,7 @@ const StatisticalReport = () => {
     setLocalizedRenderersUI(localizedRenderers);
     setLocalizedAggregatorTemplates(localizedAggregatorTemplates);
     setPivotState({});
-  }, [t, i18n.language]); 
+  }, [t, i18n.language]);
 
   // Map for endpoints and their respective configurations
   const endpointConfigs = {
@@ -381,7 +381,7 @@ const StatisticalReport = () => {
           breadcrumbItem={t("Statistical Report")}
         />
         <div className="w-100 d-flex gap-2">
-          <AddressStructureForProject
+          <TreeForLists
             onNodeSelect={handleNodeSelect}
             setIsAddressLoading={setIsAddressLoading}
             setInclude={setInclude}

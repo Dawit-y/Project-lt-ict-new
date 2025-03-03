@@ -12,7 +12,7 @@ import {
   useFetchProjectPayments,
   useSearchProjectPayments,
 } from "../../queries/projectpayment_query";
-import AddressStructureForProject from "../Project/AddressStructureForProject";
+import TreeForLists from "../../components/Common/TreeForLists";
 import { useFetchPaymentCategorys } from "../../queries/paymentcategory_query";
 import { createSelectOptions } from "../../utils/commonMethods";
 
@@ -187,7 +187,7 @@ const ProjectPaymentList = () => {
             breadcrumbItem={t("Project Payment List")}
           />
           <div className="w-100 d-flex gap-2">
-            <AddressStructureForProject
+            <TreeForLists
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}

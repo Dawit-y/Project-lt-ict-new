@@ -6,7 +6,7 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useSearchProjectPerformances } from "../../queries/projectperformance_query";
-import AddressStructureForProject from "../Project/AddressStructureForProject";
+import TreeForLists from "../../components/Common/TreeForLists";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
@@ -247,7 +247,7 @@ const ProjectPerformanceList = (props) => {
             breadcrumbItem={t("project_performance_list")}
           />
           <div className="w-100 d-flex gap-2">
-            <AddressStructureForProject
+            <TreeForLists
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}

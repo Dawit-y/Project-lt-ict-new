@@ -33,7 +33,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import AddressStructureForProject from "../Project/AddressStructureForProject";
+import TreeForLists from "../../components/Common/TreeForLists";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -210,7 +210,7 @@ const ProjectBudgetExpenditureList = () => {
         <div>
           <Breadcrumbs breadcrumbItem={t("project_budget_expenditure_list")} />
           <div className="w-100 d-flex gap-2">
-            <AddressStructureForProject
+            <TreeForLists
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}

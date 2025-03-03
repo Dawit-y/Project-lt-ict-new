@@ -9,7 +9,7 @@ import {
 import Breadcrumb from "../../components/Common/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import AddressStructureForProject from "../Project/AddressStructureForProject";
+import TreeForLists from "../../components/Common/TreeForLists";
 import {
   useFetchProjects,
   useSearchProjects,
@@ -116,7 +116,7 @@ const ProjectsLocation = () => {
           breadcrumbItem={t("projects_location")}
         />
         <div className="w-100 d-flex gap-2">
-          <AddressStructureForProject
+          <TreeForLists
             onNodeSelect={handleNodeSelect}
             setIsAddressLoading={setIsAddressLoading}
           />

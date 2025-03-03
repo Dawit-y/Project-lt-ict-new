@@ -53,7 +53,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import AddressStructureForProject from "../Project/AddressStructureForProject";
+import TreeForLists from "../../components/Common/TreeForLists";
 import { useFetchRequestStatuss } from "../../queries/requeststatus_query";
 import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
 const truncateText = (text, maxLength) => {
@@ -232,7 +232,7 @@ const RequestInformationList = () => {
             breadcrumbItem={t("Project Payment List")}
           />
           <div className="w-100 d-flex gap-2">
-            <AddressStructureForProject
+            <TreeForLists
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
             />

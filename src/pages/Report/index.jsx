@@ -11,7 +11,7 @@ import {
 } from "reactstrap";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import AddressStructureForProject from "../Project/AddressStructureForProject";
+import TreeForLists from "../../components/Common/TreeForLists";
 import TableContainer from "../../components/Common/TableContainer";
 import { useSearchDepartments } from "../../queries/department_query";
 import { useSearchUserss } from "../../queries/users_query";
@@ -282,7 +282,7 @@ const Report = () => {
           breadcrumbItem={t("Statistical Report")}
         />
         <div className="w-100 d-flex gap-2">
-          <AddressStructureForProject
+          <TreeForLists
             onNodeSelect={handleNodeSelect}
             setIsAddressLoading={setIsAddressLoading}
           />

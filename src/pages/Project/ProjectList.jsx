@@ -69,7 +69,7 @@ import {
 import { toast } from "react-toastify";
 import { createSelectOptions, createMultiSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import AddressStructureForProject from "./AddressStructureForProject";
+import TreeForLists from "./TreeForLists";
 import { useProjectListContext } from "../../context/ProjectListContext";
 import SearchForProject from "../../components/Common/SearchForProject";
 import ExportToExcel from "../../components/Common/ExportToExcel";
@@ -225,7 +225,7 @@ const ProjectModel = () => {
     setShowCanvas(!showCanvas);
     setProjectMetaData(data);
   };
- 
+
   //delete projects
   const [deleteModal, setDeleteModal] = useState(false);
   const onClickDelete = (project) => {
@@ -294,13 +294,13 @@ const ProjectModel = () => {
         filter: "agTextColumnFilter",
         flex: 3
       },
-       {
+      {
         field: "sector_name",
         headerName: t("prj_sector_id"),
         sortable: true,
         filter: "agTextColumnFilter",
         flex: 3
-      },      
+      },
       {
         headerName: t("prs_status"),
         field: "bdr_request_status",
@@ -463,7 +463,7 @@ const ProjectModel = () => {
           <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
           <div className="w-100 d-flex gap-2">
             <>
-              <AddressStructureForProject
+              <TreeForLists
                 onNodeSelect={handleNodeSelect}
                 setIsAddressLoading={setIsAddressLoading}
                 setInclude={setInclude}

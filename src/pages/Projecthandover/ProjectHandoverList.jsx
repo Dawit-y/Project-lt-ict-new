@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { Button, Col, Row, Input } from "reactstrap";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import AddressStructureForProject from "../Project/AddressStructureForProject";
+import TreeForLists from "../../components/Common/TreeForLists";
 import { setIn } from "formik";
 
 const truncateText = (text, maxLength) => {
@@ -153,7 +153,7 @@ const ProjectHandoverList = (props) => {
             breadcrumbItem={t("project_handover_list")}
           />
           <div className="w-100 d-flex gap-2">
-            <AddressStructureForProject
+            <TreeForLists
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}

@@ -27,7 +27,7 @@ import {
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import AddressStructureForProject from "../Project/AddressStructureForProject";
+import TreeForLists from "../../components/Common/TreeForLists";
 import AttachFileModal from "../../components/Common/AttachFileModal"
 import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal"
 import { PAGE_ID } from "../../constants/constantFile";
@@ -378,7 +378,7 @@ const BudgetRequestListModel = () => {
             breadcrumbItem={t("budget_request")}
           />
           <div className="w-100 d-flex gap-2">
-            <AddressStructureForProject
+            <TreeForLists
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}
@@ -421,34 +421,34 @@ const BudgetRequestListModel = () => {
                         />
                       </Col>
                       <Col
-                    sm="12"
-                    md="6"
-                    className="text-md-end d-flex align-items-center justify-content-end gap-2"
-                  ><ExportToExcel
-                      tableData={showSearchResult
+                        sm="12"
+                        md="6"
+                        className="text-md-end d-flex align-items-center justify-content-end gap-2"
+                      ><ExportToExcel
+                          tableData={showSearchResult
                             ? searchResults?.data
                             : data?.data || []}
-                      tablename={"projects"}
-                      excludeKey={["is_editable", "is_deletable"]}
-                    />
-                    <ExportToPDF
-                      tableData={showSearchResult
+                          tablename={"projects"}
+                          excludeKey={["is_editable", "is_deletable"]}
+                        />
+                        <ExportToPDF
+                          tableData={showSearchResult
                             ? searchResults?.data
                             : data?.data || []}
-                      tablename={"projects"}
-                      includeKey={budget_request}
-                    />
-                    <PrintPage
-                      tableData={showSearchResult
+                          tablename={"projects"}
+                          includeKey={budget_request}
+                        />
+                        <PrintPage
+                          tableData={showSearchResult
                             ? searchResults?.data
                             : data?.data || []}
-                      tablename={t("Projects")}
-                      excludeKey={["is_editable", "is_deletable"]}
-                      gridRef={gridRef}
-                      columnDefs={columnDefs}
-                      columnsToIgnore="3"
-                    />
-                  </Col>
+                          tablename={t("Projects")}
+                          excludeKey={["is_editable", "is_deletable"]}
+                          gridRef={gridRef}
+                          columnDefs={columnDefs}
+                          columnsToIgnore="3"
+                        />
+                      </Col>
                     </Row>
                     {/* AG Grid */}
                     <div style={{}}>

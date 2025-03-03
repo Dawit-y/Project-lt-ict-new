@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import { Button, Col, Row, Input } from "reactstrap";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import AddressStructureForProject from "../Project/AddressStructureForProject";
+import TreeForLists from "../../components/Common/TreeForLists";
 import GanttModal from "./GanttModal";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query"
 
@@ -213,7 +213,7 @@ const ProjectPlanList = () => {
         <div>
           <Breadcrumbs />
           <div className="w-100 d-flex gap-2">
-            <AddressStructureForProject
+            <TreeForLists
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}
