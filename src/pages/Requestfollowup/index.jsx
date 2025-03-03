@@ -55,7 +55,6 @@ const fetchDepartmentsByParent = async (parentId) => {
 };
 
 const RequestFollowupModel = ({ request }) => {
-  const param = { rqf_request_id: request.bdr_id };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -66,6 +65,7 @@ const RequestFollowupModel = ({ request }) => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
   const { data: departmentOptionsData } = useFetchDepartments();
+
   const departmentMap = useMemo(() => {
     return (
       departmentOptionsData?.data?.reduce((acc, department) => {
@@ -74,10 +74,8 @@ const RequestFollowupModel = ({ request }) => {
       }, {}) || {}
     );
   }, [departmentOptionsData]);
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  // const depId = storedUser?.user.usr_department_id;
 
-  //const depId = 1
+  const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const user = storedUser?.user;
   const depId = user?.usr_officer_id > 0
     ? user.usr_officer_id
@@ -102,7 +100,7 @@ const RequestFollowupModel = ({ request }) => {
     );
   }, [subDepartments]);
 
-
+  const param = { rqf_request_id: request.bdr_id }; // add depId as a param
   const { data, isLoading, error, isError, refetch } = useSearchRequestFollowups(param);
   const addRequestFollowup = useAddRequestFollowup();
   const updateRequestFollowup = useUpdateRequestFollowup();
@@ -184,7 +182,7 @@ const RequestFollowupModel = ({ request }) => {
         const updateRequestFollowup = {
           rqf_id: requestFollowup?.rqf_id,
           rqf_request_id: request?.bdr_id,
-          rqf_forwarding_dep_id: 1,
+          rqf_forwarding_dep_id: depId,
           rqf_forwarded_to_dep_id: Number(values.rqf_forwarded_to_dep_id),
           rqf_forwarding_date: values.rqf_forwarding_date,
           rqf_received_date: values.rqf_received_date,
@@ -453,7 +451,7 @@ const RequestFollowupModel = ({ request }) => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add == 1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1 && !request.forwarded}
                       isCustomPageSize={true}
                       handleUserClick={handleRequestFollowupClicks}
                       isPagination={true}

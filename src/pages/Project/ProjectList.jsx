@@ -69,7 +69,7 @@ import {
 import { toast } from "react-toastify";
 import { createSelectOptions, createMultiSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import TreeForLists from "./TreeForLists";
+import TreeForLists from "../../components/Common/TreeForLists";
 import { useProjectListContext } from "../../context/ProjectListContext";
 import SearchForProject from "../../components/Common/SearchForProject";
 import ExportToExcel from "../../components/Common/ExportToExcel";

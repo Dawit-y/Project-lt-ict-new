@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useFetchDepartments } from "../../queries/department_query";
 import { post } from "../../helpers/api_Lists";
 
-const fetchDepartmentsByParent = async (parentId) => {
+const fetchDepartmentsByParent = async (parentId = null) => {
   const response = await post(`department/departmentbyparent?parent_id=${parentId}`);
   return response?.data || [];
 };
@@ -19,9 +19,13 @@ const CascadingDepartmentDropdowns = ({
   required = false,
 }) => {
   const { t } = useTranslation();
-
   // Fetch initial departments
   const { data: departments = [], isLoading: loadingDepartments } = useFetchDepartments()
+  // const { data: departments = [], isLoading: loadingDepartments } = useQuery({
+  //   queryKey: ["subDepartments"],
+  //   queryFn: () => fetchDepartmentsByParent(),
+  //   enabled: true,
+  // });
 
   // Fetch sub-departments for selected department
   const { data: subDepartments1 = [], isLoading: loadingSub1 } = useQuery({

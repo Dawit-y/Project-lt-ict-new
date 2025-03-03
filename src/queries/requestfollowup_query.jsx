@@ -17,7 +17,6 @@ export const useFetchRequestFollowups = () => {
     meta: { persist: false },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: false
   });
 };
 
@@ -26,11 +25,11 @@ export const useSearchRequestFollowups = (searchParams = {}) => {
   return useQuery({
     queryKey: [...REQUEST_FOLLOWUP_QUERY_KEY, searchParams],
     queryFn: () => getRequestFollowup(searchParams),
-    staleTime:0,
-    gcTime: 0,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
-    enabled: true,
+    enabled: Object.keys(searchParams).length > 0
   });
 };
 
@@ -38,7 +37,7 @@ export const useSearchRequestFollowups = (searchParams = {}) => {
 export const useAddRequestFollowup = () => {
   const queryClient = useQueryClient();
 
-return useMutation({
+  return useMutation({
     mutationFn: addRequestFollowup,
     onSuccess: (newDataResponse) => {
       const queries = queryClient.getQueriesData({
@@ -65,7 +64,7 @@ return useMutation({
 // Update request_followup
 export const useUpdateRequestFollowup = () => {
   const queryClient = useQueryClient();
- return useMutation({
+  return useMutation({
     mutationFn: updateRequestFollowup,
     onSuccess: (updatedData) => {
       const queries = queryClient.getQueriesData({

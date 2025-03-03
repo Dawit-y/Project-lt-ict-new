@@ -21,8 +21,7 @@ import {
   useSearchBudgetRequestforApproval,
 } from "../../queries/budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useSearchRequestFollowups, useFetchRequestFollowups } from "../../queries/requestfollowup_query"
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForLists from "../../components/Common/TreeForLists";
@@ -37,12 +36,6 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-
-const statusClasses = new Map([
-  ["Approved", "success"],
-  ["Rejected", "danger"],
-  ["Requested", "secondary"],
-]);
 
 const ApproverBudgetRequestList = () => {
   document.title = " Budget Request List | PMS";
@@ -63,6 +56,7 @@ const ApproverBudgetRequestList = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
+  const [transaction, setTransaction] = useState({});
 
   const { data, isLoading, error, isError, refetch } = useState(null);
   const { data: budgetYearData } = useFetchBudgetYears();
@@ -74,7 +68,36 @@ const ApproverBudgetRequestList = () => {
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
 
-  const [transaction, setTransaction] = useState({});
+  const storedUser = JSON.parse(localStorage.getItem("authUser"));
+  const user = storedUser?.user;
+  // const depId = user?.usr_officer_id > 0
+  //   ? user.usr_officer_id
+  //   : user?.usr_team_id > 0
+  //     ? user.usr_team_id
+  //     : user?.usr_directorate_id > 0
+  //       ? user.usr_directorate_id
+  //       : null;
+
+  const depId = 1
+  const { data: rqfData, isLoading: rqfLoading } = useFetchRequestFollowups()
+
+  function markForwardedRequests(budgetRequests, forwardedRequests, depId) {
+    const forwardedSet = new Set(
+      forwardedRequests
+        .filter(req => req.rqf_forwarding_dep_id === depId)
+        .map(req => req.rqf_request_id)
+    );
+
+    return budgetRequests.map(request => ({
+      ...request,
+      forwarded: forwardedSet.has(request.bdr_id),
+    }));
+  }
+
+  const transformedData = useMemo(() => {
+    if (!searchResults?.data || !rqfData?.data) return [];
+    return markForwardedRequests(searchResults.data, rqfData.data, depId);
+  }, [searchResults, rqfData, depId])
 
   const budgetYearMap = useMemo(() => {
     return (
@@ -248,6 +271,21 @@ const ApproverBudgetRequestList = () => {
         flex: 1,
         cellRenderer: (params) => {
           return truncateText(params.data.bdr_released_date_gc, 30) || "-";
+        },
+      },
+      {
+        headerName: t("forwarded"),
+        field: "forwarded",
+        sortable: true,
+        filter: true,
+        flex: 1,
+        cellRenderer: (params) => {
+          const isForwarded = params.data.forwarded;
+          return (
+            <Badge className={`font-size-12 badge-soft-${isForwarded ? "danger" : "secondary"}`}>
+              {isForwarded ? "forwarded" : "not forwarded"}
+            </Badge>
+          );
         },
       },
       {
@@ -469,7 +507,7 @@ const ApproverBudgetRequestList = () => {
                         ref={gridRef}
                         rowData={
                           showSearchResult
-                            ? searchResults?.data
+                            ? transformedData
                             : data?.data || []
                         }
                         columnDefs={columnDefs}
