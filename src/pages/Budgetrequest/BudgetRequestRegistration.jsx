@@ -65,7 +65,7 @@ const truncateText = (text, maxLength) => {
 const BudgetRequestModel = () => {
   const location = useLocation();
   const id = Number(location.pathname.split("/")[2]);
-  const param = { project_id: id,request_type:"single"};
+  const param = { project_id: id, request_type: "single" };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -103,7 +103,7 @@ const BudgetRequestModel = () => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t("add_failure"), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -118,7 +118,7 @@ const BudgetRequestModel = () => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t("update_failure"), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -436,8 +436,9 @@ const BudgetRequestModel = () => {
             <div className="d-flex gap-3">
               {(cellProps.row.original?.is_editable ||
                 cellProps.row.original?.is_role_editable) && (
-                  <Link
-                    to="#"
+                  <Button
+                    size="sm"
+                    color="none"
                     className="text-success"
                     onClick={() => {
                       const data = cellProps.row.original;
@@ -448,13 +449,14 @@ const BudgetRequestModel = () => {
                     <UncontrolledTooltip placement="top" target="edittooltip">
                       Edit
                     </UncontrolledTooltip>
-                  </Link>
+                  </Button>
                 )}
               {(cellProps.row.original?.is_deletable == 9 ||
                 cellProps.row.original?.is_role_deletable == 9) && (
                   <div>
-                    <Link
-                      to="#"
+                    <Button
+                      size="sm"
+                      color="none"
                       className="text-danger"
                       onClick={() => {
                         const data = cellProps.row.original;
@@ -468,10 +470,11 @@ const BudgetRequestModel = () => {
                       <UncontrolledTooltip placement="top" target="deletetooltip">
                         Delete
                       </UncontrolledTooltip>
-                    </Link>
+                    </Button>
 
-                    <Link
-                      to="#"
+                    <Button
+                      size="sm"
+                      color="none"
                       className="text-secondary me-2"
                       onClick={() => handleClick(cellProps.row.original)}
                     >
@@ -479,7 +482,7 @@ const BudgetRequestModel = () => {
                       <UncontrolledTooltip placement="top" target="viewtooltip">
                         Budget Request Detail
                       </UncontrolledTooltip>
-                    </Link>
+                    </Button>
                   </div>
                 )}
             </div>

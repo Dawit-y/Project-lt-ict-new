@@ -100,7 +100,7 @@ const ProjectModel = () => {
   }
   const [isAddressLoading, setIsAddressLoading] = useState(false);
 
-const { data, isLoading, error, isError, refetch } =
+  const { data, isLoading, error, isError, refetch } =
     useSearchProjects(param, Object.keys(param).length > 0);
   const { data: projectCategoryData } = useFetchProjectCategorys();
   const {
@@ -472,6 +472,7 @@ const { data, isLoading, error, isError, refetch } =
     setShowCanvas(!showCanvas);
     setProjectMetaData(data);
   };
+  
   const handleProjectClick = (arg) => {
     const project = arg;
     setProject({
@@ -705,7 +706,7 @@ const { data, isLoading, error, isError, refetch } =
                       columns={columns}
                       data={data?.data || []}
                       isGlobalFilter={true}
-                      isAddButton={searchData?.previledge?.is_role_can_add==1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleProjectClicks}
                       isPagination={true}

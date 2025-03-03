@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, lazy, Suspense } from "react";
 import PropTypes from "prop-types";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { Col, Container, Row, Card, CardBody, Spinner } from "reactstrap";
 import Breadcrumbs from "../../../components/Common/Breadcrumb";
 import ProjectDetail from "./ProjectDetail";
@@ -30,11 +30,9 @@ const LazyComponents = {
 
 const ProjectsOverview = () => {
   document.title = "Overview | Project";
-
-  //const { id } = useParams();
-  //const id = Number(location.pathname.split("/")[2].split("#")[0]);
-const id=65;
-  const projectId = Number(id);
+  
+  const location = useLocation()
+  const projectId = Number(location.pathname.split("/")[2].split("#")[0]);
 
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;

@@ -54,7 +54,6 @@ const fetchDepartmentsByParent = async (parentId) => {
   return response?.data || [];
 };
 
-
 const RequestFollowupModel = ({ request }) => {
   const param = { rqf_request_id: request.bdr_id };
   const { t } = useTranslation();
@@ -80,13 +79,13 @@ const RequestFollowupModel = ({ request }) => {
 
   //const depId = 1
   const user = storedUser?.user;
-const depId = user?.usr_officer_id > 0 
-  ? user.usr_officer_id 
-  : user?.usr_team_id > 0 
-    ? user.usr_team_id 
-    : user?.usr_directorate_id > 0 
-      ? user.usr_directorate_id 
-      : null; 
+  const depId = user?.usr_officer_id > 0
+    ? user.usr_officer_id
+    : user?.usr_team_id > 0
+      ? user.usr_team_id
+      : user?.usr_directorate_id > 0
+        ? user.usr_directorate_id
+        : null;
 
   const { data: subDepartments = [], isLoading: loadingSub } = useQuery({
     queryKey: ["subDepartments", depId],
