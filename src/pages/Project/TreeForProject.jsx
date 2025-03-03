@@ -15,25 +15,23 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   const userId = storedUser?.user.usr_id;
   const { data, isLoading } = useFetchAddressStructures(userId);
   const [treeData, setTreeData] = useState([]);
-  const [sectorParam, setSectorParam] = useState({})
   const [programParam, setProgramParam] = useState({})
-  const [selectedCluster, setSelectedCluster] = useState({})
   const [selectedSector, setSelectedSector] = useState({})
 
   const [searchTerm, setSearchTerm] = useState(null)
 
-  const { data: cluster, isLoading: isClusterLoading, refetch: refetchClusters } = useFetchSectorCategorys();
-  const { isLoading: isSectorLoading, refetch: refetchSector } = getUserSectorListTree(sectorParam);
+  const { data: clusters, isLoading: isClusterLoading } = getUserSectorListTree(userId);
+  console.log("clusters", clusters)
   const { data: prData, isLoading: isProgramLoading, refetch: refetchProgram } =
     useFetchProgramInfos(programParam, Object.keys(programParam).length > 0);
 
 
   useEffect(() => {
-    setIsAddressLoading(isLoading || isClusterLoading || isSectorLoading || isProgramLoading);
-  }, [isLoading, isClusterLoading, isSectorLoading, isProgramLoading, setIsAddressLoading]);
+    setIsAddressLoading(isLoading || isClusterLoading || isProgramLoading);
+  }, [isLoading, isClusterLoading, isProgramLoading, setIsAddressLoading]);
 
   useEffect(() => {
-    if (data && cluster) {
+    if (data && clusters) {
       const transformData = (regions) =>
         regions.map((region) => ({
           ...region,
@@ -48,7 +46,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
                   id: woreda.id?.toString() || crypto.randomUUID(),
                   children: [
                     ...woreda.children,
-                    ...cluster?.data.map((c) => ({
+                    ...clusters.map((c) => ({
                       id: `${region.id}_${zone.id}_${woreda.id}_${c.psc_id}`,
                       c_id: c.psc_id,
                       name: c.psc_name,
@@ -59,7 +57,19 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
                       zone_id: zone.id,
                       woreda_id: woreda.id,
                       level: "cluster",
-                      children: [],
+                      children: c.children.map((s) => ({
+                        id: `${woreda.id}_${s.sci_id}_sector`,
+                        s_id: s.sci_id,
+                        name: s.sci_name_or,
+                        add_name_en: s.sci_name_en,
+                        add_name_or: s.sci_name_or,
+                        add_name_am: s.sci_name_am,
+                        region_id: region.id,
+                        zone_id: zone.id,
+                        woreda_id: woreda.id,
+                        level: "sector",
+                        children: []
+                      }))
                     })),
                   ],
                 }))
@@ -70,48 +80,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
 
       setTreeData(transformData(data));
     }
-  }, [data, cluster]);
-
-  // Handle fetching sectors when cluster node is clicked
-  const handleClusterClick = async (node) => {
-    const { id, c_id } = node.data;
-    if (node.children.length > 0) return;
-    setSectorParam({ sector_category_id: c_id });
-    setSelectedCluster(node.data);
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data: sectorData } = await refetchSector();
-        const { id, region_id, zone_id, woreda_id, c_id } = selectedCluster
-        const formatedSector = sectorData?.data.map((s) => ({
-          ...s,
-          id: `${woreda_id}_${s.sci_id}_sector`,
-          s_id: s.sci_id,
-          name: s.sci_name_or,
-          add_name_en: s.sci_name_en,
-          add_name_or: s.sci_name_or,
-          add_name_am: s.sci_name_am,
-          region_id: region_id,
-          zone_id: zone_id,
-          woreda_id: woreda_id,
-          level: "sector",
-          children: []
-        }))
-
-        // Update tree with new sector data
-        const updatedTreeData = updateNodeChildren(treeData, id, 'cluster', formatedSector);
-        setTreeData(updatedTreeData);
-      } catch (error) {
-        console.error("Error during sector refetch:", error);
-      }
-    };
-
-    if (Object.keys(sectorParam).length > 0) {
-      fetchData();
-    }
-  }, [sectorParam]);
+  }, [data, clusters]);
 
   // Handle fetching programs when sector node is clicked
   const handleSectorClick = async (node) => {
@@ -267,7 +236,6 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
                   node={node}
                   style={style}
                   dragHandle={dragHandle}
-                  handleClusterClick={handleClusterClick}
                   handleSectorClick={handleSectorClick}
                   onNodeSelect={onNodeSelect}
                 />
@@ -297,7 +265,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
 };
 
 
-const Node = ({ node, style, dragHandle, handleClusterClick, handleSectorClick, onNodeSelect }) => {
+const Node = ({ node, style, dragHandle, handleSectorClick, onNodeSelect }) => {
   if (!node?.data) return null;
   const { i18n } = useTranslation();
   const lang = i18n.language
@@ -308,9 +276,8 @@ const Node = ({ node, style, dragHandle, handleClusterClick, handleSectorClick, 
   const handleNodeClick = (node) => {
     node.toggle();
     onNodeSelect(node);
-    if (node.data.level === "cluster") {
-      handleClusterClick(node);
-    } else if (node.data.level === "sector") {
+
+    if (node.data.level === "sector") {
       handleSectorClick(node);
     }
   };

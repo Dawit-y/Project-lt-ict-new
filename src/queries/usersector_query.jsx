@@ -34,15 +34,16 @@ export const useSearchUserSectors = (searchParams = {}) => {
     enabled: searchParams.length > 0,
   });
 };
-export const getUserSectorListTree = (searchParams = {}) => {
+
+export const getUserSectorListTree = (userId) => {
   return useQuery({
-    queryKey: [...USER_SECTOR_QUERY_KEY, "search", searchParams],
-    queryFn: () => getUserSectorTree(searchParams),
+    queryKey: [...USER_SECTOR_QUERY_KEY, "tree", userId],
+    queryFn: () => getUserSectorTree(),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
+    select: (data) => buildTree(data?.data),
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: searchParams.length > 0,
   });
 };
 
@@ -77,3 +78,28 @@ export const useDeleteUserSector = () => {
     },
   });
 };
+
+
+function buildTree(data) {
+  const clusterMap = {};
+
+  data.forEach(({ psc_id, psc_name, sci_id, sci_name_or, sci_name_am, sci_name_en }) => {
+    if (!clusterMap[psc_id]) {
+      clusterMap[psc_id] = {
+        psc_id: psc_id,
+        psc_name: psc_name,
+        children: []
+      };
+    }
+
+    clusterMap[psc_id].children.push({
+      sci_id: sci_id,
+      sci_name_or: sci_name_or,
+      sci_name_am: sci_name_am,
+      sci_name_en: sci_name_en
+    });
+  });
+
+  return Object.values(clusterMap);
+}
+
