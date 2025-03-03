@@ -21,10 +21,8 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   const [searchTerm, setSearchTerm] = useState(null)
 
   const { data: clusters, isLoading: isClusterLoading } = getUserSectorListTree(userId);
-  console.log("clusters", clusters)
   const { data: prData, isLoading: isProgramLoading, refetch: refetchProgram } =
     useFetchProgramInfos(programParam, Object.keys(programParam).length > 0);
-
 
   useEffect(() => {
     setIsAddressLoading(isLoading || isClusterLoading || isProgramLoading);

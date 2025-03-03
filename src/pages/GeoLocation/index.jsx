@@ -13,6 +13,15 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "./leaflet-container.css";
+import L from "leaflet"
+import customMarkerImg from "../../assets/images/marker.png"
+
+const customMarkerIcon = L.icon({
+  iconUrl: customMarkerImg,
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
 
 const MapResizer = ({ isActive }) => {
   const map = useMap();
@@ -114,6 +123,7 @@ const GeoLocation = ({ passedId, isActive }) => {
               eventHandlers={eventHandlers}
               position={markerPos}
               ref={markerRef}
+              icon={customMarkerIcon}
             />
           </MapContainer>
         )}

@@ -19,6 +19,16 @@ import { createSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import Spinners from "../../components/Common/Spinner";
 import "leaflet/dist/leaflet.css";
+import L from "leaflet"
+import customMarkerImg from "../../assets/images/marker.png"
+
+const customMarkerIcon = L.icon({
+  iconUrl: customMarkerImg,
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
+
 
 const ProjectsLocation = () => {
   const [viewState, setViewState] = useState({
@@ -149,6 +159,7 @@ const ProjectsLocation = () => {
                     eventHandlers={{
                       mouseover: () => setHoveredMarker(marker.id),
                     }}
+                    icon={customMarkerIcon}
                   >
                     {hoveredMarker === marker.id && (
                       <Popup>

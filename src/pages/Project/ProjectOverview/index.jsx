@@ -18,6 +18,16 @@ import ProjectDocuments from "./ProjectDocuments";
 import { useFetchProject } from "../../../queries/project_query";
 import { useFetchProjectDocuments } from "../../../queries/projectdocument_query";
 import { useFetchProjectStakeholders } from "../../../queries/projectstakeholder_query";
+import L from "leaflet"
+import customMarkerImg from "../../../assets/images/marker.png"
+
+const customMarkerIcon = L.icon({
+  iconUrl: customMarkerImg,
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
+
 
 const ProjectsOverview = (props) => {
   document.title = "Overview | Project";
@@ -86,7 +96,7 @@ const ProjectsOverview = (props) => {
                               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
-                            <Marker position={position}>
+                            <Marker position={position} icon={customMarkerIcon}>
                               {projectName && <Popup>{projectName}</Popup>}
                             </Marker>
                           </MapContainer>

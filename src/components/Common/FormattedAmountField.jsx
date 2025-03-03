@@ -47,7 +47,7 @@ const FormattedAmountField = ({
   );
 };
 
-FormattedAmountField.PropTypes = {
+FormattedAmountField.propTypes = {
   validation: PropTypes.object,
   isRequired: PropTypes.bool,
   fieldId: PropTypes.string
