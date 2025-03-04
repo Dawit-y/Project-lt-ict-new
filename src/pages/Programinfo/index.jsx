@@ -35,6 +35,11 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 import { toast } from "react-toastify";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -138,11 +143,11 @@ const ProgramInfoModel = ({ node }) => {
       pri_owner_zone_id: Yup.number().required(t('pri_owner_zone_id')),
       pri_owner_woreda_id: Yup.number().required(t('pri_owner_woreda_id')),
       pri_sector_id: Yup.number().required(t('pri_sector_id')),
-      pri_name_or: Yup.string().required(t('pri_name_or')),
-      pri_name_am: Yup.string().required(t('pri_name_am')),
-      pri_name_en: Yup.string().required(t('pri_name_en')),
-      pri_program_code: Yup.string().required(t('pri_program_code')),
-      pri_description: Yup.string()
+      pri_name_or: alphanumericValidation(2, 100, true),
+      pri_name_am: alphanumericValidation(2, 100, true),
+      pri_name_en: alphanumericValidation(2, 100, true),
+      pri_program_code: alphanumericValidation(2, 10, true),
+      pri_description: alphanumericValidation(2, 100, false),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -381,28 +386,6 @@ const ProgramInfoModel = ({ node }) => {
       //     );
       //   },
       // },
-
-      {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
     ];
     if (
       data?.previledge?.is_role_editable == 1 ||
@@ -431,7 +414,7 @@ const ProgramInfoModel = ({ node }) => {
                   </UncontrolledTooltip>
                 </Link>
               )}
-              {cellProps.row.original.is_deletable == 1 && (
+              {cellProps.row.original.is_deletable == 9 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -522,7 +505,7 @@ const ProgramInfoModel = ({ node }) => {
               >
                 <Row>
                   <Col className='col-md-6 mb-3'>
-                    <Label>{t('pri_name_or')}</Label>
+                    <Label>{t('pri_name_or')}<span className="text-danger">*</span></Label>
                     <Input
                       name='pri_name_or'
                       type='text'
@@ -546,7 +529,7 @@ const ProgramInfoModel = ({ node }) => {
                     ) : null}
                   </Col>
                   <Col className='col-md-6 mb-3'>
-                    <Label>{t('pri_name_am')}</Label>
+                    <Label>{t('pri_name_am')}<span className="text-danger">*</span></Label>
                     <Input
                       name='pri_name_am'
                       type='text'
@@ -570,7 +553,7 @@ const ProgramInfoModel = ({ node }) => {
                     ) : null}
                   </Col>
                   <Col className='col-md-6 mb-3'>
-                    <Label>{t('pri_name_en')}</Label>
+                    <Label>{t('pri_name_en')}<span className="text-danger">*</span></Label>
                     <Input
                       name='pri_name_en'
                       type='text'
@@ -594,7 +577,7 @@ const ProgramInfoModel = ({ node }) => {
                     ) : null}
                   </Col>
                   <Col className='col-md-6 mb-3'>
-                    <Label>{t('pri_program_code')}</Label>
+                    <Label>{t('pri_program_code')}<span className="text-danger">*</span></Label>
                     <Input
                       name='pri_program_code'
                       type='text'

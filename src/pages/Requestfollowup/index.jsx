@@ -83,6 +83,8 @@ const RequestFollowupModel = ({ request }) => {
       ? user.usr_team_id
       : user?.usr_directorate_id > 0
         ? user.usr_directorate_id
+        : user?.usr_department_id > 0
+        ? user.usr_department_id
         : null;
 
   const { data: subDepartments = [], isLoading: loadingSub } = useQuery({
@@ -381,7 +383,7 @@ const RequestFollowupModel = ({ request }) => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.rqf_forwarding_dep_id == depId && (
+              {cellProps.row.original.rqf_forwarding_dep_id == depId && !request.forwarded && (
                 <Link
                   to="#"
                   className="text-success"
@@ -396,7 +398,7 @@ const RequestFollowupModel = ({ request }) => {
                   </UncontrolledTooltip>
                 </Link>
               )}
-              {cellProps.row.original.rqf_forwarding_dep_id == depId && (
+              {cellProps.row.original.rqf_forwarding_dep_id == depId && !request.forwarded &&(
                 <Link
                   to="#"
                   className="text-danger"

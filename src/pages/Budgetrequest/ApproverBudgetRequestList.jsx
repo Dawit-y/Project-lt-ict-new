@@ -70,15 +70,17 @@ const ApproverBudgetRequestList = () => {
 
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const user = storedUser?.user;
-  // const depId = user?.usr_officer_id > 0
-  //   ? user.usr_officer_id
-  //   : user?.usr_team_id > 0
-  //     ? user.usr_team_id
-  //     : user?.usr_directorate_id > 0
-  //       ? user.usr_directorate_id
-  //       : null;
+ const depId = user?.usr_officer_id > 0
+    ? user.usr_officer_id
+    : user?.usr_team_id > 0
+      ? user.usr_team_id
+      : user?.usr_directorate_id > 0
+        ? user.usr_directorate_id
+        : user?.usr_department_id > 0
+        ? user.usr_department_id
+        : null;
 
-  const depId = 1
+  //const depId = 1
   const { data: rqfData, isLoading: rqfLoading } = useFetchRequestFollowups()
 
   function markForwardedRequests(budgetRequests, forwardedRequests, depId) {

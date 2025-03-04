@@ -173,7 +173,7 @@ const SectorInformationModel = () => {
       sci_sector_category_id: numberValidation(1, 10, true),
       sci_name_am: Yup.string().required(t("sci_name_am")),
       sci_name_en: alphanumericValidation(2, 100, true),
-      sci_code: numberValidation(100, 200, false),
+      sci_code: numberValidation(100, 300, false),
       sci_description: alphanumericValidation(3, 425, false),
     }),
     validateOnBlur: true,
@@ -527,7 +527,7 @@ const SectorInformationModel = () => {
                       theadClass="table-light"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                      divClassName="-"
+                      divClassName="dt-responsive"
                     />
                   </CardBody>
                 </Card>
