@@ -27,9 +27,9 @@ export const useSearchDepartments = (searchParams = {}) => {
     queryFn: () => getDepartment(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    enabled: searchParams.length > 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    enabled: true,
   });
 };
 

@@ -1198,5 +1198,9 @@
 "cso_update_time":"Update Time",
 "cso_delete_time":"Delete Time",
 "cso_created_by":"Created By",
-"cso_status":"Status"
+"cso_status":"Status",
+"select_department":"Department",
+"usr_directorate_id":"Directorate", 
+"usr_team_id":"Team",
+"usr_officer_id":"Officer"
 }

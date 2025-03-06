@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect , useMemo } from "react";
 import { FormGroup, Label, Input, FormFeedback } from "reactstrap";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
-import { useFetchDepartments } from "../../queries/department_query";
+import { useFetchDepartments, useSearchDepartments } from "../../queries/department_query";
 import { post } from "../../helpers/api_Lists";
 
 const fetchDepartmentsByParent = async (parentId = null) => {
@@ -20,7 +20,8 @@ const CascadingDepartmentDropdowns = ({
 }) => {
   const { t } = useTranslation();
   // Fetch initial departments
-  const { data: departments = [], isLoading: loadingDepartments } = useFetchDepartments()
+  const params = { dep_id: 1 };
+  const { data: departments = [], isLoading: loadingDepartments } = useSearchDepartments(params);
   // const { data: departments = [], isLoading: loadingDepartments } = useQuery({
   //   queryKey: ["subDepartments"],
   //   queryFn: () => fetchDepartmentsByParent(),

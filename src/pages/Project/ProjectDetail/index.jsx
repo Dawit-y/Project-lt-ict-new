@@ -59,11 +59,19 @@ const ProjectsOverview = () => {
     59: { label: t("request_information"), component: LazyComponents.RequestInformationModel, path: "requests" },
     34: { label: t("budget_request"), component: LazyComponents.BudgetRequestModel, path: "budget_request" },
     61: { label: t("project_plan"), component: LazyComponents.ProjectPlanModel, path: "project_plan" },
-    39: { label: t("request_information"), component: LazyComponents.RequestInformationModel, path: "information" },
+    //39: { label: t("request_information"), component: LazyComponents.RequestInformationModel, path: "information" },
   }), [t]);
 
   // Allowed tabs based on project data
-  const allowedTabs = useMemo(() => data?.allowedTabs || [], [data]);
+  //const allowedTabs = useMemo(() => data?.allowedTabs || [], [data]);
+  const [allowedTabs, setAllowedTabs] = useState(data?.allowedTabs || []);
+  useEffect(() => {
+    if (data?.data?.prj_project_status_id <= 4) {
+      setAllowedTabs([34, 54, 37]);
+    } else {
+      setAllowedTabs(data?.allowedTabs || []);
+    }
+  }, [data?.data?.prj_project_status_id]);
 
   // Dynamic components based on allowed tabs
   const dynamicComponents = useMemo(() => (

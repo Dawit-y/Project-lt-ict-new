@@ -237,21 +237,21 @@ const ProjectModel = () => {
         sortable: true,
         filter: "agTextColumnFilter",
         /*floatingFilter: true,*/
-        flex: 4
+        flex: 3
       },
       {
         field: "zone_name",
         headerName: t("prj_owner_zone_id"),
         sortable: true,
         filter: "agTextColumnFilter",
-        flex: 3
+        flex: 2.5
       },
       {
         field: "sector_name",
         headerName: t("prj_sector_id"),
         sortable: true,
         filter: "agTextColumnFilter",
-        flex: 3
+        flex: 4.5
       },
       {
         headerName: t("prs_status"),
