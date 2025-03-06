@@ -5,10 +5,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useFetchDepartments, useSearchDepartments } from "../../queries/department_query";
 import { post } from "../../helpers/api_Lists";
 
-const fetchDepartmentsByParent = async (parentId = null) => {
+/*const fetchDepartmentsByParent = async (parentId = null) => {
   const response = await post(`department/departmentbyparent?parent_id=${parentId}`);
   return response?.data || [];
-};
+};*/
 
 const CascadingDepartmentDropdowns = ({
   validation,
