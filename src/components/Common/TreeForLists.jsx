@@ -76,10 +76,10 @@ const TreeForLists = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   if (isLoading) {
     return (
       <div
-        style={{ minHeight: "450px" }}
+        style={{ minHeight: "450px", minWidth: "400px" }}
         className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
       >
-        <h4 className="mb-2 text-secondary">{t("address_tree_Search")}</h4>
+        <h5 className="mb-2 text-secondary">{t("address_tree_Search")}</h5>
         <hr className="text-dark" />
         <p>Loading...</p>
       </div>

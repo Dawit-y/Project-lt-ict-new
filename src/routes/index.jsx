@@ -3,8 +3,7 @@ import { Navigate } from "react-router-dom";
 
 import Dashboard from "../pages/Dashboard/index";
 import Login from "../pages/Authentication/Login";
-import ProjectProvider from "../context/ProjectContext";
-import ProjectListProvider from "../context/ProjectListContext";
+
 const UsersProfile = lazy(() => import("../pages/Profile"));
 const ProjectPaymentList = lazy(() =>
   import("../pages/Projectpayment/ProjectPaymentList")
@@ -214,58 +213,54 @@ const authProtectedRoutes = [
   {
     path: "/Project",
     component: (
-      <ProjectProvider>
-        <Project />
-      </ProjectProvider>
+      <Project />
     ),
   },
   {
     path: "/project_list",
     component: (
-      <ProjectListProvider>
+      <>
         <ProjectList />
-      </ProjectListProvider>
+      </>
     ),
   },
   {
     path: "/Project/:id",
     component: (
-      <ProjectProvider>
+      <>
         <ProjectOverview />
-      </ProjectProvider>
+      </>
     ),
   },
   {
     path: "/projectdetail/:id",
     component: (
-      // <ProjectProvider>
-        <ProjectDetail />
-      /*</ProjectProvider>*/
+      <ProjectDetail />
     ),
   },
-  
+
   {
     path: "/Project/:id/project_plan",
     component: (
-      <ProjectProvider>
+      <>
         <ProjectPlan />
-      </ProjectProvider>
+      </>
     ),
   },
   {
     path: "/Project/:id/budget_request",
     component: (
-      <ProjectProvider>
+      <>
         <BudgetRequest />
-      </ProjectProvider>
+      </>
     ),
   },
   {
     path: "/Project/:id/budget_expenditure",
     component: (
-      <ProjectProvider>
+      <>
         <ProjectBudgetExpenditure />
-      </ProjectProvider>
+      </>
     ),
   },
   { path: "/project_plan_list", component: <ProjectPlanList /> },

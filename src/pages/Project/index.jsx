@@ -72,24 +72,29 @@ const ProjectModel = () => {
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [project, setProject] = useState(null);
-  const [quickFilterText, setQuickFilterText] = useState("");
-  const [selectedRows, setSelectedRows] = useState([]);
-  const gridRef = useRef(null);
-  const {
-    setSearchResults,
-    isSearchLoading,
-    showSearchResult,
-    setShowSearchResult,
-    projectParams,
-    setProjectParams,
-    setSelectedLocations,
-    params,
-    setParams,
-    searchParams,
-    setSearchParams,
-    searchData,
-    setInclude,
-  } = useProjectContext();
+
+  const [include, setInclude] = useState(0);
+  const [projectParams, setProjectParams] = useState({});
+  const [selectedLocations, setSelectedLocations] = useState({
+    region: null,
+    zone: null,
+    woreda: null,
+    cluster: null,
+    sector: null,
+    program: null,
+  });
+
+  useEffect(() => {
+    setProjectParams({
+      ...(selectedLocations.region && { prj_location_region_id: selectedLocations.region }),
+      ...(selectedLocations.zone && { prj_location_zone_id: selectedLocations.zone }),
+      ...(selectedLocations.woreda && { prj_location_woreda_id: selectedLocations.woreda }),
+      ...(selectedLocations.cluster && { prj_location_cluster_id: selectedLocations.cluster }),
+      ...(selectedLocations.sector && { prj_location_sector_id: selectedLocations.sector }),
+      ...(selectedLocations.program && { prj_location_program_id: selectedLocations.program }),
+      ...(include === 1 && { include }),
+    });
+  }, [selectedLocations, include]);
 
   const [selectedPage, setSelectedPage] = useState({ page: "", data: null });
   const [selectedNode, setSelectedNode] = useState(null)
@@ -224,7 +229,7 @@ const ProjectModel = () => {
       prj_owner_id: (project && project.prj_owner_id) || "",
       prj_urban_ben_number: (project && project.prj_urban_ben_number) || "",
       prj_rural_ben_number: (project && project.prj_rural_ben_number) || "",
-     // prj_department_id: (project && project.prj_department_id) || "",
+      // prj_department_id: (project && project.prj_department_id) || "",
       is_deletable: (project && project.is_deletable) || 1,
       is_editable: (project && project.is_editable) || 1,
     },
@@ -450,11 +455,11 @@ const ProjectModel = () => {
         return newState;
       });
 
-      if (showSearchResult) {
-        setShowSearchResult(false);
-      }
+      // if (showSearchResult) {
+      //   setShowSearchResult(false);
+      // }
     },
-    [showSearchResult, setShowSearchResult]
+    []
   );
 
   const handleClick = (data) => {
@@ -618,8 +623,8 @@ const ProjectModel = () => {
       }
     ];
     if (
-     data?.previledge?.is_role_editable==1 ||
-     data?.previledge?.is_role_deletable==1
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -630,20 +635,20 @@ const ProjectModel = () => {
           return (
             <div className="d-flex gap-3">
               {(data?.previledge?.is_role_editable == 1 && cellProps.row.original?.is_editable == 1) && (
-                  <Link
-                    to="#"
-                    className="text-success"
-                    onClick={() => {
-                      const data = cellProps.row.original;
-                      handleProjectClick(data);
-                    }}
-                  >
-                    <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                    <UncontrolledTooltip placement="top" target="edittooltip">
-                      Edit
-                    </UncontrolledTooltip>
-                  </Link>
-                )}
+                <Link
+                  to="#"
+                  className="text-success"
+                  onClick={() => {
+                    const data = cellProps.row.original;
+                    handleProjectClick(data);
+                  }}
+                >
+                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                  <UncontrolledTooltip placement="top" target="edittooltip">
+                    Edit
+                  </UncontrolledTooltip>
+                </Link>
+              )}
             </div>
           );
         },

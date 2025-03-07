@@ -8,48 +8,21 @@ import React, {
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { before, isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
-import * as Yup from "yup";
-import { useFormik } from "formik";
-import { Spinner } from "reactstrap";
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
-//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "./ag-grid.css";
+import { useSearchOnlyProjects } from "../../queries/project_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import { useTranslation } from "react-i18next";
-
 import {
   Button,
   Col,
   Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
   Input,
-  FormFeedback,
-  Label,
-  FormGroup,
-  InputGroup,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  UncontrolledDropdown,
   Badge
 } from "reactstrap";
-import {
-  alphanumericValidation,
-  amountValidation,
-  numberValidation,
-  onlyAmharicValidation
-} from "../../utils/Validation/validation";
-import { toast } from "react-toastify";
 import { createSelectOptions, createMultiSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForLists from "../../components/Common/TreeForLists";
@@ -66,7 +39,7 @@ const linkMapping = {
 };
 
 const ProjectModel = () => {
-  document.title = " Project";
+  document.title = "Projects List | PMS";
 
   const [projectMetaData, setProjectMetaData] = useState([]);
   const [showCanvas, setShowCanvas] = useState(false);
@@ -79,24 +52,56 @@ const ProjectModel = () => {
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
+
+  const [searchResults, setSearchResults] = useState(null);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState(null);
+  const [showSearchResult, setShowSearchResult] = useState(false);
+
+  const [projectParams, setProjectParams] = useState({});
+  const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
+  const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
+  const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
+  const [include, setInclude] = useState(0);
+
+  const [params, setParams] = useState({});
+  const [searchParams, setSearchParams] = useState({});
   const {
-    setSearchResults,
-    isSearchLoading,
-    showSearchResult,
-    setShowSearchResult,
-    projectParams,
-    setProjectParams,
-    setPrjLocationRegionId,
-    setPrjLocationZoneId,
-    setPrjLocationWoredaId,
-    setSelectedLocations,
-    params,
-    setParams,
-    searchParams,
-    setSearchParams,
-    searchData,
-    setInclude,
-  } = useProjectListContext();
+    data: searchData,
+    error: srError,
+    isError: isSrError,
+    refetch: search,
+  } = useSearchOnlyProjects(searchParams);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsSearchLoading(true);
+        await search();
+        setShowSearchResult(true);
+      } catch (error) {
+        console.error("Error during search:", error);
+      } finally {
+        setIsSearchLoading(false);
+      }
+    };
+    if (Object.keys(searchParams).length > 0) {
+      fetchData();
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    setProjectParams({
+      ...(prjLocationRegionId && {
+        prj_location_region_id: prjLocationRegionId,
+      }),
+      ...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
+      ...(prjLocationWoredaId && {
+        prj_location_woreda_id: prjLocationWoredaId,
+      }),
+      ...(include === 1 && { include: include }),
+    });
+  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
 
   const [isAddressLoading, setIsAddressLoading] = useState(false);
 
@@ -375,7 +380,6 @@ const ProjectModel = () => {
                   searchParams={searchParams}
                   setSearchParams={setSearchParams}
                 />
-
                 <div
                   className="ag-theme-alpine"
                   style={{ height: "100%", width: "100%" }}
