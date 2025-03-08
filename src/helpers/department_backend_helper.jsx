@@ -2,10 +2,21 @@ import { post } from "./api_Lists";
 //import * as url from "./url_Lists";
 
 const apiUrl = import.meta.env.VITE_BASE_API_URL;
+const GET_DEPARTMENT_STRUCTURE = "department/listdepartment";
 const GET_DEPARTMENT = "department/listgrid";
 const ADD_DEPARTMENT = "department/insertgrid";
 const UPDATE_DEPARTMENT = "department/updategrid";
 const DELETE_DEPARTMENT = "department/deletegrid";
+
+// get department structure
+export const getDepartmentStructure = async () => {
+  try {
+    const response = await post(apiUrl + GET_DEPARTMENT_STRUCTURE);
+    return response;
+  } catch (error) {
+    console.log(error); // Handle any errors
+  }
+};
 
 // Get departments
 export const getDepartment = async (params = {}) => {
