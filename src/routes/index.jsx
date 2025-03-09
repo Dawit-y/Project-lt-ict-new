@@ -216,6 +216,7 @@ const authProtectedRoutes = [
       <Project />
     ),
   },
+  
   {
     path: "/project_list",
     component: (

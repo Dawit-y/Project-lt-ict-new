@@ -434,7 +434,7 @@ const BudgetRequestModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {(data?.previledge?.is_role_editable == 1 && cellProps.row.original?.is_editable == 1) && (
+              {(data?.previledge?.is_role_editable == 1 && cellProps.row.original?.is_editable == 1 && cellProps.row.original?.bdr_request_status == 1) && (
                   <Button
                     size="sm"
                     color="none"

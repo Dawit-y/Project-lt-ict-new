@@ -94,6 +94,9 @@ const AuthMiddleware = ({ children }) => {
       "/Project/:id/budget_request",
       "/Project/:id/budget_expenditure",
       "/projectdetail/:id",
+      "/citizenshipprojectdetail/:id",
+      "/citizenship_project",
+      "/citizenship_project_list"
     );
   }
 

@@ -227,7 +227,7 @@ const DepartmentTree = () => {
           <div className="d-flex vh-100">
             <div
               className="w-30 p-3 bg-white border-end overflow-auto shadow-sm"
-              style={{ minWidth: "300px" }}
+              style={{ minWidth: "500px" }}
             >
               <h4 className="mb-2 text-secondary">{t("department")}</h4>
               <hr className="text-dark" />
