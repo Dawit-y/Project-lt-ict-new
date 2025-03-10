@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 
 import Dashboard from "../pages/Dashboard/index";
 import Login from "../pages/Authentication/Login";
+import { components } from "react-select";
 
 const UsersProfile = lazy(() => import("../pages/Profile"));
 const ProjectPaymentList = lazy(() =>
@@ -144,6 +145,17 @@ const ProposalRequestList = lazy(() => import("../pages/Proposalrequest/Proposal
 const SupersetListReport = lazy(() =>
   import("../pages/Report/SupersetListReport")
 );
+const CitizenshipProject = lazy(() =>
+  import("../pages/Citizenshipproject/index.jsx")
+);
+const CitizenshipProjectList = lazy(() =>
+  import("../pages/Citizenshipproject/ProjectList.jsx")
+);
+const CitizenshipProjectDetail = lazy(() =>
+  import("../pages/Citizenshipproject/ProjectDetail/index.jsx")
+);
+
+
 const authProtectedRoutes = [
   { path: '/cso_information', component: <CSOInformation /> },
   { path: '/date_setting', component: <DateSetting /> },
@@ -210,60 +222,16 @@ const authProtectedRoutes = [
   { path: "/project_stakeholder", component: <ProjectStakeholder /> },
   { path: "/stakeholder_type", component: <StakeholderType /> },
   { path: "/document_type", component: <DocumentType /> },
-  {
-    path: "/Project",
-    component: (
-      <Project />
-    ),
-  },
-  
-  {
-    path: "/project_list",
-    component: (
-      <>
-        <ProjectList />
-      </>
-    ),
-  },
-  {
-    path: "/Project/:id",
-    component: (
-      <>
-        <ProjectOverview />
-      </>
-    ),
-  },
-  {
-    path: "/projectdetail/:id",
-    component: (
-      <ProjectDetail />
-    ),
-  },
-
-  {
-    path: "/Project/:id/project_plan",
-    component: (
-      <>
-        <ProjectPlan />
-      </>
-    ),
-  },
-  {
-    path: "/Project/:id/budget_request",
-    component: (
-      <>
-        <BudgetRequest />
-      </>
-    ),
-  },
-  {
-    path: "/Project/:id/budget_expenditure",
-    component: (
-      <>
-        <ProjectBudgetExpenditure />
-      </>
-    ),
-  },
+  { path: "/Project", component: <Project /> },
+  { path: "/project_list", component: <ProjectList /> },
+  { path: "/Project/:id", component: <ProjectOverview /> },
+  { path: "/projectdetail/:id", component: <ProjectDetail /> },
+  { path: "/Project/:id/project_plan", component: <ProjectPlan />, },
+  { path: "/Project/:id/budget_request", component: <BudgetRequest /> },
+  { path: "/Project/:id/budget_expenditure", component: <ProjectBudgetExpenditure /> },
+  { path: "/citizenship_project", component: <CitizenshipProject /> },
+  { path: "/citizenship_project_list", component: <CitizenshipProjectList /> },
+  { path: "/citizenship_project_detail/:id", component: <CitizenshipProjectDetail /> },
   { path: "/project_plan_list", component: <ProjectPlanList /> },
   { path: "/project_category", component: <ProjectCategory /> },
   { path: "/project_contractor", component: <ProjectContractor /> },

@@ -8,7 +8,7 @@ import {
   getSearchProject
 } from "../helpers/citizenship_project_backend_helper";
 
-export const PROJECT_QUERY_KEY = ["project"];
+export const PROJECT_QUERY_KEY = ["citizen_project"];
 
 // Fetch project
 export const useFetchProjects = (param = {}) => {
@@ -39,9 +39,10 @@ export const useFetchProject = (id, userId, isActive = false) => {
     queryKey: [...PROJECT_QUERY_KEY, "detail", id, userId],
     queryFn: () => fetchProject(id),
     staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 6,
     meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: !!id && !!userId && isActive,
   });
 };

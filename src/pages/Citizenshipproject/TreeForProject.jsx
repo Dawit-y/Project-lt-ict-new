@@ -220,6 +220,10 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
         <h5 className="text-secondary">{t("address_tree_Search")}</h5>
         <hr />
         <Row className="d-flex align-items-center justify-content-between mb-3">
+          <Col className="d-flex align-items-center gap-2 my-auto">
+            <Input className="" id="include" name="include" type="checkbox" onChange={handleCheckboxChange} />
+            <Label for="include" className="my-auto">{t('include_sub_address')}</Label>
+          </Col>
           <Col className="d-flex gap-2" >
             <Input id="searchterm" name="searchterm" type="text" bsSize="sm" placeholder="search" onChange={handleSearchTerm} />
             <Button
