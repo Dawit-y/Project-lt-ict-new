@@ -1202,5 +1202,8 @@
 "select_department":"Department",
 "usr_directorate_id":"Directorate", 
 "usr_team_id":"Team",
-"usr_officer_id":"Officer"
+"usr_officer_id":"Officer",
+"select_sub_department_1":"Select Directorate",
+"select_sub_department_2":"Select Team",
+"select_sub_department_3":"Select Officer"
 }

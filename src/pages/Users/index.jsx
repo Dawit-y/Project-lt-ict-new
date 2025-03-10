@@ -319,7 +319,7 @@ usr_officer_id: (users && users.usr_officer_id) || ""
           usr_department_id: Number(values.usr_department_id),
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
-           usr_directorate_id : Number(values.usr_directorate_id),
+          usr_directorate_id : Number(values.usr_directorate_id),
           usr_team_id : Number(values.usr_team_id),
           usr_officer_id : Number(values.usr_officer_id),
         };
@@ -373,8 +373,8 @@ usr_officer_id: (users && users.usr_officer_id) || ""
       is_deletable: user.is_deletable,
       is_editable: user.is_editable,
       usr_directorate_id : Number(user.usr_directorate_id),
-          usr_team_id : Number(user.usr_team_id),
-          usr_officer_id : Number(user.usr_officer_id),
+      usr_team_id : Number(user.usr_team_id),
+      usr_officer_id : Number(user.usr_officer_id),
     });
     setIsEdit(true);
     toggle();
@@ -400,6 +400,9 @@ usr_officer_id: (users && users.usr_officer_id) || ""
       usr_description: users.usr_description,
       usr_status: users.usr_status,
       usr_department_id: Number(users.usr_department_id),
+      usr_directorate_id: Number(users.usr_directorate_id),
+      usr_team_id: Number(users.usr_team_id),
+      usr_officer_id: Number(users.usr_officer_id),
       is_deletable: users.is_deletable,
       is_editable: users.is_editable,
     });
