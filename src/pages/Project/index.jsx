@@ -59,7 +59,7 @@ import {
 import { toast } from "react-toastify";
 import { createSelectOptions, createMultiSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import TreeForLists from "./TreeForProject";
+import TreeForProject from "./TreeForProject";
 import { useProjectContext } from "../../context/ProjectContext";
 
 const ProjectModel = () => {
@@ -677,7 +677,7 @@ const ProjectModel = () => {
         <div>
           <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
           <div className="w-100 d-flex gap-2">
-            <TreeForLists
+            <TreeForProject
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}

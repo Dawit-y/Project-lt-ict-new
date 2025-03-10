@@ -32,7 +32,7 @@ export const getSearchProject = async (params = {}) => {
 
 export const fetchProject = async (prj_id) => {
   try {
-    const response = await get(`/project/${prj_id}`);
+    const response = await get(`/project_citizenship/${prj_id}`);
     return response;
   } catch (error) {
     throw error;
@@ -56,9 +56,9 @@ export const deleteProject = (objectName) =>
 
 export const fetchSingleProjectApi = async (prj_id) => {
   try {
-    const response = await get(`/project/${prj_id}`);
+    const response = await get(`/citizenship_project/${prj_id}`);
     return response;
   } catch (error) {
-    console.log(error);
+    throw error
   }
 };

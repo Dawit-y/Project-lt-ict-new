@@ -7,42 +7,31 @@ import React, {
 } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { before, isEmpty, update } from "lodash";
+import { isEmpty } from "lodash";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "./ag-grid.css";
-import { useSearchOnlyProjects } from "../../queries/project_query";
+import { useSearchProjects } from "../../queries/citizenship_project_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
-import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import { useTranslation } from "react-i18next";
 import {
   Button,
   Col,
   Row,
   Input,
-  Badge
+  Badge,
 } from "reactstrap";
-import { createSelectOptions, createMultiSelectOptions } from "../../utils/commonMethods";
+import { createMultiSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForLists from "../../components/Common/TreeForLists";
-import { useProjectListContext } from "../../context/ProjectListContext";
 import SearchForProject from "../../components/Common/SearchForProject";
 import ExportToExcel from "../../components/Common/ExportToExcel";
 import ExportToPDF from "../../components/Common/ExportToPdf";
 import PrintPage from "../../components/Common/PrintPage";
 
-const linkMapping = {
-  34: "budget_request",
-  61: "project_plan",
-  39: "project_budget_expenditure"
-};
-
 const ProjectModel = () => {
-  document.title = "Projects List | PMS";
-
-  const [projectMetaData, setProjectMetaData] = useState([]);
-  const [showCanvas, setShowCanvas] = useState(false);
+  document.title = "Citizenship Projects List | PMS";
   const { t, i18n } = useTranslation();
   const lang = i18n.language
   const [modal, setModal] = useState(false);
@@ -71,7 +60,20 @@ const ProjectModel = () => {
     error: srError,
     isError: isSrError,
     refetch: search,
-  } = useSearchOnlyProjects(searchParams);
+  } = useSearchProjects(searchParams);
+
+  const [isAddressLoading, setIsAddressLoading] = useState(false);
+  const { data, isLoading, error, isError, refetch } = useState(false);
+  const { data: projectCategoryData } = useFetchProjectCategorys();
+  const {
+    pct_name_en: projectCategoryOptionsEn,
+    pct_name_or: projectCategoryOptionsOr,
+    pct_name_am: projectCategoryOptionsAm,
+  } = createMultiSelectOptions(
+    projectCategoryData?.data || [],
+    "pct_id",
+    ["pct_name_en", "pct_name_or", "pct_name_am"]
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -102,36 +104,6 @@ const ProjectModel = () => {
       ...(include === 1 && { include: include }),
     });
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
-
-  const [isAddressLoading, setIsAddressLoading] = useState(false);
-
-  const { data, isLoading, error, isError, refetch } = useState(false);
-  const { data: projectCategoryData } = useFetchProjectCategorys();
-  const {
-    pct_name_en: projectCategoryOptionsEn,
-    pct_name_or: projectCategoryOptionsOr,
-    pct_name_am: projectCategoryOptionsAm,
-  } = createMultiSelectOptions(
-    projectCategoryData?.data || [],
-    "pct_id",
-    ["pct_name_en", "pct_name_or", "pct_name_am"]
-  );
-  const { data: sectorInformationData } = useFetchSectorInformations();
-  const sectorInformationOptions = createSelectOptions(
-    sectorInformationData?.data || [],
-    "sci_id",
-    "sci_name_en"
-  );
-  const [allowedTabs, setAllowedTabs] = useState(searchData?.allowedTabs || []);
-  const allowedLinks = searchData?.allowedLinks || []
-
-  useEffect(() => {
-    if (projectMetaData?.prj_project_status_id <= 4) {
-      setAllowedTabs([54, 37]);
-    } else {
-      setAllowedTabs(searchData?.allowedTabs || []);
-    }
-  }, [projectMetaData?.prj_project_status_id, searchData]);
 
   useEffect(() => {
     setProject(data);
@@ -178,17 +150,7 @@ const ProjectModel = () => {
       setShowSearchResult,
     ]
   );
-  const handleClick = (data) => {
-    setShowCanvas(!showCanvas);
-    setProjectMetaData(data);
-  };
 
-  //delete projects
-  const [deleteModal, setDeleteModal] = useState(false);
-  const onClickDelete = (project) => {
-    setProject(project);
-    setDeleteModal(true);
-  };
   const localeText = {
     // For Pagination Panel
     page: t("page"),
@@ -256,8 +218,7 @@ const ProjectModel = () => {
         headerName: t("prj_sector_id"),
         sortable: true,
         filter: "agTextColumnFilter",
-        flex: 4.5,
-        cellStyle: { 'text-overflow': 'ellipsis', 'white-space': 'nowrap', 'overflow': 'hidden', 'padding': 0 }
+        flex: 4.5
       },
       {
         headerName: t("prs_status"),
@@ -298,7 +259,7 @@ const ProjectModel = () => {
           }
           const { prj_id } = params.data || {};
           return (
-            <Link to={`/projectdetail/${prj_id}`} target="_blank">
+            <Link to={`/citizenship_project_detail/${prj_id}`} target="_blank">
               <Button type="button" className="btn-sm mb-1 default" outline>
                 <i className="fa fa-eye"></i>
               </Button>
@@ -308,7 +269,8 @@ const ProjectModel = () => {
       },
     ];
     return baseColumnDefs;
-  }, [data, onClickDelete, t]);
+  }, [searchData, t]);
+
   const rowData = useMemo(() => {
     return showSearchResult ? searchData?.data : data?.data || [];
   }, [showSearchResult, searchData?.data, data?.data]);
@@ -327,24 +289,16 @@ const ProjectModel = () => {
     setShowSearchResult(true);
   }, []);
 
-  const defaultColDef = {
-    sortable: true,
-    filter: true,
-    resizable: true,
-    flex: 1,
-  };
-  const onGridReady = useCallback((params) => {
-    params.api.sizeColumnsToFit();
-  }, []);
   const onSelectionChanged = useCallback(() => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
     const selectedData = selectedNodes.map((node) => node.data);
     setSelectedRows(selectedData);
   }, []);
 
-  if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
+  if (isSrError) {
+    return <FetchErrorHandler error={srError} refetch={search} />;
   }
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -386,17 +340,17 @@ const ProjectModel = () => {
                   style={{ height: "100%", width: "100%" }}
                 >
                   <Row className="mb-3">
-                    <Col sm="12" md="6">
+                    <Col sm="12" md="4">
                       <Input
                         type="text"
-                        placeholder={t("Search") + "..."}
+                        placeholder={t("filter") + "..."}
                         onChange={(e) => setQuickFilterText(e.target.value)}
                         className="mb-2"
                       />
                     </Col>
                     <Col
                       sm="12"
-                      md="6"
+                      md="8"
                       className="text-md-end d-flex align-items-center justify-content-end gap-2"
                     >
                       <ExportToExcel
