@@ -12,14 +12,14 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   const treeRef = useRef()
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
-  const { data, isLoading } = useFetchAddressStructures(userId);
+  const { data, isLoading, isError } = useFetchAddressStructures(userId);
   const [treeData, setTreeData] = useState([]);
   const [programParam, setProgramParam] = useState({})
   const [selectedSector, setSelectedSector] = useState({})
 
   const [searchTerm, setSearchTerm] = useState(null)
 
-  const { data: clusters, isLoading: isClusterLoading } = getUserSectorListTree(userId);
+  const { data: clusters, isLoading: isClusterLoading, isError: isClusterError } = getUserSectorListTree(userId);
   const { data: prData, isLoading: isProgramLoading, refetch: refetchProgram } =
     useFetchProgramInfos(programParam, Object.keys(programParam).length > 0);
 
@@ -214,6 +214,22 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
     return nameExists(node);
   }, []);
 
+  if (isLoading || isClusterLoading) {
+    return (
+      <div
+        style={{ minHeight: "100vh", minWidth: "400px" }}
+        className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
+      >
+        <h5 className="mb-2 text-secondary">{t("address_tree_Search")}</h5>
+        <hr className="text-dark" />
+        <p>Loading...</p>
+      </div>
+    );
+  }
+  if (isError || isClusterLoading) {
+    return <div>Error fetching address structure</div>;
+  }
+
   return (
     <Card className="border shadow-sm" style={{ minWidth: '400px' }}>
       <CardBody className="p-3">
@@ -232,7 +248,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
             </Button>
           </Col>
         </Row>
-        <div className="border rounded p-2 overflow-auto" style={{ minHeight: "350px" }}>
+        <div className="border rounded p-2 overflow-auto" style={{ minHeight: "100vh" }}>
           {treeData.length > 0 && (
             <Tree
               initialData={treeData}

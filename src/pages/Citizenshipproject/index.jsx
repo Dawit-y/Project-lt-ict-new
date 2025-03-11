@@ -549,13 +549,6 @@ const ProjectModel = () => {
         flex: 2.5
       },
       {
-        field: "sector_name",
-        headerName: t("prj_sector_id"),
-        sortable: true,
-        filter: "agTextColumnFilter",
-        flex: 4.5
-      },
-      {
         headerName: t("prs_status"),
         field: "bdr_request_status",
         sortable: true,
@@ -720,7 +713,7 @@ const ProjectModel = () => {
                       className="text-md-end d-flex align-items-center justify-content-end gap-2"
                     >
                       <Col sm="12" md="6" className="text-md-end">
-                        <Button color="success" disabled={!prjLocationRegionId} onClick={handleProjectClicks}>
+                        <Button color="success" disabled={!prjLocationWoredaId} onClick={handleProjectClicks}>
                           {t("add")}
                         </Button>
                       </Col>

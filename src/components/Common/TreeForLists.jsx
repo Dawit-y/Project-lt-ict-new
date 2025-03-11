@@ -76,7 +76,7 @@ const TreeForLists = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   if (isLoading) {
     return (
       <div
-        style={{ minHeight: "450px", minWidth: "400px" }}
+        style={{ minHeight: "100vh", minWidth: "400px" }}
         className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
       >
         <h5 className="mb-2 text-secondary">{t("address_tree_Search")}</h5>
@@ -111,7 +111,7 @@ const TreeForLists = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
             </Button>
           </Col>
         </Row>
-        <div className="border rounded p-2 overflow-auto" style={{ minHeight: "350px" }}>
+        <div className="border rounded p-2 overflow-auto" style={{ minHeight: "100vh" }}>
           {treeData.length > 0 && (
             <Tree
               initialData={treeData}

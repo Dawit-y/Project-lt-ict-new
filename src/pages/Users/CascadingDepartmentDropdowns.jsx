@@ -1,4 +1,4 @@
-import React, { useEffect , useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { FormGroup, Label, Input, FormFeedback } from "reactstrap";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
@@ -81,13 +81,24 @@ const CascadingDepartmentDropdowns = ({
           value={validation.values[dropdown1name]}
           onChange={handleDepartmentChange}
           onBlur={validation.handleBlur}
-          invalid={!!validation.errors[dropdown1name]}
+          invalid={
+            validation.touched[dropdown1name] &&
+              validation.errors[dropdown1name]
+              ? true
+              : false
+          }
         >
           <option value="">{t("select_department")}</option>
           {loadingDepartments ? <option disabled>{t("Loading...")}</option> :
             departments?.data.map((dept) => <option key={dept.dep_id} value={dept.dep_id}>{dept.dep_name_en}</option>)
           }
         </Input>
+        {validation.touched[dropdown1name] &&
+          validation.errors[dropdown1name] ? (
+          <FormFeedback type="invalid">
+            {validation.errors[dropdown1name]}
+          </FormFeedback>
+        ) : null}
       </FormGroup>
 
       {/* Sub-department Level 1 */}

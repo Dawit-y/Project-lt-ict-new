@@ -21,6 +21,8 @@ import Spinners from "../../components/Common/Spinner";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet"
 import customMarkerImg from "../../assets/images/marker.png"
+import { FullscreenControl } from "react-leaflet-fullscreen";
+import "react-leaflet-fullscreen/styles.css";
 
 const customMarkerIcon = L.icon({
   iconUrl: customMarkerImg,
@@ -138,14 +140,14 @@ const ProjectsLocation = () => {
               setShowSearchResult={setShowSearchResult}
             />
             {isLoading || isSearchLoading || isAddressLoading ? (
-              <div style={{ width: "100%", height: "400px" }}>
+              <div style={{ width: "100%", height: "100vh" }}>
                 <Spinners />
               </div>
             ) : markers && markers.length > 0 ? (
               <MapContainer
                 center={[viewState.latitude, viewState.longitude]}
                 zoom={viewState.zoom}
-                style={{ height: "400px", width: "100%", zIndex: "1" }}
+                style={{ height: "100vh", width: "100%", zIndex: "1" }}
                 scrollWheelZoom={true}
               >
                 <TileLayer
@@ -169,6 +171,11 @@ const ProjectsLocation = () => {
                     )}
                   </Marker>
                 ))}
+                <FullscreenControl
+                  position="bottomleft"
+                  forcePseudoFullscreen
+                  forceSeparateButton
+                />
               </MapContainer>
             ) : (
               <div className="position-absolute top-70 start-50">

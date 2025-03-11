@@ -197,9 +197,10 @@ const UsersModel = () => {
       is_deletable: (users && users.is_deletable) || 1,
       is_editable: (users && users.is_editable) || 1,
 
-usr_directorate_id: (users && users.usr_directorate_id) || "",
-usr_team_id: (users && users.usr_team_id) || "",
-usr_officer_id: (users && users.usr_officer_id) || ""
+      usr_directorate_id: (users && users.usr_directorate_id) || "",
+      usr_team_id: (users && users.usr_team_id) || "",
+      usr_officer_id: (users && users.usr_officer_id) || "",
+      usr_user_type: (users && users.usr_user_type) || "",
     },
     validationSchema: Yup.object({
       usr_email: Yup.string()
@@ -231,6 +232,7 @@ usr_officer_id: (users && users.usr_officer_id) || ""
       usr_sector_id: dropdownValidation(1, 100, true),
       usr_department_id: dropdownValidation(1, 100, true),
       usr_region_id: Yup.number().required(t("usr_region_id")),
+      usr_user_type: Yup.number().required(t("usr_user_type")),
       // usr_zone_id: Yup.number().required(t("usr_zone_id")),
       //usr_woreda_id: Yup.number().required(t("usr_woreda_id")),
     }),
@@ -261,9 +263,10 @@ usr_officer_id: (users && users.usr_officer_id) || ""
           usr_department_id: Number(values.usr_department_id),
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
-          usr_directorate_id : Number(values.usr_directorate_id),
-          usr_team_id : Number(values.usr_team_id),
-          usr_officer_id : Number(values.usr_officer_id),
+          usr_directorate_id: Number(values.usr_directorate_id),
+          usr_team_id: Number(values.usr_team_id),
+          usr_officer_id: Number(values.usr_officer_id),
+          usr_user_type: Number(values.usr_user_type),
         };
         // update Users
         handleUpdateUsers(updateUsers);
@@ -289,9 +292,10 @@ usr_officer_id: (users && users.usr_officer_id) || ""
           usr_department_id: Number(values.usr_department_id),
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
-          usr_directorate_id : Number(values.usr_directorate_id),
-          usr_team_id : Number(values.usr_team_id),
-          usr_officer_id : Number(values.usr_officer_id),
+          usr_directorate_id: Number(values.usr_directorate_id),
+          usr_team_id: Number(values.usr_team_id),
+          usr_officer_id: Number(values.usr_officer_id),
+          usr_user_type: Number(values.usr_user_type),
         };
         // setSelectedDepartment(values.usr_department_id);
         // update Users
@@ -319,9 +323,10 @@ usr_officer_id: (users && users.usr_officer_id) || ""
           usr_department_id: Number(values.usr_department_id),
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
-          usr_directorate_id : Number(values.usr_directorate_id),
-          usr_team_id : Number(values.usr_team_id),
-          usr_officer_id : Number(values.usr_officer_id),
+          usr_directorate_id: Number(values.usr_directorate_id),
+          usr_team_id: Number(values.usr_team_id),
+          usr_officer_id: Number(values.usr_officer_id),
+          usr_user_type: Number(values.usr_user_type),
         };
         handleAddUsers(newUsers);
       }
@@ -372,9 +377,10 @@ usr_officer_id: (users && users.usr_officer_id) || ""
       usr_department_id: Number(user.usr_department_id),
       is_deletable: user.is_deletable,
       is_editable: user.is_editable,
-      usr_directorate_id : Number(user.usr_directorate_id),
-      usr_team_id : Number(user.usr_team_id),
-      usr_officer_id : Number(user.usr_officer_id),
+      usr_directorate_id: Number(user.usr_directorate_id),
+      usr_team_id: Number(user.usr_team_id),
+      usr_officer_id: Number(user.usr_officer_id),
+      usr_user_type: Number(user.usr_user_type),
     });
     setIsEdit(true);
     toggle();
@@ -405,6 +411,7 @@ usr_officer_id: (users && users.usr_officer_id) || ""
       usr_officer_id: Number(users.usr_officer_id),
       is_deletable: users.is_deletable,
       is_editable: users.is_editable,
+      usr_user_type: Number(users.usr_user_type),
     });
     setIsDuplicateModalOpen(true);
     toggle();
@@ -846,36 +853,34 @@ usr_officer_id: (users && users.usr_officer_id) || ""
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  {/* <Col className="col-md-4 mb-3">
-                    <Label>{t("Cluster Name")} <span className="text-danger">*</span></Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("usr_user_type")} <span className="text-danger">*</span></Label>
                     <Input
-                      name="usr_department_id"
+                      name="usr_user_type"
                       type="select"
                       className="form-select"
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.usr_department_id || ""}
+                      value={validation.values.usr_user_type || ""}
                       invalid={
-                        validation.touched.usr_department_id &&
-                          validation.errors.usr_department_id
+                        validation.touched.usr_user_type &&
+                          validation.errors.usr_user_type
                           ? true
                           : false
                       }
                     >
                       <option value="">{t("select_one")}</option>
-                      {departmentOptions.map((option) => (
-                        <option key={option.value} value={Number(option.value)}>
-                          {t(option.label)}
-                        </option>
-                      ))}
+                      <option value={1}>{t("Governmental")}</option>
+                      <option value={2}>{t("CSO")}</option>
+                      <option value={3}>{t("Citizenship")}</option>
                     </Input>
-                    {validation.touched.usr_department_id &&
-                      validation.errors.usr_department_id ? (
+                    {validation.touched.usr_user_type &&
+                      validation.errors.usr_user_type ? (
                       <FormFeedback type="invalid">
-                        {validation.errors.usr_department_id}
+                        {validation.errors.usr_user_type}
                       </FormFeedback>
                     ) : null}
-                  </Col> */}
+                  </Col>
 
                   <Col className="col-md-6 mb-3">
                     <CascadingDropdowns

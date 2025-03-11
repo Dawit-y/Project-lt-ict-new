@@ -15,6 +15,9 @@ import "leaflet/dist/leaflet.css";
 import "./leaflet-container.css";
 import L from "leaflet"
 import customMarkerImg from "../../assets/images/marker.png"
+import { FullscreenControl } from "react-leaflet-fullscreen";
+import "react-leaflet-fullscreen/styles.css";
+
 
 const customMarkerIcon = L.icon({
   iconUrl: customMarkerImg,
@@ -124,6 +127,11 @@ const GeoLocation = ({ passedId, isActive }) => {
               position={markerPos}
               ref={markerRef}
               icon={customMarkerIcon}
+            />
+            <FullscreenControl
+              position="bottomleft"
+              forcePseudoFullscreen
+              forceSeparateButton
             />
           </MapContainer>
         )}
