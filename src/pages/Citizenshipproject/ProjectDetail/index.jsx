@@ -67,7 +67,7 @@ const ProjectsOverview = () => {
   const [allowedTabs, setAllowedTabs] = useState(data?.allowedTabs || []);
   useEffect(() => {
     if (data?.data?.prj_project_status_id <= 4) {
-      setAllowedTabs([34, 54, 37]);
+      setAllowedTabs([54, 37, 33]);
     } else {
       setAllowedTabs(data?.allowedTabs || []);
     }

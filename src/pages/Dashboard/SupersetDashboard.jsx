@@ -17,6 +17,7 @@ const SupersetDashboard = (dashboardPath) => {
   : 0;
 //alert(User.user.user_sector[0].sector_ids);
   const departmentId = User.user.usr_department_id === 1 ? 0 : User.user.usr_department_id;
+  const projectType = User.user.usr_user_type;
   useEffect(() => {
     // Construct the iframe URL with dynamic parameters
     //const baseUrl = "http://196.188.182.83:1110/superset/dashboard/12/?standalone=true";
@@ -28,7 +29,8 @@ const SupersetDashboard = (dashboardPath) => {
     url.searchParams.set("zone_id", zoneId);
     url.searchParams.set("woreda_id", woredaId);
     url.searchParams.set("sector_id", sectorId);
-    url.searchParams.set("department_id", departmentId);
+    //url.searchParams.set("department_id", departmentId);
+    url.searchParams.set("project_type", projectType);
     const fullUrl = url.toString();
     // Update the iframe URL
     setDashboardUrl(fullUrl);

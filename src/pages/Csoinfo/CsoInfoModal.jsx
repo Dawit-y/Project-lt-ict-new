@@ -61,11 +61,7 @@ const CsoInfoModal = (props) => {
                     <p className="mb-2">
             {t('cso_description')}: <span className="text-primary">{transaction.cso_description}</span>
           </p>
-          </tr><tr>
-                    <td>@lang("form_lang.cso_status"):</td>
-                    <td>@if ($pms_cso_info_data->cso_status==1) @lang("form_lang.yes") @else @lang("form_lang.no") @endif</td>
-                    </tr>
-
+          </tr>
           {transaction.is_deletable === 1 && (
             <p className="text-danger">data is deletable</p>
           )}
