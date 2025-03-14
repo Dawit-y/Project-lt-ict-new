@@ -89,8 +89,13 @@ const Navbar = (props) => {
                       {props.t(menu.title)}
                       <div className="arrow-down"></div>
                     </div>
+
                     <div
-                      style={{ zIndex: 2000 }}
+                      style={{
+                        zIndex: 2000,
+                        maxHeight: "500px", // Set a max height
+                        overflowY: "auto", // Enable scrolling when content overflows
+                      }}
                       className={classname("dropdown-menu", {
                         show: activeMenuIndex === index,
                       })}
