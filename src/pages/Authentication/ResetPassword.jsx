@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -12,6 +12,7 @@ import {
   Input,
   Label,
   Row,
+  Alert,
 } from "reactstrap";
 import { LOGIN_TITLE, FOOTER_TEXT } from "../../constants/constantFile";
 
@@ -21,6 +22,8 @@ import lightlogo from "../../assets/images/logo-light.png";
 
 const ResetPassword = () => {
   document.title = "Reset Password";
+  const [apiResponse, setApiResponse] = useState("");
+  const [error, setError] = useState("");
 
   const validation = useFormik({
     enableReinitialize: true,
@@ -32,9 +35,24 @@ const ResetPassword = () => {
         .email("Invalid email address")
         .required("Please Enter Your Email"),
     }),
-    onSubmit: (values) => {
-      console.log("Form submitted with values:", values);
-      // Handle reset password logic here
+    onSubmit: async (values) => {
+      try {
+        const response = await fetch(
+          `https://pms.awashsol.com/api/forgot-password?email=${values.email}`,
+          {
+            method: "POST",
+          }
+        );
+        const data = await response.json();
+        if (response.ok) {
+          setApiResponse(data.message);
+          setError("");
+        } else {
+          setError(data.message || "Something went wrong");
+        }
+      } catch (err) {
+        setError("Network error, please try again");
+      }
     },
   });
 
@@ -74,40 +92,54 @@ const ResetPassword = () => {
                 </div>
 
                 <div className="p-2">
-                  <div className="alert alert-success text-center mb-4">
-                    Enter your email and instructions will be sent to you!
-                  </div>
+                  {error ? (
+                    <Alert color="danger">{error}</Alert>
+                  ) : (
+                    !apiResponse && (
+                      <div className="alert alert-success text-center mb-4">
+                        Enter your email, and instructions will be sent to you!
+                      </div>
+                    )
+                  )}
 
-                  <Form
-                    className="form-horizontal"
-                    onSubmit={validation.handleSubmit}
-                  >
-                    <div className="mb-3">
-                      <Label className="form-label">Email</Label>
-                      <Input
-                        name="email"
-                        className="form-control"
-                        placeholder="Enter email"
-                        type="email"
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.email}
-                        invalid={
-                          !!(
-                            validation.touched.email && validation.errors.email
-                          )
-                        }
-                      />
-                      {validation.touched.email && validation.errors.email && (
-                        <FormFeedback>{validation.errors.email}</FormFeedback>
-                      )}
-                    </div>
-                    <div className="text-end">
-                      <button className="btn btn-primary w-md" type="submit">
-                        Reset
-                      </button>
-                    </div>
-                  </Form>
+                  {apiResponse.length > 0 ? (
+                    apiResponse && <Alert color="success">{apiResponse}</Alert>
+                  ) : (
+                    <Form
+                      className="form-horizontal"
+                      onSubmit={validation.handleSubmit}
+                    >
+                      <div className="mb-3">
+                        <Label className="form-label">Email</Label>
+                        <Input
+                          name="email"
+                          className="form-control"
+                          placeholder="Enter email"
+                          type="email"
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.email}
+                          invalid={
+                            !!(
+                              validation.touched.email &&
+                              validation.errors.email
+                            )
+                          }
+                        />
+                        {validation.touched.email &&
+                          validation.errors.email && (
+                            <FormFeedback>
+                              {validation.errors.email}
+                            </FormFeedback>
+                          )}
+                      </div>
+                      <div className="text-end">
+                        <button className="btn btn-primary w-md" type="submit">
+                          Reset
+                        </button>
+                      </div>
+                    </Form>
+                  )}
                 </div>
               </CardBody>
             </Card>

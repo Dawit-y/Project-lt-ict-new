@@ -40,6 +40,8 @@ import { useFetchBudgetRequestTasks } from "../../queries/budgetrequesttask_quer
 import { useFetchBudgetExSources } from "../../queries/budgetexsource_query";
 import DatePicker from "../../components/Common/DatePicker";
 import RequestFollowupModel from "../Requestfollowup";
+import BudgetRequestModal from "./BudgetRequestModal";
+import BudgetRequestDetails from "./BudgetRequestDetails";
 
 const modalStyle = {
   width: "100%",
@@ -55,8 +57,12 @@ const ApproverBudgetRequestListModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction, budgetYearMap = {} } = props;
   const { mutateAsync, isPending } = useUpdateBudgetRequestApproval();
-  const { data: statusData } = useFetchRequestStatuss()
-  const statusOptions = createSelectOptions(statusData?.data || [], "rqs_id", "rqs_name_en")
+  const { data: statusData } = useFetchRequestStatuss();
+  const statusOptions = createSelectOptions(
+    statusData?.data || [],
+    "rqs_id",
+    "rqs_name_en"
+  );
 
   const getStatusOption = (value) =>
     statusOptions.find((option) => option.value === value) || null;
@@ -118,6 +124,22 @@ const ApproverBudgetRequestListModal = (props) => {
 
   const tabs = [
     {
+      id: "view_detail_modal",
+      label: `${t("view_details")}`,
+      content: <BudgetRequestDetails transaction={transaction} />,
+    },
+    {
+      id: "request_followup",
+      label: `${t("request_follow_up")}`,
+      content: <RequestFollowupModel request={transaction} />,
+    },
+    {
+      id: "details",
+      label: `${t("details")}`,
+      content: <TakeActionForm data={transaction} />,
+    },
+
+    {
       id: "take_action",
       label: `${t("take_action")}`,
       content: (
@@ -166,7 +188,7 @@ const ApproverBudgetRequestListModal = (props) => {
                       className="select2-selection"
                       invalid={
                         formik.touched.bdr_request_status &&
-                          formik.errors.bdr_request_status
+                        formik.errors.bdr_request_status
                           ? true
                           : false
                       }
@@ -181,28 +203,28 @@ const ApproverBudgetRequestListModal = (props) => {
                   {(formik.values.bdr_request_status === 2 ||
                     (transaction.bdr_request_status === 2 &&
                       transaction.bdr_released_amount)) && (
-                      <FormGroup>
-                        <Label>Released Amount</Label>
-                        <Input
-                          type="number"
-                          name="bdr_released_amount"
-                          onChange={formik.handleChange}
-                          value={formik.values.bdr_released_amount}
-                          invalid={
-                            formik.touched.bdr_released_amount &&
-                              formik.errors.bdr_released_amount
-                              ? true
-                              : false
-                          }
-                        />
-                        {formik.errors.bdr_released_amount &&
-                          formik.touched.bdr_released_amount && (
-                            <div className="text-danger">
-                              {formik.errors.bdr_released_amount}
-                            </div>
-                          )}
-                      </FormGroup>
-                    )}
+                    <FormGroup>
+                      <Label>Released Amount</Label>
+                      <Input
+                        type="number"
+                        name="bdr_released_amount"
+                        onChange={formik.handleChange}
+                        value={formik.values.bdr_released_amount}
+                        invalid={
+                          formik.touched.bdr_released_amount &&
+                          formik.errors.bdr_released_amount
+                            ? true
+                            : false
+                        }
+                      />
+                      {formik.errors.bdr_released_amount &&
+                        formik.touched.bdr_released_amount && (
+                          <div className="text-danger">
+                            {formik.errors.bdr_released_amount}
+                          </div>
+                        )}
+                    </FormGroup>
+                  )}
                   <FormGroup>
                     <DatePicker
                       isRequired={true}
@@ -222,7 +244,7 @@ const ApproverBudgetRequestListModal = (props) => {
                       value={formik.values.bdr_action_remark}
                       invalid={
                         formik.touched.bdr_action_remark &&
-                          formik.errors.bdr_action_remark
+                        formik.errors.bdr_action_remark
                           ? true
                           : false
                       }
@@ -259,18 +281,6 @@ const ApproverBudgetRequestListModal = (props) => {
         </Row>
       ),
     },
-    {
-      id: "details",
-      label: `${t("details")}`,
-      content: (
-        <TakeActionForm data={transaction} />
-      ),
-    },
-    {
-      id: "request_followup",
-      label: `${t("request_follow_up")}`,
-      content: <RequestFollowupModel request={transaction} />
-    }
   ];
 
   return (
@@ -885,11 +895,7 @@ const TakeActionForm = (props) => {
                         Budget Request Amount
                       </AccordionHeader>
                       <AccordionBody accordionId="1">
-                        <Accordion
-                          flush
-                          open={subOpen}
-                          toggle={toggleSubAcc}
-                        >
+                        <Accordion flush open={subOpen} toggle={toggleSubAcc}>
                           {brAmounts?.isLoading ? (
                             <div className="w-100 d-flex align-items-center justify-content-center">
                               <Spinner size={"sm"} color="primary" />
@@ -974,4 +980,4 @@ const TakeActionForm = (props) => {
       </Row>
     </>
   );
-}
+};

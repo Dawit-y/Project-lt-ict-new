@@ -17,16 +17,18 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import BudgetRequestAnalysis from "./BudgetRequestAnalysis";
-import {
-  useSearchBudgetRequestforApproval,
-} from "../../queries/budget_request_query";
+import { useSearchBudgetRequestforApproval } from "../../queries/budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
-import { useSearchRequestFollowups, useFetchRequestFollowups } from "../../queries/requestfollowup_query"
+import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
+import {
+  useSearchRequestFollowups,
+  useFetchRequestFollowups,
+} from "../../queries/requestfollowup_query";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForLists from "../../components/Common/TreeForLists";
-import AttachFileModal from "../../components/Common/AttachFileModal"
-import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal"
+import AttachFileModal from "../../components/Common/AttachFileModal";
+import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal";
 import { PAGE_ID } from "../../constants/constantFile";
 import BudgetRequestModal from "./BudgetRequestModal";
 
@@ -47,10 +49,10 @@ const ApproverBudgetRequestList = () => {
   const gridRef = useRef(null);
 
   const [budgetRequestMetaData, setBudgetRequestMetaData] = useState({});
-  const [detailModal, setDetailModal] = useState(false)
+  const [detailModal, setDetailModal] = useState(false);
   const [showCanvas, setShowCanvas] = useState(false);
-  const [fileModal, setFileModal] = useState(false)
-  const [convModal, setConvModal] = useState(false)
+  const [fileModal, setFileModal] = useState(false);
+  const [convModal, setConvModal] = useState(false);
 
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -60,6 +62,7 @@ const ApproverBudgetRequestList = () => {
 
   const { data, isLoading, error, isError, refetch } = useState(null);
   const { data: budgetYearData } = useFetchBudgetYears();
+  const { data: bgCategoryOptionsData } = useFetchRequestCategorys();
 
   const [projectParams, setProjectParams] = useState({});
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
@@ -70,27 +73,28 @@ const ApproverBudgetRequestList = () => {
 
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const user = storedUser?.user;
- const depId = user?.usr_officer_id > 0
-    ? user.usr_officer_id
-    : user?.usr_team_id > 0
+  const depId =
+    user?.usr_officer_id > 0
+      ? user.usr_officer_id
+      : user?.usr_team_id > 0
       ? user.usr_team_id
       : user?.usr_directorate_id > 0
-        ? user.usr_directorate_id
-        : user?.usr_department_id > 0
-        ? user.usr_department_id
-        : null;
+      ? user.usr_directorate_id
+      : user?.usr_department_id > 0
+      ? user.usr_department_id
+      : null;
 
   //const depId = 1
-  const { data: rqfData, isLoading: rqfLoading } = useFetchRequestFollowups()
+  const { data: rqfData, isLoading: rqfLoading } = useFetchRequestFollowups();
 
   function markForwardedRequests(budgetRequests, forwardedRequests, depId) {
     const forwardedSet = new Set(
       forwardedRequests
-        .filter(req => req.rqf_forwarding_dep_id === depId)
-        .map(req => req.rqf_request_id)
+        .filter((req) => req.rqf_forwarding_dep_id === depId)
+        .map((req) => req.rqf_request_id)
     );
 
-    return budgetRequests.map(request => ({
+    return budgetRequests.map((request) => ({
       ...request,
       forwarded: forwardedSet.has(request.bdr_id),
     }));
@@ -99,7 +103,7 @@ const ApproverBudgetRequestList = () => {
   const transformedData = useMemo(() => {
     if (!searchResults?.data || !rqfData?.data) return [];
     return markForwardedRequests(searchResults.data, rqfData.data, depId);
-  }, [searchResults, rqfData, depId])
+  }, [searchResults, rqfData, depId]);
 
   const budgetYearMap = useMemo(() => {
     return (
@@ -119,6 +123,15 @@ const ApproverBudgetRequestList = () => {
     );
   }, [budgetYearData]);
 
+  const requestCategoryOptions = useMemo(() => {
+    return (
+      bgCategoryOptionsData?.data?.map((category) => ({
+        label: category.rqc_name_en,
+        value: category.rqc_id,
+      })) || []
+    );
+  }, [bgCategoryOptionsData]);
+
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
@@ -130,11 +143,10 @@ const ApproverBudgetRequestList = () => {
     setBudgetRequestMetaData(data);
   };
 
-  const toggleDetailModal = () => setDetailModal(!detailModal)
+  const toggleDetailModal = () => setDetailModal(!detailModal);
   const toggleViewModal = () => setModal1(!modal1);
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
-
 
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
@@ -191,7 +203,7 @@ const ApproverBudgetRequestList = () => {
         sortable: false,
         filter: false,
         width: 60,
-        flex: .5
+        flex: 0.5,
       },
       {
         headerName: t("bdr_budget_year_id"),
@@ -203,6 +215,20 @@ const ApproverBudgetRequestList = () => {
           return truncateText(params.data.bdy_name, 30) || "-";
         },
       },
+      {
+        headerName: t("bdr_request_category_id"),
+        field: "bdr_request_category_id",
+        sortable: true,
+        filter: true,
+        flex: 1,
+        cellRenderer: (params) => {
+          const category = requestCategoryOptions.find(
+            (option) => option.value === params.data.bdr_request_category_id
+          );
+          return category ? truncateText(category.label, 30) : "-";
+        },
+      },
+
       {
         headerName: t("prj_name"),
         field: "prj_name",
@@ -240,6 +266,16 @@ const ApproverBudgetRequestList = () => {
         },
       },
       {
+        headerName: t("bdr_requested_date_gc"),
+        field: "bdr_requested_date_gc",
+        sortable: true,
+        filter: "agDateColumnFilter",
+        flex: 1,
+        cellRenderer: (params) => {
+          return truncateText(params.data.bdr_requested_date_gc, 30) || "-";
+        },
+      },
+      {
         headerName: t("bdr_released_amount"),
         field: "bdr_released_amount",
         sortable: true,
@@ -255,16 +291,7 @@ const ApproverBudgetRequestList = () => {
           return "0.00"; // Default value if null or undefined
         },
       },
-      {
-        headerName: t("bdr_requested_date_gc"),
-        field: "bdr_requested_date_gc",
-        sortable: true,
-        filter: "agDateColumnFilter",
-        flex: 1,
-        cellRenderer: (params) => {
-          return truncateText(params.data.bdr_requested_date_gc, 30) || "-";
-        },
-      },
+
       {
         headerName: t("bdr_released_date_gc"),
         field: "bdr_released_date_gc",
@@ -284,8 +311,12 @@ const ApproverBudgetRequestList = () => {
         cellRenderer: (params) => {
           const isForwarded = params.data.forwarded;
           return (
-            <Badge className={`font-size-12 badge-soft-${isForwarded ? "danger" : "secondary"}`}>
-              {isForwarded ? "forwarded" : "not forwarded"}
+            <Badge
+              className={`font-size-12 badge-soft-${
+                isForwarded ? "danger" : "secondary"
+              }`}
+            >
+              {isForwarded ? t("forwarded") : t("not_forwarded")}
             </Badge>
           );
         },
@@ -305,26 +336,27 @@ const ApproverBudgetRequestList = () => {
           );
         },
       },
-      {
-        headerName: t("view_detail"),
-        field: "view_detail",
-        flex: 1,
-        cellRenderer: (params) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                toggleDetailModal();
-                setTransaction(params.data);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
+
+      // {
+      //   headerName: t("view_detail"),
+      //   field: "view_detail",
+      //   flex: 1,
+      //   cellRenderer: (params) => {
+      //     return (
+      //       <Button
+      //         type="button"
+      //         color="primary"
+      //         className="btn-sm"
+      //         onClick={() => {
+      //           toggleDetailModal();
+      //           setTransaction(params.data);
+      //         }}
+      //       >
+      //         {t("view_detail")}
+      //       </Button>
+      //     );
+      //   },
+      // },
       {
         headerName: t("take_action"),
         field: "take_action",
@@ -388,7 +420,6 @@ const ApproverBudgetRequestList = () => {
           );
         },
       },
-
     ];
 
     if (
@@ -429,11 +460,11 @@ const ApproverBudgetRequestList = () => {
 
   return (
     <React.Fragment>
-      <BudgetRequestModal
+      {/* <BudgetRequestModal
         isOpen={detailModal}
         toggle={toggleDetailModal}
         transaction={transaction}
-      />
+      /> */}
       <ApproverBudgetRequestListModal
         isOpen={modal1}
         toggle={toggleViewModal}
@@ -475,6 +506,10 @@ const ApproverBudgetRequestList = () => {
                     key: "bdr_budget_year_id",
                     options: budgetYearOptions,
                   },
+                  {
+                    key: "bdr_request_category_id",
+                    options: requestCategoryOptions,
+                  },
                 ]}
                 additionalParams={projectParams}
                 setAdditionalParams={setProjectParams}
@@ -508,9 +543,7 @@ const ApproverBudgetRequestList = () => {
                       <AgGridReact
                         ref={gridRef}
                         rowData={
-                          showSearchResult
-                            ? transformedData
-                            : data?.data || []
+                          showSearchResult ? transformedData : data?.data || []
                         }
                         columnDefs={columnDefs}
                         pagination={true}
