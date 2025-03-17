@@ -181,7 +181,7 @@ const RequestInformationList = () => {
         },
       },
       {
-        headerName: "Request Category",
+        headerName: "request_category",
         field: "rqi_request_category_id",
         sortable: true,
         filter: false,

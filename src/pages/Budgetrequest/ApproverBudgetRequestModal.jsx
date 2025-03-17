@@ -46,7 +46,7 @@ import {
   alphanumericValidation,
   amountValidation,
   numberValidation,
-  onlyAmharicValidation
+  onlyAmharicValidation,
 } from "../../utils/Validation/validation";
 const modalStyle = {
   width: "100%",
@@ -179,10 +179,10 @@ const ApproverBudgetRequestListModal = (props) => {
           <Col xl={7}>
             <Card>
               <CardBody>
-                <CardTitle className="mb-4">Take Action</CardTitle>
+                <CardTitle className="mb-4">{t("take_action")}</CardTitle>
                 <form onSubmit={formik.handleSubmit}>
                   <FormGroup>
-                    <Label>Status</Label>
+                    <Label>{t("status")}</Label>
                     <Select
                       name="bdr_request_status"
                       options={statusOptions}
@@ -238,7 +238,7 @@ const ApproverBudgetRequestListModal = (props) => {
                   </FormGroup>
 
                   <FormGroup>
-                    <Label>Action Remark</Label>
+                    <Label>{t("action_remark")}</Label>
                     <Input
                       type="textarea"
                       name="bdr_action_remark"
@@ -274,7 +274,7 @@ const ApproverBudgetRequestListModal = (props) => {
                     </Button>
                   ) : (
                     <Button type="submit" color="primary" className="w-md">
-                      Submit
+                      {t("submit")}
                     </Button>
                   )}
                 </form>

@@ -179,6 +179,7 @@
 	"Edit Project Status": "Edit Project Status",
 	"Add Project Status": "Add Project Status",
 	"Add New Project": "Add New Project",
+	
 
 	"Order Delete Successfully": "Order Delete Successfully",
 	"Order Delete Failed": "Order Delete Failed",
@@ -334,6 +335,7 @@
 	"prp_status": "Status",
 
 	"project_document": "Project Document",
+	"project_document_list": "Project Document List",
 	"prd_id": "Id",
 	"prd_project_id": "Project",
 	"prd_document_type_id": "Document Type",
