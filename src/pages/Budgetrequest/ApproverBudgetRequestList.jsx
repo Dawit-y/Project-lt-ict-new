@@ -1,9 +1,6 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState, useRef, lazy, Suspense } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import Spinners from "../../components/Common/Spinner";
-import Breadcrumbs from "../../components/Common/Breadcrumb";
-import ApproverBudgetRequestListModal from "./ApproverBudgetRequestModal";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -16,7 +13,23 @@ import {
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import BudgetRequestAnalysis from "./BudgetRequestAnalysis";
+// Lazy-loaded components
+const Spinners = lazy(() => import("../../components/Common/Spinner"));
+const Breadcrumbs = lazy(() => import("../../components/Common/Breadcrumb"));
+const ApproverBudgetRequestListModal = lazy(() => import("./ApproverBudgetRequestModal"));
+const BudgetRequestAnalysis = lazy(() => import("./BudgetRequestAnalysis"));
+const AdvancedSearch = lazy(() => import("../../components/Common/AdvancedSearch"));
+const FetchErrorHandler = lazy(() => import("../../components/Common/FetchErrorHandler"));
+const TreeForLists = lazy(() => import("../../components/Common/TreeForLists"));
+const AttachFileModal = lazy(() => import("../../components/Common/AttachFileModal"));
+const ConvInfoModal = lazy(() => import("../../pages/Conversationinformation/ConvInfoModal"));
+const BudgetRequestModal = lazy(() => import("./BudgetRequestModal"));
+
+const ExportToExcel = lazy(() => import("../../components/Common/ExportToExcel"));
+const ExportToPDF = lazy(() => import("../../components/Common/ExportToPdf"));
+const PrintPage = lazy(() => import("../../components/Common/PrintPage"));
+//const { budget_request } = lazy(() => import("../../settings/printablecolumns"));
+import { budget_request } from "../../settings/printablecolumns";
 import { useSearchBudgetRequestforApproval } from "../../queries/budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
@@ -24,14 +37,7 @@ import {
   useSearchRequestFollowups,
   useFetchRequestFollowups,
 } from "../../queries/requestfollowup_query";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import TreeForLists from "../../components/Common/TreeForLists";
-import AttachFileModal from "../../components/Common/AttachFileModal";
-import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal";
 import { PAGE_ID } from "../../constants/constantFile";
-import BudgetRequestModal from "./BudgetRequestModal";
-
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -457,8 +463,8 @@ const ApproverBudgetRequestList = () => {
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <React.Fragment>
       {/* <BudgetRequestModal
         isOpen={detailModal}
@@ -537,6 +543,36 @@ const ApproverBudgetRequestList = () => {
                           className="mb-2"
                         />
                       </Col>
+                      <Col
+                        sm="12"
+                        md="6"
+                        className="text-md-end d-flex align-items-center justify-content-end gap-2"
+                      >
+                        <ExportToExcel
+                          tableData={
+                            showSearchResult ? transformedData : data?.data || []
+                          }
+                          tablename={"projects"}
+                          includeKey={budget_request}
+                        />
+                        <ExportToPDF
+                          tableData={
+                            showSearchResult ? transformedData : data?.data || []
+                          }
+                          tablename={"projects"}
+                          includeKey={budget_request}
+                        />
+                        <PrintPage
+                          tableData={
+                            showSearchResult ? transformedData : data?.data || []
+                          }
+                          tablename={t("Projects")}
+                          excludeKey={["is_editable", "is_deletable"]}
+                          gridRef={gridRef}
+                          columnDefs={columnDefs}
+                          columnsToIgnore="3"
+                        />
+                      </Col>
                     </Row>
                     {/* AG Grid */}
                     <div style={{ height: "600px", zoom: "90%" }}>
@@ -564,6 +600,7 @@ const ApproverBudgetRequestList = () => {
         </div>
       </div>
     </React.Fragment>
+    </Suspense>
   );
 };
 ApproverBudgetRequestList.propTypes = {

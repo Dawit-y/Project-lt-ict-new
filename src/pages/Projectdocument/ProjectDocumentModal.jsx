@@ -29,7 +29,8 @@ const ProjectDocumentModal = (props) => {
     "prd_uploaded_date",
     "prd_description",
     "prd_size",
-    "prd_create_time"
+    "prd_create_time",
+    "prd_created_by"
   ];
   const tabs = [
     {

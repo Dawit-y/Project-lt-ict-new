@@ -351,7 +351,7 @@
 	"prd_status": "Status",
 
 	"budget_request": "Budget Request",
-	"budget_request_approval": "Budget Request Approval",
+	"budget_request_approval": "Request Approval",
 	"bdr_id": "Id",
 	"bdr_budget_year_id": "Budget Year",
 	"bdr_request_category_id":"Request Category",
@@ -781,8 +781,8 @@
 	"employee_date_end": "Employee End Date",
 	"contractsign_date_start": "Contract Sign Start Date",
 	"contractsign_date_end": "Contract Sign End Date",
-	"budget_request_date_start": "Budget Request Start Date",
-	"budget_request_date_end": "Budget Request End Date",
+	"budget_request_date_start": "Request Start Date",
+	"budget_request_date_end": "Request End Date",
 	"project_handover_list": "Project Handover List",
 	"project_performance_list": "Project Performance List",
 	"project_variation_list": "Project Variation List",
@@ -1110,7 +1110,7 @@
 	"proposal_request_list": "Proposal Request List",
 	"request_information_list": "Request Information List",
 	"attach_files": "Files",
-	"documents": "Documnets",
+	"documents": "Documents",
 	"open": "Open",
 	"no_files_availaible": "No Files Available.",
 	"name": "Name",
@@ -1118,7 +1118,7 @@
 	"size": "Size",
 	"create_new": "Create New",
 	"Message": "Message",
-	"budget_request_approval": "Budget Request Approval",
+	"budget_request_approval": "Budget Request",
 	"is_deleted": "Is Deleted",
 	"yes": "Yes",
 	"no": "No",
@@ -1209,5 +1209,6 @@
 	"select_sub_department_1": "Select Directorate",
 	"select_sub_department_2": "Select Team",
 	"select_sub_department_3": "Select Officer",
-	"usr_user_type": "User Type"
+	"usr_user_type": "User Type",
+	"menu_request":"Requests"
 }

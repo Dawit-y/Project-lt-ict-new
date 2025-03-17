@@ -66,7 +66,8 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const BudgetRequestModel = () => {
+const BudgetRequestModel = (props) => {
+  const {isActive, status, startDate } = props;
   const location = useLocation();
   const id = Number(location.pathname.split("/")[2]);
   const param = { project_id: id, request_type: "single" };
@@ -213,14 +214,25 @@ const BudgetRequestModel = () => {
     );
   }, [bgYearsOptionsData]);
 
-  const RequestCatagoryMap = useMemo(() => {
+/*  const RequestCatagoryMap = useMemo(() => {
     return (
       bgCategoryOptionsData?.data?.reduce((cat, category) => {
         cat[category.rqc_id] = category.rqc_name_en;
         return cat;
       }, {}) || {}
     );
-  }, [bgCategoryOptionsData]);
+  }, [bgCategoryOptionsData]);*/
+
+  const RequestCatagoryMap = useMemo(() => {
+  const filteredData = bgCategoryOptionsData?.data?.filter(category => 
+    status < 5 ? [1].includes(category.rqc_id) : true
+  ) || [];
+  return filteredData.reduce((cat, category) => {
+    cat[category.rqc_id] = category.rqc_name_en;
+    return cat;
+  }, {});
+}, [bgCategoryOptionsData, status]);
+
 
   useEffect(() => {
     setBudgetRequest(data?.data);
@@ -701,12 +713,11 @@ const BudgetRequestModel = () => {
                   }
                   maxLength={20}
                 >
-                  <option value="">Select Request Category</option>
-                  {bgCategoryOptionsData?.data?.map((data) => (
-                    <option key={data.rqc_id} value={data.rqc_id}>
-                      {data.rqc_name_en}
-                    </option>
-                  ))}
+                 {Object.entries(RequestCatagoryMap).map(([id, name]) => (
+        <option key={id} value={id}>
+          {name}
+        </option>
+      ))}
                 </Input>
                 {validation.touched.bdr_request_category_id &&
                 validation.errors.bdr_request_category_id ? (

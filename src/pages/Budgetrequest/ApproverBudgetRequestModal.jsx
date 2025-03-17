@@ -42,7 +42,12 @@ import DatePicker from "../../components/Common/DatePicker";
 import RequestFollowupModel from "../Requestfollowup";
 import BudgetRequestModal from "./BudgetRequestModal";
 import BudgetRequestDetails from "./BudgetRequestDetails";
-
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+  onlyAmharicValidation
+} from "../../utils/Validation/validation";
 const modalStyle = {
   width: "100%",
 };
@@ -138,7 +143,6 @@ const ApproverBudgetRequestListModal = (props) => {
       label: `${t("details")}`,
       content: <TakeActionForm data={transaction} />,
     },
-
     {
       id: "take_action",
       label: `${t("take_action")}`,
@@ -147,7 +151,6 @@ const ApproverBudgetRequestListModal = (props) => {
           <Col xl={5}>
             <Card>
               <CardBody>
-                <h5 className="fw-semibold">Overview</h5>
                 <div className="table-responsive">
                   <table className="table">
                     <tbody>
