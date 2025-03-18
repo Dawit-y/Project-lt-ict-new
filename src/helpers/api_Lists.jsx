@@ -43,7 +43,7 @@ export const scheduleTokenRefresh = (token) => {
 const refreshAccessToken = async () => {
   const storedUser = getStoredUser();
   if (!storedUser?.authorization?.refresh_token) {
-    console.warn("No refresh token available.");
+    //console.warn("No refresh token available.");
     redirectToLogin();
     return;
   }
@@ -57,7 +57,7 @@ const refreshAccessToken = async () => {
     updateStoredUser(data);
     // console.log("Access token refreshed successfully!");
   } catch (error) {
-    console.error("Failed to refresh token:", error);
+    //console.error("Failed to refresh token:", error);
     localStorage.removeItem("authUser");
     redirectToLogin();
   }
@@ -82,9 +82,15 @@ axiosApi.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !error?.response?.data?.message.includes("Incorrect email") && !originalRequest._retry) {
-      originalRequest._retry = true;
+    const isLoginRequest = originalRequest.url.includes("/login");
 
+    if (error.response?.status === 401 && isLoginRequest && !originalRequest._retry) {
+      originalRequest._retry = true;
+      return Promise.reject(error);
+    }
+
+    if (error.response?.status === 401 && error?.response.statusText === "Unauthorized" && !originalRequest._retry) {
+      originalRequest._retry = true;
       try {
         await refreshAccessToken();
 
@@ -94,13 +100,11 @@ axiosApi.interceptors.response.use(
 
         return axiosApi(originalRequest);
       } catch (refreshError) {
-        console.error("Token refresh failed in response intercept:", refreshError);
         localStorage.removeItem("authUser");
-        redirectToLogin()
+        redirectToLogin();
         return Promise.reject(refreshError);
       }
     }
-
     return Promise.reject(error);
   }
 );

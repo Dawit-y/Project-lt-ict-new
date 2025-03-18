@@ -66,14 +66,6 @@ const App = (props) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!isOnline) {
-      toast.error("You are currently offline", { autoClose: 1000 });
-    } else {
-      toast.success("You are back online", { autoClose: 1000 });
-    }
-  }, [isOnline]);
-
   const authUser = JSON.parse(localStorage.getItem("authUser"));
   useEffect(() => {
     scheduleTokenRefresh(authUser?.authorization?.token)
