@@ -23,6 +23,7 @@ import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useSearchStatisticalReport } from "../../queries/statisticalreport_query";
 import "./statistical.css";
 import { createSelectOptions } from "../../utils/commonMethods";
+import PrintStatisticalReportPage from "../../components/Common/PrintStatisticalReportPage";
 
 const PlotlyRenderers = createPlotlyRenderers(Plot);
 
@@ -59,7 +60,7 @@ const StatisticalReport = () => {
   const [textSearchKeys, setTextSearchKeys] = useState([]);
   const [dateSearchKeys, setDateSearchKeys] = useState([]);
   const [dropdownSearchKeys, setDropdownSearchKeys] = useState([]);
-  const [include, setInclude] = useState(0)
+  const [include, setInclude] = useState(0);
 
   const [selectedEndpoint, setSelectedEndpoint] = useState("");
   const [data, setData] = useState([]);
@@ -116,10 +117,12 @@ const StatisticalReport = () => {
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
-      dropdownSearchKeys: [{
-        key: "prj_budget_year_id",
-        options: budgetYearOptions
-      }],
+      dropdownSearchKeys: [
+        {
+          key: "prj_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
       reportTypeIndex: 1,
     },
     project_employee: {
@@ -129,10 +132,12 @@ const StatisticalReport = () => {
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
-      dropdownSearchKeys: [{
-        key: "emp_budget_year_id",
-        options: budgetYearOptions
-      }],
+      dropdownSearchKeys: [
+        {
+          key: "emp_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
       reportTypeIndex: 2,
     },
     project_budget_plan: {
@@ -142,10 +147,12 @@ const StatisticalReport = () => {
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
-      dropdownSearchKeys: [{
-        key: "bpl_budget_year_id",
-        options: budgetYearOptions
-      }],
+      dropdownSearchKeys: [
+        {
+          key: "bpl_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
       reportTypeIndex: 3,
     },
     project_budget_expenditure: {
@@ -155,10 +162,12 @@ const StatisticalReport = () => {
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
-      dropdownSearchKeys: [{
-        key: "pbe_budget_year_id",
-        options: budgetYearOptions
-      }],
+      dropdownSearchKeys: [
+        {
+          key: "pbe_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
       reportTypeIndex: 4,
     },
     budget_source: {
@@ -168,10 +177,12 @@ const StatisticalReport = () => {
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
-      dropdownSearchKeys: [{
-        key: "pbs_budget_year_id",
-        options: budgetYearOptions
-      }],
+      dropdownSearchKeys: [
+        {
+          key: "pbs_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
       reportTypeIndex: 5,
     },
     project_contractor: {
@@ -181,10 +192,12 @@ const StatisticalReport = () => {
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
-      dropdownSearchKeys: [{
-        key: "cni_budget_year_id",
-        options: budgetYearOptions
-      }],
+      dropdownSearchKeys: [
+        {
+          key: "cni_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
       reportTypeIndex: 6,
     },
     project_payment: {
@@ -194,10 +207,12 @@ const StatisticalReport = () => {
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
-      dropdownSearchKeys: [{
-        key: "prp_budget_year_id",
-        options: budgetYearOptions
-      }],
+      dropdownSearchKeys: [
+        {
+          key: "prp_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
       reportTypeIndex: 7,
     },
 
@@ -208,10 +223,12 @@ const StatisticalReport = () => {
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
-      dropdownSearchKeys: [{
-        key: "prp_budget_year_id",
-        options: budgetYearOptions
-      }],
+      dropdownSearchKeys: [
+        {
+          key: "prp_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
       reportTypeIndex: 8,
     },
     project_stakeholder: {
@@ -221,10 +238,12 @@ const StatisticalReport = () => {
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
-      dropdownSearchKeys: [{
-        key: "psh_budget_year_id",
-        options: budgetYearOptions
-      }],
+      dropdownSearchKeys: [
+        {
+          key: "psh_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
       reportTypeIndex: 9,
     },
     project_supplimentary: {
@@ -235,10 +254,12 @@ const StatisticalReport = () => {
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
-      dropdownSearchKeys: [{
-        key: "prs_budget_year_id",
-        options: budgetYearOptions
-      }],
+      dropdownSearchKeys: [
+        {
+          key: "prs_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
       reportTypeIndex: 10,
     },
 
@@ -250,10 +271,12 @@ const StatisticalReport = () => {
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
-      dropdownSearchKeys: [{
-        key: "prv_budget_year_id",
-        options: budgetYearOptions
-      }],
+      dropdownSearchKeys: [
+        {
+          key: "prv_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
       reportTypeIndex: 11,
     },
     project_handover: {
@@ -263,10 +286,12 @@ const StatisticalReport = () => {
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
-      dropdownSearchKeys: [{
-        key: "prh_budget_year_id",
-        options: budgetYearOptions
-      }],
+      dropdownSearchKeys: [
+        {
+          key: "prh_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
       reportTypeIndex: 12,
     },
     budget_request: {
@@ -276,10 +301,12 @@ const StatisticalReport = () => {
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
-      dropdownSearchKeys: [{
-        key: "prd_budget_year_id",
-        options: budgetYearOptions
-      }],
+      dropdownSearchKeys: [
+        {
+          key: "prd_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
       reportTypeIndex: 13,
     },
   };
@@ -295,7 +322,7 @@ const StatisticalReport = () => {
     if (config) {
       setSearchHook(() => config.hook);
       setTextSearchKeys(config.textKeys);
-      setDropdownSearchKeys(config.dropdownSearchKeys)
+      setDropdownSearchKeys(config.dropdownSearchKeys);
       setDateSearchKeys(config.dateKeys);
       setReportTypeId(config.reportTypeIndex);
     }
@@ -328,7 +355,7 @@ const StatisticalReport = () => {
     if (ReportTypeId) {
       updatedParams["report_type"] = ReportTypeId;
     }
-    const newParams = { ...updatedParams, ...(include === 1 && { include }) }
+    const newParams = { ...updatedParams, ...(include === 1 && { include }) };
     setProjectParams(newParams);
   }, [
     LocationRegionId,
@@ -336,7 +363,7 @@ const StatisticalReport = () => {
     LocationWoredaId,
     ReportTypeId,
     locationParams,
-    include
+    include,
   ]);
 
   // Handle node selection dynamically based on selected endpoint's location keys
@@ -388,17 +415,16 @@ const StatisticalReport = () => {
           />
           <div className="w-100">
             <Row className="d-flex align-items-center justify-content-center">
-              <Col xs="2" sm="2" lg="2">
-                <Card className="">
-                  <CardBody className="">
-                    <>
+              <Col xs="4" sm="4" lg="4">
+                <Card>
+                  <CardBody>
+                    <div className="d-flex align-items-center gap-5">
                       <Input
                         type="select"
                         name="endpoint"
                         id="api-endpoints"
                         value={selectedEndpoint.name}
                         onChange={handleSelectionChange}
-                        className=""
                       >
                         <option value="">{t("select_stat")}</option>
                         {endpoints.map((endpoint, index) => (
@@ -407,11 +433,18 @@ const StatisticalReport = () => {
                           </option>
                         ))}
                       </Input>
-                    </>
+
+                      <PrintStatisticalReportPage
+                        tableData={searchResults || []}
+                        tablename={t("Statistical Report")}
+                        excludeKey={["is_editable", "is_deletable"]}
+                      />
+                    </div>
                   </CardBody>
                 </Card>
               </Col>
-              <Col xs="10" sm="10" lg="10">
+
+              <Col xs="8" sm="8" lg="8">
                 <AdvancedSearch
                   searchHook={useSearchStatisticalReport}
                   textSearchKeys={textSearchKeys}
@@ -457,9 +490,7 @@ const StatisticalReport = () => {
                       </Card>
                     )}
                   {searchResults && searchResults.length === 0 && (
-                    <p>
-                      {t("statistical_search")}
-                    </p>
+                    <p>{t("statistical_search")}</p>
                   )}
                 </>
               )}
@@ -471,4 +502,3 @@ const StatisticalReport = () => {
   );
 };
 export default StatisticalReport;
-
