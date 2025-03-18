@@ -32,7 +32,7 @@ export const scheduleTokenRefresh = (token) => {
 
       clearTimeout(refreshTimeout); // Clear previous timeout
       refreshTimeout = setTimeout(refreshAccessToken, refreshTime);
-      console.log(`Token will refresh in ${refreshTime / 1000} seconds`);
+      // console.log(`Token will refresh in ${refreshTime / 1000} seconds`);
     }
   } catch (error) {
     console.error("Error decoding token:", error);
@@ -55,7 +55,7 @@ const refreshAccessToken = async () => {
       },
     });
     updateStoredUser(data);
-    console.log("Access token refreshed successfully!");
+    // console.log("Access token refreshed successfully!");
   } catch (error) {
     console.error("Failed to refresh token:", error);
     localStorage.removeItem("authUser");
@@ -82,7 +82,7 @@ axiosApi.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !error?.response?.data?.message.includes("Incorrect email") && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {

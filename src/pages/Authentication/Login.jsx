@@ -35,7 +35,7 @@ const Login = () => {
 
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const togglePasswordVisibility = () =>
     setShowPassword((prevState) => !prevState);
@@ -46,7 +46,7 @@ const Login = () => {
       localStorage.setItem("authUser", JSON.stringify(data));
       localStorage.setItem("I18N_LANGUAGE", "en");
       localStorage.setItem("i18nextLng", "en");
-      setErrorMessage(null);
+      setErrorMessage(null)
       navigate("/dashboard");
     },
     onError: (error) => {
@@ -94,7 +94,9 @@ const Login = () => {
                 </Row>
               </div>
               <CardBody className="pt-0 mt-2">
-                {errorMessage && <Alert color="danger">{errorMessage}</Alert>}
+                {errorMessage && (
+                  <Alert color="danger">{errorMessage}</Alert>
+                )}
                 <Form onSubmit={validation.handleSubmit}>
                   <div className="mb-3">
                     <Label>Email</Label>
@@ -160,13 +162,6 @@ const Login = () => {
                       Log In
                     </button>
                   </div>
-
-                  {/* <div className="mt-4 text-center">
-                    <Link to="/forgot_password" className="text-muted">
-                      <i className="mdi mdi-lock me-1" />
-                      Forgot your password?
-                    </Link>
-                  </div> */}
                 </Form>
               </CardBody>
             </Card>

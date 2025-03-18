@@ -53,7 +53,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const PaymentCategoryModel = () => {
-  document.title = " Payment Category";
+  document.title = "Payment Category";
 
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
@@ -533,11 +533,12 @@ const PaymentCategoryModel = () => {
                       ) : null}
                     </div>
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-12 mb-3">
                     <Label>{t("pyc_description")}</Label>
                     <Input
                       name="pyc_description"
                       type="textarea"
+                      rows={4}
                       placeholder={t("pyc_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
@@ -548,7 +549,7 @@ const PaymentCategoryModel = () => {
                           ? true
                           : false
                       }
-                      maxLength={20}
+                      maxLength={200}
                     />
                     {validation.touched.pyc_description &&
                       validation.errors.pyc_description ? (

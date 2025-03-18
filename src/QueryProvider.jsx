@@ -4,20 +4,37 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
+
+const useErrorMessages = () => {
+  const { t } = useTranslation();
+  return {
+    452: t("errors_duplicateEntry"),
+    453: t("errors_missingField"),
+    454: t("errors_invalidReference"),
+    455: t("errors_genericError"),
+  };
+};
+
+// Function to extract API error message
+const GetErrorMessage = ({ error }) => {
+  const statusMessages = useErrorMessages();
+
+  if (error?.response?.data) {
+    const { status_code, errorMsg, column } = error.response.data;
+    if (statusMessages[status_code]) {
+      return `${statusMessages[status_code]} ${column ? `on ${column}` : ""}`;
+    }
+    return `${errorMsg} ${column ? `on ${column}` : ""}`;
+  }
+
+  return error.message || "An unexpected error occurred.";
+};
 
 // Create a Web Storage Persistor
 const localStoragePersistor = createSyncStoragePersister({
   storage: window.localStorage,
 });
-
-// Function to extract API error message
-const getErrorMessage = (error) => {
-  if (error?.response?.data) {
-    const { status_code, errorMsg, column } = error.response.data;
-    return `[Error ${status_code}] ${errorMsg} ${column ? `on ${column}` : ""}`;
-  }
-  return error.message || "An unexpected error occurred.";
-};
 
 // Create the QueryClient
 const queryClient = new QueryClient({
@@ -36,9 +53,9 @@ const queryClient = new QueryClient({
   }),
   mutationCache: new MutationCache({
     onError: (error, _, __, mutation) => {
-      if (!error.handledByMutationCache) {
+      if (!error.handledByMutationCache && error.response?.status !== 401) {
         error.handledByMutationCache = true;
-        const message = getErrorMessage(error);
+        const message = <GetErrorMessage error={error} />;
         toast.error(message, { autoClose: 2000 });
       }
     },
