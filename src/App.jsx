@@ -28,7 +28,7 @@ import Unauthorized from "./components/Common/Unauthorized";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NetworkAlert from "./components/Common/NetworkAlert";
-import "./helpers/api_Lists"
+import { scheduleTokenRefresh } from "./helpers/api_Lists";
 
 function getLayout(layoutType) {
   // Check if layoutType exists in localStorage
@@ -51,6 +51,7 @@ function getLayout(layoutType) {
   return layoutCls;
 }
 
+
 const App = (props) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   useEffect(() => {
@@ -72,6 +73,11 @@ const App = (props) => {
       toast.success("You are back online", { autoClose: 1000 });
     }
   }, [isOnline]);
+
+  const authUser = JSON.parse(localStorage.getItem("authUser"));
+  useEffect(() => {
+    scheduleTokenRefresh(authUser?.authorization?.token)
+  }, [authUser])
 
   const LayoutProperties = createSelector(
     (state) => state.Layout,

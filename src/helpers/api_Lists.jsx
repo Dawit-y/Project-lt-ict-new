@@ -18,7 +18,7 @@ const updateStoredUser = (newAuthData) => {
 };
 
 // Function to schedule token refresh before expiry
-const scheduleTokenRefresh = (token) => {
+export const scheduleTokenRefresh = (token) => {
   if (!token) return;
 
   try {
