@@ -257,7 +257,7 @@ const ProjectModel = () => {
         sortable: true,
         filter: "agTextColumnFilter",
         flex: 4.5,
-        cellStyle: { 'text-overflow': 'ellipsis', 'white-space': 'nowrap', 'overflow': 'hidden', 'padding': 0 }
+        cellStyle: { 'text-overflow': 'ellipsis', 'whiteSpace': 'nowrap', 'overflow': 'hidden', 'padding': 0 }
       },
       {
         headerName: t("prs_status"),

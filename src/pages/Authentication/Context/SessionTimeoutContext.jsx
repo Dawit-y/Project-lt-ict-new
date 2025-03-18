@@ -25,7 +25,7 @@ export const SessionTimeoutProvider = ({ children }) => {
     localStorage.removeItem(SIDEDATA_CACHE_KEY)
   };
 
-  // Start the inactivity timer (2 minutes)
+  // Start the inactivity timer
   const startInactivityTimer = () => {
     inactivityTimeout = setTimeout(handleSessionExpiration, 1200000); // 10 minutes
   };

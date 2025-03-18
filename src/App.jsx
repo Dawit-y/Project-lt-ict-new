@@ -28,6 +28,7 @@ import Unauthorized from "./components/Common/Unauthorized";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NetworkAlert from "./components/Common/NetworkAlert";
+import "./helpers/api_Lists"
 
 function getLayout(layoutType) {
   // Check if layoutType exists in localStorage

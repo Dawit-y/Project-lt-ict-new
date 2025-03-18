@@ -61,7 +61,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const BudgetYearModel = () => {
-  //meta title
+	//meta title
 	document.title = " BudgetYear";
 	const { t } = useTranslation();
 	const [modal, setModal] = useState(false);
@@ -79,7 +79,7 @@ const BudgetYearModel = () => {
 	const addBudgetYear = useAddBudgetYear();
 	const updateBudgetYear = useUpdateBudgetYear();
 	const deleteBudgetYear = useDeleteBudgetYear();
-  //START CRUD
+	//START CRUD
 	const handleAddBudgetYear = async (data) => {
 		try {
 			await addBudgetYear.mutateAsync(data);
@@ -126,12 +126,12 @@ const BudgetYearModel = () => {
 			setDeleteModal(false);
 		}
 	};
-  //END CRUD
-  //START FOREIGN CALLS
+	//END CRUD
+	//START FOREIGN CALLS
 
-  // validation
+	// validation
 	const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
+		// enableReinitialize: use this flag when initial values need to be changed
 		enableReinitialize: true,
 
 		initialValues: {
@@ -171,7 +171,7 @@ const BudgetYearModel = () => {
 					is_deletable: values.is_deletable,
 					is_editable: values.is_editable,
 				};
-        // update BudgetYear
+				// update BudgetYear
 				handleUpdateBudgetYear(updateBudgetYear);
 			} else {
 				const newBudgetYear = {
@@ -182,7 +182,7 @@ const BudgetYearModel = () => {
 					is_deletable: 1,
 					is_editable: 1,
 				};
-        // save new BudgetYear
+				// save new BudgetYear
 				handleAddBudgetYear(newBudgetYear);
 			}
 		},
@@ -190,7 +190,7 @@ const BudgetYearModel = () => {
 	const [transaction, setTransaction] = useState({});
 	const toggleViewModal = () => setModal1(!modal1);
 
-  // Fetch BudgetYear on component mount
+	// Fetch BudgetYear on component mount
 	useEffect(() => {
 		setBudgetYear(data);
 	}, [data]);
@@ -211,7 +211,7 @@ const BudgetYearModel = () => {
 
 	const handleBudgetYearClick = (arg) => {
 		const budgetYear = arg;
-    // console.log("handleBudgetYearClick", budgetYear);
+		// console.log("handleBudgetYearClick", budgetYear);
 		setBudgetYear({
 			bdy_id: budgetYear.bdy_id,
 			bdy_name: budgetYear.bdy_name,
@@ -225,7 +225,7 @@ const BudgetYearModel = () => {
 		toggle();
 	};
 
-  //delete projects
+	//delete projects
 	const [deleteModal, setDeleteModal] = useState(false);
 	const onClickDelete = (budgetYear) => {
 		setBudgetYear(budgetYear);
@@ -242,76 +242,76 @@ const BudgetYearModel = () => {
 		setSearchError(error);
 		setShowSearchResult(true);
 	};
-  //START UNCHANGED
+	//START UNCHANGED
 	const columns = useMemo(() => {
 		const baseColumns = [
-		{
-			header: "",
-			accessorKey: "bdy_name",
-			enableColumnFilter: false,
-			enableSorting: true,
-			cell: (cellProps) => {
-				return (
-					<span>
-					{truncateText(cellProps.row.original.bdy_name, 30) || "-"}
-					</span>
+			{
+				header: "",
+				accessorKey: "bdy_name",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.bdy_name, 30) || "-"}
+						</span>
 					);
+				},
 			},
-		},
-		{
-			header: "",
-			accessorKey: "bdy_code",
-			enableColumnFilter: false,
-			enableSorting: true,
-			cell: (cellProps) => {
-				return (
-					<span>
-					{truncateText(cellProps.row.original.bdy_code, 30) || "-"}
-					</span>
+			{
+				header: "",
+				accessorKey: "bdy_code",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.bdy_code, 30) || "-"}
+						</span>
 					);
+				},
 			},
-		},
-		{
-        header: t('is_deleted'),        
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span className={cellProps.row.original.bdy_status === 1 ? "btn btn-sm btn-soft-danger" : ""}>
-              {cellProps.row.original.bdy_status == 1
-                ? t("yes")
-                : t("no")
-              }
-            </span>
-          );
-        },
-      },
-		{
-			header: t("view_detail"),
-			enableColumnFilter: false,
-			enableSorting: true,
-			cell: (cellProps) => {
-				return (
-					<Button
-					type="button"
-					color="primary"
-					className="btn-sm"
-					onClick={() => {
-						const data = cellProps.row.original;
-						toggleViewModal(data);
-						setTransaction(cellProps.row.original);
-					}}
-					>
-					{t("view_detail")}
-					</Button>
+			{
+				header: t('is_deleted'),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span className={cellProps.row.original.bdy_status === 1 ? "btn btn-sm btn-soft-danger" : ""}>
+							{cellProps.row.original.bdy_status == 1
+								? t("yes")
+								: t("no")
+							}
+						</span>
 					);
+				},
 			},
-		},
+			{
+				header: t("view_detail"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								const data = cellProps.row.original;
+								toggleViewModal(data);
+								setTransaction(cellProps.row.original);
+							}}
+						>
+							{t("view_detail")}
+						</Button>
+					);
+				},
+			},
 		];
 		if (
 			data?.previledge?.is_role_editable == 1 ||
 			data?.previledge?.is_role_deletable == 1
-			) {
+		) {
 			baseColumns.push({
 				header: t("Action"),
 				accessorKey: t("Action"),
@@ -320,249 +320,249 @@ const BudgetYearModel = () => {
 				cell: (cellProps) => {
 					return (
 						<div className="d-flex gap-3">
-						{cellProps.row.original.is_editable == 1 && (
-							<Link
-							to="#"
-							className="text-success"
-							onClick={() => {
-								const data = cellProps.row.original;
-								handleBudgetYearClick(data);
-							}}
-							>
-							<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-							<UncontrolledTooltip placement="top" target="edittooltip">
-							Edit
-							</UncontrolledTooltip>
-							</Link>
+							{cellProps.row.original.is_editable == 1 && (
+								<Link
+									to="#"
+									className="text-success"
+									onClick={() => {
+										const data = cellProps.row.original;
+										handleBudgetYearClick(data);
+									}}
+								>
+									<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+									<UncontrolledTooltip placement="top" target="edittooltip">
+										Edit
+									</UncontrolledTooltip>
+								</Link>
 							)}
 						</div>
-						);
+					);
 				},
 			});
-	}
-	return baseColumns;
-}, [handleBudgetYearClick, toggleViewModal, onClickDelete]);
+		}
+		return baseColumns;
+	}, [handleBudgetYearClick, toggleViewModal, onClickDelete]);
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;
 	}
 	return (
 		<React.Fragment>
-		<BudgetYearModal
-		isOpen={modal1}
-		toggle={toggleViewModal}
-		transaction={transaction}
-		/>
-		<DeleteModal
-		show={deleteModal}
-		onDeleteClick={handleDeleteBudgetYear}
-		onCloseClick={() => setDeleteModal(false)}
-		isLoading={deleteBudgetYear.isPending}
-		/>
-		<div className="page-content">
-		<div className="container-fluid">
-		<Breadcrumbs
-		title={t("budget_year")}
-		breadcrumbItem={t("budget_year")}
-		/>
-		{isLoading || isSearchLoading ? (
-			<Spinners />
-			) : (
-			<Row>
-			<Col xs="12">
-			<Card>
-			<CardBody>
-			<TableContainer
-			columns={columns}
-			data={
-				showSearchResult
-				? searchResults?.data
-				: data?.data || []
-			}
-			isGlobalFilter={true}
-			isAddButton={data?.previledge?.is_role_can_add == 1}
-			isCustomPageSize={true}
-			handleUserClick={handleBudgetYearClicks}
-			isPagination={true}
-			SearchPlaceholder={t("filter_placeholder")}
-			buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-			buttonName={t("add") + " " + t("budget_year")}
-			tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-			theadClass="table-light"
-			pagination="pagination"
-			paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-			divClassName="-"
+			<BudgetYearModal
+				isOpen={modal1}
+				toggle={toggleViewModal}
+				transaction={transaction}
 			/>
-			</CardBody>
-			</Card>
-			</Col>
-			</Row>
-			)}
-			<Modal isOpen={modal} toggle={toggle} className="modal-xl">
-			<ModalHeader toggle={toggle} tag="h4">
-			{!!isEdit
-			? t("edit") + " " + t("budget_year")
-			: t("add") + " " + t("budget_year")}
-			</ModalHeader>
-			<ModalBody>
-			<Form
-			onSubmit={(e) => {
-				e.preventDefault();
-				validation.handleSubmit();
-				return false;
-			}}
-			>
-			<Row>
-			<Col className="col-md-6 mb-3">
-			<Label>
-			{t("bdy_name")}
-			<span className="text-danger">*</span>
-			</Label>
-			<Input
-			name="bdy_name"
-			type="number"
-			placeholder={t("bdy_name")}
-			onChange={(e) => {
-				const value = e.target.value;
-                        // Allow only integers (numeric values)
-				if (/^\d*$/.test(value)) {
-					validation.handleChange(e);
-				}
-			}}
-			onBlur={validation.handleBlur}
-			value={validation.values.bdy_name || ""}
-			invalid={
-				validation.touched.bdy_name &&
-				validation.errors.bdy_name
-				? true
-				: false
-			}
-			maxLength={4}
+			<DeleteModal
+				show={deleteModal}
+				onDeleteClick={handleDeleteBudgetYear}
+				onCloseClick={() => setDeleteModal(false)}
+				isLoading={deleteBudgetYear.isPending}
 			/>
-			{validation.touched.bdy_name &&
-			validation.errors.bdy_name ? (
-				<FormFeedback type="invalid">
-				{validation.errors.bdy_name}
-				</FormFeedback>
-				) : null}
-			</Col>
-			<Col className="col-md-6 mb-3">
-			<Label>{t("bdy_code")}</Label>
-			<Input
-			name="bdy_code"
-			type="text"
-			placeholder={t("bdy_code")}
-			onChange={validation.handleChange}
-			onBlur={validation.handleBlur}
-			value={validation.values.bdy_code || ""}
-			invalid={
-				validation.touched.bdy_code &&
-				validation.errors.bdy_code
-				? true
-				: false
-			}
-			maxLength={10}
-			/>
-			{validation.touched.bdy_code &&
-			validation.errors.bdy_code ? (
-				<FormFeedback type="invalid">
-				{validation.errors.bdy_code}
-				</FormFeedback>
-				) : null}
-			</Col>
-			<Col className="col-md-6 mb-3">
-                  <div className="form-check mb-4">
-                      <Label className="me-1" for="bdy_status">
-                        {t("is_deleted")}
-                      </Label>
-                      <Input
-                        id="bdy_status"
-                        name="bdy_status"
-                        type="checkbox"
-                        placeholder={t("is_deleted")}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        checked={validation.values.bdy_status}
-                        invalid={
-                          validation.touched.bdy_status &&
-                          validation.errors.bdy_status
-                            ? true
-                            : false
-                        }
-                      />
-                      {validation.touched.bdy_status &&
-                      validation.errors.bdy_status ? (
-                        <FormFeedback type="invalid">
-                          {validation.errors.bdy_status}
-                        </FormFeedback>
-                      ) : null}
-                      </div>
-                    </Col>
-			<Col className="col-md-6 mb-3">
-			<Label>{t("bdy_description")}</Label>
-			<Input
-			name="bdy_description"
-			type="textarea"
-			placeholder={t("bdy_description")}
-			onChange={validation.handleChange}
-			onBlur={validation.handleBlur}
-			value={validation.values.bdy_description || ""}
-			invalid={
-				validation.touched.bdy_description &&
-				validation.errors.bdy_description
-				? true
-				: false
-			}
-			maxLength={425}
-			/>
-			{validation.touched.bdy_description &&
-			validation.errors.bdy_description ? (
-				<FormFeedback type="invalid">
-				{validation.errors.bdy_description}
-				</FormFeedback>
-				) : null}
-			</Col>
-			</Row>
-			<Row>
-			<Col>
-			<div className="text-end">
-			{addBudgetYear.isPending || updateBudgetYear.isPending ? (
-				<Button
-				color="success"
-				type="submit"
-				className="save-user"
-				disabled={
-					addBudgetYear.isPending ||
-					updateBudgetYear.isPending ||
-					!validation.dirty
-				}
-				>
-				<Spinner size={"sm"} color="light" className="me-2" />
-				{t("Save")}
-				</Button>
-				) : (
-				<Button
-				color="success"
-				type="submit"
-				className="save-user"
-				disabled={
-					addBudgetYear.isPending ||
-					updateBudgetYear.isPending ||
-					!validation.dirty
-				}
-				>
-				{t("Save")}
-				</Button>
-				)}
+			<div className="page-content">
+				<div className="container-fluid">
+					<Breadcrumbs
+						title={t("budget_year")}
+						breadcrumbItem={t("budget_year")}
+					/>
+					{isLoading || isSearchLoading ? (
+						<Spinners />
+					) : (
+						<Row>
+							<Col xs="12">
+								<Card>
+									<CardBody>
+										<TableContainer
+											columns={columns}
+											data={
+												showSearchResult
+													? searchResults?.data
+													: data?.data || []
+											}
+											isGlobalFilter={true}
+											isAddButton={data?.previledge?.is_role_can_add == 1}
+											isCustomPageSize={true}
+											handleUserClick={handleBudgetYearClicks}
+											isPagination={true}
+											SearchPlaceholder={t("filter_placeholder")}
+											buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+											buttonName={t("add") + " " + t("budget_year")}
+											tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+											theadClass="table-light"
+											pagination="pagination"
+											paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+											divClassName="-"
+										/>
+									</CardBody>
+								</Card>
+							</Col>
+						</Row>
+					)}
+					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
+						<ModalHeader toggle={toggle} tag="h4">
+							{!!isEdit
+								? t("edit") + " " + t("budget_year")
+								: t("add") + " " + t("budget_year")}
+						</ModalHeader>
+						<ModalBody>
+							<Form
+								onSubmit={(e) => {
+									e.preventDefault();
+									validation.handleSubmit();
+									return false;
+								}}
+							>
+								<Row>
+									<Col className="col-md-6 mb-3">
+										<Label>
+											{t("bdy_name")}
+											<span className="text-danger">*</span>
+										</Label>
+										<Input
+											name="bdy_name"
+											type="number"
+											placeholder={t("bdy_name")}
+											onChange={(e) => {
+												const value = e.target.value;
+												// Allow only integers (numeric values)
+												if (/^\d*$/.test(value)) {
+													validation.handleChange(e);
+												}
+											}}
+											onBlur={validation.handleBlur}
+											value={validation.values.bdy_name || ""}
+											invalid={
+												validation.touched.bdy_name &&
+													validation.errors.bdy_name
+													? true
+													: false
+											}
+											maxLength={4}
+										/>
+										{validation.touched.bdy_name &&
+											validation.errors.bdy_name ? (
+											<FormFeedback type="invalid">
+												{validation.errors.bdy_name}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-6 mb-3">
+										<Label>{t("bdy_code")}</Label>
+										<Input
+											name="bdy_code"
+											type="text"
+											placeholder={t("bdy_code")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.bdy_code || ""}
+											invalid={
+												validation.touched.bdy_code &&
+													validation.errors.bdy_code
+													? true
+													: false
+											}
+											maxLength={10}
+										/>
+										{validation.touched.bdy_code &&
+											validation.errors.bdy_code ? (
+											<FormFeedback type="invalid">
+												{validation.errors.bdy_code}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-6 mb-3">
+										<div className="form-check mb-4">
+											<Label className="me-1" for="bdy_status">
+												{t("is_deleted")}
+											</Label>
+											<Input
+												id="bdy_status"
+												name="bdy_status"
+												type="checkbox"
+												placeholder={t("is_deleted")}
+												onChange={validation.handleChange}
+												onBlur={validation.handleBlur}
+												checked={validation.values.bdy_status}
+												invalid={
+													validation.touched.bdy_status &&
+														validation.errors.bdy_status
+														? true
+														: false
+												}
+											/>
+											{validation.touched.bdy_status &&
+												validation.errors.bdy_status ? (
+												<FormFeedback type="invalid">
+													{validation.errors.bdy_status}
+												</FormFeedback>
+											) : null}
+										</div>
+									</Col>
+									<Col className="col-md-6 mb-3">
+										<Label>{t("bdy_description")}</Label>
+										<Input
+											name="bdy_description"
+											type="textarea"
+											placeholder={t("bdy_description")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.bdy_description || ""}
+											invalid={
+												validation.touched.bdy_description &&
+													validation.errors.bdy_description
+													? true
+													: false
+											}
+											maxLength={425}
+										/>
+										{validation.touched.bdy_description &&
+											validation.errors.bdy_description ? (
+											<FormFeedback type="invalid">
+												{validation.errors.bdy_description}
+											</FormFeedback>
+										) : null}
+									</Col>
+								</Row>
+								<Row>
+									<Col>
+										<div className="text-end">
+											{addBudgetYear.isPending || updateBudgetYear.isPending ? (
+												<Button
+													color="success"
+													type="submit"
+													className="save-user"
+													disabled={
+														addBudgetYear.isPending ||
+														updateBudgetYear.isPending ||
+														!validation.dirty
+													}
+												>
+													<Spinner size={"sm"} color="light" className="me-2" />
+													{t("Save")}
+												</Button>
+											) : (
+												<Button
+													color="success"
+													type="submit"
+													className="save-user"
+													disabled={
+														addBudgetYear.isPending ||
+														updateBudgetYear.isPending ||
+														!validation.dirty
+													}
+												>
+													{t("Save")}
+												</Button>
+											)}
+										</div>
+									</Col>
+								</Row>
+							</Form>
+						</ModalBody>
+					</Modal>
 				</div>
-				</Col>
-				</Row>
-				</Form>
-				</ModalBody>
-				</Modal>
-				</div>
-				</div>
-				</React.Fragment>
-				);
+			</div>
+		</React.Fragment>
+	);
 };
 BudgetYearModel.propTypes = {
 	preGlobalFilteredRows: PropTypes.any,
