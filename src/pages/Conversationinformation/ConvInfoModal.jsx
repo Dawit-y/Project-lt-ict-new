@@ -13,7 +13,7 @@ import {
   Modal,
   ModalBody,
   ModalHeader,
-  ModalFooter
+  ModalFooter,
 } from "reactstrap";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { toast } from "react-toastify";
@@ -28,9 +28,10 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const Conversation = (props) => {
   const { isOpen, toggle, ownerId, ownerTypeId } = props;
-  const param = { cvi_object_type_id: ownerTypeId, cvi_object_id: ownerId }
+  const param = { cvi_object_type_id: ownerTypeId, cvi_object_id: ownerId };
   const [conversationInformation, setConversationInformation] = useState(null);
-  const { data, isLoading, isError, error, refetch } = useFetchConversationInformations(param, isOpen);
+  const { data, isLoading, isError, error, refetch } =
+    useFetchConversationInformations(param, isOpen);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -106,10 +107,10 @@ const Conversation = (props) => {
     return formatDistanceToNow(parseISO(timestamp), { addSuffix: true });
   };
 
-  const comments = data?.data || []
+  const comments = data?.data || [];
 
   if (isError) {
-    <FetchErrorHandler error={error} refetch={refetch} />
+    <FetchErrorHandler error={error} refetch={refetch} />;
   }
 
   return (
@@ -124,7 +125,7 @@ const Conversation = (props) => {
         toggle={toggle}
       >
         <div className="modal-xl">
-          <ModalHeader toggle={toggle}>{t("View Messages")}</ModalHeader>
+          <ModalHeader toggle={toggle}>{t("view_messages")}</ModalHeader>
           <ModalBody>
             <Row>
               <Col lg={12}>
@@ -133,7 +134,9 @@ const Conversation = (props) => {
                     <>
                       <div>
                         <div className="">
-                          <h5 className="font-size-16 mb-3">Leave a Message</h5>
+                          <h5 className="font-size-16 mb-3">
+                            {t("leave_a_message")}
+                          </h5>
 
                           <Form
                             onSubmit={(e) => {
@@ -143,23 +146,23 @@ const Conversation = (props) => {
                             }}
                           >
                             <div className="mb-3">
-                              <Label>{"Subject"}</Label>
+                              <Label>{t("subject")}</Label>
                               <Input
                                 name="cvi_title"
                                 type="text"
-                                placeholder={"Subject"}
+                                placeholder={t("subject")}
                                 onChange={validation.handleChange}
                                 onBlur={validation.handleBlur}
                                 value={validation.values.cvi_title || ""}
                                 invalid={
                                   validation.touched.cvi_title &&
-                                    validation.errors.cvi_title
+                                  validation.errors.cvi_title
                                     ? true
                                     : false
                                 }
                               />
                               {validation.touched.cvi_title &&
-                                validation.errors.cvi_title ? (
+                              validation.errors.cvi_title ? (
                                 <FormFeedback type="invalid">
                                   {validation.errors.cvi_title}
                                 </FormFeedback>
@@ -167,26 +170,26 @@ const Conversation = (props) => {
                             </div>
 
                             <div className="mb-3">
-                              <Label>{"Message"}</Label>
+                              <Label>{t("Message")}</Label>
                               <textarea
                                 name="cvi_description"
                                 className="form-control"
                                 id="commentmessage-input"
                                 rows="3"
                                 type="text"
-                                placeholder={"Message"}
+                                placeholder={t("Message")}
                                 onChange={validation.handleChange}
                                 onBlur={validation.handleBlur}
                                 value={validation.values.cvi_description || ""}
                                 invalid={
                                   validation.touched.cvi_description &&
-                                    validation.errors.cvi_description
+                                  validation.errors.cvi_description
                                     ? true
                                     : false
                                 }
                               ></textarea>
                               {validation.touched.cvi_description &&
-                                validation.errors.cvi_description ? (
+                              validation.errors.cvi_description ? (
                                 <FormFeedback type="invalid">
                                   {validation.errors.cvi_description}
                                 </FormFeedback>
@@ -223,7 +226,7 @@ const Conversation = (props) => {
                                         !validation.dirty
                                       }
                                     >
-                                      {"Submit"}
+                                      {t("submit")}
                                     </Button>
                                   )}
                                 </div>
@@ -233,7 +236,7 @@ const Conversation = (props) => {
                         </div>
                         <h5 className="font-size-15">
                           <i className="bx bx-message-dots text-muted align-middle me-1"></i>{" "}
-                          Conversations
+                          {t("conversations")}
                         </h5>
                         <div>
                           {comments.map((comment) => (
@@ -271,12 +274,11 @@ const Conversation = (props) => {
           </ModalBody>
           <ModalFooter>
             <Button type="button" color="secondary" onClick={toggle}>
-              {t('Close')}
+              {t("Close")}
             </Button>
           </ModalFooter>
         </div>
       </Modal>
-
     </React.Fragment>
   );
 };

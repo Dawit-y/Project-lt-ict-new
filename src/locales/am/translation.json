@@ -238,7 +238,12 @@
 	"please_specify_if_deletable": "እባኮትን እንደሚሰረዝ ተገልጸው ይግለጹ",
 	"please_specify_if_editable": "እባኮትን እንደሚሻሽል ተገልጸው ይግለጹ",
 	"please_enter_the_status_number": "እባኮትን ሁኔታ ቁጥር አስገባ",
-
+"conversations":"ውይይቶች",
+"leave_a_message":"መልእክት ያስቀምጡ",
+"subject":"ርዕሰ ጉዳይ",
+"view_messages":"መልዕክቶችን ይመልከቱ",
+"sector_name":"የዘርፍ ስም",
+"Supplimentary":"ተጨማሪ",
 	"delete_now": "አሁን አጥፋ",
 	"confirm_erase": "መረጃን በድረስ ለማጥፋት እርግጠኛ ነህ/ነሽ?",
 	"close": "ዝጋ",

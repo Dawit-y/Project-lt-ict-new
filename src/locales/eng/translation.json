@@ -1215,5 +1215,10 @@
 	"errors_duplicateEntry": "Duplicate entry detected. The record already exists.",
 	"errors_missingField": "A required field is missing. Please fill in all necessary details.",
 	"errors_invalidReference": "Invalid reference. The associated record does not exist.",
-	"errors_genericError": "Something went wrong. Try again later."
+	"errors_genericError": "Something went wrong. Try again later.",
+
+	"leave_a_message":"Leave a message",
+	"conversation":"Conversation",
+	"subject":"Subject",
+	"view_messages":"View Messages"
 }
