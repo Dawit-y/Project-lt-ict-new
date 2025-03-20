@@ -90,15 +90,17 @@ const TreeForLists = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   }
 
   return (
-    <Card className="border shadow-sm" style={{ minWidth: '400px' }}>
+    <Card className="border shadow-sm">
       <CardBody className="p-3">
         <h5 className="text-secondary">{t("address_tree_Search")}</h5>
         <hr />
-        <Row className="d-flex align-items-center justify-content-between mb-3">
+        <Row className="mb-2">
           <Col className="d-flex align-items-center gap-2 my-auto">
             <Input className="" id="include" name="include" type="checkbox" onChange={handleCheckboxChange} />
             <Label for="include" className="my-auto">{t('include_sub_address')}</Label>
           </Col>
+        </Row>
+        <Row className="mb-1">
           <Col className="d-flex gap-2" >
             <Input id="searchterm" name="searchterm" type="text" bsSize="sm" placeholder="search" onChange={handleSearchTerm} />
             <Button
@@ -106,7 +108,7 @@ const TreeForLists = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
                 onNodeSelect({})
                 treeRef.current?.closeAll()
               }}
-              size="sm" outline color="secondary-subtle">
+              size="sm" color="secondary-subtle" className="border">
               <FaChevronUp size={15} className="my-auto" />
             </Button>
           </Col>
@@ -120,7 +122,7 @@ const TreeForLists = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
               searchMatch={(node, term) => searchMatch(node, term, i18n.language)}
               ref={treeRef}
               width={400}
-              height={700}
+              height={800}
               indent={24}
               rowHeight={36}
               overscanCount={1}
@@ -136,22 +138,6 @@ const TreeForLists = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
             </Tree>
           )}
         </div>
-        <style>
-          {`
-            /* Custom scrollbar */
-            div::-webkit-scrollbar {
-              width: 6px;
-              height: 6px;
-            }
-            div::-webkit-scrollbar-thumb {
-              background: rgba(0, 0, 0, 0.3);
-              border-radius: 3px;
-            }
-            div::-webkit-scrollbar-track {
-              background: rgba(0, 0, 0, 0.1);
-            }
-          `}
-        </style>
       </CardBody>
     </Card>
   );

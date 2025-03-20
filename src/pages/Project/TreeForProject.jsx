@@ -231,7 +231,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   }
 
   return (
-    <Card className="border shadow-sm" style={{ minWidth: '400px' }}>
+    <Card className="border shadow-sm">
       <CardBody className="p-3">
         <h5 className="text-secondary">{t("address_tree_Search")}</h5>
         <hr />
@@ -256,7 +256,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
               searchTerm={searchTerm}
               searchMatch={(node, term) => searchMatch(node, term, i18n.language)}
               ref={treeRef}
-              width={500}
+              width={400}
               height={800}
               indent={24}
               rowHeight={36}
@@ -274,22 +274,6 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
             </Tree>
           )}
         </div>
-        <style>
-          {`
-            /* Custom scrollbar */
-            div::-webkit-scrollbar {
-              width: 6px;
-              height: 6px;
-            }
-            div::-webkit-scrollbar-thumb {
-              background: rgba(0, 0, 0, 0.3);
-              border-radius: 3px;
-            }
-            div::-webkit-scrollbar-track {
-              background: rgba(0, 0, 0, 0.1);
-            }
-          `}
-        </style>
       </CardBody>
     </Card>
   );

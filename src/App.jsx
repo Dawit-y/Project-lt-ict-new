@@ -29,6 +29,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NetworkAlert from "./components/Common/NetworkAlert";
 import { scheduleTokenRefresh } from "./helpers/api_Lists";
+import "./App.css"
 
 function getLayout(layoutType) {
   // Check if layoutType exists in localStorage

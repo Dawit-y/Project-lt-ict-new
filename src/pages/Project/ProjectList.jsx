@@ -348,105 +348,87 @@ const ProjectModel = () => {
   return (
     <React.Fragment>
       <div className="page-content">
-        <div>
+        <div className="w-100">
           <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
-          <div className="w-100 d-flex gap-2">
-            <>
+          <div className="d-flex gap-2" style={{ display: "flex", flexWrap: "nowrap" }}>
+            {/* Sidebar - Tree */}
+            <div style={{ flex: "0 0 30%", minWidth: "300px" }}>
               <TreeForLists
                 onNodeSelect={handleNodeSelect}
                 setIsAddressLoading={setIsAddressLoading}
                 setInclude={setInclude}
               />
-              <div className="w-100">
-                <SearchForProject
-                  textSearchKeys={["prj_name", "prj_code"]}
-                  dropdownSearchKeys={[
-                    {
-                      key: "prj_project_category_id",
-                      options: lang === "en"
-                        ? projectCategoryOptionsEn
-                        : lang === "am"
-                          ? projectCategoryOptionsAm
-                          : projectCategoryOptionsOr
-                      ,
-                    },
-                  ]}
-                  checkboxSearchKeys={[]}
-                  additionalParams={searchConfig.projectParams}
-                  setAdditionalParams={setProjectParams}
-                  setSearchResults={handleSearch}
-                  setShowSearchResult={setShowSearchResult}
-                  params={searchConfig.params}
-                  setParams={setParams}
-                  searchParams={searchParams}
-                  setSearchParams={setSearchParams}
-                />
-                <div
-                  className="ag-theme-alpine"
-                  style={{ height: "100%", width: "100%" }}
-                >
-                  <Row className="mb-3">
-                    <Col sm="12" md="6">
-                      <Input
-                        type="text"
-                        placeholder={t("Search") + "..."}
-                        onChange={(e) => setQuickFilterText(e.target.value)}
-                        className="mb-2"
-                      />
-                    </Col>
-                    <Col
-                      sm="12"
-                      md="6"
-                      className="text-md-end d-flex align-items-center justify-content-end gap-2"
-                    >
-                      <ExportToExcel
-                        tableData={searchData?.data || []}
-                        tablename={"projects"}
-                        excludeKey={["is_editable", "is_deletable"]}
-                      />
-                      <ExportToPDF
-                        tableData={searchData?.data || []}
-                        tablename={"projects"}
-                        excludeKey={["is_editable", "is_deletable"]}
-                      />
-                      <PrintPage
-                        tableData={searchData?.data || []}
-                        tablename={t("Projects")}
-                        excludeKey={["is_editable", "is_deletable"]}
-                        gridRef={gridRef}
-                        columnDefs={columnDefs}
-                        columnsToIgnore="3"
-                      />
-                    </Col>
-                  </Row>
-                  <div style={{ height: "500px", overflow: "visible" }}>
-                    <AgGridReact
-                      rowStyle={{ overflow: "visible" }}
-                      ref={gridRef}
-                      rowData={rowData}
-                      immutableData={true}
-                      getRowId={(params) => String(params.data.prj_id)}
-                      columnDefs={columnDefs}
-                      pagination={true}
-                      paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                      paginationPageSize={10}
-                      quickFilterText={quickFilterText}
-                      onSelectionChanged={onSelectionChanged}
-                      rowHeight={32} // Set the row height here
-                      animateRows={true} // Enables row animations
-                      domLayout="autoHeight" // Auto-size the grid to fit content
-                      onGridReady={(params) => {
-                        params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                      }}
-                      localeText={localeText} // Dynamically translated texts
+            </div>
+
+            {/* Main Content */}
+            <div style={{ flex: "0 0 70%", minWidth: "600px" }}>
+              <SearchForProject
+                textSearchKeys={["prj_name", "prj_code"]}
+                dropdownSearchKeys={[
+                  {
+                    key: "prj_project_category_id",
+                    options: lang === "en"
+                      ? projectCategoryOptionsEn
+                      : lang === "am"
+                        ? projectCategoryOptionsAm
+                        : projectCategoryOptionsOr,
+                  },
+                ]}
+                checkboxSearchKeys={[]}
+                additionalParams={searchConfig.projectParams}
+                setAdditionalParams={setProjectParams}
+                setSearchResults={handleSearch}
+                setShowSearchResult={setShowSearchResult}
+                params={searchConfig.params}
+                setParams={setParams}
+                searchParams={searchParams}
+                setSearchParams={setSearchParams}
+              />
+              <div className="ag-theme-alpine" style={{ height: "100%", width: "100%" }}>
+                <Row className="mb-3">
+                  <Col sm="12" md="6">
+                    <Input
+                      type="text"
+                      placeholder={t("Search") + "..."}
+                      onChange={(e) => setQuickFilterText(e.target.value)}
+                      className="mb-2"
                     />
-                  </div>
+                  </Col>
+                  <Col sm="12" md="6" className="text-md-end d-flex align-items-center justify-content-end gap-2">
+                    <ExportToExcel tableData={searchData?.data || []} tablename={"projects"} excludeKey={["is_editable", "is_deletable"]} />
+                    <ExportToPDF tableData={searchData?.data || []} tablename={"projects"} excludeKey={["is_editable", "is_deletable"]} />
+                    <PrintPage tableData={searchData?.data || []} tablename={t("Projects")} excludeKey={["is_editable", "is_deletable"]} gridRef={gridRef} columnDefs={columnDefs} columnsToIgnore="3" />
+                  </Col>
+                </Row>
+                <div style={{ height: "500px", overflow: "visible" }}>
+                  <AgGridReact
+                    rowStyle={{ overflow: "visible" }}
+                    ref={gridRef}
+                    rowData={rowData}
+                    immutableData={true}
+                    getRowId={(params) => String(params.data.prj_id)}
+                    columnDefs={columnDefs}
+                    pagination={true}
+                    paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+                    paginationPageSize={10}
+                    quickFilterText={quickFilterText}
+                    onSelectionChanged={onSelectionChanged}
+                    rowHeight={32}
+                    animateRows={true}
+                    domLayout="autoHeight"
+                    onGridReady={(params) => {
+                      params.api.sizeColumnsToFit();
+                    }}
+                    localeText={localeText}
+                  />
                 </div>
               </div>
-            </>
+            </div>
           </div>
         </div>
       </div>
+
+
     </React.Fragment>
   );
 };
