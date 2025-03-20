@@ -278,7 +278,7 @@ const PermissionModel = (props) => {
     const baseColumns = [
       {
         header: "",
-        accessorKey: "page_name",
+        accessorKey: "pag_name",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
@@ -471,9 +471,8 @@ const PermissionModel = (props) => {
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
               {!!isEdit
-                ? `${t("edit")} ${t("permission")} ${"for"} ${
-                    selectedItem?.pag_name
-                  } ${t("page")}`
+                ? `${t("edit")} ${t("permission")} ${"for"} ${selectedItem?.pag_name
+                } ${t("page")}`
                 : `${t("add")} ${t("permission")}`}
             </ModalHeader>
             <ModalBody>
@@ -495,7 +494,7 @@ const PermissionModel = (props) => {
                       value={validation.values.pem_enabled || ""}
                       invalid={
                         validation.touched.pem_enabled &&
-                        validation.errors.pem_enabled
+                          validation.errors.pem_enabled
                           ? true
                           : false
                       }
@@ -506,7 +505,7 @@ const PermissionModel = (props) => {
                       <option value={2}>{t("No")}</option>
                     </Input>
                     {validation.touched.pem_enabled &&
-                    validation.errors.pem_enabled ? (
+                      validation.errors.pem_enabled ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pem_enabled}
                       </FormFeedback>
@@ -523,7 +522,7 @@ const PermissionModel = (props) => {
                       value={validation.values.pem_edit || ""}
                       invalid={
                         validation.touched.pem_edit &&
-                        validation.errors.pem_edit
+                          validation.errors.pem_edit
                           ? true
                           : false
                       }
@@ -534,7 +533,7 @@ const PermissionModel = (props) => {
                       <option value={2}>{t("No")}</option>
                     </Input>
                     {validation.touched.pem_edit &&
-                    validation.errors.pem_edit ? (
+                      validation.errors.pem_edit ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pem_edit}
                       </FormFeedback>
@@ -552,7 +551,7 @@ const PermissionModel = (props) => {
                       value={validation.values.pem_insert || ""}
                       invalid={
                         validation.touched.pem_insert &&
-                        validation.errors.pem_insert
+                          validation.errors.pem_insert
                           ? true
                           : false
                       }
@@ -563,7 +562,7 @@ const PermissionModel = (props) => {
                       <option value={2}>{t("No")}</option>
                     </Input>
                     {validation.touched.pem_insert &&
-                    validation.errors.pem_insert ? (
+                      validation.errors.pem_insert ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pem_insert}
                       </FormFeedback>
@@ -581,7 +580,7 @@ const PermissionModel = (props) => {
                       value={validation.values.pem_view || ""}
                       invalid={
                         validation.touched.pem_view &&
-                        validation.errors.pem_view
+                          validation.errors.pem_view
                           ? true
                           : false
                       }
@@ -592,7 +591,7 @@ const PermissionModel = (props) => {
                       <option value={2}>{t("No")}</option>
                     </Input>
                     {validation.touched.pem_view &&
-                    validation.errors.pem_view ? (
+                      validation.errors.pem_view ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pem_view}
                       </FormFeedback>
@@ -610,7 +609,7 @@ const PermissionModel = (props) => {
                       value={validation.values.pem_delete || ""}
                       invalid={
                         validation.touched.pem_delete &&
-                        validation.errors.pem_delete
+                          validation.errors.pem_delete
                           ? true
                           : false
                       }
@@ -621,7 +620,7 @@ const PermissionModel = (props) => {
                       <option value={2}>{t("No")}</option>
                     </Input>
                     {validation.touched.pem_delete &&
-                    validation.errors.pem_delete ? (
+                      validation.errors.pem_delete ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pem_delete}
                       </FormFeedback>
@@ -639,7 +638,7 @@ const PermissionModel = (props) => {
                       value={validation.values.pem_show || ""}
                       invalid={
                         validation.touched.pem_show &&
-                        validation.errors.pem_show
+                          validation.errors.pem_show
                           ? true
                           : false
                       }
@@ -651,7 +650,7 @@ const PermissionModel = (props) => {
                       <option value={3}>{t("Custom")}</option>
                     </Input>
                     {validation.touched.pem_show &&
-                    validation.errors.pem_show ? (
+                      validation.errors.pem_show ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pem_show}
                       </FormFeedback>
@@ -669,7 +668,7 @@ const PermissionModel = (props) => {
                       value={validation.values.pem_search || ""}
                       invalid={
                         validation.touched.pem_search &&
-                        validation.errors.pem_search
+                          validation.errors.pem_search
                           ? true
                           : false
                       }
@@ -681,7 +680,7 @@ const PermissionModel = (props) => {
                       <option value={3}>{t("None")}</option>
                     </Input>
                     {validation.touched.pem_search &&
-                    validation.errors.pem_search ? (
+                      validation.errors.pem_search ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pem_search}
                       </FormFeedback>
@@ -699,14 +698,14 @@ const PermissionModel = (props) => {
                       value={validation.values.pem_description || ""}
                       invalid={
                         validation.touched.pem_description &&
-                        validation.errors.pem_description
+                          validation.errors.pem_description
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pem_description &&
-                    validation.errors.pem_description ? (
+                      validation.errors.pem_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pem_description}
                       </FormFeedback>

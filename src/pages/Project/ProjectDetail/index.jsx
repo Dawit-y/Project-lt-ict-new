@@ -7,6 +7,8 @@ import ProjectDetail from "./ProjectDetail";
 import ProjectDetailTabDynamic from "./ProjectDetailTabDynamic";
 import { useFetchProject } from "../../../queries/project_query";
 import { useTranslation } from "react-i18next";
+import ProjectSummary from "./ProjectSummary";
+import { TabWrapper } from "../../../components/Common/DetailViewWrapper";
 
 // Lazy Load Components
 const LazyComponents = {
@@ -30,7 +32,7 @@ const LazyComponents = {
 
 const ProjectsOverview = () => {
   document.title = "Overview | Project";
-  
+
   const location = useLocation()
   const projectId = Number(location.pathname.split("/")[2].split("#")[0]);
 
@@ -84,6 +86,21 @@ const ProjectsOverview = () => {
     }, {})
   ), [allowedTabs, tabMapping]);
 
+  const tabs = [
+    {
+      id: "details",
+      label: "Details",
+      content: <ProjectDetail data={data?.data || {}} />,
+    },
+    {
+      id: "summary",
+      label: "Summary",
+      content: (
+        <ProjectSummary data={data || {}} />
+      ),
+    },
+  ];
+
   return (
     <div className="page-content" style={{ zoom: "90%" }}>
       <Container fluid>
@@ -94,7 +111,7 @@ const ProjectsOverview = () => {
           <>
             <Row>
               <Col lg="12">
-                <ProjectDetail data={data?.data || {}} />
+                <TabWrapper tabs={tabs} />
               </Col>
             </Row>
             <Row>
