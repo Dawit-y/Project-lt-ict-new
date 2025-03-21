@@ -1233,5 +1233,14 @@
 	"Used Time": "Used Time",
 	"Remaining Time": "Remaining Time",
 	"Time data is unavailable.": "Time data is unavailable.",
-	"days": "days"
+	"days": "days",
+	"woreda_name": "Wereda Name",
+	"zone_name": "Zone Name",
+	"sector_name":"Sector Name",
+	"last_logged_in":"Last Logged In",
+	"created":"Created",
+	"email":"Email",
+	"phone_number":"Phone Number",
+	"full_name":"Full Name"
+	
 }

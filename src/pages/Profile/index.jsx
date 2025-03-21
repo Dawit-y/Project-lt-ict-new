@@ -19,12 +19,11 @@ import {
 import Spinners from "../../components/Common/Spinner";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import axios from "axios";
-import Breadcrumbs from "../../components/Common/Breadcrumb";
-import UpdateModal from "./UpdateModal";
-import { FaLock } from "react-icons/fa";
+import { FaLock, FaEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useFetchUser } from "../../queries/users_query";
 import { useTranslation } from "react-i18next";
+import UpdateModal from "./UpdateModal"; // Ensure this import is correct
 
 const API_URL = import.meta.env.VITE_BASE_API_FILE;
 
@@ -33,97 +32,75 @@ const UsersProfile = () => {
 
   const { t } = useTranslation();
   const storedUser = localStorage.getItem("authUser");
-  const Users = storedUser ? JSON.parse(storedUser) : null; // Handle null case
-  const [userProfile, setUserProfile] = useState(Users); // Set state directly to Users
+  const Users = storedUser ? JSON.parse(storedUser) : null;
   const [profile, setProfile] = useState({});
   const { data, isLoading, refetch } = useFetchUser({
-    id: userProfile?.user?.usr_id,
+    id: Users?.user?.usr_id,
   });
 
-  useEffect(() => {
-    setProfile(data?.data[0]);
-  }, [data]);
-
-  const formatDate = (dateString) => {
-    const parsedDate = parseISO(dateString); // Parse the string into a Date object
-    return formatDistanceToNow(parsedDate, { addSuffix: true }); // Get a relative time format (e.g., "3 minutes ago")
-  };
-
-  const miniCards = [
-    { title: "Completed Projects", iconClass: "bx-check-circle", text: "125" },
-    { title: "Pending Projects", iconClass: "bx-hourglass", text: "12" },
-    { title: "Total Cost", iconClass: "bx-package", text: "36,524 ETB" },
-  ];
-
-  const [modal_backdrop, setModal_backdrop] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [newPassword, setNewPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [passwordShown, setPasswordShown] = useState(false);
-  const [updateModal, setUpdateModal] = useState(false);
 
-  const tog_backdrop = () => {
-    setModal_backdrop(!modal_backdrop);
-  };
-
-  const toggleUpdateModal = () => {
-    setUpdateModal(!updateModal);
-  };
+  useEffect(() => {
+    if (data?.data[0]) {
+      setProfile(data.data[0]);
+    }
+  }, [data]);
 
   const togglePasswordVisibility = () => {
     setPasswordShown(!passwordShown);
   };
 
+  const formatDate = (dateString) => {
+    const parsedDate = parseISO(dateString);
+    return formatDistanceToNow(parsedDate, { addSuffix: true });
+  };
+
   const handlePasswordChange = async () => {
-    if (!userProfile || !userProfile.user || !newPassword) {
-      setMessage("Please enter a valid password.");
+    if (!newPassword) {
+      toast.error("Please enter a valid password.", { autoClose: 2000 });
       return;
     }
 
-    const data = {
-      user_id: userProfile.user.usr_id, // Assuming usr_id exists
-      password: newPassword,
-    };
-
     try {
-      const response = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_BASE_API_URL}user/change_password`,
-        data
+        {
+          user_id: Users.user.usr_id,
+          password: newPassword,
+        }
       );
-      setMessage("Password changed successfully!");
-      toast.success(`Password changed successfully!`, {
-        autoClose: 2000,
-      });
-
-      setModal_backdrop(false); // Close the modal on success
+      toast.success("Password changed successfully!", { autoClose: 2000 });
+      setIsPasswordModalOpen(false);
+      setNewPassword("");
     } catch (error) {
-      toast.success(`Error changing password. Please try again.`, {
+      toast.error("Error changing password. Please try again.", {
         autoClose: 2000,
       });
-      setMessage("Error changing password. Please try again.");
     }
   };
 
   return (
     <React.Fragment>
+      {/* Update Modal */}
       <UpdateModal
         profile={profile}
-        modal={updateModal}
-        toggle={toggleUpdateModal}
+        modal={isUpdateModalOpen}
+        toggle={() => setIsUpdateModalOpen(!isUpdateModalOpen)}
         refetch={refetch}
       />
+
+      {/* Password Change Modal */}
       <Modal
-        isOpen={modal_backdrop}
-        toggle={() => {
-          tog_backdrop();
-        }}
+        isOpen={isPasswordModalOpen}
+        toggle={() => setIsPasswordModalOpen(!isPasswordModalOpen)}
         backdrop={"static"}
-        id="staticBackdrop"
         centered={true}
       >
         <ModalHeader
-          toggle={() => {
-            tog_backdrop();
-          }}
+          toggle={() => setIsPasswordModalOpen(!isPasswordModalOpen)}
         >
           {t("edit")} Password
         </ModalHeader>
@@ -136,20 +113,20 @@ const UsersProfile = () => {
               >
                 Password
               </Label>
-              <Col sm={9} style={{ position: "relative" }}>
+              <Col sm={9}>
                 <Input
                   type={passwordShown ? "text" : "password"}
                   name="password"
                   className="form-control"
                   id="horizontal-password-Input"
-                  autoComplete="off"
                   placeholder="Enter Your New Password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                 />
                 <i
-                  className={`mdi ${passwordShown ? "mdi-eye-off" : "mdi-eye"
-                    } font-size-16`}
+                  className={`mdi ${
+                    passwordShown ? "mdi-eye-off" : "mdi-eye"
+                  } font-size-16`}
                   onClick={togglePasswordVisibility}
                   style={{
                     position: "absolute",
@@ -162,135 +139,157 @@ const UsersProfile = () => {
                 ></i>
               </Col>
             </Row>
-            {message && <p>{message}</p>}
           </Form>
         </ModalBody>
         <ModalFooter>
-          <Button
-            type="button"
-            color="light"
-            onClick={() => {
-              setModal_backdrop(false);
-            }}
-          >
+          <Button color="light" onClick={() => setIsPasswordModalOpen(false)}>
             {t("close")}
           </Button>
-          <Button type="button" color="success" onClick={handlePasswordChange}>
+          <Button color="success" onClick={handlePasswordChange}>
             {t("edit")}
           </Button>
         </ModalFooter>
       </Modal>
+
       <div className="page-content">
         <Container>
-          {/* Render Breadcrumbs */}
-          <Breadcrumbs title="Contacts" breadcrumbItem="Profile" />
           <Row className="d-flex align-items-center justify-content-center">
             <Col xl="10">
-              <Card className="overflow-hidden">
-                <div className="bg-primary-subtle"></div>
+              <Card
+                className="overflow-hidden"
+                style={{ boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)" }}
+              >
                 {isLoading ? (
                   <Spinners />
                 ) : (
-                  <CardBody className="">
+                  <CardBody className="position-relative">
                     <Row>
                       <Col>
-                        <Row>
-                          <Col xl={8}>
-                            <div className="d-flex justify-content-center">
-                              <div className="avatar-xl profile-user-wid mb-2">
-                                <img
-                                  src={`${API_URL}/public/uploads/pictures/${profile?.usr_picture}`}
-                                  alt="User Profile"
-                                  className="img-thumbnail rounded-circle mt-3"
-                                  onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src =
-                                      "https://i.pinimg.com/236x/58/79/29/5879293da8bd698f308f19b15d3aba9a.jpg";
-                                  }}
-                                />
-                              </div>
-                            </div>
-                            <h5 className="font-size-15 text-truncate text-center mt-4">
-                              {profile?.usr_full_name === ""
-                                ? "Unkonwn User"
-                                : profile?.usr_full_name}
-                            </h5>
-                            <p className="text-muted mb-0 text-truncate text-center mb-2">
-                              {profile?.usr_department_id === ""
-                                ? "Unkonwn Department"
-                                : profile?.usr_department_id}
-                            </p>
-                          </Col>
-                          <Col xl={4}>
-                            <div className="d-flex flex-column flex-wrap gap-2">
-                              <Button
-                                outline
-                                type="button"
-                                color="success"
-                                onClick={() => toggleUpdateModal()}
-                              >
-                                <i className="mdi mdi-pencil font-size-16 me-2"></i>
-                                {t("edit")}
-                              </Button>
-                              <Button
-                                outline
-                                type="button"
-                                color="primary"
-                                onClick={() => {
-                                  tog_backdrop();
-                                }}
-                              >
-                                <FaLock className="me-2" />
-                                {t("reset_password")}
-                              </Button>
-                            </div>
-                          </Col>
-                        </Row>
+                        <div className="d-flex justify-content-center">
+                          <div className="avatar-xl profile-user-wid mb-4">
+                            <img
+                              src={`${API_URL}/public/uploads/pictures/${Users.user.usr_picture}`}
+                              alt="User Profile"
+                              className="img-thumbnail rounded-circle mt-3"
+                              style={{
+                                border: "4px solid #fff",
+                                boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+                                width: "120px",
+                                height: "120px",
+                              }}
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src =
+                                  "https://i.pinimg.com/236x/58/79/29/5879293da8bd698f308f19b15d3aba9a.jpg";
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <h5 className="font-size-15 text-truncate text-center mb-2">
+                          {Users.user.usr_full_name || "-"}
+                        </h5>
 
-                        <div>
+                        <Col className="align-self-center">
+                          <div className="text-lg-center mt-4 mb-2 mt-lg-0">
+                            <Row>
+                              <Col xs="4">
+                                <div className="p-3 border rounded">
+                                  <i
+                                    className={`bx bx-building-house font-size-24 mb-2`}
+                                  ></i>
+                                  <h5 className="mb-1">
+                                    {Users.user.user_info.sector_name || "-"}
+                                  </h5>
+                                  <p className="text-muted mb-0">
+                                    {t("sector_name")}
+                                  </p>
+                                </div>
+                              </Col>
+                              <Col xs="4">
+                                <div className="p-3 border rounded">
+                                  <i
+                                    className={`bx bx-map font-size-24 mb-2`}
+                                  ></i>
+                                  <h5 className="mb-1">
+                                    {Users.user.user_info.woreda_name || "-"}
+                                  </h5>
+                                  <p className="text-muted mb-0">
+                                    {t("woreda_name")}
+                                  </p>
+                                </div>
+                              </Col>
+                              <Col xs="4">
+                                <div className="p-3 border rounded">
+                                  <i
+                                    className={`bx bx-globe font-size-24 mb-2`}
+                                  ></i>
+                                  <h5 className="mb-1">
+                                    {Users.user.user_info.zone_name || "-"}
+                                  </h5>
+                                  <p className="text-muted mb-0">
+                                    {t("zone_name")}
+                                  </p>
+                                </div>
+                              </Col>
+                            </Row>
+                          </div>
+                        </Col>
+                        <Card>
                           <CardBody>
-                            <CardTitle className="mb-4">
+                            <CardTitle className="mb-2">
                               {t("personal_information")}
                             </CardTitle>
                             <p className="text-muted mb-4">
-                              {profile?.usr_description === ""
-                                ? "No Description"
-                                : profile?.usr_description}
+                              {Users.user.usr_description ||
+                                "Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum quos aliquid dolorem aperiam facilis veritatis accusantium rerum voluptatem voluptas esse dolores ipsam, voluptatum debitis sapiente quae. Enim non, mollitia cum dolorem laborum ipsum ipsa quas?"}
                             </p>
                             <div className="table-responsive">
                               <Table className="table-nowrap mb-0">
                                 <tbody>
                                   <tr>
-                                    <th scope="row">{t("usr_full_name")}: </th>
+                                    <th scope="row">
+                                      <i className="mdi mdi-account-circle me-2"></i>
+                                      {t("full_name")} :
+                                    </th>
+                                    <td>{Users.user.usr_full_name || "-"}</td>
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">
+                                      <i className="mdi mdi-phone me-2"></i>
+                                      {t("phone_number")} :
+                                    </th>
                                     <td>
-                                      {profile?.usr_full_name === ""
-                                        ? "-"
-                                        : profile?.usr_full_name}
+                                      {Users.user.usr_phone_number || "-"}
                                     </td>
                                   </tr>
                                   <tr>
                                     <th scope="row">
-                                      {t("usr_phone_number")}:
+                                      <i className="mdi mdi-email me-2"></i>
+                                      {t("email")} :
+                                    </th>
+                                    <td>{Users.user.usr_email || "-"}</td>
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">
+                                      <i className="mdi mdi-calendar me-2"></i>
+                                      {t("created")} :
                                     </th>
                                     <td>
-                                      {profile?.usr_phone_number === ""
-                                        ? "-"
-                                        : profile?.usr_phone_number}
+                                      {Users.user.usr_create_time
+                                        ? formatDate(Users.user.usr_create_time)
+                                        : "-"}
                                     </td>
                                   </tr>
                                   <tr>
-                                    <th scope="row">{t("usr_email")}: </th>
+                                    <th scope="row">
+                                      <i className="mdi mdi-clock me-2"></i>
+                                      {t("last_logged_in")} :
+                                    </th>
                                     <td>
-                                      {profile?.usr_email === ""
-                                        ? "-"
-                                        : profile?.usr_email}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <th scope="row">{t("usr_create_time")}:</th>
-                                    <td>
-                                      {profile?.usr_create_time
-                                        ? formatDate(profile.usr_create_time)
+                                      {Users.user.usr_last_logged_in
+                                        ? formatDate(
+                                            Users.user.usr_last_logged_in
+                                          )
                                         : "-"}
                                     </td>
                                   </tr>
@@ -298,7 +297,31 @@ const UsersProfile = () => {
                               </Table>
                             </div>
                           </CardBody>
-                        </div>
+                          <Row className="d-flex justify-content-center align-items-center g-3">
+                            <Col xs="auto">
+                              <Button
+                                outline
+                                color="success"
+                                className="d-flex align-items-center px-4 py-2"
+                                onClick={() => setIsUpdateModalOpen(true)}
+                              >
+                                <FaEdit className="me-2" />
+                                {t("edit")}
+                              </Button>
+                            </Col>
+                            <Col xs="auto">
+                              <Button
+                                outline
+                                color="primary"
+                                className="d-flex align-items-center px-4 py-2"
+                                onClick={() => setIsPasswordModalOpen(true)}
+                              >
+                                <FaLock className="me-2" />
+                                {t("reset_password")}
+                              </Button>
+                            </Col>
+                          </Row>
+                        </Card>
                       </Col>
                     </Row>
                   </CardBody>

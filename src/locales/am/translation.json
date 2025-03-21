@@ -1339,5 +1339,13 @@
 	"Used Time": "የተጠቀሰ ጊዜ",
 	"Remaining Time": "የቀረ ጊዜ",
 	"Time data is unavailable.": "የጊዜ መረጃ አልተገኘም።",
-	"days": "ቀናት"
+	"days": "ቀናት",
+	"woreda_name": "የ ወረዳ ስም",
+	"zone_name": "የ ዞን ስም",
+	"last_logged_in":"መጨረሻ የገባበት",
+	"created":"የተፈጠረው",
+	"email":"ኢሜይል",
+	"phone_number":"ስልክ ቁጥር",
+	"full_name":"ሙሉ ስም"
+
 }
