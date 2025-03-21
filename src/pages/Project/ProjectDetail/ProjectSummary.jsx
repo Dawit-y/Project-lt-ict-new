@@ -1,10 +1,12 @@
 import React from "react";
 import { Card, CardBody, CardTitle, Row, Col } from "reactstrap";
 import Chart from "react-apexcharts";
+import { useTranslation } from "react-i18next";
 
 const ProjectSummary = ({ data }) => {
-  console.log("data", data)
-  const additionalBudget = parseFloat(data?.additional_budget?.additional_budget) || 0
+  const { t } = useTranslation();
+  const additionalBudget = parseFloat(data?.additional_budget?.additional_budget) || 0;
+
   const budgetData = {
     totalBudget: parseFloat(data?.data?.prj_total_estimate_budget) + additionalBudget || 0,
     usedBudget: parseFloat(data?.performance?.used_amount) || 0,
@@ -32,7 +34,6 @@ const ProjectSummary = ({ data }) => {
   let timeChartSeries = null;
 
   if (startDate && endDate && !isNaN(startDate) && !isNaN(endDate)) {
-    // Perform calculations only if both dates exist
     const totalDurationMs = endDate - startDate;
     const usedTimeMs = Date.now() - startDate;
     const remainingTimeMs = endDate - Date.now();
@@ -52,13 +53,13 @@ const ProjectSummary = ({ data }) => {
 
   const budgetChartOptions = {
     colors: ["#50a5f1", "#f1b44c", "#f46a6a"],
-    labels: ["Used Budget", "Remaining Budget", "Additional Budget"],
+    labels: [t("Used Budget"), t("Remaining Budget"), t("Additional Budget")],
   };
   const budgetChartSeries = [budgetData.usedBudget, budgetData.remainingAmount, additionalBudget];
 
   const timeChartOptions = {
     colors: ["#50a5f1", "#f1b44c"],
-    labels: ["Used Time", "Remaining Time"],
+    labels: [t("Used Time"), t("Remaining Time")],
   };
 
   const performanceChartOptions = {
@@ -82,11 +83,11 @@ const ProjectSummary = ({ data }) => {
         <Row>
           {/* Budget Overview */}
           <Col md={4}>
-            <CardTitle tag="h5" className="mb-4">Budget Overview</CardTitle>
-            <h6>Current Total Budget: {budgetData.totalBudget.toLocaleString()} birr</h6>
-            <h6>Additional Budget: {additionalBudget.toLocaleString()} birr</h6>
-            <h6>Used Budget: {budgetData.usedBudget.toLocaleString()} birr</h6>
-            <h6>Remaining Amount: {budgetData.remainingAmount.toLocaleString()} birr</h6>
+            <CardTitle tag="h5" className="mb-4">{t("Budget Overview")}</CardTitle>
+            <h6>{t("Current Total Budget")}: {budgetData.totalBudget.toLocaleString()} {t("birr")}</h6>
+            <h6>{t("Additional Budget")}: {additionalBudget.toLocaleString()} {t("birr")}</h6>
+            <h6>{t("Used Budget")}: {budgetData.usedBudget.toLocaleString()} {t("birr")}</h6>
+            <h6>{t("Remaining Amount")}: {budgetData.remainingAmount.toLocaleString()} {t("birr")}</h6>
             <div>
               <Chart options={budgetChartOptions} series={budgetChartSeries} type="pie" width={350} height={350} />
             </div>
@@ -94,26 +95,26 @@ const ProjectSummary = ({ data }) => {
 
           {/* Physical Performance */}
           <Col md={4}>
-            <CardTitle tag="h5">Physical Performance</CardTitle>
+            <CardTitle tag="h5">{t("Physical Performance")}</CardTitle>
             <div>
               <Chart options={performanceChartOptions} series={performanceChartSeries} type="radialBar" width={250} />
             </div>
           </Col>
 
-          {/* Time Overview - Show only if valid dates exist */}
+          {/* Time Overview */}
           <Col md={4}>
-            <CardTitle tag="h5" className="mb-4">Time Overview</CardTitle>
+            <CardTitle tag="h5" className="mb-4">{t("Time Overview")}</CardTitle>
             {timeData ? (
               <>
-                <h6>Total Project Duration: {timeData.totalDuration} days</h6>
-                <h6>Used Time: {timeData.usedTime} days</h6>
-                <h6>Remaining Time: {timeData.remainingTime} days</h6>
+                <h6>{t("Total Project Duration")}: {timeData.totalDuration} {t("days")}</h6>
+                <h6>{t("Used Time")}: {timeData.usedTime} {t("days")}</h6>
+                <h6>{t("Remaining Time")}: {timeData.remainingTime} {t("days")}</h6>
                 <div>
                   <Chart options={timeChartOptions} series={timeChartSeries} type="pie" width={350} height={350} />
                 </div>
               </>
             ) : (
-              <p>Time data is unavailable.</p>
+              <p>{t("Time data is unavailable.")}</p>
             )}
           </Col>
         </Row>

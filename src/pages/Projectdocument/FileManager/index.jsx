@@ -344,106 +344,106 @@ const Index = (props) => {
         </ModalBody>
       </Modal>
       <div className="">
-          <div className="d-xl-flex">
-            <div className="w-100">
-              <div className="d-md-flex">
-                {/* FileRightBar */}
-                <Card
-                  className="filemanager-sidebar me-md-2"
-                  style={{ minHeight: "500px" }}
-                >
-                  <CardBody>
-                    <div className="d-flex flex-column h-100">
-                      <div className="mb-4">
-                        <div className="mb-3">
-                          <Button
-                            className="btn btn-primary w-100"
-                            color="info-subtle"
-                            type="button"
-                            onClick={toggle}
+        <div className="d-xl-flex">
+          <div className="w-100">
+            <div className="d-md-flex">
+              {/* FileRightBar */}
+              <Card
+                className="filemanager-sidebar me-md-2"
+                style={{ minHeight: "500px" }}
+              >
+                <CardBody>
+                  <div className="d-flex flex-column h-100">
+                    <div className="mb-4">
+                      <div className="mb-3">
+                        <Button
+                          className="btn btn-primary w-100"
+                          color="info-subtle"
+                          type="button"
+                          onClick={toggle}
+                        >
+                          <i className="mdi mdi-plus me-1"></i>{t("create_new")}
+                        </Button>
+                      </div>
+                      <ul className="list-unstyled categories-list">
+                        <li>
+                          <div
+                            className={`${selectedDocumentTypeId === null
+                              ? "border border-info-subtle"
+                              : ""
+                              }`}
                           >
-                            <i className="mdi mdi-plus me-1"></i>{t("create_new")}
-                          </Button>
-                        </div>
-                        <ul className="list-unstyled categories-list">
-                          <li>
+                            <Link
+                              className="text-body fw-medium py-1 d-flex align-items-center"
+                              to="#"
+                              onClick={() => {
+                                setSearchParams({ project_id: passedId });
+                                setSelectedDocumentTypeId(null);
+                              }} // Reset search params
+                            >
+                              <i className="mdi mdi-folder font-size-16 text-warning me-2"></i>
+                              All Documents
+                            </Link>
+                          </div>
+                        </li>
+                        {docTypeData?.data?.map((type) => (
+                          <li key={type.pdt_id}>
                             <div
-                              className={`${selectedDocumentTypeId === null
-                                  ? "border border-info-subtle"
-                                  : ""
+                              className={`${selectedDocumentTypeId === type.pdt_id
+                                ? "border border-info-subtle"
+                                : ""
                                 }`}
                             >
                               <Link
                                 className="text-body fw-medium py-1 d-flex align-items-center"
                                 to="#"
                                 onClick={() => {
-                                  setSearchParams({ project_id: passedId });
-                                  setSelectedDocumentTypeId(null);
-                                }} // Reset search params
+                                  setSelectedDocumentTypeId(type.pdt_id);
+                                  setSearchParams({
+                                    project_id: passedId,
+                                    prd_document_type_id: type.pdt_id,
+                                  });
+                                }}
                               >
                                 <i className="mdi mdi-folder font-size-16 text-warning me-2"></i>
-                                All Documents
+                                {type.pdt_doc_name_or}
                               </Link>
                             </div>
                           </li>
-                          {docTypeData?.data?.map((type) => (
-                            <li key={type.pdt_id}>
-                              <div
-                                className={`${selectedDocumentTypeId === type.pdt_id
-                                    ? "border border-info-subtle"
-                                    : ""
-                                  }`}
-                              >
-                                <Link
-                                  className="text-body fw-medium py-1 d-flex align-items-center"
-                                  to="#"
-                                  onClick={() => {
-                                    setSelectedDocumentTypeId(type.pdt_id);
-                                    setSearchParams({
-                                      project_id: passedId,
-                                      prd_document_type_id: type.pdt_id,
-                                    });
-                                  }}
-                                >
-                                  <i className="mdi mdi-folder font-size-16 text-warning me-2"></i>
-                                  {type.pdt_doc_name_or}
-                                </Link>
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                        ))}
+                      </ul>
                     </div>
+                  </div>
+                </CardBody>
+              </Card>
+
+              {/* Main Content */}
+              <div className="w-100 h-100" style={{ minHeight: "500px" }}>
+                <Card className="h-100" >
+                  <CardBody>
+                    {isSearchLoading || isLoading ? (
+                      <Spinners />
+                    ) : (
+                      <FileList
+                        files={searchedDocs?.data || data?.data || []}
+                        edit={handleProjectDocumentClick}
+                        isDeleteLoading={deleteProjectDocument.isPending}
+                        handleDeleteProjectDocument={
+                          handleDeleteProjectDocument
+                        }
+                        deleteModal={deleteModal}
+                        setDeleteModal={setDeleteModal}
+                        onClickDelete={onClickDelete}
+                        isGridView={isGridView}
+                        setIsGridView={setIsGridView}
+                      />
+                    )}
                   </CardBody>
                 </Card>
-
-                {/* Main Content */}
-                <div className="w-100 h-100" style={{ minHeight: "500px" }}>
-                  <Card >
-                    <CardBody>
-                      {isSearchLoading || isLoading ? (
-                        <Spinners />
-                      ) : (
-                        <FileList
-                          files={searchedDocs?.data || data?.data || []}
-                          edit={handleProjectDocumentClick}
-                          isDeleteLoading={deleteProjectDocument.isPending}
-                          handleDeleteProjectDocument={
-                            handleDeleteProjectDocument
-                          }
-                          deleteModal={deleteModal}
-                          setDeleteModal={setDeleteModal}
-                          onClickDelete={onClickDelete}
-                          isGridView={isGridView}
-                          setIsGridView={setIsGridView}
-                        />
-                      )}
-                    </CardBody>
-                  </Card>
-                </div>
               </div>
             </div>
           </div>
+        </div>
       </div>
     </React.Fragment>
   );

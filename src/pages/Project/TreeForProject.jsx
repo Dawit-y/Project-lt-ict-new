@@ -217,7 +217,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   if (isLoading || isClusterLoading) {
     return (
       <div
-        style={{ minHeight: "100vh", minWidth: "400px" }}
+        style={{ minHeight: "100vh", minWidth: "300px" }}
         className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
       >
         <h5 className="mb-2 text-secondary">{t("address_tree_Search")}</h5>
@@ -226,8 +226,17 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
       </div>
     );
   }
-  if (isError || isClusterLoading) {
-    return <div>Error fetching address structure</div>;
+  if (isError || isClusterError) {
+    return (
+      <div
+        style={{ minHeight: "100vh", minWidth: "300px" }}
+        className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
+      >
+        <h5 className="mb-2 text-secondary">{t("address_tree_Search")}</h5>
+        <hr className="text-dark" />
+        <p>Error Fetching address structure</p>
+      </div>
+    )
   }
 
   return (
@@ -243,7 +252,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
                 onNodeSelect({ data: null })
                 treeRef.current?.closeAll()
               }}
-              size="sm" outline color="secondary-subtle">
+              size="sm" color="secondary-subtle" className="border">
               <FaChevronUp size={15} className="my-auto" />
             </Button>
           </Col>

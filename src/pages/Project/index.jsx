@@ -690,7 +690,7 @@ const ProjectModel = () => {
             <div style={{ flex: "0 0 70%", minWidth: "600px" }}>
               {breadcrumb.length > 0 && (
                 <Card className="w-100 d-flex">
-                  <CardBody className="w-100 d-flex flex-wrap text-break p-2">
+                  <CardBody className="w-100 d-flex flex-wrap text-break p-3">
                     {breadcrumb.map((node, index) => (
                       <span key={index} className="me-1 text-break mb-1">
                         {getTranslatedName(node)} {index < breadcrumb.length - 1 && <strong>{" > "}</strong>}

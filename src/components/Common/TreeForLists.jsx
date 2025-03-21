@@ -76,7 +76,7 @@ const TreeForLists = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   if (isLoading) {
     return (
       <div
-        style={{ minHeight: "100vh", minWidth: "400px" }}
+        style={{ minHeight: "100vh", minWidth: "300px" }}
         className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
       >
         <h5 className="mb-2 text-secondary">{t("address_tree_Search")}</h5>
@@ -86,7 +86,16 @@ const TreeForLists = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
     );
   }
   if (isError) {
-    return <div>Error fetching address structure</div>;
+    return (
+      <div
+        style={{ minHeight: "100vh", minWidth: "300px" }}
+        className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
+      >
+        <h5 className="mb-2 text-secondary">{t("address_tree_Search")}</h5>
+        <hr className="text-dark" />
+        <p>Error Fetching address structure</p>
+      </div>
+    )
   }
 
   return (

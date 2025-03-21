@@ -247,7 +247,7 @@ const UsersProfile = () => {
                           </Col>
                         </Row>
 
-                        <Card>
+                        <div>
                           <CardBody>
                             <CardTitle className="mb-4">
                               {t("personal_information")}
@@ -298,7 +298,7 @@ const UsersProfile = () => {
                               </Table>
                             </div>
                           </CardBody>
-                        </Card>
+                        </div>
                       </Col>
                     </Row>
                   </CardBody>

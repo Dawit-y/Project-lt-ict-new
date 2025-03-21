@@ -1319,5 +1319,19 @@
 	"errors_duplicateEntry": "Galmeen wal fakkaataa argameera. Galmeen kun dursee jira.",
 	"errors_missingField": "Dirqamaan guutamuu qabu tokko hin guutamne. Mee guutuutti guutaa.",
 	"errors_invalidReference": "Maayikiroo sirrii miti. Galmee wal qabatee barbaadame hin jiru.",
-	"errors_genericError": "Rakkoon uumameera. Mee booda irra deebi'aa yaalaa."
+	"errors_genericError": "Rakkoon uumameera. Mee booda irra deebi'aa yaalaa.",
+	"Budget Overview": "Xiinxala Baajataa",
+	"Current Total Budget": "Baajata Waliigalaa Amma",
+	"Additional Budget": "Baajata Dabalataa",
+	"Used Budget": "Baajata Fayyadame",
+	"Remaining Budget": "Baajata Hafe",
+	"Remaining Amount": "Hirmaata Hafe",
+	"birr": "Birrii",
+	"Physical Performance": "Hojiirra Oolmaa Qaamaa",
+	"Time Overview": "Xiinxala Yeroo",
+	"Total Project Duration": "Yeroo Guutuu Pirojeektii",
+	"Used Time": "Yeroo Fayyadame",
+	"Remaining Time": "Yeroo Hafe",
+	"Time data is unavailable.": "Daataan yeroo hin jiruu.",
+	"days": "guyyaa"
 }

@@ -96,6 +96,9 @@ const ProjectVariationList = lazy(() =>
 const ProjectSupplimentaryList = lazy(() =>
   import("../pages/Projectsupplimentary/ProjectSupplimentaryList")
 );
+const ProjectDocumentList = lazy(() =>
+  import("../pages/Projectdocument/ProjectDocumentList")
+);
 const ProjectEmployeeList = lazy(() =>
   import("../pages/Projectemployee/ProjectEmployeeList")
 );
@@ -206,6 +209,7 @@ const authProtectedRoutes = [
     path: "/project_supplimentary_list",
     component: <ProjectSupplimentaryList />,
   },
+  { path: "/project_document_list", component: <ProjectDocumentList /> },
   { path: "/project_employee_list", component: <ProjectEmployeeList /> },
   { path: "/project_stakeholder_list", component: <ProjectStakeholderList /> },
   { path: "/project_contractor_list", component: <ProjectContractorList /> },

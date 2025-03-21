@@ -1216,9 +1216,22 @@
 	"errors_missingField": "A required field is missing. Please fill in all necessary details.",
 	"errors_invalidReference": "Invalid reference. The associated record does not exist.",
 	"errors_genericError": "Something went wrong. Try again later.",
-
-	"leave_a_message":"Leave a message",
-	"conversation":"Conversation",
-	"subject":"Subject",
-	"view_messages":"View Messages"
+	"leave_a_message": "Leave a message",
+	"conversation": "Conversation",
+	"subject": "Subject",
+	"view_messages": "View Messages",
+	"Budget Overview": "Budget Overview",
+	"Current Total Budget": "Current Total Budget",
+	"Additional Budget": "Additional Budget",
+	"Used Budget": "Used Budget",
+	"Remaining Budget": "Remaining Budget",
+	"Remaining Amount": "Remaining Amount",
+	"birr": "birr",
+	"Physical Performance": "Physical Performance",
+	"Time Overview": "Time Overview",
+	"Total Project Duration": "Total Project Duration",
+	"Used Time": "Used Time",
+	"Remaining Time": "Remaining Time",
+	"Time data is unavailable.": "Time data is unavailable.",
+	"days": "days"
 }

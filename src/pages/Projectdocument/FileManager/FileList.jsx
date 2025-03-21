@@ -20,13 +20,42 @@ import DeleteModal from "../../../components/Common/DeleteModal";
 import { BsFillGrid1X2Fill } from "react-icons/bs";
 import { useTranslation } from "react-i18next";
 
-const formatFileSize = (bytes) => {
+export const formatFileSize = (bytes) => {
   if (isNaN(bytes) || bytes < 0) return "0 KB";
 
   if (bytes < 1024 * 1024) {
     return `${(bytes / 1024).toFixed(2)} KB`;
   }
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+};
+
+// Function to get file icon details
+export const getFileIcon = (extension) => {
+  switch (extension?.toLowerCase()) {
+    case "pdf":
+      return { icon: "bx bxs-file-pdf", color: "text-danger" };
+    case "doc":
+    case "docx":
+      return { icon: "bx bxs-file-word", color: "text-primary" };
+    case "xls":
+    case "xlsx":
+      return { icon: "bx bxs-file-excel", color: "text-success" };
+    case "ppt":
+    case "pptx":
+      return { icon: "bx bxs-file-powerpoint", color: "text-warning" };
+    case "txt":
+      return { icon: "bx bxs-file-txt", color: "text-muted" };
+    case "jpg":
+    case "jpeg":
+    case "png":
+    case "gif":
+      return { icon: "bx bxs-file-image", color: "text-info" };
+    case "zip":
+    case "rar":
+      return { icon: "bx bxs-file-archive", color: "text-secondary" };
+    default:
+      return { icon: "bx bxs-file", color: "text-dark" };
+  }
 };
 
 const FileList = ({
@@ -55,34 +84,6 @@ const FileList = ({
     setIsGridView((prev) => !prev);
   };
 
-  // Function to get file icon details
-  const getFileIcon = (extension) => {
-    switch (extension?.toLowerCase()) {
-      case "pdf":
-        return { icon: "bx bxs-file-pdf", color: "text-danger" };
-      case "doc":
-      case "docx":
-        return { icon: "bx bxs-file-word", color: "text-primary" };
-      case "xls":
-      case "xlsx":
-        return { icon: "bx bxs-file-excel", color: "text-success" };
-      case "ppt":
-      case "pptx":
-        return { icon: "bx bxs-file-powerpoint", color: "text-warning" };
-      case "txt":
-        return { icon: "bx bxs-file-txt", color: "text-muted" };
-      case "jpg":
-      case "jpeg":
-      case "png":
-      case "gif":
-        return { icon: "bx bxs-file-image", color: "text-info" };
-      case "zip":
-      case "rar":
-        return { icon: "bx bxs-file-archive", color: "text-secondary" };
-      default:
-        return { icon: "bx bxs-file", color: "text-dark" };
-    }
-  };
 
   // Filter files based on search query
   const filteredFiles = files.filter((file) =>
@@ -114,7 +115,7 @@ const FileList = ({
         onCloseClick={() => setDeleteModal(false)}
         isLoading={isDeleteLoading}
       />
-      <div>
+      <div className="h-100">
         <Row className="mb-3">
           <Col xl={3} sm={6}>
             <div className="mt-2">
