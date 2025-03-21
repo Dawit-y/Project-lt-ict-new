@@ -4,6 +4,7 @@ import { useFetchAddressStructures } from "../../queries/address_structure_query
 import { Tree } from "react-arborist";
 import { FaFolder, FaFile, FaChevronRight, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { Card, CardBody, Input, Label, Col, Row, Button } from "reactstrap";
+import useResizeObserver from "use-resize-observer";
 
 const TreeForLists = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   const { t, i18n } = useTranslation();
@@ -13,6 +14,7 @@ const TreeForLists = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   const { data, isLoading, isError } = useFetchAddressStructures(userId);
   const [treeData, setTreeData] = useState([]);
   const [searchTerm, setSearchTerm] = useState(null)
+  const { ref, width, height } = useResizeObserver();
 
   useEffect(() => {
     setIsAddressLoading(isLoading);
@@ -122,16 +124,16 @@ const TreeForLists = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
             </Button>
           </Col>
         </Row>
-        <div className="border rounded p-2 overflow-auto" style={{ minHeight: "100vh" }}>
-          {treeData.length > 0 && (
+        <div ref={ref} className="border rounded p-2 overflow-auto" style={{ minHeight: "100vh" }}>
+          {treeData.length > 0 && width && height && (
             <Tree
               initialData={treeData}
               openByDefault={false}
               searchTerm={searchTerm}
               searchMatch={(node, term) => searchMatch(node, term, i18n.language)}
               ref={treeRef}
-              width={400}
-              height={800}
+              width={Math.max(width || 350, 350)}
+              height={height || 800}
               indent={24}
               rowHeight={36}
               overscanCount={1}

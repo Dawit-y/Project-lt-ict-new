@@ -6,6 +6,7 @@ import { useSearchProgramInfos, useFetchProgramInfos } from "../../queries/progr
 import { Tree } from "react-arborist";
 import { FaFolder, FaFile, FaChevronRight, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { Card, CardBody, Input, Label, Col, Row, Button } from "reactstrap";
+import useResizeObserver from "use-resize-observer";
 
 const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   const { t, i18n } = useTranslation();
@@ -16,7 +17,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   const [treeData, setTreeData] = useState([]);
   const [programParam, setProgramParam] = useState({})
   const [selectedSector, setSelectedSector] = useState({})
-
+  const { ref, width, height } = useResizeObserver();
   const [searchTerm, setSearchTerm] = useState(null)
 
   const { data: clusters, isLoading: isClusterLoading, isError: isClusterError } = getUserSectorListTree(userId);
@@ -257,16 +258,16 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
             </Button>
           </Col>
         </Row>
-        <div className="border rounded p-2 overflow-auto" style={{ minHeight: "100vh" }}>
-          {treeData.length > 0 && (
+        <div ref={ref} className="border rounded p-2 overflow-auto" style={{ minHeight: "100vh" }}>
+          {treeData.length > 0 && width && height && (
             <Tree
               initialData={treeData}
               openByDefault={false}
               searchTerm={searchTerm}
               searchMatch={(node, term) => searchMatch(node, term, i18n.language)}
               ref={treeRef}
-              width={400}
-              height={800}
+              width={Math.max(width || 450, 450)}
+              height={height || 800}
               indent={24}
               rowHeight={36}
               overscanCount={1}

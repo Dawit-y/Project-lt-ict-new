@@ -61,6 +61,7 @@ import { createSelectOptions, createMultiSelectOptions } from "../../utils/commo
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForProject from "./TreeForProject";
 import DatePicker from "../../components/Common/DatePicker";
+import useResizeObserver from "use-resize-observer";
 
 const ProjectModel = () => {
   document.title = "Projects";
@@ -674,11 +675,11 @@ const ProjectModel = () => {
         isLoading={deleteProject.isPending}
       />
       <div className="page-content">
-        <div className="w-100">
+        <div className="w-100 h-100">
           <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
-          <div className="d-flex gap-2" style={{ display: "flex", flexWrap: "nowrap" }}>
+          <div className="d-flex gap-2" style={{ display: "flex", flexWrap: "nowrap", height: "100%" }}>
             {/* Tree Section (30%) */}
-            <div style={{ flex: "0 0 30%", minWidth: "300px" }}>
+            <div style={{ flex: "0 0 30%", minWidth: "300px", height: "100%" }}>
               <TreeForProject
                 onNodeSelect={handleNodeSelect}
                 setIsAddressLoading={setIsAddressLoading}
