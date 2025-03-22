@@ -59,6 +59,7 @@ import { ToastContainer, toast } from "react-toastify";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import { createSelectOptions } from "../../utils/commonMethods";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import AccessLog from "../Accesslog/AccessLog";
 
 //import ImageUploader from "../../components/Common/ImageUploader";
 const truncateText = (text, maxLength) => {
@@ -211,22 +212,24 @@ const UsersModel = () => {
             (item) => item.usr_email === value && item.usr_id !== users?.usr_id
           );
         }),
-      usr_password: !isEdit && Yup.string()
-        .required(t("usr_password"))
-        .min(8, t("Password must be at least 8 characters"))
-        .matches(
-          /[a-z]/,
-          t("Password must contain at least one lowercase letter")
-        )
-        .matches(
-          /[A-Z]/,
-          t("Password must contain at least one uppercase letter")
-        )
-        .matches(/\d/, t("Password must contain at least one number"))
-        .matches(
-          /[@$!%*?&#]/,
-          t("Password must contain at least one special character")
-        ),
+      usr_password:
+        !isEdit &&
+        Yup.string()
+          .required(t("usr_password"))
+          .min(8, t("Password must be at least 8 characters"))
+          .matches(
+            /[a-z]/,
+            t("Password must contain at least one lowercase letter")
+          )
+          .matches(
+            /[A-Z]/,
+            t("Password must contain at least one uppercase letter")
+          )
+          .matches(/\d/, t("Password must contain at least one number"))
+          .matches(
+            /[@$!%*?&#]/,
+            t("Password must contain at least one special character")
+          ),
       usr_full_name: alphanumericValidation(3, 50, true),
       usr_phone_number: phoneValidation(true),
       usr_sector_id: dropdownValidation(1, 100, true),
@@ -360,7 +363,9 @@ const UsersModel = () => {
       usr_email: user.usr_email,
       usr_password: user.usr_password,
       usr_full_name: user.usr_full_name,
-      usr_phone_number: Number(user.usr_phone_number.toString().replace(/^(\+?251)/, "")),
+      usr_phone_number: Number(
+        user.usr_phone_number.toString().replace(/^(\+?251)/, "")
+      ),
       usr_role_id: Number(user.usr_role_id),
       usr_region_id: Number(user.usr_region_id),
       usr_zone_id: Number(user.usr_zone_id),
@@ -555,23 +560,27 @@ const UsersModel = () => {
             )}
             {/* added duplicat  */}
             {/* Add duplicate project icon */}
-            {(params.data?.is_editable == 90 && params.data?.is_role_editable) && (
-              <Link
-                to="#"
-                className="text-primary"
-                onClick={() => {
-                  handleUsersDuplicateClick(params.data);
-                }}
-              >
-                <i
-                  className="mdi mdi-content-duplicate font-size-18"
-                  id="duplicateTooltip"
-                />
-                <UncontrolledTooltip placement="top" target="duplicateTooltip">
-                  Duplicate
-                </UncontrolledTooltip>
-              </Link>
-            )}
+            {params.data?.is_editable == 90 &&
+              params.data?.is_role_editable && (
+                <Link
+                  to="#"
+                  className="text-primary"
+                  onClick={() => {
+                    handleUsersDuplicateClick(params.data);
+                  }}
+                >
+                  <i
+                    className="mdi mdi-content-duplicate font-size-18"
+                    id="duplicateTooltip"
+                  />
+                  <UncontrolledTooltip
+                    placement="top"
+                    target="duplicateTooltip"
+                  >
+                    Duplicate
+                  </UncontrolledTooltip>
+                </Link>
+              )}
             {/* End of duplicate project icon */}
           </div>
         ),
@@ -713,23 +722,24 @@ const UsersModel = () => {
                       value={validation.values.usr_email || ""}
                       invalid={
                         validation.touched.usr_email &&
-                          validation.errors.usr_email
+                        validation.errors.usr_email
                           ? true
                           : false
                       }
                       maxLength={30}
                     />
                     {validation.touched.usr_email &&
-                      validation.errors.usr_email ? (
+                    validation.errors.usr_email ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_email}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  {!isEdit &&
+                  {!isEdit && (
                     <Col className="col-md-4 mb-3">
                       <Label>
-                        {t("usr_password")} <span className="text-danger">*</span>
+                        {t("usr_password")}{" "}
+                        <span className="text-danger">*</span>
                       </Label>
                       <InputGroup>
                         <Input
@@ -741,7 +751,7 @@ const UsersModel = () => {
                           value={validation.values.usr_password || ""}
                           invalid={
                             validation.touched.usr_password &&
-                              validation.errors.usr_password
+                            validation.errors.usr_password
                               ? true
                               : false
                           }
@@ -754,13 +764,14 @@ const UsersModel = () => {
                           {showPassword ? <FaEyeSlash /> : <FaEye />}
                         </InputGroupText>
                         {validation.touched.usr_password &&
-                          validation.errors.usr_password ? (
+                        validation.errors.usr_password ? (
                           <FormFeedback type="invalid">
                             {validation.errors.usr_password}
                           </FormFeedback>
                         ) : null}
                       </InputGroup>
-                    </Col>}
+                    </Col>
+                  )}
                   <Col className={`${isEdit ? "col-md-8" : "col-md-4"} mb-3`}>
                     <Label>
                       {t("usr_full_name")}{" "}
@@ -775,14 +786,14 @@ const UsersModel = () => {
                       value={validation.values.usr_full_name || ""}
                       invalid={
                         validation.touched.usr_full_name &&
-                          validation.errors.usr_full_name
+                        validation.errors.usr_full_name
                           ? true
                           : false
                       }
                       maxLength={30}
                     />
                     {validation.touched.usr_full_name &&
-                      validation.errors.usr_full_name ? (
+                    validation.errors.usr_full_name ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_full_name}
                       </FormFeedback>
@@ -816,7 +827,7 @@ const UsersModel = () => {
                         }
                       />
                       {validation.touched.usr_phone_number &&
-                        validation.errors.usr_phone_number ? (
+                      validation.errors.usr_phone_number ? (
                         <FormFeedback type="invalid">
                           {validation.errors.usr_phone_number}
                         </FormFeedback>
@@ -824,7 +835,10 @@ const UsersModel = () => {
                     </InputGroup>
                   </Col>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("usr_sector_id")} <span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("usr_sector_id")}{" "}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="usr_sector_id"
                       type="select"
@@ -834,7 +848,7 @@ const UsersModel = () => {
                       value={validation.values.usr_sector_id || ""}
                       invalid={
                         validation.touched.usr_sector_id &&
-                          validation.errors.usr_sector_id
+                        validation.errors.usr_sector_id
                           ? true
                           : false
                       }
@@ -847,14 +861,17 @@ const UsersModel = () => {
                       ))}
                     </Input>
                     {validation.touched.usr_sector_id &&
-                      validation.errors.usr_sector_id ? (
+                    validation.errors.usr_sector_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_sector_id}
                       </FormFeedback>
                     ) : null}
                   </Col>
                   <Col className="col-md-4 mb-3">
-                    <Label>{t("usr_user_type")} <span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("usr_user_type")}{" "}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="usr_user_type"
                       type="select"
@@ -864,7 +881,7 @@ const UsersModel = () => {
                       value={validation.values.usr_user_type || ""}
                       invalid={
                         validation.touched.usr_user_type &&
-                          validation.errors.usr_user_type
+                        validation.errors.usr_user_type
                           ? true
                           : false
                       }
@@ -875,7 +892,7 @@ const UsersModel = () => {
                       <option value={3}>{t("Citizenship")}</option>
                     </Input>
                     {validation.touched.usr_user_type &&
-                      validation.errors.usr_user_type ? (
+                    validation.errors.usr_user_type ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_user_type}
                       </FormFeedback>
@@ -917,14 +934,14 @@ const UsersModel = () => {
                       value={validation.values.usr_description || ""}
                       invalid={
                         validation.touched.usr_description &&
-                          validation.errors.usr_description
+                        validation.errors.usr_description
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_description &&
-                      validation.errors.usr_description ? (
+                    validation.errors.usr_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_description}
                       </FormFeedback>
@@ -990,7 +1007,11 @@ const UsersModel = () => {
           canvasWidth={84}
           name={userMetaData.usr_name || "User Roles"}
           id={userMetaData.usr_id}
-          components={{ "User Roles": UserRoles, "User Sector": UserSectorModel }}
+          components={{
+            "User Roles": UserRoles,
+            "User Sector": UserSectorModel,
+            "Access Log": AccessLog,
+          }}
         />
       )}
     </React.Fragment>
