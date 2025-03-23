@@ -207,19 +207,6 @@ const UsersProfile = () => {
                               <Col xs="4">
                                 <div className="p-3 border rounded">
                                   <i
-                                    className={`bx bx-map font-size-24 mb-2`}
-                                  ></i>
-                                  <h5 className="mb-1">
-                                    {Users.user.user_info.woreda_name || "-"}
-                                  </h5>
-                                  <p className="text-muted mb-0">
-                                    {t("woreda_name")}
-                                  </p>
-                                </div>
-                              </Col>
-                              <Col xs="4">
-                                <div className="p-3 border rounded">
-                                  <i
                                     className={`bx bx-globe font-size-24 mb-2`}
                                   ></i>
                                   <h5 className="mb-1">
@@ -227,6 +214,19 @@ const UsersProfile = () => {
                                   </h5>
                                   <p className="text-muted mb-0">
                                     {t("zone_name")}
+                                  </p>
+                                </div>
+                              </Col>
+                              <Col xs="4">
+                                <div className="p-3 border rounded">
+                                  <i
+                                    className={`bx bx-map font-size-24 mb-2`}
+                                  ></i>
+                                  <h5 className="mb-1">
+                                    {Users.user.user_info.woreda_name || "-"}
+                                  </h5>
+                                  <p className="text-muted mb-0">
+                                    {t("woreda_name")}
                                   </p>
                                 </div>
                               </Col>
@@ -239,8 +239,7 @@ const UsersProfile = () => {
                               {t("personal_information")}
                             </CardTitle>
                             <p className="text-muted mb-4">
-                              {Users.user.usr_description ||
-                                "Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum quos aliquid dolorem aperiam facilis veritatis accusantium rerum voluptatem voluptas esse dolores ipsam, voluptatum debitis sapiente quae. Enim non, mollitia cum dolorem laborum ipsum ipsa quas?"}
+                              {Users.user.usr_description || ""}
                             </p>
                             <div className="table-responsive">
                               <Table className="table-nowrap mb-0">

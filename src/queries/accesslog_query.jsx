@@ -20,6 +20,17 @@ export const useFetchAccessLogs = () => {
   });
 };
 
+export const useFetchAccessLogsByProps = (param = {}, isActive) => {
+  return useQuery({
+    queryKey: [...ACCESS_LOG_QUERY_KEY, "fetch", param],
+    queryFn: () => getAccessLog(param),
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    enabled: isActive,
+  });
+};
+
 //search access_log
 export const useSearchAccessLogs = (searchParams = {}) => {
   return useQuery({
@@ -40,7 +51,7 @@ export const useAddAccessLog = () => {
   return useMutation({
     mutationFn: addAccessLog,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( ACCESS_LOG_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(ACCESS_LOG_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,
@@ -88,7 +99,8 @@ export const useDeleteAccessLog = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (AccessLogData) => AccessLogData.acl_id !== parseInt(deletedData.deleted_id)
+            (AccessLogData) =>
+              AccessLogData.acl_id !== parseInt(deletedData.deleted_id)
           ),
         };
       });
