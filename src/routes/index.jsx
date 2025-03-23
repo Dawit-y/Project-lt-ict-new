@@ -34,6 +34,15 @@ const UserRole = lazy(() => import("../pages/Userrole/index"));
 const Roles = lazy(() => import("../pages/Roles/index"));
 const DateSetting = lazy(() => import("../pages/Datesetting/index"));
 const CSOInformation = lazy(() => import("../pages/Csoinfo/index"));
+const CSOProject = lazy(() => import("../pages/Csoproject/index"));
+const CSOProjectList = lazy(() => import("../pages/Csoproject/ProjectList"));
+const CSOProjectDetail = lazy(() => import("../pages/Csoproject/ProjectDetail/index.jsx"));
+const CSOBudgetRequestListModel = lazy(() =>
+  import("../pages/Budgetrequest/CsoBudgetRequestList.jsx")
+);
+const CSOApproverBudgetRequestList = lazy(() =>
+  import("../pages/Budgetrequest/CsoApproverBudgetRequestList.jsx")
+);
 const SectorInformation = lazy(() =>
   import("../pages/Sectorinformation/index")
 );
@@ -174,6 +183,11 @@ const CitizenshipProjectDetail = lazy(() =>
 
 const authProtectedRoutes = [
   { path: "/cso_information", component: <CSOInformation /> },
+  { path: "/project_cso", component: <CSOProject /> },
+  { path: "/project_cso_list", component: <CSOProjectList /> },
+  { path: "/projectdetail_cso/:id", component: <CSOProjectDetail /> },
+  { path: "/cso_proposal_request", component: <CSOBudgetRequestListModel /> },
+  { path: "/cso_proposal_request_approval", component: <CSOApproverBudgetRequestList /> },
   { path: "/date_setting", component: <DateSetting /> },
   { path: "/conversation_information", component: <ConversationInformation /> },
   { path: "/superset_list_report", component: <SupersetListReport /> },

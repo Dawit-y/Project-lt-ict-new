@@ -6,21 +6,20 @@ import { useSearchProgramInfos, useFetchProgramInfos } from "../../queries/progr
 import { Tree } from "react-arborist";
 import { FaFolder, FaFile, FaChevronRight, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { Card, CardBody, Input, Label, Col, Row, Button } from "reactstrap";
-import useResizeObserver from "use-resize-observer";
 
 const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   const { t, i18n } = useTranslation();
   const treeRef = useRef()
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
-  const { data, isLoading, isError } = useFetchAddressStructures(userId);
+  const { data, isLoading } = useFetchAddressStructures(userId);
   const [treeData, setTreeData] = useState([]);
   const [programParam, setProgramParam] = useState({})
   const [selectedSector, setSelectedSector] = useState({})
-  const { ref, width, height } = useResizeObserver();
+
   const [searchTerm, setSearchTerm] = useState(null)
 
-  const { data: clusters, isLoading: isClusterLoading, isError: isClusterError } = getUserSectorListTree(userId);
+  const { data: clusters, isLoading: isClusterLoading } = getUserSectorListTree(userId);
   const { data: prData, isLoading: isProgramLoading, refetch: refetchProgram } =
     useFetchProgramInfos(programParam, Object.keys(programParam).length > 0);
 
@@ -195,7 +194,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   }
 
   const searchMatch = useCallback((node, term, lang) => {
-    if (!term) return true;
+    if (!term) return true; 
     const searchTerm = term.toLowerCase();
     const getNodeName = (node) => {
       if (!node?.data) return "";
@@ -215,37 +214,17 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
     return nameExists(node);
   }, []);
 
-  if (isLoading || isClusterLoading) {
-    return (
-      <div
-        style={{ minHeight: "100vh", minWidth: "250px" }}
-        className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
-      >
-        <h5 className="mb-2 text-secondary">{t("address_tree_Search")}</h5>
-        <hr className="text-dark" />
-        <p>Loading...</p>
-      </div>
-    );
-  }
-  if (isError || isClusterError) {
-    return (
-      <div
-        style={{ minHeight: "100vh", minWidth: "250px" }}
-        className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
-      >
-        <h5 className="mb-2 text-secondary">{t("address_tree_Search")}</h5>
-        <hr className="text-dark" />
-        <p>Error Fetching address structure</p>
-      </div>
-    )
-  }
 
   return (
-    <Card className="border shadow-sm">
+    <Card className="border shadow-sm" style={{ minWidth: '400px' }}>
       <CardBody className="p-3">
         <h5 className="text-secondary">{t("address_tree_Search")}</h5>
         <hr />
         <Row className="d-flex align-items-center justify-content-between mb-3">
+          <Col className="d-flex align-items-center gap-2 my-auto">
+            <Input className="" id="include" name="include" type="checkbox" onChange={handleCheckboxChange} />
+            <Label for="include" className="my-auto">{t('include_sub_address')}</Label>
+          </Col>
           <Col className="d-flex gap-2" >
             <Input id="searchterm" name="searchterm" type="text" bsSize="sm" placeholder="search" onChange={handleSearchTerm} />
             <Button
@@ -253,21 +232,21 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
                 onNodeSelect({ data: null })
                 treeRef.current?.closeAll()
               }}
-              size="sm" color="secondary-subtle" className="border">
+              size="sm" outline color="secondary-subtle">
               <FaChevronUp size={15} className="my-auto" />
             </Button>
           </Col>
         </Row>
-        <div ref={ref} className="border rounded p-2 overflow-auto" style={{ minHeight: "100vh" }}>
-          {treeData.length > 0 && width && height && (
+        <div className="border rounded p-2 overflow-auto" style={{ minHeight: "350px" }}>
+          {treeData.length > 0 && (
             <Tree
               initialData={treeData}
               openByDefault={false}
               searchTerm={searchTerm}
               searchMatch={(node, term) => searchMatch(node, term, i18n.language)}
               ref={treeRef}
-              width={Math.max(width || 450, 450)}
-              height={height || 800}
+              width={500}
+              height={800}
               indent={24}
               rowHeight={36}
               overscanCount={1}
@@ -284,6 +263,22 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
             </Tree>
           )}
         </div>
+        <style>
+          {`
+            /* Custom scrollbar */
+            div::-webkit-scrollbar {
+              width: 6px;
+              height: 6px;
+            }
+            div::-webkit-scrollbar-thumb {
+              background: rgba(0, 0, 0, 0.3);
+              border-radius: 3px;
+            }
+            div::-webkit-scrollbar-track {
+              background: rgba(0, 0, 0, 0.1);
+            }
+          `}
+        </style>
       </CardBody>
     </Card>
   );

@@ -211,7 +211,7 @@ const TableContainer = ({
             {isAddButton && (
               <Button
                 type="button"
-                className="btn-soft-success m-2"
+                className="btn-soft-success me-2"
                 onClick={handleUserClick}
               >
                 <i className="mdi mdi-plus me-1"></i> {buttonName}

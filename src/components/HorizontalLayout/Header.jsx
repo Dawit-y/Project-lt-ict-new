@@ -68,13 +68,12 @@ const Header = (props) => {
                   <img src={logoDark} alt="" height="55" />
                 </span>
               </Link>
-
               <Link to="/" className="logo logo-light">
                 <span className="logo-sm">
-                  <img src={logoLightSvg} alt="" height="22" />
+                  <img src={logo} alt="" height="22" />
                 </span>
                 <span className="logo-lg">
-                  <img src={logoLight} alt="" />
+                  <img src={logoDark} alt="" height="55" />
                 </span>
               </Link>
             </div>

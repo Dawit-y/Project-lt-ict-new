@@ -74,7 +74,7 @@ const ProjectDetailTabDynamic = ({
           ))}
         </Nav>
       )}
-      <TabContent activeTab={activeTab1} className="p-3 text-muted mt-4" style={{ minHeight: "300px" }}>
+      <TabContent activeTab={activeTab1} className="p-3 text-muted mt-4">
         {renderTabComponent()}
       </TabContent>
     </React.Fragment>

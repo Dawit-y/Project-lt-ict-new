@@ -679,7 +679,7 @@ const ProjectModel = () => {
           <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
           <div className="d-flex gap-2" style={{ display: "flex", flexWrap: "nowrap", height: "100%" }}>
             {/* Tree Section (30%) */}
-            <div style={{ flex: "0 0 30%", minWidth: "300px", height: "100%" }}>
+            <div style={{ flex: "0 0 25%", minWidth: "250px", height: "100%" }}>
               <TreeForProject
                 onNodeSelect={handleNodeSelect}
                 setIsAddressLoading={setIsAddressLoading}
@@ -688,7 +688,7 @@ const ProjectModel = () => {
             </div>
 
             {/* Main Content (70%) */}
-            <div style={{ flex: "0 0 70%", minWidth: "600px" }}>
+            <div style={{ flex: "0 0 75%", minWidth: "600px" }}>
               {breadcrumb.length > 0 && (
                 <Card className="w-100 d-flex">
                   <CardBody className="w-100 d-flex flex-wrap text-break p-3">

@@ -37,7 +37,7 @@ const UsersProfile = () => {
   const { data, isLoading, refetch } = useFetchUser({
     id: Users?.user?.usr_id,
   });
-
+  console.log("user", Users)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -124,9 +124,8 @@ const UsersProfile = () => {
                   onChange={(e) => setNewPassword(e.target.value)}
                 />
                 <i
-                  className={`mdi ${
-                    passwordShown ? "mdi-eye-off" : "mdi-eye"
-                  } font-size-16`}
+                  className={`mdi ${passwordShown ? "mdi-eye-off" : "mdi-eye"
+                    } font-size-16`}
                   onClick={togglePasswordVisibility}
                   style={{
                     position: "absolute",
@@ -288,8 +287,8 @@ const UsersProfile = () => {
                                     <td>
                                       {Users.user.usr_last_logged_in
                                         ? formatDate(
-                                            Users.user.usr_last_logged_in
-                                          )
+                                          Users.user.usr_last_logged_in
+                                        )
                                         : "-"}
                                     </td>
                                   </tr>

@@ -2,9 +2,6 @@ import React, { useEffect, useMemo, useState, useRef } from "react";
 import Spinners from "../../components/Common/Spinner";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { useSearchProjectPerformances } from "../../queries/projectperformance_query";
 import TreeForLists from "../../components/Common/TreeForLists";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
@@ -12,7 +9,6 @@ import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
 import { useTranslation } from "react-i18next";
 import { Col, Row, Input } from "reactstrap";
-import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { createSelectOptions } from "../../utils/commonMethods";
@@ -24,7 +20,7 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 const ProjectPerformanceList = (props) => {
-  document.title = " Project Performance";
+  document.title = "Project Performance List";
   const { passedId, isActive } = props;
   const param = { prp_project_id: passedId };
 

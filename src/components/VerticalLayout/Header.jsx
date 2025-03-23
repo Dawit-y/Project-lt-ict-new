@@ -16,6 +16,8 @@ import megamenuImg from "../../assets/images/megamenu-img.png";
 
 import logo from "../../assets/images/logo.svg";
 import logoLightSvg from "../../assets/images/logo-light.svg";
+import logoLight from "../../assets/images/logo-light.png";
+import logoDark from "../../assets/images/logo-dark.png";
 
 //i18n
 import { withTranslation } from "react-i18next";
@@ -79,11 +81,16 @@ const Header = (props) => {
                 <span className="logo-sm">
                   <img src={logo} alt="" height="22" />
                 </span>
+                <span className="logo-lg">
+                  <img src={logoDark} alt="" height="55" />
+                </span>
               </Link>
-
               <Link to="/" className="logo logo-light">
                 <span className="logo-sm">
-                  <img src={logoLightSvg} alt="" height="22" />
+                  <img src={logo} alt="" height="22" />
+                </span>
+                <span className="logo-lg">
+                  <img src={logoDark} alt="" height="55" />
                 </span>
               </Link>
             </div>
