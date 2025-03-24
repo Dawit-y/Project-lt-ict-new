@@ -8,6 +8,7 @@ import BudgetRequestAmount from "../Budgetrequestamount/index";
 import BudgetRequestTask from "../Budgetrequesttask/index";
 import BudgetExSource from "../Budgetexsource/index";
 import { useTranslation } from "react-i18next";
+import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 import {
   Button,
   Col,
@@ -37,6 +38,7 @@ import ExportToPDF from "../../components/Common/ExportToPdf";
 import PrintPage from "../../components/Common/PrintPage";
 import { budget_request } from "../../settings/printablecolumns";
 import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
+import { createSelectOptions } from "../../utils/commonMethods";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -69,6 +71,7 @@ const BudgetRequestListModel = () => {
   const { data, isLoading, error, isError, refetch } = useState(null);
   const { data: budgetYearData } = useFetchBudgetYears();
   const { data: bgCategoryOptionsData } = useFetchRequestCategorys();
+  const { data: projectStatusData } = useFetchProjectStatuss();
 
   const [projectParams, setProjectParams] = useState({});
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
@@ -105,6 +108,21 @@ const BudgetRequestListModel = () => {
       })) || []
     );
   }, [bgCategoryOptionsData]);
+
+  // const projectStatusOptions = createSelectOptions(
+  //   projectStatusData?.data || [],
+  //   "prs_id",
+  //   "prs_status_name_or"
+  // );
+
+  const projectStatusOptions = useMemo(() => {
+    return (
+      projectStatusData?.data?.map((type) => ({
+        label: type.prs_status_name_or,
+        value: type.prs_id,
+      })) || []
+    );
+  }, [projectStatusData]);
 
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
@@ -189,7 +207,19 @@ const BudgetRequestListModel = () => {
           return category ? truncateText(category.label, 30) : "-";
         },
       },
+      {
+        headerName: t("bdr_request_type"),
+        field: "bdr_request_type",
+        sortable: true,
+        filter: true,
 
+        cellRenderer: (params) => {
+          const requestType = projectStatusOptions.find(
+            (option) => option.value === params.data.bdr_request_type
+          );
+          return requestType ? truncateText(requestType.label, 30) : "-";
+        },
+      },
       {
         headerName: t("prj_name"),
         field: "prj_name",
@@ -409,7 +439,7 @@ const BudgetRequestListModel = () => {
               <AdvancedSearch
                 searchHook={useSearchBudgetRequests}
                 dateSearchKeys={["budget_request_date"]}
-                textSearchKeys={["prj_name", "prj_code"]}
+                textSearchKeys={["prj_name"]}
                 dropdownSearchKeys={[
                   {
                     key: "bdr_budget_year_id",
@@ -418,6 +448,10 @@ const BudgetRequestListModel = () => {
                   {
                     key: "bdr_request_category_id",
                     options: requestCategoryOptions,
+                  },
+                  {
+                    key: "bdr_request_type",
+                    options: projectStatusOptions,
                   },
                 ]}
                 additionalParams={projectParams}
@@ -501,9 +535,9 @@ const BudgetRequestListModel = () => {
                         rowHeight={30}
                         animateRows={true}
                         domLayout="autoHeight"
-                      // onGridReady={(params) => {
-                      //   params.api.sizeColumnsToFit();
-                      // }}
+                        // onGridReady={(params) => {
+                        //   params.api.sizeColumnsToFit();
+                        // }}
                       />
                     </div>
                     {/*<BudgetRequestAnalysis

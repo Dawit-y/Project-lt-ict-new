@@ -54,6 +54,7 @@ const ProjectPerformanceList = (props) => {
     "prs_id",
     "prs_status_name_or"
   );
+  console.log(projectStatusData?.data);
   const budgetYearOptions = createSelectOptions(
     budgetYearData?.data || [],
     "bdy_id",
