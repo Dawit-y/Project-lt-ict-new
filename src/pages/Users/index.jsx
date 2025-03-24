@@ -36,6 +36,7 @@ import {
 } from "../../queries/users_query";
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import { useFetchDepartments } from "../../queries/department_query";
+import { useFetchCsoInfos } from "../../queries/csoinfo_query"
 import UsersModal from "./UsersModal";
 import { useTranslation } from "react-i18next";
 import {
@@ -54,12 +55,14 @@ import {
   Badge,
   InputGroup,
   InputGroupText,
+  FormGroup
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import { createSelectOptions } from "../../utils/commonMethods";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import AccessLog from "../Accesslog/AccessLog";
+import Select from "react-select"
 
 //import ImageUploader from "../../components/Common/ImageUploader";
 const truncateText = (text, maxLength) => {
@@ -68,17 +71,10 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-const statusClasses = {
-  1: "success", // Green for completed
-  0: "danger", // Yellow for started
-};
-const statusText = {
-  1: "Active", // Green for completed
-  0: "Inactive", // Yellow for started
-};
+
 const UsersModel = () => {
-  //meta title
-  document.title = " Users";
+  document.title = "Users";
+
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -108,6 +104,9 @@ const UsersModel = () => {
     "dep_id",
     "dep_name_en"
   );
+  const { data: csoData } = useFetchCsoInfos()
+  const csoOptions = createSelectOptions(csoData?.data || [], "cso_id", "cso_name")
+
   const addUsers = useAddUsers();
   const updateUsers = useUpdateUsers();
   const deleteUsers = useDeleteUsers();
@@ -174,7 +173,6 @@ const UsersModel = () => {
   };
   // validation
   const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
     initialValues: {
       usr_email: (users && users.usr_email) || "",
@@ -197,11 +195,11 @@ const UsersModel = () => {
       usr_department_id: (users && users.usr_department_id) || "",
       is_deletable: (users && users.is_deletable) || 1,
       is_editable: (users && users.is_editable) || 1,
-
       usr_directorate_id: (users && users.usr_directorate_id) || "",
       usr_team_id: (users && users.usr_team_id) || "",
       usr_officer_id: (users && users.usr_officer_id) || "",
       usr_user_type: (users && users.usr_user_type) || "",
+      usr_owner_id: (users && users.usr_owner_id) || "",
     },
     validationSchema: Yup.object({
       usr_email: Yup.string()
@@ -244,10 +242,8 @@ const UsersModel = () => {
     onSubmit: (values) => {
       if (isEdit) {
         const updateUsers = {
-          // usr_id: users ? users.usr_id : 0,
           usr_id: users?.usr_id,
           usr_email: values.usr_email,
-          // usr_password: values.usr_password,
           usr_full_name: values.usr_full_name,
           usr_phone_number: values.usr_phone_number,
           usr_role_id: values.usr_role_id,
@@ -270,8 +266,8 @@ const UsersModel = () => {
           usr_team_id: Number(values.usr_team_id),
           usr_officer_id: Number(values.usr_officer_id),
           usr_user_type: Number(values.usr_user_type),
+          usr_owner_id: Number(values.usr_owner_id),
         };
-        // update Users
         handleUpdateUsers(updateUsers);
       } else if (isDuplicateModalOpen) {
         const duplcateuser = {
@@ -299,9 +295,8 @@ const UsersModel = () => {
           usr_team_id: Number(values.usr_team_id),
           usr_officer_id: Number(values.usr_officer_id),
           usr_user_type: Number(values.usr_user_type),
+          usr_owner_id: Number(values.usr_owner_id),
         };
-        // setSelectedDepartment(values.usr_department_id);
-        // update Users
         handleAddUsers(duplcateuser);
       } else {
         const newUsers = {
@@ -330,6 +325,7 @@ const UsersModel = () => {
           usr_team_id: Number(values.usr_team_id),
           usr_officer_id: Number(values.usr_officer_id),
           usr_user_type: Number(values.usr_user_type),
+          usr_owner_id: Number(values.usr_owner_id),
         };
         handleAddUsers(newUsers);
       }
@@ -346,6 +342,11 @@ const UsersModel = () => {
       setIsEdit(false);
     }
   }, [data]);
+  useEffect(() => {
+    if (validation.values.usr_user_type !== 2 && validation.values.usr_owner_id) {
+      validation.setFieldValue("usr_owner_id", "");
+    }
+  }, [validation.values.usr_user_type]);
   const toggle = () => {
     if (modal) {
       setModal(false);
@@ -386,6 +387,7 @@ const UsersModel = () => {
       usr_team_id: Number(user.usr_team_id),
       usr_officer_id: Number(user.usr_officer_id),
       usr_user_type: Number(user.usr_user_type),
+      usr_owner_id: Number(user.usr_owner_id),
     });
     setIsEdit(true);
     toggle();
@@ -417,6 +419,7 @@ const UsersModel = () => {
       is_deletable: users.is_deletable,
       is_editable: users.is_editable,
       usr_user_type: Number(users.usr_user_type),
+      usr_owner_id: Number(users.usr_owner_id),
     });
     setIsDuplicateModalOpen(true);
     toggle();
@@ -442,14 +445,14 @@ const UsersModel = () => {
       {
         headerName: t("s_n"),
         valueGetter: "node.rowIndex + 1",
-        flex: 1,
+        width: 60,
       },
       {
         headerName: t("usr_email"),
         field: "usr_email",
         sortable: true,
         filter: false,
-        flex: 4,
+        // flex: 4,
         cellRenderer: (params) =>
           truncateText(params.data.usr_email, 30) || "-",
       },
@@ -458,7 +461,7 @@ const UsersModel = () => {
         field: "usr_full_name",
         sortable: true,
         filter: false,
-        flex: 4,
+        // flex: 4,
         cellRenderer: (params) =>
           truncateText(params.data.usr_full_name, 30) || "-",
       },
@@ -467,7 +470,7 @@ const UsersModel = () => {
         field: "usr_phone_number",
         sortable: true,
         filter: false,
-        flex: 3,
+        // flex: 3,
         cellRenderer: (params) =>
           truncateText(params.data.usr_phone_number, 30) || "-",
       },
@@ -476,7 +479,7 @@ const UsersModel = () => {
         field: "sector_name",
         sortable: true,
         filter: false,
-        flex: 3,
+        // flex: 3,
         cellRenderer: (params) =>
           sectorInformationMap[params.data.usr_sector_id],
       },
@@ -498,7 +501,7 @@ const UsersModel = () => {
       },*/
       {
         headerName: t("view_detail"),
-        flex: 2,
+        width: 120,
         sortable: true,
         filter: false,
         cellRenderer: (params) => (
@@ -526,9 +529,9 @@ const UsersModel = () => {
         headerName: t("Action"),
         sortable: true,
         filter: false,
-        flex: 2,
+        width: 150,
         cellRenderer: (params) => (
-          <div className="d-flex gap-3">
+          <div className="d-flex gap-2">
             {(params.data?.is_editable || params.data?.is_role_editable) && (
               <Button
                 size="sm"
@@ -599,17 +602,10 @@ const UsersModel = () => {
     const selectedData = selectedNodes.map((node) => node.data);
     setSelectedRows(selectedData);
   };
-  // Filter by marked rows
-  const filterMarked = () => {
-    if (gridRef.current) {
-      gridRef.current.api.setRowData(selectedRows);
-    }
-  };
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
   return (
     <React.Fragment>
       <UsersModal
@@ -680,10 +676,7 @@ const UsersModel = () => {
                   onSelectionChanged={onSelectionChanged}
                   rowHeight={30} // Set the row height here
                   animateRows={true} // Enables row animations
-                  domLayout="autoHeight" // Auto-size the grid to fit content
-                  onGridReady={(params) => {
-                    params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                  }}
+                  domLayout="autoHeight"
                 />
               </div>
             </div>
@@ -722,14 +715,14 @@ const UsersModel = () => {
                       value={validation.values.usr_email || ""}
                       invalid={
                         validation.touched.usr_email &&
-                        validation.errors.usr_email
+                          validation.errors.usr_email
                           ? true
                           : false
                       }
                       maxLength={30}
                     />
                     {validation.touched.usr_email &&
-                    validation.errors.usr_email ? (
+                      validation.errors.usr_email ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_email}
                       </FormFeedback>
@@ -751,7 +744,7 @@ const UsersModel = () => {
                           value={validation.values.usr_password || ""}
                           invalid={
                             validation.touched.usr_password &&
-                            validation.errors.usr_password
+                              validation.errors.usr_password
                               ? true
                               : false
                           }
@@ -764,7 +757,7 @@ const UsersModel = () => {
                           {showPassword ? <FaEyeSlash /> : <FaEye />}
                         </InputGroupText>
                         {validation.touched.usr_password &&
-                        validation.errors.usr_password ? (
+                          validation.errors.usr_password ? (
                           <FormFeedback type="invalid">
                             {validation.errors.usr_password}
                           </FormFeedback>
@@ -786,14 +779,14 @@ const UsersModel = () => {
                       value={validation.values.usr_full_name || ""}
                       invalid={
                         validation.touched.usr_full_name &&
-                        validation.errors.usr_full_name
+                          validation.errors.usr_full_name
                           ? true
                           : false
                       }
                       maxLength={30}
                     />
                     {validation.touched.usr_full_name &&
-                    validation.errors.usr_full_name ? (
+                      validation.errors.usr_full_name ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_full_name}
                       </FormFeedback>
@@ -827,7 +820,7 @@ const UsersModel = () => {
                         }
                       />
                       {validation.touched.usr_phone_number &&
-                      validation.errors.usr_phone_number ? (
+                        validation.errors.usr_phone_number ? (
                         <FormFeedback type="invalid">
                           {validation.errors.usr_phone_number}
                         </FormFeedback>
@@ -848,7 +841,7 @@ const UsersModel = () => {
                       value={validation.values.usr_sector_id || ""}
                       invalid={
                         validation.touched.usr_sector_id &&
-                        validation.errors.usr_sector_id
+                          validation.errors.usr_sector_id
                           ? true
                           : false
                       }
@@ -861,7 +854,7 @@ const UsersModel = () => {
                       ))}
                     </Input>
                     {validation.touched.usr_sector_id &&
-                    validation.errors.usr_sector_id ? (
+                      validation.errors.usr_sector_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_sector_id}
                       </FormFeedback>
@@ -881,7 +874,7 @@ const UsersModel = () => {
                       value={validation.values.usr_user_type || ""}
                       invalid={
                         validation.touched.usr_user_type &&
-                        validation.errors.usr_user_type
+                          validation.errors.usr_user_type
                           ? true
                           : false
                       }
@@ -892,34 +885,69 @@ const UsersModel = () => {
                       <option value={3}>{t("Citizenship")}</option>
                     </Input>
                     {validation.touched.usr_user_type &&
-                    validation.errors.usr_user_type ? (
+                      validation.errors.usr_user_type ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_user_type}
                       </FormFeedback>
                     ) : null}
                   </Col>
-
-                  <Col className="col-md-6 mb-3">
-                    <CascadingDropdowns
-                      validation={validation}
-                      dropdown1name="usr_region_id"
-                      dropdown2name="usr_zone_id"
-                      dropdown3name="usr_woreda_id"
-                      isEdit={isEdit}
-                      required={true}
-                    />
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <CascadingDepartmentDropdowns
-                      validation={validation}
-                      dropdown1name="usr_department_id"
-                      dropdown2name="usr_directorate_id"
-                      dropdown3name="usr_team_id"
-                      dropdown4name="usr_officer_id"
-                      isEdit={isEdit}
-                      required={true}
-                    />
-                  </Col>
+                  {validation.values.usr_user_type == 2 &&
+                    <Col className="col-md-4 mb-3">
+                      <Label>
+                        {t("usr_owner_id")}{" "}
+                      </Label>
+                      <Input
+                        name="usr_owner_id"
+                        type="select"
+                        className="form-select"
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.usr_owner_id || ""}
+                        invalid={
+                          validation.touched.usr_owner_id &&
+                            validation.errors.usr_owner_id
+                            ? true
+                            : false
+                        }
+                      >
+                        <option value="">{t("select_one")}</option>
+                        {csoOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {t(`${option.label}`)}
+                          </option>
+                        ))}
+                      </Input>
+                      {validation.touched.usr_owner_id &&
+                        validation.errors.usr_owner_id ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.usr_owner_id}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
+                  }
+                  <Row>
+                    <Col className="col-md-6 mb-3">
+                      <CascadingDropdowns
+                        validation={validation}
+                        dropdown1name="usr_region_id"
+                        dropdown2name="usr_zone_id"
+                        dropdown3name="usr_woreda_id"
+                        isEdit={isEdit}
+                        required={true}
+                      />
+                    </Col>
+                    <Col className="col-md-6 mb-3">
+                      <CascadingDepartmentDropdowns
+                        validation={validation}
+                        dropdown1name="usr_department_id"
+                        dropdown2name="usr_directorate_id"
+                        dropdown3name="usr_team_id"
+                        dropdown4name="usr_officer_id"
+                        isEdit={isEdit}
+                        required={true}
+                      />
+                    </Col>
+                  </Row>
                   {/*<ImageUploader validation={validation} />*/}
 
                   <Col className="col-md-12 mb-3">
@@ -934,14 +962,14 @@ const UsersModel = () => {
                       value={validation.values.usr_description || ""}
                       invalid={
                         validation.touched.usr_description &&
-                        validation.errors.usr_description
+                          validation.errors.usr_description
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.usr_description &&
-                    validation.errors.usr_description ? (
+                      validation.errors.usr_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.usr_description}
                       </FormFeedback>

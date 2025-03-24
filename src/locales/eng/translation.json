@@ -1242,6 +1242,18 @@
 	"email":"Email",
 	"phone_number":"Phone Number",
 	"full_name":"Full Name",
-	"bdr_request_type": "Request Type"
+	"bdr_request_type": "Request Type",
 	
+	"sector_name": "Sector Name",
+	"last_logged_in": "Last Logged In",
+	"created": "Created",
+	"email": "Email",
+	"phone_number": "Phone Number",
+	"full_name": "Full Name",
+	"usr_owner_id": "Owner",
+	"project_cso": "CSO Project",
+	"project_cso_list": "CSO Project List",
+	"cso_proposal_request": "Project Proposal Request List",
+	"projectdetail_cso": "Project Detail",
+	"cso_proposal_request_approval": "Proposal Request List"
 }
