@@ -38,10 +38,10 @@ const CSOProject = lazy(() => import("../pages/Csoproject/index"));
 const CSOProjectList = lazy(() => import("../pages/Csoproject/ProjectList"));
 const CSOProjectDetail = lazy(() => import("../pages/Csoproject/ProjectDetail/index.jsx"));
 const CSOBudgetRequestListModel = lazy(() =>
-  import("../pages/Budgetrequest/CsoBudgetRequestList.jsx")
+  import("../pages/Csobudgetrequest/BudgetRequestList.jsx")
 );
 const CSOApproverBudgetRequestList = lazy(() =>
-  import("../pages/Budgetrequest/CsoApproverBudgetRequestList.jsx")
+  import("../pages/Csobudgetrequest/ApproverBudgetRequestList.jsx")
 );
 const SectorInformation = lazy(() =>
   import("../pages/Sectorinformation/index")

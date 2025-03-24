@@ -3,24 +3,14 @@ import React, {
   useState,
 } from "react";
 import { Link } from "react-router-dom";
-import * as Yup from "yup";
-import { useFormik } from "formik";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "./ag-grid.css";
 import { useTranslation } from "react-i18next";
-import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
 import {
   Button,
   Col,
   Row,
   UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
   Badge,
   Card,
   CardBody,
@@ -29,20 +19,9 @@ import {
   TabContent,
   TabPane,
 } from "reactstrap";
-import {
-  alphanumericValidation,
-} from "../../utils/Validation/validation";
 import classnames from "classnames";
-import { toast } from "react-toastify";
-import DatePicker from "../../components/Common/DatePicker";
 import TableContainer from "../../components/Common/TableContainer";
-import {
-  useAddBudgetRequest,
-  useUpdateBudgetRequest,
-  useDeleteBudgetRequest,
-  useFetchBudgetRequests
-} from "../../queries/budget_request_query";
-import BudgetRequestRegistration from "../Budgetrequest/CsoBudgetRequestRegistration"
+import BudgetRequestRegistration from "../Csobudgetrequest/BudgetRequestRegistration"
 
 const ProjectTabs = ({ projects, handleAddClick, handleEditClick }) => {
   const [activeTab, setactiveTab] = useState(1)

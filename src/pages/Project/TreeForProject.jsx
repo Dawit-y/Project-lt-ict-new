@@ -244,8 +244,8 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
     <Card className="border shadow-sm">
       <CardBody className="p-3">
         <h5 className="text-secondary">{t("address_tree_Search")}</h5>
-        <hr />
-        <Row className="d-flex align-items-center justify-content-between mb-3">
+        <hr className="my-2" />
+        <Row className="d-flex align-items-center justify-content-between mb-1">
           <Col className="d-flex gap-2" >
             <Input id="searchterm" name="searchterm" type="text" bsSize="sm" placeholder="search" onChange={handleSearchTerm} />
             <Button

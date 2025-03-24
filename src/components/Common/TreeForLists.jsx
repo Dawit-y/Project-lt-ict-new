@@ -78,7 +78,7 @@ const TreeForLists = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   if (isLoading) {
     return (
       <div
-        style={{ minHeight: "100vh", minWidth: "300px" }}
+        style={{ minHeight: "100vh", minWidth: "250px" }}
         className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
       >
         <h5 className="mb-2 text-secondary">{t("address_tree_Search")}</h5>
@@ -90,7 +90,7 @@ const TreeForLists = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   if (isError) {
     return (
       <div
-        style={{ minHeight: "100vh", minWidth: "300px" }}
+        style={{ minHeight: "100vh", minWidth: "250px" }}
         className="w-20 flex-shrink-0 p-3 bg-white border-end overflow-auto shadow-sm"
       >
         <h5 className="mb-2 text-secondary">{t("address_tree_Search")}</h5>
@@ -104,7 +104,7 @@ const TreeForLists = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
     <Card className="border shadow-sm">
       <CardBody className="p-3">
         <h5 className="text-secondary">{t("address_tree_Search")}</h5>
-        <hr />
+        <hr className="my-2" />
         <Row className="mb-2">
           <Col className="d-flex align-items-center gap-2 my-auto">
             <Input className="" id="include" name="include" type="checkbox" onChange={handleCheckboxChange} />
