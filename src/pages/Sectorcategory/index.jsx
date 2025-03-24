@@ -258,7 +258,7 @@ const SectorCategoryModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.psc_name, 30) || "-"}
+              {truncateText(cellProps.row.original.psc_name, 80) || "-"}
             </span>
           );
         },
@@ -272,19 +272,6 @@ const SectorCategoryModel = () => {
           return (
             <span>
               {truncateText(cellProps.row.original.psc_code, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "psc_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.psc_description, 30) || "-"}
             </span>
           );
         },
@@ -449,14 +436,14 @@ const SectorCategoryModel = () => {
                       value={validation.values.psc_name || ""}
                       invalid={
                         validation.touched.psc_name &&
-                        validation.errors.psc_name
+                          validation.errors.psc_name
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.psc_name &&
-                    validation.errors.psc_name ? (
+                      validation.errors.psc_name ? (
                       <FormFeedback type="invalid">
                         {validation.errors.psc_name}
                       </FormFeedback>
@@ -473,14 +460,14 @@ const SectorCategoryModel = () => {
                       value={validation.values.psc_code || ""}
                       invalid={
                         validation.touched.psc_code &&
-                        validation.errors.psc_code
+                          validation.errors.psc_code
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.psc_code &&
-                    validation.errors.psc_code ? (
+                      validation.errors.psc_code ? (
                       <FormFeedback type="invalid">
                         {validation.errors.psc_code}
                       </FormFeedback>
@@ -497,14 +484,14 @@ const SectorCategoryModel = () => {
                       value={validation.values.psc_description || ""}
                       invalid={
                         validation.touched.psc_description &&
-                        validation.errors.psc_description
+                          validation.errors.psc_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.psc_description &&
-                    validation.errors.psc_description ? (
+                      validation.errors.psc_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.psc_description}
                       </FormFeedback>
@@ -515,7 +502,7 @@ const SectorCategoryModel = () => {
                   <Col>
                     <div className="text-end">
                       {addSectorCategory.isPending ||
-                      updateSectorCategory.isPending ? (
+                        updateSectorCategory.isPending ? (
                         <Button
                           color="success"
                           type="submit"

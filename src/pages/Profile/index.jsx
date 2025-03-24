@@ -28,7 +28,7 @@ import UpdateModal from "./UpdateModal"; // Ensure this import is correct
 const API_URL = import.meta.env.VITE_BASE_API_FILE;
 
 const UsersProfile = () => {
-  document.title = "Profile | PMS";
+  document.title = "Profile ";
 
   const { t } = useTranslation();
   const storedUser = localStorage.getItem("authUser");

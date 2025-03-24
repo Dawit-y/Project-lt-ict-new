@@ -34,7 +34,7 @@ const BudgetRequestDetails = ({ transaction }) => {
 
   return (
     <div className="container mt-4">
-      <h2>{t("View Details")}</h2>
+      {/* <h2>{t("View Details")}</h2> */}
       {isLoading ? (
         <div className="text-center">
           <Spinner color="primary" />

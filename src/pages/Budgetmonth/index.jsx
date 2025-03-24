@@ -25,7 +25,7 @@ import { useTranslation } from "react-i18next";
 
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import { alphanumericValidation, amountValidation, numberValidation } from '../../utils/Validation/validation';
 import {
   Button,
   Col,
@@ -43,7 +43,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -74,13 +74,13 @@ const BudgetMonthModel = () => {
   const addBudgetMonth = useAddBudgetMonth();
   const updateBudgetMonth = useUpdateBudgetMonth();
   const deleteBudgetMonth = useDeleteBudgetMonth();
-//START CRUD
+  //START CRUD
   const handleAddBudgetMonth = async (data) => {
     try {
       await addBudgetMonth.mutateAsync(data);
       toast.success(t('add_success'), {
         autoClose: 2000,
-      }); 
+      });
       validation.resetForm();
     } catch (error) {
       toast.error(t('add_failure'), {
@@ -95,7 +95,7 @@ const BudgetMonthModel = () => {
       toast.success(t('update_success'), {
         autoClose: 2000,
       });
-       validation.resetForm();
+      validation.resetForm();
     } catch (error) {
       toast.error(t('update_failure'), {
         autoClose: 2000,
@@ -125,58 +125,58 @@ const BudgetMonthModel = () => {
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
     initialValues: {
-     bdm_month:(budgetMonth && budgetMonth.bdm_month) || "", 
-      bdm_name_or:(budgetMonth && budgetMonth.bdm_name_or) || "", 
-      bdm_name_am:(budgetMonth && budgetMonth.bdm_name_am) || "", 
-      bdm_name_en:(budgetMonth && budgetMonth.bdm_name_en) || "", 
-      bdm_code:(budgetMonth && budgetMonth.bdm_code) || "", 
-      bdm_description:(budgetMonth && budgetMonth.bdm_description) || "", 
-      bdm_status:(budgetMonth && budgetMonth.bdm_status) || "",
+      bdm_month: (budgetMonth && budgetMonth.bdm_month) || "",
+      bdm_name_or: (budgetMonth && budgetMonth.bdm_name_or) || "",
+      bdm_name_am: (budgetMonth && budgetMonth.bdm_name_am) || "",
+      bdm_name_en: (budgetMonth && budgetMonth.bdm_name_en) || "",
+      bdm_code: (budgetMonth && budgetMonth.bdm_code) || "",
+      bdm_description: (budgetMonth && budgetMonth.bdm_description) || "",
+      bdm_status: (budgetMonth && budgetMonth.bdm_status) || "",
       is_deletable: (budgetMonth && budgetMonth.is_deletable) || 1,
       is_editable: (budgetMonth && budgetMonth.is_editable) || 1
     },
     validationSchema: Yup.object({
-    bdm_month:numberValidation(1,12,true).test("unique-bdm_month", t("Already exists"), (value) => {
-          return !data?.data.some(
-            (item) =>
-              item.bdm_month == value && item.bdm_id !== budgetMonth?.bdm_id
-          );
-        }),
-     bdm_name_am: Yup.string().required(t('bdm_name_am')),
-     bdm_name_or: alphanumericValidation(2,100,true),
-     bdm_name_en: alphanumericValidation(2,100,true),
-     bdm_description: alphanumericValidation(3,425,false)
+      bdm_month: numberValidation(1, 12, true).test("unique-bdm_month", t("Already exists"), (value) => {
+        return !data?.data.some(
+          (item) =>
+            item.bdm_month == value && item.bdm_id !== budgetMonth?.bdm_id
+        );
+      }),
+      bdm_name_am: Yup.string().required(t('bdm_name_am')),
+      bdm_name_or: alphanumericValidation(2, 100, true),
+      bdm_name_en: alphanumericValidation(2, 100, true),
+      bdm_description: alphanumericValidation(3, 425, false)
 
-}),
+    }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateBudgetMonth = {
           bdm_id: budgetMonth ? budgetMonth.bdm_id : 0,
-          bdm_month:values.bdm_month, 
-          bdm_name_or:values.bdm_name_or, 
-          bdm_name_am:values.bdm_name_am, 
-          bdm_name_en:values.bdm_name_en, 
-          bdm_code:values.bdm_code, 
-          bdm_description:values.bdm_description, 
-          bdm_status:values.bdm_status, 
+          bdm_month: values.bdm_month,
+          bdm_name_or: values.bdm_name_or,
+          bdm_name_am: values.bdm_name_am,
+          bdm_name_en: values.bdm_name_en,
+          bdm_code: values.bdm_code,
+          bdm_description: values.bdm_description,
+          bdm_status: values.bdm_status,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
         // update BudgetMonth
         handleUpdateBudgetMonth(updateBudgetMonth);
-       
+
       } else {
         const newBudgetMonth = {
-          bdm_month:values.bdm_month, 
-          bdm_name_or:values.bdm_name_or, 
-          bdm_name_am:values.bdm_name_am, 
-          bdm_name_en:values.bdm_name_en, 
-          bdm_code:values.bdm_code, 
-          bdm_description:values.bdm_description, 
-          bdm_status:values.bdm_status, 
+          bdm_month: values.bdm_month,
+          bdm_name_or: values.bdm_name_or,
+          bdm_name_am: values.bdm_name_am,
+          bdm_name_en: values.bdm_name_en,
+          bdm_code: values.bdm_code,
+          bdm_description: values.bdm_description,
+          bdm_status: values.bdm_status,
 
         };
         // save new BudgetMonth
@@ -191,32 +191,32 @@ const BudgetMonthModel = () => {
   useEffect(() => {
     setBudgetMonth(data);
   }, [data]);
-useEffect(() => {
+  useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setBudgetMonth(data);
       setIsEdit(false);
     }
   }, [data]);
-const toggle = () => {
+  const toggle = () => {
     if (modal) {
       setModal(false);
-       setBudgetMonth(null);
+      setBudgetMonth(null);
     } else {
       setModal(true);
     }
   };
-   const handleBudgetMonthClick = (arg) => {
+  const handleBudgetMonthClick = (arg) => {
     const budgetMonth = arg;
     // console.log("handleBudgetMonthClick", budgetMonth);
     setBudgetMonth({
-      bdm_id:budgetMonth.bdm_id, 
-      bdm_month:budgetMonth.bdm_month, 
-      bdm_name_or:budgetMonth.bdm_name_or, 
-      bdm_name_am:budgetMonth.bdm_name_am, 
-      bdm_name_en:budgetMonth.bdm_name_en, 
-      bdm_code:budgetMonth.bdm_code, 
-      bdm_description:budgetMonth.bdm_description, 
-      bdm_status:budgetMonth.bdm_status,
+      bdm_id: budgetMonth.bdm_id,
+      bdm_month: budgetMonth.bdm_month,
+      bdm_name_or: budgetMonth.bdm_name_or,
+      bdm_name_am: budgetMonth.bdm_name_am,
+      bdm_name_en: budgetMonth.bdm_name_en,
+      bdm_code: budgetMonth.bdm_code,
+      bdm_description: budgetMonth.bdm_description,
+      bdm_status: budgetMonth.bdm_status,
       is_deletable: budgetMonth.is_deletable,
       is_editable: budgetMonth.is_editable,
     });
@@ -235,7 +235,7 @@ const toggle = () => {
     setBudgetMonth("");
     toggle();
   }
-const handleSearchResults = ({ data, error }) => {
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -243,7 +243,7 @@ const handleSearchResults = ({ data, error }) => {
   //START UNCHANGED
   const columns = useMemo(() => {
     const baseColumns = [
-    {
+      {
         header: '',
         accessorKey: 'bdm_month',
         enableColumnFilter: false,
@@ -284,8 +284,8 @@ const handleSearchResults = ({ data, error }) => {
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'bdm_name_en',
         enableColumnFilter: false,
@@ -298,8 +298,8 @@ const handleSearchResults = ({ data, error }) => {
             </span>
           );
         },
-      }, 
-{
+      },
+      {
         header: '',
         accessorKey: 'bdm_code',
         enableColumnFilter: false,
@@ -312,22 +312,7 @@ const handleSearchResults = ({ data, error }) => {
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'bdm_description',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bdm_description, 30) ||
-                '-'}
-            </span>
-          );
-        },
       },
-
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -350,9 +335,9 @@ const handleSearchResults = ({ data, error }) => {
         },
       },
     ];
-     if (
-      data?.previledge?.is_role_editable==1 ||
-      data?.previledge?.is_role_deletable==1
+    if (
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -362,12 +347,12 @@ const handleSearchResults = ({ data, error }) => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable==1 && (
+              {cellProps.row.original.is_editable == 1 && (
                 <Link
                   to="#"
                   className="text-success"
                   onClick={() => {
-                    const data = cellProps.row.original;                    
+                    const data = cellProps.row.original;
                     handleBudgetMonthClick(data);
                   }}
                 >
@@ -414,7 +399,7 @@ const handleSearchResults = ({ data, error }) => {
       />
       <DeleteModal
         show={deleteModal}
-       onDeleteClick={handleDeleteBudgetMonth}
+        onDeleteClick={handleDeleteBudgetMonth}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteBudgetMonth.isPending}
       />
@@ -439,13 +424,13 @@ const handleSearchResults = ({ data, error }) => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add==1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleBudgetMonthClicks}
                       isPagination={true}
                       SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") +" "+ t("budget_month")}
+                      buttonName={t("add") + " " + t("budget_month")}
                       tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       theadClass="table-light"
                       pagination="pagination"
@@ -459,7 +444,7 @@ const handleSearchResults = ({ data, error }) => {
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " "+t("budget_month")) : (t("add") +" "+t("budget_month"))}
+              {!!isEdit ? (t("edit") + " " + t("budget_month")) : (t("add") + " " + t("budget_month"))}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -472,149 +457,149 @@ const handleSearchResults = ({ data, error }) => {
                 <Row>
                   <Col className='col-md-6 mb-3'>
 
-                  <Label>{t('bdm_month')}<span className="text-danger">*</span></Label>
-                      <Input
-                        name='bdm_month'
-                        type='number'
-                        placeholder={t('bdm_month')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdm_month || ''}
-                        invalid={
-                          validation.touched.bdm_month &&
+                    <Label>{t('bdm_month')}<span className="text-danger">*</span></Label>
+                    <Input
+                      name='bdm_month'
+                      type='number'
+                      placeholder={t('bdm_month')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdm_month || ''}
+                      invalid={
+                        validation.touched.bdm_month &&
                           validation.errors.bdm_month
-                            ? true
-                            : false
-                        }
-                        maxLength={2}
-                      />
-                      {validation.touched.bdm_month &&
+                          ? true
+                          : false
+                      }
+                      maxLength={2}
+                    />
+                    {validation.touched.bdm_month &&
                       validation.errors.bdm_month ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdm_month}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
+                      <FormFeedback type='invalid'>
+                        {validation.errors.bdm_month}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                   <Col className='col-md-6 mb-3'>
-                      <Label>{t('bdm_name_or')}<span className="text-danger">*</span></Label>
-                      <Input
-                        name='bdm_name_or'
-                        type='text'
-                        placeholder={t('bdm_name_or')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdm_name_or || ''}
-                        invalid={
-                          validation.touched.bdm_name_or &&
+                    <Label>{t('bdm_name_or')}<span className="text-danger">*</span></Label>
+                    <Input
+                      name='bdm_name_or'
+                      type='text'
+                      placeholder={t('bdm_name_or')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdm_name_or || ''}
+                      invalid={
+                        validation.touched.bdm_name_or &&
                           validation.errors.bdm_name_or
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bdm_name_or &&
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bdm_name_or &&
                       validation.errors.bdm_name_or ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdm_name_or}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-                    <Col className='col-md-6 mb-3'>
-                      <Label>{t('bdm_name_am')}<span className="text-danger">*</span></Label>
-                      <Input
-                        name='bdm_name_am'
-                        type='text'
-                        placeholder={t('bdm_name_am')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdm_name_am || ''}
-                        invalid={
-                          validation.touched.bdm_name_am &&
+                      <FormFeedback type='invalid'>
+                        {validation.errors.bdm_name_or}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('bdm_name_am')}<span className="text-danger">*</span></Label>
+                    <Input
+                      name='bdm_name_am'
+                      type='text'
+                      placeholder={t('bdm_name_am')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdm_name_am || ''}
+                      invalid={
+                        validation.touched.bdm_name_am &&
                           validation.errors.bdm_name_am
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bdm_name_am &&
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bdm_name_am &&
                       validation.errors.bdm_name_am ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdm_name_am}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-                      <Col className='col-md-6 mb-3'>
-                      <Label>{t('bdm_name_en')}<span className="text-danger">*</span></Label>
-                      <Input
-                        name='bdm_name_en'
-                        type='text'
-                        placeholder={t('bdm_name_en')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdm_name_en || ''}
-                        invalid={
-                          validation.touched.bdm_name_en &&
+                      <FormFeedback type='invalid'>
+                        {validation.errors.bdm_name_am}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('bdm_name_en')}<span className="text-danger">*</span></Label>
+                    <Input
+                      name='bdm_name_en'
+                      type='text'
+                      placeholder={t('bdm_name_en')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdm_name_en || ''}
+                      invalid={
+                        validation.touched.bdm_name_en &&
                           validation.errors.bdm_name_en
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bdm_name_en &&
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bdm_name_en &&
                       validation.errors.bdm_name_en ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdm_name_en}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-                      <Col className='col-md-6 mb-3'>
-                      <Label>{t('bdm_code')}</Label>
-                      <Input
-                        name='bdm_code'
-                        type='text'
-                        placeholder={t('bdm_code')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdm_code || ''}
-                        invalid={
-                          validation.touched.bdm_code &&
+                      <FormFeedback type='invalid'>
+                        {validation.errors.bdm_name_en}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('bdm_code')}</Label>
+                    <Input
+                      name='bdm_code'
+                      type='text'
+                      placeholder={t('bdm_code')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdm_code || ''}
+                      invalid={
+                        validation.touched.bdm_code &&
                           validation.errors.bdm_code
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.bdm_code &&
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bdm_code &&
                       validation.errors.bdm_code ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdm_code}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-                      <Col className='col-md-6 mb-3'>
-                      <Label>{t('bdm_description')}</Label>
-                      <Input
-                        name='bdm_description'
-                        type='textarea'
-                        placeholder={t('bdm_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.bdm_description || ''}
-                        invalid={
-                          validation.touched.bdm_description &&
+                      <FormFeedback type='invalid'>
+                        {validation.errors.bdm_code}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('bdm_description')}</Label>
+                    <Input
+                      name='bdm_description'
+                      type='textarea'
+                      placeholder={t('bdm_description')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bdm_description || ''}
+                      invalid={
+                        validation.touched.bdm_description &&
                           validation.errors.bdm_description
-                            ? true
-                            : false
-                        }
-                        maxLength={425}
-                      />
-                      {validation.touched.bdm_description &&
+                          ? true
+                          : false
+                      }
+                      maxLength={425}
+                    />
+                    {validation.touched.bdm_description &&
                       validation.errors.bdm_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.bdm_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col>
+                      <FormFeedback type='invalid'>
+                        {validation.errors.bdm_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                 </Row>
                 <Row>
                   <Col>

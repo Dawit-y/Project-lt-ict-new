@@ -31,7 +31,7 @@ import {
 const loginUser = async (credentials) => await post("/login", credentials);
 
 const Login = () => {
-  document.title = "Login | PMS";
+  document.title = "Login ";
 
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);

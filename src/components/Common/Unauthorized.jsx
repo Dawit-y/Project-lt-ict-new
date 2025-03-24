@@ -7,7 +7,7 @@ import error from "../../assets/images/error-img.png";
 
 const Unauthorized = () => {
   //meta title
-  document.title = "Unauthorized | PMS";
+  document.title = "Unauthorized ";
 
   console.log("unauthorized");
 

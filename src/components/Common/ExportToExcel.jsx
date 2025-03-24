@@ -10,21 +10,21 @@ const ExportToExcel = ({ tableData, tablename, includeKey = [] }) => {
     }
     const filteredKeys = Object.keys(tableData[0]).filter(
       (key) => includeKey.includes(key)
-      );
+    );
     const headers = filteredKeys.map((key) => t(key));
     const dataRows = tableData.map((row) =>
       filteredKeys.map((key) => row[key])
-      );
+    );
     const header = [
-  ["Organization Name", "", ""], // Merged cells for the company name
-  ["Report Title", "", ""], // Merged cells for the report title
-  ["Date: " + new Date().toLocaleDateString(), "", ""], // Dynamic date
-  [], // Empty row for spacing
-  ];
+      ["Organization Name", "", ""], // Merged cells for the company name
+      ["Report Title", "", ""], // Merged cells for the report title
+      ["Date: " + new Date().toLocaleDateString(), "", ""], // Dynamic date
+      [], // Empty row for spacing
+    ];
     const footer = [
-  [], // Empty row for spacing
-  ["Prepared by: ______", "", ""]
-  ];
+      [], // Empty row for spacing
+      ["Prepared by: ______", "", ""]
+    ];
     //const combinedData = [headers, ...dataRows];
     const combinedData = [...header, headers, ...dataRows, ...footer];
     const worksheet = XLSX.utils.aoa_to_sheet(combinedData);
@@ -44,18 +44,18 @@ const ExportToExcel = ({ tableData, tablename, includeKey = [] }) => {
         s: { r: combinedData.length - 1, c: 0 },
         e: { r: combinedData.length - 1, c: numCols - 1 },
       }, // Merge footer row 2 (End of Report)
-      ];
+    ];
     XLSX.utils.book_append_sheet(workbook, worksheet, "Table Data");
     XLSX.writeFile(workbook, `table_${tablename}.xlsx`);
   };
   return (
     <button
-    className="btn btn-soft-primary"
-    onClick={handleExportToExcel}
-    disabled={!tableData || tableData.length === 0}
+      className="btn btn-soft-primary"
+      onClick={handleExportToExcel}
+      disabled={!tableData || tableData.length === 0}
     >
-    {t("exportToExcel")}
+      {t("exportToExcel")}
     </button>
-    );
+  );
 };
 export default ExportToExcel;

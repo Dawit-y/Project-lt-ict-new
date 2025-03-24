@@ -26,7 +26,7 @@ import { useTranslation } from "react-i18next";
 
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import { alphanumericValidation, amountValidation, numberValidation } from '../../utils/Validation/validation';
 import {
   Button,
   Col,
@@ -78,12 +78,12 @@ const ProjectStatusModel = () => {
   const handleAddProjectStatus = async (data) => {
     try {
       await addProjectStatus.mutateAsync(data);
-    toast.success(t('add_success'), {
+      toast.success(t('add_success'), {
         autoClose: 2000,
       });
-    validation.resetForm();
+      validation.resetForm();
     } catch (error) {
-     toast.error(t('add_failure'), {
+      toast.error(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -93,12 +93,12 @@ const ProjectStatusModel = () => {
   const handleUpdateProjectStatus = async (data) => {
     try {
       await updateProjectStatus.mutateAsync(data);
-     toast.success(t('update_success'), {
+      toast.success(t('update_success'), {
         autoClose: 2000,
       });
-     validation.resetForm();
+      validation.resetForm();
     } catch (error) {
-     toast.error(t('update_failure'), {
+      toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -109,13 +109,13 @@ const ProjectStatusModel = () => {
       try {
         const id = projectStatus.prs_id;
         await deleteProjectStatus.mutateAsync(id);
-       toast.success(t('delete_success'), {
-        autoClose: 2000,
-      });
+        toast.success(t('delete_success'), {
+          autoClose: 2000,
+        });
       } catch (error) {
-       toast.error(t('delete_failure'), {
-        autoClose: 2000,
-      });
+        toast.error(t('delete_failure'), {
+          autoClose: 2000,
+        });
       }
       setDeleteModal(false);
     }
@@ -145,7 +145,7 @@ const ProjectStatusModel = () => {
       is_editable: (projectStatus && projectStatus.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      prs_status_name_or: alphanumericValidation(4,100,true)
+      prs_status_name_or: alphanumericValidation(4, 100, true)
         .test("unique-prs_status_name_or", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
@@ -154,10 +154,10 @@ const ProjectStatusModel = () => {
           );
         }),
       prs_status_name_am: Yup.string().required(t("prs_status_name_am")),
-      prs_status_name_en: alphanumericValidation(2,100,true),
-      prs_color_code: alphanumericValidation(6,20,false),
-      prs_order_number: numberValidation(1,10,true),
-      prs_description: alphanumericValidation(2,425,false)
+      prs_status_name_en: alphanumericValidation(2, 100, true),
+      prs_color_code: alphanumericValidation(6, 20, false),
+      prs_order_number: numberValidation(1, 10, true),
+      prs_description: alphanumericValidation(2, 425, false)
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -327,20 +327,6 @@ const ProjectStatusModel = () => {
         },
       },
       {
-        header: "",
-        accessorKey: "prs_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prs_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-
-      {
         header: t("view_detail"),
         enableColumnFilter: false,
         enableSorting: true,
@@ -374,7 +360,7 @@ const ProjectStatusModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable ==1  && (
+              {cellProps.row.original.is_editable == 1 && (
                 <Link
                   to="#"
                   className="text-success"
@@ -416,7 +402,7 @@ const ProjectStatusModel = () => {
 
     return baseColumns;
   }, [handleProjectStatusClick, toggleViewModal, onClickDelete]);
- if (isError) {
+  if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -497,14 +483,14 @@ const ProjectStatusModel = () => {
                       value={validation.values.prs_status_name_or || ""}
                       invalid={
                         validation.touched.prs_status_name_or &&
-                        validation.errors.prs_status_name_or
+                          validation.errors.prs_status_name_or
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.prs_status_name_or &&
-                    validation.errors.prs_status_name_or ? (
+                      validation.errors.prs_status_name_or ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_status_name_or}
                       </FormFeedback>
@@ -521,14 +507,14 @@ const ProjectStatusModel = () => {
                       value={validation.values.prs_status_name_am || ""}
                       invalid={
                         validation.touched.prs_status_name_am &&
-                        validation.errors.prs_status_name_am
+                          validation.errors.prs_status_name_am
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.prs_status_name_am &&
-                    validation.errors.prs_status_name_am ? (
+                      validation.errors.prs_status_name_am ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_status_name_am}
                       </FormFeedback>
@@ -545,14 +531,14 @@ const ProjectStatusModel = () => {
                       value={validation.values.prs_status_name_en || ""}
                       invalid={
                         validation.touched.prs_status_name_en &&
-                        validation.errors.prs_status_name_en
+                          validation.errors.prs_status_name_en
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.prs_status_name_en &&
-                    validation.errors.prs_status_name_en ? (
+                      validation.errors.prs_status_name_en ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_status_name_en}
                       </FormFeedback>
@@ -569,14 +555,14 @@ const ProjectStatusModel = () => {
                       value={validation.values.prs_color_code || ""}
                       invalid={
                         validation.touched.prs_color_code &&
-                        validation.errors.prs_color_code
+                          validation.errors.prs_color_code
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prs_color_code &&
-                    validation.errors.prs_color_code ? (
+                      validation.errors.prs_color_code ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_color_code}
                       </FormFeedback>
@@ -599,14 +585,14 @@ const ProjectStatusModel = () => {
                       value={validation.values.prs_order_number || ""}
                       invalid={
                         validation.touched.prs_order_number &&
-                        validation.errors.prs_order_number
+                          validation.errors.prs_order_number
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prs_order_number &&
-                    validation.errors.prs_order_number ? (
+                      validation.errors.prs_order_number ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_order_number}
                       </FormFeedback>
@@ -623,14 +609,14 @@ const ProjectStatusModel = () => {
                       value={validation.values.prs_description || ""}
                       invalid={
                         validation.touched.prs_description &&
-                        validation.errors.prs_description
+                          validation.errors.prs_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.prs_description &&
-                    validation.errors.prs_description ? (
+                      validation.errors.prs_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_description}
                       </FormFeedback>
@@ -641,7 +627,7 @@ const ProjectStatusModel = () => {
                   <Col>
                     <div className="text-end">
                       {addProjectStatus.isPending ||
-                      updateProjectStatus.isPending ? (
+                        updateProjectStatus.isPending ? (
                         <Button
                           color="success"
                           type="submit"

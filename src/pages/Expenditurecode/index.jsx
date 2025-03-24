@@ -13,7 +13,7 @@ import Spinners from "../../components/Common/Spinner";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import { alphanumericValidation, amountValidation, numberValidation } from '../../utils/Validation/validation';
 
 import {
   useFetchExpenditureCodes,
@@ -113,11 +113,11 @@ const ExpenditureCodeModel = () => {
       try {
         const id = expenditureCode.pec_id;
         await deleteExpenditureCode.mutateAsync(id);
-      toast.success(t('delete_success'), {
+        toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-      toast.error(t('delete_failure'), {
+        toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -143,21 +143,21 @@ const ExpenditureCodeModel = () => {
     },
 
     validationSchema: Yup.object({
-      pec_name: alphanumericValidation(2,100,true)
+      pec_name: alphanumericValidation(2, 100, true)
         .test("unique-pec_name", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.pec_name == value && item.pec_id !== expenditureCode?.pec_id
           );
         }),
-      pec_code: alphanumericValidation(2,100,true)
+      pec_code: alphanumericValidation(2, 100, true)
         .test("unique-pec_code", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.pec_code == value && item.pec_id !== expenditureCode?.pec_id
           );
         }),
-         pec_description: alphanumericValidation(3,425,false)
+      pec_description: alphanumericValidation(3, 425, false)
 
     }),
     validateOnBlur: true,
@@ -274,20 +274,6 @@ const ExpenditureCodeModel = () => {
         },
       },
       {
-        header: "",
-        accessorKey: "pec_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pec_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-
-      {
         header: t("view_detail"),
         enableColumnFilter: false,
         enableSorting: true,
@@ -310,8 +296,8 @@ const ExpenditureCodeModel = () => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable==1 ||
- data?.previledge?.is_role_deletable==1
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -321,7 +307,7 @@ const ExpenditureCodeModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable==1 && (  
+              {cellProps.row.original.is_editable == 1 && (
                 <Link
                   to="#"
                   className="text-success"
@@ -337,7 +323,7 @@ const ExpenditureCodeModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable==1 && (
+              {cellProps.row.original.is_deletable == 1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -408,7 +394,7 @@ const ExpenditureCodeModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add==1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleExpenditureCodeClicks}
                       isPagination={true}
@@ -451,14 +437,14 @@ const ExpenditureCodeModel = () => {
                       value={validation.values.pec_name || ""}
                       invalid={
                         validation.touched.pec_name &&
-                        validation.errors.pec_name
+                          validation.errors.pec_name
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.pec_name &&
-                    validation.errors.pec_name ? (
+                      validation.errors.pec_name ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pec_name}
                       </FormFeedback>
@@ -475,14 +461,14 @@ const ExpenditureCodeModel = () => {
                       value={validation.values.pec_code || ""}
                       invalid={
                         validation.touched.pec_code &&
-                        validation.errors.pec_code
+                          validation.errors.pec_code
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pec_code &&
-                    validation.errors.pec_code ? (
+                      validation.errors.pec_code ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pec_code}
                       </FormFeedback>
@@ -499,14 +485,14 @@ const ExpenditureCodeModel = () => {
                       value={validation.values.pec_description || ""}
                       invalid={
                         validation.touched.pec_description &&
-                        validation.errors.pec_description
+                          validation.errors.pec_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.pec_description &&
-                    validation.errors.pec_description ? (
+                      validation.errors.pec_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pec_description}
                       </FormFeedback>
@@ -517,7 +503,7 @@ const ExpenditureCodeModel = () => {
                   <Col>
                     <div className="text-end">
                       {addExpenditureCode.isPending ||
-                      updateExpenditureCode.isPending ? (
+                        updateExpenditureCode.isPending ? (
                         <Button
                           color="success"
                           type="submit"

@@ -37,7 +37,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const ApproverBudgetRequestList = () => {
-  document.title = " Budget Request List | PMS";
+  document.title = " Budget Request List ";
 
   const { t } = useTranslation();
   const [modal1, setModal1] = useState(false);
@@ -190,14 +190,13 @@ const ApproverBudgetRequestList = () => {
         sortable: false,
         filter: false,
         width: 60,
-        flex: .5
       },
       {
         headerName: t("Year"),
         field: "bdy_name",
         sortable: true,
         filter: true,
-        flex: 1,
+        width: 120,
         cellRenderer: (params) => {
           return truncateText(params.data.bdy_name, 30) || "-";
         },
@@ -207,7 +206,6 @@ const ApproverBudgetRequestList = () => {
         field: "prj_name",
         sortable: true,
         filter: true,
-        flex: 2,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_name, 30) || "-";
         },
@@ -217,7 +215,6 @@ const ApproverBudgetRequestList = () => {
         field: "prj_code",
         sortable: true,
         filter: true,
-        flex: 1.5,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_code, 30) || "-";
         },
@@ -259,7 +256,6 @@ const ApproverBudgetRequestList = () => {
         field: "bdr_requested_date_gc",
         sortable: true,
         filter: "agDateColumnFilter",
-        flex: 1,
         cellRenderer: (params) => {
           return truncateText(params.data.bdr_requested_date_gc, 30) || "-";
         },
@@ -279,7 +275,7 @@ const ApproverBudgetRequestList = () => {
         field: "forwarded",
         sortable: true,
         filter: true,
-        flex: 1,
+        width: 140,
         cellRenderer: (params) => {
           const isForwarded = params.data.forwarded;
           return (
@@ -294,7 +290,7 @@ const ApproverBudgetRequestList = () => {
         field: "bdr_request_status",
         sortable: true,
         filter: true,
-        flex: 1,
+        width: 140,
         cellRenderer: (params) => {
           const badgeClass = params.data.color_code;
           return (
@@ -327,7 +323,7 @@ const ApproverBudgetRequestList = () => {
       {
         headerName: t("take_action"),
         field: "take_action",
-        flex: 1,
+        width: 120,
         cellRenderer: (params) => {
           return (
             <Button
@@ -348,7 +344,7 @@ const ApproverBudgetRequestList = () => {
       {
         headerName: t("attach_files"),
         field: "attach_files",
-        flex: 1,
+        width: 80,
         cellRenderer: (params) => {
           return (
             <Button
@@ -369,7 +365,7 @@ const ApproverBudgetRequestList = () => {
       {
         headerName: t("Message"),
         field: "Message",
-        flex: 1,
+        width: 100,
         cellRenderer: (params) => {
           return (
             <Button
@@ -397,7 +393,7 @@ const ApproverBudgetRequestList = () => {
       baseColumnDefs.push({
         headerName: t("view_detail"),
         field: "view_detail",
-        flex: 1,
+        width: 120,
         cellRenderer: (params) => (
           <div className="d-flex gap-3">
             {params.data.is_editable ? (
@@ -488,7 +484,6 @@ const ApproverBudgetRequestList = () => {
                 <>
                   <div
                     className="ag-theme-alpine"
-                    style={{ height: "100%", width: "100%" }}
                   >
                     {/* Row for search input and buttons */}
                     <Row className="mb-3">
@@ -518,7 +513,7 @@ const ApproverBudgetRequestList = () => {
                         onSelectionChanged={onSelectionChanged}
                         rowHeight={30}
                         animateRows={true}
-                        domLayout="autoHeight" // Auto-size the grid to fit content
+                        domLayout="autoHeight"
                       />
                     </div>
                   </div>

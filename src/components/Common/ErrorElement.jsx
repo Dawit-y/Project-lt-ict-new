@@ -7,7 +7,7 @@ import error from "../../assets/images/error-img.png";
 
 const ErrorElement = () => {
   //meta title
-  document.title = "500 Error Page | PMS";
+  document.title = "500 Error Page ";
 
   return (
     <React.Fragment>

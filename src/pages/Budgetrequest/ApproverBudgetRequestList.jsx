@@ -46,7 +46,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const ApproverBudgetRequestList = () => {
-  document.title = " Budget Request List | PMS";
+  document.title = " Budget Request List ";
 
   const { t } = useTranslation();
   const [modal1, setModal1] = useState(false);
@@ -83,12 +83,12 @@ const ApproverBudgetRequestList = () => {
     user?.usr_officer_id > 0
       ? user.usr_officer_id
       : user?.usr_team_id > 0
-      ? user.usr_team_id
-      : user?.usr_directorate_id > 0
-      ? user.usr_directorate_id
-      : user?.usr_department_id > 0
-      ? user.usr_department_id
-      : null;
+        ? user.usr_team_id
+        : user?.usr_directorate_id > 0
+          ? user.usr_directorate_id
+          : user?.usr_department_id > 0
+            ? user.usr_department_id
+            : null;
 
   //const depId = 1
   const { data: rqfData, isLoading: rqfLoading } = useFetchRequestFollowups();
@@ -209,14 +209,15 @@ const ApproverBudgetRequestList = () => {
         sortable: false,
         filter: false,
         width: 60,
-        flex: 0.5,
+        // flex: 0.5,
       },
       {
         headerName: t("bdr_budget_year_id"),
         field: "bdy_name",
         sortable: true,
         filter: true,
-        flex: 1,
+        //flex: 1,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.bdy_name, 30) || "-";
         },
@@ -226,7 +227,7 @@ const ApproverBudgetRequestList = () => {
         field: "bdr_request_category_id",
         sortable: true,
         filter: true,
-        flex: 1,
+        //flex: 1,
         cellRenderer: (params) => {
           const category = requestCategoryOptions.find(
             (option) => option.value === params.data.bdr_request_category_id
@@ -240,7 +241,7 @@ const ApproverBudgetRequestList = () => {
         field: "prj_name",
         sortable: true,
         filter: true,
-        flex: 2,
+        //flex: 2,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_name, 30) || "-";
         },
@@ -250,7 +251,7 @@ const ApproverBudgetRequestList = () => {
         field: "prj_code",
         sortable: true,
         filter: true,
-        flex: 1.5,
+        //flex: 1.5,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_code, 30) || "-";
         },
@@ -260,7 +261,7 @@ const ApproverBudgetRequestList = () => {
         field: "bdr_requested_amount",
         sortable: true,
         filter: true,
-        flex: 1.2,
+        //flex: 1.2,
         valueFormatter: (params) => {
           if (params.value != null) {
             return new Intl.NumberFormat("en-US", {
@@ -276,7 +277,7 @@ const ApproverBudgetRequestList = () => {
         field: "bdr_requested_date_gc",
         sortable: true,
         filter: "agDateColumnFilter",
-        flex: 1,
+        //flex: 1,
         cellRenderer: (params) => {
           return truncateText(params.data.bdr_requested_date_gc, 30) || "-";
         },
@@ -286,7 +287,7 @@ const ApproverBudgetRequestList = () => {
         field: "bdr_released_amount",
         sortable: true,
         filter: true,
-        flex: 1.2,
+        //flex: 1.2,
         valueFormatter: (params) => {
           if (params.value != null) {
             return new Intl.NumberFormat("en-US", {
@@ -303,7 +304,7 @@ const ApproverBudgetRequestList = () => {
         field: "bdr_released_date_gc",
         sortable: true,
         filter: "agDateColumnFilter",
-        flex: 1,
+        //flex: 1,
         cellRenderer: (params) => {
           return truncateText(params.data.bdr_released_date_gc, 30) || "-";
         },
@@ -313,14 +314,14 @@ const ApproverBudgetRequestList = () => {
         field: "forwarded",
         sortable: true,
         filter: true,
-        flex: 1,
+        //flex: 1,
+        width: 130,
         cellRenderer: (params) => {
           const isForwarded = params.data.forwarded;
           return (
             <Badge
-              className={`font-size-12 badge-soft-${
-                isForwarded ? "danger" : "secondary"
-              }`}
+              className={`font-size-12 badge-soft-${isForwarded ? "danger" : "secondary"
+                }`}
             >
               {isForwarded ? t("forwarded") : t("not_forwarded")}
             </Badge>
@@ -332,7 +333,8 @@ const ApproverBudgetRequestList = () => {
         field: "bdr_request_status",
         sortable: true,
         filter: true,
-        flex: 1,
+        //flex: 1,
+        width: 120,
         cellRenderer: (params) => {
           const badgeClass = params.data.color_code;
           return (
@@ -346,7 +348,7 @@ const ApproverBudgetRequestList = () => {
       // {
       //   headerName: t("view_detail"),
       //   field: "view_detail",
-      //   flex: 1,
+      //   //flex: 1,
       //   cellRenderer: (params) => {
       //     return (
       //       <Button
@@ -366,7 +368,8 @@ const ApproverBudgetRequestList = () => {
       {
         headerName: t("take_action"),
         field: "take_action",
-        flex: 1,
+        //flex: 1,
+        width: 120,
         cellRenderer: (params) => {
           return (
             <Button
@@ -387,7 +390,8 @@ const ApproverBudgetRequestList = () => {
       {
         headerName: t("attach_files"),
         field: "attach_files",
-        flex: 1,
+        //flex: 1,
+        width: 80,
         cellRenderer: (params) => {
           return (
             <Button
@@ -408,7 +412,8 @@ const ApproverBudgetRequestList = () => {
       {
         headerName: t("Message"),
         field: "Message",
-        flex: 1,
+        //flex: 1,
+        width: 100,
         cellRenderer: (params) => {
           return (
             <Button
@@ -435,7 +440,8 @@ const ApproverBudgetRequestList = () => {
       baseColumnDefs.push({
         headerName: t("view_detail"),
         field: "view_detail",
-        flex: 1,
+        //flex: 1,
+        width: 150,
         cellRenderer: (params) => (
           <div className="d-flex gap-3">
             {params.data.is_editable ? (
@@ -465,141 +471,142 @@ const ApproverBudgetRequestList = () => {
   }
   return (
     <Suspense fallback={<div>Loading...</div>}>
-    <React.Fragment>
-      {/* <BudgetRequestModal
+      <React.Fragment>
+        {/* <BudgetRequestModal
         isOpen={detailModal}
         toggle={toggleDetailModal}
         transaction={transaction}
       /> */}
-      <ApproverBudgetRequestListModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-        budgetYearMap={budgetYearMap}
-      />
-      <AttachFileModal
-        isOpen={fileModal}
-        toggle={toggleFileModal}
-        projectId={transaction?.bdr_project_id}
-        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-        ownerId={transaction?.bdr_id}
-      />
-      <ConvInfoModal
-        isOpen={convModal}
-        toggle={toggleConvModal}
-        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-        ownerId={transaction?.bdr_id ?? null}
-      />
-      <div className="page-content">
-        <div className="">
-          <Breadcrumbs
-            title={t("budget_request")}
-            breadcrumbItem={t("budget_request")}
-          />
-          <div className="w-100 d-flex gap-2">
-            <TreeForLists
-              onNodeSelect={handleNodeSelect}
-              setIsAddressLoading={setIsAddressLoading}
-              setInclude={setInclude}
+        <ApproverBudgetRequestListModal
+          isOpen={modal1}
+          toggle={toggleViewModal}
+          transaction={transaction}
+          budgetYearMap={budgetYearMap}
+        />
+        <AttachFileModal
+          isOpen={fileModal}
+          toggle={toggleFileModal}
+          projectId={transaction?.bdr_project_id}
+          ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+          ownerId={transaction?.bdr_id}
+        />
+        <ConvInfoModal
+          isOpen={convModal}
+          toggle={toggleConvModal}
+          ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+          ownerId={transaction?.bdr_id ?? null}
+        />
+        <div className="page-content">
+          <div className="">
+            <Breadcrumbs
+              title={t("budget_request")}
+              breadcrumbItem={t("budget_request")}
             />
-            <div className="w-100">
-              <AdvancedSearch
-                searchHook={useSearchBudgetRequestforApproval}
-                dateSearchKeys={["budget_request_date"]}
-                textSearchKeys={["prj_name", "prj_code"]}
-                dropdownSearchKeys={[
-                  {
-                    key: "bdr_budget_year_id",
-                    options: budgetYearOptions,
-                  },
-                  {
-                    key: "bdr_request_category_id",
-                    options: requestCategoryOptions,
-                  },
-                ]}
-                additionalParams={projectParams}
-                setAdditionalParams={setProjectParams}
-                onSearchResult={handleSearchResults}
-                setIsSearchLoading={setIsSearchLoading}
-                setSearchResults={setSearchResults}
-                setShowSearchResult={setShowSearchResult}
+            <div className="w-100 d-flex gap-2">
+              <TreeForLists
+                onNodeSelect={handleNodeSelect}
+                setIsAddressLoading={setIsAddressLoading}
+                setInclude={setInclude}
               />
+              <div className="w-100">
+                <AdvancedSearch
+                  searchHook={useSearchBudgetRequestforApproval}
+                  dateSearchKeys={["budget_request_date"]}
+                  textSearchKeys={["prj_name", "prj_code"]}
+                  dropdownSearchKeys={[
+                    {
+                      key: "bdr_budget_year_id",
+                      options: budgetYearOptions,
+                    },
+                    {
+                      key: "bdr_request_category_id",
+                      options: requestCategoryOptions,
+                    },
+                  ]}
+                  additionalParams={projectParams}
+                  setAdditionalParams={setProjectParams}
+                  onSearchResult={handleSearchResults}
+                  setIsSearchLoading={setIsSearchLoading}
+                  setSearchResults={setSearchResults}
+                  setShowSearchResult={setShowSearchResult}
+                />
 
-              {isLoading || isSearchLoading ? (
-                <Spinners />
-              ) : (
-                <>
-                  <div
-                    className="ag-theme-alpine"
-                    style={{ height: "100%", width: "100%" }}
-                  >
-                    {/* Row for search input and buttons */}
-                    <Row className="mb-3">
-                      <Col sm="12" md="6">
-                        <Input
-                          type="text"
-                          placeholder="Search..."
-                          onChange={(e) => setQuickFilterText(e.target.value)}
-                          className="mb-2"
-                        />
-                      </Col>
-                      <Col
-                        sm="12"
-                        md="6"
-                        className="text-md-end d-flex align-items-center justify-content-end gap-2"
-                      >
-                        <ExportToExcel
-                          tableData={
+                {isLoading || isSearchLoading ? (
+                  <div className="w-100" style={{ position: "relative", height: "300px" }}><Spinners /></div>
+                ) : (
+                  <div>
+                    <div
+                      className="ag-theme-alpine"
+                      style={{ height: "100%" }}
+                    >
+                      {/* Row for search input and buttons */}
+                      <Row className="mb-1">
+                        <Col sm="12" md="6">
+                          <Input
+                            type="text"
+                            placeholder="Search..."
+                            onChange={(e) => setQuickFilterText(e.target.value)}
+                            className="mb-2"
+                          />
+                        </Col>
+                        <Col
+                          sm="12"
+                          md="6"
+                          className="text-md-end d-flex align-items-center justify-content-end gap-2"
+                        >
+                          <ExportToExcel
+                            tableData={
+                              showSearchResult ? transformedData : data?.data || []
+                            }
+                            tablename={"projects"}
+                            includeKey={budget_request}
+                          />
+                          <ExportToPDF
+                            tableData={
+                              showSearchResult ? transformedData : data?.data || []
+                            }
+                            tablename={"projects"}
+                            includeKey={budget_request}
+                          />
+                          <PrintPage
+                            tableData={
+                              showSearchResult ? transformedData : data?.data || []
+                            }
+                            tablename={t("Projects")}
+                            excludeKey={["is_editable", "is_deletable"]}
+                            gridRef={gridRef}
+                            columnDefs={columnDefs}
+                            columnsToIgnore="3"
+                          />
+                        </Col>
+                      </Row>
+                      {/* AG Grid */}
+                      <div >
+                        <AgGridReact
+                          ref={gridRef}
+                          rowData={
                             showSearchResult ? transformedData : data?.data || []
                           }
-                          tablename={"projects"}
-                          includeKey={budget_request}
-                        />
-                        <ExportToPDF
-                          tableData={
-                            showSearchResult ? transformedData : data?.data || []
-                          }
-                          tablename={"projects"}
-                          includeKey={budget_request}
-                        />
-                        <PrintPage
-                          tableData={
-                            showSearchResult ? transformedData : data?.data || []
-                          }
-                          tablename={t("Projects")}
-                          excludeKey={["is_editable", "is_deletable"]}
-                          gridRef={gridRef}
                           columnDefs={columnDefs}
-                          columnsToIgnore="3"
+                          defaultColDef={{ resizable: true }}
+                          pagination={true}
+                          paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+                          paginationPageSize={10}
+                          quickFilterText={quickFilterText}
+                          onSelectionChanged={onSelectionChanged}
+                          rowHeight={30}
+                          animateRows={true}
+                          domLayout="autoHeight"
                         />
-                      </Col>
-                    </Row>
-                    {/* AG Grid */}
-                    <div style={{ height: "600px", zoom: "90%" }}>
-                      <AgGridReact
-                        ref={gridRef}
-                        rowData={
-                          showSearchResult ? transformedData : data?.data || []
-                        }
-                        columnDefs={columnDefs}
-                        pagination={true}
-                        paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                        paginationPageSize={10}
-                        quickFilterText={quickFilterText}
-                        onSelectionChanged={onSelectionChanged}
-                        rowHeight={30}
-                        animateRows={true}
-                        domLayout="autoHeight" // Auto-size the grid to fit content
-                      />
+                      </div>
                     </div>
                   </div>
-                </>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </React.Fragment>
+      </React.Fragment>
     </Suspense>
   );
 };

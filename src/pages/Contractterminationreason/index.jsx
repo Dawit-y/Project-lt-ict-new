@@ -312,19 +312,6 @@ const ContractTerminationReasonModel = () => {
         },
       },
       {
-        header: "",
-        accessorKey: "ctr_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.ctr_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
         header: t("view_detail"),
         enableColumnFilter: false,
         enableSorting: true,
@@ -486,14 +473,14 @@ const ContractTerminationReasonModel = () => {
                       value={validation.values.ctr_reason_name_or || ""}
                       invalid={
                         validation.touched.ctr_reason_name_or &&
-                        validation.errors.ctr_reason_name_or
+                          validation.errors.ctr_reason_name_or
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.ctr_reason_name_or &&
-                    validation.errors.ctr_reason_name_or ? (
+                      validation.errors.ctr_reason_name_or ? (
                       <FormFeedback type="invalid">
                         {validation.errors.ctr_reason_name_or}
                       </FormFeedback>
@@ -513,14 +500,14 @@ const ContractTerminationReasonModel = () => {
                       value={validation.values.ctr_reason_name_am || ""}
                       invalid={
                         validation.touched.ctr_reason_name_am &&
-                        validation.errors.ctr_reason_name_am
+                          validation.errors.ctr_reason_name_am
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.ctr_reason_name_am &&
-                    validation.errors.ctr_reason_name_am ? (
+                      validation.errors.ctr_reason_name_am ? (
                       <FormFeedback type="invalid">
                         {validation.errors.ctr_reason_name_am}
                       </FormFeedback>
@@ -540,14 +527,14 @@ const ContractTerminationReasonModel = () => {
                       value={validation.values.ctr_reason_name_en || ""}
                       invalid={
                         validation.touched.ctr_reason_name_en &&
-                        validation.errors.ctr_reason_name_en
+                          validation.errors.ctr_reason_name_en
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.ctr_reason_name_en &&
-                    validation.errors.ctr_reason_name_en ? (
+                      validation.errors.ctr_reason_name_en ? (
                       <FormFeedback type="invalid">
                         {validation.errors.ctr_reason_name_en}
                       </FormFeedback>
@@ -564,14 +551,14 @@ const ContractTerminationReasonModel = () => {
                       value={validation.values.ctr_description || ""}
                       invalid={
                         validation.touched.ctr_description &&
-                        validation.errors.ctr_description
+                          validation.errors.ctr_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.ctr_description &&
-                    validation.errors.ctr_description ? (
+                      validation.errors.ctr_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.ctr_description}
                       </FormFeedback>
@@ -582,7 +569,7 @@ const ContractTerminationReasonModel = () => {
                   <Col>
                     <div className="text-end">
                       {addContractTerminationReason.isPending ||
-                      updateContractTerminationReason.isPending ? (
+                        updateContractTerminationReason.isPending ? (
                         <Button
                           color="success"
                           type="submit"

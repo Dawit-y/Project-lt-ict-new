@@ -31,7 +31,7 @@ import ExportToPDF from "../../components/Common/ExportToPdf";
 import PrintPage from "../../components/Common/PrintPage";
 
 const ProjectModel = () => {
-  document.title = "Citizenship Projects List | PMS";
+  document.title = "Citizenship Projects List ";
   const { t, i18n } = useTranslation();
   const lang = i18n.language
   const [modal, setModal] = useState(false);

@@ -13,7 +13,7 @@ import Spinners from "../../components/Common/Spinner";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import { alphanumericValidation, amountValidation, numberValidation } from '../../utils/Validation/validation';
 
 import {
   useFetchStakeholderTypes,
@@ -80,10 +80,10 @@ const StakeholderTypeModel = () => {
   const handleAddStakeholderType = async (data) => {
     try {
       await addStakeholderType.mutateAsync(data);
-   toast.success(t('add_success'), {
+      toast.success(t('add_success'), {
         autoClose: 2000,
       });
-   validation.resetForm();
+      validation.resetForm();
     } catch (error) {
       toast.error(t('add_failure'), {
         autoClose: 2000,
@@ -112,11 +112,11 @@ const StakeholderTypeModel = () => {
       try {
         const id = stakeholderType.sht_id;
         await deleteStakeholderType.mutateAsync(id);
-      toast.success(t('delete_success'), {
+        toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-      toast.error(t('delete_failure'), {
+        toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -146,7 +146,7 @@ const StakeholderTypeModel = () => {
     },
 
     validationSchema: Yup.object({
-      sht_type_name_or: alphanumericValidation(2,100,true)
+      sht_type_name_or: alphanumericValidation(2, 100, true)
         .test("unique-sht_type_name_or", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
@@ -155,8 +155,8 @@ const StakeholderTypeModel = () => {
           );
         }),
       sht_type_name_am: Yup.string().required(t("sht_type_name_am")),
-      sht_type_name_en: alphanumericValidation(2,100,true),
-      sht_description: alphanumericValidation(3,425,true),
+      sht_type_name_en: alphanumericValidation(2, 100, true),
+      sht_description: alphanumericValidation(3, 425, true),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -286,19 +286,6 @@ const StakeholderTypeModel = () => {
         },
       },
       {
-        header: "",
-        accessorKey: "sht_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.sht_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
         header: t("view_detail"),
         enableColumnFilter: false,
         enableSorting: true,
@@ -321,8 +308,8 @@ const StakeholderTypeModel = () => {
       },
     ];
     if (
-     data?.previledge?.is_role_editable==1 ||
-     data?.previledge?.is_role_deletable==1
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -347,7 +334,7 @@ const StakeholderTypeModel = () => {
                   </UncontrolledTooltip>
                 </Link>
               )}
-{(data?.previledge?.is_role_deletable == 9 && cellProps.row.original?.is_deletable == 9) && (
+              {(data?.previledge?.is_role_deletable == 9 && cellProps.row.original?.is_deletable == 9) && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -373,7 +360,7 @@ const StakeholderTypeModel = () => {
 
     return baseColumns;
   }, [handleStakeholderTypeClick, toggleViewModal, onClickDelete]);
- if (isError) {
+  if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -410,7 +397,7 @@ const StakeholderTypeModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add==1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleStakeholderTypeClicks}
                       isPagination={true}
@@ -454,14 +441,14 @@ const StakeholderTypeModel = () => {
                       value={validation.values.sht_type_name_or || ""}
                       invalid={
                         validation.touched.sht_type_name_or &&
-                        validation.errors.sht_type_name_or
+                          validation.errors.sht_type_name_or
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.sht_type_name_or &&
-                    validation.errors.sht_type_name_or ? (
+                      validation.errors.sht_type_name_or ? (
                       <FormFeedback type="invalid">
                         {validation.errors.sht_type_name_or}
                       </FormFeedback>
@@ -478,14 +465,14 @@ const StakeholderTypeModel = () => {
                       value={validation.values.sht_type_name_am || ""}
                       invalid={
                         validation.touched.sht_type_name_am &&
-                        validation.errors.sht_type_name_am
+                          validation.errors.sht_type_name_am
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.sht_type_name_am &&
-                    validation.errors.sht_type_name_am ? (
+                      validation.errors.sht_type_name_am ? (
                       <FormFeedback type="invalid">
                         {validation.errors.sht_type_name_am}
                       </FormFeedback>
@@ -502,14 +489,14 @@ const StakeholderTypeModel = () => {
                       value={validation.values.sht_type_name_en || ""}
                       invalid={
                         validation.touched.sht_type_name_en &&
-                        validation.errors.sht_type_name_en
+                          validation.errors.sht_type_name_en
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.sht_type_name_en &&
-                    validation.errors.sht_type_name_en ? (
+                      validation.errors.sht_type_name_en ? (
                       <FormFeedback type="invalid">
                         {validation.errors.sht_type_name_en}
                       </FormFeedback>
@@ -526,14 +513,14 @@ const StakeholderTypeModel = () => {
                       value={validation.values.sht_description || ""}
                       invalid={
                         validation.touched.sht_description &&
-                        validation.errors.sht_description
+                          validation.errors.sht_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.sht_description &&
-                    validation.errors.sht_description ? (
+                      validation.errors.sht_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.sht_description}
                       </FormFeedback>
@@ -544,7 +531,7 @@ const StakeholderTypeModel = () => {
                   <Col>
                     <div className="text-end">
                       {addStakeholderType.isPending ||
-                      updateStakeholderType.isPending ? (
+                        updateStakeholderType.isPending ? (
                         <Button
                           color="success"
                           type="submit"

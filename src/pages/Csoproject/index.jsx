@@ -45,7 +45,7 @@ import DatePicker from "../../components/Common/DatePicker";
 import ProjectTabs from "./ProjectTabs";
 
 const ProjectModel = () => {
-  document.title = "Projects | PMS";
+  document.title = "Projects ";
 
   const [projectMetaData, setProjectMetaData] = useState([]);
   const [showCanvas, setShowCanvas] = useState(false);

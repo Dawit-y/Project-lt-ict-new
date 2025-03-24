@@ -7,7 +7,7 @@ import error from "../../assets/images/error-img.png";
 
 const NotFound = () => {
   //meta title
-  document.title = "404 Error Page | PMS";
+  document.title = "404 Error Page ";
 
   return (
     <React.Fragment>

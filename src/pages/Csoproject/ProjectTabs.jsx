@@ -235,7 +235,7 @@ const ProjectTabs = ({ projects, handleAddClick, handleEditClick }) => {
                     // theadClass="table-light"
                     pagination="pagination"
                     paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                    excludeKey={["is_editable", "is_deletable"]} // will be used by export to excel and pdf components
+                    excludeKey={["is_editable", "is_deletable", "Select"]} // will be used by export to excel and pdf components
                     tableName="Project Data" // will be used by export to excel and pdf components
                     isExcelExport={true}
                     isPdfExport={true}

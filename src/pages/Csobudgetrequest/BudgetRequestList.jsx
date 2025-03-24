@@ -43,7 +43,7 @@ const statusClasses = new Map([
   ["Requested", "secondary"],
 ]);
 const BudgetRequestListModel = () => {
-  document.title = " Budget Request List | PMS";
+  document.title = " Budget Request List ";
   const { t } = useTranslation();
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);

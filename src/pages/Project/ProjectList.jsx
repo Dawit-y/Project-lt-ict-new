@@ -39,7 +39,7 @@ const linkMapping = {
 };
 
 const ProjectModel = () => {
-  document.title = "Projects List | PMS";
+  document.title = "Projects List ";
 
   const [projectMetaData, setProjectMetaData] = useState([]);
   const [showCanvas, setShowCanvas] = useState(false);

@@ -51,7 +51,7 @@ import {
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 
 const ProjectModel = () => {
-  document.title = "Citizenship Projects List | PMS";
+  document.title = "Citizenship Projects List ";
   const { t, i18n } = useTranslation();
   const lang = i18n.language
   const [modal, setModal] = useState(false);

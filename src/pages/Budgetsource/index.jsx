@@ -13,7 +13,7 @@ import Spinners from "../../components/Common/Spinner";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-import { alphanumericValidation,amountValidation,numberValidation } from '../../utils/Validation/validation';
+import { alphanumericValidation, amountValidation, numberValidation } from '../../utils/Validation/validation';
 
 import {
   useFetchBudgetSources,
@@ -83,7 +83,7 @@ const BudgetSourceModel = () => {
       toast.success(t('add_success'), {
         autoClose: 2000,
       });
-       validation.resetForm();
+      validation.resetForm();
     } catch (error) {
       toast.error(t('add_failure'), {
         autoClose: 2000,
@@ -112,11 +112,11 @@ const BudgetSourceModel = () => {
       try {
         const id = budgetSource.pbs_id;
         await deleteBudgetSource.mutateAsync(id);
-      toast.success(t('delete_success'), {
+        toast.success(t('delete_success'), {
           autoClose: 2000,
         });
       } catch (error) {
-      toast.error(t('delete_failure'), {
+        toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -144,18 +144,18 @@ const BudgetSourceModel = () => {
       is_editable: (budgetSource && budgetSource.is_editable) || 1,
     },
 
-    validationSchema: Yup.object({        
-      pbs_name_or: alphanumericValidation(2,100,true).test("unique-pbs_name_or", t("Already exists"), (value) => {
-          return !data?.data.some(
-            (item) =>
-              item.pbs_name_or == value && item.pbs_id !== budgetSource?.pbs_id
-          );
-        }),
-      pbs_name_am: Yup.string().required(t("pbs_name_am")),   
-     pbs_name_en: alphanumericValidation(2,100,true),
-     pbs_description: alphanumericValidation(3,425,false)
-
+    validationSchema: Yup.object({
+      pbs_name_or: alphanumericValidation(2, 100, true).test("unique-pbs_name_or", t("Already exists"), (value) => {
+        return !data?.data.some(
+          (item) =>
+            item.pbs_name_or == value && item.pbs_id !== budgetSource?.pbs_id
+        );
       }),
+      pbs_name_am: Yup.string().required(t("pbs_name_am")),
+      pbs_name_en: alphanumericValidation(2, 100, true),
+      pbs_description: alphanumericValidation(3, 425, false)
+
+    }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
@@ -300,19 +300,6 @@ const BudgetSourceModel = () => {
         },
       },
       {
-        header: "",
-        accessorKey: "pbs_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pbs_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
         header: t("view_detail"),
         enableColumnFilter: false,
         enableSorting: true,
@@ -335,8 +322,8 @@ const BudgetSourceModel = () => {
       },
     ];
     if (
-      data?.previledge?.is_role_editable==1 ||
-      data?.previledge?.is_role_deletable==1
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -346,8 +333,8 @@ const BudgetSourceModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-            {cellProps.row.original.is_editable==1 && (  
-                 <Link
+              {cellProps.row.original.is_editable == 1 && (
+                <Link
                   to="#"
                   className="text-success"
                   onClick={() => {
@@ -361,7 +348,7 @@ const BudgetSourceModel = () => {
                   </UncontrolledTooltip>
                 </Link>
               )}
-            {cellProps.row.original.is_deletable==1 && (  
+              {cellProps.row.original.is_deletable == 1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -387,7 +374,7 @@ const BudgetSourceModel = () => {
 
     return baseColumns;
   }, [handleBudgetSourceClick, toggleViewModal, onClickDelete]);
- if (isError) {
+  if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
@@ -425,7 +412,7 @@ const BudgetSourceModel = () => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add==1}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
                       handleUserClick={handleBudgetSourceClicks}
                       isPagination={true}
@@ -469,14 +456,14 @@ const BudgetSourceModel = () => {
                       value={validation.values.pbs_name_or || ""}
                       invalid={
                         validation.touched.pbs_name_or &&
-                        validation.errors.pbs_name_or
+                          validation.errors.pbs_name_or
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.pbs_name_or &&
-                    validation.errors.pbs_name_or ? (
+                      validation.errors.pbs_name_or ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pbs_name_or}
                       </FormFeedback>
@@ -493,14 +480,14 @@ const BudgetSourceModel = () => {
                       value={validation.values.pbs_name_am || ""}
                       invalid={
                         validation.touched.pbs_name_am &&
-                        validation.errors.pbs_name_am
+                          validation.errors.pbs_name_am
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.pbs_name_am &&
-                    validation.errors.pbs_name_am ? (
+                      validation.errors.pbs_name_am ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pbs_name_am}
                       </FormFeedback>
@@ -517,14 +504,14 @@ const BudgetSourceModel = () => {
                       value={validation.values.pbs_name_en || ""}
                       invalid={
                         validation.touched.pbs_name_en &&
-                        validation.errors.pbs_name_en
+                          validation.errors.pbs_name_en
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.pbs_name_en &&
-                    validation.errors.pbs_name_en ? (
+                      validation.errors.pbs_name_en ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pbs_name_en}
                       </FormFeedback>
@@ -541,14 +528,14 @@ const BudgetSourceModel = () => {
                       value={validation.values.pbs_code || ""}
                       invalid={
                         validation.touched.pbs_code &&
-                        validation.errors.pbs_code
+                          validation.errors.pbs_code
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pbs_code &&
-                    validation.errors.pbs_code ? (
+                      validation.errors.pbs_code ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pbs_code}
                       </FormFeedback>
@@ -565,14 +552,14 @@ const BudgetSourceModel = () => {
                       value={validation.values.pbs_description || ""}
                       invalid={
                         validation.touched.pbs_description &&
-                        validation.errors.pbs_description
+                          validation.errors.pbs_description
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pbs_description &&
-                    validation.errors.pbs_description ? (
+                      validation.errors.pbs_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pbs_description}
                       </FormFeedback>
@@ -583,7 +570,7 @@ const BudgetSourceModel = () => {
                   <Col>
                     <div className="text-end">
                       {addBudgetSource.isPending ||
-                      updateBudgetSource.isPending ? (
+                        updateBudgetSource.isPending ? (
                         <Button
                           color="success"
                           type="submit"
