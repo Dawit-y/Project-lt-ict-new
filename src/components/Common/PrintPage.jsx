@@ -1,26 +1,24 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import {
-  UncontrolledTooltip
-} from "reactstrap";
-const PrintPage = ({ tableData, tablename, excludeKey = [], gridRef,columnDefs,columnsToIgnore=0 }) => {
+
+const PrintPage = ({ tableData, tablename, excludeKey = [], gridRef, columnDefs, columnsToIgnore = 0 }) => {
   const { t } = useTranslation();
 
   // Function to get printable content
   const getPrintableContent = () => {
     if (gridRef.current) {
       //const gridHtml = gridRef.current.api.getDataAsHtml();
-    const rowCount = gridRef.current.api.getDisplayedRowCount(); // Get total displayed rows
-    const printableData = [];
+      const rowCount = gridRef.current.api.getDisplayedRowCount(); // Get total displayed rows
+      const printableData = [];
 
-    // Loop through all displayed rows
-    for (let i = 0; i < rowCount; i++) {
-      const rowNode = gridRef.current.api.getDisplayedRowAtIndex(i); // Get row node by index
-      const rowData = { ...rowNode.data };
-      rowData.sn = i + 1;
-      printableData.push(rowData); 
-    }
-     // Construct HTML table
+      // Loop through all displayed rows
+      for (let i = 0; i < rowCount; i++) {
+        const rowNode = gridRef.current.api.getDisplayedRowAtIndex(i); // Get row node by index
+        const rowData = { ...rowNode.data };
+        rowData.sn = i + 1;
+        printableData.push(rowData);
+      }
+      // Construct HTML table
       let html = `<table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse;">`;
       // Add table headers
       html += `<thead><tr>`;
@@ -35,11 +33,11 @@ const PrintPage = ({ tableData, tablename, excludeKey = [], gridRef,columnDefs,c
       printableData.forEach((row) => {
         html += `<tr>`;
         columnDefs.forEach((col) => {
-         // if (!excludeKey.includes(col.field)) { // Exclude columns based on excludeKey
-            html += `<td>${ typeof row[col.field] === "number"
-        ? row[col.field].toLocaleString()
-        : row[col.field]}</td>`;
-         // }
+          // if (!excludeKey.includes(col.field)) { // Exclude columns based on excludeKey
+          html += `<td>${typeof row[col.field] === "number"
+            ? row[col.field].toLocaleString()
+            : row[col.field]}</td>`;
+          // }
         });
         html += `</tr>`;
       });
@@ -180,14 +178,14 @@ const PrintPage = ({ tableData, tablename, excludeKey = [], gridRef,columnDefs,c
 
   return (
     <div id="print-cont">
-    <button
-      className="btn btn-soft-primary"
-      onClick={printPage}
-      disabled={!tableData || tableData.length === 0}
-    >
-      {t("print")}
-    </button>
-    
+      <button
+        className="btn btn-soft-primary"
+        onClick={printPage}
+        disabled={!tableData || tableData.length === 0}
+      >
+        {t("print")}
+      </button>
+
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -9,15 +9,10 @@ import Spinners from "../../components/Common/Spinner";
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns1";
 import CascadingDropdownsearch from "../../components/Common/CascadingDropdowns2";
 import CascadingDepartmentDropdowns from "./CascadingDepartmentDropdowns";
-//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-// pages
 import UserRoles from "../../pages/Userrole/index";
 import UserSectorModel from "../Usersector";
-import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-import "bootstrap/dist/css/bootstrap.min.css";
+import AgGridContainer from "../../components/Common/AgGridContainer";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import {
@@ -62,7 +57,6 @@ import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import { createSelectOptions } from "../../utils/commonMethods";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import AccessLog from "../Accesslog/AccessLog";
-import Select from "react-select"
 
 //import ImageUploader from "../../components/Common/ImageUploader";
 const truncateText = (text, maxLength) => {
@@ -112,9 +106,7 @@ const UsersModel = () => {
   const deleteUsers = useDeleteUsers();
   const [users, setUsers] = useState(null);
   const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
-  const [quickFilterText, setQuickFilterText] = useState("");
-  const [selectedRows, setSelectedRows] = useState([]);
-  const gridRef = useRef(null);
+
   const [userMetaData, setUserData] = useState({});
   const [showCanvas, setShowCanvas] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -452,6 +444,7 @@ const UsersModel = () => {
     const baseColumns = [
       {
         headerName: t("s_n"),
+        field: "sn",
         valueGetter: "node.rowIndex + 1",
         width: 60,
       },
@@ -604,12 +597,6 @@ const UsersModel = () => {
     onClickDelete,
     handleUsersDuplicateClick,
   ]);
-  // When selection changes, update selectedRows
-  const onSelectionChanged = () => {
-    const selectedNodes = gridRef.current.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
-    setSelectedRows(selectedData);
-  };
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -648,46 +635,27 @@ const UsersModel = () => {
           {isLoading || isSearchLoading ? (
             <Spinners top={"top-60"} />
           ) : (
-            <div
-              className="ag-theme-alpine"
-              style={{ height: "100%", width: "100%" }}
-            >
-              {/* Row for search input and buttons */}
-              <Row className="mb-3">
-                <Col sm="12" md="6">
-                  {/* Search Input for  Filter */}
-                  <Input
-                    type="text"
-                    placeholder="Search..."
-                    onChange={(e) => setQuickFilterText(e.target.value)}
-                    className="mb-2"
-                  />
-                </Col>
-                <Col sm="12" md="6" className="text-md-end">
-                  <Button color="success" onClick={handleUsersClicks}>
-                    {t("add")}
-                  </Button>
-                </Col>
-              </Row>
-              {/* AG Grid */}
-              <div style={{ minHeight: "600px" }}>
-                <AgGridReact
-                  ref={gridRef}
-                  rowData={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
-                  columnDefs={columnDefs}
-                  pagination={true}
-                  paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                  paginationPageSize={20}
-                  quickFilterText={quickFilterText}
-                  onSelectionChanged={onSelectionChanged}
-                  rowHeight={30} // Set the row height here
-                  animateRows={true} // Enables row animations
-                  domLayout="autoHeight"
-                />
-              </div>
-            </div>
+            <>
+              <AgGridContainer
+                rowData={
+                  showSearchResult ? searchResults?.data : data?.data || []
+                }
+                columnDefs={columnDefs}
+                isPagination={true}
+                paginationPageSize={20}
+                isGlobalFilter={true}
+                isAddButton={true}
+                onAddClick={handleUsersClicks}
+                addButtonText="Add"
+                isExcelExport={true}
+                isPdfExport={true}
+                isPrint={true}
+                tableName="Users"
+                includeKey={["usr_full_name", "usr_email", "usr_phone_number"]}
+                excludeKey={["is_editable", "is_deletable"]}
+              />
+            </>
+
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
