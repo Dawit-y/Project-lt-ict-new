@@ -234,6 +234,13 @@ const UsersModel = () => {
       usr_department_id: dropdownValidation(1, 100, true),
       usr_region_id: Yup.number().required(t("usr_region_id")),
       usr_user_type: Yup.number().required(t("usr_user_type")),
+      usr_owner_id: Yup.string().when("usr_user_type", {
+        is: 2,
+        then: () => {
+          return Yup.number().required(t("usr_owner_id"))
+        },
+        otherwise: (s) => s,
+      }),
       // usr_zone_id: Yup.number().required(t("usr_zone_id")),
       //usr_woreda_id: Yup.number().required(t("usr_woreda_id")),
     }),
@@ -331,6 +338,7 @@ const UsersModel = () => {
       }
     },
   });
+  console.log("val error", validation.errors)
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
   useEffect(() => {
@@ -358,7 +366,7 @@ const UsersModel = () => {
   };
   const handleUsersClick = (arg) => {
     const user = arg;
-    console.log(user);
+    console.log("owner", user.usr_owner_id)
     setUsers({
       usr_id: user.usr_id,
       usr_email: user.usr_email,
@@ -827,7 +835,7 @@ const UsersModel = () => {
                       ) : null}
                     </InputGroup>
                   </Col>
-                  <Col className="col-md-4 mb-3">
+                  <Col className="col-md-8 mb-3">
                     <Label>
                       {t("usr_sector_id")}{" "}
                       <span className="text-danger">*</span>
@@ -895,6 +903,7 @@ const UsersModel = () => {
                     <Col className="col-md-4 mb-3">
                       <Label>
                         {t("usr_owner_id")}{" "}
+                        <span className="text-danger">*</span>
                       </Label>
                       <Input
                         name="usr_owner_id"
