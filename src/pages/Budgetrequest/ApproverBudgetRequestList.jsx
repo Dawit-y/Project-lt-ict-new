@@ -1,4 +1,11 @@
-import React, { useEffect, useMemo, useState, useRef, lazy, Suspense } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+  lazy,
+  Suspense,
+} from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -16,16 +23,28 @@ import "ag-grid-community/styles/ag-theme-alpine.css";
 // Lazy-loaded components
 const Spinners = lazy(() => import("../../components/Common/Spinner"));
 const Breadcrumbs = lazy(() => import("../../components/Common/Breadcrumb"));
-const ApproverBudgetRequestListModal = lazy(() => import("./ApproverBudgetRequestModal"));
+const ApproverBudgetRequestListModal = lazy(() =>
+  import("./ApproverBudgetRequestModal")
+);
 const BudgetRequestAnalysis = lazy(() => import("./BudgetRequestAnalysis"));
-const AdvancedSearch = lazy(() => import("../../components/Common/AdvancedSearch"));
-const FetchErrorHandler = lazy(() => import("../../components/Common/FetchErrorHandler"));
+const AdvancedSearch = lazy(() =>
+  import("../../components/Common/AdvancedSearch")
+);
+const FetchErrorHandler = lazy(() =>
+  import("../../components/Common/FetchErrorHandler")
+);
 const TreeForLists = lazy(() => import("../../components/Common/TreeForLists"));
-const AttachFileModal = lazy(() => import("../../components/Common/AttachFileModal"));
-const ConvInfoModal = lazy(() => import("../../pages/Conversationinformation/ConvInfoModal"));
+const AttachFileModal = lazy(() =>
+  import("../../components/Common/AttachFileModal")
+);
+const ConvInfoModal = lazy(() =>
+  import("../../pages/Conversationinformation/ConvInfoModal")
+);
 const BudgetRequestModal = lazy(() => import("./BudgetRequestModal"));
 
-const ExportToExcel = lazy(() => import("../../components/Common/ExportToExcel"));
+const ExportToExcel = lazy(() =>
+  import("../../components/Common/ExportToExcel")
+);
 const ExportToPDF = lazy(() => import("../../components/Common/ExportToPdf"));
 const PrintPage = lazy(() => import("../../components/Common/PrintPage"));
 //const { budget_request } = lazy(() => import("../../settings/printablecolumns"));
@@ -38,6 +57,7 @@ import {
   useFetchRequestFollowups,
 } from "../../queries/requestfollowup_query";
 import { PAGE_ID } from "../../constants/constantFile";
+import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -69,6 +89,7 @@ const ApproverBudgetRequestList = () => {
   const { data, isLoading, error, isError, refetch } = useState(null);
   const { data: budgetYearData } = useFetchBudgetYears();
   const { data: bgCategoryOptionsData } = useFetchRequestCategorys();
+  const { data: projectStatusData } = useFetchProjectStatuss();
 
   const [projectParams, setProjectParams] = useState({});
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
@@ -83,12 +104,12 @@ const ApproverBudgetRequestList = () => {
     user?.usr_officer_id > 0
       ? user.usr_officer_id
       : user?.usr_team_id > 0
-        ? user.usr_team_id
-        : user?.usr_directorate_id > 0
-          ? user.usr_directorate_id
-          : user?.usr_department_id > 0
-            ? user.usr_department_id
-            : null;
+      ? user.usr_team_id
+      : user?.usr_directorate_id > 0
+      ? user.usr_directorate_id
+      : user?.usr_department_id > 0
+      ? user.usr_department_id
+      : null;
 
   //const depId = 1
   const { data: rqfData, isLoading: rqfLoading } = useFetchRequestFollowups();
@@ -137,6 +158,15 @@ const ApproverBudgetRequestList = () => {
       })) || []
     );
   }, [bgCategoryOptionsData]);
+
+  const projectStatusOptions = useMemo(() => {
+    return (
+      projectStatusData?.data?.map((type) => ({
+        label: type.prs_status_name_or,
+        value: type.prs_id,
+      })) || []
+    );
+  }, [projectStatusData]);
 
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
@@ -237,6 +267,20 @@ const ApproverBudgetRequestList = () => {
       },
 
       {
+        headerName: t("bdr_request_type"),
+        field: "bdr_request_type",
+        sortable: true,
+        filter: true,
+
+        cellRenderer: (params) => {
+          const requestType = projectStatusOptions.find(
+            (option) => option.value === params.data.bdr_request_type
+          );
+          return requestType ? truncateText(requestType.label, 30) : "-";
+        },
+      },
+
+      {
         headerName: t("prj_name"),
         field: "prj_name",
         sortable: true,
@@ -320,8 +364,9 @@ const ApproverBudgetRequestList = () => {
           const isForwarded = params.data.forwarded;
           return (
             <Badge
-              className={`font-size-12 badge-soft-${isForwarded ? "danger" : "secondary"
-                }`}
+              className={`font-size-12 badge-soft-${
+                isForwarded ? "danger" : "secondary"
+              }`}
             >
               {isForwarded ? t("forwarded") : t("not_forwarded")}
             </Badge>
@@ -512,7 +557,7 @@ const ApproverBudgetRequestList = () => {
                 <AdvancedSearch
                   searchHook={useSearchBudgetRequestforApproval}
                   dateSearchKeys={["budget_request_date"]}
-                  textSearchKeys={["prj_name", "prj_code"]}
+                  textSearchKeys={["prj_name"]}
                   dropdownSearchKeys={[
                     {
                       key: "bdr_budget_year_id",
@@ -521,6 +566,10 @@ const ApproverBudgetRequestList = () => {
                     {
                       key: "bdr_request_category_id",
                       options: requestCategoryOptions,
+                    },
+                    {
+                      key: "bdr_request_type",
+                      options: projectStatusOptions,
                     },
                   ]}
                   additionalParams={projectParams}
@@ -532,13 +581,15 @@ const ApproverBudgetRequestList = () => {
                 />
 
                 {isLoading || isSearchLoading ? (
-                  <div className="w-100" style={{ position: "relative", height: "300px" }}><Spinners /></div>
+                  <div
+                    className="w-100"
+                    style={{ position: "relative", height: "300px" }}
+                  >
+                    <Spinners />
+                  </div>
                 ) : (
                   <div>
-                    <div
-                      className="ag-theme-alpine"
-                      style={{ height: "100%" }}
-                    >
+                    <div className="ag-theme-alpine" style={{ height: "100%" }}>
                       {/* Row for search input and buttons */}
                       <Row className="mb-1">
                         <Col sm="12" md="6">
@@ -556,21 +607,27 @@ const ApproverBudgetRequestList = () => {
                         >
                           <ExportToExcel
                             tableData={
-                              showSearchResult ? transformedData : data?.data || []
+                              showSearchResult
+                                ? transformedData
+                                : data?.data || []
                             }
                             tablename={"projects"}
                             includeKey={budget_request}
                           />
                           <ExportToPDF
                             tableData={
-                              showSearchResult ? transformedData : data?.data || []
+                              showSearchResult
+                                ? transformedData
+                                : data?.data || []
                             }
                             tablename={"projects"}
                             includeKey={budget_request}
                           />
                           <PrintPage
                             tableData={
-                              showSearchResult ? transformedData : data?.data || []
+                              showSearchResult
+                                ? transformedData
+                                : data?.data || []
                             }
                             tablename={t("Projects")}
                             excludeKey={["is_editable", "is_deletable"]}
@@ -581,11 +638,13 @@ const ApproverBudgetRequestList = () => {
                         </Col>
                       </Row>
                       {/* AG Grid */}
-                      <div >
+                      <div>
                         <AgGridReact
                           ref={gridRef}
                           rowData={
-                            showSearchResult ? transformedData : data?.data || []
+                            showSearchResult
+                              ? transformedData
+                              : data?.data || []
                           }
                           columnDefs={columnDefs}
                           defaultColDef={{ resizable: true }}
