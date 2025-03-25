@@ -27,6 +27,8 @@ import { useTranslation } from "react-i18next";
 import BudgetRequestAmount from "../Budgetrequestamount/index";
 import BudgetRequestTask from "../Budgetrequesttask/index";
 import BudgetExSource from "../Budgetexsource/index";
+import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
+
 import {
   Button,
   Col,
@@ -67,7 +69,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const BudgetRequestModel = (props) => {
-  const {isActive, status, startDate } = props;
+  const { isActive, status, startDate } = props;
   const location = useLocation();
   const id = Number(location.pathname.split("/")[2]);
   const param = { project_id: id, request_type: "single" };
@@ -87,6 +89,8 @@ const BudgetRequestModel = (props) => {
 
   const [budgetRequestMetaData, setBudgetRequestMetaData] = useState([]);
   const [showCanvas, setShowCanvas] = useState(false);
+
+  const { data: projectStatusData } = useFetchProjectStatuss();
 
   const { data, isLoading, isError, error, refetch } =
     useFetchBudgetRequests(param);
@@ -146,6 +150,8 @@ const BudgetRequestModel = (props) => {
       bdr_requested_date_gc:
         (budgetRequest && budgetRequest.bdr_requested_date_gc) || "",
 
+      bdr_request_type: (budgetRequest && budgetRequest.bdr_request_type) || "",
+
       bdr_description: (budgetRequest && budgetRequest.bdr_description) || "",
       bdr_status: (budgetRequest && budgetRequest.bdr_status) || "",
       bdr_request_status:
@@ -177,6 +183,8 @@ const BudgetRequestModel = (props) => {
           bdr_requested_date_gc: values.bdr_requested_date_gc,
           bdr_description: values.bdr_description,
           bdr_request_status: values.bdr_request_status,
+          // bdr_request_type:values.bdr_request_type,
+          bdr_request_type: parseInt(values.bdr_request_type),
           bdr_request_category_id: values.bdr_request_category_id,
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -186,6 +194,8 @@ const BudgetRequestModel = (props) => {
         const newBudgetRequest = {
           bdr_budget_year_id: parseInt(values.bdr_budget_year_id),
           bdr_project_id: id,
+          // bdr_request_type:values.bdr_request_type,
+          bdr_request_type: parseInt(values.bdr_request_type),
           bdr_requested_amount: convertToNumericValue(
             values.bdr_requested_amount
           ),
@@ -214,7 +224,7 @@ const BudgetRequestModel = (props) => {
     );
   }, [bgYearsOptionsData]);
 
-/*  const RequestCatagoryMap = useMemo(() => {
+  /*  const RequestCatagoryMap = useMemo(() => {
     return (
       bgCategoryOptionsData?.data?.reduce((cat, category) => {
         cat[category.rqc_id] = category.rqc_name_en;
@@ -223,16 +233,25 @@ const BudgetRequestModel = (props) => {
     );
   }, [bgCategoryOptionsData]);*/
 
-  const RequestCatagoryMap = useMemo(() => {
-  const filteredData = bgCategoryOptionsData?.data?.filter(category => 
-    status < 5 ? [1].includes(category.rqc_id) : true
-  ) || [];
-  return filteredData.reduce((cat, category) => {
-    cat[category.rqc_id] = category.rqc_name_en;
-    return cat;
-  }, {});
-}, [bgCategoryOptionsData, status]);
+  const projectStatusMap = useMemo(() => {
+    return (
+      projectStatusData?.data?.reduce((acc, project_status) => {
+        acc[project_status.prs_id] = project_status.prs_status_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [projectStatusData]);
 
+  const RequestCatagoryMap = useMemo(() => {
+    const filteredData =
+      bgCategoryOptionsData?.data?.filter((category) =>
+        status < 5 ? [1].includes(category.rqc_id) : true
+      ) || [];
+    return filteredData.reduce((cat, category) => {
+      cat[category.rqc_id] = category.rqc_name_en;
+      return cat;
+    }, {});
+  }, [bgCategoryOptionsData, status]);
 
   useEffect(() => {
     setBudgetRequest(data?.data);
@@ -263,6 +282,7 @@ const BudgetRequestModel = (props) => {
         budgetRequest.bdr_requested_amount
       ).toLocaleString(),
       bdr_project_id: budgetRequest.bdr_project_id,
+      bdr_request_type: budgetRequest.bdr_request_type,
       bdr_requested_date_ec: budgetRequest.bdr_requested_date_ec,
       bdr_requested_date_gc: budgetRequest.bdr_requested_date_gc,
       bdr_description: budgetRequest.bdr_description,
@@ -337,6 +357,19 @@ const BudgetRequestModel = (props) => {
               {RequestCatagoryMap[
                 cellProps.row.original.bdr_request_category_id
               ] || ""}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: "bdr_request_type",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {projectStatusMap[cellProps.row.original.bdr_request_type] || ""}
             </span>
           );
         },
@@ -695,6 +728,40 @@ const BudgetRequestModel = (props) => {
 
               <Col className="col-md-6 mb-3">
                 <Label>
+                  {t("bdr_request_type")}
+                  <span className="text-danger">*</span>
+                </Label>
+                <Input
+                  name="bdr_request_type"
+                  type="select"
+                  className="form-select"
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bdr_request_type || ""}
+                  invalid={
+                    validation.touched.bdr_request_type &&
+                    validation.errors.bdr_request_type
+                      ? true
+                      : false
+                  }
+                >
+                  <option value="">{t("select_one")}</option>
+                  {projectStatusData?.data?.map((data) => (
+                    <option key={data.prs_id} value={data.prs_id}>
+                      {data.prs_status_name_or}
+                    </option>
+                  ))}
+                </Input>
+                {validation.touched.bdr_request_type &&
+                validation.errors.bdr_request_type ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bdr_request_type}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+
+              <Col className="col-md-6 mb-3">
+                <Label>
                   {t("bdr_request_category_id")}
                   <span className="text-danger">*</span>
                 </Label>
@@ -713,11 +780,11 @@ const BudgetRequestModel = (props) => {
                   }
                   maxLength={20}
                 >
-                 {Object.entries(RequestCatagoryMap).map(([id, name]) => (
-        <option key={id} value={id}>
-          {name}
-        </option>
-      ))}
+                  {Object.entries(RequestCatagoryMap).map(([id, name]) => (
+                    <option key={id} value={id}>
+                      {name}
+                    </option>
+                  ))}
                 </Input>
                 {validation.touched.bdr_request_category_id &&
                 validation.errors.bdr_request_category_id ? (
