@@ -13,6 +13,7 @@ import {
   logoLightSvg,
   logoDark,
 } from "../../constants/constantFile";
+import { Card } from "reactstrap";
 
 const SIDEDATA_CACHE_KEY = "sidedata_cache";
 
@@ -72,7 +73,7 @@ const Sidebar = (props) => {
           <Link to="/" className="logo logo-inf0-light">
             <span className="logo-sm"></span>
             <span className="logo-lg">
-              <img src={logoLightPng} alt="" height="70" />
+              <img src={logoLightPng} alt="" height="55" />
             </span>
           </Link>
         </div>

@@ -46,17 +46,14 @@ const RightSidebar = props => {
 
   // Save layout changes to localStorage
   const handleLayoutChange = (layoutType) => {
-    localStorage.setItem('layoutType', layoutType);
     props.changeLayout(layoutType);
   };
 
   const handleLayoutWidthChange = (layoutWidth) => {
-    localStorage.setItem('layoutWidth', layoutWidth);
     props.changeLayoutWidth(layoutWidth);
   };
 
   const handleTopbarThemeChange = (theme) => {
-    localStorage.setItem('topbarTheme', theme);
     props.changeTopbarTheme(theme);
   };
 
@@ -235,11 +232,11 @@ const RightSidebar = props => {
                       onChange={e => props.changeSidebarType(e.target.value)}
                     />
                     <label className="me-1" htmlFor="sidebarIcon">Icon</label>
-                  </div>    
+                  </div>
                   <hr className="mt-1" />
                 </React.Fragment>
               ) : null}
-{/*preloader here*/}
+              {/*preloader here*/}
             </div>
           </div>
         </SimpleBar>

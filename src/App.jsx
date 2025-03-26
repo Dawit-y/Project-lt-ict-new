@@ -32,22 +32,14 @@ import { scheduleTokenRefresh } from "./helpers/api_Lists";
 import "./App.css"
 
 function getLayout(layoutType) {
-  // Check if layoutType exists in localStorage
-  const storedLayoutType = localStorage.getItem("layoutType");
   let layoutCls = VerticalLayout;
-
-  if (storedLayoutType) {
-    layoutCls =
-      storedLayoutType === "horizontal" ? HorizontalLayout : VerticalLayout;
-  } else {
-    switch (layoutType) {
-      case "horizontal":
-        layoutCls = HorizontalLayout;
-        break;
-      default:
-        layoutCls = VerticalLayout;
-        break;
-    }
+  switch (layoutType) {
+    case "horizontal":
+      layoutCls = HorizontalLayout;
+      break;
+    default:
+      layoutCls = VerticalLayout;
+      break;
   }
   return layoutCls;
 }
