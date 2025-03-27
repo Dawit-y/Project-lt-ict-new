@@ -166,7 +166,7 @@ import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
 import { useAddUserSector, useFetchUserSectors, useUpdateUserSector } from "../../queries/usersector_query";
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
-import { Button, Row, Form, Input, Label, FormGroup, Spinner, Container, Col } from "reactstrap";
+import { Button, Row, Form, Input, Label, FormGroup, Spinner, Container, Col, Card, CardBody } from "reactstrap";
 import { toast } from "react-toastify";
 import { createMultiSelectOptions } from "../../utils/commonMethods";
 import Spinners from "../../components/Common/Spinner";
@@ -266,68 +266,70 @@ const UserSectorModel = ({ passedId, isActive }) => {
   };
 
   return (
-    <Container className="d-flex justify-content-center align-items-center">
-      <Form onSubmit={validation.handleSubmit} className="w-75 p-4 border rounded shadow bg-white">
-        <Row className="d-flex flex-column align-items-center" style={{ minHeight: "300px" }}>
-          {sectorLoading || userSectorsLoading ? (
-            <Spinners />
-          ) : (
-            <>
-              <Row xl={12} className="mb-2 d-flex align-items-center justify-content-between">
-                <Col>
-                  <h5>{t("Select sectors")}</h5>
-                </Col>
-                <Col xl={6}>
-                  <Input
-                    name="filter"
-                    value={filterInput}
-                    onChange={(e) => setFilterInput(e.target.value)}
-                    placeholder={t("filter_placeholder")}
-                  />
-                </Col>
-              </Row>
-              <hr />
-              <Col className="">
-                <FormGroup check className="d-flex align-items-center gap-2 w-100 mb-3">
-                  <Input
-                    type="checkbox"
-                    id="select-all"
-                    checked={selectAll}
-                    onChange={handleSelectAll}
-                    style={{ width: "15px", height: "15px" }}
-                  />
-                  <Label for="select-all" style={{ fontSize: "1 rem" }} className="me-2 my-auto"><strong>{t("Select All")}</strong></Label>
-                </FormGroup>
-                {filteredOptions.map(({ value, label }) => (
-                  <FormGroup key={value} className="d-flex align-items-center gap-2 w-100">
+    <Card className="d-flex justify-content-center align-items-center">
+      <CardBody className="w-75">
+        <Form onSubmit={validation.handleSubmit}>
+          <Row className="d-flex flex-column align-items-center" style={{ minHeight: "300px" }}>
+            {sectorLoading || userSectorsLoading ? (
+              <Spinners />
+            ) : (
+              <>
+                <Row xl={12} className="mb-2 d-flex align-items-center justify-content-between">
+                  <Col>
+                    <h5>{t("Select sectors")}</h5>
+                  </Col>
+                  <Col xl={6}>
                     <Input
-                      id={`checkbox-${value}`}
+                      name="filter"
+                      value={filterInput}
+                      onChange={(e) => setFilterInput(e.target.value)}
+                      placeholder={t("filter_placeholder")}
+                    />
+                  </Col>
+                </Row>
+                <hr />
+                <Col className="">
+                  <FormGroup check className="d-flex align-items-center gap-2 w-100 mb-3">
+                    <Input
                       type="checkbox"
-                      className="form-check-input form-check-input-lg"
-                      checked={validation.values.sectors[value] || false}
-                      onChange={(e) =>
-                        validation.setFieldValue("sectors", {
-                          ...validation.values.sectors,
-                          [value]: e.target.checked,
-                        })
-                      }
+                      id="select-all"
+                      checked={selectAll}
+                      onChange={handleSelectAll}
                       style={{ width: "15px", height: "15px" }}
                     />
-                    <Label for={`checkbox-${value}`} style={{ fontSize: "1 rem" }} className="me-2 my-auto">{`${label}`}</Label>
+                    <Label for="select-all" style={{ fontSize: "1 rem" }} className="me-2 my-auto"><strong>{t("Select All")}</strong></Label>
                   </FormGroup>
-                ))}
-              </Col>
-            </>
-          )}
-        </Row>
-        <div className="text-center mt-3">
-          <Button type="submit" color="success" disabled={addUserSector.isPending || updateUserSector.isPending}>
-            {(addUserSector.isPending || updateUserSector.isPending) && <Spinner size="sm" className="me-2" />}
-            Submit
-          </Button>
-        </div>
-      </Form>
-    </Container>
+                  {filteredOptions.map(({ value, label }) => (
+                    <FormGroup key={value} className="d-flex align-items-center gap-2 w-100">
+                      <Input
+                        id={`checkbox-${value}`}
+                        type="checkbox"
+                        className="form-check-input form-check-input-lg"
+                        checked={validation.values.sectors[value] || false}
+                        onChange={(e) =>
+                          validation.setFieldValue("sectors", {
+                            ...validation.values.sectors,
+                            [value]: e.target.checked,
+                          })
+                        }
+                        style={{ width: "15px", height: "15px" }}
+                      />
+                      <Label for={`checkbox-${value}`} style={{ fontSize: "1 rem" }} className="me-2 my-auto">{`${label}`}</Label>
+                    </FormGroup>
+                  ))}
+                </Col>
+              </>
+            )}
+          </Row>
+          <div className="text-center mt-3">
+            <Button type="submit" color="success" disabled={addUserSector.isPending || updateUserSector.isPending}>
+              {(addUserSector.isPending || updateUserSector.isPending) && <Spinner size="sm" className="me-2" />}
+              Submit
+            </Button>
+          </div>
+        </Form>
+      </CardBody>
+    </Card>
   );
 };
 

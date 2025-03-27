@@ -103,7 +103,7 @@ const TreeForLists = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   return (
     <Card className="border shadow-sm">
       <CardBody className="p-3">
-        <h5 className="text-secondary">{t("address_tree_Search")}</h5>
+        <h5 className="">{t("address_tree_Search")}</h5>
         <hr className="my-2" />
         <Row className="mb-2">
           <Col className="d-flex align-items-center gap-2 my-auto">

@@ -535,9 +535,6 @@ const BudgetRequestListModel = () => {
                         rowHeight={30}
                         animateRows={true}
                         domLayout="autoHeight"
-                        // onGridReady={(params) => {
-                        //   params.api.sizeColumnsToFit();
-                        // }}
                       />
                     </div>
                     {/*<BudgetRequestAnalysis

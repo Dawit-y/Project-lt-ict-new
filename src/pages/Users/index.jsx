@@ -330,7 +330,6 @@ const UsersModel = () => {
       }
     },
   });
-  console.log("val error", validation.errors)
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
   useEffect(() => {
@@ -358,7 +357,6 @@ const UsersModel = () => {
   };
   const handleUsersClick = (arg) => {
     const user = arg;
-    console.log("owner", user.usr_owner_id)
     setUsers({
       usr_id: user.usr_id,
       usr_email: user.usr_email,
@@ -480,7 +478,7 @@ const UsersModel = () => {
         field: "sector_name",
         sortable: true,
         filter: false,
-        // flex: 3,
+        width: 200,
         cellRenderer: (params) =>
           sectorInformationMap[params.data.usr_sector_id],
       },
@@ -515,6 +513,7 @@ const UsersModel = () => {
               toggleViewModal(userdata);
               setTransaction(userdata);
             }}
+            outline
           >
             {t("view_detail")}
           </Button>

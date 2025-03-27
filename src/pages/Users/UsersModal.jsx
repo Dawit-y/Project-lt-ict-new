@@ -109,7 +109,6 @@ const UsersModal = (props) => {
       user_id: transaction.usr_id, // Assuming usr_id exists
       password: newPassword,
     };
-    console.log(data);
     try {
       await changeUserPassword.mutateAsync(data);
       //setSwitch1(true);
@@ -216,9 +215,8 @@ const UsersModal = (props) => {
                   <Row>
                     <Col className="md-6">
                       <img
-                        src={`${
-                          import.meta.env.VITE_BASE_API_FILE
-                        }/public/uploads/userfiles/${transaction.usr_picture}`}
+                        src={`${import.meta.env.VITE_BASE_API_FILE
+                          }/public/uploads/userfiles/${transaction.usr_picture}`}
                         alt="User Profile"
                         className="img-thumbnail"
                         style={{
@@ -233,8 +231,8 @@ const UsersModal = (props) => {
                         }}
                       />
 
-                      <Card>
-                        <CardBody>
+                      <>
+                        <div className="p-3">
                           <CardTitle className="mb-4">
                             Personal Information
                           </CardTitle>
@@ -263,90 +261,8 @@ const UsersModal = (props) => {
                               </tbody>
                             </Table>
                           </div>
-                        </CardBody>
-                      </Card>
-                      <div
-                        className="d-flex justify-content-between align-items-center gap-3 p-3"
-                        style={{
-                          backgroundColor: "#ffff2",
-                          borderRadius: "10px",
-                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-                        }}
-                      >
-                        <Col>
-                          <Label
-                            className="form-label mb-2"
-                            style={{ fontSize: "16px", fontWeight: "bold" }}
-                          >
-                            Reset New Password
-                          </Label>
-                          <Button
-                            type="button"
-                            color="primary"
-                            className="px-4 py-2"
-                            style={{
-                              borderRadius: "5px",
-                              fontWeight: "bold",
-                              fontSize: "16px",
-                            }}
-                            onClick={() => {
-                              tog_backdrop();
-                            }}
-                          >
-                            <i
-                              className="bx bx-refresh"
-                              style={{ marginRight: "8px" }}
-                            ></i>{" "}
-                            Reset
-                          </Button>
-                        </Col>
-
-                        <Col className="d-flex flex-column align-items-center">
-                          <Label
-                            className="form-label mb-2"
-                            style={{
-                              fontSize: "16px",
-                              fontWeight: "bold",
-                              color: "#333",
-                            }}
-                          >
-                            Update User Status
-                          </Label>
-
-                          <div className="d-flex align-items-center">
-                            <Switch
-                              uncheckedIcon={<OffSymbol />}
-                              checkedIcon={<OnSymbol />}
-                              className="me-2"
-                              onColor="#626ed4"
-                              offColor="#d9534f"
-                              onChange={() => {
-                                console.log("current", switch1);
-                                const updatedStatus = !switch1 ? 1 : 0;
-                                console.log("updated", updatedStatus);
-                                const update_user = {
-                                  usr_id: transaction.usr_id,
-                                  usr_email: transaction.usr_email,
-                                  usr_status: updatedStatus,
-                                };
-                                handleChangeUserStatus(update_user);
-                              }}
-                              checked={switch1}
-                            />
-
-                            {/* Display Active/Inactive based on switch state */}
-                            <span
-                              style={{
-                                fontSize: "16px",
-                                fontWeight: "bold",
-                                color: switch1 ? "#28a745" : "#d9534f", // Green for Active, Red for Inactive
-                              }}
-                            >
-                              {switch1 ? "Active" : "Inactive"}
-                            </span>
-                          </div>
-                        </Col>
-                      </div>
+                        </div>
+                      </>
                     </Col>
                   </Row>
                 </CardBody>
@@ -395,6 +311,60 @@ const UsersModal = (props) => {
                   </tbody>
                 </Table>
               </div>
+              <Card>
+                <CardBody className="d-flex justify-content-between align-items-start gap-3">
+                  <Col className="d-flex flex-column align-items-start">
+                    <div className="card-title mb-2">
+                      {t("Reset New Password")}
+                    </div>
+                    <Button
+                      type="button"
+                      color="primary"
+                      onClick={() => {
+                        tog_backdrop();
+                      }}
+                      outline
+                    >
+                      {t("Reset")}
+                    </Button>
+                  </Col>
+
+                  <Col className="d-flex flex-column align-items-start">
+                    <div className="card-title mb-2">
+                      {t("Update User Status")}
+                    </div>
+                    <div className="d-flex align-items-center">
+                      <Switch
+                        uncheckedIcon={<OffSymbol />}
+                        checkedIcon={<OnSymbol />}
+                        className="me-2"
+                        onColor="#626ed4"
+                        offColor="#d9534f"
+                        onChange={() => {
+                          const updatedStatus = !switch1 ? 1 : 0;
+                          const update_user = {
+                            usr_id: transaction.usr_id,
+                            usr_email: transaction.usr_email,
+                            usr_status: updatedStatus,
+                          };
+                          handleChangeUserStatus(update_user);
+                        }}
+                        checked={switch1}
+                      />
+                      <span
+                        style={{
+                          fontSize: "16px",
+                          fontWeight: "bold",
+                          color: switch1 ? "#28a745" : "#d9534f",
+                        }}
+                      >
+                        {switch1 ? "Active" : "Inactive"}
+                      </span>
+                    </div>
+                  </Col>
+                </CardBody>
+              </Card>
+
             </Col>
           </Row>
         </ModalBody>
@@ -441,9 +411,8 @@ const UsersModal = (props) => {
                     onChange={handlePasswordInput}
                   />
                   <i
-                    className={`mdi ${
-                      passwordShown ? "mdi-eye-off" : "mdi-eye"
-                    } font-size-16`}
+                    className={`mdi ${passwordShown ? "mdi-eye-off" : "mdi-eye"
+                      } font-size-16`}
                     onClick={togglePasswordVisibility}
                     style={{
                       position: "absolute",
@@ -463,8 +432,8 @@ const UsersModal = (props) => {
                       passwordStrength === "Strong"
                         ? "green"
                         : passwordStrength === "Moderate"
-                        ? "orange"
-                        : "red",
+                          ? "orange"
+                          : "red",
                   }}
                 >
                   Password Strength: {passwordStrength}

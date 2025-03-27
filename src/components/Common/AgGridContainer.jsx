@@ -18,7 +18,7 @@ const AgGridContainer = ({
   paginationPageSize,
   isGlobalFilter,
   onAddClick,
-  placeholder = "Search...",
+  placeholder = "Filter...",
   addButtonText = "Add",
   isAddButton,
   isExcelExport = false,

@@ -35,7 +35,6 @@ const AdvancedSearch = ({
   setIsSearchLoading,
   setSearchResults,
   setShowSearchResult,
-  reportType,
 }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -171,190 +170,239 @@ const AdvancedSearch = ({
     );
   };
 
-  if (isError) {
-    <FetchErrorHandler error={error} refetch={refetch} />
-  }
+  // Calculate responsive sizes
+  const calculateTotalInputs = () => {
+    const textCount = textSearchKeys?.length || 0;
+    const dropdownCount = dropdownSearchKeys?.length || 0;
+    const dateCount = dateSearchKeys?.length || 0;
+    return textCount + dropdownCount + dateCount;
+  };
 
+  const getResponsiveColSize = () => {
+    const totalInputs = calculateTotalInputs();
+
+    if (totalInputs <= 2) return 6;
+    if (totalInputs <= 4) return 4;
+    if (totalInputs <= 6) return 3;
+    return 2;
+  };
+
+  const totalInputs = calculateTotalInputs()
+  const responsiveColSize = getResponsiveColSize();
+  const inputStyles = { minWidth: '120px' };
+
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />
+  }
   return (
     <React.Fragment>
-      <Card className="job-filter">
-        <CardBody>
+      <Card className="p-0 m-0 mb-3">
+        <CardBody className="p-1">
           <form action="#">
-            <Row className="g-3">
-              <Col xxl={10} lg={10}>
-                <Row>
-                  {/* Text Inputs */}
-                  {dateSearchKeys &&
-                    dateSearchKeys.map((key) => (
-                      <Col xxl={4} lg={4} key={key}>
-                        <FormGroup>
-                          <InputGroup>
-                            <Flatpickr
-                              ref={flatpickrStartRef}
-                              id={`${key}Start`}
-                              name={`${key}Start`}
-                              className={`form-control`}
+            <Row xxl={12} lg={12} className="pt-2 d-flex flex-row flex-wrap justify-content-center align-items-center gap-1">
+              <Row xxl={12} lg={12} >
+                <Col xxl={10} lg={10}>
+                  <Row>
+                    {/* Text Inputs */}
+                    {dateSearchKeys &&
+                      dateSearchKeys.map((key) => (
+                        <Col
+                          xxl={totalInputs <= 2 ? responsiveColSize : responsiveColSize * 2}
+                          lg={totalInputs <= 2 ? responsiveColSize : responsiveColSize * 2}
+                          md={totalInputs <= 2 ? responsiveColSize : responsiveColSize * 2}
+                          sm={12}
+                          key={key}
+                          className="mb-2"
+                        >
+                          <div className="">
+                            <InputGroup style={inputStyles} size="sm" className="rounded">
+                              <Flatpickr
+                                ref={flatpickrStartRef}
+                                id={`${key}Start`}
+                                name={`${key}Start`}
+                                className={`rounded`}
+                                type="text"
+                                placeholder={t(`${key}_start`)}
+                                autoComplete="off"
+                                options={{
+                                  altInput: true,
+                                  altFormat: "Y-m-d",
+                                  dateFormat: "Y-m-d",
+                                  enableTime: false,
+                                }}
+                                value={params[key] || null}
+                                onChange={(e) => {
+                                  handleSearchKey(
+                                    `${key}Start`,
+                                    formatDateHyphen(e[0])
+                                  );
+                                }}
+                              />
+                              <Flatpickr
+                                ref={flatpickrEndRef}
+                                id={`${key}End`}
+                                name={`${key}End`}
+                                className={``}
+                                type="text"
+                                placeholder={t(`${key}_end`)}
+                                autoComplete="off"
+                                options={{
+                                  altInput: true,
+                                  altFormat: "Y-m-d",
+                                  dateFormat: "Y-m-d",
+                                  enableTime: false,
+                                }}
+                                value={params[key] || null}
+                                onChange={(date) => {
+                                  handleSearchKey(
+                                    `${key}End`,
+                                    formatDateHyphen(date[0])
+                                  );
+                                }}
+                              />
+                            </InputGroup>
+                          </div>
+                        </Col>
+                      ))}
+
+                    {textSearchKeys &&
+                      textSearchKeys.map((key) => (
+                        <Col
+                          xxl={responsiveColSize}
+                          lg={responsiveColSize}
+                          md={6}
+                          sm={12}
+                          key={key}
+                          className="mb-2"
+                        >
+                          <div className="">
+                            <Input
                               type="text"
-                              placeholder={t(`${key}_start`)}
+                              id={key}
+                              name={key}
                               autoComplete="off"
-                              options={{
-                                altInput: true,
-                                altFormat: "Y-m-d",
-                                dateFormat: "Y-m-d",
-                                enableTime: false,
-                              }}
-                              value={params[key] || null}
+                              placeholder={t(key)}
+                              value={params[key] || ""}
                               onChange={(e) => {
-                                handleSearchKey(
-                                  `${key}Start`,
-                                  formatDateHyphen(e[0])
-                                );
+                                handleSearchKey(key, e.target.value);
                               }}
+                              style={inputStyles}
+                              size={"sm"}
                             />
-                            <Flatpickr
-                              ref={flatpickrEndRef}
-                              id={`${key}End`}
-                              name={`${key}End`}
-                              className={`form-control`}
-                              type="text"
-                              placeholder={t(`${key}_end`)}
-                              autoComplete="off"
-                              options={{
-                                altInput: true,
-                                altFormat: "Y-m-d",
-                                dateFormat: "Y-m-d",
-                                enableTime: false,
-                              }}
-                              value={params[key] || null}
-                              onChange={(date) => {
-                                handleSearchKey(
-                                  `${key}End`,
-                                  formatDateHyphen(date[0])
-                                );
-                              }}
-                            />
-                          </InputGroup>
-                        </FormGroup>
-                      </Col>
-                    ))}
-
-                  {textSearchKeys &&
-                    textSearchKeys.map((key) => (
-                      <Col xxl={2} lg={2} key={key}>
-                        <div className="position-relative mb-1">
-                          <Input
-                            type="text"
-                            id={key}
-                            name={key}
-                            autoComplete="off"
-                            placeholder={t(key)}
-                            value={params[key] || ""}
-                            onChange={(e) => {
-                              handleSearchKey(key, e.target.value);
-                            }}
-                          />
-                        </div>
-                      </Col>
-                    ))}
-                  {/* Dropdown Inputs */}
-                  {dropdownSearchKeys &&
-                    dropdownSearchKeys.map(({ key, options }) => (
-                      <Col xxl={2} lg={2} key={key}>
-                        <div className="position-relative mb-1">
-                          <Select
-                            className="select2"
-                            id={key}
-                            name={key}
-                            options={options}
-                            value={
-                              options.find(
-                                (option) => option.value === params[key]
-                              ) || null
-                            }
-                            onChange={(option) =>
-                              handleSearchKey(key, option.value)
-                            }
-                          />
-                        </div>
-                      </Col>
-                    ))}
-                </Row>
-              </Col>
-              <Col xxl={2} lg={2}>
-                <Row xxl={12} lg={12}>
-                  <div className="position-relative h-100 hstack gap-3 pull-right">
-                    <div
-                      id="search-icon-wrapper"
-                      className="position-relative flex-grow-1 h-100"
-                      style={{ display: "flex" }}
+                          </div>
+                        </Col>
+                      ))}
+                    {/* Dropdown Inputs */}
+                    {dropdownSearchKeys &&
+                      dropdownSearchKeys.map(({ key, options }) => (
+                        <Col
+                          xxl={responsiveColSize}
+                          lg={responsiveColSize}
+                          md={6}
+                          sm={12}
+                          key={key}
+                          className="mb-2"
+                        >
+                          <div className="">
+                            <Input
+                              name={key}
+                              id={key}
+                              type="select"
+                              className="form-select"
+                              onChange={(event) =>
+                                handleSearchKey(key, event.target.value)
+                              }
+                              value={params[key] || ""}
+                              style={inputStyles}
+                              size={"sm"}
+                            >
+                              <option value={null}>{t("Select") + " " + t(`${key}`)}</option>
+                              {options.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {t(`${option.label}`)}
+                                </option>
+                              ))}
+                            </Input>
+                          </div>
+                        </Col>
+                      ))}
+                  </Row>
+                </Col>
+                <Col
+                  xxl={2} lg={2} md={2} sm={12}
+                  className="d-flex flex-row flex-wrap justify-content-center align-items-start gap-1">
+                  <div
+                    id="search-icon-wrapper"
+                    className=" flex-grow-1 mb-2"
+                    style={{ display: "flex" }}
+                  >
+                    <button
+                      id="search-icon"
+                      type="button"
+                      className="btn btn-sm btn-primary h-100 w-100 p-1"
+                      onClick={handleSearch}
+                      disabled={isButtonDisabled()}
                     >
-                      <button
-                        id="search-icon"
-                        type="button"
-                        className="btn btn-primary h-100 w-100 p-2"
-                        onClick={handleSearch}
-                        disabled={isButtonDisabled()}
-                      >
-                        <i className="bx bx-search-alt align-middle"></i>
-                      </button>
-                      <UncontrolledTooltip
-                        placement="top"
-                        target={"search-icon-wrapper"}
-                      >
-                        {t("srch_search")}
-                      </UncontrolledTooltip>
-                    </div>
-                    <div className="position-relative flex-grow-1 h-100">
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger align-middle h-100 w-100 p-2"
-                        onClick={handleClear}
-                        id="clear-button"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="12"
-                          height="12"
-                          fill="currentColor"
-                          className="bi bi-x-square"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
-                          <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-                        </svg>
-                      </button>
-                      <UncontrolledTooltip
-                        placement="top"
-                        target={"clear-button"}
-                      >
-                        {t("srch_clear")}
-                      </UncontrolledTooltip>
-                    </div>
-
-                    {(checkboxSearchKeys?.length > 0 || Component) && (
-                      <div className="position-relative flex-grow-1 h-100">
-                        <a
-                          id="more-filter-icon"
-                          onClick={toggle}
-                          className="btn btn-secondary h-100 w-100 p-2"
-                        >
-                          <i className="bx bx-filter-alt align-middle"></i>
-                        </a>
-                        <UncontrolledTooltip
-                          placement="top"
-                          target={"more-filter-icon"}
-                        >
-                          {t("srch_more")}
-                        </UncontrolledTooltip>
-                      </div>
-                    )}
+                      <i className="bx bx-search-alt align-middle"></i>
+                    </button>
+                    <UncontrolledTooltip
+                      placement="top"
+                      target={"search-icon-wrapper"}
+                    >
+                      {t("srch_search")}
+                    </UncontrolledTooltip>
                   </div>
-                </Row>
-              </Col>
+                  <div className=" flex-grow-1 mb-2">
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-danger align-middle h-100 w-100 p-1"
+                      onClick={handleClear}
+                      id="clear-button"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="12"
+                        height="12"
+                        fill="currentColor"
+                        className="bi bi-x-square"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                      </svg>
+                    </button>
+                    <UncontrolledTooltip
+                      placement="top"
+                      target={"clear-button"}
+                    >
+                      {t("srch_clear")}
+                    </UncontrolledTooltip>
+                  </div>
+
+                  {(checkboxSearchKeys?.length > 0 || Component) && (
+                    <div className=" flex-grow-1 mb-2">
+                      <a
+                        id="more-filter-icon"
+                        onClick={toggle}
+                        className="btn btn-sm btn-secondary h-100 w-100 p-1"
+                      >
+                        <i className="bx bx-filter-alt align-middle"></i>
+                      </a>
+                      <UncontrolledTooltip
+                        placement="top"
+                        target={"more-filter-icon"}
+                      >
+                        {t("srch_more")}
+                      </UncontrolledTooltip>
+                    </div>
+                  )}
+
+                </Col>
+              </Row>
 
               <Collapse isOpen={isOpen} id="collapseExample">
                 <div>
-                  <Row className="mt-2">
+                  <Row className="">
                     <Col>
                       {Component && (
                         <Component
