@@ -8,7 +8,7 @@ import {
   updateBudgetRequestApproval
 } from "../helpers/cso_budget_request_helper";
 
-const BUDGET_REQUESTS_QUERY_KEY = ["budgetrequest"];
+const BUDGET_REQUESTS_QUERY_KEY = ["csobudgetrequest"];
 
 // Fetch budget_year
 export const useFetchBudgetRequests = (params = {}) => {

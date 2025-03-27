@@ -204,7 +204,8 @@ const UserSectorModel = ({ passedId, isActive }) => {
   const filteredOptions = useMemo(() => {
     return getOptionsByLanguage().filter(option => option.label.toLowerCase().includes(filterInput.toLowerCase()));
   }, [filterInput, lang, sectorOptions]);
-
+  const shouldSplit = filteredOptions.length > 26;
+  const midIndex = Math.ceil(filteredOptions.length / 2);
   const getUserSectorMap = () => {
     return userSectorsData?.data?.reduce((acc, sector) => {
       acc[sector.usc_sector_id] = sector.usc_status === 1;
@@ -266,8 +267,7 @@ const UserSectorModel = ({ passedId, isActive }) => {
   };
 
   return (
-    <Container className="d-flex justify-content-center align-items-center">
-      <Form onSubmit={validation.handleSubmit} className="w-75 p-4 border rounded shadow bg-white">
+      <Form onSubmit={validation.handleSubmit} className="p-2 border rounded shadow bg-white">
         <Row className="d-flex flex-column align-items-center" style={{ minHeight: "300px" }}>
           {sectorLoading || userSectorsLoading ? (
             <Spinners />
@@ -298,24 +298,30 @@ const UserSectorModel = ({ passedId, isActive }) => {
                   />
                   <Label for="select-all" style={{ fontSize: "1 rem" }} className="me-2 my-auto"><strong>{t("Select All")}</strong></Label>
                 </FormGroup>
-                {filteredOptions.map(({ value, label }) => (
-                  <FormGroup key={value} className="d-flex align-items-center gap-2 w-100">
-                    <Input
-                      id={`checkbox-${value}`}
-                      type="checkbox"
-                      className="form-check-input form-check-input-lg"
-                      checked={validation.values.sectors[value] || false}
-                      onChange={(e) =>
-                        validation.setFieldValue("sectors", {
-                          ...validation.values.sectors,
-                          [value]: e.target.checked,
-                        })
-                      }
-                      style={{ width: "15px", height: "15px" }}
-                    />
-                    <Label for={`checkbox-${value}`} style={{ fontSize: "1 rem" }} className="me-2 my-auto">{`${label}`}</Label>
-                  </FormGroup>
-                ))}
+                  <Row className="g-2">
+    {filteredOptions.map(({ value, label }) => (
+      <Col md={4} key={value}> {/* Each column takes 4/12 = 3 columns per row */}
+        <FormGroup className="d-flex align-items-center gap-2">
+          <Input
+            id={`checkbox-${value}`}
+            type="checkbox"
+            className="form-check-input form-check-input-lg"
+            checked={validation.values.sectors[value] || false}
+            onChange={(e) =>
+              validation.setFieldValue("sectors", {
+                ...validation.values.sectors,
+                [value]: e.target.checked,
+              })
+            }
+            style={{ width: "15px", height: "15px" }}
+          />
+          <Label for={`checkbox-${value}`} style={{ fontSize: ".8rem" }} className="me-2 my-auto">
+            {label}
+          </Label>
+        </FormGroup>
+      </Col>
+    ))}
+  </Row>
               </Col>
             </>
           )}
@@ -327,7 +333,6 @@ const UserSectorModel = ({ passedId, isActive }) => {
           </Button>
         </div>
       </Form>
-    </Container>
   );
 };
 

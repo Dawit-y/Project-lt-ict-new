@@ -1,10 +1,10 @@
 import { post } from "./api_Lists";
 
 const apiUrl = import.meta.env.VITE_BASE_API_URL;
-const GET_BUDGET_REQUEST = "budget_request/listgrid";
-const ADD_BUDGET_REQUEST = "budget_request/insertgrid";
-const UPDATE_BUDGET_REQUEST = "budget_request/updategrid";
-const DELETE_BUDGET_REQUEST = "budget_request/deletegrid";
+const GET_BUDGET_REQUEST = "cso_budget_request/listgrid";
+const ADD_BUDGET_REQUEST = "cso_budget_request/insertgrid";
+const UPDATE_BUDGET_REQUEST = "cso_budget_request/updategrid";
+const DELETE_BUDGET_REQUEST = "cso_budget_request/deletegrid";
 const GET_BUDGET_REQUEST_APPROVAL = "cso_proposal_request_approval/listgrid";
 const UPDATE_BUDGET_REQUEST_APPROVAL = "cso_proposal_request_approval/updategrid";
 

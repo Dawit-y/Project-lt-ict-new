@@ -97,7 +97,7 @@ const DepartmentTreeNode = ({
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
-            maxWidth: "250px",
+            maxWidth: "450px",
             display: "inline-block",
             verticalAlign: "middle",
           }}

@@ -192,6 +192,16 @@ const ApproverBudgetRequestList = () => {
         width: 60,
       },
       {
+        headerName: t("cso_name"),
+        field: "cso_name",
+        sortable: true,
+        filter: true,
+        width: 220,
+        cellRenderer: (params) => {
+          return truncateText(params.data.cso_name, 30) || "-";
+        },
+      },
+      {
         headerName: t("Year"),
         field: "bdy_name",
         sortable: true,

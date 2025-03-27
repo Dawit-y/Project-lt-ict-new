@@ -7,6 +7,7 @@ const Logout = () => {
 
   useEffect(() => {
     localStorage.removeItem("authUser");
+    localStorage.removeItem("sidedata_cache");
     navigate("/login");
   }, []);
 

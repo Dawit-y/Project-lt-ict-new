@@ -43,7 +43,7 @@ import {
 } from "../../utils/Validation/validation";
 import DatePicker from "../../components/Common/DatePicker";
 import { PAGE_ID } from "../../constants/constantFile";
-
+import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -51,7 +51,7 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const BudgetRequestModel = ({ projectId, isActive }) => {
+const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
   const param = { project_id: projectId, request_type: "single" };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
@@ -75,7 +75,7 @@ const BudgetRequestModel = ({ projectId, isActive }) => {
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
   const project = useFetchProject(projectId, userId, true);
-
+  const { data: bgCategoryOptionsData } = useFetchRequestCategorys();
   const handleAddBudgetRequest = async (data) => {
     try {
       await addBudgetRequest.mutateAsync(data);
@@ -179,6 +179,17 @@ const BudgetRequestModel = ({ projectId, isActive }) => {
     );
   }, [bgYearsOptionsData]);
 
+  //if status of project is 5(draft), duty free(6) can not be
+    const RequestCatagoryMap = useMemo(() => {
+    const filteredData =
+      bgCategoryOptionsData?.data?.filter((category) =>
+        projectStatus < 5 ? [5].includes(category.rqc_id) : [5,6].includes(category.rqc_id)
+      ) || [];
+    return filteredData.reduce((cat, category) => {
+      cat[category.rqc_id] = category.rqc_name_en;
+      return cat;
+    }, {});
+  }, [bgCategoryOptionsData, projectStatus]);
   useEffect(() => {
     setBudgetRequest(data?.data);
   }, [data]);
@@ -255,6 +266,21 @@ const BudgetRequestModel = ({ projectId, isActive }) => {
 
   const columns = useMemo(() => {
     const baseColumns = [
+       {
+        header: "",
+        accessorKey: "bdr_request_category_id",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {RequestCatagoryMap[
+                cellProps.row.original.bdr_request_category_id
+              ] || ""}
+            </span>
+          );
+        },
+      },
       {
         header: "",
         accessorKey: "Year",
@@ -498,6 +524,39 @@ const BudgetRequestModel = ({ projectId, isActive }) => {
             }}
           >
             <Row>
+                <Col className="col-md-6 mb-3">
+                <Label>
+                  {t("bdr_request_category_id")}
+                  <span className="text-danger">*</span>
+                </Label>
+                <Input
+                  name="bdr_request_category_id"
+                  type="select"
+                  placeholder={t("bdr_request_category_id")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bdr_request_category_id || ""}
+                  invalid={
+                    validation.touched.bdr_request_category_id &&
+                    validation.errors.bdr_request_category_id
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                >
+                  {Object.entries(RequestCatagoryMap).map(([id, name]) => (
+                    <option key={id} value={id}>
+                      {name}
+                    </option>
+                  ))}
+                </Input>
+                {validation.touched.bdr_request_category_id &&
+                validation.errors.bdr_request_category_id ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bdr_request_category_id}
+                  </FormFeedback>
+                ) : null}
+              </Col>
               <Col className="col-md-6 mb-3">
                 <Label>
                   {t("Year")}
