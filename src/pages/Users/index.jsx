@@ -451,7 +451,8 @@ const UsersModel = () => {
         field: "usr_email",
         sortable: true,
         filter: false,
-        // flex: 4,
+        flex: 3,
+        minWidth: 200,
         cellRenderer: (params) =>
           truncateText(params.data.usr_email, 30) || "-",
       },
@@ -460,7 +461,8 @@ const UsersModel = () => {
         field: "usr_full_name",
         sortable: true,
         filter: false,
-        // flex: 4,
+        flex: 3,
+        minWidth: 200,
         cellRenderer: (params) =>
           truncateText(params.data.usr_full_name, 30) || "-",
       },
@@ -469,7 +471,8 @@ const UsersModel = () => {
         field: "usr_phone_number",
         sortable: true,
         filter: false,
-        // flex: 3,
+        flex: 2,
+        minWidth: 200,
         cellRenderer: (params) =>
           truncateText(params.data.usr_phone_number, 30) || "-",
       },
@@ -478,31 +481,17 @@ const UsersModel = () => {
         field: "sector_name",
         sortable: true,
         filter: false,
-        width: 200,
+        flex: 3,
+        minWidth: 200,
         cellRenderer: (params) =>
           sectorInformationMap[params.data.usr_sector_id],
       },
-      /*   {
-        headerName: t("usr_is_active"),
-        field: "usr_is_active",
-        sortable: true,
-        filter: false,
-        cellRenderer: (params) => {
-          // Determine badge class based on status value
-          const badgeClass =
-            statusClasses[params.data.usr_is_active] || "secondary";
-          return (
-            <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
-              {statusText[params.value]}
-            </Badge>
-          );
-        },
-      },*/
       {
         headerName: t("view_detail"),
-        width: 120,
         sortable: true,
         filter: false,
+        flex: 1,
+        minWidth: 120,
         cellRenderer: (params) => (
           <Button
             type="button"
@@ -529,7 +518,8 @@ const UsersModel = () => {
         headerName: t("Action"),
         sortable: true,
         filter: false,
-        width: 150,
+        flex: 1,
+        minWidth: 120,
         cellRenderer: (params) => (
           <div className="d-flex gap-2">
             {(params.data?.is_editable || params.data?.is_role_editable) && (
@@ -634,7 +624,7 @@ const UsersModel = () => {
           {isLoading || isSearchLoading ? (
             <Spinners top={"top-60"} />
           ) : (
-            <>
+            <div>
               <AgGridContainer
                 rowData={
                   showSearchResult ? searchResults?.data : data?.data || []
@@ -653,7 +643,7 @@ const UsersModel = () => {
                 includeKey={["usr_full_name", "usr_email", "usr_phone_number"]}
                 excludeKey={["is_editable", "is_deletable"]}
               />
-            </>
+            </div>
 
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">

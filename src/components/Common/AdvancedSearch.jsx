@@ -215,7 +215,7 @@ const AdvancedSearch = ({
                           className="mb-2"
                         >
                           <div className="">
-                            <InputGroup style={inputStyles} size="sm" className="rounded">
+                            <InputGroup style={inputStyles} className="rounded">
                               <Flatpickr
                                 ref={flatpickrStartRef}
                                 id={`${key}Start`}
@@ -287,7 +287,6 @@ const AdvancedSearch = ({
                                 handleSearchKey(key, e.target.value);
                               }}
                               style={inputStyles}
-                              size={"sm"}
                             />
                           </div>
                         </Col>
@@ -314,7 +313,6 @@ const AdvancedSearch = ({
                               }
                               value={params[key] || ""}
                               style={inputStyles}
-                              size={"sm"}
                             >
                               <option value={null}>{t("Select") + " " + t(`${key}`)}</option>
                               {options.map((option) => (
@@ -339,7 +337,7 @@ const AdvancedSearch = ({
                     <button
                       id="search-icon"
                       type="button"
-                      className="btn btn-sm btn-primary h-100 w-100 p-1"
+                      className="btn btn-primary h-100 w-100 p-2"
                       onClick={handleSearch}
                       disabled={isButtonDisabled()}
                     >
@@ -355,7 +353,7 @@ const AdvancedSearch = ({
                   <div className=" flex-grow-1 mb-2">
                     <button
                       type="button"
-                      className="btn btn-sm btn-outline-danger align-middle h-100 w-100 p-1"
+                      className="btn btn-outline-danger align-middle h-100 w-100 p-2"
                       onClick={handleClear}
                       id="clear-button"
                     >
@@ -384,7 +382,7 @@ const AdvancedSearch = ({
                       <a
                         id="more-filter-icon"
                         onClick={toggle}
-                        className="btn btn-sm btn-secondary h-100 w-100 p-1"
+                        className="btn btn-secondary h-100 w-100 p-2"
                       >
                         <i className="bx bx-filter-alt align-middle"></i>
                       </a>
