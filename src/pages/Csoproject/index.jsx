@@ -536,7 +536,7 @@ const ProjectModel = () => {
                 <SearchForProject
                   textSearchKeys={["prj_name", "prj_code"]}
                   dropdownSearchKeys={[
-                    {
+                    /*{
                       key: "prj_project_category_id",
                       options: lang === "en"
                         ? projectCategoryOptionsEn
@@ -544,7 +544,7 @@ const ProjectModel = () => {
                           ? projectCategoryOptionsAm
                           : projectCategoryOptionsOr
                       ,
-                    },
+                    },*/
                   ]}
                   checkboxSearchKeys={[]}
                   additionalParams={searchConfig.projectParams}

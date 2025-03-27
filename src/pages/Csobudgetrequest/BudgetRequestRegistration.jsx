@@ -1,23 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, Suspense, lazy } from "react";
 import PropTypes from "prop-types";
 import { isEmpty, update } from "lodash";
-import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { Spinner } from "reactstrap";
-import Spinners from "../../components/Common/Spinner";
-import DeleteModal from "../../components/Common/DeleteModal";
-import {
-  useFetchBudgetRequests,
-  useSearchBudgetRequests,
-  useAddBudgetRequest,
-  useUpdateBudgetRequest,
-  useDeleteBudgetRequest,
-} from "../../queries/cso_budget_request_query";
-import { useFetchProject } from "../../queries/cso_project_query";
-import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
-import BudgetRequestModal from "./BudgetRequestModal";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 import {
   Button,
   Col,
@@ -31,19 +18,33 @@ import {
   FormFeedback,
   Label,
   Badge,
+  Spinner,
 } from "reactstrap";
-import { toast } from "react-toastify";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import RightOffCanvas from "../../components/Common/RightOffCanvas";
-import ActionModal from "./ActionModal";
-import AttachFileModal from "../../components/Common/AttachFileModal";
-import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal"
+
 import {
-  alphanumericValidation,
-} from "../../utils/Validation/validation";
-import DatePicker from "../../components/Common/DatePicker";
+  useFetchBudgetRequests,
+  useSearchBudgetRequests,
+  useAddBudgetRequest,
+  useUpdateBudgetRequest,
+  useDeleteBudgetRequest,
+} from "../../queries/cso_budget_request_query";
+import { useFetchProject } from "../../queries/cso_project_query";
+import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
+import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
+
+import { alphanumericValidation } from "../../utils/Validation/validation";
 import { PAGE_ID } from "../../constants/constantFile";
 
+// Lazy-loaded components
+const TableContainer = lazy(() => import("../../components/Common/TableContainer"));
+const Spinners = lazy(() => import("../../components/Common/Spinner"));
+const DeleteModal = lazy(() => import("../../components/Common/DeleteModal"));
+const BudgetRequestModal = lazy(() => import("./BudgetRequestModal"));
+const FetchErrorHandler = lazy(() => import("../../components/Common/FetchErrorHandler"));
+const RightOffCanvas = lazy(() => import("../../components/Common/RightOffCanvas"));
+const AttachFileModal = lazy(() => import("../../components/Common/AttachFileModal"));
+const ConvInfoModal = lazy(() => import("../../pages/Conversationinformation/ConvInfoModal"));
+const DatePicker = lazy(() => import("../../components/Common/DatePicker"));
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -51,12 +52,11 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const BudgetRequestModel = ({ projectId, isActive }) => {
+const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
   const param = { project_id: projectId, request_type: "single" };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
-  const [actionModal, setActionModal] = useState(false);
   const [fileModal, setFileModal] = useState(false)
   const [convModal, setConvModal] = useState(false)
   const [isEdit, setIsEdit] = useState(false);
@@ -75,7 +75,7 @@ const BudgetRequestModel = ({ projectId, isActive }) => {
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
   const project = useFetchProject(projectId, userId, true);
-
+  const { data: bgCategoryOptionsData } = useFetchRequestCategorys();
   const handleAddBudgetRequest = async (data) => {
     try {
       await addBudgetRequest.mutateAsync(data);
@@ -166,7 +166,6 @@ const BudgetRequestModel = ({ projectId, isActive }) => {
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-  const toggleActionModal = () => setActionModal(!actionModal);
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
 
@@ -179,6 +178,17 @@ const BudgetRequestModel = ({ projectId, isActive }) => {
     );
   }, [bgYearsOptionsData]);
 
+  //if status of project is 5(draft), duty free(6) can not be
+    const RequestCatagoryMap = useMemo(() => {
+    const filteredData =
+      bgCategoryOptionsData?.data?.filter((category) =>
+        projectStatus < 5 ? [5].includes(category.rqc_id) : [5,6].includes(category.rqc_id)
+      ) || [];
+    return filteredData.reduce((cat, category) => {
+      cat[category.rqc_id] = category.rqc_name_en;
+      return cat;
+    }, {});
+  }, [bgCategoryOptionsData, projectStatus]);
   useEffect(() => {
     setBudgetRequest(data?.data);
   }, [data]);
@@ -255,6 +265,21 @@ const BudgetRequestModel = ({ projectId, isActive }) => {
 
   const columns = useMemo(() => {
     const baseColumns = [
+       {
+        header: "",
+        accessorKey: "bdr_request_category_id",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {RequestCatagoryMap[
+                cellProps.row.original.bdr_request_category_id
+              ] || ""}
+            </span>
+          );
+        },
+      },
       {
         header: "",
         accessorKey: "Year",
@@ -433,16 +458,14 @@ const BudgetRequestModel = ({ projectId, isActive }) => {
   }
   return (
     <React.Fragment>
-      <BudgetRequestModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      />
-      <ActionModal
-        isOpen={actionModal}
-        toggle={toggleActionModal}
-        data={transaction}
-      />
+      {modal1 && (
+  <BudgetRequestModal
+    isOpen={modal1}
+    toggle={toggleViewModal}
+    transaction={transaction}
+  />
+)}
+       {fileModal && (
       <AttachFileModal
         isOpen={fileModal}
         toggle={toggleFileModal}
@@ -450,12 +473,15 @@ const BudgetRequestModel = ({ projectId, isActive }) => {
         ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
         ownerId={transaction?.bdr_id}
       />
+      )}
+       {convModal && (
       <ConvInfoModal
         isOpen={convModal}
         toggle={toggleConvModal}
         ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
         ownerId={transaction?.bdr_id ?? null}
       />
+      )}
       <DeleteModal
         show={deleteModal}
         onDeleteClick={handleDeleteBudgetRequest}
@@ -498,6 +524,39 @@ const BudgetRequestModel = ({ projectId, isActive }) => {
             }}
           >
             <Row>
+                <Col className="col-md-6 mb-3">
+                <Label>
+                  {t("bdr_request_category_id")}
+                  <span className="text-danger">*</span>
+                </Label>
+                <Input
+                  name="bdr_request_category_id"
+                  type="select"
+                  placeholder={t("bdr_request_category_id")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.bdr_request_category_id || ""}
+                  invalid={
+                    validation.touched.bdr_request_category_id &&
+                    validation.errors.bdr_request_category_id
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                >
+                  {Object.entries(RequestCatagoryMap).map(([id, name]) => (
+                    <option key={id} value={id}>
+                      {name}
+                    </option>
+                  ))}
+                </Input>
+                {validation.touched.bdr_request_category_id &&
+                validation.errors.bdr_request_category_id ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.bdr_request_category_id}
+                  </FormFeedback>
+                ) : null}
+              </Col>
               <Col className="col-md-6 mb-3">
                 <Label>
                   {t("Year")}

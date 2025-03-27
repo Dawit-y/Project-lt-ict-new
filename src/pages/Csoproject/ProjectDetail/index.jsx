@@ -5,7 +5,7 @@ import { Col, Container, Row, Card, CardBody, Spinner } from "reactstrap";
 import Breadcrumbs from "../../../components/Common/Breadcrumb";
 import ProjectDetail from "./ProjectDetail";
 import ProjectDetailTabDynamic from "./ProjectDetailTabDynamic";
-import { useFetchProject } from "../../../queries/project_query";
+import { useFetchProject } from "../../../queries/cso_project_query";
 import { useTranslation } from "react-i18next";
 
 // Lazy Load Components

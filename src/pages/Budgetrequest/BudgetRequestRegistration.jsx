@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, Suspense, lazy } from "react";
 import PropTypes from "prop-types";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -22,11 +22,8 @@ import {
   usePopulateBudgetYears,
 } from "../../queries/budgetyear_query";
 import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
-import BudgetRequestModal from "./BudgetRequestModal";
+
 import { useTranslation } from "react-i18next";
-import BudgetRequestAmount from "../Budgetrequestamount/index";
-import BudgetRequestTask from "../Budgetrequesttask/index";
-import BudgetExSource from "../Budgetexsource/index";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 
 import {
@@ -47,11 +44,15 @@ import {
 } from "reactstrap";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import ProjectDetailColapse from "../Project/ProjectDetailColapse";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
-import ActionModal from "./ActionModal";
-import AttachFileModal from "../../components/Common/AttachFileModal";
-import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal";
+const BudgetRequestAmount = lazy(() => import("../Budgetrequestamount/index"));
+const BudgetRequestTask = lazy(() => import("../Budgetrequesttask/index"));
+const BudgetExSource = lazy(() => import("../Budgetexsource/index"));
+
+const BudgetRequestModal = lazy(() => import("./BudgetRequestModal"));
+const ActionModal = lazy(() => import("./ActionModal"));
+const AttachFileModal = lazy(() => import("../../components/Common/AttachFileModal"));
+const ConvInfoModal = lazy(() => import("../../pages/Conversationinformation/ConvInfoModal"));
 import {
   alphanumericValidation,
   formattedAmountValidation,
@@ -67,7 +68,10 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-
+// Loader Component for Suspense
+const LazyLoader = ({ children }) => (
+  <Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
+);
 const BudgetRequestModel = (props) => {
   const { isActive, status, startDate } = props;
   const location = useLocation();
@@ -616,39 +620,43 @@ const BudgetRequestModel = (props) => {
         },
       });
     }
-
     return baseColumns;
   }, [handleBudgetRequestClick, toggleViewModal, onClickDelete]);
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
-
   return (
     <React.Fragment>
+    <LazyLoader>
+    {modal1 && (
       <BudgetRequestModal
         isOpen={modal1}
         toggle={toggleViewModal}
         transaction={transaction}
-      />
+      />)}
+      {actionModal && (
       <ActionModal
         isOpen={actionModal}
         toggle={toggleActionModal}
         data={transaction}
-      />
+      />)}
+      {fileModal && (
       <AttachFileModal
         isOpen={fileModal}
         toggle={toggleFileModal}
         projectId={id}
         ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
         ownerId={transaction?.bdr_id}
-      />
+      />)}
+      {convModal && (
       <ConvInfoModal
         isOpen={convModal}
         toggle={toggleConvModal}
         ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
         ownerId={transaction?.bdr_id ?? null}
-      />
+      />)}
+      </LazyLoader>
       <DeleteModal
         show={deleteModal}
         onDeleteClick={handleDeleteBudgetRequest}

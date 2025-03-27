@@ -43,6 +43,10 @@ const AccessLogModal = (props) => {
     <td className="col-sm-8 p-2">{transaction.acl_user_id}</td>
   </tr>
   <tr>
+    <td className="col-sm-4 p-2">{t('acl_object_action')}</td>
+    <td className="col-sm-8 p-2">{transaction.acl_object_action}</td>
+  </tr>
+  <tr>
     <td className="col-sm-4 p-2">{t('acl_object_name')}</td>
     <td className="col-sm-8 p-2">{transaction.acl_object_name}</td>
   </tr>
@@ -60,8 +64,8 @@ const AccessLogModal = (props) => {
   </tr>
   <tr>
     <td className="col-sm-4 p-2">{t('acl_description')}</td>
-    <td className="col-sm-8 p-2" style={{ overflowWrap: "anywhere"}}>      
-        {transaction.acl_description}
+    <td className="col-sm-8 p-2 bg-info" style={{ overflowWrap: "anywhere"}}>      
+        <pre>{transaction.acl_description}</pre>
     </td>
   </tr>
 </table>

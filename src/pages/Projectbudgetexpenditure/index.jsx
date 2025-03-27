@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, lazy } from "react";
 import PropTypes from "prop-types";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -45,15 +45,12 @@ import {
   amountValidation,
   numberValidation,
 } from "../../utils/Validation/validation";
-import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import "flatpickr/dist/themes/material_blue.css";
-import Flatpickr from "react-flatpickr";
-import BudgetExipDetail from "../Budgetexipdetail/index";
-import ProjectDetailColapse from "../Project/ProjectDetailColapse";
-import RightOffCanvas from "../../components/Common/RightOffCanvas";
-import Breadcrumb from "../../components/Common/Breadcrumb";
+const AdvancedSearch = lazy(() => import("../../components/Common/AdvancedSearch"));
+const FetchErrorHandler = lazy(() => import("../../components/Common/FetchErrorHandler"));
+const Flatpickr = lazy(() => import("react-flatpickr"));
+const BudgetExipDetail = lazy(() => import("../Budgetexipdetail/index"));
+const RightOffCanvas = lazy(() => import("../../components/Common/RightOffCanvas"));
+const Breadcrumb = lazy(() => import("../../components/Common/Breadcrumb"));
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -499,10 +496,6 @@ const ProjectBudgetExpenditureModel = () => {
               <Spinners />
             ) : (
               <Row>
-                <ProjectDetailColapse
-                  data={project?.data?.data || []}
-                  isExpanded={isExpanded}
-                />
                 {/* TableContainer for displaying data */}
                 <Col lg={12}>
                   <Card>

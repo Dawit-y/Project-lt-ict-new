@@ -97,7 +97,27 @@ const ProjectDocumentList = () => {
         valueGetter: (params) => params.node.rowIndex + 1,
         sortable: false,
         filter: false,
-        width: 70,
+        width: 70
+      },
+            {
+        headerName: t("prj_name"),
+        field: "prj_name",
+        sortable: true,
+        filter: true,
+        flex: 4,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_name, 30) || "-";
+        },
+      },
+      {
+        headerName: t("prj_code"),
+        field: "prj_code",
+        sortable: true,
+        filter: true,
+        width: 100,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_code, 30) || "-";
+        },
       },
       {
         headerName: t("prd_name"),
@@ -119,12 +139,12 @@ const ProjectDocumentList = () => {
         },
       },
       {
-        headerName: t("prd_update_time"),
-        field: "prd_update_time",
+        headerName: t("prd_create_time"),
+        field: "prd_create_time",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return new Date(params.data?.prd_update_time).toISOString().split("T")[0]
+          return new Date(params.data?.prd_create_time).toISOString().split("T")[0]
         },
       },
       // {

@@ -227,7 +227,7 @@ const DepartmentTree = () => {
           <div className="d-flex vh-100">
             <div
               className="w-30 p-3 bg-white border-end overflow-auto shadow-sm"
-              style={{ minWidth: "500px" }}
+              style={{ minWidth: "700px" }}
             >
               <h4 className="mb-2 text-secondary">{t("department")}</h4>
               <hr className="text-dark" />
@@ -240,7 +240,7 @@ const DepartmentTree = () => {
               ))}
             </div>
             <div className="p-3 flex-grow-1 bg-light">
-              <div className="mb-4 d-flex-col align-items-center w-75 mx-auto">
+              <div className="mb-4 d-flex-col align-items-center w-100 mx-auto">
                 <Card className="w-full p-3">
                   <div className="d-flex gap-1 align-items-center">
                     <span className="me-3">

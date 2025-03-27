@@ -69,8 +69,6 @@ const CascadingDropdowns = lazy(() =>
   import("../components/Common/CascadingDropdowns")
 );
 const Notifications = lazy(() => import("../pages/notifications"));
-
-const ProjectOverview = lazy(() => import("../pages/Project/ProjectOverview"));
 const ProjectDetail = lazy(() => import("../pages/Project/ProjectDetail"));
 const ProjectsLocation = lazy(() => import("../pages/ProjectsLocation"));
 const Gantty = lazy(() => import("../pages/GanttChart/index"));
@@ -261,7 +259,6 @@ const authProtectedRoutes = [
   { path: "/document_type", component: <DocumentType /> },
   { path: "/Project", component: <Project /> },
   { path: "/project_list", component: <ProjectList /> },
-  { path: "/Project/:id", component: <ProjectOverview /> },
   { path: "/projectdetail/:id", component: <ProjectDetail /> },
   { path: "/Project/:id/project_plan", component: <ProjectPlan /> },
   { path: "/Project/:id/budget_request", component: <BudgetRequest /> },

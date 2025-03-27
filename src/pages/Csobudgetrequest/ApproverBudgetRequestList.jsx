@@ -1,9 +1,6 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState, useRef, lazy, Suspense } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import Spinners from "../../components/Common/Spinner";
-import Breadcrumbs from "../../components/Common/Breadcrumb";
-import ApproverBudgetRequestListModal from "./ApproverBudgetRequestModal";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -12,6 +9,7 @@ import {
   UncontrolledTooltip,
   Input,
   Badge,
+  Spinner,
 } from "reactstrap";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
@@ -20,22 +18,29 @@ import {
   useSearchBudgetRequestforApproval,
 } from "../../queries/cso_budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
-import { useSearchRequestFollowups, useFetchRequestFollowups } from "../../queries/requestfollowup_query"
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import TreeForLists from "../../components/Common/TreeForLists";
-import AttachFileModal from "../../components/Common/AttachFileModal"
-import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal"
+import { useSearchRequestFollowups, useFetchRequestFollowups } from "../../queries/requestfollowup_query";
 import { PAGE_ID } from "../../constants/constantFile";
-import BudgetRequestModal from "./BudgetRequestModal";
 
+// Lazy load components
+const Spinners = lazy(() => import("../../components/Common/Spinner"));
+const Breadcrumbs = lazy(() => import("../../components/Common/Breadcrumb"));
+const AdvancedSearch = lazy(() => import("../../components/Common/AdvancedSearch"));
+const FetchErrorHandler = lazy(() => import("../../components/Common/FetchErrorHandler"));
+const TreeForLists = lazy(() => import("../../components/Common/TreeForLists"));
+const AttachFileModal = lazy(() => import("../../components/Common/AttachFileModal"));
+const ConvInfoModal = lazy(() => import("../../pages/Conversationinformation/ConvInfoModal"));
+const BudgetRequestModal = lazy(() => import("./BudgetRequestModal"));
+const ApproverBudgetRequestListModal = lazy(() => import("./ApproverBudgetRequestModal"));
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-
+// Loader Component for Suspense
+const LazyLoader = ({ children }) => (
+  <Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
+);
 const ApproverBudgetRequestList = () => {
   document.title = " Budget Request List ";
 
@@ -192,6 +197,16 @@ const ApproverBudgetRequestList = () => {
         width: 60,
       },
       {
+        headerName: t("cso_name"),
+        field: "cso_name",
+        sortable: true,
+        filter: true,
+        width: 220,
+        cellRenderer: (params) => {
+          return truncateText(params.data.cso_name, 30) || "-";
+        },
+      },
+      {
         headerName: t("Year"),
         field: "bdy_name",
         sortable: true,
@@ -222,22 +237,6 @@ const ApproverBudgetRequestList = () => {
       // {
       //   headerName: t("bdr_requested_amount"),
       //   field: "bdr_requested_amount",
-      //   sortable: true,
-      //   filter: true,
-      //   flex: 1.2,
-      //   valueFormatter: (params) => {
-      //     if (params.value != null) {
-      //       return new Intl.NumberFormat("en-US", {
-      //         minimumFractionDigits: 2,
-      //         maximumFractionDigits: 2,
-      //       }).format(params.value);
-      //     }
-      //     return "0.00"; // Default value if null or undefined
-      //   },
-      // },
-      // {
-      //   headerName: t("bdr_released_amount"),
-      //   field: "bdr_released_amount",
       //   sortable: true,
       //   filter: true,
       //   flex: 1.2,
@@ -424,30 +423,37 @@ const ApproverBudgetRequestList = () => {
 
   return (
     <React.Fragment>
+     <LazyLoader>
+     {toggleDetailModal && (
       <BudgetRequestModal
         isOpen={detailModal}
         toggle={toggleDetailModal}
         transaction={transaction}
-      />
+      />)}
+      {modal1 && (
       <ApproverBudgetRequestListModal
         isOpen={modal1}
         toggle={toggleViewModal}
         transaction={transaction}
         budgetYearMap={budgetYearMap}
-      />
+      />)}
+      {fileModal && (
       <AttachFileModal
         isOpen={fileModal}
         toggle={toggleFileModal}
         projectId={transaction?.bdr_project_id}
         ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
         ownerId={transaction?.bdr_id}
-      />
+      />)}
+      {convModal && (
       <ConvInfoModal
         isOpen={convModal}
         toggle={toggleConvModal}
         ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
         ownerId={transaction?.bdr_id ?? null}
       />
+      )}
+      </LazyLoader>
       <div className="page-content">
         <div className="">
           <Breadcrumbs

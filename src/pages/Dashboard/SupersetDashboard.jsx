@@ -12,7 +12,7 @@ const SupersetDashboard = (dashboardPath) => {
   const zoneId = User.user.usr_zone_id;
   const woredaId = User.user.usr_woreda_id;
   //const sectorId = User.user.usr_sector_id === 1 ? 0 : User.user.usr_sector_id;
-  const sectorId = User.user.user_sector[0].sector_ids?.length > 0 
+ const sectorId = User?.user?.user_sector?.[0]?.sector_ids?.length > 0 
   ? User.user.user_sector[0].sector_ids 
   : 0;
 //alert(User.user.user_sector[0].sector_ids);
