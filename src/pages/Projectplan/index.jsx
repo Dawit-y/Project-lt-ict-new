@@ -49,7 +49,6 @@ import { createSelectOptions, formatDate } from "../../utils/commonMethods";
 import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
-import ProjectDetailColapse from "../Project/ProjectDetailColapse";
 import DatePicker from "../../components/Common/DatePicker";
 import Breadcrumb from "../../components/Common/Breadcrumb.jsx";
 
@@ -498,10 +497,6 @@ const ProjectPlanModel = () => {
             <Spinners />
           ) : (
             <Row>
-              <ProjectDetailColapse
-                data={project?.data?.data || []}
-                isExpanded={isExpanded}
-              />
               {/* TableContainer for displaying data */}
               <Col lg={12}>
                 <Card>

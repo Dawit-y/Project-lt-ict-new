@@ -47,7 +47,6 @@ import {
 } from "reactstrap";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import ProjectDetailColapse from "../Project/ProjectDetailColapse";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import ActionModal from "./ActionModal";
 import AttachFileModal from "../../components/Common/AttachFileModal";

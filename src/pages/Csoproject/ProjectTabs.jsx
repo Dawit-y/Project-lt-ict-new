@@ -159,6 +159,34 @@ const ProjectTabs = ({ projects, handleAddClick, handleEditClick }) => {
         <CardBody>
           <h4 className="card-title mb-4"></h4>
           <div className="wizard clearfix">
+           <div className="actions clearfix">
+              <ul>
+                <li>
+                  <Button
+                    color="primary"
+                    onClick={() => toggleTab(activeTab - 1)}
+                    disabled={activeTab === 1}
+                  >
+                    Previous
+                  </Button>
+                </li>
+                <li>
+                  {activeTab === 2 ? (
+                    <Button type="submit" color="primary" disabled>
+                      Next
+                    </Button>
+                  ) : (
+                    <Button
+                      color="primary"
+                      onClick={() => toggleTab(activeTab + 1)}
+                      disabled={isNextButtonDisabled()}
+                    >
+                      Next
+                    </Button>
+                  )}
+                </li>
+              </ul>
+            </div>
             <div className="steps clearfix">
               <ul>
                 <NavItem className={classnames({ current: activeTab === 1 })}>
@@ -212,34 +240,7 @@ const ProjectTabs = ({ projects, handleAddClick, handleEditClick }) => {
                 </TabPane>
               </TabContent>
             </div>
-            <div className="actions clearfix">
-              <ul>
-                <li>
-                  <Button
-                    color="primary"
-                    onClick={() => toggleTab(activeTab - 1)}
-                    disabled={activeTab === 1}
-                  >
-                    Previous
-                  </Button>
-                </li>
-                <li>
-                  {activeTab === 2 ? (
-                    <Button type="submit" color="primary" disabled>
-                      Next
-                    </Button>
-                  ) : (
-                    <Button
-                      color="primary"
-                      onClick={() => toggleTab(activeTab + 1)}
-                      disabled={isNextButtonDisabled()}
-                    >
-                      Next
-                    </Button>
-                  )}
-                </li>
-              </ul>
-            </div>
+           
           </div>
         </CardBody>
       </Card>

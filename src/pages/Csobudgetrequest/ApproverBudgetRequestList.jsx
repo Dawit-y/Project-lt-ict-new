@@ -245,22 +245,6 @@ const ApproverBudgetRequestList = () => {
       //     return "0.00"; // Default value if null or undefined
       //   },
       // },
-      // {
-      //   headerName: t("bdr_released_amount"),
-      //   field: "bdr_released_amount",
-      //   sortable: true,
-      //   filter: true,
-      //   flex: 1.2,
-      //   valueFormatter: (params) => {
-      //     if (params.value != null) {
-      //       return new Intl.NumberFormat("en-US", {
-      //         minimumFractionDigits: 2,
-      //         maximumFractionDigits: 2,
-      //       }).format(params.value);
-      //     }
-      //     return "0.00"; // Default value if null or undefined
-      //   },
-      // },
       {
         headerName: t("bdr_requested_date_gc"),
         field: "bdr_requested_date_gc",

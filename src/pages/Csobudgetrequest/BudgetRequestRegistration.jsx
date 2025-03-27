@@ -1,23 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, Suspense, lazy } from "react";
 import PropTypes from "prop-types";
 import { isEmpty, update } from "lodash";
-import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { Spinner } from "reactstrap";
-import Spinners from "../../components/Common/Spinner";
-import DeleteModal from "../../components/Common/DeleteModal";
-import {
-  useFetchBudgetRequests,
-  useSearchBudgetRequests,
-  useAddBudgetRequest,
-  useUpdateBudgetRequest,
-  useDeleteBudgetRequest,
-} from "../../queries/cso_budget_request_query";
-import { useFetchProject } from "../../queries/cso_project_query";
-import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
-import BudgetRequestModal from "./BudgetRequestModal";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 import {
   Button,
   Col,
@@ -31,19 +18,33 @@ import {
   FormFeedback,
   Label,
   Badge,
+  Spinner,
 } from "reactstrap";
-import { toast } from "react-toastify";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import RightOffCanvas from "../../components/Common/RightOffCanvas";
-import ActionModal from "./ActionModal";
-import AttachFileModal from "../../components/Common/AttachFileModal";
-import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal"
+
 import {
-  alphanumericValidation,
-} from "../../utils/Validation/validation";
-import DatePicker from "../../components/Common/DatePicker";
-import { PAGE_ID } from "../../constants/constantFile";
+  useFetchBudgetRequests,
+  useSearchBudgetRequests,
+  useAddBudgetRequest,
+  useUpdateBudgetRequest,
+  useDeleteBudgetRequest,
+} from "../../queries/cso_budget_request_query";
+import { useFetchProject } from "../../queries/cso_project_query";
+import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
+
+import { alphanumericValidation } from "../../utils/Validation/validation";
+import { PAGE_ID } from "../../constants/constantFile";
+
+// Lazy-loaded components
+const TableContainer = lazy(() => import("../../components/Common/TableContainer"));
+const Spinners = lazy(() => import("../../components/Common/Spinner"));
+const DeleteModal = lazy(() => import("../../components/Common/DeleteModal"));
+const BudgetRequestModal = lazy(() => import("./BudgetRequestModal"));
+const FetchErrorHandler = lazy(() => import("../../components/Common/FetchErrorHandler"));
+const RightOffCanvas = lazy(() => import("../../components/Common/RightOffCanvas"));
+const AttachFileModal = lazy(() => import("../../components/Common/AttachFileModal"));
+const ConvInfoModal = lazy(() => import("../../pages/Conversationinformation/ConvInfoModal"));
+const DatePicker = lazy(() => import("../../components/Common/DatePicker"));
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -56,7 +57,6 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
-  const [actionModal, setActionModal] = useState(false);
   const [fileModal, setFileModal] = useState(false)
   const [convModal, setConvModal] = useState(false)
   const [isEdit, setIsEdit] = useState(false);
@@ -166,7 +166,6 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-  const toggleActionModal = () => setActionModal(!actionModal);
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
 
@@ -459,15 +458,11 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
   }
   return (
     <React.Fragment>
+    <Suspense fallback={<Spinner color="primary" />}>
       <BudgetRequestModal
         isOpen={modal1}
         toggle={toggleViewModal}
         transaction={transaction}
-      />
-      <ActionModal
-        isOpen={actionModal}
-        toggle={toggleActionModal}
-        data={transaction}
       />
       <AttachFileModal
         isOpen={fileModal}
@@ -509,6 +504,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
           infoIcon={true}
         />
       )}
+      </Suspense>
       <Modal isOpen={modal} toggle={toggle} className="modal-xl">
         <ModalHeader toggle={toggle} tag="h4">
           {!!isEdit
