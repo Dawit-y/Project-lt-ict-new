@@ -458,12 +458,14 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
   }
   return (
     <React.Fragment>
-    <Suspense fallback={<Spinner color="primary" />}>
-      <BudgetRequestModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      />
+      {modal1 && (
+  <BudgetRequestModal
+    isOpen={modal1}
+    toggle={toggleViewModal}
+    transaction={transaction}
+  />
+)}
+       {fileModal && (
       <AttachFileModal
         isOpen={fileModal}
         toggle={toggleFileModal}
@@ -471,12 +473,15 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
         ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
         ownerId={transaction?.bdr_id}
       />
+      )}
+       {convModal && (
       <ConvInfoModal
         isOpen={convModal}
         toggle={toggleConvModal}
         ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
         ownerId={transaction?.bdr_id ?? null}
       />
+      )}
       <DeleteModal
         show={deleteModal}
         onDeleteClick={handleDeleteBudgetRequest}
@@ -504,7 +509,6 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
           infoIcon={true}
         />
       )}
-      </Suspense>
       <Modal isOpen={modal} toggle={toggle} className="modal-xl">
         <ModalHeader toggle={toggle} tag="h4">
           {!!isEdit
