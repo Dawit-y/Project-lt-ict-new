@@ -6,7 +6,7 @@ import {
   deleteCsoInfo,
 } from "../helpers/csoinfo_backend_helper";
 
-const CSO_INFO_QUERY_KEY = ["csoinfo"];
+export const CSO_INFO_QUERY_KEY = ["csoinfo"];
 
 // Fetch cso_info
 export const useFetchCsoInfos = () => {

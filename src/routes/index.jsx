@@ -2,7 +2,8 @@ import React, { lazy } from "react";
 import { Navigate } from "react-router-dom";
 
 import Dashboard from "../pages/Dashboard/index";
-import Login from "../pages/Authentication/Login";
+import Login from "../pages/Authentication/CsoLogin.jsx";
+import CsoRegister from "../pages/Authentication/CsoRegister.jsx";
 import { components } from "react-select";
 import ResetPassword from "../pages/Authentication/ResetPassword.jsx";
 import ResetPasswordForm from "../pages/Authentication/ResetPasswordForm.jsx";
@@ -302,6 +303,7 @@ const authProtectedRoutes = [
 const publicRoutes = [
   { path: "/logout", component: <Logout /> },
   { path: "/login", component: <Login /> },
+  { path: "/register", component: <CsoRegister /> },
   { path: "/forgot_password", component: <ResetPassword /> },
   { path: "/reset_password", component: <ResetPasswordForm /> },
 ];

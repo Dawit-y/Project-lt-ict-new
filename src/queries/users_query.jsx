@@ -10,7 +10,7 @@ import {
   getUser,
 } from "../helpers/users_backend_helper";
 
-const USERS_QUERY_KEY = ["users"];
+export const USERS_QUERY_KEY = ["users"];
 
 // Fetch users
 export const useFetchUserss = () => {
