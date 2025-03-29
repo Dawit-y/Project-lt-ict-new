@@ -179,7 +179,7 @@ const CitizenshipProjectDetail = lazy(() =>
   import("../pages/Citizenshipproject/ProjectDetail/index.jsx")
 );
 //START PROCUMENET
-const ProcurementinformationList = lazy(() => import('../pages/Procurementinformation/ProcurementinformationList'));
+const ProcurementinformationList = lazy(() => import('../pages/Procurementinformation/ProcurementInformationList'));
 const ProcurementInformation = lazy(() => import('../pages/Procurementinformation/index'));
 const ProcurementMethod = lazy(() => import('../pages/Procurementmethod/index'));
 const ProcurementParticipant = lazy(() => import('../pages/Procurementparticipant/index'));
