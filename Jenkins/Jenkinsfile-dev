@@ -10,7 +10,7 @@ pipeline {
         NODE_OPTIONS         = '--max-old-space-size=4096'
         
         // Docker
-        DOCKER_IMAGE         = 'otecpms/react-app-devx'
+        DOCKER_IMAGE         = 'otecpms/react-cso-devx'
         DOCKER_TAG           = 'latest'
         FULL_DOCKER_IMAGE    = "${DOCKER_IMAGE}:${DOCKER_TAG}"
         REGISTRY_URL         = 'https://registry.hub.docker.com'
@@ -21,11 +21,11 @@ pipeline {
         SSL_CERTIFICATE      = '/home/certs/fullchain.pem'
         SSL_CERTIFICATE_KEY  = '/home/certs/privkey.pem'
 
-        PORT_EXT             = '1212'
+        PORT_EXT             = '1219'
         PORT_INT             = '80'
         
         // Container name
-        CONTAINER_NAME       = 'react-app-devx'
+        CONTAINER_NAME       = 'react-cso-devx'
 
         // Enable BuildKit
         DOCKER_BUILDKIT      = '1'
