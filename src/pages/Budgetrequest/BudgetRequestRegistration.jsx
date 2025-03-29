@@ -237,14 +237,16 @@ const BudgetRequestModel = (props) => {
     );
   }, [bgCategoryOptionsData]);*/
 
-  const projectStatusMap = useMemo(() => {
-    return (
-      projectStatusData?.data?.reduce((acc, project_status) => {
+ const projectStatusMap = useMemo(() => { 
+  return (
+    projectStatusData?.data?.reduce((acc, project_status) => {
+      if (project_status.prs_id === 5 || project_status.prs_id === 6) {
         acc[project_status.prs_id] = project_status.prs_status_name_or;
-        return acc;
-      }, {}) || {}
-    );
-  }, [projectStatusData]);
+      }
+      return acc;
+    }, {}) || {}
+  );
+}, [projectStatusData]);
 
   const RequestCatagoryMap = useMemo(() => {
     const filteredData =
@@ -754,9 +756,9 @@ const BudgetRequestModel = (props) => {
                   }
                 >
                   <option value="">{t("select_one")}</option>
-                  {projectStatusData?.data?.map((data) => (
-                    <option key={data.prs_id} value={data.prs_id}>
-                      {data.prs_status_name_or}
+                  {Object.entries(projectStatusMap).map(([id, name]) => (
+                    <option key={id} value={id}>
+                      {name}
                     </option>
                   ))}
                 </Input>

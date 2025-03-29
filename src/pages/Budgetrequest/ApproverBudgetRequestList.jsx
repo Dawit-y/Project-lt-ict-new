@@ -41,12 +41,9 @@ const ConvInfoModal = lazy(() =>
   import("../../pages/Conversationinformation/ConvInfoModal")
 );
 const BudgetRequestModal = lazy(() => import("./BudgetRequestModal"));
+const AgGridContainer = lazy(() =>
+  import("../../components/Common/AgGridContainer"));
 
-const ExportToExcel = lazy(() =>
-  import("../../components/Common/ExportToExcel")
-);
-const ExportToPDF = lazy(() => import("../../components/Common/ExportToPdf"));
-const PrintPage = lazy(() => import("../../components/Common/PrintPage"));
 //const { budget_request } = lazy(() => import("../../settings/printablecolumns"));
 import { budget_request } from "../../settings/printablecolumns";
 import { useSearchBudgetRequestforApproval } from "../../queries/budget_request_query";
@@ -159,14 +156,17 @@ const ApproverBudgetRequestList = () => {
     );
   }, [bgCategoryOptionsData]);
 
-  const projectStatusOptions = useMemo(() => {
-    return (
-      projectStatusData?.data?.map((type) => ({
+ const projectStatusOptions = useMemo(() => {
+  return (
+    projectStatusData?.data
+      ?.filter((type) => type.prs_id === 5 || type.prs_id === 6)
+      .map((type) => ({
         label: type.prs_status_name_or,
         value: type.prs_id,
       })) || []
-    );
-  }, [projectStatusData]);
+  );
+}, [projectStatusData]);
+
 
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
@@ -589,76 +589,32 @@ const ApproverBudgetRequestList = () => {
                   </div>
                 ) : (
                   <div>
-                    <div className="ag-theme-alpine" style={{ height: "100%" }}>
-                      {/* Row for search input and buttons */}
-                      <Row className="mb-1">
-                        <Col sm="12" md="6">
-                          <Input
-                            type="text"
-                            placeholder="Search..."
-                            onChange={(e) => setQuickFilterText(e.target.value)}
-                            className="mb-2"
-                          />
-                        </Col>
-                        <Col
-                          sm="12"
-                          md="6"
-                          className="text-md-end d-flex align-items-center justify-content-end gap-2"
-                        >
-                          <ExportToExcel
-                            tableData={
-                              showSearchResult
-                                ? transformedData
-                                : data?.data || []
-                            }
-                            tablename={"projects"}
-                            includeKey={budget_request}
-                          />
-                          <ExportToPDF
-                            tableData={
-                              showSearchResult
-                                ? transformedData
-                                : data?.data || []
-                            }
-                            tablename={"projects"}
-                            includeKey={budget_request}
-                          />
-                          <PrintPage
-                            tableData={
-                              showSearchResult
-                                ? transformedData
-                                : data?.data || []
-                            }
-                            tablename={t("Projects")}
-                            excludeKey={["is_editable", "is_deletable"]}
-                            gridRef={gridRef}
-                            columnDefs={columnDefs}
-                            columnsToIgnore="3"
-                          />
-                        </Col>
-                      </Row>
-                      {/* AG Grid */}
-                      <div>
-                        <AgGridReact
-                          ref={gridRef}
-                          rowData={
-                            showSearchResult
+                      <AgGridContainer
+                rowData={
+                  showSearchResult
                               ? transformedData
                               : data?.data || []
-                          }
-                          columnDefs={columnDefs}
-                          defaultColDef={{ resizable: true }}
-                          pagination={true}
-                          paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                          paginationPageSize={10}
-                          quickFilterText={quickFilterText}
-                          onSelectionChanged={onSelectionChanged}
-                          rowHeight={30}
-                          animateRows={true}
-                          domLayout="autoHeight"
-                        />
-                      </div>
-                    </div>
+                }
+                columnDefs={columnDefs}
+                isPagination={true}
+                paginationPageSize={20}
+                isGlobalFilter={true}
+                isAddButton={false}
+                addButtonText="Add"
+                isExcelExport={true}
+                isPdfExport={true}
+                isPrint={true}
+                tableName="budget_request"
+                includeKey={["bdy_name",
+                        "prj_name",
+                        "prj_code",
+                        "bdr_request_status",
+                        "bdr_requested_amount",
+                        "bdr_released_amount",
+                        "bdr_requested_date_gc,bdr_released_date_gc",
+                        "bdr_description"]}
+                excludeKey={["is_editable", "is_deletable"]}
+              />
                   </div>
                 )}
               </div>
