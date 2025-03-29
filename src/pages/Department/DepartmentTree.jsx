@@ -226,10 +226,10 @@ const DepartmentTree = () => {
           <Breadcrumbs title={t("department")} />
           <div className="d-flex vh-100">
             <div
-              className="w-30 p-3 bg-white border-end overflow-auto shadow-sm"
+              className="w-30 p-3 border-end overflow-auto shadow-sm"
               style={{ minWidth: "700px" }}
             >
-              <h4 className="mb-2 text-secondary">{t("department")}</h4>
+              <h5 className="mb-1">{t("department")}</h5>
               <hr className="text-dark" />
               {data?.map((node) => (
                 <DepartmentTreeNode

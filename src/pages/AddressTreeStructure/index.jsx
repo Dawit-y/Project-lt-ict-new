@@ -225,12 +225,12 @@ const App_tree = () => {
           <Breadcrumbs title={t("address_tree_Search")} />
           <div className="d-flex vh-100">
             <div
-              className="w-30 p-3 bg-white border-end overflow-auto shadow-sm"
+              className="w-30 p-3 border-end overflow-auto shadow-sm"
               style={{ minWidth: "500px" }}
             >
-              <h4 className="mb-2 text-secondary">
+              <h5 className="mb-1">
                 {t("address_tree_Search")}
-              </h4>
+              </h5>
               <hr className="text-dark" />
               {data?.map((node) => (
                 <TreeNode
