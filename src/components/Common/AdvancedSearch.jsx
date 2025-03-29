@@ -69,9 +69,17 @@ const AdvancedSearch = ({
           : [value];
         return { ...prevParams, [key]: updatedValues };
       }
+
+      if (value === "") {
+        const updatedParams = { ...prevParams };
+        delete updatedParams[key];
+        return updatedParams;
+      }
+
       return { ...prevParams, [key]: value };
     });
   };
+
 
   const handleSearch = () => {
     validation.handleSubmit();
@@ -314,7 +322,7 @@ const AdvancedSearch = ({
                               value={params[key] || ""}
                               style={inputStyles}
                             >
-                              <option value={null}>{t("Select") + " " + t(`${key}`)}</option>
+                              <option value={""}>{t("Select") + " " + t(`${key}`)}</option>
                               {options.map((option) => (
                                 <option key={option.value} value={option.value}>
                                   {t(`${option.label}`)}
