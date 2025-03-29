@@ -72,7 +72,7 @@ const ProcurementInformationModel = (props) => {
   //meta title
   document.title = " ProcurementInformation";
   const { t } = useTranslation();
-  const { passedId,startDate} = props;
+  const { passedId,isActive,startDate} = props;
   const param = { pri_project_id: passedId };
 
   const [modal, setModal] = useState(false);
@@ -85,7 +85,7 @@ const ProcurementInformationModel = (props) => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useSearchProcurementInformations(param);
+  const { data, isLoading, error, isError, refetch } = useFetchProcurementInformations(param, isActive);
 
   const { data: procurementStageData } = useFetchProcurementStages();
   const procurementStageOptions = createSelectOptions(
@@ -94,13 +94,13 @@ const ProcurementInformationModel = (props) => {
     "pst_name_or"
   );
 
-  const { data: procurementParticipant } = useFetchProcurementParticipants();
+/*  const { data: procurementParticipant } = useFetchProcurementParticipants();
   const procurementParticipantOptions = createSelectOptions(
     procurementParticipant?.data || [],
     "ppp_id",
     "ppp_name_or"
   );
-
+*/
   const { data: procurementMethodData } = useFetchProcurementMethods();
   const procurementMethodOptions = createSelectOptions(
     procurementMethodData?.data || [],

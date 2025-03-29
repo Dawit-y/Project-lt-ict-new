@@ -9,15 +9,16 @@ import {
 
 const PROCUREMENT_INFORMATION_QUERY_KEY = ["procurementinformation"];
 
-export const useFetchProcurementInformations = () => {
+export const useFetchProcurementInformations = (param = {}, isActive) => {
   return useQuery({
-    queryKey: PROCUREMENT_INFORMATION_QUERY_KEY,
-    queryFn: () => getProcurementInformation(),
-    cacheTime: 0,          // Disables caching
-    staleTime: 0,          // Data becomes stale immediately
+    queryKey: [...PROCUREMENT_INFORMATION_QUERY_KEY, "fetch", param],
+    queryFn: () => getProcurementInformation(param),
+   staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
     meta: { persist: false },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: isActive,
   });
 };
 //search procurement_information
