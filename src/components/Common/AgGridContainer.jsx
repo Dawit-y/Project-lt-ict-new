@@ -7,7 +7,6 @@ import PrintPage from "./PrintPage";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 
-
 import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
 
@@ -26,7 +25,8 @@ const AgGridContainer = ({
   isPrint = true,
   excludeKey = [],
   tableName = "",
-  includeKey = []
+  includeKey = [],
+  rowHeight = "",
 }) => {
   const gridRef = useRef(null);
   const [quickFilterText, setQuickFilterText] = useState("");
@@ -37,19 +37,15 @@ const AgGridContainer = ({
       layoutModeType: layout.layoutModeType,
     })
   );
-  const {
-    layoutModeType,
-  } = useSelector(selectLayoutProperties);
-
+  const { layoutModeType } = useSelector(selectLayoutProperties);
 
   return (
     <div
       className={
-        layoutModeType === "dark"
-          ? "ag-theme-alpine-dark"
-          : "ag-theme-alpine"
+        layoutModeType === "dark" ? "ag-theme-alpine-dark" : "ag-theme-alpine"
       }
-      style={{ height: "100%", width: "100%" }}>
+      style={{ height: "100%", width: "100%" }}
+    >
       <Row className="mb-2 align-items-center">
         {isGlobalFilter && (
           <Col xs="12" md="6">
@@ -61,7 +57,11 @@ const AgGridContainer = ({
             />
           </Col>
         )}
-        <Col xs="12" md="6" className="d-flex justify-content-md-end flex-wrap gap-2 mt-2 mt-md-0">
+        <Col
+          xs="12"
+          md="6"
+          className="d-flex justify-content-md-end flex-wrap gap-2 mt-2 mt-md-0"
+        >
           {isAddButton && (
             <Button color="success" onClick={onAddClick}>
               {addButtonText}
@@ -106,7 +106,7 @@ const AgGridContainer = ({
           paginationPageSizeSelector={[10, 20, 30, 40, 50]}
           paginationPageSize={paginationPageSize}
           quickFilterText={quickFilterText}
-          rowHeight={30}
+          rowHeight={rowHeight.length > 0 ? rowHeight : 30}
           animateRows={true}
           domLayout="autoHeight"
         />

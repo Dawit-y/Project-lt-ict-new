@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
-import TableContainer from "../../components/Common/TableContainer";
+import AgGridContainer from "../../components/Common/AgGridContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
@@ -16,7 +15,10 @@ import {
   useDeleteProjectPayment,
 } from "../../queries/projectpayment_query";
 import { useFetchPaymentCategorys } from "../../queries/paymentcategory_query";
-import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
+import {
+  useFetchBudgetYears,
+  usePopulateBudgetYears,
+} from "../../queries/budgetyear_query";
 import {
   alphanumericValidation,
   amountValidation,
@@ -42,6 +44,7 @@ import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { PAGE_ID } from "../../constants/constantFile";
 import { useStatusCheck } from "../../hooks/useStatusCheck";
+import TableContainer from "../../components/Common/TableContainer";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -88,11 +91,11 @@ const ProjectPaymentModel = (props) => {
   const handleAddProjectPayment = async (newProjectPayment) => {
     try {
       await addProjectPayment.mutateAsync(newProjectPayment);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
     } catch (error) {
-      toast.error(t('add_failure'), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -102,12 +105,12 @@ const ProjectPaymentModel = (props) => {
   const handleUpdateProjectPayment = async (data) => {
     try {
       await updateProjectPayment.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('update_failure'), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -119,12 +122,12 @@ const ProjectPaymentModel = (props) => {
       try {
         const id = projectPayment.prp_id;
         await deleteProjectPayment.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
         validation.resetForm();
       } catch (error) {
-        toast.error(t('delete_failure'), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -164,19 +167,22 @@ const ProjectPaymentModel = (props) => {
 
     validationSchema: Yup.object({
       // prp_project_id: Yup.string().required(t("prp_project_id")),
-      prp_type: numberValidation(1, 10, true)
-        .test("unique-role-id", t("Already exists"), (value) => {
+      prp_type: numberValidation(1, 10, true).test(
+        "unique-role-id",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) =>
               item.prp_type == value && item.prp_id !== projectPayment?.prp_id
           );
-        }),
+        }
+      ),
       prp_budget_year_id: numberValidation(1, 20, true),
       // prp_payment_date_et: Yup.string().required(t("prp_payment_date_et")),
       prp_payment_date_gc: Yup.string().required(t("prp_payment_date_gc")),
       prp_payment_amount: amountValidation(1, 10000000000, true),
       prp_payment_percentage: amountValidation(1, 100, true),
-      prp_description: alphanumericValidation(3, 425, false)
+      prp_description: alphanumericValidation(3, 425, false),
       //prp_status: Yup.string().required(t("prp_status")),
     }),
     validateOnBlur: true,
@@ -273,146 +279,297 @@ const ProjectPaymentModel = (props) => {
     toggle();
   };
 
+  // const columns = useMemo(() => {
+  //   const baseColumns = [
+  //     {
+  //       header: "",
+  //       accessorKey: "prp_budget_year_id",
+  //       enableColumnFilter: false,
+  //       enableSorting: true,
+  //       cell: (cellProps) => {
+  //         return (
+  //           <span>
+  //             {budgetYearMap[cellProps.row.original.prp_budget_year_id] || ""}
+  //           </span>
+  //         );
+  //       },
+  //     },
+  //     {
+  //       header: "",
+  //       accessorKey: "prp_type",
+  //       enableColumnFilter: false,
+  //       enableSorting: true,
+  //       cell: (cellProps) => {
+  //         return (
+  //           <span>
+  //             {paymentCategoryMap[cellProps.row.original.prp_type] || ""}
+  //           </span>
+  //         );
+  //       },
+  //     },
+
+  //     {
+  //       header: "",
+  //       accessorKey: "prp_payment_date_gc",
+  //       enableColumnFilter: false,
+  //       enableSorting: true,
+  //       cell: (cellProps) => {
+  //         return (
+  //           <span>
+  //             {truncateText(cellProps.row.original.prp_payment_date_gc, 30) ||
+  //               "-"}
+  //           </span>
+  //         );
+  //       },
+  //     },
+  //     {
+  //       header: "",
+  //       accessorKey: "prp_payment_amount",
+  //       enableColumnFilter: false,
+  //       enableSorting: true,
+  //       cell: (cellProps) => {
+  //         return (
+  //           <span>
+  //             {truncateText(cellProps.row.original.prp_payment_amount, 30) ||
+  //               "-"}
+  //           </span>
+  //         );
+  //       },
+  //     },
+  //     {
+  //       header: "",
+  //       accessorKey: "prp_payment_percentage",
+  //       enableColumnFilter: false,
+  //       enableSorting: true,
+  //       cell: (cellProps) => {
+  //         return (
+  //           <span>
+  //             {truncateText(
+  //               cellProps.row.original.prp_payment_percentage,
+  //               30
+  //             ) || "-"}
+  //           </span>
+  //         );
+  //       },
+  //     },
+  //     {
+  //       header: t("view_detail"),
+  //       enableColumnFilter: false,
+  //       enableSorting: true,
+  //       cell: (cellProps) => {
+  //         return (
+  //           <Button
+  //             type="button"
+  //             color="primary"
+  //             className="btn-sm"
+  //             onClick={() => {
+  //               const data = cellProps.row.original;
+  //               toggleViewModal(data);
+  //               setTransaction(cellProps.row.original);
+  //             }}
+  //           >
+  //             {t("view_detail")}
+  //           </Button>
+  //         );
+  //       },
+  //     },
+  //   ];
+  //   if (
+  //     data?.previledge?.is_role_editable == 1 ||
+  //     data?.previledge?.is_role_deletable == 1
+  //   ) {
+  //     baseColumns.push({
+  //       header: t("Action"),
+  //       accessorKey: t("Action"),
+  //       enableColumnFilter: false,
+  //       enableSorting: true,
+  //       cell: (cellProps) => {
+  //         return (
+  //           <div className="d-flex gap-3">
+  //             {data?.previledge?.is_role_editable == 1 &&
+  //               cellProps.row.original?.is_editable == 1 && (
+  //                 <Button
+  //                   color="none"
+  //                   className="text-success"
+  //                   onClick={() => {
+  //                     const data = cellProps.row.original;
+  //                     handleProjectPaymentClick(data);
+  //                   }}
+  //                 >
+  //                   <i
+  //                     className="mdi mdi-pencil font-size-18"
+  //                     id="edittooltip"
+  //                   />
+  //                   <UncontrolledTooltip placement="top" target="edittooltip">
+  //                     {t("edit")}
+  //                   </UncontrolledTooltip>
+  //                 </Button>
+  //               )}
+  //             {data?.previledge?.is_role_deletable == 9 &&
+  //               cellProps.row.original?.is_deletable == 9 && (
+  //                 <Button
+  //                   color="none"
+  //                   className="text-danger"
+  //                   onClick={() => {
+  //                     const data = cellProps.row.original;
+  //                     onClickDelete(data);
+  //                   }}
+  //                 >
+  //                   <i
+  //                     className="mdi mdi-delete font-size-18"
+  //                     id="deletetooltip"
+  //                   />
+  //                   <UncontrolledTooltip placement="top" target="deletetooltip">
+  //                     Delete
+  //                   </UncontrolledTooltip>
+  //                 </Button>
+  //               )}
+  //           </div>
+  //         );
+  //       },
+  //     });
+  //   }
+  //   return baseColumns;
+  // }, [handleProjectPaymentClick, toggleViewModal, onClickDelete]);
+
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: "",
-        accessorKey: "prp_budget_year_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {budgetYearMap[cellProps.row.original.prp_budget_year_id] || ""}
-            </span>
-          );
-        },
+        headerName: t("s_n"),
+        field: "sn",
+        valueGetter: "node.rowIndex + 1",
+        width: 60,
       },
       {
-        header: "",
-        accessorKey: "prp_type",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {paymentCategoryMap[cellProps.row.original.prp_type] || ""}
-            </span>
-          );
-        },
+        headerName: t("prp_budget_year_id"),
+        field: "prp_budget_year_id",
+        sortable: true,
+        filter: false,
+        flex: 3,
+        minWidth: 200,
+        cellRenderer: (params) =>
+          truncateText(budgetYearMap[params.data.prp_budget_year_id], 30) ||
+          "-",
       },
 
       {
-        header: "",
-        accessorKey: "prp_payment_date_gc",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prp_payment_date_gc, 30) ||
-                "-"}
-            </span>
-          );
-        },
+        headerName: t("prp_type"),
+        field: "prp_type",
+        sortable: true,
+        filter: false,
+        flex: 3,
+        minWidth: 200,
+        cellRenderer: (params) =>
+          truncateText(paymentCategoryMap[params.data.prp_type], 30) || "-",
       },
+
       {
-        header: "",
-        accessorKey: "prp_payment_amount",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prp_payment_amount, 30) ||
-                "-"}
-            </span>
-          );
-        },
+        headerName: t("prp_payment_date_gc"),
+        field: "prp_payment_date_gc",
+        sortable: true,
+        filter: false,
+        flex: 3,
+        minWidth: 200,
+        cellRenderer: (params) =>
+          truncateText(params.data.prp_payment_date_gc, 30) || "-",
       },
+
       {
-        header: "",
-        accessorKey: "prp_payment_percentage",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.prp_payment_percentage,
-                30
-              ) || "-"}
-            </span>
-          );
-        },
+        headerName: t("prp_payment_amount"),
+        field: "prp_payment_amount",
+        sortable: true,
+        filter: false,
+        flex: 3,
+        minWidth: 200,
+        cellRenderer: (params) =>
+          truncateText(params.data.prp_payment_amount, 30) || "-",
       },
+
       {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
+        headerName: t("prp_payment_percentage"),
+        field: "prp_payment_percentage",
+        sortable: true,
+        filter: false,
+        flex: 3,
+        minWidth: 200,
+        cellRenderer: (params) =>
+          truncateText(params.data.prp_payment_percentage, 30) || "-",
+      },
+
+      {
+        headerName: t("view_detail"),
+        sortable: true,
+        filter: false,
+        flex: 1,
+        minWidth: 120,
+        cellRenderer: (params) => (
+          <Button
+            type="button"
+            color="primary"
+            className="btn-sm"
+            onClick={() => {
+              const data = params.data;
+              toggleViewModal(data);
+              setTransaction(data);
+            }}
+            outline
+          >
+            {t("view_detail")}
+          </Button>
+        ),
       },
     ];
     if (
-     data?.previledge?.is_role_editable==1 ||
-     data?.previledge?.is_role_deletable==1
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
+        headerName: t("Action"),
+        sortable: true,
+        filter: false,
+        flex: 1,
+        minWidth: 120,
+        cellRenderer: (params) => {
           return (
             <div className="d-flex gap-3">
-             {(data?.previledge?.is_role_editable == 1 && cellProps.row.original?.is_editable == 1) && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleProjectPaymentClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    {t("edit")}
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-{(data?.previledge?.is_role_deletable == 9 && cellProps.row.original?.is_deletable == 9) && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+              {data?.previledge?.is_role_editable == 1 &&
+                params.data?.is_editable == 1 && (
+                  <Button
+                    color="none"
+                    className="text-success"
+                    onClick={() => {
+                      const data = params.data;
+                      handleProjectPaymentClick(data);
+                    }}
+                  >
+                    <i
+                      className="mdi mdi-pencil font-size-18"
+                      id="edittooltip"
+                    />
+                    <UncontrolledTooltip placement="top" target="edittooltip">
+                      {t("edit")}
+                    </UncontrolledTooltip>
+                  </Button>
+                )}
+              {data?.previledge?.is_role_deletable == 9 &&
+                params.data?.is_deletable == 9 && (
+                  <Button
+                    color="none"
+                    className="text-danger"
+                    onClick={() => {
+                      const data = params.data;
+                      onClickDelete(data);
+                    }}
+                  >
+                    <i
+                      className="mdi mdi-delete font-size-18"
+                      id="deletetooltip"
+                    />
+                    <UncontrolledTooltip placement="top" target="deletetooltip">
+                      Delete
+                    </UncontrolledTooltip>
+                  </Button>
+                )}
             </div>
           );
         },
@@ -422,7 +579,7 @@ const ProjectPaymentModel = (props) => {
   }, [handleProjectPaymentClick, toggleViewModal, onClickDelete]);
 
   if (isError) {
-    <FetchErrorHandler error={error} refetch={refetch} />
+    <FetchErrorHandler error={error} refetch={refetch} />;
   }
 
   return (
@@ -431,17 +588,21 @@ const ProjectPaymentModel = (props) => {
         isOpen={modal1}
         toggle={toggleViewModal} // Function to close the modal
         data={transaction} // Pass transaction as data to the modal
-        title={t('project_payment')}
+        title={t("project_payment")}
         description={transaction.prp_description}
         dateInEC={transaction.prp_payment_date_et}
         dateInGC={transaction.prp_payment_date_gc}
         fields={[
-          { label: t('prp_type'), key: "prp_type", value: paymentCategoryMap[transaction.prp_type] },
-          { label: t('prp_payment_amount'), key: "prp_payment_amount" },
-          { label: t('prp_payment_percentage'), key: "prp_payment_percentage" },
+          {
+            label: t("prp_type"),
+            key: "prp_type",
+            value: paymentCategoryMap[transaction.prp_type],
+          },
+          { label: t("prp_payment_amount"), key: "prp_payment_amount" },
+          { label: t("prp_payment_percentage"), key: "prp_payment_percentage" },
           //{ label: t('prp_payment_percentage'), key: "prp_status" },
         ]}
-        footerText={t('close')}
+        footerText={t("close")}
       />
       <DeleteModal
         show={deleteModal}
@@ -461,22 +622,49 @@ const ProjectPaymentModel = (props) => {
           {isLoading || searchLoading ? (
             <Spinners top={"top-70"} />
           ) : (
-            <TableContainer
-              columns={columns}
-              data={showSearchResults ? results : data?.data || []}
-              isGlobalFilter={true}
-              isAddButton={data?.previledge?.is_role_can_add == 1}
-              isCustomPageSize={true}
-              handleUserClick={handleProjectPaymentClicks}
-              isPagination={true}
-              SearchPlaceholder={t("filter_placeholder")}
-              buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-              buttonName={t("add")}
-              tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-              theadClass="table-light"
-              pagination="pagination"
-              paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-            />
+            // <TableContainer
+            //   columns={columns}
+            //   data={showSearchResults ? results : data?.data || []}
+            //   isGlobalFilter={true}
+            //   isAddButton={data?.previledge?.is_role_can_add == 1}
+            //   isCustomPageSize={true}
+            //   handleUserClick={handleProjectPaymentClicks}
+            //   isPagination={true}
+            //   SearchPlaceholder={t("filter_placeholder")}
+            //   buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+            //   buttonName={t("add")}
+            //   tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+            //   theadClass="table-light"
+            //   pagination="pagination"
+            //   paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+            // />
+
+            <div>
+              <AgGridContainer
+                rowData={showSearchResults ? results : data?.data || []}
+                columnDefs={columns}
+                isPagination={true}
+                paginationPageSize={10}
+                isGlobalFilter={true}
+                isAddButton={data?.previledge?.is_role_can_add == 1}
+                onAddClick={handleProjectPaymentClicks}
+                addButtonText="Add"
+                isExcelExport={true}
+                isPdfExport={true}
+                isPrint={true}
+                tableName="Project Payment"
+                includeKey={[
+                  "prj_name",
+                  "prj_code",
+                  "prp_type",
+                  "prp_payment_date_gc",
+                  "prp_payment_amount",
+                  "prp_payment_percentage",
+                ]}
+                excludeKey={["is_editable", "is_deletable"]}
+                rowHeight="45"
+              />
+            </div>
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
@@ -494,7 +682,10 @@ const ProjectPaymentModel = (props) => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prp_budget_year_id")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prp_budget_year_id")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prp_budget_year_id"
                       type="select"
@@ -503,13 +694,13 @@ const ProjectPaymentModel = (props) => {
                       value={validation.values.prp_budget_year_id || ""}
                       invalid={
                         validation.touched.prp_budget_year_id &&
-                          validation.errors.prp_budget_year_id
+                        validation.errors.prp_budget_year_id
                           ? true
                           : false
                       }
                       maxLength={20}
                     >
-                      <option value="">{t('select_one')}</option>
+                      <option value="">{t("select_one")}</option>
                       {budgetYearData?.data?.map((data) => (
                         <option key={data.bdy_id} value={data.bdy_id}>
                           {data.bdy_name}
@@ -517,14 +708,17 @@ const ProjectPaymentModel = (props) => {
                       ))}
                     </Input>
                     {validation.touched.prp_budget_year_id &&
-                      validation.errors.prp_budget_year_id ? (
+                    validation.errors.prp_budget_year_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_budget_year_id}
                       </FormFeedback>
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prp_type")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prp_type")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prp_type"
                       type="select"
@@ -534,13 +728,13 @@ const ProjectPaymentModel = (props) => {
                       value={validation.values.prp_type || ""}
                       invalid={
                         validation.touched.prp_type &&
-                          validation.errors.prp_type
+                        validation.errors.prp_type
                           ? true
                           : false
                       }
                       maxLength={20}
                     >
-                      <option value="">{t('select_one')}</option>
+                      <option value="">{t("select_one")}</option>
                       {paymentCategoryData?.data?.map((data) => (
                         <option key={data.pyc_id} value={data.pyc_id}>
                           {data.pyc_name_or}
@@ -548,7 +742,7 @@ const ProjectPaymentModel = (props) => {
                       ))}
                     </Input>
                     {validation.touched.prp_type &&
-                      validation.errors.prp_type ? (
+                    validation.errors.prp_type ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_type}
                       </FormFeedback>
@@ -577,14 +771,14 @@ const ProjectPaymentModel = (props) => {
                       value={validation.values.prp_payment_amount || ""}
                       invalid={
                         validation.touched.prp_payment_amount &&
-                          validation.errors.prp_payment_amount
+                        validation.errors.prp_payment_amount
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prp_payment_amount &&
-                      validation.errors.prp_payment_amount ? (
+                    validation.errors.prp_payment_amount ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_payment_amount}
                       </FormFeedback>
@@ -612,7 +806,7 @@ const ProjectPaymentModel = (props) => {
                         value={validation.values.prp_payment_percentage || ""}
                         invalid={
                           validation.touched.prp_payment_percentage &&
-                            validation.errors.prp_payment_percentage
+                          validation.errors.prp_payment_percentage
                             ? true
                             : false
                         }
@@ -623,7 +817,7 @@ const ProjectPaymentModel = (props) => {
                       </span>
                     </div>
                     {validation.touched.prp_payment_percentage &&
-                      validation.errors.prp_payment_percentage ? (
+                    validation.errors.prp_payment_percentage ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_payment_percentage}
                       </FormFeedback>
@@ -641,13 +835,13 @@ const ProjectPaymentModel = (props) => {
                       value={validation.values.prp_description || ""}
                       invalid={
                         validation.touched.prp_description &&
-                          validation.errors.prp_description
+                        validation.errors.prp_description
                           ? true
                           : false
                       }
                     />
                     {validation.touched.prp_description &&
-                      validation.errors.prp_description ? (
+                    validation.errors.prp_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_description}
                       </FormFeedback>
@@ -664,7 +858,7 @@ const ProjectPaymentModel = (props) => {
                       value={validation.values.prp_status || ""}
                       invalid={
                         validation.touched.prp_status &&
-                          validation.errors.prp_status
+                        validation.errors.prp_status
                           ? true
                           : false
                       }
@@ -674,7 +868,7 @@ const ProjectPaymentModel = (props) => {
                       <option value="1">{t("active")}</option>
                     </Input>
                     {validation.touched.prp_status &&
-                      validation.errors.prp_status ? (
+                    validation.errors.prp_status ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_status}
                       </FormFeedback>
@@ -685,7 +879,7 @@ const ProjectPaymentModel = (props) => {
                   <Col>
                     <div className="text-end">
                       {addProjectPayment.isPending ||
-                        updateProjectPayment.isPending ? (
+                      updateProjectPayment.isPending ? (
                         <Button
                           color="success"
                           type="submit"
