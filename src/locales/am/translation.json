@@ -1346,6 +1346,6 @@
 	"created":"የተፈጠረው",
 	"email":"ኢሜይል",
 	"phone_number":"ስልክ ቁጥር",
-	"full_name":"ሙሉ ስም"
-
+	"full_name":"ሙሉ ስም",
+	"no_rows_to_show": "ምንም የሚታዩ ረድፎች የሉም"
 }

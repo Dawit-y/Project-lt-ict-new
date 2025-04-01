@@ -6,30 +6,38 @@ import ExportToPDF from "./ExportToPdf";
 import PrintPage from "./PrintPage";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
+import { Spinner } from "reactstrap";
 
 import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
+import { useTranslation } from "react-i18next";
+
+const LoadingOverlay = () => {
+  return <Spinner color="primary" />
+}
 
 const AgGridContainer = ({
   rowData,
   columnDefs,
-  isPagination,
-  paginationPageSize,
-  isGlobalFilter,
+  isLoading = false,
+  isPagination = true,
+  paginationPageSize = 10,
+  isGlobalFilter = true,
   onAddClick,
   placeholder = "Filter...",
   addButtonText = "Add",
-  isAddButton,
+  isAddButton = false,
+  rowHeight = 32,
   isExcelExport = false,
   isPdfExport = false,
   isPrint = true,
   excludeKey = [],
   tableName = "",
-  includeKey = [],
-  rowHeight = "",
+  includeKey = []
 }) => {
   const gridRef = useRef(null);
   const [quickFilterText, setQuickFilterText] = useState("");
+  const { t } = useTranslation()
 
   const selectLayoutProperties = createSelector(
     (state) => state.Layout,
@@ -102,13 +110,16 @@ const AgGridContainer = ({
           ref={gridRef}
           rowData={rowData}
           columnDefs={columnDefs}
+          loading={isLoading}
+          loadingOverlayComponent={LoadingOverlay}
+          overlayNoRowsTemplate={t("no_rows_to_show")}
           pagination={isPagination}
           paginationPageSizeSelector={[10, 20, 30, 40, 50]}
           paginationPageSize={paginationPageSize}
           quickFilterText={quickFilterText}
-          rowHeight={rowHeight.length > 0 ? rowHeight : 30}
+          rowHeight={rowHeight}
           animateRows={true}
-          domLayout="autoHeight"
+          domLayout="autoHeight" 
         />
       </div>
     </div>

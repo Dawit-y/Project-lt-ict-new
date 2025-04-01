@@ -234,7 +234,7 @@ const ProjectModel = () => {
       <div className="page-content">
         <div className="w-100">
           <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
-          <div className="d-flex gap-2" style={{ display: "flex", flexWrap: "nowrap" }}>
+          <div className="d-flex gap-2 flex-nowrap">
             {/* Sidebar - Tree */}
             <div style={{ flex: "0 0 25%", minWidth: "250px" }}>
               <TreeForLists
@@ -243,7 +243,6 @@ const ProjectModel = () => {
                 setInclude={setInclude}
               />
             </div>
-
             {/* Main Content */}
             <div style={{ flex: "0 0 75%" }}>
               <AdvancedSearch

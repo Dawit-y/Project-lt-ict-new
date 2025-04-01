@@ -5,23 +5,13 @@ import React, {
   useRef,
   lazy,
   Suspense,
+  useCallback,
 } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Input,
-  Badge,
-} from "reactstrap";
-import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-// Lazy-loaded components
-const Spinners = lazy(() => import("../../components/Common/Spinner"));
+import { Button, Badge } from "reactstrap";
+import Spinners from "../../components/Common/Spinner";
 const Breadcrumbs = lazy(() => import("../../components/Common/Breadcrumb"));
 const ApproverBudgetRequestListModal = lazy(() =>
   import("./ApproverBudgetRequestModal")
@@ -44,7 +34,6 @@ const BudgetRequestModal = lazy(() => import("./BudgetRequestModal"));
 const AgGridContainer = lazy(() =>
   import("../../components/Common/AgGridContainer"));
 
-//const { budget_request } = lazy(() => import("../../settings/printablecolumns"));
 import { budget_request } from "../../settings/printablecolumns";
 import { useSearchBudgetRequestforApproval } from "../../queries/budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
@@ -63,13 +52,9 @@ const truncateText = (text, maxLength) => {
 };
 
 const ApproverBudgetRequestList = () => {
-  document.title = " Budget Request List ";
-
+  document.title = "Budget Request List";
   const { t } = useTranslation();
   const [modal1, setModal1] = useState(false);
-  const [quickFilterText, setQuickFilterText] = useState("");
-  const [selectedRows, setSelectedRows] = useState([]);
-  const gridRef = useRef(null);
 
   const [budgetRequestMetaData, setBudgetRequestMetaData] = useState({});
   const [detailModal, setDetailModal] = useState(false);
@@ -101,12 +86,12 @@ const ApproverBudgetRequestList = () => {
     user?.usr_officer_id > 0
       ? user.usr_officer_id
       : user?.usr_team_id > 0
-      ? user.usr_team_id
-      : user?.usr_directorate_id > 0
-      ? user.usr_directorate_id
-      : user?.usr_department_id > 0
-      ? user.usr_department_id
-      : null;
+        ? user.usr_team_id
+        : user?.usr_directorate_id > 0
+          ? user.usr_directorate_id
+          : user?.usr_department_id > 0
+            ? user.usr_department_id
+            : null;
 
   //const depId = 1
   const { data: rqfData, isLoading: rqfLoading } = useFetchRequestFollowups();
@@ -156,23 +141,23 @@ const ApproverBudgetRequestList = () => {
     );
   }, [bgCategoryOptionsData]);
 
- const projectStatusOptions = useMemo(() => {
-  return (
-    projectStatusData?.data
-      ?.filter((type) => type.prs_id === 5 || type.prs_id === 6)
-      .map((type) => ({
-        label: type.prs_status_name_or,
-        value: type.prs_id,
-      })) || []
-  );
-}, [projectStatusData]);
+  const projectStatusOptions = useMemo(() => {
+    return (
+      projectStatusData?.data
+        ?.filter((type) => type.prs_id === 5 || type.prs_id === 6)
+        .map((type) => ({
+          label: type.prs_status_name_or,
+          value: type.prs_id,
+        })) || []
+    );
+  }, [projectStatusData]);
 
 
-  const handleSearchResults = ({ data, error }) => {
+  const handleSearch = useCallback(({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
-  };
+  }, []);
 
   const handleEyeClick = (data) => {
     setShowCanvas(!showCanvas);
@@ -183,23 +168,6 @@ const ApproverBudgetRequestList = () => {
   const toggleViewModal = () => setModal1(!modal1);
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
-
-  // When selection changes, update selectedRows
-  const onSelectionChanged = () => {
-    const selectedNodes = gridRef.current.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
-    setSelectedRows(selectedData);
-  };
-  // Filter by marked rows
-  const filterMarked = () => {
-    if (gridRef.current) {
-      gridRef.current.api.setRowData(selectedRows);
-    }
-  };
-  // Clear the filter and show all rows again
-  const clearFilter = () => {
-    gridRef.current.api.setRowData(showSearchResults ? results : data);
-  };
 
   useEffect(() => {
     setProjectParams({
@@ -364,9 +332,8 @@ const ApproverBudgetRequestList = () => {
           const isForwarded = params.data.forwarded;
           return (
             <Badge
-              className={`font-size-12 badge-soft-${
-                isForwarded ? "danger" : "secondary"
-              }`}
+              className={`font-size-12 badge-soft-${isForwarded ? "danger" : "secondary"
+                }`}
             >
               {isForwarded ? t("forwarded") : t("not_forwarded")}
             </Badge>
@@ -389,27 +356,6 @@ const ApproverBudgetRequestList = () => {
           );
         },
       },
-
-      // {
-      //   headerName: t("view_detail"),
-      //   field: "view_detail",
-      //   //flex: 1,
-      //   cellRenderer: (params) => {
-      //     return (
-      //       <Button
-      //         type="button"
-      //         color="primary"
-      //         className="btn-sm"
-      //         onClick={() => {
-      //           toggleDetailModal();
-      //           setTransaction(params.data);
-      //         }}
-      //       >
-      //         {t("view_detail")}
-      //       </Button>
-      //     );
-      //   },
-      // },
       {
         headerName: t("take_action"),
         field: "take_action",
@@ -420,7 +366,7 @@ const ApproverBudgetRequestList = () => {
             <Button
               type="button"
               color="primary"
-              className="btn-sm"
+              className="btn-sm my-auto"
               onClick={() => {
                 const data = params.data;
                 toggleViewModal();
@@ -477,37 +423,6 @@ const ApproverBudgetRequestList = () => {
         },
       },
     ];
-
-    if (
-      data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable
-    ) {
-      baseColumnDefs.push({
-        headerName: t("view_detail"),
-        field: "view_detail",
-        //flex: 1,
-        width: 150,
-        cellRenderer: (params) => (
-          <div className="d-flex gap-3">
-            {params.data.is_editable ? (
-              <Link
-                to="#"
-                className="text-secondary"
-                onClick={() => handleEyeClick(params.data)}
-              >
-                <i className="mdi mdi-eye font-size-18 ms-2" id="viewtooltip" />
-                <UncontrolledTooltip placement="top" target="viewtooltip">
-                  View
-                </UncontrolledTooltip>
-              </Link>
-            ) : (
-              ""
-            )}
-          </div>
-        ),
-      });
-    }
-
     return baseColumnDefs;
   }, []);
 
@@ -515,13 +430,8 @@ const ApproverBudgetRequestList = () => {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<Spinners />}>
       <React.Fragment>
-        {/* <BudgetRequestModal
-        isOpen={detailModal}
-        toggle={toggleDetailModal}
-        transaction={transaction}
-      /> */}
         <ApproverBudgetRequestListModal
           isOpen={modal1}
           toggle={toggleViewModal}
@@ -547,13 +457,15 @@ const ApproverBudgetRequestList = () => {
               title={t("budget_request")}
               breadcrumbItem={t("budget_request")}
             />
-            <div className="w-100 d-flex gap-2">
-              <TreeForLists
-                onNodeSelect={handleNodeSelect}
-                setIsAddressLoading={setIsAddressLoading}
-                setInclude={setInclude}
-              />
-              <div className="w-100">
+            <div className="w-100 d-flex gap-2 flex-nowrap">
+              <div style={{ flex: "0 0 25%", minWidth: "250px" }}>
+                <TreeForLists
+                  onNodeSelect={handleNodeSelect}
+                  setIsAddressLoading={setIsAddressLoading}
+                  setInclude={setInclude}
+                />
+              </div>
+              <div style={{ flex: "0 0 75%" }}>
                 <AdvancedSearch
                   searchHook={useSearchBudgetRequestforApproval}
                   dateSearchKeys={["budget_request_date"]}
@@ -574,49 +486,43 @@ const ApproverBudgetRequestList = () => {
                   ]}
                   additionalParams={projectParams}
                   setAdditionalParams={setProjectParams}
-                  onSearchResult={handleSearchResults}
+                  onSearchResult={handleSearch}
                   setIsSearchLoading={setIsSearchLoading}
                   setSearchResults={setSearchResults}
                   setShowSearchResult={setShowSearchResult}
                 />
-
-                {isLoading || isSearchLoading ? (
-                  <div
-                    className="w-100"
-                    style={{ position: "relative", height: "300px" }}
-                  >
-                    <Spinners />
-                  </div>
-                ) : (
-                  <div>
-                      <AgGridContainer
-                rowData={
-                  showSearchResult
-                              ? transformedData
-                              : data?.data || []
-                }
-                columnDefs={columnDefs}
-                isPagination={true}
-                paginationPageSize={20}
-                isGlobalFilter={true}
-                isAddButton={false}
-                addButtonText="Add"
-                isExcelExport={true}
-                isPdfExport={true}
-                isPrint={true}
-                tableName="budget_request"
-                includeKey={["bdy_name",
-                        "prj_name",
-                        "prj_code",
-                        "bdr_request_status",
-                        "bdr_requested_amount",
-                        "bdr_released_amount",
-                        "bdr_requested_date_gc,bdr_released_date_gc",
-                        "bdr_description"]}
-                excludeKey={["is_editable", "is_deletable"]}
-              />
-                  </div>
-                )}
+                <div>
+                  <AgGridContainer
+                    rowData={
+                      showSearchResult
+                        ? transformedData
+                        : data?.data || []
+                    }
+                    columnDefs={columnDefs}
+                    isLoading={isSearchLoading}
+                    isPagination={true}
+                    paginationPageSize={20}
+                    isGlobalFilter={true}
+                    isAddButton={false}
+                    rowHeight={35}
+                    addButtonText="Add"
+                    isExcelExport={true}
+                    isPdfExport={true}
+                    isPrint={true}
+                    tableName="budget_request"
+                    includeKey={[
+                      "bdy_name",
+                      "prj_name",
+                      "prj_code",
+                      "bdr_request_status",
+                      "bdr_requested_amount",
+                      "bdr_released_amount",
+                      "bdr_requested_date_gc",
+                      "bdr_released_date_gc",
+                      "bdr_description"]}
+                    excludeKey={["is_editable", "is_deletable"]}
+                  />
+                </div>
               </div>
             </div>
           </div>
