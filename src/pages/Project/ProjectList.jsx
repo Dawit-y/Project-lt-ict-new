@@ -226,14 +226,11 @@ const ProjectModel = () => {
     return baseColumnDefs;
   }, [data, onClickDelete, t]);
 
-  if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
-  }
   return (
     <React.Fragment>
       <div className="page-content">
         <div className="w-100">
-          <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
+          <Breadcrumbs />
           <div className="d-flex gap-2 flex-nowrap">
             {/* Sidebar - Tree */}
             <div style={{ flex: "0 0 25%", minWidth: "250px" }}>
@@ -269,8 +266,7 @@ const ProjectModel = () => {
                 setParams={setParams}
                 searchParams={searchParams}
                 setSearchParams={setSearchParams}
-              />
-              <div>
+              >
                 <AgGridContainer
                   rowData={
                     showSearchResult ? searchResults?.data : data?.data || []
@@ -288,13 +284,11 @@ const ProjectModel = () => {
                   includeKey={["prj_name", "prj_code"]}
                   excludeKey={["is_editable", "is_deletable"]}
                 />
-              </div>
+              </AdvancedSearch>
             </div>
           </div>
         </div>
       </div>
-
-
     </React.Fragment>
   );
 };

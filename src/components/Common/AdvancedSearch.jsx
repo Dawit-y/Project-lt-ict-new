@@ -35,6 +35,7 @@ const AdvancedSearch = ({
   setIsSearchLoading,
   setSearchResults,
   setShowSearchResult,
+  children
 }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -469,6 +470,9 @@ const AdvancedSearch = ({
           </form>
         </CardBody>
       </Card>
+      <div>
+        {children}
+      </div>
     </React.Fragment>
   );
 };
