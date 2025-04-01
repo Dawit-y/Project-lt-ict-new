@@ -146,7 +146,7 @@ const CsoRegister = () => {
               <CardBody className="pt-0 mt-2">
                 <Form onSubmit={validation.handleSubmit}>
                   <Row>
-                    <Col className='col-md-6 mb-3'>
+                    <Col md={6} sm={12} className='mb-3'>
                       <Label>{t('cso_name')}</Label>
                       <span className="text-danger">*</span>
                       <Input
@@ -170,7 +170,7 @@ const CsoRegister = () => {
                         </FormFeedback>
                       ) : null}
                     </Col>
-                    <Col className='col-md-6 mb-3'>
+                    <Col md={6} sm={12} className='col-md-6 mb-3'>
                       <Label>{t('usr_email')}</Label>
                       <span className="text-danger">*</span>
                       <Input
@@ -196,7 +196,7 @@ const CsoRegister = () => {
                     </Col>
                   </Row>
                   <Row>
-                    <Col className='col-md-6 mb-3'>
+                    <Col md={6} sm={12} className='col-md-6 mb-3'>
                       <Label>{t('cso_address')}</Label>
                       <span className="text-danger">*</span>
                       <Input
@@ -220,7 +220,7 @@ const CsoRegister = () => {
                         </FormFeedback>
                       ) : null}
                     </Col>
-                    <Col className="col-md-6 mb-3">
+                    <Col md={6} sm={12} className="col-md-6 mb-3">
                       <Label>
                         Phone Number <span className="text-danger">*</span>
                       </Label>
@@ -370,7 +370,7 @@ const CsoRegister = () => {
               <p>
                 {t("have_account")}{" "}
                 <Link to="/login" className="fw-medium text-primary">
-                  {t("login")}
+                  {t("Login")}
                 </Link>
               </p>
               <p>
