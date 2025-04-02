@@ -1,6 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
-import Spinners from "../../components/Common/Spinner";
-import { AgGridReact } from "ag-grid-react";
+import React, { useEffect, useMemo, useState, lazy } from "react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -11,7 +9,9 @@ import { Button, Col, Row, Input } from "reactstrap";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForLists from "../../components/Common/TreeForLists";
-
+const AgGridContainer = lazy(() =>
+  import("../../components/Common/AgGridContainer")
+);
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -32,26 +32,8 @@ const ProjectEmployeeList = () => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
-  const { data, isLoading, error, isError, refetch } = useState("");
-  const [quickFilterText, setQuickFilterText] = useState("");
-  const [selectedRows, setSelectedRows] = useState([]);
-  const gridRef = useRef(null);
-  // When selection changes, update selectedRows
-  const onSelectionChanged = () => {
-    const selectedNodes = gridRef.current.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
-    setSelectedRows(selectedData);
-  };
-  // Filter by marked rows
-  const filterMarked = () => {
-    if (gridRef.current) {
-      gridRef.current.api.setRowData(selectedRows);
-    }
-  };
-  // Clear the filter and show all rows again
-  const clearFilter = () => {
-    gridRef.current.api.setRowData(showSearchResults ? results : data);
-  };
+  const { data, error, isError, refetch } = useState("");
+
   //START FOREIGN CALLS
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
@@ -187,7 +169,9 @@ const ProjectEmployeeList = () => {
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}
             />
-            <div className="w-100">
+
+            {/* Main Content */}
+            <div style={{ flex: "0 0 75%" }}>
               <AdvancedSearch
                 searchHook={useSearchProjectEmployees}
                 textSearchKeys={[
@@ -205,53 +189,33 @@ const ProjectEmployeeList = () => {
                 setIsSearchLoading={setIsSearchLoading}
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
-              />
-              {isLoading || isSearchLoading ? (
-                <Spinners />
-              ) : (
-                <div
-                  className="ag-theme-alpine"
-                  style={{ height: "100%", width: "100%" }}
-                >
-                  <Row className="mb-3">
-                    <Col sm="12" md="6">
-                      {/* Search Input for  Filter */}
-                      <Input
-                        type="text"
-                        placeholder="Search..."
-                        onChange={(e) => setQuickFilterText(e.target.value)}
-                        className="mb-2"
-                        style={{ width: "50%", maxWidth: "400px" }}
-                      />
-                    </Col>
-                    <Col sm="12" md="6" className="text-md-end"></Col>
-                  </Row>
-
-                  {/* AG Grid */}
-                  <div>
-                    <AgGridReact
-                      ref={gridRef}
-                      rowData={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      columnDefs={columnDefs}
-                      pagination={true}
-                      paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                      paginationPageSize={10}
-                      quickFilterText={quickFilterText}
-                      onSelectionChanged={onSelectionChanged}
-                      rowHeight={30} // Set the row height here
-                      animateRows={true} // Enables row animations
-                      domLayout="autoHeight" // Auto-size the grid to fit content
-                      onGridReady={(params) => {
-                        params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
+              >
+                <AgGridContainer
+                  rowData={
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
+                  columnDefs={columnDefs}
+                  isLoading={isSearchLoading}
+                  isPagination={true}
+                  rowHeight={35}
+                  paginationPageSize={10}
+                  isGlobalFilter={true}
+                  isExcelExport={true}
+                  isPdfExport={true}
+                  isPrint={true}
+                  tableName="Project Employee"
+                  includeKey={[
+                    "prj_name",
+                    "emp_full_name",
+                    "emp_id_no",
+                    "emp_email",
+                    "emp_phone_num",
+                    "emp_address",
+                    "emp_role",
+                  ]}
+                  excludeKey={["is_editable", "is_deletable"]}
+                />
+              </AdvancedSearch>
             </div>
           </div>
         </div>

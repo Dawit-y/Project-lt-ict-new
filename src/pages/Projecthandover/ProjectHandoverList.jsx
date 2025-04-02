@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState, lazy } from "react";
 import Spinners from "../../components/Common/Spinner";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
@@ -11,8 +11,9 @@ import { Button, Col, Row, Input } from "reactstrap";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForLists from "../../components/Common/TreeForLists";
-import { setIn } from "formik";
-
+const AgGridContainer = lazy(() =>
+  import("../../components/Common/AgGridContainer")
+);
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -38,7 +39,6 @@ const ProjectHandoverList = (props) => {
   const { data, isLoading, error, isError, refetch } = useState("");
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
-  const gridRef = useRef(null);
 
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
@@ -103,6 +103,7 @@ const ProjectHandoverList = (props) => {
       {
         headerName: t("prj_name"),
         field: "prj_name",
+        flex: 1,
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
@@ -130,6 +131,7 @@ const ProjectHandoverList = (props) => {
       {
         headerName: t("prh_description"),
         field: "prh_description",
+        flex: 1,
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
@@ -158,7 +160,9 @@ const ProjectHandoverList = (props) => {
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}
             />
-            <div className="w-100">
+
+            {/* Main Content */}
+            <div style={{ flex: "0 0 75%" }}>
               <AdvancedSearch
                 searchHook={useSearchProjectHandovers}
                 textSearchKeys={["prj_name", "prj_code"]}
@@ -171,54 +175,30 @@ const ProjectHandoverList = (props) => {
                 setIsSearchLoading={setIsSearchLoading}
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
-              />
-              {isLoading || isSearchLoading ? (
-                <Spinners />
-              ) : (
-                <div
-                  className="ag-theme-alpine"
-                  style={{ height: "100%", width: "100%" }}
-                >
-                  {/* Row for search input and buttons */}
-                  <Row className="mb-3">
-                    <Col sm="12" md="6">
-                      {/* Search Input for  Filter */}
-                      <Input
-                        type="text"
-                        placeholder="Search..."
-                        onChange={(e) => setQuickFilterText(e.target.value)}
-                        className="mb-2"
-                        style={{ width: "50%", maxWidth: "400px" }}
-                      />
-                    </Col>
-                    <Col sm="12" md="6" className="text-md-end"></Col>
-                  </Row>
-
-                  {/* AG Grid */}
-                  <div>
-                    <AgGridReact
-                      ref={gridRef}
-                      rowData={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      columnDefs={columnDefs}
-                      pagination={true}
-                      paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                      paginationPageSize={10}
-                      quickFilterText={quickFilterText}
-                      onSelectionChanged={onSelectionChanged}
-                      rowHeight={30} // Set the row height here
-                      animateRows={true} // Enables row animations
-                      domLayout="autoHeight" // Auto-size the grid to fit content
-                      onGridReady={(params) => {
-                        params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
+              >
+                <AgGridContainer
+                  rowData={
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
+                  columnDefs={columnDefs}
+                  isLoading={isSearchLoading}
+                  isPagination={true}
+                  rowHeight={35}
+                  paginationPageSize={10}
+                  isGlobalFilter={true}
+                  isExcelExport={true}
+                  isPdfExport={true}
+                  isPrint={true}
+                  tableName="Project Handover"
+                  includeKey={[
+                    "prj_name",
+                    "prj_code",
+                    "prh_handover_date_gc",
+                    "prh_description",
+                  ]}
+                  excludeKey={["is_editable", "is_deletable"]}
+                />
+              </AdvancedSearch>
             </div>
           </div>
         </div>
