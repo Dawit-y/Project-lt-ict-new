@@ -44,6 +44,7 @@ import {
 } from "../../queries/requestfollowup_query";
 import { PAGE_ID } from "../../constants/constantFile";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -55,10 +56,6 @@ const ApproverBudgetRequestList = () => {
   document.title = "Budget Request List";
   const { t } = useTranslation();
   const [modal1, setModal1] = useState(false);
-
-  const [budgetRequestMetaData, setBudgetRequestMetaData] = useState({});
-  const [detailModal, setDetailModal] = useState(false);
-  const [showCanvas, setShowCanvas] = useState(false);
   const [fileModal, setFileModal] = useState(false);
   const [convModal, setConvModal] = useState(false);
 
@@ -68,7 +65,6 @@ const ApproverBudgetRequestList = () => {
   const [showSearchResult, setShowSearchResult] = useState(false);
   const [transaction, setTransaction] = useState({});
 
-  const { data, isLoading, error, isError, refetch } = useState(null);
   const { data: budgetYearData } = useFetchBudgetYears();
   const { data: bgCategoryOptionsData } = useFetchRequestCategorys();
   const { data: projectStatusData } = useFetchProjectStatuss();
@@ -79,40 +75,6 @@ const ApproverBudgetRequestList = () => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
-
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const user = storedUser?.user;
-  const depId =
-    user?.usr_officer_id > 0
-      ? user.usr_officer_id
-      : user?.usr_team_id > 0
-        ? user.usr_team_id
-        : user?.usr_directorate_id > 0
-          ? user.usr_directorate_id
-          : user?.usr_department_id > 0
-            ? user.usr_department_id
-            : null;
-
-  //const depId = 1
-  const { data: rqfData, isLoading: rqfLoading } = useFetchRequestFollowups();
-
-  function markForwardedRequests(budgetRequests, forwardedRequests, depId) {
-    const forwardedSet = new Set(
-      forwardedRequests
-        .filter((req) => req.rqf_forwarding_dep_id === depId)
-        .map((req) => req.rqf_request_id)
-    );
-
-    return budgetRequests.map((request) => ({
-      ...request,
-      forwarded: forwardedSet.has(request.bdr_id),
-    }));
-  }
-
-  const transformedData = useMemo(() => {
-    if (!searchResults?.data || !rqfData?.data) return [];
-    return markForwardedRequests(searchResults.data, rqfData.data, depId);
-  }, [searchResults, rqfData, depId]);
 
   const budgetYearMap = useMemo(() => {
     return (
@@ -159,12 +121,6 @@ const ApproverBudgetRequestList = () => {
     setShowSearchResult(true);
   }, []);
 
-  const handleEyeClick = (data) => {
-    setShowCanvas(!showCanvas);
-    setBudgetRequestMetaData(data);
-  };
-
-  const toggleDetailModal = () => setDetailModal(!detailModal);
   const toggleViewModal = () => setModal1(!modal1);
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
@@ -426,9 +382,6 @@ const ApproverBudgetRequestList = () => {
     return baseColumnDefs;
   }, []);
 
-  if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
-  }
   return (
     <Suspense fallback={<Spinners />}>
       <React.Fragment>
@@ -453,10 +406,7 @@ const ApproverBudgetRequestList = () => {
         />
         <div className="page-content">
           <div className="">
-            <Breadcrumbs
-              title={t("budget_request")}
-              breadcrumbItem={t("budget_request")}
-            />
+            <Breadcrumbs />
             <div className="w-100 d-flex gap-2 flex-nowrap">
               <div style={{ flex: "0 0 25%", minWidth: "250px" }}>
                 <TreeForLists
@@ -490,39 +440,9 @@ const ApproverBudgetRequestList = () => {
                   setIsSearchLoading={setIsSearchLoading}
                   setSearchResults={setSearchResults}
                   setShowSearchResult={setShowSearchResult}
-                />
-                <div>
-                  <AgGridContainer
-                    rowData={
-                      showSearchResult
-                        ? transformedData
-                        : data?.data || []
-                    }
-                    columnDefs={columnDefs}
-                    isLoading={isSearchLoading}
-                    isPagination={true}
-                    paginationPageSize={20}
-                    isGlobalFilter={true}
-                    isAddButton={false}
-                    rowHeight={35}
-                    addButtonText="Add"
-                    isExcelExport={true}
-                    isPdfExport={true}
-                    isPrint={true}
-                    tableName="budget_request"
-                    includeKey={[
-                      "bdy_name",
-                      "prj_name",
-                      "prj_code",
-                      "bdr_request_status",
-                      "bdr_requested_amount",
-                      "bdr_released_amount",
-                      "bdr_requested_date_gc",
-                      "bdr_released_date_gc",
-                      "bdr_description"]}
-                    excludeKey={["is_editable", "is_deletable"]}
-                  />
-                </div>
+                >
+                  <TableWrapper columnDefs={columnDefs} showSearchResult={showSearchResult} />
+                </AdvancedSearch>
               </div>
             </div>
           </div>
@@ -535,3 +455,68 @@ ApproverBudgetRequestList.propTypes = {
   preGlobalFilteredRows: PropTypes.any,
 };
 export default ApproverBudgetRequestList;
+
+const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
+  const storedUser = JSON.parse(localStorage.getItem("authUser"));
+  const user = storedUser?.user;
+  const depId =
+    user?.usr_officer_id > 0
+      ? user.usr_officer_id
+      : user?.usr_team_id > 0
+        ? user.usr_team_id
+        : user?.usr_directorate_id > 0
+          ? user.usr_directorate_id
+          : user?.usr_department_id > 0
+            ? user.usr_department_id
+            : null;
+
+  const { data: rqfData, isLoading: rqfLoading } = useFetchRequestFollowups();
+
+  function markForwardedRequests(budgetRequests = [], forwardedRequests = [], depId) {
+    const forwardedSet = new Set(
+      forwardedRequests
+        .filter((req) => req.rqf_forwarding_dep_id === depId)
+        .map((req) => req.rqf_request_id)
+    );
+
+    return budgetRequests.map((request) => ({
+      ...request,
+      forwarded: forwardedSet.has(request.bdr_id),
+    }));
+  }
+
+  let transformedData = data?.data || [];
+  if (data?.data && rqfData?.data) {
+    transformedData = markForwardedRequests(data.data, rqfData.data, depId);
+  }
+
+  return (
+    <AgGridContainer
+      rowData={showSearchResult ? transformedData : []}
+      columnDefs={columnDefs}
+      isLoading={isLoading}
+      isPagination={true}
+      paginationPageSize={20}
+      isGlobalFilter={true}
+      isAddButton={false}
+      rowHeight={35}
+      addButtonText="Add"
+      isExcelExport={true}
+      isPdfExport={true}
+      isPrint={true}
+      tableName="budget_request"
+      includeKey={[
+        "bdy_name",
+        "prj_name",
+        "prj_code",
+        "bdr_request_status",
+        "bdr_requested_amount",
+        "bdr_released_amount",
+        "bdr_requested_date_gc",
+        "bdr_released_date_gc",
+        "bdr_description",
+      ]}
+      excludeKey={["is_editable", "is_deletable"]}
+    />
+  );
+};

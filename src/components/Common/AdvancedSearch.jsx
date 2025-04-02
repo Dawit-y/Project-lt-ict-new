@@ -13,7 +13,6 @@ import {
   Tooltip,
   UncontrolledTooltip,
 } from "reactstrap";
-import Select from "react-select";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import "flatpickr/dist/themes/material_blue.css";
@@ -42,7 +41,7 @@ const AdvancedSearch = ({
   const toggle = () => setIsOpen(!isOpen);
   const [params, setParams] = useState({});
   const [searchParams, setSearchParams] = useState({});
-  const { refetch, isError, error } = searchHook(searchParams);
+  const { data = [], isLoading, refetch, isError, error } = searchHook(searchParams);
 
   const flatpickrStartRef = useRef(null);
   const flatpickrEndRef = useRef(null);
@@ -471,7 +470,7 @@ const AdvancedSearch = ({
         </CardBody>
       </Card>
       <div>
-        {children}
+        {children && React.cloneElement(children, { data, isLoading })}
       </div>
     </React.Fragment>
   );

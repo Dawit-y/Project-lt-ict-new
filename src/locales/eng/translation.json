@@ -1306,5 +1306,6 @@
 	"ppp_created_by": "Created By",
 	"ppp_status": "Status",
 	"val_tin_min_length": "Minimum Length",
-	"no_rows_to_show": "No rows to show"
+	"no_rows_to_show": "No rows to show",
+	"bdr_action_remark": "Remark"
 }
