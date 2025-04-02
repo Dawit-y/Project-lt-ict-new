@@ -1,17 +1,17 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
-import Spinners from "../../components/Common/Spinner";
+import React, { useEffect, lazy, useMemo, useState } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { AgGridReact } from "ag-grid-react";
 import { useSearchProjectPerformances } from "../../queries/projectperformance_query";
 import TreeForLists from "../../components/Common/TreeForLists";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
 import { useTranslation } from "react-i18next";
-import { Col, Row, Input } from "reactstrap";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { createSelectOptions } from "../../utils/commonMethods";
+const AgGridContainer = lazy(() =>
+  import("../../components/Common/AgGridContainer")
+);
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -40,12 +40,8 @@ const ProjectPerformanceList = (props) => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [include, setInclude] = useState(0);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useState({});
-  const [transaction, setTransaction] = useState({});
+  const { data, error, isError, refetch } = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [quickFilterText, setQuickFilterText] = useState("");
-  const gridRef = useRef(null);
   const { data: budgetYearData } = useFetchBudgetYears();
   const { data: budgetMonthData } = useFetchBudgetMonths();
   const { data: projectStatusData } = useFetchProjectStatuss();
@@ -66,22 +62,6 @@ const ProjectPerformanceList = (props) => {
     "bdm_month"
   );
 
-  // When selection changes, update selectedRows
-  const onSelectionChanged = () => {
-    const selectedNodes = gridRef.current.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
-    setSelectedRows(selectedData);
-  };
-  // Filter by marked rows
-  const filterMarked = () => {
-    if (gridRef.current) {
-      gridRef.current.api.setRowData(selectedRows);
-    }
-  };
-  // Clear the filter and show all rows again
-  const clearFilter = () => {
-    gridRef.current.api.setRowData(showSearchResults ? results : data);
-  };
   // Fetch ProjectPerformance on component mount
 
   const toggle = () => {
@@ -93,18 +73,6 @@ const ProjectPerformanceList = (props) => {
     }
   };
 
-  //delete projects
-  const [deleteModal, setDeleteModal] = useState(false);
-  const onClickDelete = (projectPerformance) => {
-    setProjectPerformance(projectPerformance);
-    setDeleteModal(true);
-  };
-
-  const handleProjectPerformanceClicks = () => {
-    setIsEdit(false);
-    setProjectPerformance("");
-    toggle();
-  };
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
@@ -243,14 +211,15 @@ const ProjectPerformanceList = (props) => {
             title={t("project")}
             breadcrumbItem={t("project_performance_list")}
           />
-          
+
           <div className="w-100 d-flex gap-2">
             <TreeForLists
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}
             />
-            <div className="w-100">
+            {/* Main Content */}
+            <div style={{ flex: "0 0 75%" }}>
               <AdvancedSearch
                 searchHook={useSearchProjectPerformances}
                 textSearchKeys={["prj_name", "prj_code"]}
@@ -275,54 +244,33 @@ const ProjectPerformanceList = (props) => {
                 setIsSearchLoading={setIsSearchLoading}
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
-              />
-              {isLoading || isSearchLoading ? (
-                <Spinners />
-              ) : (
-                <div
-                  className="ag-theme-alpine"
-                  style={{ height: "100%", width: "100%" }}
-                >
-                  {/* Row for search input and buttons */}
-                  <Row className="mb-3">
-                    <Col sm="12" md="6">
-                      {/* Search Input for  Filter */}
-                      <Input
-                        type="text"
-                        placeholder="Search..."
-                        onChange={(e) => setQuickFilterText(e.target.value)}
-                        className="mb-2"
-                        style={{ width: "50%", maxWidth: "400px" }}
-                      />
-                    </Col>
-                    <Col sm="12" md="6" className="text-md-end"></Col>
-                  </Row>
-
-                  {/* AG Grid */}
-                  <div>
-                    <AgGridReact
-                      ref={gridRef}
-                      rowData={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      columnDefs={columnDefs}
-                      pagination={true}
-                      paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                      paginationPageSize={10}
-                      quickFilterText={quickFilterText}
-                      onSelectionChanged={onSelectionChanged}
-                      rowHeight={30} // Set the row height here
-                      animateRows={true} // Enables row animations
-                      domLayout="autoHeight" // Auto-size the grid to fit content
-                      onGridReady={(params) => {
-                        params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
+              >
+                <AgGridContainer
+                  rowData={
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
+                  columnDefs={columnDefs}
+                  isLoading={isSearchLoading}
+                  isPagination={true}
+                  rowHeight={35}
+                  paginationPageSize={10}
+                  isGlobalFilter={true}
+                  isExcelExport={true}
+                  isPdfExport={true}
+                  isPrint={true}
+                  tableName="Project Performance"
+                  includeKey={[
+                    "prj_name",
+                    "prp_record_date_gc",
+                    "prp_total_budget_used",
+                    "prp_physical_performance",
+                    "status_name",
+                    "year_name",
+                    "month_name",
+                  ]}
+                  excludeKey={["is_editable", "is_deletable"]}
+                />
+              </AdvancedSearch>
             </div>
           </div>
         </div>
