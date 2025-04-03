@@ -82,13 +82,13 @@ const AuthMiddleware = ({ children }) => {
   const authPaths = extractAuthPaths(authProtectedRoutes);
   const allowedPaths = sidedata.length > 0 ? extractPaths(sidedata) : [];
 
-  const isProjectPath = (path) => {
-    const projectPathRegex = /^\/Project(detail)?\/\d+(\/\w+)?(#\w+)?$/i;
-    return projectPathRegex.test(path);
+  const isCSOProjectPath = (path) => {
+    const csoProjectPathRegex = /^\/projectdetail_cso\/\d+(#\w+)?$/i;
+    return csoProjectPathRegex.test(path);
   };
 
-  if (isProjectPath(currentPath)) {
-    allowedPaths.push("/projectdetail/:id");
+  if (isCSOProjectPath(currentPath)) {
+    allowedPaths.push("/projectdetail_cso/:id");
   }
 
   const isAuthenticated = localStorage.getItem("authUser");
@@ -113,11 +113,11 @@ const AuthMiddleware = ({ children }) => {
     return <Navigate to="/login" state={{ from: location }} />;
   }
 
-  if (!authPaths.includes(currentPath) && !isProjectPath(currentPath)) {
+  if (!authPaths.includes(currentPath) && !isCSOProjectPath(currentPath)) {
     return <Navigate to="/not_found" />;
   }
 
-  if (!allowedPaths.includes(currentPath) && !isProjectPath(currentPath)) {
+  if (!allowedPaths.includes(currentPath) && !isCSOProjectPath(currentPath)) {
     return <Navigate to="/unauthorized" />;
   }
 
