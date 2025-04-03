@@ -13,7 +13,6 @@ import {
   Tooltip,
   UncontrolledTooltip,
 } from "reactstrap";
-import Select from "react-select";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import "flatpickr/dist/themes/material_blue.css";
@@ -35,13 +34,14 @@ const AdvancedSearch = ({
   setIsSearchLoading,
   setSearchResults,
   setShowSearchResult,
+  children
 }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
   const [params, setParams] = useState({});
   const [searchParams, setSearchParams] = useState({});
-  const { refetch, isError, error } = searchHook(searchParams);
+  const { data = [], isLoading, refetch, isError, error } = searchHook(searchParams);
 
   const flatpickrStartRef = useRef(null);
   const flatpickrEndRef = useRef(null);
@@ -69,9 +69,17 @@ const AdvancedSearch = ({
           : [value];
         return { ...prevParams, [key]: updatedValues };
       }
+
+      if (value === "") {
+        const updatedParams = { ...prevParams };
+        delete updatedParams[key];
+        return updatedParams;
+      }
+
       return { ...prevParams, [key]: value };
     });
   };
+
 
   const handleSearch = () => {
     validation.handleSubmit();
@@ -314,7 +322,7 @@ const AdvancedSearch = ({
                               value={params[key] || ""}
                               style={inputStyles}
                             >
-                              <option value={null}>{t("Select") + " " + t(`${key}`)}</option>
+                              <option value={""}>{t("Select") + " " + t(`${key}`)}</option>
                               {options.map((option) => (
                                 <option key={option.value} value={option.value}>
                                   {t(`${option.label}`)}
@@ -461,6 +469,9 @@ const AdvancedSearch = ({
           </form>
         </CardBody>
       </Card>
+      <div>
+        {children && React.cloneElement(children, { data, isLoading })}
+      </div>
     </React.Fragment>
   );
 };

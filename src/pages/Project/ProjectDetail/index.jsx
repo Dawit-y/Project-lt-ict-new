@@ -38,6 +38,9 @@ const LazyComponents = {
   ProjectPlanModel: lazy(() =>
     import("../../../pages/Projectplan/ProjectPlanRegistration")
   ),
+  ProcurementInformationModel: lazy(() =>
+    import("../../Procurementinformation")
+  ),
 };
 
 const ProjectsOverview = () => {
@@ -57,6 +60,11 @@ const ProjectsOverview = () => {
   // Tab configuration
   const tabMapping = useMemo(
     () => ({
+      7: {
+        label: t("procurement_information"),
+        component: LazyComponents.ProcurementInformationModel,
+        path: "procurement",
+      },
       39: {
         label: t("project_budget_expenditure"),
         component: LazyComponents.ProjectBudgetExpenditureModel,

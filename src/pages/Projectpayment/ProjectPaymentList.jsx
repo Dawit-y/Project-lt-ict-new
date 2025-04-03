@@ -1,11 +1,8 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
-import Spinners from "../../components/Common/Spinner";
+import React, { useEffect, lazy, useMemo, useState } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { useTranslation } from "react-i18next";
-import { Button, Col, Row, Input } from "reactstrap";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import {
@@ -15,7 +12,9 @@ import {
 import TreeForLists from "../../components/Common/TreeForLists";
 import { useFetchPaymentCategorys } from "../../queries/paymentcategory_query";
 import { createSelectOptions } from "../../utils/commonMethods";
-
+const AgGridContainer = lazy(() =>
+  import("../../components/Common/AgGridContainer")
+);
 const ProjectPaymentList = () => {
   document.title = "Project Payment List";
   const { t } = useTranslation();
@@ -32,32 +31,14 @@ const ProjectPaymentList = () => {
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
 
-  const { data, isLoading, error, isError, refetch } = useState("");
-  const [quickFilterText, setQuickFilterText] = useState("");
-  const [selectedRows, setSelectedRows] = useState([]);
-  const gridRef = useRef(null);
+  const { data } = useState("");
+
   const { data: paymentCategoryData } = useFetchPaymentCategorys();
   const paymentCategoryOptions = createSelectOptions(
     paymentCategoryData?.data || [],
     "pyc_id",
     "pyc_name_or"
   );
-  // When selection changes, update selectedRows
-  const onSelectionChanged = () => {
-    const selectedNodes = gridRef.current.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
-    setSelectedRows(selectedData);
-  };
-  // Filter by marked rows
-  const filterMarked = () => {
-    if (gridRef.current) {
-      gridRef.current.api.setRowData(selectedRows);
-    }
-  };
-  // Clear the filter and show all rows again
-  const clearFilter = () => {
-    gridRef.current.api.setRowData(showSearchResults ? results : data);
-  };
 
   useEffect(() => {
     setProjectPayment(data);
@@ -117,6 +98,7 @@ const ProjectPaymentList = () => {
       {
         headerName: t("prj_name"),
         field: "prj_name",
+        flex: 1,
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
@@ -155,6 +137,7 @@ const ProjectPaymentList = () => {
         field: "prp_payment_amount",
         sortable: true,
         filter: true,
+
         valueFormatter: (params) => {
           if (params.value != null) {
             return new Intl.NumberFormat("en-US", {
@@ -192,7 +175,8 @@ const ProjectPaymentList = () => {
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}
             />
-            <div className="w-100">
+            {/* Main Content */}
+            <div style={{ flex: "0 0 75%" }}>
               <AdvancedSearch
                 searchHook={useSearchProjectPayments}
                 textSearchKeys={["prj_name", "prj_code"]}
@@ -210,59 +194,30 @@ const ProjectPaymentList = () => {
                 setIsSearchLoading={setIsSearchLoading}
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
-              />
-              {isLoading || isSearchLoading ? (
-                <Spinners />
-              ) : (
-                <div
-                  className="ag-theme-alpine"
-                  style={{ height: "100%", width: "100%" }}
-                >
-                  {/* Row for search input and buttons */}
-                  <Row className="mb-3">
-                    <Col sm="12" md="6">
-                      {/* Search Input for  Filter */}
-                      <Input
-                        type="text"
-                        placeholder="Search..."
-                        onChange={(e) => setQuickFilterText(e.target.value)}
-                        className="mb-2"
-                        style={{ width: "50%", maxWidth: "400px" }}
-                      />
-                    </Col>
-                    <Col sm="12" md="6" className="text-md-end"></Col>
-                  </Row>
-
-                  {/* AG Grid */}
-                  <div>
-                    <AgGridReact
-                      ref={gridRef}
-                      rowData={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      columnDefs={columnDefs}
-                      pagination={true}
-                      paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                      paginationPageSize={10}
-                      quickFilterText={quickFilterText}
-                      onSelectionChanged={onSelectionChanged}
-                      rowHeight={30} // Set the row height here
-                      animateRows={true} // Enables row animations
-                      domLayout="autoHeight" // Auto-size the grid to fit content
-                      onGridReady={(params) => {
-                        params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                      }}
-                    />
-                  </div>
-                  {/*<PaymentAnalaysis
-                    data={
-                      showSearchResult ? searchResults?.data : data?.data || []
-                    }
-                  />*/}
-                </div>
-              )}
+              >
+                <AgGridContainer
+                  rowData={
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
+                  columnDefs={columnDefs}
+                  isLoading={isSearchLoading}
+                  isPagination={true}
+                  rowHeight={35}
+                  paginationPageSize={10}
+                  isGlobalFilter={true}
+                  isExcelExport={true}
+                  isPdfExport={true}
+                  isPrint={true}
+                  tableName="Project Payment"
+                  includeKey={[
+                    "prj_name",
+                    "prp_payment_amount",
+                    "prp_payment_percentage",
+                    "prp_payment_date_gc",
+                  ]}
+                  excludeKey={["is_editable", "is_deletable"]}
+                />
+              </AdvancedSearch>
             </div>
           </div>
         </div>
@@ -271,4 +226,3 @@ const ProjectPaymentList = () => {
   );
 };
 export default ProjectPaymentList;
-

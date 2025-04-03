@@ -179,7 +179,13 @@ const CitizenshipProjectList = lazy(() =>
 const CitizenshipProjectDetail = lazy(() =>
   import("../pages/Citizenshipproject/ProjectDetail/index.jsx")
 );
-
+//START PROCUMENET
+const ProcurementinformationList = lazy(() => import('../pages/Procurementinformation/ProcurementInformationList'));
+const ProcurementInformation = lazy(() => import('../pages/Procurementinformation/index'));
+const ProcurementMethod = lazy(() => import('../pages/Procurementmethod/index'));
+const ProcurementParticipant = lazy(() => import('../pages/Procurementparticipant/index'));
+const ProcurementStage = lazy(() => import('../pages/Procurementstage/index'));
+//END PROCUREMENT
 const authProtectedRoutes = [
   { path: "/cso_information", component: <CSOInformation /> },
   { path: "/project_cso", component: <CSOProject /> },
@@ -298,6 +304,13 @@ const authProtectedRoutes = [
   //   // this route should be at the end of all other routes
   //   // eslint-disable-next-line react/display-name
   { path: "/", exact: true, component: <Navigate to="/dashboard" /> },
+  //START PROCUREMENT
+  {path: '/procurement_information', component: <ProcurementInformation/> },
+   {path: '/procurement_method', component: <ProcurementMethod/> },
+   {path: '/procurement_participant', component: <ProcurementParticipant/> },
+   {path: '/procurement_stage', component: <ProcurementStage/> },
+   {path: '/procurement_list', component: <ProcurementinformationList/> },
+  //END PROCUREMENT
 ];
 
 const publicRoutes = [
