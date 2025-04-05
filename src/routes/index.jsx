@@ -301,16 +301,14 @@ const authProtectedRoutes = [
   { path: "/budget_ex_source", component: <BudgetExSource /> },
   { path: "/budget_exip_detail", component: <BudgetExipDetail /> },
   { path: "/payment_category", component: <PaymentCategory /> },
+  { path: '/procurement_information', component: <ProcurementInformation /> },
+  { path: '/procurement_method', component: <ProcurementMethod /> },
+  { path: '/procurement_participant', component: <ProcurementParticipant /> },
+  { path: '/procurement_stage', component: <ProcurementStage /> },
+  { path: '/procurement_list', component: <ProcurementinformationList /> },
   //   // this route should be at the end of all other routes
   //   // eslint-disable-next-line react/display-name
   { path: "/", exact: true, component: <Navigate to="/dashboard" /> },
-  //START PROCUREMENT
-  {path: '/procurement_information', component: <ProcurementInformation/> },
-   {path: '/procurement_method', component: <ProcurementMethod/> },
-   {path: '/procurement_participant', component: <ProcurementParticipant/> },
-   {path: '/procurement_stage', component: <ProcurementStage/> },
-   {path: '/procurement_list', component: <ProcurementinformationList/> },
-  //END PROCUREMENT
 ];
 
 const publicRoutes = [

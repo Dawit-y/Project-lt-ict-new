@@ -42,6 +42,7 @@ export const PAGE_ID = {
 	PROJ_CONTRACTOR: 44,
 	PROJ_STAKEHOLDER: 1,
 	PROJ_BUDGET_REQUEST: 34,
+	CSO: 65,
 };
 
 //Login Page Constants

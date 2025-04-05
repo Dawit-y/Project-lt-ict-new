@@ -21,17 +21,18 @@ export const useFetchCsoInfos = () => {
 };
 
 //search cso_info
-export const useSearchCsoInfos = (searchParams = {}) => {
+export const useSearchCsoInfos = (searchParams = null) => {
   return useQuery({
-    queryKey: [...CSO_INFO_QUERY_KEY, searchParams],
+    queryKey: searchParams ? [...CSO_INFO_QUERY_KEY, searchParams] : [],
     queryFn: () => getCsoInfo(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: searchParams.length > 0,
+    enabled: !!searchParams && !!searchParams.cso_id, // Ensures ownerId is valid
   });
 };
+
 
 // Add cso_info
 export const useAddCsoInfo = () => {
@@ -40,7 +41,7 @@ export const useAddCsoInfo = () => {
   return useMutation({
     mutationFn: addCsoInfo,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( CSO_INFO_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(CSO_INFO_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,

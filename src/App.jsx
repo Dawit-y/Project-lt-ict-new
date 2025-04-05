@@ -24,8 +24,8 @@ import HorizontalLayout from "./components/HorizontalLayout/";
 import NonAuthLayout from "./components/NonAuthLayout";
 import ErrorBoundary from "./components/Common/ErrorBoundary";
 import Unauthorized from "./components/Common/Unauthorized";
+const AccountVerification = lazy(() => import("./components/Common/AccountVerification"));
 
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NetworkAlert from "./components/Common/NetworkAlert";
 import { scheduleTokenRefresh } from "./helpers/api_Lists";
@@ -43,7 +43,6 @@ function getLayout(layoutType) {
   }
   return layoutCls;
 }
-
 
 const App = (props) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -125,6 +124,20 @@ const App = (props) => {
                 <Unauthorized />
               </ErrorBoundary>
             </Layout>
+          }
+        />
+        <Route
+          path="/not_approved"
+          element={
+            <>
+              <Layout>
+                <ErrorBoundary>
+                  <Suspense fallback={<Spinners />}>
+                    <AccountVerification />
+                  </Suspense>
+                </ErrorBoundary>
+              </Layout>
+            </>
           }
         />
         <Route
