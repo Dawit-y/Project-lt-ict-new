@@ -23,20 +23,21 @@ const ProjectDocumentModal = (props) => {
     "is_editable",
     "prd_project_id",
     "prd_id",
-    "prd_status",
     "total_count",
     "prd_delete_time",
     "prd_uploaded_date",
     "prd_description",
-    "prd_size",
-    "prd_create_time",
     "prd_created_by"
   ];
   const tabs = [
     {
       id: "details",
       label: "Details",
-      content: <DetailsView details={transaction} keysToRemove={keysToRemove} />,
+      content:
+        <DetailsView
+          details={transaction}
+          keysToRemove={keysToRemove}
+        />,
     },
     {
       id: "pdf",

@@ -22,7 +22,6 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import BudgetRequestAnalysis from "./BudgetRequestAnalysis";
 import {
-  useFetchBudgetRequests,
   useSearchBudgetRequests,
 } from "../../queries/budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
@@ -320,7 +319,6 @@ const BudgetRequestListModel = () => {
               className="btn-sm"
               onClick={() => {
                 toggleViewModal();
-                console.log(params.data);
                 setTransaction(params.data);
               }}
             >

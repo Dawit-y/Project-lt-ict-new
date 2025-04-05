@@ -66,12 +66,12 @@ const FileList = ({
   setDeleteModal,
   isDeleteLoading,
   onClickDelete,
-  isGridView,
-  setIsGridView,
+  actions = true
 }) => {
   const { t } = useTranslation()
   const [modal1, setModal1] = useState(false);
   const [details, setDetails] = useState({});
+  const [isGridView, setIsGridView] = useState(true)
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -180,17 +180,21 @@ const FileList = ({
                                 >
                                   {t("open")}
                                 </DropdownItem>
-                                <DropdownItem to="#" onClick={() => edit(file)}>
-                                  {t("edit")}
-                                </DropdownItem>
-                                <div className="dropdown-divider"></div>
-                                <DropdownItem
-                                  to="#"
-                                  className="text-danger"
-                                  onClick={() => onClickDelete(file)}
-                                >
-                                  {t("delete")}
-                                </DropdownItem>
+                                {actions &&
+                                  <>
+                                    <DropdownItem to="#" onClick={() => edit(file)}>
+                                      {t("edit")}
+                                    </DropdownItem>
+                                    <div className="dropdown-divider"></div>
+                                    <DropdownItem
+                                      to="#"
+                                      className="text-danger"
+                                      onClick={() => onClickDelete(file)}
+                                    >
+                                      {t("delete")}
+                                    </DropdownItem>
+                                  </>
+                                }
                               </DropdownMenu>
                             </UncontrolledDropdown>
                           </div>
@@ -323,17 +327,21 @@ const FileList = ({
                               >
                                 {t("open")}
                               </DropdownItem>
-                              <DropdownItem to="#" onClick={() => edit(file)}>
-                                {t("edit")}
-                              </DropdownItem>
-                              <div className="dropdown-divider"></div>
-                              <DropdownItem
-                                to="#"
-                                className="text-danger"
-                                onClick={() => onClickDelete(file)}
-                              >
-                                {t("delete")}
-                              </DropdownItem>
+                              {actions &&
+                                <>
+                                  <DropdownItem to="#" onClick={() => edit(file)}>
+                                    {t("edit")}
+                                  </DropdownItem>
+                                  <div className="dropdown-divider"></div>
+                                  <DropdownItem
+                                    to="#"
+                                    className="text-danger"
+                                    onClick={() => onClickDelete(file)}
+                                  >
+                                    {t("delete")}
+                                  </DropdownItem>
+                                </>
+                              }
                             </DropdownMenu>
                           </UncontrolledDropdown>
                         </td>
