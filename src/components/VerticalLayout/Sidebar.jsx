@@ -92,7 +92,7 @@ const Sidebar = (props) => {
 };
 
 Sidebar.propTypes = {
-  type: PropTypes.string,
+  type: PropTypes.any,
 };
 
 const mapStatetoProps = (state) => {

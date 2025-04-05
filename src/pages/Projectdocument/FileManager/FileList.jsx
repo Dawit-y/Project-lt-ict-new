@@ -84,10 +84,9 @@ const FileList = ({
     setIsGridView((prev) => !prev);
   };
 
-
   // Filter files based on search query
   const filteredFiles = files.filter((file) =>
-    file.prd_name.toLowerCase().includes(searchQuery.toLowerCase())
+    String(file?.prd_name || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Pagination logic
