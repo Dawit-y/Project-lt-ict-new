@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react'
+import { Navigate } from 'react-router-dom'
 import FileUploadField from './FileUploadField'
 import DeleteModal from './DeleteModal'
 import { useFormik } from 'formik'
@@ -16,20 +17,24 @@ import FileList from '../../pages/Projectdocument/FileManager/FileList'
 
 const AccountVerification = () => {
   document.title = "Account Verification Required"
-  const [projectDocument, setProjectDocument] = useState(null)
-  const [modal, setModal] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [isGridView, setIsGridView] = useState(false)
 
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const ownerId = storedUser?.user?.usr_owner_id
+  const userType = storedUser?.user?.usr_user_type
   const csoParam = ownerId ? { cso_id: ownerId } : null;
   const { data: csoData } = useSearchCsoInfos(csoParam)
   const csoId = csoData?.data?.length > 0 ? csoData.data[0].cso_id : null;
-
+  const csoStatus = csoData?.data?.length > 0 ? csoData.data[0].cso_status : null;
+  if ((csoStatus !== null && csoStatus !== 0) || userType === 4) {
+    return <Navigate to="/dashboard" replace />;
+  }
   const param = { prd_owner_type_id: PAGE_ID.CSO, prd_owner_id: csoId };
   const isQueryEnabled = Object.values(param).every(value => value !== null && value !== undefined);
   const { data, isLoading, isError, error, refetch } = useFetchProjectDocuments(param, isQueryEnabled);
+
+  const [projectDocument, setProjectDocument] = useState(null)
+  const [modal, setModal] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
 
   const addProjectDocument = useAddProjectDocument();
   const updateProjectDocument = useUpdateProjectDocument();
@@ -268,8 +273,6 @@ const AccountVerification = () => {
                     deleteModal={deleteModal}
                     setDeleteModal={setDeleteModal}
                     onClickDelete={onClickDelete}
-                    isGridView={isGridView}
-                    setIsGridView={setIsGridView}
                   />
                 </>
               ) : (

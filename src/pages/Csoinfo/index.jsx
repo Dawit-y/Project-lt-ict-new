@@ -35,12 +35,13 @@ import {
   FormGroup,
   Badge,
   InputGroup,
-  InputGroupText
+  InputGroupText,
 } from "reactstrap";
 import { toast } from "react-toastify";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { phoneValidation, alphanumericValidation, websiteUrlValidation } from "../../utils/Validation/validation";
+import FileModal from "./FileModal";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -50,11 +51,12 @@ const truncateText = (text, maxLength) => {
 };
 
 const CsoInfoModel = () => {
-  document.title = " CSO Info | PMS";
+  document.title = " CSO Lists";
 
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
+  const [fileModal, setFileModal] = useState(false)
   const [isEdit, setIsEdit] = useState(false);
   const [csoInfo, setCsoInfo] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
@@ -184,6 +186,7 @@ const CsoInfoModel = () => {
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
+  const toggleFileModal = () => setFileModal(!fileModal)
   // Fetch CsoInfo on component mount
   useEffect(() => {
     setCsoInfo(data);
@@ -322,20 +325,20 @@ const CsoInfoModel = () => {
           );
         },
       },
-      // {
-      //   header: '',
-      //   accessorKey: 'cso_description',
-      //   enableColumnFilter: false,
-      //   enableSorting: true,
-      //   cell: (cellProps) => {
-      //     return (
-      //       <span>
-      //         {truncateText(cellProps.row.original.cso_description, 30) ||
-      //           '-'}
-      //       </span>
-      //     );
-      //   },
-      // },
+      {
+        header: '',
+        accessorKey: 'cso_status',
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          const status = cellProps.row.original.cso_status
+          return (
+            <Badge color={status === 1 ? "success" : "danger"}>
+              {status === 1 ? "Approved" : "Requested"}
+            </Badge>
+          );
+        },
+      },
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -347,12 +350,32 @@ const CsoInfoModel = () => {
               color="primary"
               className="btn-sm"
               onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
                 setTransaction(cellProps.row.original);
+                toggleViewModal();
               }}
             >
               {t("view_detail")}
+            </Button>
+          );
+        },
+      },
+      {
+        header: t("Files"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              type="button"
+              outline
+              color="success"
+              size="sm"
+              onClick={() => {
+                setTransaction(cellProps.row.original);
+                toggleFileModal();
+              }}
+            >
+              {t("Files")}
             </Button>
           );
         },
@@ -408,6 +431,11 @@ const CsoInfoModel = () => {
         onDeleteClick={handleDeleteCsoInfo}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteCsoInfo.isPending}
+      />
+      <FileModal
+        isOpen={fileModal}
+        toggle={toggleFileModal}
+        transaction={transaction}
       />
       <div className="page-content">
         <div className="container-fluid">

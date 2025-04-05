@@ -42,6 +42,7 @@ const AuthMiddleware = ({ children }) => {
 
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const ownerId = storedUser?.user?.usr_owner_id
+  const userType = storedUser?.user?.usr_user_type
   const param = ownerId ? { cso_id: ownerId } : null;
   const { data } = useSearchCsoInfos(param)
   const csoStatus = data?.data?.length > 0 ? data.data[0].cso_status : null;
@@ -121,7 +122,7 @@ const AuthMiddleware = ({ children }) => {
   }
 
   // Redirect to "/not-approved" if cso_status is null or 0 (not approved)
-  if (csoStatus === null || csoStatus === 0) {
+  if ((csoStatus === null || csoStatus === 0) && userType !== 4) {
     return <Navigate to="/not_approved" />;
   }
 
