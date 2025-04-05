@@ -45,7 +45,6 @@ const Index = (props) => {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [isGridView, setIsGridView] = useState(true);
   const [searchParams, setSearchParams] = useState({ project_id: passedId });
 
   const [projectDocument, setProjectDocument] = useState(null);
@@ -434,8 +433,6 @@ const Index = (props) => {
                         deleteModal={deleteModal}
                         setDeleteModal={setDeleteModal}
                         onClickDelete={onClickDelete}
-                        isGridView={isGridView}
-                        setIsGridView={setIsGridView}
                       />
                     )}
                   </CardBody>
