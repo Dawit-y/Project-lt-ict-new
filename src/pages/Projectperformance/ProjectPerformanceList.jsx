@@ -8,7 +8,10 @@ import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
 import { useTranslation } from "react-i18next";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import { createSelectOptions } from "../../utils/commonMethods";
+import {
+  createMultiSelectOptions,
+  createSelectOptions,
+} from "../../utils/commonMethods";
 const AgGridContainer = lazy(() =>
   import("../../components/Common/AgGridContainer")
 );
@@ -23,8 +26,9 @@ const ProjectPerformanceList = (props) => {
   document.title = "Project Performance List";
   const { passedId, isActive } = props;
   const param = { prp_project_id: passedId };
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
 
-  const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -45,12 +49,18 @@ const ProjectPerformanceList = (props) => {
   const { data: budgetYearData } = useFetchBudgetYears();
   const { data: budgetMonthData } = useFetchBudgetMonths();
   const { data: projectStatusData } = useFetchProjectStatuss();
-  const projectStatusOptions = createSelectOptions(
-    projectStatusData?.data || [],
-    "prs_id",
-    "prs_status_name_or"
-  );
-  console.log(projectStatusData?.data);
+
+  const {
+    prs_status_name_en: projectStatusOptionsEn,
+
+    prs_status_name_or: projectStatusOptionsOr,
+    prs_status_name_am: projectStatusOptionsAm,
+  } = createMultiSelectOptions(projectStatusData?.data || [], "prs_id", [
+    "prs_status_name_en",
+    "prs_status_name_or",
+    "prs_status_name_am",
+  ]);
+
   const budgetYearOptions = createSelectOptions(
     budgetYearData?.data || [],
     "bdy_id",
@@ -62,16 +72,19 @@ const ProjectPerformanceList = (props) => {
     "bdm_month"
   );
 
-  // Fetch ProjectPerformance on component mount
-
-  const toggle = () => {
-    if (modal) {
-      setModal(false);
-      setProjectPerformance(null);
-    } else {
-      setModal(true);
-    }
-  };
+  const projectStatusMap = useMemo(() => {
+    return (
+      projectStatusData?.data?.reduce((acc, project_status) => {
+        acc[project_status.prs_id] =
+          lang === "en"
+            ? project_status.prs_status_name_en
+            : lang === "am"
+            ? project_status.prs_status_name_am
+            : project_status.prs_status_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [projectStatusData, lang]);
 
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
@@ -160,7 +173,7 @@ const ProjectPerformanceList = (props) => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.status_name, 30) || "-";
+          return projectStatusMap[params.data.prp_project_status_id] || "";
         },
       },
       {
@@ -226,7 +239,12 @@ const ProjectPerformanceList = (props) => {
                 dropdownSearchKeys={[
                   {
                     key: "prp_project_status_id",
-                    options: projectStatusOptions,
+                    options:
+                      lang === "en"
+                        ? projectStatusOptionsEn
+                        : lang === "am"
+                        ? projectStatusOptionsAm
+                        : projectStatusOptionsOr,
                   },
                   {
                     key: "budget_year",

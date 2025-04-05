@@ -16,7 +16,10 @@ import {
   useUpdateProjectPerformance,
 } from "../../queries/projectperformance_query";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
-import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
+import {
+  useFetchBudgetYears,
+  usePopulateBudgetYears,
+} from "../../queries/budgetyear_query";
 import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
 import ProjectPerformanceModal from "./ProjectPerformanceModal";
 import { useTranslation } from "react-i18next";
@@ -53,7 +56,8 @@ const truncateText = (text, maxLength) => {
 const ProjectPerformanceModel = (props) => {
   const { passedId, isActive, startDate } = props;
   const param = { prp_project_id: passedId };
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -78,12 +82,12 @@ const ProjectPerformanceModel = (props) => {
   const handleAddProjectPerformance = async (data) => {
     try {
       await addProjectPerformance.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('add_failure'), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -92,12 +96,12 @@ const ProjectPerformanceModel = (props) => {
   const handleUpdateProjectPerformance = async (data) => {
     try {
       await updateProjectPerformance.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('update_failure'), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -108,11 +112,11 @@ const ProjectPerformanceModel = (props) => {
       try {
         const id = projectPerformance.prp_id;
         await deleteProjectPerformance.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(t('delete_failure'), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -136,7 +140,8 @@ const ProjectPerformanceModel = (props) => {
       prp_total_budget_used:
         (projectPerformance && projectPerformance.prp_total_budget_used) || "0",
       prp_physical_performance:
-        (projectPerformance && projectPerformance.prp_physical_performance) || "0",
+        (projectPerformance && projectPerformance.prp_physical_performance) ||
+        "0",
       prp_description:
         (projectPerformance && projectPerformance.prp_description) || "",
       prp_status: (projectPerformance && projectPerformance.prp_status) || "",
@@ -147,8 +152,10 @@ const ProjectPerformanceModel = (props) => {
 
     validationSchema: Yup.object({
       // prp_project_id: Yup.string().required(t('prp_project_id')),
-      prp_project_status_id: numberValidation(1, 20, true)
-        .test("unique-status-id", t("Status already exists for the selected budget"), function (value) {
+      prp_project_status_id: numberValidation(1, 20, true).test(
+        "unique-status-id",
+        t("Status already exists for the selected budget"),
+        function (value) {
           const { prp_budget_year_id, prp_budget_month_id } = this.parent;
           if (!data?.data) return true;
           return !data?.data.some(
@@ -158,21 +165,29 @@ const ProjectPerformanceModel = (props) => {
               item.prp_budget_month_id === prp_budget_month_id &&
               item.prp_id !== projectPerformance.prp_id
           );
-        }),
+        }
+      ),
       prp_budget_year_id: numberValidation(1, 20, true),
-      prp_budget_month_id: numberValidation(1, 20, true)
-        .test("unique-month-id", t("Already exists."), function (value) {
+      prp_budget_month_id: numberValidation(1, 20, true).test(
+        "unique-month-id",
+        t("Already exists."),
+        function (value) {
           const { prp_budget_year_id } = this.parent;
           return !data?.data.some(
             (item) =>
-              item.prp_budget_month_id == value && item.prp_budget_year_id == prp_budget_year_id && item.prp_id !== projectPerformance?.prp_id
+              item.prp_budget_month_id == value &&
+              item.prp_budget_year_id == prp_budget_year_id &&
+              item.prp_id !== projectPerformance?.prp_id
           );
-        }),
+        }
+      ),
       //prp_record_date_ec: Yup.string().required(t('prp_record_date_ec')),
-      prp_record_date_gc: Yup.date().required(t("val_required")).typeError("Invalid date format"),
+      prp_record_date_gc: Yup.date()
+        .required(t("val_required"))
+        .typeError("Invalid date format"),
       prp_total_budget_used: amountValidation(0, 10000000000, true),
       prp_physical_performance: amountValidation(0, 100, true),
-      prp_description: alphanumericValidation(3, 425, false)
+      prp_description: alphanumericValidation(3, 425, false),
       // prp_status: Yup.string().required(t('prp_status')),
       //prp_created_date: Yup.string().required(t('prp_created_date')),
       //prp_termination_reason_id: Yup.string().required(t('prp_termination_reason_id')),
@@ -232,14 +247,20 @@ const ProjectPerformanceModel = (props) => {
       }, {}) || {}
     );
   }, [bgYearsOptionsData]);
+
   const projectStatusMap = useMemo(() => {
     return (
       projectStatusData?.data?.reduce((acc, project_status) => {
-        acc[project_status.prs_id] = project_status.prs_status_name_or;
+        acc[project_status.prs_id] =
+          lang === "en"
+            ? project_status.prs_status_name_en
+            : lang === "am"
+            ? project_status.prs_status_name_am
+            : project_status.prs_status_name_or;
         return acc;
       }, {}) || {}
     );
-  }, [projectStatusData]);
+  }, [projectStatusData, lang]);
 
   const budgetMonthMap = useMemo(() => {
     return (
@@ -314,7 +335,6 @@ const ProjectPerformanceModel = (props) => {
   //START UNCHANGED
   const columns = useMemo(() => {
     const baseColumns = [
-
       {
         header: "",
         accessorKey: "prp_budget_year_id",
@@ -349,7 +369,8 @@ const ProjectPerformanceModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {projectStatusMap[cellProps.row.original.prp_project_status_id] || ""}
+              {projectStatusMap[cellProps.row.original.prp_project_status_id] ||
+                ""}
             </span>
           );
         },
@@ -432,47 +453,46 @@ const ProjectPerformanceModel = (props) => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {(data?.previledge?.is_role_editable == 1 && cellProps.row.original?.is_editable == 1) && (
-                <Button
-                  size="sm"
-                  color="none"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleProjectPerformanceClick(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-pencil font-size-18"
-                    id="edittooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Button>
-              )}
-              {(data?.previledge?.is_role_deletable == 9 && cellProps.row.original?.is_deletable == 9) && (
-                <Button
-                  size="sm"
-                  color="none"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip
-                    placement="top"
-                    target="deletetooltip"
+              {data?.previledge?.is_role_editable == 1 &&
+                cellProps.row.original?.is_editable == 1 && (
+                  <Button
+                    size="sm"
+                    color="none"
+                    className="text-success"
+                    onClick={() => {
+                      const data = cellProps.row.original;
+                      handleProjectPerformanceClick(data);
+                    }}
                   >
-                    Delete
-                  </UncontrolledTooltip>
-                </Button>
-              )}
+                    <i
+                      className="mdi mdi-pencil font-size-18"
+                      id="edittooltip"
+                    />
+                    <UncontrolledTooltip placement="top" target="edittooltip">
+                      Edit
+                    </UncontrolledTooltip>
+                  </Button>
+                )}
+              {data?.previledge?.is_role_deletable == 9 &&
+                cellProps.row.original?.is_deletable == 9 && (
+                  <Button
+                    size="sm"
+                    color="none"
+                    className="text-danger"
+                    onClick={() => {
+                      const data = cellProps.row.original;
+                      onClickDelete(data);
+                    }}
+                  >
+                    <i
+                      className="mdi mdi-delete font-size-18"
+                      id="deletetooltip"
+                    />
+                    <UncontrolledTooltip placement="top" target="deletetooltip">
+                      Delete
+                    </UncontrolledTooltip>
+                  </Button>
+                )}
             </div>
           );
         },
@@ -498,17 +518,32 @@ const ProjectPerformanceModel = (props) => {
         isOpen={modal1}
         toggle={toggleViewModal} // Function to close the modal
         data={transaction} // Pass transaction as data to the modal
-        title={t('project_performance')}
+        title={t("project_performance")}
         description={transaction.prp_description}
         dateInGC={transaction.prp_record_date_gc}
         fields={[
-          { label: t('prp_budget_year_id'), key: "prp_budget_year_id", value: budgetYearMap[transaction.prp_budget_year_id] },
-          { label: t('prp_budget_month_id'), key: "prp_budget_month_id", value: budgetMonthMap[transaction.prp_budget_month_id] },
-          { label: t('prp_project_status_id'), key: "prp_project_status_id", value: projectStatusMap[transaction.prp_project_status_id] },
-          { label: t('prp_total_budget_used'), key: "prp_total_budget_used" },
-          { label: t('prp_physical_performance'), key: "prp_physical_performance" }
+          {
+            label: t("prp_budget_year_id"),
+            key: "prp_budget_year_id",
+            value: budgetYearMap[transaction.prp_budget_year_id],
+          },
+          {
+            label: t("prp_budget_month_id"),
+            key: "prp_budget_month_id",
+            value: budgetMonthMap[transaction.prp_budget_month_id],
+          },
+          {
+            label: t("prp_project_status_id"),
+            key: "prp_project_status_id",
+            value: projectStatusMap[transaction.prp_project_status_id],
+          },
+          { label: t("prp_total_budget_used"), key: "prp_total_budget_used" },
+          {
+            label: t("prp_physical_performance"),
+            key: "prp_physical_performance",
+          },
         ]}
-        footerText={t('close')}
+        footerText={t("close")}
       />
       <DeleteModal
         show={deleteModal}
@@ -555,7 +590,10 @@ const ProjectPerformanceModel = (props) => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prp_budget_year_id")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prp_budget_year_id")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prp_budget_year_id"
                       type="select"
@@ -564,13 +602,13 @@ const ProjectPerformanceModel = (props) => {
                       value={validation.values.prp_budget_year_id || ""}
                       invalid={
                         validation.touched.prp_budget_year_id &&
-                          validation.errors.prp_budget_year_id
+                        validation.errors.prp_budget_year_id
                           ? true
                           : false
                       }
                       maxLength={20}
                     >
-                      <option value="">{t('select_one')}</option>
+                      <option value="">{t("select_one")}</option>
                       {budgetYearData?.data?.map((data) => (
                         <option key={data.bdy_id} value={data.bdy_id}>
                           {data.bdy_name}
@@ -578,14 +616,17 @@ const ProjectPerformanceModel = (props) => {
                       ))}
                     </Input>
                     {validation.touched.prp_budget_year_id &&
-                      validation.errors.prp_budget_year_id ? (
+                    validation.errors.prp_budget_year_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_budget_year_id}
                       </FormFeedback>
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prp_budget_month_id")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prp_budget_month_id")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prp_budget_month_id"
                       type="select"
@@ -595,13 +636,13 @@ const ProjectPerformanceModel = (props) => {
                       value={validation.values.prp_budget_month_id || ""}
                       invalid={
                         validation.touched.prp_budget_month_id &&
-                          validation.errors.prp_budget_month_id
+                        validation.errors.prp_budget_month_id
                           ? true
                           : false
                       }
                       maxLength={20}
                     >
-                      <option value="">{t('select_one')}</option>
+                      <option value="">{t("select_one")}</option>
                       {budgetMonthData?.data?.map((data) => (
                         <option key={data.bdm_id} value={data.bdm_id}>
                           {data.bdm_month}
@@ -609,7 +650,7 @@ const ProjectPerformanceModel = (props) => {
                       ))}
                     </Input>
                     {validation.touched.prp_budget_month_id &&
-                      validation.errors.prp_budget_month_id ? (
+                    validation.errors.prp_budget_month_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_budget_month_id}
                       </FormFeedback>
@@ -629,20 +670,24 @@ const ProjectPerformanceModel = (props) => {
                       value={validation.values.prp_project_status_id || ""}
                       invalid={
                         validation.touched.prp_project_status_id &&
-                          validation.errors.prp_project_status_id
+                        validation.errors.prp_project_status_id
                           ? true
                           : false
                       }
                     >
-                      <option value="">{t('select_one')}</option>
+                      <option value="">{t("select_one")}</option>
                       {projectStatusData?.data?.map((data) => (
                         <option key={data.prs_id} value={data.prs_id}>
-                          {data.prs_status_name_or}
+                          {lang === "en"
+                            ? data.prs_status_name_en
+                            : lang === "am"
+                            ? data.prs_status_name_am
+                            : data.prs_status_name_or}
                         </option>
                       ))}
                     </Input>
                     {validation.touched.prp_project_status_id &&
-                      validation.errors.prp_project_status_id ? (
+                    validation.errors.prp_project_status_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_project_status_id}
                       </FormFeedback>
@@ -657,7 +702,10 @@ const ProjectPerformanceModel = (props) => {
                     />
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prp_total_budget_used")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prp_total_budget_used")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prp_total_budget_used"
                       type="number"
@@ -667,21 +715,24 @@ const ProjectPerformanceModel = (props) => {
                       value={validation.values.prp_total_budget_used || ""}
                       invalid={
                         validation.touched.prp_total_budget_used &&
-                          validation.errors.prp_total_budget_used
+                        validation.errors.prp_total_budget_used
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prp_total_budget_used &&
-                      validation.errors.prp_total_budget_used ? (
+                    validation.errors.prp_total_budget_used ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_total_budget_used}
                       </FormFeedback>
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prp_physical_performance")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prp_physical_performance")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prp_physical_performance"
                       type="number"
@@ -691,14 +742,14 @@ const ProjectPerformanceModel = (props) => {
                       value={validation.values.prp_physical_performance || ""}
                       invalid={
                         validation.touched.prp_physical_performance &&
-                          validation.errors.prp_physical_performance
+                        validation.errors.prp_physical_performance
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prp_physical_performance &&
-                      validation.errors.prp_physical_performance ? (
+                    validation.errors.prp_physical_performance ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_physical_performance}
                       </FormFeedback>
@@ -716,14 +767,14 @@ const ProjectPerformanceModel = (props) => {
                       value={validation.values.prp_description || ""}
                       invalid={
                         validation.touched.prp_description &&
-                          validation.errors.prp_description
+                        validation.errors.prp_description
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prp_description &&
-                      validation.errors.prp_description ? (
+                    validation.errors.prp_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_description}
                       </FormFeedback>
@@ -734,7 +785,7 @@ const ProjectPerformanceModel = (props) => {
                   <Col>
                     <div className="text-end">
                       {addProjectPerformance.isPending ||
-                        updateProjectPerformance.isPending ? (
+                      updateProjectPerformance.isPending ? (
                         <Button
                           color="success"
                           type="submit"

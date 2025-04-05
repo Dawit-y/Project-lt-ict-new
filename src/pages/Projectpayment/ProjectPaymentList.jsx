@@ -11,13 +11,18 @@ import {
 } from "../../queries/projectpayment_query";
 import TreeForLists from "../../components/Common/TreeForLists";
 import { useFetchPaymentCategorys } from "../../queries/paymentcategory_query";
-import { createSelectOptions } from "../../utils/commonMethods";
+import {
+  createSelectOptions,
+  createMultiSelectOptions,
+} from "../../utils/commonMethods";
 const AgGridContainer = lazy(() =>
   import("../../components/Common/AgGridContainer")
 );
 const ProjectPaymentList = () => {
   document.title = "Project Payment List";
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
+
   const [projectPayment, setProjectPayment] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -34,11 +39,31 @@ const ProjectPaymentList = () => {
   const { data } = useState("");
 
   const { data: paymentCategoryData } = useFetchPaymentCategorys();
-  const paymentCategoryOptions = createSelectOptions(
-    paymentCategoryData?.data || [],
-    "pyc_id",
-    "pyc_name_or"
-  );
+
+  const {
+    pyc_name_en: paymentCategoryOptionsEn,
+
+    pyc_name_or: paymentCategoryOptionsOr,
+    pyc_name_am: paymentCategoryOptionsAm,
+  } = createMultiSelectOptions(paymentCategoryData?.data || [], "pyc_id", [
+    "pyc_name_en",
+    "pyc_name_or",
+    "pyc_name_am",
+  ]);
+
+  const paymentCategoryTypeMap = useMemo(() => {
+    return (
+      paymentCategoryData?.data?.reduce((acc, payment_type) => {
+        acc[payment_type.pyc_id] =
+          lang === "en"
+            ? payment_type.pyc_name_en
+            : lang === "am"
+            ? payment_type.pyc_name_am
+            : payment_type.pyc_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [paymentCategoryData, lang]);
 
   useEffect(() => {
     setProjectPayment(data);
@@ -120,7 +145,7 @@ const ProjectPaymentList = () => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.payment_category, 30) || "-";
+          return paymentCategoryTypeMap[params.data.prp_type] || "";
         },
       },
       {
@@ -184,7 +209,12 @@ const ProjectPaymentList = () => {
                 dropdownSearchKeys={[
                   {
                     key: "prp_type",
-                    options: paymentCategoryOptions,
+                    options:
+                      lang === "en"
+                        ? paymentCategoryOptionsEn
+                        : lang === "am"
+                        ? paymentCategoryOptionsAm
+                        : paymentCategoryOptionsOr,
                   },
                 ]}
                 checkboxSearchKeys={[]}

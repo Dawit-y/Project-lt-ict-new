@@ -56,7 +56,8 @@ const truncateText = (text, maxLength) => {
 const ProjectPaymentModel = (props) => {
   const { passedId, isActive, status, startDate } = props;
   const param = { project_id: passedId };
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
 
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -137,11 +138,16 @@ const ProjectPaymentModel = (props) => {
   const paymentCategoryMap = useMemo(() => {
     return (
       paymentCategoryData?.data?.reduce((acc, payment_category) => {
-        acc[payment_category.pyc_id] = payment_category.pyc_name_or;
+        acc[payment_category.pyc_id] =
+          lang === "en"
+            ? payment_category.pyc_name_en
+            : lang === "am"
+            ? payment_category.pyc_name_am
+            : payment_category.pyc_name_or;
         return acc;
       }, {}) || {}
     );
-  }, [paymentCategoryData]);
+  }, [paymentCategoryData, lang]);
 
   const validation = useFormik({
     enableReinitialize: true,
@@ -564,7 +570,12 @@ const ProjectPaymentModel = (props) => {
                       <option value="">{t("select_one")}</option>
                       {paymentCategoryData?.data?.map((data) => (
                         <option key={data.pyc_id} value={data.pyc_id}>
-                          {data.pyc_name_or}
+                          {/* {data.pyc_name_or} */}
+                          {lang === "en"
+                            ? data.pyc_name_en
+                            : lang === "am"
+                            ? data.pyc_name_am
+                            : data.pyc_name_or}
                         </option>
                       ))}
                     </Input>

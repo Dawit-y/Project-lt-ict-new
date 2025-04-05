@@ -1,36 +1,33 @@
-import React, { useState, useEffect } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  useMapEvents,
-} from "react-leaflet";
+import React, { useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import "react-leaflet-fullscreen/styles.css";
+import { FullscreenControl } from "react-leaflet-fullscreen";
+import MarkerClusterGroup from "react-leaflet-cluster";
+import customMarkerImg from "../../assets/images/marker.png";
 import Breadcrumb from "../../components/Common/Breadcrumb";
-import { useTranslation } from "react-i18next";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import TreeForLists from "../../components/Common/TreeForLists";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import Spinners from "../../components/Common/Spinner";
+import { useTranslation } from "react-i18next";
 import {
   useFetchProjects,
   useSearchProjects,
 } from "../../queries/project_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
-import { createSelectOptions } from "../../utils/commonMethods";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import Spinners from "../../components/Common/Spinner";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet"
-import customMarkerImg from "../../assets/images/marker.png"
-import { FullscreenControl } from "react-leaflet-fullscreen";
-import "react-leaflet-fullscreen/styles.css";
+import {
+  createSelectOptions,
+  createMultiSelectOptions,
+} from "../../utils/commonMethods";
 
 const customMarkerIcon = L.icon({
   iconUrl: customMarkerImg,
-  iconSize: [32, 32],
-  iconAnchor: [16, 32],
-  popupAnchor: [0, -32],
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
+  popupAnchor: [0, -40],
 });
-
 
 const ProjectsLocation = () => {
   const [viewState, setViewState] = useState({
@@ -41,20 +38,26 @@ const ProjectsLocation = () => {
   const [hoveredMarker, setHoveredMarker] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
+  const [searchError, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
   const [projectParams, setProjectParams] = useState({});
-  const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
-  const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
-  const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
-
+  const { i18n } = useTranslation();
+  const lang = i18n.language;
   const { data: projectCategoryData } = useFetchProjectCategorys();
-  const projectCategoryOptions = createSelectOptions(
-    projectCategoryData?.data || [],
-    "pct_id",
-    "pct_name_or"
-  );
+
+  const {
+    pct_name_en: projectCategoryOptionsEn,
+
+    pct_name_or: projectCategoryOptionsOr,
+    pct_name_am: projectCategoryOptionsAm,
+  } = createMultiSelectOptions(projectCategoryData?.data || [], "pct_id", [
+    "pct_name_en",
+    "pct_name_or",
+    "pct_name_am",
+  ]);
+
+  console.log("projectCategoryOptions", projectCategoryData);
 
   const { data, isLoading, error, isError, refetch } =
     useFetchProjects(projectParams);
@@ -71,6 +74,7 @@ const ProjectsLocation = () => {
       id: project.prj_id,
       name: project.prj_name,
       code: project.prj_code,
+
       ...parseGeoLocation(project.prj_geo_location),
     }))
     .filter((location) => location.latitude && location.longitude);
@@ -81,29 +85,8 @@ const ProjectsLocation = () => {
     setShowSearchResult(true);
   };
 
-  useEffect(() => {
-    setProjectParams({
-      ...(prjLocationRegionId && {
-        prj_location_region_id: prjLocationRegionId,
-      }),
-      ...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
-      ...(prjLocationWoredaId && {
-        prj_location_woreda_id: prjLocationWoredaId,
-      }),
-    });
-  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId]);
-
-  const handleNodeSelect = (node) => {
-    if (node.level === "region") {
-      setPrjLocationRegionId(node.id);
-      setPrjLocationZoneId(null); // Clear dependent states
-      setPrjLocationWoredaId(null);
-    } else if (node.level === "zone") {
-      setPrjLocationZoneId(node.id);
-      setPrjLocationWoredaId(null); // Clear dependent state
-    } else if (node.level === "woreda") {
-      setPrjLocationWoredaId(node.id);
-    }
+  const handleMapClick = () => {
+    setHoveredMarker(null);
   };
 
   if (isError) {
@@ -112,77 +95,86 @@ const ProjectsLocation = () => {
 
   return (
     <div className="page-content">
-      <div className="" style={{ position: "relative" }}>
-        <Breadcrumb
-          title={t("projects_location")}
-          breadcrumbItem={t("projects_location")}
+      <Breadcrumb
+        title={t("projects_location")}
+        breadcrumbItem={t("projects_location")}
+      />
+      <div className="w-100 d-flex gap-2">
+        <TreeForLists
+          setIsAddressLoading={setIsAddressLoading}
+          onNodeSelect={(node) => setProjectParams({ region: node.id })}
         />
-        <div className="w-100 d-flex gap-2">
-          <TreeForLists
-            onNodeSelect={handleNodeSelect}
-            setIsAddressLoading={setIsAddressLoading}
+        <div className="w-100">
+          <AdvancedSearch
+            searchHook={useSearchProjects}
+            textSearchKeys={["prj_name", "prj_code"]}
+            dropdownSearchKeys={[
+              {
+                key: "prj_project_category_id",
+                options:
+                  lang === "en"
+                    ? projectCategoryOptionsEn
+                    : lang === "am"
+                    ? projectCategoryOptionsAm
+                    : projectCategoryOptionsOr,
+              },
+            ]}
+            additionalParams={projectParams}
+            setAdditionalParams={setProjectParams}
+            onSearchResult={handleSearchResults}
+            setIsSearchLoading={setIsSearchLoading}
           />
-          <div className="w-100">
-            <AdvancedSearch
-              searchHook={useSearchProjects}
-              textSearchKeys={["prj_name", "prj_code"]}
-              dropdownSearchKeys={[
-                {
-                  key: "prj_project_category_id",
-                  options: projectCategoryOptions,
-                },
-              ]}
-              additionalParams={projectParams}
-              setAdditionalParams={setProjectParams}
-              onSearchResult={handleSearchResults}
-              setIsSearchLoading={setIsSearchLoading}
-              setSearchResults={setSearchResults}
-              setShowSearchResult={setShowSearchResult}
-            />
-            {isLoading || isSearchLoading || isAddressLoading ? (
-              <div style={{ width: "100%", height: "100vh" }}>
-                <Spinners />
-              </div>
-            ) : markers && markers.length > 0 ? (
-              <MapContainer
-                center={[viewState.latitude, viewState.longitude]}
-                zoom={viewState.zoom}
-                style={{ height: "100vh", width: "100%", zIndex: "1" }}
-                scrollWheelZoom={true}
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
+          {isLoading || isSearchLoading ? (
+            <div style={{ width: "100%", height: "100vh" }}>
+              <Spinners />
+            </div>
+          ) : markers?.length > 0 ? (
+            <MapContainer
+              center={[viewState.latitude, viewState.longitude]}
+              zoom={viewState.zoom}
+              style={{ height: "100vh", width: "100%" }}
+              scrollWheelZoom={true}
+              onClick={handleMapClick}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              <MarkerClusterGroup>
                 {markers.map((marker) => (
                   <Marker
                     key={marker.id}
                     position={[marker.latitude, marker.longitude]}
                     eventHandlers={{
                       mouseover: () => setHoveredMarker(marker.id),
+                      mouseout: () => setHoveredMarker(null),
+                      click: () => setHoveredMarker(marker.id),
                     }}
                     icon={customMarkerIcon}
                   >
                     {hoveredMarker === marker.id && (
                       <Popup>
-                        <h6>{marker.name}</h6>
-                        <h6>{marker.code}</h6>
+                        <h5>{marker.name}</h5>
+                        <p>
+                          <strong>Code:</strong> {marker.code}
+                        </p>
                       </Popup>
                     )}
                   </Marker>
                 ))}
-                <FullscreenControl
-                  position="bottomleft"
-                  forcePseudoFullscreen
-                  forceSeparateButton
-                />
-              </MapContainer>
-            ) : (
-              <div className="position-absolute top-70 start-50">
-                <h6 className="mt-5 mb-1">{t("No data available")}</h6>
-              </div>
-            )}
-          </div>
+              </MarkerClusterGroup>
+              <FullscreenControl
+                position="bottomleft"
+                forcePseudoFullscreen
+                forceSeparateButton
+              />
+            </MapContainer>
+          ) : (
+            <div className="text-center mt-5">
+              <h5 className="text-muted">{t("No data available")}</h5>
+              <p>{t("Try changing your filters or searching again.")}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
