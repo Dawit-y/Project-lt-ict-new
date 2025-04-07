@@ -96,7 +96,7 @@ const BudgetRequestModel = (props) => {
 
   const { data: projectStatusData } = useFetchProjectStatuss();
 
-  const { data, isLoading, isError, error, refetch } =
+  const { data, isLoading, isFetching, isError, error, refetch } =
     useFetchBudgetRequests(param);
   const { data: budgetYearData } = usePopulateBudgetYears();
   const { data: bgYearsOptionsData } = useFetchBudgetYears();
@@ -237,16 +237,16 @@ const BudgetRequestModel = (props) => {
     );
   }, [bgCategoryOptionsData]);*/
 
- const projectStatusMap = useMemo(() => { 
-  return (
-    projectStatusData?.data?.reduce((acc, project_status) => {
-      if (project_status.prs_id === 5 || project_status.prs_id === 6) {
-        acc[project_status.prs_id] = project_status.prs_status_name_or;
-      }
-      return acc;
-    }, {}) || {}
-  );
-}, [projectStatusData]);
+  const projectStatusMap = useMemo(() => {
+    return (
+      projectStatusData?.data?.reduce((acc, project_status) => {
+        if (project_status.prs_id === 5 || project_status.prs_id === 6) {
+          acc[project_status.prs_id] = project_status.prs_status_name_or;
+        }
+        return acc;
+      }, {}) || {}
+    );
+  }, [projectStatusData]);
 
   const RequestCatagoryMap = useMemo(() => {
     const filteredData =
@@ -630,34 +630,34 @@ const BudgetRequestModel = (props) => {
   }
   return (
     <React.Fragment>
-    <LazyLoader>
-    {modal1 && (
-      <BudgetRequestModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      />)}
-      {actionModal && (
-      <ActionModal
-        isOpen={actionModal}
-        toggle={toggleActionModal}
-        data={transaction}
-      />)}
-      {fileModal && (
-      <AttachFileModal
-        isOpen={fileModal}
-        toggle={toggleFileModal}
-        projectId={id}
-        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-        ownerId={transaction?.bdr_id}
-      />)}
-      {convModal && (
-      <ConvInfoModal
-        isOpen={convModal}
-        toggle={toggleConvModal}
-        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-        ownerId={transaction?.bdr_id ?? null}
-      />)}
+      <LazyLoader>
+        {modal1 && (
+          <BudgetRequestModal
+            isOpen={modal1}
+            toggle={toggleViewModal}
+            transaction={transaction}
+          />)}
+        {actionModal && (
+          <ActionModal
+            isOpen={actionModal}
+            toggle={toggleActionModal}
+            data={transaction}
+          />)}
+        {fileModal && (
+          <AttachFileModal
+            isOpen={fileModal}
+            toggle={toggleFileModal}
+            projectId={id}
+            ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+            ownerId={transaction?.bdr_id}
+          />)}
+        {convModal && (
+          <ConvInfoModal
+            isOpen={convModal}
+            toggle={toggleConvModal}
+            ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+            ownerId={transaction?.bdr_id ?? null}
+          />)}
       </LazyLoader>
       <DeleteModal
         show={deleteModal}
@@ -684,6 +684,8 @@ const BudgetRequestModel = (props) => {
           pagination="pagination"
           paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
           infoIcon={true}
+          refetch={refetch}
+          isFetching={isFetching}
         />
       )}
       <Modal isOpen={modal} toggle={toggle} className="modal-xl">
@@ -715,7 +717,7 @@ const BudgetRequestModel = (props) => {
                   value={validation.values.bdr_budget_year_id || ""}
                   invalid={
                     validation.touched.bdr_budget_year_id &&
-                    validation.errors.bdr_budget_year_id
+                      validation.errors.bdr_budget_year_id
                       ? true
                       : false
                   }
@@ -729,7 +731,7 @@ const BudgetRequestModel = (props) => {
                   ))}
                 </Input>
                 {validation.touched.bdr_budget_year_id &&
-                validation.errors.bdr_budget_year_id ? (
+                  validation.errors.bdr_budget_year_id ? (
                   <FormFeedback type="invalid">
                     {validation.errors.bdr_budget_year_id}
                   </FormFeedback>
@@ -750,7 +752,7 @@ const BudgetRequestModel = (props) => {
                   value={validation.values.bdr_request_type || ""}
                   invalid={
                     validation.touched.bdr_request_type &&
-                    validation.errors.bdr_request_type
+                      validation.errors.bdr_request_type
                       ? true
                       : false
                   }
@@ -763,7 +765,7 @@ const BudgetRequestModel = (props) => {
                   ))}
                 </Input>
                 {validation.touched.bdr_request_type &&
-                validation.errors.bdr_request_type ? (
+                  validation.errors.bdr_request_type ? (
                   <FormFeedback type="invalid">
                     {validation.errors.bdr_request_type}
                   </FormFeedback>
@@ -784,7 +786,7 @@ const BudgetRequestModel = (props) => {
                   value={validation.values.bdr_request_category_id || ""}
                   invalid={
                     validation.touched.bdr_request_category_id &&
-                    validation.errors.bdr_request_category_id
+                      validation.errors.bdr_request_category_id
                       ? true
                       : false
                   }
@@ -797,7 +799,7 @@ const BudgetRequestModel = (props) => {
                   ))}
                 </Input>
                 {validation.touched.bdr_request_category_id &&
-                validation.errors.bdr_request_category_id ? (
+                  validation.errors.bdr_request_category_id ? (
                   <FormFeedback type="invalid">
                     {validation.errors.bdr_request_category_id}
                   </FormFeedback>
@@ -901,14 +903,14 @@ const BudgetRequestModel = (props) => {
                   value={validation.values.bdr_description || ""}
                   invalid={
                     validation.touched.bdr_description &&
-                    validation.errors.bdr_description
+                      validation.errors.bdr_description
                       ? true
                       : false
                   }
                   maxLength={200}
                 />
                 {validation.touched.bdr_description &&
-                validation.errors.bdr_description ? (
+                  validation.errors.bdr_description ? (
                   <FormFeedback type="invalid">
                     {validation.errors.bdr_description}
                   </FormFeedback>
@@ -945,7 +947,7 @@ const BudgetRequestModel = (props) => {
               <Col>
                 <div className="text-end">
                   {addBudgetRequest.isPending ||
-                  updateBudgetRequest.isPending ? (
+                    updateBudgetRequest.isPending ? (
                     <Button
                       color="success"
                       type="submit"
