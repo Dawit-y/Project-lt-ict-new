@@ -2,30 +2,32 @@ import React from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { useTranslation } from "react-i18next";
+import { DropdownItem } from "reactstrap";
+import { FaFilePdf } from "react-icons/fa6";
 
-const ExportToPDF = ({ tableData, tablename, includeKey = [] }) => {
+const ExportToPDF = ({ tableData, tablename, includeKey = [], dropdownItem = false }) => {
   const { t } = useTranslation();
   const headerText = tablename; // Custom header text
-    const footerText = "Prepared by: ____"; // Custom footer text
+  const footerText = "Prepared by: ____"; // Custom footer text
 
-     // Function to add header and footer
-    const addHeaderFooter = (doc) => {
-      const pageCount = doc.internal.getNumberOfPages();
+  // Function to add header and footer
+  const addHeaderFooter = (doc) => {
+    const pageCount = doc.internal.getNumberOfPages();
 
-      for (let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
 
-        // Add header
-        doc.setFontSize(12);
-        doc.text(headerText, 14, 10);
+      // Add header
+      doc.setFontSize(12);
+      doc.text(headerText, 14, 10);
 
-        // Add footer
-        const pageSize = doc.internal.pageSize;
-        const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
-        doc.setFontSize(10);
-        doc.text(footerText, 14, pageHeight - 10);
-      }
-    };
+      // Add footer
+      const pageSize = doc.internal.pageSize;
+      const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+      doc.setFontSize(10);
+      doc.text(footerText, 14, pageHeight - 10);
+    }
+  };
   const handleExportToPDF = () => {
     if (!tableData || tableData.length === 0) {
       return;
@@ -78,9 +80,18 @@ const ExportToPDF = ({ tableData, tablename, includeKey = [] }) => {
 
       startY = doc.lastAutoTable.finalY + 10;
     });
-addHeaderFooter(doc);
+    addHeaderFooter(doc);
     doc.save(`${tablename || "table_data"}.pdf`);
   };
+
+  if (dropdownItem) {
+    return (
+      <DropdownItem onClick={handleExportToPDF} disabled={!tableData || tableData.length === 0}>
+        <FaFilePdf className="me-1" />
+        {t("exportToPdf")}
+      </DropdownItem>
+    );
+  }
 
   return (
     <button

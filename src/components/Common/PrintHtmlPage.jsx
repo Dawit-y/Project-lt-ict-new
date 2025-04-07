@@ -2,12 +2,13 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { FOOTER_TEXT, COPYRIGHT_YEAR } from "../../constants/constantFile";
 import {
-  UncontrolledTooltip
+  UncontrolledTooltip, DropdownItem
 } from "reactstrap";
+import { FaPrint } from "react-icons/fa6";
 
-const PrintHtmlPage = ({ tableData, tablename, excludeKey = [], columnsToIgnore = 2 }) => {
+const PrintHtmlPage = ({ tableData, tablename, excludeKey = [], columnsToIgnore = 2, dropdownItem = false }) => {
   const { t } = useTranslation();
-  
+
   const printPage = (event) => {
     const customHeader = getCustomHeader();
     const customFooter = getCustomFooter();
@@ -117,6 +118,16 @@ const PrintHtmlPage = ({ tableData, tablename, excludeKey = [], columnsToIgnore 
     `;
   };
   //END PRINT
+
+  if (dropdownItem) {
+    return (
+      <DropdownItem onClick={printPage} disabled={!tableData || tableData.length === 0}>
+        <FaPrint className="me-1" />
+        {t("print")}
+      </DropdownItem>
+    );
+  }
+
   return (
     <div id="print-cont">
       <button

@@ -11,11 +11,11 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { UncontrolledTooltip } from "reactstrap";
+import { UncontrolledTooltip, UncontrolledDropdown, DropdownMenu, DropdownToggle } from "reactstrap";
 import { rankItem } from "@tanstack/match-sorter-utils";
 import ExportToExcel from "../../components/Common/ExportToExcel";
 import PrintHtmlPage from "../../components/Common/PrintHtmlPage";
-import { FaArrowsRotate, FaCircleInfo, FaRotate } from "react-icons/fa6";
+import { FaFileExport, FaCircleInfo, FaRotate } from "react-icons/fa6";
 import ExportToPDF from "./ExportToPdf";
 
 // Column Filter
@@ -209,37 +209,56 @@ const TableContainer = ({
         </>
 
         <Col sm={6}>
-          <div className="text-sm-end d-flex align-items-center justify-content-end gap-1">
+          <div className="text-sm-end d-flex align-items-center justify-content-end gap-2">
             {isAddButton && (
               <Button
                 type="button"
-                className="btn-soft-success me-2"
+                className="btn-soft-success"
                 onClick={handleUserClick}
               >
                 <i className="mdi mdi-plus me-1"></i> {buttonName}
               </Button>
             )}
-            {isExcelExport && (
-              <ExportToExcel
-                tableData={data}
-                tablename={tableName}
-                excludeKey={excludeKey}
-              />
-            )}
-
-            {isPdfExport && (
-              <ExportToPDF
-                tableData={data}
-                tablename={tableName}
-                excludeKey={excludeKey}
-              />
-            )}
-            {isPrint && (
-              <PrintHtmlPage
-                tableData={data}
-                tablename={tableName}
-                excludeKey={excludeKey}
-              />
+            {(isExcelExport || isPdfExport || isPrint) && (
+              <>
+                <UncontrolledDropdown>
+                  <DropdownToggle
+                    color="primary"
+                    id="export_toggle"
+                  >
+                    <FaFileExport size={18} />
+                  </DropdownToggle>
+                  <DropdownMenu end className="py-2 mt-1">
+                    {isExcelExport && (
+                      <ExportToExcel
+                        tableData={data}
+                        tablename={tableName}
+                        excludeKey={excludeKey}
+                        dropdownItem={true}
+                      />
+                    )}
+                    {isPdfExport && (
+                      <ExportToPDF
+                        tableData={data}
+                        tablename={tableName}
+                        excludeKey={excludeKey}
+                        dropdownItem={true}
+                      />
+                    )}
+                    {isPrint && (
+                      <PrintHtmlPage
+                        tableData={data}
+                        tablename={tableName}
+                        excludeKey={excludeKey}
+                        dropdownItem={true}
+                      />
+                    )}
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+                <UncontrolledTooltip placement="top" target="export_toggle">
+                  Export
+                </UncontrolledTooltip>
+              </>
             )}
             {infoIcon &&
               <div>
@@ -249,9 +268,25 @@ const TableContainer = ({
                 </UncontrolledTooltip>
               </div>}
             {refetch &&
-              <Button color="primary" onClick={refetch} outline>
-                {isFetching ? <Spinner color="light" size={"sm"} /> : <FaRotate />}
-              </Button>
+              <>
+                <Button
+                  id="refresh_btn"
+                  color="primary"
+                  onClick={refetch}
+                  outline
+                  className="rounded-circle p-0 d-flex align-items-center justify-content-center"
+                  style={{ width: "30px", height: "30px", fontSize: "14px" }}
+                >
+                  {isFetching ? (
+                    <Spinner color="light" size="sm" />
+                  ) : (
+                    <FaRotate />
+                  )}
+                </Button>
+                <UncontrolledTooltip placement="top" target="refresh_btn">
+                  Refresh
+                </UncontrolledTooltip>
+              </>
             }
           </div>
         </Col>

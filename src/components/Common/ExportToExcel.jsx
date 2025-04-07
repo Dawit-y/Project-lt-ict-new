@@ -1,7 +1,10 @@
 import React from "react";
 import * as XLSX from "xlsx";
 import { useTranslation } from "react-i18next";
-const ExportToExcel = ({ tableData, tablename, includeKey = [] }) => {
+import { DropdownItem } from "reactstrap";
+import { FaFileExcel } from "react-icons/fa6";
+
+const ExportToExcel = ({ tableData, tablename, includeKey = [], dropdownItem = false }) => {
   const { t } = useTranslation();
   const handleExportToExcel = () => {
     if (!tableData || tableData.length === 0) {
@@ -48,6 +51,16 @@ const ExportToExcel = ({ tableData, tablename, includeKey = [] }) => {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Table Data");
     XLSX.writeFile(workbook, `table_${tablename}.xlsx`);
   };
+
+  if (dropdownItem) {
+    return (
+      <DropdownItem onClick={handleExportToExcel} disabled={!tableData || tableData.length === 0}>
+        <FaFileExcel className="me-1" />
+        {t("exportToExcel")}
+      </DropdownItem>
+    );
+  }
+
   return (
     <button
       className="btn btn-soft-primary"

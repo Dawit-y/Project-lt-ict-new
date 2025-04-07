@@ -12,6 +12,7 @@ export const useFetchAddressStructures = (userId) => {
     queryKey: ["folders", userId],
     queryFn: () => getAddressStructure(),
     staleTime: 1000 * 60 * 5, // 5 minutes
+    meta: { persist: true },
     select: (data) => buildTree(data?.data),
     refetchOnMount: false,
     refetchOnWindowFocus: false,
