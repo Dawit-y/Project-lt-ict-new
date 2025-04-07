@@ -1307,5 +1307,15 @@
 	"ppp_status": "Status",
 	"val_tin_min_length": "Minimum Length",
 	"no_rows_to_show": "No rows to show",
-	"bdr_action_remark": "Remark"
+	"bdr_action_remark": "Remark",
+	"notice":"Notice",
+	"your_account_is_still_using_the":"Your account is still using the",
+    "administrator_assigned_password":"administrator-assigned password",
+	"for_security_reasons_please":"For security reasons please",
+	"click_me_to_update_your_password":"Click me to update your password",
+	"promptly":"Promptly",
+	"change_password":"Change Password",
+	"new_password":"New Password",
+	"enter_new_password":"Enter New Password",
+	"confirm_password":"Confirm Password"
 }

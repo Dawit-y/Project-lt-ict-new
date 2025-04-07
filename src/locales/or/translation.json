@@ -1334,5 +1334,15 @@
 	"Remaining Time": "Yeroo Hafe",
 	"Time data is unavailable.": "Daataan yeroo hin jiruu.",
 	"days": "guyyaa",
-	"no_rows_to_show": "Tarreewwan agarsiisu hin jiru"
+	"no_rows_to_show": "Tarreewwan agarsiisu hin jiru",
+	"notice":"Notice",
+	"your_account_is_still_using_the":"Your account is still using the",
+    "administrator_assigned_password":"administrator-assigned password",
+	"for_security_reasons_please":"For security reasons please",
+	"click_me_to_update_your_password":"Click me to update your password",
+	"promptly":"Promptly",
+	"change_password":"Jecha darbii Jijjiiri",
+	"new_password":"Jecha darbii haaraa",
+	"enter_new_password":"Jecha darbii haaraa galchi",
+	"confirm_password":"Jecha darbii mirkaneessi"
 }
