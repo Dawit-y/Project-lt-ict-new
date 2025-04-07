@@ -16,11 +16,11 @@ import classnames from "classnames";
 import { IoMdDownload } from "react-icons/io";
 
 import { pdfjs, Document, Page } from "react-pdf";
-import { Button } from "reactstrap";
+import { Button, Badge } from "reactstrap";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import { useTranslation } from "react-i18next";
-import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
+
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
   import.meta.url
@@ -70,75 +70,6 @@ TabWrapper.propTypes = {
   ).isRequired,
 };
 
-export const DetailsView = ({ details, keysToRemove }) => {
-  const { t } = useTranslation();
-
-  const removeKeys = (obj, keysToRemove) => {
-    const newObj = { ...obj };
-    keysToRemove.forEach((key) => delete newObj[key]);
-    return newObj;
-  };
-
-  let newTransaction = details;
-  if (keysToRemove && keysToRemove.length > 0) {
-    newTransaction = removeKeys(details, keysToRemove);
-  }
-
-  const descriptionKey = Object.keys(newTransaction).find((key) =>
-    key.includes("description")
-  );
-  const descriptionValue = descriptionKey ? newTransaction[descriptionKey] : "-";
-
-  return (
-    <div>
-      <div className="mt-2">
-        <h5 className="text-truncate font-size-15">{t(descriptionKey || "description")}</h5>
-        <p className="text-muted">{descriptionValue}</p>
-      </div>
-      <div className="text-muted mt-4">
-        <Table className="table-sm">
-          <tbody>
-            <tr key="-1">
-              <th>{t("prd_size")}:</th>
-              <td>{bytesToReadableSize(details.prd_size)}</td>
-            </tr>
-            {Object.entries(newTransaction)
-              .filter(([key]) => key !== descriptionKey)
-              .map(([key, value]) => (
-                <tr key={key}>
-                  <th>{t(key)}:</th>
-                  <td>{value}</td>
-                </tr>
-              ))}
-            <Col sm="12" xs="12">
-              <div className="mt-4 text-center">
-                <h5 className="font-size-14">
-                  <i className="bx bx-calendar-check me-1 text-primary" />{" "}
-                  {t("prd_create_time")}
-                </h5>
-                <p className="text-muted mb-0">{details.prd_create_time}</p>
-              </div>
-            </Col>
-          </tbody>
-        </Table>
-      </div>
-    </div>
-  );
-};
-
-DetailsView.propTypes = {
-  details: PropTypes.object.isRequired,
-};
-
-
-const pdfViewerStyle = {
-  width: "100%",
-  overflow: "auto",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-};
-
 const bytesToReadableSize = (bytes) => {
   if (isNaN(bytes) || bytes < 0) return "0 KB";
   const mb = bytes / (1024 * 1024); // Convert to MB
@@ -148,15 +79,113 @@ const bytesToReadableSize = (bytes) => {
     ? `${mb.toFixed(2)} MB`
     : `${kb.toFixed(2)} KB`;
 };
+
+export const DetailsView = ({ details, keysToRemove = [], status }) => {
+  const { t } = useTranslation();
+  const removeKeys = (obj, keys) => {
+    const newObj = { ...obj };
+    keys.forEach((key) => delete newObj[key]);
+    return newObj;
+  };
+
+  // Remove unwanted keys
+  let filteredDetails = removeKeys(details, keysToRemove);
+  // Detect special keys
+  const descriptionKey = Object.keys(filteredDetails).find((key) =>
+    key.includes("description")
+  );
+  const descriptionValue = descriptionKey ? filteredDetails[descriptionKey] : "-";
+
+  const sizeKey = Object.keys(filteredDetails).find((key) =>
+    key.toLowerCase().includes("size")
+  );
+  const timeKey = Object.keys(filteredDetails).find((key) =>
+    key.toLowerCase().endsWith("_create_time")
+  );
+  // Status processing
+  const statusKey = status?.key;
+  const statusValue = filteredDetails[statusKey];
+  const statusItem =
+    status?.values?.find((obj) => Object.hasOwn(obj, statusValue))?.[statusValue];
+
+  return (
+    <div>
+      <div className="mt-2">
+        <h5 className="text-truncate font-size-15">
+          {t(descriptionKey || "description")}
+        </h5>
+        <p className="text-muted">{descriptionValue}</p>
+      </div>
+      {statusKey && statusValue !== undefined && statusItem && (
+        <div className="my-3">
+          <Badge color={statusItem.color}>{statusItem.name}</Badge>
+        </div>
+      )}
+      <div className="text-muted mt-4">
+        <Table className="table-sm">
+          <tbody>
+            {Object.entries(filteredDetails)
+              .filter(
+                ([key]) =>
+                  key !== descriptionKey &&
+                  key !== sizeKey &&
+                  key !== timeKey &&
+                  key !== statusKey
+              )
+              .map(([key, value]) => (
+                <tr key={key}>
+                  <th>{t(key)}:</th>
+                  <td>{value}</td>
+                </tr>
+              ))}
+
+            {sizeKey && (
+              <tr key="size">
+                <th>{t(sizeKey)}:</th>
+                <td>{bytesToReadableSize(filteredDetails[sizeKey])}</td>
+              </tr>
+            )}
+
+            {timeKey && (
+              <tr key="time">
+                <td colSpan={2}>
+                  <div className="mt-4 text-center">
+                    <h5 className="font-size-14">
+                      <i className="bx bx-calendar-check me-1 text-primary" />
+                      {t(timeKey)}
+                    </h5>
+                    <p className="text-muted mb-0">
+                      {filteredDetails[timeKey]}
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </Table>
+      </div>
+    </div>
+  );
+};
+
+DetailsView.propTypes = {
+  details: PropTypes.object.isRequired,
+  keysToRemove: PropTypes.array,
+  status: PropTypes.shape({
+    key: PropTypes.string.isRequired,
+    values: PropTypes.arrayOf(PropTypes.object).isRequired,
+  }),
+};
+
+
 export const PDFPreview = ({ filePath, fileSize }) => {
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageDimensions, setPageDimensions] = useState({});
   const [goToPage, setGoToPage] = useState("");
-  //() => `${API_URL}/public/uploads/projectfiles/${filePath}`,
-  //() => `${API_URL}uploads/projectfiles/${filePath}`,
+
   const fullPath = useMemo(
-    () => `${API_URL}uploads/projectfiles/${filePath}`,
+    () => `${API_URL}/uploads/projectfiles/${filePath}`,
     [filePath]
   );
 

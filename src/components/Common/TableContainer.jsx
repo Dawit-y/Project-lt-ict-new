@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState, useRef } from "react";
-import { Row, Table, Button, Col } from "reactstrap";
+import { Row, Table, Button, Col, Spinner } from "reactstrap";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FOOTER_TEXT, COPYRIGHT_YEAR } from "../../constants/constantFile";
@@ -15,7 +15,7 @@ import { UncontrolledTooltip } from "reactstrap";
 import { rankItem } from "@tanstack/match-sorter-utils";
 import ExportToExcel from "../../components/Common/ExportToExcel";
 import PrintHtmlPage from "../../components/Common/PrintHtmlPage";
-import { FaInfoCircle } from "react-icons/fa";
+import { FaArrowsRotate, FaCircleInfo, FaRotate } from "react-icons/fa6";
 import ExportToPDF from "./ExportToPdf";
 
 // Column Filter
@@ -96,7 +96,9 @@ const TableContainer = ({
   isPrint = true,
   excludeKey = [],
   tableName = "",
-  infoIcon = false
+  infoIcon = false,
+  refetch,
+  isFetching,
 }) => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -241,11 +243,16 @@ const TableContainer = ({
             )}
             {infoIcon &&
               <div>
-                <FaInfoCircle size={20} id="info" />
+                <FaCircleInfo size={20} id="info" />
                 <UncontrolledTooltip placement="top" target="info">
                   Sample Info
                 </UncontrolledTooltip>
               </div>}
+            {refetch &&
+              <Button color="primary" onClick={refetch} outline>
+                {isFetching ? <Spinner color="light" size={"sm"} /> : <FaRotate />}
+              </Button>
+            }
           </div>
         </Col>
       </Row>

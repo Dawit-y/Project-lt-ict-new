@@ -847,6 +847,7 @@ const UsersModel = () => {
                       <option value="">{t("select_one")}</option>
                       <option value={1}>{t("Governmental")}</option>
                       <option value={2}>{t("CSO")}</option>
+                      <option value={4}>{t("CSO Director")}</option>
                       <option value={3}>{t("Citizenship")}</option>
                     </Input>
                     {validation.touched.usr_user_type &&
