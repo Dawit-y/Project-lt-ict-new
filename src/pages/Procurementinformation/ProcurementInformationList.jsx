@@ -29,9 +29,10 @@ import {
 } from "../../queries/procurementinformation_query";
 import ProcurementInformationModal from "./ProcurementInformationModal";
 import { useTranslation } from "react-i18next";
-
+import { useFetchProcurementStages } from "../../queries/procurementstage_query";
+import { useFetchProcurementMethods } from "../../queries/procurementmethod_query";
 import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
+import { createSelectOptions } from "../../utils/commonMethods";
 
 import {
   Button,
@@ -55,6 +56,8 @@ import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForLists from "../../components/Common/TreeForLists";
+import { createSelector } from "reselect";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -85,6 +88,38 @@ const ProcurementInformationList = () => {
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
+ const { data: procurementStageData } = useFetchProcurementStages();
+  const { data: procurementMethodData } = useFetchProcurementMethods();
+  
+  const procurementStageOptions = createSelectOptions(
+    procurementStageData?.data || [],
+    "pst_id",
+    "pst_name_or"
+  );
+
+  const procurementMethodOptions = createSelectOptions(
+    procurementMethodData?.data || [],
+    "prm_id",
+    "prm_name_or"
+  );
+  const procurementStageMap = useMemo(() => {
+    return (
+      procurementStageData?.data?.reduce((acc, procurement_stage) => {
+        acc[procurement_stage.pst_id] = procurement_stage.pst_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [procurementStageData]);
+
+  const procurementMethodMap = useMemo(() => {
+    return (
+      procurementMethodData?.data?.reduce((acc, procurement_method) => {
+        acc[procurement_method.prm_id] = procurement_method.prm_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [procurementMethodData]);
+
 
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
@@ -165,6 +200,15 @@ const ProcurementInformationList = () => {
         },
       },
        {
+        headerName: t("pri_total_procurement_amount"),
+        field: "pri_total_procurement_amount",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.pri_total_procurement_amount, 30) || "-";
+        },
+      },
+       {
         headerName: t("pri_bid_announced_date"),
         field: "pri_bid_announced_date",
         sortable: true,
@@ -224,7 +268,8 @@ const ProcurementInformationList = () => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.pri_procurement_stage_id, 30) || "-";
+          return truncateText(procurementStageMap[params.data.pri_procurement_stage_id], 30) || "-";
+
         },
       },
       {
@@ -233,7 +278,7 @@ const ProcurementInformationList = () => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.pri_procurement_method_id, 30) || "-";
+          return truncateText(procurementMethodMap[params.data.pri_procurement_method_id], 30) || "-";
         },
       }
     ];
@@ -261,7 +306,17 @@ const ProcurementInformationList = () => {
             searchHook={useSearchProcurementInformations}
             textSearchKeys={["prj_name", "prj_code"]}
             dateSearchKeys={[]}
-            dropdownSearchKeys={[]}
+             dropdownSearchKeys={[
+            {
+             key: "pri_procurement_stage_id",
+             options: procurementStageOptions,
+             },
+             {
+              key: "pri_procurement_method_id",
+              options: procurementMethodOptions,
+            },
+            ]}
+            
             checkboxSearchKeys={[]}
             Component={CascadingDropdowns}
             additionalParams={projectParams}

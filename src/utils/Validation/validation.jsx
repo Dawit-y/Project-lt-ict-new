@@ -136,8 +136,40 @@ export const websiteUrlValidation = (required = false) => {
 
   return schema;
 };
+export const emailValidation = (isRequired = true) => {
+  const { t } = useTranslation();
+  
+  let schema = Yup.string()
+    .email(t("val_invalid_email"))  // Built-in Yup email validation
+    .matches(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, // Additional format check
+      t("val_invalid_email_format")
+    );
 
+  if (isRequired) {
+    schema = schema.required(t('val_required'));
+  }
+  
+  return schema;
+};
+export const tinValidation = (minLength, maxLength, isRequired = true) => {
+  const { t } = useTranslation();
+  
+  let schema = Yup.string()
+    // Only letters and numbers allowed (no spaces or special chars)
+    .matches(
+      /^[a-zA-Z0-9]*$/,  // <-- Only alphanumeric characters
+      t("val_letters_numbers_only") // Error message key
+    )
+    .min(minLength, t("val_min_length", { length: minLength }))
+    .max(maxLength, t("val_max_length", { length: maxLength }));
 
+  if (isRequired) {
+    schema = schema.required(t('val_required'));
+  }
+  
+  return schema;
+};
 // These statuses are received from the backend. verify with the backend before making any modifications.
 // const statuses = {
 //   1: "Draft",

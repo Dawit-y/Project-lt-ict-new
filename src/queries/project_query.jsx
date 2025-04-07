@@ -30,6 +30,7 @@ export const useSearchOnlyProjects = (param = {}) => {
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled:false
   });
 };
 

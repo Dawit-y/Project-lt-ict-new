@@ -19,9 +19,8 @@ import {
   useDeleteProcurementInformation,
   useUpdateProcurementInformation,
 } from "../../queries/procurementinformation_query";
-
+import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import { useFetchProcurementStages } from "../../queries/procurementstage_query";
-import { useFetchProcurementParticipants } from "../../queries/procurementparticipant_query";
 import { useFetchProcurementMethods } from "../../queries/procurementmethod_query";
 import DatePicker from "../../components/Common/DatePicker";
 
@@ -74,11 +73,10 @@ const ProcurementInformationModel = (props) => {
   const { t } = useTranslation();
   const { passedId,isActive,startDate} = props;
   const param = { pri_project_id: passedId };
-
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [procurementParticipantMetaData, setProcurementparticipantMetaData] = useState([]);
+  const [procurementInformationMetaData, setProcurementInformationMetaData] = useState([]);
   const [showCanvas, setShowCanvas] = useState(false);
   const [procurementInformation, setProcurementInformation] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
@@ -88,26 +86,25 @@ const ProcurementInformationModel = (props) => {
   const { data, isLoading, error, isError, refetch } = useFetchProcurementInformations(param, isActive);
 
   const { data: procurementStageData } = useFetchProcurementStages();
-  const procurementStageOptions = createSelectOptions(
-    procurementStageData?.data || [],
-    "pst_id",
-    "pst_name_or"
-  );
-
-/*  const { data: procurementParticipant } = useFetchProcurementParticipants();
-  const procurementParticipantOptions = createSelectOptions(
-    procurementParticipant?.data || [],
-    "ppp_id",
-    "ppp_name_or"
-  );
-*/
   const { data: procurementMethodData } = useFetchProcurementMethods();
-  const procurementMethodOptions = createSelectOptions(
-    procurementMethodData?.data || [],
-    "prm_id",
-    "prm_name_or"
-  );
+  
+  const procurementStageMap = useMemo(() => {
+    return (
+      procurementStageData?.data?.reduce((acc, procurement_stage) => {
+        acc[procurement_stage.pst_id] = procurement_stage.pst_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [procurementStageData]);
 
+  const procurementMethodMap = useMemo(() => {
+    return (
+      procurementMethodData?.data?.reduce((acc, procurement_method) => {
+        acc[procurement_method.prm_id] = procurement_method.prm_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [procurementMethodData]);
 
   const addProcurementInformation = useAddProcurementInformation();
   const updateProcurementInformation = useUpdateProcurementInformation();
@@ -190,7 +187,6 @@ const ProcurementInformationModel = (props) => {
      pri_bid_closing_date: Yup.string().required(t('pri_bid_closing_date')),
      pri_bid_evaluation_date: Yup.string().required(t('pri_bid_evaluation_date')),
      pri_bid_award_date: Yup.string().required(t('pri_bid_award_date')),
-
      pri_procurement_stage_id: Yup.string().required(t('pri_procurement_stage_id')),
      pri_procurement_method_id: Yup.string().required(t('pri_procurement_method_id')),
      pri_description: alphanumericValidation(3, 425, false)
@@ -245,7 +241,7 @@ const ProcurementInformationModel = (props) => {
 
    const handleClick = (data) => {
     setShowCanvas(!showCanvas);
-    setProcurementparticipantMetaData(data);
+    setProcurementInformationMetaData(data);
   };
   // Fetch ProcurementInformation on component mount
   useEffect(() => {
@@ -282,7 +278,6 @@ const ProcurementInformationModel = (props) => {
       pri_procurement_method_id:procurementInformation.pri_procurement_method_id, 
       pri_description:procurementInformation.pri_description, 
       pri_status:procurementInformation.pri_status, 
-
       is_deletable: procurementInformation.is_deletable,
       is_editable: procurementInformation.is_editable,
     });
@@ -415,8 +410,9 @@ const ProcurementInformationModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pri_procurement_stage_id, 30) ||
-                '-'}
+             
+             {procurementStageMap[cellProps.row.original.pri_procurement_stage_id] || ""}
+
             </span>
           );
         },
@@ -429,8 +425,7 @@ const ProcurementInformationModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pri_procurement_method_id, 30) ||
-                '-'}
+              {procurementMethodMap[cellProps.row.original.pri_procurement_method_id] || ""}  
             </span>
           );
         },
@@ -501,6 +496,19 @@ const ProcurementInformationModel = (props) => {
               </UncontrolledTooltip>
               </Link>
               )}
+
+            <Button
+                to="#"
+                color="none"
+                className="text-secondary"
+                onClick={() => handleClick(cellProps.row.original)}
+              >
+                <i className="mdi mdi-cog font-size-18" id="viewtooltip" />
+                <UncontrolledTooltip placement="top" target="viewtooltip">
+                  Detail
+                </UncontrolledTooltip>
+              </Button>
+
             </div>
             );
         },
@@ -510,11 +518,21 @@ const ProcurementInformationModel = (props) => {
 }, [handleProcurementInformationClick, toggleViewModal, onClickDelete]);
   return (
     <React.Fragment>
-    <ProcurementInformationModal
-    isOpen={modal1}
-    toggle={toggleViewModal}
-    transaction={transaction}
-    />
+  
+     <DynamicDetailsModal
+        isOpen={modal1}
+        toggle={toggleViewModal} // Function to close the modal
+        data={transaction} // Pass transaction as data to the modal
+        title={t('procurement_information')}
+        description={transaction.pri_description}
+        pri_total_procurement_amount={transaction.pri_total_procurement_amount}
+        fields={[
+          { label: t('pri_procurement_stage_id'), key: "pri_procurement_stage_id", value: procurementStageMap[transaction.pri_procurement_stage_id] },
+          { label: t('pri_procurement_method_id'), key: "pri_procurement_method_id", value: procurementMethodMap[transaction.pri_procurement_method_id] },
+        ]}
+        footerText={t('close')}
+      />
+
     <DeleteModal
     show={deleteModal}
     onDeleteClick={handleDeleteProcurementInformation}
@@ -561,7 +579,8 @@ const ProcurementInformationModel = (props) => {
       >
            <Row>
                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('pri_total_procurement_amount')}</Label>
+                      <Label>{t('pri_total_procurement_amount')}
+                      <span className="text-danger">*</span></Label>
                       <Input
                         name='pri_total_procurement_amount'
                         type='number'
@@ -660,8 +679,11 @@ const ProcurementInformationModel = (props) => {
                               ) : null}
                               </Col> 
 
-                     <Col className="col-md-6 mb-3">
-                    <Label>{t("pri_procurement_stage_id")}</Label>
+                   <Col className="col-md-6 mb-3">
+                    <Label>
+                      {t("pri_procurement_stage_id")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pri_procurement_stage_id"
                       type="select"
@@ -671,27 +693,32 @@ const ProcurementInformationModel = (props) => {
                       value={validation.values.pri_procurement_stage_id || ""}
                       invalid={
                         validation.touched.pri_procurement_stage_id &&
-                        validation.errors.pri_procurement_stage_id
+                          validation.errors.pri_procurement_stage_id
                           ? true
                           : false
                       }
                     >
-                      <option value={null}>Select Procurement Stage</option>
-                      {procurementStageOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {t(`${option.label}`)}
+                      <option value="">{t('select_one')}</option>
+                      {procurementStageData?.data?.map((data) => (
+                        <option key={data.pst_id} value={data.pst_id}>
+                          {data.pst_name_or}
                         </option>
                       ))}
                     </Input>
                     {validation.touched.pri_procurement_stage_id &&
-                    validation.errors.pri_procurement_stage_id ? (
+                      validation.errors.pri_procurement_stage_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pri_procurement_stage_id}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pri_procurement_method_id")}</Label>
+
+
+                   <Col className="col-md-6 mb-3">
+                    <Label>
+                      {t("pri_procurement_method_id")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pri_procurement_method_id"
                       type="select"
@@ -701,26 +728,26 @@ const ProcurementInformationModel = (props) => {
                       value={validation.values.pri_procurement_method_id || ""}
                       invalid={
                         validation.touched.pri_procurement_method_id &&
-                        validation.errors.pri_procurement_method_id
+                          validation.errors.pri_procurement_method_id
                           ? true
                           : false
                       }
                     >
-                      <option value={null}>Select Procurement Method</option>
-                      {procurementMethodOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {t(`${option.label}`)}
+                      <option value="">{t('select_one')}</option>
+                      {procurementMethodData?.data?.map((data) => (
+                        <option key={data.prm_id} value={data.prm_id}>
+                          {data.prm_name_or}
                         </option>
                       ))}
                     </Input>
                     {validation.touched.pri_procurement_method_id &&
-                    validation.errors.pri_procurement_method_id ? (
+                      validation.errors.pri_procurement_method_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pri_procurement_method_id}
                       </FormFeedback>
                     ) : null}
                   </Col>
-
+                  
                   <Col className='col-md-6 mb-3'>
                   <Label>{t('pri_description')}</Label>
                       <Input
@@ -808,16 +835,17 @@ const ProcurementInformationModel = (props) => {
         </Form>
         </ModalBody>
         </Modal>
+         
         </div>
-         {showCanvas && (
+        {showCanvas && (
         <RightOffCanvas
           handleClick={handleClick}
           showCanvas={showCanvas}
           canvasWidth={84}
           name={""}
-          id={procurementParticipantMetaData.ppp_id}
+          id={procurementInformationMetaData.pri_id}
           components={{
-            [t("procurementparticipant")]: ProcurementParticipant,
+            [t("procurement_participant")]: ProcurementParticipant,
           }}
         />
       )}

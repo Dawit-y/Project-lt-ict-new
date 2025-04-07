@@ -8,14 +8,15 @@ import {
 
 const PROCUREMENT_PARTICIPANT_QUERY_KEY = ["procurementparticipant"];
 // Fetch procurement_participant
-export const useFetchProcurementParticipants = () => {
+export const useFetchProcurementParticipants = (param = {}, isActive) => {
   return useQuery({
-    queryKey: PROCUREMENT_PARTICIPANT_QUERY_KEY,
-    queryFn: () => getProcurementParticipant(),
-    staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
+    queryKey: [...PROCUREMENT_PARTICIPANT_QUERY_KEY, param],
+    queryFn: () => getProcurementParticipant(param),
+    staleTime: 1000 * 60 * 1,
+    meta: { persist: false },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: isActive,
   });
 };
 
