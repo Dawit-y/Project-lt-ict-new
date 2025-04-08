@@ -105,6 +105,8 @@ const AgGridContainer = ({
                   )}
                   {isPrint && (
                     <PrintPage
+                      gridRef={gridRef}
+                      columnDefs={columnDefs}
                       tableData={rowData}
                       tablename={tableName}
                       excludeKey={excludeKey}
