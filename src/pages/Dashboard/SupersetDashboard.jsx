@@ -11,6 +11,7 @@ const SupersetDashboard = (dashboardPath) => {
   const User = storedUser ? JSON.parse(storedUser) : null; // Handle null case
   const zoneId = User.user.usr_zone_id;
   const woredaId = User.user.usr_woreda_id;
+  const ownerId = User.user.usr_owner_id;
   //const sectorId = User.user.usr_sector_id === 1 ? 0 : User.user.usr_sector_id;
  const sectorId = User?.user?.user_sector?.[0]?.sector_ids?.length > 0 
   ? User.user.user_sector[0].sector_ids 
@@ -29,6 +30,7 @@ const SupersetDashboard = (dashboardPath) => {
     url.searchParams.set("zone_id", zoneId);
     url.searchParams.set("woreda_id", woredaId);
     url.searchParams.set("sector_id", sectorId);
+    url.searchParams.set("owner_id", ownerId);
     //url.searchParams.set("department_id", departmentId);
     url.searchParams.set("project_type", projectType);
     const fullUrl = url.toString();
