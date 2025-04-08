@@ -6,7 +6,8 @@ import ExportToPDF from "./ExportToPdf";
 import PrintPage from "./PrintPage";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import { Spinner } from "reactstrap";
+import { Spinner, UncontrolledTooltip, UncontrolledDropdown, DropdownMenu, DropdownToggle } from "reactstrap";
+import { FaFileExport } from "react-icons/fa6";
 
 import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
@@ -76,31 +77,46 @@ const AgGridContainer = ({
             </Button>
           )}
 
-          {isExcelExport && (
-            <ExportToExcel
-              tableData={rowData}
-              tablename={tableName}
-              includeKey={includeKey}
-            />
-          )}
-
-          {isPdfExport && (
-            <ExportToPDF
-              tableData={rowData}
-              tablename={tableName}
-              includeKey={includeKey}
-            />
-          )}
-
-          {isPrint && (
-            <PrintPage
-              tableData={rowData || []}
-              tablename={tableName}
-              excludeKey={excludeKey}
-              columnsToIgnore={"2"}
-              gridRef={gridRef}
-              columnDefs={columnDefs}
-            />
+          {(isExcelExport || isPdfExport || isPrint) && (
+            <>
+              <UncontrolledDropdown>
+                <DropdownToggle
+                  color="primary"
+                  id="export_toggle"
+                >
+                  <FaFileExport size={18} />
+                </DropdownToggle>
+                <DropdownMenu end className="py-2 mt-1">
+                  {isExcelExport && (
+                    <ExportToExcel
+                      tableData={rowData}
+                      tablename={tableName}
+                      excludeKey={excludeKey}
+                      dropdownItem={true}
+                    />
+                  )}
+                  {isPdfExport && (
+                    <ExportToPDF
+                      tableData={rowData}
+                      tablename={tableName}
+                      excludeKey={excludeKey}
+                      dropdownItem={true}
+                    />
+                  )}
+                  {isPrint && (
+                    <PrintPage
+                      tableData={rowData}
+                      tablename={tableName}
+                      excludeKey={excludeKey}
+                      dropdownItem={true}
+                    />
+                  )}
+                </DropdownMenu>
+              </UncontrolledDropdown>
+              <UncontrolledTooltip placement="top" target="export_toggle">
+                Export
+              </UncontrolledTooltip>
+            </>
           )}
         </Col>
       </Row>
@@ -119,7 +135,7 @@ const AgGridContainer = ({
           quickFilterText={quickFilterText}
           rowHeight={rowHeight}
           animateRows={true}
-          domLayout="autoHeight" 
+          domLayout="autoHeight"
         />
       </div>
     </div>
