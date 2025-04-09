@@ -72,7 +72,7 @@ const SectorInformationModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } =
+  const { data, isLoading, isFetching, error, isError, refetch } =
     useFetchSectorInformations();
   const { data: sectorCategoryData } = useFetchSectorCategorys();
   const sectorCategoryOptions = createSelectOptions(
@@ -528,6 +528,8 @@ const SectorInformationModel = () => {
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                       divClassName="table-responsive"
+                      refetch={refetch}
+                      isFetching={isFetching}
                     />
                   </CardBody>
                 </Card>

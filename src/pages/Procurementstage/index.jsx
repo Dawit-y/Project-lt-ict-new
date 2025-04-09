@@ -42,7 +42,6 @@ import {
 } from "reactstrap";
 import { ToastContainer,toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import {
   alphanumericValidation,
@@ -69,7 +68,7 @@ const ProcurementStageModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useFetchProcurementStages();
+  const { data, isLoading, isFetching,error, isError, refetch } = useFetchProcurementStages();
   const addProcurementStage = useAddProcurementStage();
   const updateProcurementStage = useUpdateProcurementStage();
   const deleteProcurementStage = useDeleteProcurementStage();
@@ -390,26 +389,6 @@ pst_status:(procurementStage && procurementStage.pst_status) || "",
     title={t("procurement_stage")}
     breadcrumbItem={t("procurement_stage")}
     />
-    <AdvancedSearch
-    searchHook={useSearchProcurementStages}
-    textSearchKeys={["pst_name_or", "pst_name_en", "pst_name_am"]}
-    dropdownSearchKeys={[
-   
-    ]}
-    checkboxSearchKeys={[
-    {
-      key: "example1",
-      options: [
-        { value: "Engineering", label: "Example1" },
-        { value: "Science", label: "Example2" },
-        ],
-    },
-    ]}
-    onSearchResult={handleSearchResults}
-    setIsSearchLoading={setIsSearchLoading}
-    setSearchResults={setSearchResults}
-    setShowSearchResult={setShowSearchResult}
-    />
     {isLoading || isSearchLoading ? (
       <Spinners />
       ) : (
@@ -436,7 +415,10 @@ pst_status:(procurementStage && procurementStage.pst_status) || "",
       theadClass="table-light"
       pagination="pagination"
       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+      refetch={refetch}
+       isFetching={isFetching} 
       />
+
       </CardBody>
       </Card>
       </Col>

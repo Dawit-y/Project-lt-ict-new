@@ -78,7 +78,7 @@ const ProjectBudgetExpenditureModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } =
+  const { data, isLoading, isFetching, error, isError, refetch } =
     useFetchProjectBudgetExpenditures(param);
   const { data: budgetYearData } = useFetchBudgetYears();
   const { data: budgetMonthData } = useFetchBudgetMonths();
@@ -519,6 +519,8 @@ const ProjectBudgetExpenditureModel = () => {
                         theadClass="table-light"
                         pagination="pagination"
                         paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                        refetch={refetch}
+                        isFetching={isFetching}
                       />
                     </CardBody>
                   </Card>

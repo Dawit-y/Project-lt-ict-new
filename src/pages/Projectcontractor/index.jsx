@@ -73,7 +73,7 @@ const ProjectContractorModel = (props) => {
 
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } =
+  const { data, isLoading, isFetching, error, isError, refetch } =
     useFetchProjectContractors(param, isActive);
 
   const addProjectContractor = useAddProjectContractor();
@@ -609,6 +609,8 @@ const ProjectContractorModel = (props) => {
               theadClass="table-light"
               pagination="pagination"
               paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+              refetch={refetch}
+              isFetching={isFetching}
             />
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">

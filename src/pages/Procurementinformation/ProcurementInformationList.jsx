@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState,useRef } from "react";
+import React, { useEffect, lazy, useMemo, useState,useRef } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
@@ -11,11 +11,10 @@ import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 //import SearchComponent from "../../components/Common/SearchComponent";
 //import components
-import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
+const AgGridContainer = lazy(() =>
+  import("../../components/Common/AgGridContainer")
+);
 import "bootstrap/dist/css/bootstrap.min.css";
-
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
@@ -32,7 +31,7 @@ import { useTranslation } from "react-i18next";
 import { useFetchProcurementStages } from "../../queries/procurementstage_query";
 import { useFetchProcurementMethods } from "../../queries/procurementmethod_query";
 import { useSelector, useDispatch } from "react-redux";
-import { createSelectOptions } from "../../utils/commonMethods";
+import { createSelectOptions, createMultiSelectOptions } from "../../utils/commonMethods";
 
 import {
   Button,
@@ -68,7 +67,8 @@ const truncateText = (text, maxLength) => {
 const ProcurementInformationList = () => {
   //meta title
   document.title = " ProcurementInformation";
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -90,37 +90,53 @@ const ProcurementInformationList = () => {
   const gridRef = useRef(null);
  const { data: procurementStageData } = useFetchProcurementStages();
   const { data: procurementMethodData } = useFetchProcurementMethods();
-  
-  const procurementStageOptions = createSelectOptions(
-    procurementStageData?.data || [],
-    "pst_id",
-    "pst_name_or"
-  );
+     const {
+    pst_name_en: procurementStageOptionsEn,
+    pst_name_or: procurementStageOptionsOr,
+    pst_name_am: procurementStageOptionsAm,
+  } = createMultiSelectOptions(procurementStageData?.data || [], "pst_id", [
+    "pst_name_en",
+    "pst_name_or",
+    "pst_name_am",
+  ]);
 
-  const procurementMethodOptions = createSelectOptions(
-    procurementMethodData?.data || [],
-    "prm_id",
-    "prm_name_or"
-  );
-  const procurementStageMap = useMemo(() => {
+ const procurementStageMap = useMemo(() => {
     return (
       procurementStageData?.data?.reduce((acc, procurement_stage) => {
-        acc[procurement_stage.pst_id] = procurement_stage.pst_name_or;
+        acc[procurement_stage.pst_id] =
+          lang === "en"
+            ? procurement_stage.pst_name_en
+            : lang === "am"
+            ? procurement_stage.pst_name_am
+            : procurement_stage.pst_name_or;
         return acc;
       }, {}) || {}
     );
-  }, [procurementStageData]);
+  }, [procurementStageData, lang]);
 
-  const procurementMethodMap = useMemo(() => {
+  const {
+    prm_name_en: procurementMethodOptionsEn,
+    prm_name_or: procurementMethodOptionsOr,
+    prm_name_am: procurementMethodOptionsAm,
+  } = createMultiSelectOptions(procurementMethodData?.data || [], "prm_id", [
+    "prm_name_en",
+    "prm_name_or",
+    "prm_name_am",
+  ]);
+
+ const procurementMethodMap = useMemo(() => {
     return (
       procurementMethodData?.data?.reduce((acc, procurement_method) => {
-        acc[procurement_method.prm_id] = procurement_method.prm_name_or;
+        acc[procurement_method.prm_id] =
+          lang === "en"
+            ? procurement_method.prm_name_en
+            : lang === "am"
+            ? procurement_method.prm_name_am
+            : procurement_method.prm_name_or;
         return acc;
       }, {}) || {}
     );
-  }, [procurementMethodData]);
-
-
+  }, [procurementMethodData, lang]);
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
@@ -309,75 +325,60 @@ const ProcurementInformationList = () => {
              dropdownSearchKeys={[
             {
              key: "pri_procurement_stage_id",
-             options: procurementStageOptions,
+             options:
+                      lang === "en"
+                        ? procurementStageOptionsEn
+                        : lang === "am"
+                        ? procurementStageOptionsAm
+                        : procurementStageOptionsOr,
              },
              {
               key: "pri_procurement_method_id",
-              options: procurementMethodOptions,
+              options:
+                      lang === "en"
+                        ? procurementMethodOptionsEn
+                        : lang === "am"
+                        ? procurementMethodOptionsAm
+                        : procurementMethodOptionsOr,
             },
             ]}
             
             checkboxSearchKeys={[]}
-            Component={CascadingDropdowns}
             additionalParams={projectParams}
             setAdditionalParams={setProjectParams}
             onSearchResult={handleSearchResults}
             setIsSearchLoading={setIsSearchLoading}
             setSearchResults={setSearchResults}
             setShowSearchResult={setShowSearchResult}
-          />
-          {isLoading || isSearchLoading ? (
-            <Spinners />
-          ) : (
-            <div
-              className="ag-theme-alpine"
-              style={{ height: "100%", width: "100%" }}
-            >
-              {/* Row for search input and buttons */}
-              <Row className="mb-3">
-                <Col sm="12" md="6">
-                  {/* Search Input for  Filter */}
-                  <Input
-                    type="text"
-                    placeholder="Search..."
-                    onChange={(e) => setQuickFilterText(e.target.value)}
-                    className="mb-2"
-                    style={{ width: "50%", maxWidth: "400px" }}
-                  />
-                </Col>
-                <Col sm="12" md="6" className="text-md-end"></Col>
-              </Row>
-
-              {/* AG Grid */}
-              <div>
-                <AgGridReact
-                      ref={gridRef}
-                      rowData={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      columnDefs={columnDefs}
-                      pagination={true}
-                      paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                      paginationPageSize={10}
-                      quickFilterText={quickFilterText}
-                      onSelectionChanged={onSelectionChanged}
-                      rowHeight={30} // Set the row height here
-                      animateRows={true} // Enables row animations
-                      domLayout="autoHeight" // Auto-size the grid to fit content
-                      onGridReady={(params) => {
-                        params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                      }}
-                    />
-              </div>
+          >
+          <AgGridContainer
+                  rowData={
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
+                  columnDefs={columnDefs}
+                  isLoading={isSearchLoading}
+                  isPagination={true}
+                  rowHeight={35}
+                  paginationPageSize={10}
+                  isGlobalFilter={true}
+                  isExcelExport={true}
+                  isPdfExport={true}
+                  isPrint={true}
+                  tableName="Project Procurement"
+                  includeKey={[
+                    "prj_name",
+                    "prj_code",
+                    "pri_total_procurement_amount",
+                    "pri_bid_opening_date",
+                    "pri_bid_closing_date",
+                  ]}
+                  excludeKey={["is_editable", "is_deletable"]}
+                />
+              </AdvancedSearch>
             </div>
-          )}
+          </div>
         </div>
-      </div>    
       </div>
-      </div>
-
     </React.Fragment>
   );
 };

@@ -74,7 +74,7 @@ const DocumentTypeModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useFetchDocumentTypes();
+  const { data, isLoading, isFetching, error, isError, refetch } = useFetchDocumentTypes();
 
   const addDocumentType = useAddDocumentType();
   const updateDocumentType = useUpdateDocumentType();
@@ -444,6 +444,8 @@ const DocumentTypeModel = () => {
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                       divClassName="-"
+                      refetch={refetch}
+                      isFetching={isFetching}
                     />
                   </CardBody>
                 </Card>

@@ -70,7 +70,7 @@ const ProjectPlanModel = () => {
   const [transaction, setTransaction] = useState({});
   const [projectPlanSelected, setProjectPlanSelected] = useState(null);
 
-  const { data, isLoading, error, isError, refetch } =
+  const { data, isLoading, isFetching, error, isError, refetch } =
     useFetchProjectPlans(param);
   const { data: budgetYearData } = useFetchBudgetYears();
 
@@ -504,6 +504,8 @@ const ProjectPlanModel = () => {
               theadClass="table-light"
               pagination="pagination"
               paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+              refetch={refetch}
+              isFetching={isFetching}
             />
           </Col>
           {projectPlanSelected && (

@@ -68,7 +68,7 @@ const ProjectPaymentModel = (props) => {
   const [showSearchResults, setShowSearchResults] = useState(false);
 
   const performStatusCheck = useStatusCheck(PAGE_ID.PROJ_PAYMENT, status);
-  const { data, isLoading, error, isError, refetch } = useFetchProjectPayments(
+  const { data, isLoading, isFetching, error, isError, refetch } = useFetchProjectPayments(
     param,
     isActive
   );
@@ -497,6 +497,8 @@ const ProjectPaymentModel = (props) => {
               theadClass="table-light"
               pagination="pagination"
               paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+              refetch={refetch}
+              isFetching={isFetching}
             />
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">

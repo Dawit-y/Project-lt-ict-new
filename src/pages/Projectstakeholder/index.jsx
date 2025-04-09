@@ -56,7 +56,7 @@ const ProjectStakeholderModel = (props) => {
   const [isEdit, setIsEdit] = useState(false);
   const [projectStakeholder, setProjectStakeholder] = useState(null);
 
-  const { data, isLoading, error, isError, refetch } =
+  const { data, isLoading, isFetching, error, isError, refetch } =
     useFetchProjectStakeholders(param, isActive);
   const { data: stakeholderTypeData } = useFetchStakeholderTypes();
   const stakeholderTypeOptions = createSelectOptions(
@@ -441,6 +441,8 @@ const ProjectStakeholderModel = (props) => {
               theadClass="table-light"
               pagination="pagination"
               paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+              refetch={refetch}
+              isFetching={isFetching}
             />
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
