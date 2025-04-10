@@ -1,18 +1,14 @@
 import React, { useEffect, lazy, useMemo, useState } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
 import { useTranslation } from "react-i18next";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import {
-  useFetchProjectPayments,
   useSearchProjectPayments,
 } from "../../queries/projectpayment_query";
 import TreeForLists from "../../components/Common/TreeForLists";
 import { useFetchPaymentCategorys } from "../../queries/paymentcategory_query";
 import {
-  createSelectOptions,
   createMultiSelectOptions,
 } from "../../utils/commonMethods";
 const AgGridContainer = lazy(() =>
@@ -22,7 +18,6 @@ const ProjectPaymentList = () => {
   document.title = "Project Payment List";
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
-
   const [projectPayment, setProjectPayment] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -35,14 +30,10 @@ const ProjectPaymentList = () => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
-
   const { data } = useState("");
-
   const { data: paymentCategoryData } = useFetchPaymentCategorys();
-
   const {
     pyc_name_en: paymentCategoryOptionsEn,
-
     pyc_name_or: paymentCategoryOptionsOr,
     pyc_name_am: paymentCategoryOptionsAm,
   } = createMultiSelectOptions(paymentCategoryData?.data || [], "pyc_id", [
@@ -50,7 +41,6 @@ const ProjectPaymentList = () => {
     "pyc_name_or",
     "pyc_name_am",
   ]);
-
   const paymentCategoryTypeMap = useMemo(() => {
     return (
       paymentCategoryData?.data?.reduce((acc, payment_type) => {

@@ -372,9 +372,8 @@ const Index = (props) => {
                               : ""
                               }`}
                           >
-                            <Link
-                              className="text-body fw-medium py-1 d-flex align-items-center"
-                              to="#"
+                            <Button
+                              className="text-body fw-medium py-1 d-flex align-items-center border-0 bg-transparent w-100 text-start"
                               onClick={() => {
                                 setSearchParams({ project_id: passedId });
                                 setSelectedDocumentTypeId(null);
@@ -382,33 +381,32 @@ const Index = (props) => {
                             >
                               <i className="mdi mdi-folder font-size-16 text-warning me-2"></i>
                               All Documents
-                            </Link>
+                            </Button>
                           </div>
                         </li>
                         {docTypeData?.data?.map((type) => (
-                          <li key={type.pdt_id}>
-                            <div
-                              className={`${selectedDocumentTypeId === type.pdt_id
-                                ? "border border-info-subtle"
-                                : ""
-                                }`}
-                            >
-                              <Link
-                                className="text-body fw-medium py-1 d-flex align-items-center"
-                                to="#"
-                                onClick={() => {
-                                  setSelectedDocumentTypeId(type.pdt_id);
-                                  setSearchParams({
-                                    project_id: passedId,
-                                    prd_document_type_id: type.pdt_id,
-                                  });
-                                }}
-                              >
-                                <i className="mdi mdi-folder font-size-16 text-warning me-2"></i>
-                                {type.pdt_doc_name_or}
-                              </Link>
-                            </div>
-                          </li>
+                         <li key={type.pdt_id}>
+  <div
+    className={`${selectedDocumentTypeId === type.pdt_id ? "border border-info-subtle" : ""}`}
+    style={{ backgroundColor: "transparent" }}
+  >
+    <button
+      type="button"
+      className="text-body fw-medium py-1 d-flex align-items-center border-0 bg-transparent w-100 text-start"
+      onClick={() => {
+        setSelectedDocumentTypeId(type.pdt_id);
+        setSearchParams({
+          project_id: passedId,
+          prd_document_type_id: type.pdt_id,
+        });
+      }}
+    >
+      <i className="mdi mdi-folder font-size-16 text-warning me-2"></i>
+      {type.pdt_doc_name_or}
+    </button>
+  </div>
+</li>
+
                         ))}
                       </ul>
                     </div>

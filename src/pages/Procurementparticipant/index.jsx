@@ -72,7 +72,7 @@ const ProcurementParticipantModel = (props ) => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } =
+  const { data, isLoading, isFetching, error, isError, refetch } =
     useFetchProcurementParticipants(param,isActive);
   const addProcurementParticipant = useAddProcurementParticipant();
   const updateProcurementParticipant = useUpdateProcurementParticipant();
@@ -86,7 +86,7 @@ const ProcurementParticipantModel = (props ) => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.error(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -100,7 +100,7 @@ const ProcurementParticipantModel = (props ) => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
+      toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -115,7 +115,7 @@ const ProcurementParticipantModel = (props ) => {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t('delete_failure'), {
+        toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -352,36 +352,7 @@ const ProcurementParticipantModel = (props ) => {
                   </span>
                 );
               },
-            }, 
-      {
-        header: '',
-        accessorKey: 'ppp_participant_address',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.ppp_participant_address, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-     {
-        header: '',
-        accessorKey: 'ppp_description',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.ppp_description, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-
+            },
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -492,6 +463,8 @@ const ProcurementParticipantModel = (props ) => {
       theadClass="table-light"
       pagination="pagination"
       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+      refetch={refetch}
+      isFetching={isFetching}
       />
       )}
       <Modal isOpen={modal} toggle={toggle} className="modal-xl">

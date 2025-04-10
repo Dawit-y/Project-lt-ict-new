@@ -365,19 +365,23 @@ const ProjectHandoverModel = (props) => {
           return (
             <div className="d-flex gap-3">
 {(data?.previledge?.is_role_editable == 1 && cellProps.row.original?.is_editable == 1) && (
-                  <Link
-                    to="#"
+                   <Button
+                    size="sm"
+                    color="none"
                     className="text-success"
                     onClick={() => {
                       const data = cellProps.row.original;
                       handleProjectHandoverClick(data);
                     }}
                   >
-                    <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                    <i
+                      className="mdi mdi-pencil font-size-18"
+                      id="edittooltip"
+                    />
                     <UncontrolledTooltip placement="top" target="edittooltip">
                       Edit
                     </UncontrolledTooltip>
-                  </Link>
+                  </Button>
                 )}
 {(data?.previledge?.is_role_deletable == 9 && cellProps.row.original?.is_deletable == 9) && (
                   <Link

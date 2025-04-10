@@ -431,8 +431,8 @@ const ProjectBudgetExpenditureModel = () => {
                 </Button>
               )}
 
-              {(cellProps.row.original?.is_deletable ||
-                cellProps.row.original?.is_role_deletable) && (
+              {(cellProps.row.original?.is_deletable === 9 ||
+                cellProps.row.original?.is_role_deletable === 9) && (
                 <Button
                   to="#"
                   color="none"

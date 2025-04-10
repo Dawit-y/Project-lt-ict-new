@@ -93,6 +93,7 @@ const AgGridContainer = ({
                       tablename={tableName}
                       excludeKey={excludeKey}
                       dropdownItem={true}
+                      includeKey={includeKey}
                     />
                   )}
                   {isPdfExport && (
@@ -101,6 +102,7 @@ const AgGridContainer = ({
                       tablename={tableName}
                       excludeKey={excludeKey}
                       dropdownItem={true}
+                      includeKey={includeKey}
                     />
                   )}
                   {isPrint && (
@@ -111,6 +113,7 @@ const AgGridContainer = ({
                       tablename={tableName}
                       excludeKey={excludeKey}
                       dropdownItem={true}
+                      includeKey={includeKey}
                     />
                   )}
                 </DropdownMenu>
