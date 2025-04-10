@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import TreeTableContainer from '../../components/Common/TreeTableContainer'
-import { FaChevronRight, FaChevronDown, FaPen, FaPlus, FaTrash } from "react-icons/fa6";
+import { FaChevronRight, FaChevronDown, FaPen, FaPlus, FaTrash, FaArrowsUpDownLeftRight } from "react-icons/fa6";
 import { Button, Card, CardBody, UncontrolledTooltip } from 'reactstrap';
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import {
@@ -9,15 +9,26 @@ import {
 import FormModal from './FormModal';
 import FetchErrorHandler from '../../components/Common/FetchErrorHandler';
 import Spinners from "../../components/Common/Spinner"
+import { useSortable } from '@dnd-kit/sortable'
 
 const AddressStructure = () => {
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
   const { data, isLoading, isError, error, refetch } = useFetchAddressStructures(userId);
+
+  const [treeData, setTreeData] = useState([])
   const [selectedRow, setSelectedRow] = useState(null)
   const [deleteModal, setDeleteModal] = useState(false)
   const [formModal, setFormModal] = useState(false);
   const [modalAction, setModalAction] = useState(null); // "add" or "edit"
+
+  useEffect(() => {
+    setTreeData(data)
+  }, [])
+
+  useEffect(() => {
+    setTreeData(data)
+  }, [data])
 
   const toggleFormModal = (action = null) => {
     setModalAction(action);
@@ -28,8 +39,21 @@ const AddressStructure = () => {
   const columns = React.useMemo(
     () => [
       {
+        id: 'drag-handle',
+        header: 'Move',
+        cell: ({ row }) =>
+          String(row.original?.level).trim().toLowerCase() === "woreda" ? (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+              <RowDragHandleCell rowId={row.id} />
+            </div>
+          ) : (
+            ""
+          ),
+        size: 60,
+      },
+      {
         accessorKey: 'name',
-        header: () => <>Name</>,
+        header: "Name",
         cell: ({ row, getValue }) => {
           const hasChildren = row.getCanExpand();
           const depth = row.depth;
@@ -65,12 +89,12 @@ const AddressStructure = () => {
       },
       {
         accessorKey: 'add_name_am',
-        header: () => <>Name (Amharic)</>,
+        header: "Name (Amharic)",
         footer: props => props.column.id,
       },
       {
         accessorKey: 'add_name_en',
-        header: () => <>Name (English)</>,
+        header: "Name (English)",
         footer: props => props.column.id,
       },
       {
@@ -86,14 +110,19 @@ const AddressStructure = () => {
       {
         id: 'actions',
         header: "Actions",
-        cell: props =>
-          <RowActions
-            row={props.row}
-            toggleForm={toggleFormModal}
-            toggleDelete={toggleDeleteModal}
-            setSelectedRow={setSelectedRow}
-          />,
-      }
+        size: 120, // or use 'width: 120' depending on the table library
+        cell: props => (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+            <RowActions
+              row={props.row}
+              toggleForm={toggleFormModal}
+              toggleDelete={toggleDeleteModal}
+              setSelectedRow={setSelectedRow}
+            />
+          </div>
+        ),
+      },
+
     ],
     []
   );
@@ -118,7 +147,8 @@ const AddressStructure = () => {
           {isLoading ? <Spinners /> :
             <Card >
               <TreeTableContainer
-                data={data}
+                data={treeData}
+                setData={setTreeData}
                 columns={columns}
               />
             </Card>
@@ -198,3 +228,35 @@ function RowActions({ row, toggleForm, toggleDelete, setSelectedRow }) {
     </div>
   )
 }
+
+
+// Cell Component
+const RowDragHandleCell = ({ rowId }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef, // ✅ You need to attach this to the DOM element
+    isDragging,
+  } = useSortable({
+    id: rowId,
+  });
+
+  return (
+    <button
+      ref={setNodeRef} // ✅ This is crucial
+      {...attributes}
+      {...listeners}
+      type="button"
+      style={{
+        background: 'none',
+        border: 'none',
+        padding: 2,
+        marginRight: '0.5rem',
+        cursor: isDragging ? 'grabbing' : 'grab', // just for UX
+        touchAction: 'none', // ✅ Prevents mobile glitches
+      }}
+    >
+      <FaArrowsUpDownLeftRight />
+    </button>
+  );
+};
