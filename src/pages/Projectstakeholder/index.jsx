@@ -56,7 +56,7 @@ const ProjectStakeholderModel = (props) => {
   const [isEdit, setIsEdit] = useState(false);
   const [projectStakeholder, setProjectStakeholder] = useState(null);
 
-  const { data, isLoading, error, isError, refetch } =
+  const { data, isLoading, isFetching, error, isError, refetch } =
     useFetchProjectStakeholders(param, isActive);
   const { data: stakeholderTypeData } = useFetchStakeholderTypes();
   const stakeholderTypeOptions = createSelectOptions(
@@ -356,21 +356,24 @@ const ProjectStakeholderModel = (props) => {
           return (
             <div className="d-flex gap-3">
               {cellProps.row.original.is_editable && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleProjectStakeholderClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
+                 <Button
+                    size="sm"
+                    color="none"
+                    className="text-success"
+                    onClick={() => {
+                      const data = cellProps.row.original;
+                      handleProjectStakeholderClick(data);
+                    }}
+                  >
+                    <i
+                      className="mdi mdi-pencil font-size-18"
+                      id="edittooltip"
+                    />
+                    <UncontrolledTooltip placement="top" target="edittooltip">
+                      Edit
+                    </UncontrolledTooltip>
+                  </Button>
               )}
-
               {cellProps.row.original.is_deletable && (
                 <Link
                   to="#"
@@ -441,6 +444,8 @@ const ProjectStakeholderModel = (props) => {
               theadClass="table-light"
               pagination="pagination"
               paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+              refetch={refetch}
+              isFetching={isFetching}
             />
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">

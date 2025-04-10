@@ -1317,5 +1317,19 @@
 	"change_password":"Change Password",
 	"new_password":"New Password",
 	"enter_new_password":"Enter New Password",
-	"confirm_password":"Confirm Password"
+	"confirm_password":"Confirm Password",
+	"last_logged_in":"Last Logged In",
+  "created":"Created",
+  "email":"Email",
+  "phone_number":"Phone Number",
+  "full_name":"Full Name",
+  "cso_proposal_request":"Proposal Request",
+  "cso_proposal_request_approval":"Proposal Request List",
+  "project_cso":"CSO Project",
+  "project_cso_list":"CSO Project List",
+  "citizenship_project":"Citizenship Project",
+  "citizenship_project_list":"Citizenship Project List",
+  "procurement_list":"Procurment List",
+  "rqc_gov_active":"Is Active for Government",
+  "rqc_cso_active":"Is Active for CSO"
 }

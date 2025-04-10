@@ -83,7 +83,7 @@ const ProcurementInformationModel = (props) => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useFetchProcurementInformations(param, isActive);
+  const { data, isLoading, isFetching, error, isError, refetch } = useFetchProcurementInformations(param, isActive);
 
   const { data: procurementStageData } = useFetchProcurementStages();
   const { data: procurementMethodData } = useFetchProcurementMethods();
@@ -563,6 +563,8 @@ const ProcurementInformationModel = (props) => {
       theadClass="table-light"
       pagination="pagination"
       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+      refetch={refetch}
+      isFetching={isFetching}
       />
       )}
       <Modal isOpen={modal} toggle={toggle} className="modal-xl">

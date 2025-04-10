@@ -69,7 +69,7 @@ const ProjectStatusModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useFetchProjectStatuss();
+  const { data, isLoading, isFetching, error, isError, refetch } = useFetchProjectStatuss();
 
   const addProjectStatus = useAddProjectStatus();
   const updateProjectStatus = useUpdateProjectStatus();
@@ -451,6 +451,8 @@ const ProjectStatusModel = () => {
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                       divClassName="-"
+                      refetch={refetch}
+                      isFetching={isFetching} 
                     />
                   </CardBody>
                 </Card>

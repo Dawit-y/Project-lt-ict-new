@@ -69,7 +69,7 @@ const BudgetMonthModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useFetchBudgetMonths();
+  const { data, isLoading, isFetching, error, isError, refetch } = useFetchBudgetMonths();
 
   const addBudgetMonth = useAddBudgetMonth();
   const updateBudgetMonth = useUpdateBudgetMonth();
@@ -436,6 +436,8 @@ const BudgetMonthModel = () => {
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                       divClassName="-"
+                      refetch={refetch}
+                      isFetching={isFetching}
                     />
                   </CardBody>
                 </Card>

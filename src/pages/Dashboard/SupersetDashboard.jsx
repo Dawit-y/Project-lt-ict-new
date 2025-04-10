@@ -39,7 +39,7 @@ const SupersetDashboard = (dashboardPath) => {
     <Row>
       <Col xs="12">
         <iframe width="100%" height="1200" seamless=""
-          scrolling="no"
+          scrolling="yes"
           src={dashboardUrl} />
       </Col>
     </Row>
