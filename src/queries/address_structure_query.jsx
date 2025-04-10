@@ -65,6 +65,8 @@ const buildTree = (data) => {
     {
       id: 1,
       name: "Oromia",
+      add_name_am: "ኦሮሚያ",
+      add_name_en: "Oromia",
       rootId: null,
       level: "region",
       children: [],

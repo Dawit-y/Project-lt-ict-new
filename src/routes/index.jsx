@@ -3,7 +3,6 @@ import { Navigate } from "react-router-dom";
 
 import Dashboard from "../pages/Dashboard/index";
 import Login from "../pages/Authentication/Login";
-import { components } from "react-select";
 import ResetPassword from "../pages/Authentication/ResetPassword.jsx";
 import ResetPasswordForm from "../pages/Authentication/ResetPasswordForm.jsx";
 
@@ -15,7 +14,7 @@ const ProjectsTreeView = lazy(() => import("../pages/ProjectStatusTree/index"));
 const Logout = lazy(() => import("../pages/Authentication/Logout"));
 
 const AddressStructure = lazy(() =>
-  import("../pages/AddressTreeStructure/index.jsx")
+  import("../pages/AddressTreeStructure/index2.jsx")
 );
 const DocumentType = lazy(() => import("../pages/Documenttype/index"));
 const Project = lazy(() => import("../pages/Project/index"));
@@ -304,11 +303,11 @@ const authProtectedRoutes = [
   //   // eslint-disable-next-line react/display-name
   { path: "/", exact: true, component: <Navigate to="/dashboard" /> },
   //START PROCUREMENT
-  {path: '/procurement_information', component: <ProcurementInformation/> },
-   {path: '/procurement_method', component: <ProcurementMethod/> },
-   {path: '/procurement_participant', component: <ProcurementParticipant/> },
-   {path: '/procurement_stage', component: <ProcurementStage/> },
-   {path: '/procurement_list', component: <ProcurementinformationList/> },
+  { path: '/procurement_information', component: <ProcurementInformation /> },
+  { path: '/procurement_method', component: <ProcurementMethod /> },
+  { path: '/procurement_participant', component: <ProcurementParticipant /> },
+  { path: '/procurement_stage', component: <ProcurementStage /> },
+  { path: '/procurement_list', component: <ProcurementinformationList /> },
   //END PROCUREMENT
 ];
 
