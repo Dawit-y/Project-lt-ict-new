@@ -25,11 +25,12 @@ export const useSearchCsoInfos = (searchParams = null) => {
   return useQuery({
     queryKey: searchParams ? [...CSO_INFO_QUERY_KEY, searchParams] : [],
     queryFn: () => getCsoInfo(searchParams),
-    staleTime: 1000 * 60 * 2,
-    gcTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    enabled: !!searchParams && !!searchParams.cso_id, // Ensures ownerId is valid
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    enabled: true
+   // enabled: !!searchParams && !!searchParams.cso_id, // Ensures ownerId is valid
   });
 };
 

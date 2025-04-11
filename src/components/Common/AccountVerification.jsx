@@ -16,7 +16,7 @@ import { PAGE_ID } from '../../constants/constantFile'
 import FileList from '../../pages/Projectdocument/FileManager/FileList'
 
 const AccountVerification = () => {
-  document.title = "Account Verification Required"
+  document.title = "Operational Agreement is Required"
 
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const ownerId = storedUser?.user?.usr_owner_id
@@ -225,21 +225,19 @@ const AccountVerification = () => {
         <Container className=''>
           <div className="mb-5">
             <div className="text-center pt-5">
-              <h2 className="">Account Verification Required</h2>
+              <h2 className="">Dear {csoData?.data?.length > 0 ? csoData.data[0].cso_name : ''}, Operational Agreement is Required</h2>
               <p className="lead">
-                Before you can access all features, we need to verify your account.
+                Before you proceed with proposal submission, Operational Agreement should be approved.
               </p>
               <div className="alert alert-info mx-auto" style={{ maxWidth: '600px' }}>
                 <h5>Please upload the following documents:</h5>
                 <ul className="text-start">
-                  <li>Sample Document</li>
-                  <li>Sample Document</li>
-                  <li>Sample Document</li>
-                  <li>Any other supporting documents</li>
+                  <li>Legal Documents</li>
+                  <li>Trade License</li>
                 </ul>
                 <p className="mb-0">
                   Our team will review your documents within 1-2 business days.
-                  You'll receive an email notification once your account is approved.
+                  You'll receive an email notification once it is approved.
                 </p>
               </div>
               <Button
