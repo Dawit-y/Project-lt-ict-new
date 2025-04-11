@@ -70,7 +70,7 @@ const ProjectPlanModel = () => {
   const [transaction, setTransaction] = useState({});
   const [projectPlanSelected, setProjectPlanSelected] = useState(null);
 
-  const { data, isLoading, error, isError, refetch } =
+  const { data, isLoading, isFetching, error, isError, refetch } =
     useFetchProjectPlans(param);
   const { data: budgetYearData } = useFetchBudgetYears();
 
@@ -408,18 +408,23 @@ const ProjectPlanModel = () => {
           return (
             <div className="d-flex gap-3">
               {(data?.previledge?.is_role_editable == 1 && cellProps.row.original?.is_editable ==1) && (
-                  <Link
+                  <Button
+                    size="sm"
+                    color="none"
                     className="text-success"
                     onClick={() => {
                       const data = cellProps.row.original;
                       handleProjectPlanClick(data);
                     }}
                   >
-                    <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                    <i
+                      className="mdi mdi-pencil font-size-18"
+                      id="edittooltip"
+                    />
                     <UncontrolledTooltip placement="top" target="edittooltip">
                       Edit
                     </UncontrolledTooltip>
-                  </Link>
+                  </Button>
                 )}
 {(data?.previledge?.is_role_deletable == 9 && cellProps.row.original?.is_deletable == 9) && (
                   <Link
@@ -504,6 +509,8 @@ const ProjectPlanModel = () => {
               theadClass="table-light"
               pagination="pagination"
               paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+              refetch={refetch}
+              isFetching={isFetching}
             />
           </Col>
           {projectPlanSelected && (

@@ -1358,5 +1358,16 @@
 	"procurement_stage": "የግዥ ደረጃ",
 	"procurement_method": "የግዥ ዘዴ",
 	"request_status": "የጥያቄ ሁኔታ",
-	"project_cso": "ፕሮጀክት cso"
+	"project_cso": "ፕሮጀክት cso",
+	"notice":"ማሳሰቢያ",
+	"your_account_is_still_using_the":"መለያዎ አሁንም",
+    "administrator_assigned_password":"በአስተዳዳሪው የተመደበውን ይለፍ ቃል እየተጠቀመ ነው።",
+	"for_security_reasons_please":"ለደህንነት ሲባል፣",
+	"click_me_to_update_your_password":"እባክዎ የይለፍ ቃልዎን በፍጥነት ለማዘመን ጠቅ ",
+	"promptly":"ያድርጉ።",
+	"change_password":"የይለፍ ቃል ቀይር",
+	"new_password":"አዲስ የይለፍ ቃል",
+	"enter_new_password":"አዲስ የይለፍ ቃል አስገባ",
+	"confirm_password":"የይለፍ ቃል አረጋግጥ"
 }
+

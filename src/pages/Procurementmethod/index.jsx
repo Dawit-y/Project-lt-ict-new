@@ -48,6 +48,7 @@ import {
   alphanumericValidation,
   amountValidation,
   numberValidation,
+  onlyAmharicValidation
 } from "../../utils/Validation/validation";
 
 const truncateText = (text, maxLength) => {
@@ -68,7 +69,7 @@ const ProcurementMethodModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useFetchProcurementMethods();
+  const { data, isLoading, isFetching, error, isError, refetch } = useFetchProcurementMethods();
   const addProcurementMethod = useAddProcurementMethod();
   const updateProcurementMethod = useUpdateProcurementMethod();
   const deleteProcurementMethod = useDeleteProcurementMethod();
@@ -127,10 +128,10 @@ const ProcurementMethodModel = () => {
     enableReinitialize: true,
     initialValues: {
      prm_name_or:(procurementMethod && procurementMethod.prm_name_or) || "", 
-prm_name_en:(procurementMethod && procurementMethod.prm_name_en) || "", 
-prm_name_am:(procurementMethod && procurementMethod.prm_name_am) || "", 
-prm_description:(procurementMethod && procurementMethod.prm_description) || "", 
-prm_status:(procurementMethod && procurementMethod.prm_status) || "", 
+      prm_name_en:(procurementMethod && procurementMethod.prm_name_en) || "", 
+      prm_name_am:(procurementMethod && procurementMethod.prm_name_am) || "", 
+      prm_description:(procurementMethod && procurementMethod.prm_description) || "", 
+      prm_status:(procurementMethod && procurementMethod.prm_status) || "", 
 
      is_deletable: (procurementMethod && procurementMethod.is_deletable) || 1,
      is_editable: (procurementMethod && procurementMethod.is_editable) || 1
@@ -147,7 +148,7 @@ prm_status:(procurementMethod && procurementMethod.prm_status) || "",
           );
         }
       ),
-      prm_name_am: Yup.string().required(t("prm_name_am")),
+      prm_name_am: onlyAmharicValidation(2, 100, true),
       prm_name_en: alphanumericValidation(2, 100, true),
       prm_description: alphanumericValidation(3, 425, false),
 
@@ -158,12 +159,11 @@ prm_status:(procurementMethod && procurementMethod.prm_status) || "",
     if (isEdit) {
       const updateProcurementMethod = {
         prm_id: procurementMethod ? procurementMethod.prm_id : 0,
-        prm_id:procurementMethod.prm_id, 
-prm_name_or:values.prm_name_or, 
-prm_name_en:values.prm_name_en, 
-prm_name_am:values.prm_name_am, 
-prm_description:values.prm_description, 
-prm_status:values.prm_status, 
+        prm_name_or:values.prm_name_or, 
+        prm_name_en:values.prm_name_en, 
+        prm_name_am:values.prm_name_am, 
+        prm_description:values.prm_description, 
+        prm_status:values.prm_status, 
 
         is_deletable: values.is_deletable,
         is_editable: values.is_editable,
@@ -209,11 +209,11 @@ prm_status:values.prm_status,
     // console.log("handleProcurementMethodClick", procurementMethod);
     setProcurementMethod({
       prm_id:procurementMethod.prm_id, 
-prm_name_or:procurementMethod.prm_name_or, 
-prm_name_en:procurementMethod.prm_name_en, 
-prm_name_am:procurementMethod.prm_name_am, 
-prm_description:procurementMethod.prm_description, 
-prm_status:procurementMethod.prm_status, 
+      prm_name_or:procurementMethod.prm_name_or, 
+      prm_name_en:procurementMethod.prm_name_en, 
+      prm_name_am:procurementMethod.prm_name_am, 
+      prm_description:procurementMethod.prm_description, 
+      prm_status:procurementMethod.prm_status, 
 
       is_deletable: procurementMethod.is_deletable,
       is_editable: procurementMethod.is_editable,
@@ -436,6 +436,8 @@ prm_status:procurementMethod.prm_status,
       theadClass="table-light"
       pagination="pagination"
       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+     refetch={refetch}
+     isFetching={isFetching}
       />
       </CardBody>
       </Card>
@@ -456,7 +458,7 @@ prm_status:procurementMethod.prm_status,
       >
       <Row>
       <Col className='col-md-6 mb-3'>
-                      <Label>{t('prm_name_or')}</Label>
+                      <Label>{t('prm_name_or')}<span className="text-danger">*</span></Label>
                       <Input
                         name='prm_name_or'
                         type='text'
@@ -480,7 +482,7 @@ prm_status:procurementMethod.prm_status,
                       ) : null}
                     </Col> 
 <Col className='col-md-6 mb-3'>
-                      <Label>{t('prm_name_en')}</Label>
+                      <Label>{t('prm_name_en')}<span className="text-danger">*</span></Label>
                       <Input
                         name='prm_name_en'
                         type='text'
@@ -504,7 +506,7 @@ prm_status:procurementMethod.prm_status,
                       ) : null}
                     </Col> 
 <Col className='col-md-6 mb-3'>
-                      <Label>{t('prm_name_am')}</Label>
+                      <Label>{t('prm_name_am')}<span className="text-danger">*</span></Label>
                       <Input
                         name='prm_name_am'
                         type='text'
@@ -551,7 +553,7 @@ prm_status:procurementMethod.prm_status,
                         </FormFeedback>
                       ) : null}
                     </Col> 
-<Col className='col-md-6 mb-3'  style={{ display: 'none' }}>
+                <Col className='col-md-6 mb-3'  style={{ display: 'none' }}>
                       <Label>{t('prm_status')}</Label>
                       <Input
                         name='prm_status'

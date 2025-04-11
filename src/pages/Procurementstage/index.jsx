@@ -42,12 +42,12 @@ import {
 } from "reactstrap";
 import { ToastContainer,toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import {
   alphanumericValidation,
   amountValidation,
   numberValidation,
+  onlyAmharicValidation
 } from "../../utils/Validation/validation";
 
 const truncateText = (text, maxLength) => {
@@ -68,7 +68,7 @@ const ProcurementStageModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useFetchProcurementStages();
+  const { data, isLoading, isFetching,error, isError, refetch } = useFetchProcurementStages();
   const addProcurementStage = useAddProcurementStage();
   const updateProcurementStage = useUpdateProcurementStage();
   const deleteProcurementStage = useDeleteProcurementStage();
@@ -147,7 +147,7 @@ pst_status:(procurementStage && procurementStage.pst_status) || "",
           );
         }
       ),
-      pst_name_am: Yup.string().required(t("pst_name_am")),
+      pst_name_am: onlyAmharicValidation(2, 100, true),
       pst_name_en: alphanumericValidation(2, 100, true),
       pst_description: alphanumericValidation(3, 425, false),
 
@@ -158,7 +158,6 @@ pst_status:(procurementStage && procurementStage.pst_status) || "",
     if (isEdit) {
       const updateProcurementStage = {
         pst_id: procurementStage ? procurementStage.pst_id : 0,
-        pst_id:procurementStage.pst_id, 
         pst_name_or:values.pst_name_or, 
         pst_name_en:values.pst_name_en, 
         pst_name_am:values.pst_name_am, 
@@ -390,26 +389,6 @@ pst_status:(procurementStage && procurementStage.pst_status) || "",
     title={t("procurement_stage")}
     breadcrumbItem={t("procurement_stage")}
     />
-    <AdvancedSearch
-    searchHook={useSearchProcurementStages}
-    textSearchKeys={["pst_name_or", "pst_name_en", "pst_name_am"]}
-    dropdownSearchKeys={[
-   
-    ]}
-    checkboxSearchKeys={[
-    {
-      key: "example1",
-      options: [
-        { value: "Engineering", label: "Example1" },
-        { value: "Science", label: "Example2" },
-        ],
-    },
-    ]}
-    onSearchResult={handleSearchResults}
-    setIsSearchLoading={setIsSearchLoading}
-    setSearchResults={setSearchResults}
-    setShowSearchResult={setShowSearchResult}
-    />
     {isLoading || isSearchLoading ? (
       <Spinners />
       ) : (
@@ -436,7 +415,10 @@ pst_status:(procurementStage && procurementStage.pst_status) || "",
       theadClass="table-light"
       pagination="pagination"
       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+      refetch={refetch}
+       isFetching={isFetching} 
       />
+
       </CardBody>
       </Card>
       </Col>
@@ -456,7 +438,7 @@ pst_status:(procurementStage && procurementStage.pst_status) || "",
       >
       <Row>
       <Col className='col-md-6 mb-3'>
-                      <Label>{t('pst_name_or')}</Label>
+                      <Label>{t('pst_name_or')} <span className="text-danger">*</span></Label>
                       <Input
                         name='pst_name_or'
                         type='text'
@@ -480,7 +462,7 @@ pst_status:(procurementStage && procurementStage.pst_status) || "",
                       ) : null}
                     </Col> 
 <Col className='col-md-6 mb-3'>
-                      <Label>{t('pst_name_en')}</Label>
+                      <Label>{t('pst_name_en')}<span className="text-danger">*</span></Label>
                       <Input
                         name='pst_name_en'
                         type='text'
@@ -504,7 +486,7 @@ pst_status:(procurementStage && procurementStage.pst_status) || "",
                       ) : null}
                     </Col> 
 <Col className='col-md-6 mb-3'>
-                      <Label>{t('pst_name_am')}</Label>
+                      <Label>{t('pst_name_am')}<span className="text-danger">*</span></Label>
                       <Input
                         name='pst_name_am'
                         type='text'

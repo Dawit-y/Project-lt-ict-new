@@ -60,7 +60,7 @@ const BudgetYearModel = React.memo(() => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useFetchBudgetYears();
+  const { data, isLoading, isFetching, error, isError, refetch } = useFetchBudgetYears();
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = useCallback(() => setModal1((prev) => !prev), []);
 
@@ -304,6 +304,8 @@ const BudgetYearModel = React.memo(() => {
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                       divClassName="-"
+                      refetch={refetch}
+                      isFetching={isFetching}
                     />
                   </CardBody>
                 </Card>

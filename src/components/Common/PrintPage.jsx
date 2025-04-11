@@ -1,7 +1,9 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { UncontrolledTooltip, DropdownItem } from "reactstrap";
+import { FaPrint } from "react-icons/fa6";
 
-const PrintPage = ({ tableData, tablename, excludeKey = [], gridRef, columnDefs, columnsToIgnore = 0 }) => {
+const PrintPage = ({ tableData, tablename, excludeKey = [], gridRef, columnDefs, columnsToIgnore = 0, dropdownItem = false }) => {
   const { t } = useTranslation();
 
   // Function to get printable content
@@ -175,6 +177,15 @@ const PrintPage = ({ tableData, tablename, excludeKey = [], gridRef, columnDefs,
     printWindow.print();
     printWindow.close();
   };
+
+  if (dropdownItem) {
+    return (
+      <DropdownItem onClick={printPage} disabled={!tableData || tableData.length === 0}>
+        <FaPrint className="me-1" />
+        {t("print")}
+      </DropdownItem>
+    );
+  }
 
   return (
     <div id="print-cont">

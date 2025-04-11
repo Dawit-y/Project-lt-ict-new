@@ -54,8 +54,8 @@ height: 100%;
 
 /* Custom scrollbar */
 div::-webkit-scrollbar {
-	width: 6px;
-	height: 6px;
+	width: 10px;
+	height: 10px;
 }
 
 div::-webkit-scrollbar-thumb {

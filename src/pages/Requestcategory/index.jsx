@@ -63,7 +63,7 @@ const RequestCategoryModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } =
+  const { data, isLoading, isFetching, error, isError, refetch } =
     useFetchRequestCategorys();
   const addRequestCategory = useAddRequestCategory();
   const updateRequestCategory = useUpdateRequestCategory();
@@ -127,7 +127,8 @@ const RequestCategoryModel = () => {
       rqc_description:
         (requestCategory && requestCategory.rqc_description) || "",
       rqc_status: (requestCategory && requestCategory.rqc_status) || "",
-
+      rqc_gov_active: requestCategory?.rqc_gov_active || false,
+      rqc_cso_active: requestCategory?.rqc_cso_active || false,
       is_deletable: (requestCategory && requestCategory.is_deletable) || 1,
       is_editable: (requestCategory && requestCategory.is_editable) || 1,
     },
@@ -147,7 +148,8 @@ const RequestCategoryModel = () => {
           rqc_name_en: values.rqc_name_en,
           rqc_description: values.rqc_description,
           rqc_status: values.rqc_status,
-
+          rqc_gov_active: values?.rqc_gov_active ? 1 : 0,
+         rqc_cso_active: values?.rqc_cso_active ? 1 : 0,
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -160,6 +162,8 @@ const RequestCategoryModel = () => {
           rqc_name_en: values.rqc_name_en,
           rqc_description: values.rqc_description,
           rqc_status: values.rqc_status,
+          rqc_gov_active: values?.rqc_gov_active ? 1 : 0,
+         rqc_cso_active: values?.rqc_cso_active ? 1 : 0,
         };
         // save new RequestCategory
         handleAddRequestCategory(newRequestCategory);
@@ -196,7 +200,8 @@ const RequestCategoryModel = () => {
       rqc_name_en: requestCategory.rqc_name_en,
       rqc_description: requestCategory.rqc_description,
       rqc_status: requestCategory.rqc_status,
-
+      rqc_gov_active: requestCategory.rqc_gov_active === 1,
+      rqc_cso_active: requestCategory.rqc_cso_active === 1,
       is_deletable: requestCategory.is_deletable,
       is_editable: requestCategory.is_editable,
     });
@@ -261,7 +266,26 @@ const RequestCategoryModel = () => {
           );
         },
       },
-
+      {
+        header: t("rqc_gov_active"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => (
+          <span className={cellProps.row.original.rqc_gov_active === 1 ? "btn btn-sm btn-soft-success" : ""}>
+            {cellProps.row.original.rqc_gov_active === 1 ? t("yes") : t("no")}
+          </span>
+        ),
+      },
+      {
+        header: t("rqc_cso_active"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => (
+          <span className={cellProps.row.original.rqc_cso_active === 1 ? "btn btn-sm btn-soft-success" : ""}>
+            {cellProps.row.original.rqc_cso_active === 1 ? t("yes") : t("no")}
+          </span>
+        ),
+      },
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -311,7 +335,7 @@ const RequestCategoryModel = () => {
                   </UncontrolledTooltip>
                 </Link>
               )}
-              {cellProps.row.original.is_deletable == 1 && (
+              {cellProps.row.original.is_deletable == 9 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -388,6 +412,8 @@ const RequestCategoryModel = () => {
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                       divClassName="-"
+                      refetch={refetch}
+                      isFetching={isFetching}
                     />
                   </CardBody>
                 </Card>
@@ -513,6 +539,46 @@ const RequestCategoryModel = () => {
                         {validation.errors.rqc_description}
                       </FormFeedback>
                     ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <div className="form-check mb-4">
+                      <Label className="me-1" for="rqc_gov_active">
+                        {t("rqc_gov_active")}
+                      </Label>
+                      <Input
+                        id="rqc_gov_active"
+                        name="rqc_gov_active"
+                        type="checkbox"
+                        placeholder={t("rqc_gov_active")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.rqc_gov_active}
+                        invalid={validation.touched.rqc_gov_active && validation.errors.rqc_gov_active}
+                      />
+                      {validation.touched.rqc_gov_active && validation.errors.rqc_gov_active && (
+                        <FormFeedback type="invalid">{validation.errors.rqc_gov_active}</FormFeedback>
+                      )}
+                    </div>
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <div className="form-check mb-4">
+                      <Label className="me-1" for="rqc_cso_active">
+                        {t("rqc_cso_active")}
+                      </Label>
+                      <Input
+                        id="rqc_cso_active"
+                        name="rqc_cso_active"
+                        type="checkbox"
+                        placeholder={t("rqc_cso_active")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.rqc_cso_active}
+                        invalid={validation.touched.rqc_cso_active && validation.errors.rqc_cso_active}
+                      />
+                      {validation.touched.rqc_cso_active && validation.errors.rqc_cso_active && (
+                        <FormFeedback type="invalid">{validation.errors.rqc_cso_active}</FormFeedback>
+                      )}
+                    </div>
                   </Col>
                 </Row>
                 <Row>

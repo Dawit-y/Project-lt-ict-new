@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState, useRef } from "react";
-import { Row, Table, Button, Col } from "reactstrap";
+import { Row, Table, Button, Col, Spinner } from "reactstrap";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FOOTER_TEXT, COPYRIGHT_YEAR } from "../../constants/constantFile";
@@ -11,11 +11,11 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { UncontrolledTooltip } from "reactstrap";
+import { UncontrolledTooltip, UncontrolledDropdown, DropdownMenu, DropdownToggle } from "reactstrap";
 import { rankItem } from "@tanstack/match-sorter-utils";
 import ExportToExcel from "../../components/Common/ExportToExcel";
 import PrintHtmlPage from "../../components/Common/PrintHtmlPage";
-import { FaInfoCircle } from "react-icons/fa";
+import { FaFileExport, FaCircleInfo, FaRotate } from "react-icons/fa6";
 import ExportToPDF from "./ExportToPdf";
 
 // Column Filter
@@ -96,7 +96,9 @@ const TableContainer = ({
   isPrint = true,
   excludeKey = [],
   tableName = "",
-  infoIcon = false
+  infoIcon = false,
+  refetch,
+  isFetching,
 }) => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -207,179 +209,223 @@ const TableContainer = ({
         </>
 
         <Col sm={6}>
-          <div className="text-sm-end d-flex align-items-center justify-content-end gap-1">
+          <div className="text-sm-end d-flex align-items-center justify-content-end gap-2">
             {isAddButton && (
               <Button
                 type="button"
-                className="btn-soft-success me-2"
+                className="btn-soft-success"
                 onClick={handleUserClick}
               >
                 <i className="mdi mdi-plus me-1"></i> {buttonName}
               </Button>
             )}
-            {isExcelExport && (
-              <ExportToExcel
-                tableData={data}
-                tablename={tableName}
-                excludeKey={excludeKey}
-              />
-            )}
-
-            {isPdfExport && (
-              <ExportToPDF
-                tableData={data}
-                tablename={tableName}
-                excludeKey={excludeKey}
-              />
-            )}
-            {isPrint && (
-              <PrintHtmlPage
-                tableData={data}
-                tablename={tableName}
-                excludeKey={excludeKey}
-              />
-            )}
-            {infoIcon &&
-              <div>
-                <FaInfoCircle size={20} id="info" />
-                <UncontrolledTooltip placement="top" target="info">
-                  Sample Info
+            {(isExcelExport || isPdfExport || isPrint) && (
+              <>
+                <UncontrolledDropdown>
+                  <DropdownToggle
+                    color="primary"
+                    id="export_toggle"
+                  >
+                    <FaFileExport size={18} />
+                  </DropdownToggle>
+                  <DropdownMenu end className="py-2 mt-1">
+                    {isExcelExport && (
+                      <ExportToExcel
+                        tableData={data}
+                        tablename={tableName}
+                        excludeKey={excludeKey}
+                        dropdownItem={true}
+                      />
+                    )}
+                    {isPdfExport && (
+                      <ExportToPDF
+                        tableData={data}
+                        tablename={tableName}
+                        excludeKey={excludeKey}
+                        dropdownItem={true}
+                      />
+                    )}
+                    {isPrint && (
+                      <PrintHtmlPage
+                        tableData={data}
+                        tablename={tableName}
+                        excludeKey={excludeKey}
+                        dropdownItem={true}
+                      />
+                    )}
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+                <UncontrolledTooltip placement="top" target="export_toggle">
+                  Export
                 </UncontrolledTooltip>
-              </div>}
+              </>
+            )}
+            {refetch &&
+              <>
+                <Button
+                  id="refresh_btn"
+                  color="primary"
+                  onClick={refetch}
+                  outline
+                  className="rounded-circle p-0 d-flex align-items-center justify-content-center"
+                  style={{ width: "30px", height: "30px", fontSize: "14px" }}
+                >
+                  {isFetching ? (
+                    <Spinner color="light" size="sm" />
+                  ) : (
+                    <FaRotate />
+                  )}
+                </Button>
+                <UncontrolledTooltip placement="top" target="refresh_btn">
+                  Refresh
+                </UncontrolledTooltip>
+              </>
+            }
           </div>
         </Col>
       </Row>
-      <div className={divClassName ? divClassName : "table-responsive"}>
-        <div id='printable-table'>
-          <Table
-            hover
-            className={`${tableClass} table-sm table-bordered table-striped`}
-            bordered={isBordered}
-          >
-            <thead className={theadClass}>
-              {getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  <th>{t("S.N")}</th>
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      className={`${header.column.columnDef.enableSorting
-                        ? "sorting sorting_desc"
-                        : ""
-                        }`}
-                    >
-                      {header.isPlaceholder ? null : (
-                        <Fragment>
-                          <div
-                            {...{
-                              className: header.column.getCanSort()
-                                ? "cursor-pointer select-none"
-                                : "",
-                              onClick: header.column.getToggleSortingHandler(),
-                            }}
-                          >
-                            {flexRender(t(header.id), header.getContext())}
-                            {{
-                              asc: "",
-                              desc: "",
-                            }[header.column.getIsSorted()] ?? null}
-                          </div>
-                          {header.column.getCanFilter() ? (
-                            <div>
-                              <Filter column={header.column} table={table} />
+      <div className="position-relative">
+        {infoIcon && (
+          <div style={{ position: "absolute", top: "2px", right: "-18px", zIndex: 1 }}>
+            <FaCircleInfo size={18} id="info" className="" />
+            <UncontrolledTooltip placement="left" target="info">
+              Sample Info
+            </UncontrolledTooltip>
+          </div>
+        )}
+        <div className={divClassName ? divClassName : "table-responsive"}>
+          <div id='printable-table'>
+            <Table
+              hover
+              className={`${tableClass} table-sm table-bordered table-striped`}
+              bordered={isBordered}
+            >
+              <thead className={theadClass}>
+                {getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    <th>{t("S.N")}</th>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        colSpan={header.colSpan}
+                        className={`${header.column.columnDef.enableSorting
+                          ? "sorting sorting_desc"
+                          : ""
+                          }`}
+                      >
+                        {header.isPlaceholder ? null : (
+                          <Fragment>
+                            <div
+                              {...{
+                                className: header.column.getCanSort()
+                                  ? "cursor-pointer select-none"
+                                  : "",
+                                onClick: header.column.getToggleSortingHandler(),
+                              }}
+                            >
+                              {flexRender(t(header.id), header.getContext())}
+                              {{
+                                asc: "",
+                                desc: "",
+                              }[header.column.getIsSorted()] ?? null}
                             </div>
-                          ) : null}
-                        </Fragment>
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody style={{ height: "auto" }}>
-              {data.length === 0 ? (
-                <tr>
-                  <td colSpan={columns.length + 2} className="text-center py-5">
-                    No data available
-                  </td>
-                </tr>
-              ) : (
-                getRowModel().rows.map((row) => (
-                  <tr key={row.id}>
-                    <td>{Number(row.id) + 1}</td>
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
+                            {header.column.getCanFilter() ? (
+                              <div>
+                                <Filter column={header.column} table={table} />
+                              </div>
+                            ) : null}
+                          </Fragment>
                         )}
-                      </td>
+                      </th>
                     ))}
                   </tr>
-                ))
-              )}
-            </tbody>
-          </Table>
-        </div>
-        {isPagination && (
-          <Row>
-            <Col sm={12} md={5}>
-              <div className="dataTables_info">
-                {paginationState.pageSize > data.length
-                  ? `${t("Showing")} ${data.length} of ${data.length}`
-                  : `${t("Showing")} ${paginationState.pageSize} of ${data.length
-                  }`}
-              </div>
-            </Col>
-            <Col sm={12} md={7}>
-              <div className={paginationWrapper}>
-                <ul className={pagination}>
-                  {/* Previous Button */}
-                  <li
-                    className={`paginate_button page-item previous ${!getCanPreviousPage() ? "disabled" : ""
-                      }`}
-                  >
-                    <Link to="#" className="page-link" onClick={handlePrevious}>
-                      <i className="mdi mdi-chevron-left"></i>
-                    </Link>
-                  </li>
-
-                  {/* Render visible page numbers */}
-                  {visiblePageNumbers.map((item) => (
+                ))}
+              </thead>
+              <tbody style={{ height: "auto" }}>
+                {data.length === 0 ? (
+                  <tr>
+                    <td colSpan={columns.length + 2} className="text-center py-5">
+                      No data available
+                    </td>
+                  </tr>
+                ) : (
+                  getRowModel().rows.map((row) => (
+                    <tr key={row.id}>
+                      <td>{Number(row.id) + 1}</td>
+                      {row.getVisibleCells().map((cell) => (
+                        <td key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </Table>
+          </div>
+          {isPagination && (
+            <Row>
+              <Col sm={12} md={5}>
+                <div className="dataTables_info">
+                  {paginationState.pageSize > data.length
+                    ? `${t("Showing")} ${data.length} of ${data.length}`
+                    : `${t("Showing")} ${paginationState.pageSize} of ${data.length
+                    }`}
+                </div>
+              </Col>
+              <Col sm={12} md={7}>
+                <div className={paginationWrapper}>
+                  <ul className={pagination}>
+                    {/* Previous Button */}
                     <li
-                      key={item}
-                      className={`paginate_button page-item ${currentPage === item ? "active" : ""
+                      className={`paginate_button page-item previous ${!getCanPreviousPage() ? "disabled" : ""
                         }`}
                     >
-                      <Link
-                        to="#"
-                        className="page-link"
-                        onClick={() => {
-                          pageIndexRef.current = item;
-                          setPageIndex(item);
-                        }}
-                      >
-                        {item + 1}
+                      <Link to="#" className="page-link" onClick={handlePrevious}>
+                        <i className="mdi mdi-chevron-left"></i>
                       </Link>
                     </li>
-                  ))}
 
-                  {/* Next Button */}
-                  <li
-                    className={`paginate_button page-item next ${!getCanNextPage() ? "disabled" : ""
-                      }`}
-                  >
-                    <Link to="#" className="page-link" onClick={handleNext}>
-                      <i className="mdi mdi-chevron-right"></i>
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-            </Col>
-          </Row>
-        )}
+                    {/* Render visible page numbers */}
+                    {visiblePageNumbers.map((item) => (
+                      <li
+                        key={item}
+                        className={`paginate_button page-item ${currentPage === item ? "active" : ""
+                          }`}
+                      >
+                        <Link
+                          to="#"
+                          className="page-link"
+                          onClick={() => {
+                            pageIndexRef.current = item;
+                            setPageIndex(item);
+                          }}
+                        >
+                          {item + 1}
+                        </Link>
+                      </li>
+                    ))}
+
+                    {/* Next Button */}
+                    <li
+                      className={`paginate_button page-item next ${!getCanNextPage() ? "disabled" : ""
+                        }`}
+                    >
+                      <Link to="#" className="page-link" onClick={handleNext}>
+                        <i className="mdi mdi-chevron-right"></i>
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              </Col>
+            </Row>
+          )}
+        </div>
       </div>
+
     </Fragment>
   );
 };

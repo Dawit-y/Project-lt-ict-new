@@ -10,7 +10,6 @@ import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 //import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
   useFetchProcurementParticipants,
@@ -42,15 +41,15 @@ import {
 } from "reactstrap";
 import { ToastContainer,toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import {
   alphanumericValidation,
   amountValidation,
   numberValidation,
-  //emailValidation,
+  emailValidation,
   phoneValidation,
-  //tinValidation 
+  tinValidation,
+  onlyAmharicValidation
 } from "../../utils/Validation/validation";
 
 const truncateText = (text, maxLength) => {
@@ -59,12 +58,12 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-const ProcurementParticipantModel = (props) => {
+const ProcurementParticipantModel = (props ) => {
   //meta title
   document.title = " ProcurementParticipant";
-  const { t } = useTranslation();
-  const { passedId,startDate} = props;
+    const { passedId,isActive,startDate} = props;
   const param = { ppp_procurement_id: passedId };
+  const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -73,7 +72,8 @@ const ProcurementParticipantModel = (props) => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useFetchProcurementParticipants();
+  const { data, isLoading, isFetching, error, isError, refetch } =
+    useFetchProcurementParticipants(param,isActive);
   const addProcurementParticipant = useAddProcurementParticipant();
   const updateProcurementParticipant = useUpdateProcurementParticipant();
   const deleteProcurementParticipant = useDeleteProcurementParticipant();
@@ -86,7 +86,7 @@ const ProcurementParticipantModel = (props) => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.error(t('add_failure'), {
         autoClose: 2000,
       });
     }
@@ -100,7 +100,7 @@ const ProcurementParticipantModel = (props) => {
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
+      toast.error(t('update_failure'), {
         autoClose: 2000,
       });
     }
@@ -115,7 +115,7 @@ const ProcurementParticipantModel = (props) => {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t('delete_failure'), {
+        toast.error(t('delete_failure'), {
           autoClose: 2000,
         });
       }
@@ -158,13 +158,12 @@ const ProcurementParticipantModel = (props) => {
           );
         }
       ),
-      ppp_name_am: Yup.string().required(t("ppp_name_am")),
+      ppp_name_am: onlyAmharicValidation(2, 100, true),
       ppp_name_en: alphanumericValidation(2, 100, true),
-      //ppp_tin_number: tinValidation(4, 20, true),
-      ppp_participant_phone_number: phoneValidation(true),
-     // ppp_participant_email: emailValidation(false),
-      ppp_name_am: Yup.string().required(t("ppp_name_am")),
-      ppp_participant_address: alphanumericValidation(2, 100, true),
+      ppp_tin_number: tinValidation(4, 20, false),
+      ppp_participant_phone_number: phoneValidation(false),
+      ppp_participant_email: emailValidation(false),
+      ppp_participant_address: alphanumericValidation(2, 100, false),
       ppp_description: alphanumericValidation(3, 425, false),
 
   }),
@@ -174,7 +173,6 @@ const ProcurementParticipantModel = (props) => {
     if (isEdit) {
       const updateProcurementParticipant = {
         ppp_id: procurementParticipant ? procurementParticipant.ppp_id : 0,
-        ppp_id:procurementParticipant.ppp_id, 
         ppp_name_or:values.ppp_name_or, 
         ppp_name_en:values.ppp_name_en, 
         ppp_name_am:values.ppp_name_am, 
@@ -197,8 +195,7 @@ const ProcurementParticipantModel = (props) => {
         ppp_name_en:values.ppp_name_en, 
         ppp_name_am:values.ppp_name_am, 
         ppp_tin_number:values.ppp_tin_number, 
-        //ppp_procurement_id:values.ppp_procurement_id, 
-        ppp_procurement_id:"1", 
+        ppp_procurement_id:passedId, 
         ppp_participant_phone_number:values.ppp_participant_phone_number, 
         ppp_participant_email:values.ppp_participant_email, 
         ppp_participant_address:values.ppp_participant_address, 
@@ -355,36 +352,7 @@ const ProcurementParticipantModel = (props) => {
                   </span>
                 );
               },
-            }, 
-      {
-        header: '',
-        accessorKey: 'ppp_participant_address',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.ppp_participant_address, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-     {
-        header: '',
-        accessorKey: 'ppp_description',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.ppp_description, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      }, 
-
+            },
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -472,39 +440,10 @@ const ProcurementParticipantModel = (props) => {
     onCloseClick={() => setDeleteModal(false)}
     isLoading={deleteProcurementParticipant.isPending}
     />
-    <div className="page-content">
-    <div className="container-fluid">
-    <Breadcrumbs
-    title={t("procurement_participant")}
-    breadcrumbItem={t("procurement_participant")}
-    />
-    <AdvancedSearch
-    searchHook={useSearchProcurementParticipants}
-    textSearchKeys={["ppp_name_or", "ppp_name_en", "ppp_name_am"]}
-    dropdownSearchKeys={[
-   
-    ]}
-    checkboxSearchKeys={[
-    {
-      key: "example1",
-      options: [
-        { value: "Engineering", label: "Example1" },
-        { value: "Science", label: "Example2" },
-        ],
-    },
-    ]}
-    onSearchResult={handleSearchResults}
-    setIsSearchLoading={setIsSearchLoading}
-    setSearchResults={setSearchResults}
-    setShowSearchResult={setShowSearchResult}
-    />
     {isLoading || isSearchLoading ? (
       <Spinners />
       ) : (
-      <Row>
-      <Col xs="12">
-      <Card>
-      <CardBody>
+     
       <TableContainer
       columns={columns}
       data={
@@ -524,11 +463,9 @@ const ProcurementParticipantModel = (props) => {
       theadClass="table-light"
       pagination="pagination"
       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+      refetch={refetch}
+      isFetching={isFetching}
       />
-      </CardBody>
-      </Card>
-      </Col>
-      </Row>
       )}
       <Modal isOpen={modal} toggle={toggle} className="modal-xl">
       <ModalHeader toggle={toggle} tag="h4">
@@ -544,7 +481,7 @@ const ProcurementParticipantModel = (props) => {
       >
       <Row>
                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('ppp_name_or')}</Label>
+                      <Label>{t('ppp_name_or')}<span className="text-danger">*</span></Label>
                       <Input
                         name='ppp_name_or'
                         type='text'
@@ -568,7 +505,7 @@ const ProcurementParticipantModel = (props) => {
                       ) : null}
                     </Col> 
                   <Col className='col-md-6 mb-3'>
-                      <Label>{t('ppp_name_en')}</Label>
+                      <Label>{t('ppp_name_en')}<span className="text-danger">*</span></Label>
                       <Input
                         name='ppp_name_en'
                         type='text'
@@ -592,7 +529,7 @@ const ProcurementParticipantModel = (props) => {
                       ) : null}
                     </Col> 
             <Col className='col-md-6 mb-3'>
-                      <Label>{t('ppp_name_am')}</Label>
+                      <Label>{t('ppp_name_am')}<span className="text-danger">*</span></Label>
                       <Input
                         name='ppp_name_am'
                         type='text'
@@ -798,8 +735,6 @@ const ProcurementParticipantModel = (props) => {
         </Form>
         </ModalBody>
         </Modal>
-        </div>
-        </div>
         <ToastContainer />
         </React.Fragment>
         );
