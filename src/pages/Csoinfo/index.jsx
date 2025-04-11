@@ -38,10 +38,12 @@ import {
   InputGroupText,
 } from "reactstrap";
 import { toast } from "react-toastify";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { phoneValidation, alphanumericValidation, websiteUrlValidation } from "../../utils/Validation/validation";
 import FileModal from "./FileModal";
+import Conversation from "../Conversationinformation/ConvInfoModal";
+import { PAGE_ID } from "../../constants/constantFile";
+import AgGridContainer from "../../components/Common/AgGridContainer";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -57,6 +59,7 @@ const CsoInfoModel = () => {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [fileModal, setFileModal] = useState(false)
+  const [convModal, setConvModal] = useState(false)
   const [isEdit, setIsEdit] = useState(false);
   const [csoInfo, setCsoInfo] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
@@ -187,6 +190,7 @@ const CsoInfoModel = () => {
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
   const toggleFileModal = () => setFileModal(!fileModal)
+  const toggleConvModal = () => setConvModal(!convModal)
   // Fetch CsoInfo on component mount
   useEffect(() => {
     setCsoInfo(data);
@@ -238,187 +242,167 @@ const CsoInfoModel = () => {
     setSearchError(error);
     setShowSearchResult(true);
   };
-  //START UNCHANGED
-  const columns = useMemo(() => {
-    const baseColumns = [
-      {
-        header: '',
-        accessorKey: 'cso_name',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.cso_name, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'cso_code',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.cso_code, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'cso_address',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.cso_address, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'cso_phone',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.cso_phone, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'cso_email',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.cso_email, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'cso_website',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.cso_website, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'cso_status',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          const status = cellProps.row.original.cso_status
-          return (
-            <Badge color={status === 1 ? "success" : "danger"}>
-              {status === 1 ? "Approved" : "Requested"}
-            </Badge>
-          );
-        },
-      },
-      {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                setTransaction(cellProps.row.original);
-                toggleViewModal();
-              }}
+
+  const columnDefs = useMemo(() => {
+    const ActionButtons = ({ data }) => {
+      return (
+        <div className="d-flex gap-3">
+          {data.is_editable == 1 && (
+            <Link
+              to="#"
+              className="text-success"
+              onClick={() => handleCsoInfoClick(data)}
             >
-              {t("view_detail")}
-            </Button>
-          );
-        },
+              <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+              <UncontrolledTooltip placement="top" target="edittooltip">
+                {t("Edit")}
+              </UncontrolledTooltip>
+            </Link>
+          )}
+        </div>
+      );
+    };
+
+    const StatusBadge = ({ status }) => {
+      return (
+        <Badge color={status === 1 ? "success" : "danger"}>
+          {status === 1 ? t("Approved") : t("Requested")}
+        </Badge>
+      );
+    };
+
+    const baseColumnDefs = [
+      {
+        headerName: t("Name"),
+        field: 'cso_name',
+        filter: false,
+        sortable: true,
+        minWidth: 200,
+        flex: 1,
+        cellRenderer: ({ data }) => truncateText(data.cso_name, 30) || '-',
       },
       {
-        header: t("Files"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              outline
-              color="success"
-              size="sm"
-              onClick={() => {
-                setTransaction(cellProps.row.original);
-                toggleFileModal();
-              }}
-            >
-              {t("Files")}
-            </Button>
-          );
-        },
+        headerName: t("Code"),
+        field: 'cso_code',
+        filter: false,
+        sortable: true,
+        cellRenderer: ({ data }) => truncateText(data.cso_code, 30) || '-',
+      },
+      {
+        headerName: t("Address"),
+        field: 'cso_address',
+        filter: false,
+        sortable: true,
+        cellRenderer: ({ data }) => truncateText(data.cso_address, 30) || '-',
+      },
+      {
+        headerName: t("Phone"),
+        field: 'cso_phone',
+        filter: false,
+        sortable: true,
+        cellRenderer: ({ data }) => truncateText(data.cso_phone, 30) || '-',
+      },
+      {
+        headerName: t("Email"),
+        field: 'cso_email',
+        filter: false,
+        sortable: true,
+        cellRenderer: ({ data }) => truncateText(data.cso_email, 30) || '-',
+      },
+      {
+        headerName: t("Website"),
+        field: 'cso_website',
+        filter: false,
+        sortable: true,
+        cellRenderer: ({ data }) => truncateText(data.cso_website, 30) || '-',
+      },
+      {
+        headerName: t("Status"),
+        field: 'cso_status',
+        filter: false,
+        sortable: true,
+        width: 120,
+        cellRenderer: ({ data }) => <StatusBadge status={data.cso_status} />,
+      },
+      {
+        headerName: t("view_detail"),
+        filter: false,
+        sortable: true,
+        width: 120,
+        cellRenderer: ({ data }) => (
+          <Button
+            type="button"
+            color="primary"
+            className="btn-sm"
+            onClick={() => {
+              setTransaction(data);
+              toggleViewModal();
+            }}
+          >
+            {t("view_detail")}
+          </Button>
+        ),
+      },
+      {
+        headerName: t("Files"),
+        filter: false,
+        sortable: false,
+        width: 120,
+        cellRenderer: ({ data }) => (
+          <Button
+            type="button"
+            outline
+            color="success"
+            size="sm"
+            onClick={() => {
+              setTransaction(data);
+              toggleFileModal();
+            }}
+          >
+            {t("Files")}
+          </Button>
+        ),
+      },
+      {
+        headerName: t("Message"),
+        filter: false,
+        sortable: false,
+        width: 120,
+        cellRenderer: ({ data }) => (
+          <Button
+            type="button"
+            outline
+            color="primary"
+            size="sm"
+            onClick={() => {
+              setTransaction(data);
+              toggleConvModal();
+            }}
+          >
+            {t("Message")}
+          </Button>
+        ),
       },
     ];
-    if (
-      data?.previledge?.is_role_editable == 1 ||
-      data?.previledge?.is_role_deletable == 1
-    ) {
-      baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable == 1 && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleCsoInfoClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-            </div>
-          );
-        },
+
+    if (data?.previledge?.is_role_editable == 1 || data?.previledge?.is_role_deletable == 1) {
+      baseColumnDefs.push({
+        headerName: t("Action"),
+        field: 'action',
+        filter: false,
+        sortable: true,
+        width: 120,
+        cellRenderer: ({ data }) => <ActionButtons data={data} />,
       });
     }
-    return baseColumns;
-  }, [handleCsoInfoClick, toggleViewModal, onClickDelete]);
+
+    return baseColumnDefs;
+  }, [handleCsoInfoClick, toggleViewModal, toggleFileModal, toggleConvModal, t]);
 
   if (isError) {
-    <FetchErrorHandler error={error} refetch={refetch} />
+    return <FetchErrorHandler error={error} refetch={refetch} />
   }
+
   return (
     <React.Fragment>
       <CsoInfoModal
@@ -437,6 +421,12 @@ const CsoInfoModel = () => {
         toggle={toggleFileModal}
         transaction={transaction}
       />
+      <Conversation
+        isOpen={convModal}
+        toggle={toggleConvModal}
+        ownerId={transaction?.cso_id}
+        ownerTypeId={PAGE_ID.CSO}
+      />
       <div className="page-content">
         <div className="container-fluid">
           <Breadcrumbs
@@ -450,25 +440,23 @@ const CsoInfoModel = () => {
               <Col xs="12">
                 <Card>
                   <CardBody>
-                    <TableContainer
-                      columns={columns}
-                      data={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
+                    <AgGridContainer
+                      rowData={
+                        showSearchResult ? searchResults?.data : data?.data || []
                       }
+                      columnDefs={columnDefs}
+                      isPagination={true}
+                      paginationPageSize={20}
                       isGlobalFilter={true}
                       isAddButton={data?.previledge?.is_role_can_add == 1}
-                      isCustomPageSize={true}
-                      handleUserClick={handleCsoInfoClicks}
-                      isPagination={true}
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add")}
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                      addButtonText="Add"
+                      onAddClick={handleCsoInfoClicks}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="CSO List"
+                      includeKey={["cso_name", "cso_code", "cso_email", "cso_phone", "cso_website", "cso_address", "cso_status"]}
+                      excludeKey={["is_editable", "is_deletable"]}
                     />
                   </CardBody>
                 </Card>

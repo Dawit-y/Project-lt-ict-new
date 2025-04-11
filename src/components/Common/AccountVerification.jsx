@@ -14,6 +14,7 @@ import FetchErrorHandler from './FetchErrorHandler'
 import ProjectDocumentModal from '../../pages/Projectdocument/ProjectDocumentModal'
 import { PAGE_ID } from '../../constants/constantFile'
 import FileList from '../../pages/Projectdocument/FileManager/FileList'
+import ConversationInformationModal from '../../pages/Conversationinformation/ConvInfoModal'
 
 const AccountVerification = () => {
   document.title = "Operational Agreement is Required"
@@ -34,6 +35,7 @@ const AccountVerification = () => {
 
   const [projectDocument, setProjectDocument] = useState(null)
   const [modal, setModal] = useState(false);
+  const [convModal, setConvModal] = useState(false)
   const [isEdit, setIsEdit] = useState(false);
 
   const addProjectDocument = useAddProjectDocument();
@@ -162,6 +164,7 @@ const AccountVerification = () => {
   const [modal1, setModal1] = useState(false)
   const [details, setDetails] = useState({})
   const toggleViewModal = () => setModal1(!modal1);
+  const toggleConvModal = () => setConvModal(!convModal)
 
   const toggleForm = () => {
     if (modal) {
@@ -220,6 +223,12 @@ const AccountVerification = () => {
         onDeleteClick={handleDeleteProjectDocument}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteProjectDocument.isPending}
+      />
+      <ConversationInformationModal
+        isOpen={convModal}
+        toggle={toggleConvModal}
+        ownerId={csoId}
+        ownerTypeId={PAGE_ID.CSO}
       />
       <div className='page-content'>
         <Container className=''>
@@ -282,6 +291,20 @@ const AccountVerification = () => {
               )}
             </CardBody>
           </Card>
+          <div className="mt-4 mb-2 d-flex align-items-center justify-content-start gap-3">
+            <p className="text-muted my-auto">
+              Have questions about your document submission?
+            </p>
+            <Button
+              size='sm'
+              color="outline-primary"
+              onClick={toggleConvModal}
+              className="d-inline-flex align-items-center"
+            >
+              <i className="mdi mdi-comment-text-outline me-2"></i>
+              Contact Support
+            </Button>
+          </div>
           <Modal isOpen={modal} toggle={toggleForm} className="modal-xl">
             <ModalHeader toggle={toggleForm} tag="h4">
               {!!isEdit
@@ -322,11 +345,6 @@ const AccountVerification = () => {
                             color="success"
                             type="submit"
                             className="save-user"
-                            disabled={
-                              addProjectDocument.isPending ||
-                              updateProjectDocument.isPending ||
-                              !validation.dirty
-                            }
                           >
                             {t("Save")}
                           </Button>
