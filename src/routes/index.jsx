@@ -7,7 +7,7 @@ import CsoRegister from "../pages/Authentication/CsoRegister.jsx";
 import { components } from "react-select";
 import ResetPassword from "../pages/Authentication/ResetPassword.jsx";
 import ResetPasswordForm from "../pages/Authentication/ResetPasswordForm.jsx";
-
+import LandingPage from "../pages/Landing/index";
 const UsersProfile = lazy(() => import("../pages/Profile"));
 const ProjectPaymentList = lazy(() =>
   import("../pages/Projectpayment/ProjectPaymentList")
@@ -37,7 +37,9 @@ const DateSetting = lazy(() => import("../pages/Datesetting/index"));
 const CSOInformation = lazy(() => import("../pages/Csoinfo/index"));
 const CSOProject = lazy(() => import("../pages/Csoproject/index"));
 const CSOProjectList = lazy(() => import("../pages/Csoproject/ProjectList"));
-const CSOProjectDetail = lazy(() => import("../pages/Csoproject/ProjectDetail/index.jsx"));
+const CSOProjectDetail = lazy(() =>
+  import("../pages/Csoproject/ProjectDetail/index.jsx")
+);
 const CSOBudgetRequestListModel = lazy(() =>
   import("../pages/Csobudgetrequest/BudgetRequestList.jsx")
 );
@@ -180,11 +182,19 @@ const CitizenshipProjectDetail = lazy(() =>
   import("../pages/Citizenshipproject/ProjectDetail/index.jsx")
 );
 //START PROCUMENET
-const ProcurementinformationList = lazy(() => import('../pages/Procurementinformation/ProcurementInformationList'));
-const ProcurementInformation = lazy(() => import('../pages/Procurementinformation/index'));
-const ProcurementMethod = lazy(() => import('../pages/Procurementmethod/index'));
-const ProcurementParticipant = lazy(() => import('../pages/Procurementparticipant/index'));
-const ProcurementStage = lazy(() => import('../pages/Procurementstage/index'));
+const ProcurementinformationList = lazy(() =>
+  import("../pages/Procurementinformation/ProcurementInformationList")
+);
+const ProcurementInformation = lazy(() =>
+  import("../pages/Procurementinformation/index")
+);
+const ProcurementMethod = lazy(() =>
+  import("../pages/Procurementmethod/index")
+);
+const ProcurementParticipant = lazy(() =>
+  import("../pages/Procurementparticipant/index")
+);
+const ProcurementStage = lazy(() => import("../pages/Procurementstage/index"));
 //END PROCUREMENT
 const authProtectedRoutes = [
   { path: "/cso_information", component: <CSOInformation /> },
@@ -192,7 +202,10 @@ const authProtectedRoutes = [
   { path: "/project_cso_list", component: <CSOProjectList /> },
   { path: "/projectdetail_cso/:id", component: <CSOProjectDetail /> },
   { path: "/cso_proposal_request", component: <CSOBudgetRequestListModel /> },
-  { path: "/cso_proposal_request_approval", component: <CSOApproverBudgetRequestList /> },
+  {
+    path: "/cso_proposal_request_approval",
+    component: <CSOApproverBudgetRequestList />,
+  },
   { path: "/date_setting", component: <DateSetting /> },
   { path: "/conversation_information", component: <ConversationInformation /> },
   { path: "/superset_list_report", component: <SupersetListReport /> },
@@ -301,24 +314,25 @@ const authProtectedRoutes = [
   { path: "/budget_ex_source", component: <BudgetExSource /> },
   { path: "/budget_exip_detail", component: <BudgetExipDetail /> },
   { path: "/payment_category", component: <PaymentCategory /> },
-  { path: '/procurement_information', component: <ProcurementInformation /> },
-  { path: '/procurement_method', component: <ProcurementMethod /> },
-  { path: '/procurement_participant', component: <ProcurementParticipant /> },
-  { path: '/procurement_stage', component: <ProcurementStage /> },
-  { path: '/procurement_list', component: <ProcurementinformationList /> },
+  { path: "/procurement_information", component: <ProcurementInformation /> },
+  { path: "/procurement_method", component: <ProcurementMethod /> },
+  { path: "/procurement_participant", component: <ProcurementParticipant /> },
+  { path: "/procurement_stage", component: <ProcurementStage /> },
+  { path: "/procurement_list", component: <ProcurementinformationList /> },
   //   // this route should be at the end of all other routes
   //   // eslint-disable-next-line react/display-name
   { path: "/", exact: true, component: <Navigate to="/dashboard" /> },
   //START PROCUREMENT
-  { path: '/procurement_information', component: <ProcurementInformation /> },
-  { path: '/procurement_method', component: <ProcurementMethod /> },
-  { path: '/procurement_participant', component: <ProcurementParticipant /> },
-  { path: '/procurement_stage', component: <ProcurementStage /> },
-  { path: '/procurement_list', component: <ProcurementinformationList /> },
+  { path: "/procurement_information", component: <ProcurementInformation /> },
+  { path: "/procurement_method", component: <ProcurementMethod /> },
+  { path: "/procurement_participant", component: <ProcurementParticipant /> },
+  { path: "/procurement_stage", component: <ProcurementStage /> },
+  { path: "/procurement_list", component: <ProcurementinformationList /> },
   //END PROCUREMENT
 ];
 
 const publicRoutes = [
+  { path: "/", component: <LandingPage /> },
   { path: "/logout", component: <Logout /> },
   { path: "/login", component: <Login /> },
   { path: "/register", component: <CsoRegister /> },
