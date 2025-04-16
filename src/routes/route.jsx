@@ -83,7 +83,7 @@ const AuthMiddleware = ({ children }) => {
   const allowedPaths = sidedata.length > 0 ? extractPaths(sidedata) : [];
 
   const isProjectPath = (path) => {
-    const projectPathRegex = /^\/projectdetail_cso\/\d+(#\w+)?$/i;
+    const projectPathRegex = /^\/Project(detail)?\/\d+(\/\w+)?(#\w+)?$/i;
     return projectPathRegex.test(path);
   };
 
