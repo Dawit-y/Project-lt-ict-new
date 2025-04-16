@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, memo, useMemo } from 'react'
 import {
   useReactTable,
   getCoreRowModel,
@@ -27,17 +27,21 @@ import { FaArrowsUpDownLeftRight } from 'react-icons/fa6';
 
 const TreeTableContainer = ({ data, columns, setData }) => {
   const [expanded, setExpanded] = useState({});
-  const [columnFilters, setColumnFilters] = useState([]);
   const [confirmModal, setConfirmModal] = useState(false);
   const [dragInfo, setDragInfo] = useState(null);
   const updateFolder = useUpdateAddressStructures();
 
   const table = useReactTable({
     data,
+    defaultColumn: {
+      minSize: 100,
+      maxSize: 800,
+    },
     columns,
     state: {
       expanded,
     },
+    columnResizeMode: 'onChange',
     onExpandedChange: setExpanded,
     getSubRows: row => row.children,
     getCoreRowModel: getCoreRowModel(),
@@ -51,6 +55,17 @@ const TreeTableContainer = ({ data, columns, setData }) => {
   const handleDragStart = (event) => {
     setActiveId(event.active.id);
   };
+
+  const columnSizeVars = useMemo(() => {
+    const headers = table.getFlatHeaders()
+    const colSizes = {}
+    for (let i = 0; i < headers.length; i++) {
+      const header = headers[i]
+      colSizes[`--header-${header.id}-size`] = header.getSize()
+      colSizes[`--col-${header.column.id}-size`] = header.column.getSize()
+    }
+    return colSizes
+  }, [table.getState().columnSizingInfo, table.getState().columnSizing])
 
   const handleDragEnd = async (event) => {
     setActiveId(null);
@@ -69,7 +84,6 @@ const TreeTableContainer = ({ data, columns, setData }) => {
 
     if (!targetZone || !currentZone) return;
 
-    // ✅ Don’t do anything if dropping within the same zone
     if (currentZone.id === targetZone.id) return;
 
     setDragInfo({
@@ -146,7 +160,13 @@ const TreeTableContainer = ({ data, columns, setData }) => {
         )}
       >
         <div className="table-responsive" style={{ maxHeight: '80vh', overflow: 'auto', minHeight: "400px" }}>
-          <Table hover bordered size='sm'>
+          <Table
+            hover bordered size='sm'
+            style={{
+              ...columnSizeVars,
+              width: "100%",
+            }}
+          >
             <thead
               className="sticky-top table-light p-3"
               style={{
@@ -158,7 +178,9 @@ const TreeTableContainer = ({ data, columns, setData }) => {
               {table.getHeaderGroups().map(headerGroup => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map(header => (
-                    <th key={header.id} colSpan={header.colSpan}>
+                    <th key={header.id} colSpan={header.colSpan}
+                      style={{ width: `calc(var(--header-${header?.id}-size) * 1px)`, position: "relative" }}
+                    >
                       {header.isPlaceholder ? null : (
                         <div>
                           {flexRender(
@@ -172,6 +194,15 @@ const TreeTableContainer = ({ data, columns, setData }) => {
                           )}
                         </div>
                       )}
+                      <div
+                        {...{
+                          onDoubleClick: () => header.column.resetSize(),
+                          onMouseDown: header.getResizeHandler(),
+                          onTouchStart: header.getResizeHandler(),
+                          className: `resizer ${header.column.getIsResizing() ? 'isResizing' : ''
+                            }`,
+                        }}
+                      />
                     </th>
                   ))}
                 </tr>
@@ -179,7 +210,7 @@ const TreeTableContainer = ({ data, columns, setData }) => {
             </thead>
             <tbody>
               {table.getRowModel().rows.map(row => (
-                <DraggableRow
+                <MemoizedDraggableRow
                   key={row.id}
                   row={row}
                   isDraggable={row.original.level === 'woreda'}
@@ -212,10 +243,10 @@ const TreeTableContainer = ({ data, columns, setData }) => {
             </div>
           ) : null}
         </DragOverlay>
-      </DndContext>
+      </DndContext >
 
       {/* Confirmation Modal */}
-      <Modal isOpen={confirmModal} toggle={handleCancel}>
+      <Modal Modal isOpen={confirmModal} toggle={handleCancel} >
         <ModalHeader>Confirm Zone Change</ModalHeader>
         <ModalBody>
           {dragInfo && (
@@ -294,13 +325,28 @@ const DraggableRow = ({ row, isDraggable, isDroppable }) => {
       style={style}
     >
       {row.getVisibleCells().map(cell => (
-        <td key={cell.id} style={{ width: cell.column.getSize() }}>
+        <td
+          key={cell.id}
+          style={{
+            width: `calc(var(--col-${cell.column.id}-size) * 1px)`,
+          }}>
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
         </td>
       ))}
     </tr>
   );
 };
+
+const areEqual = (prevProps, nextProps) => {
+  return (
+    prevProps.row.id === nextProps.row.id &&
+    prevProps.isDraggable === nextProps.isDraggable &&
+    prevProps.isDroppable === nextProps.isDroppable &&
+    prevProps.row.original === nextProps.row.original
+  );
+};
+
+export const MemoizedDraggableRow = memo(DraggableRow, areEqual);
 
 function Filter({
   column,

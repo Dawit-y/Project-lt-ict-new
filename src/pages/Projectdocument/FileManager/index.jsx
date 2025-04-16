@@ -230,6 +230,7 @@ const Index = (props) => {
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
+
   return (
     <React.Fragment>
       <Modal isOpen={modal} toggle={toggle} className="modal-xl">
@@ -276,7 +277,6 @@ const Index = (props) => {
                   </FormFeedback>
                 ) : null}
               </Col>
-
               <Col className="col-md-12 mb-3">
                 <Label>{t("prd_description")}</Label>
                 <Input
@@ -302,7 +302,6 @@ const Index = (props) => {
                   </FormFeedback>
                 ) : null}
               </Col>
-
               <Row>
                 <Col>
                   <div className="text-end">
@@ -385,27 +384,26 @@ const Index = (props) => {
                           </div>
                         </li>
                         {docTypeData?.data?.map((type) => (
-                         <li key={type.pdt_id}>
-  <div
-    className={`${selectedDocumentTypeId === type.pdt_id ? "border border-info-subtle" : ""}`}
-    style={{ backgroundColor: "transparent" }}
-  >
-    <button
-      type="button"
-      className="text-body fw-medium py-1 d-flex align-items-center border-0 bg-transparent w-100 text-start"
-      onClick={() => {
-        setSelectedDocumentTypeId(type.pdt_id);
-        setSearchParams({
-          project_id: passedId,
-          prd_document_type_id: type.pdt_id,
-        });
-      }}
-    >
-      <i className="mdi mdi-folder font-size-16 text-warning me-2"></i>
-      {type.pdt_doc_name_or}
-    </button>
-  </div>
-</li>
+                          <li key={type.pdt_id}>
+                            <div
+                              className={`${selectedDocumentTypeId === type.pdt_id ? "border border-info-subtle" : ""}`}
+                              style={{ backgroundColor: "transparent" }}
+                            >
+                              <Button
+                                className="text-body fw-medium py-1 d-flex align-items-center border-0 bg-transparent w-100 text-start"
+                                onClick={() => {
+                                  setSelectedDocumentTypeId(type.pdt_id);
+                                  setSearchParams({
+                                    project_id: passedId,
+                                    prd_document_type_id: type.pdt_id,
+                                  });
+                                }}
+                              >
+                                <i className="mdi mdi-folder font-size-16 text-warning me-2"></i>
+                                {type.pdt_doc_name_or}
+                              </Button>
+                            </div>
+                          </li>
 
                         ))}
                       </ul>

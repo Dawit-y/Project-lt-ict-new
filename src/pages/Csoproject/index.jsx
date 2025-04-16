@@ -38,11 +38,9 @@ import {
 import { toast } from "react-toastify";
 import { createSelectOptions, createMultiSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import TreeForLists from "../../components/Common/TreeForLists";
-import { useProjectListContext } from "../../context/ProjectListContext";
-import SearchForProject from "../../components/Common/SearchForProject";
+import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import DatePicker from "../../components/Common/DatePicker";
-import ProjectTabs from "./ProjectTabs";
+import ProjectTabs from "./ProjectTabs2";
 
 const ProjectModel = () => {
   document.title = "Projects ";
@@ -529,23 +527,13 @@ const ProjectModel = () => {
     <React.Fragment>
       <div className="page-content">
         <div>
-          <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
+          <Breadcrumbs />
           <div className="w-100 d-flex gap-2">
             <>
               <div className="w-100">
-                <SearchForProject
+                <AdvancedSearch
+                  searchHook={useSearchProjects}
                   textSearchKeys={["prj_name", "prj_code"]}
-                  dropdownSearchKeys={[
-                    /*{
-                      key: "prj_project_category_id",
-                      options: lang === "en"
-                        ? projectCategoryOptionsEn
-                        : lang === "am"
-                          ? projectCategoryOptionsAm
-                          : projectCategoryOptionsOr
-                      ,
-                    },*/
-                  ]}
                   checkboxSearchKeys={[]}
                   additionalParams={searchConfig.projectParams}
                   setAdditionalParams={setProjectParams}

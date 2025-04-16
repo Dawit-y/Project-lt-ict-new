@@ -61,7 +61,7 @@ import { createSelectOptions, createMultiSelectOptions } from "../../utils/commo
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForProject from "./TreeForProject";
 import DatePicker from "../../components/Common/DatePicker";
-import useResizeObserver from "use-resize-observer";
+import AsyncSelectField from "../../components/Common/AsyncSelectField";
 
 const ProjectModel = () => {
   document.title = "Projects";
@@ -107,7 +107,7 @@ const ProjectModel = () => {
 
   const { data, isLoading, error, isError, refetch } =
     useSearchProjects(param, Object.keys(param).length > 0);
-  const { data: projectCategoryData } = useFetchProjectCategorys();
+  const { data: projectCategoryData, isLoading: prCategoryLoading, isError: prCategoryIsError } = useFetchProjectCategorys();
   const {
     pct_name_en: projectCategoryOptionsEn,
     pct_name_or: projectCategoryOptionsOr,
@@ -893,55 +893,19 @@ const ProjectModel = () => {
                   </FormFeedback>
                 ) : null}
               </Col>
-              <Col className="col-md-4 mb-3">
-                <Label>
-                  {t("prj_project_category_id")}
-                  <span className="text-danger">*</span>
-                </Label>
-                <Input
-                  name="prj_project_category_id"
-                  type="select"
-                  className="form-select"
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={
-                    validation.values.prj_project_category_id || ""
-                  }
-                  invalid={
-                    validation.touched.prj_project_category_id &&
-                      validation.errors.prj_project_category_id
-                      ? true
-                      : false
-                  }
-                >
-                  <option value={null}>
-                    {t("prj_select_category")}
-                  </option>
-                  {lang === "en"
-                    ? projectCategoryOptionsEn.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {t(`${option.label}`)}
-                      </option>
-                    ))
-                    : lang === "am"
-                      ? projectCategoryOptionsAm.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {t(`${option.label}`)}
-                        </option>
-                      ))
-                      : projectCategoryOptionsOr.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {t(`${option.label}`)}
-                        </option>
-                      ))}
-                </Input>
-                {validation.touched.prj_project_category_id &&
-                  validation.errors.prj_project_category_id ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.prj_project_category_id}
-                  </FormFeedback>
-                ) : null}
-              </Col>
+              <AsyncSelectField
+                name="prj_project_category_id"
+                validation={validation}
+                isRequired
+                className="col-md-4 mb-3"
+                optionsByLang={{
+                  en: projectCategoryOptionsEn,
+                  am: projectCategoryOptionsAm,
+                  or: projectCategoryOptionsOr
+                }}
+                isLoading={prCategoryLoading}
+                isError={prCategoryIsError}
+              />
               <Col className="col-md-4 mb-3">
                 <Label>
                   {t("prj_total_estimate_budget")}

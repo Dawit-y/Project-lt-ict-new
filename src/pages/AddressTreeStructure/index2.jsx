@@ -49,7 +49,8 @@ const AddressStructure = () => {
           ) : (
             ""
           ),
-        size: 60,
+        size: 40,
+        maxSize: 40
       },
       {
         accessorKey: 'name',
@@ -64,19 +65,7 @@ const AddressStructure = () => {
             <div style={{ paddingLeft: indent }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 {hasChildren ? (
-                  <Button
-                    onClick={row.getToggleExpandedHandler()}
-                    className='text-secondary'
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      padding: 2,
-                      marginRight: '0.5rem',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                  </Button>
+                  <ExpandButton row={row} />
                 ) : shouldAddOffset ? (
                   <span style={{ display: 'inline-block', width: '1.5rem', marginRight: '0.5rem' }} />
                 ) : null}
@@ -86,16 +75,19 @@ const AddressStructure = () => {
           );
         },
         footer: props => props.column.id,
+        size: 400,
       },
       {
         accessorKey: 'add_name_am',
         header: "Name (Amharic)",
         footer: props => props.column.id,
+        size: 200,
       },
       {
         accessorKey: 'add_name_en',
         header: "Name (English)",
         footer: props => props.column.id,
+        size: 200,
       },
       {
         accessorKey: "level",
@@ -106,6 +98,7 @@ const AddressStructure = () => {
         },
         footer: props => props.column.id,
         enableColumnFilter: false,
+        size: 200,
       },
       {
         id: 'actions',
@@ -147,7 +140,7 @@ const AddressStructure = () => {
           {isLoading ? <Spinners /> :
             <Card >
               <TreeTableContainer
-                data={treeData}
+                data={treeData || []}
                 setData={setTreeData}
                 columns={columns}
               />
@@ -235,7 +228,7 @@ const RowDragHandleCell = ({ rowId }) => {
   const {
     attributes,
     listeners,
-    setNodeRef, // ✅ You need to attach this to the DOM element
+    setNodeRef,
     isDragging,
   } = useSortable({
     id: rowId,
@@ -243,7 +236,7 @@ const RowDragHandleCell = ({ rowId }) => {
 
   return (
     <button
-      ref={setNodeRef} // ✅ This is crucial
+      ref={setNodeRef}
       {...attributes}
       {...listeners}
       type="button"
@@ -252,11 +245,29 @@ const RowDragHandleCell = ({ rowId }) => {
         border: 'none',
         padding: 2,
         marginRight: '0.5rem',
-        cursor: isDragging ? 'grabbing' : 'grab', // just for UX
-        touchAction: 'none', // ✅ Prevents mobile glitches
+        cursor: isDragging ? 'grabbing' : 'grab',
+        touchAction: 'none',
       }}
     >
       <FaArrowsUpDownLeftRight />
     </button>
+  );
+};
+
+const ExpandButton = ({ row }) => {
+  return (
+    <Button
+      onClick={row.getToggleExpandedHandler()}
+      className='text-secondary'
+      style={{
+        background: 'none',
+        border: 'none',
+        padding: 2,
+        marginRight: '0.5rem',
+        cursor: 'pointer',
+      }}
+    >
+      {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+    </Button>
   );
 };
