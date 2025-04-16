@@ -33,9 +33,9 @@ const UserRole = lazy(() => import("../pages/Userrole/index"));
 const Roles = lazy(() => import("../pages/Roles/index"));
 const DateSetting = lazy(() => import("../pages/Datesetting/index"));
 const CSOInformation = lazy(() => import("../pages/Csoinfo/index"));
-const CSOProject = lazy(() => import("../pages/Csoproject/index"));
+const CSOProject = lazy(() => import("../pages/Csoproject/index2.jsx"));
 const CSOProjectList = lazy(() => import("../pages/Csoproject/ProjectList"));
-const CSOProjectDetail = lazy(() => import("../pages/Csoproject/ProjectDetail/index.jsx"));
+const CSOProjectDetail = lazy(() => import("../pages/Csoproject/ProjectDetail/index2.jsx"));
 const CSOBudgetRequestListModel = lazy(() =>
   import("../pages/Csobudgetrequest/BudgetRequestList.jsx")
 );
@@ -299,16 +299,15 @@ const authProtectedRoutes = [
   { path: "/budget_ex_source", component: <BudgetExSource /> },
   { path: "/budget_exip_detail", component: <BudgetExipDetail /> },
   { path: "/payment_category", component: <PaymentCategory /> },
-  //   // this route should be at the end of all other routes
-  //   // eslint-disable-next-line react/display-name
-  { path: "/", exact: true, component: <Navigate to="/dashboard" /> },
-  //START PROCUREMENT
   { path: '/procurement_information', component: <ProcurementInformation /> },
   { path: '/procurement_method', component: <ProcurementMethod /> },
   { path: '/procurement_participant', component: <ProcurementParticipant /> },
   { path: '/procurement_stage', component: <ProcurementStage /> },
   { path: '/procurement_list', component: <ProcurementinformationList /> },
-  //END PROCUREMENT
+  //   // this route should be at the end of all other routes
+  //   // eslint-disable-next-line react/display-name
+  { path: "/", exact: true, component: <Navigate to="/dashboard" /> },
+
 ];
 
 const publicRoutes = [

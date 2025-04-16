@@ -4,7 +4,6 @@ import classnames from "classnames";
 import { useLocation } from "react-router-dom";
 
 const ProjectDetailTabDynamic = ({
-  canvasWidth,
   name,
   id,
   status = null,

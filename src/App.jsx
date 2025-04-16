@@ -126,6 +126,7 @@ const App = (props) => {
               </ErrorBoundary>
             </Layout>
           }
+          errorElement={<ErrorElement />}
         />
         <Route
           path="/not_found"
@@ -136,6 +137,7 @@ const App = (props) => {
               </ErrorBoundary>
             </Layout>
           }
+          errorElement={<ErrorElement />}
         />
         <Route path="*" element={<NotFound />} />
       </>

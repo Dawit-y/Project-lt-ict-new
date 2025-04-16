@@ -277,6 +277,7 @@ const ProjectModel = () => {
                     showSearchResult ? searchResults?.data : data?.data || []
                   }
                   columnDefs={columnDefs}
+                  isLoading={isSearchLoading}
                   isPagination={true}
                   paginationPageSize={20}
                   isGlobalFilter={true}
@@ -294,8 +295,6 @@ const ProjectModel = () => {
           </div>
         </div>
       </div>
-
-
     </React.Fragment>
   );
 };

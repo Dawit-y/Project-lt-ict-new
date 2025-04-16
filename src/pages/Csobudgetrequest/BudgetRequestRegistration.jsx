@@ -44,7 +44,9 @@ const FetchErrorHandler = lazy(() => import("../../components/Common/FetchErrorH
 const RightOffCanvas = lazy(() => import("../../components/Common/RightOffCanvas"));
 const AttachFileModal = lazy(() => import("../../components/Common/AttachFileModal"));
 const ConvInfoModal = lazy(() => import("../../pages/Conversationinformation/ConvInfoModal"));
-const DatePicker = lazy(() => import("../../components/Common/DatePicker"));
+// const DatePicker = lazy(() => import("../../components/Common/DatePicker"));
+import DatePicker from "../../components/Common/DatePicker";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -71,7 +73,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
   const addBudgetRequest = useAddBudgetRequest();
   const updateBudgetRequest = useUpdateBudgetRequest();
   const deleteBudgetRequest = useDeleteBudgetRequest();
-  
+
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
   const project = useFetchProject(projectId, userId, true);
@@ -179,26 +181,27 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
   }, [bgYearsOptionsData]);
 
   //if status of project is 5(draft), duty free(6) can not be
-    const RequestCatagoryMap = useMemo(() => {
+  const RequestCatagoryMap = useMemo(() => {
     const filteredData =
       bgCategoryOptionsData?.data?.filter((category) =>
-        projectStatus < 5 ? [5].includes(category.rqc_id) : [5,6].includes(category.rqc_id)
+        projectStatus < 5 ? [5].includes(category.rqc_id) : [5, 6].includes(category.rqc_id)
       ) || [];
     return filteredData.reduce((cat, category) => {
       cat[category.rqc_id] = category.rqc_name_en;
       return cat;
     }, {});
   }, [bgCategoryOptionsData, projectStatus]);
+
   useEffect(() => {
     setBudgetRequest(data?.data);
-  }, [data]);
+  }, [data?.data]);
 
   useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setBudgetRequest(data?.data);
       setIsEdit(false);
     }
-  }, [data]);
+  }, [data?.data]);
 
   const toggle = () => {
     if (modal) {
@@ -265,7 +268,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
 
   const columns = useMemo(() => {
     const baseColumns = [
-       {
+      {
         header: "",
         accessorKey: "bdr_request_category_id",
         enableColumnFilter: false,
@@ -459,28 +462,28 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
   return (
     <React.Fragment>
       {modal1 && (
-  <BudgetRequestModal
-    isOpen={modal1}
-    toggle={toggleViewModal}
-    transaction={transaction}
-  />
-)}
-       {fileModal && (
-      <AttachFileModal
-        isOpen={fileModal}
-        toggle={toggleFileModal}
-        projectId={projectId}
-        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-        ownerId={transaction?.bdr_id}
-      />
+        <BudgetRequestModal
+          isOpen={modal1}
+          toggle={toggleViewModal}
+          transaction={transaction}
+        />
       )}
-       {convModal && (
-      <ConvInfoModal
-        isOpen={convModal}
-        toggle={toggleConvModal}
-        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-        ownerId={transaction?.bdr_id ?? null}
-      />
+      {fileModal && (
+        <AttachFileModal
+          isOpen={fileModal}
+          toggle={toggleFileModal}
+          projectId={projectId}
+          ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+          ownerId={transaction?.bdr_id}
+        />
+      )}
+      {convModal && (
+        <ConvInfoModal
+          isOpen={convModal}
+          toggle={toggleConvModal}
+          ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+          ownerId={transaction?.bdr_id ?? null}
+        />
       )}
       <DeleteModal
         show={deleteModal}
@@ -524,7 +527,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
             }}
           >
             <Row>
-                <Col className="col-md-6 mb-3">
+              <Col className="col-md-6 mb-3">
                 <Label>
                   {t("bdr_request_category_id")}
                   <span className="text-danger">*</span>
@@ -538,7 +541,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
                   value={validation.values.bdr_request_category_id || ""}
                   invalid={
                     validation.touched.bdr_request_category_id &&
-                    validation.errors.bdr_request_category_id
+                      validation.errors.bdr_request_category_id
                       ? true
                       : false
                   }
@@ -551,7 +554,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
                   ))}
                 </Input>
                 {validation.touched.bdr_request_category_id &&
-                validation.errors.bdr_request_category_id ? (
+                  validation.errors.bdr_request_category_id ? (
                   <FormFeedback type="invalid">
                     {validation.errors.bdr_request_category_id}
                   </FormFeedback>
