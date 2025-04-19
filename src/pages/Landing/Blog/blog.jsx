@@ -11,24 +11,27 @@ const Blog = () => {
   const blogs = [
     {
       imgUrl: blog1,
-      tag: "Cryptocurrency",
+      tag: "CSO Portal",
       date: "04 Mar, 2020",
-      title: "Donec pede justo, fringilla vele",
-      desc: "If several languages coalesce, the grammar of the resulting language",
+      title:
+        "Getting Started with the CSO Project Management Portal: A Complete Guide",
+      desc: "This blog walks new users through everything they need to know to start using the portal—from registering their CSO to submitting their first proposal.",
     },
     {
       imgUrl: blog2,
-      tag: "Cryptocurrency",
+      tag: "CSO Portal",
       date: "12 Feb, 2020",
-      title: "Aenean ut eros et nisl",
-      desc: "Everyone realizes why a new common language would be desirable",
+      title:
+        "Top 6 Features of the CSO Project Management Portal You Should Be Using",
+      desc: "Discover the portal’s most powerful features, including digital proposal submission, project tracking, and government collaboration tools.",
     },
     {
       imgUrl: blog3,
-      tag: "Cryptocurrency",
+      tag: "CSO Portal",
       date: "06 Jan, 2020",
-      title: "In turpis, pellentesque posuere",
-      desc: "To an English person, it will seem like simplified English, as a skeptical Cambridge",
+      title:
+        "How to Register Your CSO on the Oromia BoF Portal in 4 Simple Steps",
+      desc: "A step-by-step blog post that simplifies the CSO registration process, ensuring no important detail is missed.",
     },
   ];
 
@@ -55,7 +58,7 @@ const Blog = () => {
                       alt=""
                       className="rounded img-fluid mx-auto d-block"
                     />
-                    <div className="blog-badge font-size-11 badge bg-success">
+                    <div className="blog-badge font-size-11 badge bg-primary">
                       {blog.tag}
                     </div>
                   </div>

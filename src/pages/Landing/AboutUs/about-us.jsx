@@ -3,7 +3,9 @@ import { Container, Row, Col, Card, CardBody } from "reactstrap";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
-import "../../../../node_modules/swiper/swiper.scss";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 //Images
 import client1 from "../../../assets/images/clients/1.png";
@@ -16,96 +18,99 @@ import client6 from "../../../assets/images/clients/6.png";
 const AboutUs = () => {
   return (
     <React.Fragment>
-      <section className="section pt-4 bg-white" id="about">
+      <section
+        className="section py-6"
+        id="about"
+        style={{
+          background: "linear-gradient(to right, #f9fafb, #ffffff)",
+          minHeight: "100vh",
+        }}
+      >
         <Container>
           <Row>
             <Col lg="12">
               <div className="text-center mb-5">
-                <div className="small-title">About us</div>
-                <h4>What is ICO Token?</h4>
+                <div className="small-title text-uppercase text-primary fw-bold">
+                  About us
+                </div>
+                <h2 className="display-5 fw-semibold">
+                  What is CSO Project Management Portal?
+                </h2>
               </div>
             </Col>
           </Row>
-          <Row className="align-items-center">
-            <Col lg="5">
-              <div className="text-muted">
-                <h4>Best ICO for your cryptocurrency business</h4>
-                <p>
-                  If several languages coalesce, the grammar of the resulting
-                  that of the individual new common language will be more simple
-                  and regular than the existing.
-                </p>
-                <p className="mb-4">
-                  It would be necessary to have uniform pronunciation.
-                </p>
 
-                <div className="d-flex flex-wrap gap-2">
-                  <Link to="#" className="btn btn-success">
+          <Row className="align-items-center mb-5">
+            <Col lg="7">
+              <div className="text-muted pe-lg-5">
+                <h3 className="mb-4 text-dark fw-bold">
+                  Empowering Collaboration Through Innovation
+                </h3>
+                <p>
+                  The <strong>CSO Project Management Portal</strong> is an
+                  official digital platform launched by the
+                  <strong> Oromia Bureau of Finance (BoF)</strong> to empower
+                  Civil Society Organizations (CSOs) working in the Oromia
+                  Region.
+                </p>
+                <ul className="mb-4 ps-3">
+                  <li>
+                    Streamlines collaboration between CSOs, government, and
+                    donors.
+                  </li>
+                  <li>Centralized, transparent, and user-friendly system.</li>
+                  <li>
+                    Register CSOs, submit proposals, track progress, and report
+                    compliance.
+                  </li>
+                  <li>Seamlessly integrates with BoF and sector offices.</li>
+                </ul>
+                <p>
+                  Whether you're a local NGO, development partner, or government
+                  stakeholder, the portal simplifies project management and
+                  enhances impact.
+                </p>
+                <div className="d-flex flex-wrap gap-3 mt-4">
+                  <Link to="#" className="btn btn-primary btn-lg px-4">
                     Read More
                   </Link>
-                  <Link to="#" className="btn btn-outline-primary">
-                    How It work
+                  <Link to="#" className="btn btn-outline-primary btn-lg px-4">
+                    How It Works
                   </Link>
                 </div>
-
-                <Row className="mt-4">
-                  <Col lg="4" xs="6">
-                    <div className="mt-4">
-                      <h4>$ 6.2 M</h4>
-                      <p>Invest amount</p>
-                    </div>
-                  </Col>
-                  <Col lg="4" xs="6">
-                    <div className="mt-4">
-                      <h4>16245</h4>
-                      <p>Users</p>
-                    </div>
-                  </Col>
-                </Row>
               </div>
             </Col>
 
-            <Col lg="6" className="ms-auto">
-              <div className="mt-4 mt-lg-0">
-                <Row>
-                  <Col sm="6">
-                    <Card className="border">
-                      <CardBody>
-                        <div className="mb-3">
-                          <i className="mdi mdi-bitcoin h2 text-success" />
-                        </div>
-                        <h5>Lending</h5>
-                        <p className="text-muted mb-0">
-                          At vero eos et accusamus et iusto blanditiis
-                        </p>
-                      </CardBody>
-                      <div className="card-footer bg-transparent border-top text-center">
-                        <Link to="#" className="text-primary">
-                          Learn more
-                        </Link>
-                      </div>
-                    </Card>
-                  </Col>
-                  <Col sm="6">
-                    <Card className="border mt-lg-5">
-                      <CardBody>
-                        <div className="mb-3">
-                          <i className="mdi mdi-wallet-outline h2 text-success" />
-                        </div>
-                        <h5>Wallet</h5>
-                        <p className="text-muted mb-0">
-                          Quis autem vel eum iure reprehenderit
-                        </p>
-                      </CardBody>
-                      <div className="card-footer bg-transparent border-top text-center">
-                        <Link to="#" className="text-primary">
-                          Learn more
-                        </Link>
-                      </div>
-                    </Card>
-                  </Col>
-                </Row>
-              </div>
+            <Col lg="5" className="mt-5 mt-lg-0">
+              <Card className="border-0 shadow-lg h-100">
+                <CardBody className="p-4">
+                  <div className="mb-4 text-center">
+                    <i
+                      className="mdi mdi-lightbulb h1"
+                      style={{ color: "#FFC107" }}
+                    />
+                    <h5 className="fw-bold mt-3">Why We Exist</h5>
+                  </div>
+                  <ul className="text-muted ps-3">
+                    <li>Digitize and simplify NGO project workflows</li>
+                    <li>Enhance coordination with the Oromia government</li>
+                    <li>
+                      Ensure transparency, efficiency, and timely reporting
+                    </li>
+                    <li>
+                      Support development goals with smarter collaboration
+                    </li>
+                  </ul>
+                </CardBody>
+                <div className="card-footer bg-white border-0 text-center py-3">
+                  <Link
+                    to="#"
+                    className="btn btn-link text-primary fw-semibold"
+                  >
+                    Register
+                  </Link>
+                </div>
+              </Card>
             </Col>
           </Row>
 
@@ -113,93 +118,46 @@ const AboutUs = () => {
 
           <Row>
             <Col lg="12">
-              <Col lg="12">
-                <div className="hori-timeline">
-                  <Swiper
-                    slidesPerView={1}
-                    // spaceBetween={10}
-                    navigation
-                    pagination={{
-                      clickable: true,
-                    }}
-                    breakpoints={{
-                      678: {
-                        slidesPerView: 2,
-                      },
-                      992: {
-                        slidesPerView: 3,
-                      },
-                      1400: {
-                        slidesPerView: 4,
-                      },
-                    }}
-                    autoplay={{
-                      delay: 2500,
-                      disableOnInteraction: false,
-                    }}
-                    loop={true}
-                    modules={[Pagination, Navigation, Autoplay]}
-                    className="owl-carousel owl-theme clients-carousel"
-                    id="clients-carousel"
-                    dir="ltr"
-                  >
-                    <SwiperSlide className="item">
-                      <div className="client-images">
+              <div className="text-center mb-4">
+                <h4 className="fw-semibold">Our Partners</h4>
+                <p className="text-muted">
+                  Organizations that trust and work with us
+                </p>
+              </div>
+              <Swiper
+                slidesPerView={1}
+                navigation
+                pagination={{ clickable: true }}
+                breakpoints={{
+                  678: { slidesPerView: 2 },
+                  992: { slidesPerView: 3 },
+                  1400: { slidesPerView: 4 },
+                }}
+                autoplay={{ delay: 2500, disableOnInteraction: false }}
+                loop={true}
+                modules={[Pagination, Navigation, Autoplay]}
+                className="clients-carousel"
+              >
+                {[client1, client2, client3, client4, client5, client6].map(
+                  (client, index) => (
+                    <SwiperSlide
+                      key={index}
+                      className="d-flex justify-content-center"
+                    >
+                      <div
+                        className="client-images p-3 bg-white shadow-sm rounded"
+                        style={{ maxWidth: "150px" }}
+                      >
                         <img
-                          src={client1}
-                          alt="client-img"
-                          className="mx-auto img-fluid d-block"
+                          src={client}
+                          alt="client"
+                          className="img-fluid d-block mx-auto"
                         />
                       </div>
                     </SwiperSlide>
-                    <SwiperSlide className="item">
-                      <div className="client-images">
-                        <img
-                          src={client2}
-                          alt="client-img"
-                          className="mx-auto img-fluid d-block"
-                        />
-                      </div>
-                    </SwiperSlide>
-                    <SwiperSlide className="item">
-                      <div className="client-images">
-                        <img
-                          src={client3}
-                          alt="client-img"
-                          className="mx-auto img-fluid d-block"
-                        />
-                      </div>
-                    </SwiperSlide>
-                    <SwiperSlide className="item">
-                      <div className="client-images">
-                        <img
-                          src={client4}
-                          alt="client-img"
-                          className="mx-auto img-fluid d-block"
-                        />
-                      </div>
-                    </SwiperSlide>
-                    <SwiperSlide className="item">
-                      <div className="client-images">
-                        <img
-                          src={client5}
-                          alt="client-img"
-                          className="mx-auto img-fluid d-block"
-                        />
-                      </div>
-                    </SwiperSlide>
-                    <SwiperSlide className="item">
-                      <div className="client-images">
-                        <img
-                          src={client6}
-                          alt="client-img"
-                          className="mx-auto img-fluid d-block"
-                        />
-                      </div>
-                    </SwiperSlide>
-                  </Swiper>
-                </div>
-              </Col>
+                  )
+                )}
+              </Swiper>
             </Col>
           </Row>
         </Container>

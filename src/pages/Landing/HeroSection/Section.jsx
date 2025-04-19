@@ -1,61 +1,64 @@
 import React from "react";
-import { Container, Row, Col } from "reactstrap";
+import { Container, Row, Col, NavLink } from "reactstrap";
 import { Link } from "react-router-dom";
-import bgHero from "../../../assets/images/crypto/bg-ico-hero.jpg";
 import heroimg from "../../../assets/images/crypto/heroimg.jpg";
 
 const Section = () => {
   return (
-    <React.Fragment>
-      <section
-        className="section hero-section"
-        id="home"
-        style={{
-          backgroundImage: `url(${bgHero})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          position: "relative",
-        }}
-      >
-        <div className="bg-overlay bg-primary" />
-        <Container>
-          <Row className="align-items-center">
-            <Col lg={6}>
-              <div className="text-white-50">
-                <h1
-                  className="text-white fw-semibold mb-3 hero-title"
-                  style={{ fontSize: "45px" }}
+    <section
+      className="section hero-section"
+      id="home"
+      style={{
+        backgroundColor: "#ffffff",
+        padding: "190px 0",
+      }}
+    >
+      <Container>
+        <Row className="align-items-center">
+          <Col lg={6}>
+            <div>
+              <h1
+                className="fw-bold mb-4"
+                style={{ fontSize: "42px", color: "#222" }}
+              >
+                Welcome to the CSO Project Management Portal
+              </h1>
+              <p style={{ fontSize: "16px", color: "#555" }}>
+                A centralized platform for Civil Society Organizations (CSOs) to
+                register, submit proposals, request appraisals, and manage
+                projects in collaboration with the Oromia Bureau of Finance
+                (BoF) and relevant sectors.
+              </p>
+              <div className="d-flex flex-wrap gap-3 mt-4">
+                <Link to="/register" className="btn btn-primary px-4 py-2">
+                  Register
+                </Link>
+                <NavLink
+                  href="#howitworks"
+                  className="btn btn-outline-primary-light px-4 py-2"
                 >
-                  Skote - Ico Landing for a cryptocurrency business
-                </h1>
-                <p className="font-size-14">
-                  It will be as simple as occidental in fact to an English
-                  person, it will seem like simplified as a skeptical Cambridge
-                </p>
-                <div className="d-flex flex-wrap gap-2 mt-4">
-                  <Link to="#" className="btn btn-success">
-                    Get Whitepaper
-                  </Link>
-                  <Link to="#" className="btn btn-light">
-                    How it work
-                  </Link>
-                </div>
+                  How it works
+                </NavLink>
               </div>
-            </Col>
-            <Col lg={6}>
-              <div className="hero-img">
-                <img
-                  src={heroimg}
-                  alt="Hero Image"
-                  className="img-fluid rounded-4"
-                />
-              </div>
-            </Col>
-          </Row>
-        </Container>
-      </section>
-    </React.Fragment>
+            </div>
+          </Col>
+          <Col lg={6}>
+            <div className="text-center mt-4 mt-lg-0">
+              <img
+                src={heroimg}
+                alt="Hero"
+                className="img-fluid rounded-4"
+                style={{
+                  maxHeight: "400px",
+                  width: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    </section>
   );
 };
 

@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 
 //Import Images
 import logoDark from "../../../assets/images/logo-dark.png";
-import logoLight from "../../../assets/images/logo-light.png";
 
 const Navbar_Page = () => {
   const [isOpenMenu, setIsOpenMenu] = useState(false);
@@ -16,53 +15,31 @@ const Navbar_Page = () => {
 
   useEffect(() => {
     window.addEventListener("scroll", scrollNavigation, true);
-  });
+    return () => {
+      window.removeEventListener("scroll", scrollNavigation, true);
+    };
+  }, []);
 
   const scrollNavigation = () => {
-    var scrollUp = document.documentElement.scrollTop;
-    if (scrollUp > 50) {
-      setNavClass("sticky nav-sticky");
-    } else {
-      setNavClass("");
-    }
-
-    const element = document.querySelectorAll(".nav-item");
-    element.forEach((item) => {
-      item.firstChild.classList.remove("active");
-      if (item.classList.contains("active")) {
-        item.firstChild.classList.add("active");
-      }
-    });
+    const scrollTop = document.documentElement.scrollTop;
+    setNavClass(scrollTop > 50 ? "shadow-sm" : "");
   };
 
   return (
     <React.Fragment>
       <nav
-        className={
-          "navbar navbar-expand-lg navigation fixed-top sticky " + navClass
-        }
+        className={`navbar navbar-expand-lg navigation fixed-top bg-white ${navClass}`}
         id="navbar"
       >
         <Container>
           <Link className="navbar-logo" to="/">
-            <img src={logoDark} alt="" height="50" className="logo logo-dark" />
-            <img
-              src={logoLight}
-              alt=""
-              height="50"
-              className="logo logo-light"
-            />
+            <img src={logoDark} alt="logo" height="50" className="logo" />
           </Link>
 
           <NavbarToggler
             className="btn btn-sm px-3 font-size-16 d-lg-none header-item waves-effect waves-light"
             onClick={toggle}
             type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
           >
             <i className="fa fa-fw fa-bars"></i>
           </NavbarToggler>
@@ -78,40 +55,60 @@ const Navbar_Page = () => {
                 "home",
                 "about",
                 "features",
-                "roadmap",
-                "team",
+                "howitworks",
+                "announcements",
                 "news",
                 "faqs",
+                "contact",
               ]}
               currentClassName="active"
               className="ms-auto navbar-nav nav"
               id="navbar-example"
             >
               <li className="nav-item">
-                <NavLink href="#home">Home</NavLink>
+                <NavLink href="#home" className="text-dark">
+                  Home
+                </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink href="#about">About</NavLink>
+                <NavLink href="#about" className="text-dark">
+                  About
+                </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink href="#features">Features</NavLink>
+                <NavLink href="#features" className="text-dark">
+                  Features
+                </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink href="#roadmap">Roadmap</NavLink>
+                <NavLink href="#howitworks" className="text-dark">
+                  How It Works
+                </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink href="#team">Team</NavLink>
+                <NavLink href="#roadmap" className="text-dark">
+                  Announcements
+                </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink href="#news">News</NavLink>
+                <NavLink href="#news" className="text-dark">
+                  News
+                </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink href="#faqs">FAQs</NavLink>
+                <NavLink href="#faqs" className="text-dark">
+                  FAQs
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink href="#contact" className="text-dark">
+                  Contact
+                </NavLink>
               </li>
             </Scrollspy>
 
             <div className="my-2 ms-lg-2">
-              <Link to="/login" className="btn btn-outline-success w-xs">
+              <Link to="/login" className="btn btn-outline-primary w-xs">
                 Sign in
               </Link>
             </div>

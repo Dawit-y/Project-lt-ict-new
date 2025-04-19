@@ -2,8 +2,7 @@ import React from "react";
 import { Container, Row, Col } from "reactstrap";
 import { Link } from "react-router-dom";
 
-//Import Components
-import FooterLink from "./footer-link";
+import logolight from "../../../assets/images/logo-light.png";
 
 const Footer = () => {
   const footerLinks = [
@@ -12,25 +11,23 @@ const Footer = () => {
       links: [
         { title: "About Us", link: "#" },
         { title: "Features", link: "#" },
-        { title: "Team", link: "#" },
+        { title: "Announcements", link: "#" },
         { title: "News", link: "#" },
         { title: "FAQs", link: "#" },
       ],
     },
     {
-      title: "Resources",
+      title: "Legal",
       links: [
-        { title: "Whitepaper", link: "#" },
-        { title: "Token sales", link: "#" },
+        { title: "Terms of Use", link: "#" },
         { title: "Privacy Policy", link: "#" },
-        { title: "Terms & Conditions", link: "#" },
       ],
     },
     {
       title: "Links",
       links: [
-        { title: "Tokens", link: "#" },
-        { title: "Roadmap", link: "#" },
+        { title: "Register", link: "#" },
+        { title: "Contact Support", link: "#" },
         { title: "FAQs", link: "#" },
       ],
     },
@@ -38,54 +35,70 @@ const Footer = () => {
 
   return (
     <React.Fragment>
-      <footer className="landing-footer">
+      <footer className="bg-white text-dark py-5 border-top">
         <Container>
-          <Row>
-            {footerLinks.map((footerLink, key) => (
-              <Col lg="3" sm="6" key={key}>
-                <div className="mb-4 mb-lg-0">
-                  <h5 className="mb-3 footer-list-title">{footerLink.title}</h5>
-                  <ul className="list-unstyled footer-list-menu">
-                    {footerLink.links.map((Flink, key) => (
-                      <li key={key}>
-                        <Link to={Flink.link}>{Flink.title}</Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+          <Row className="mb-5">
+            {footerLinks.map((footerLink, index) => (
+              <Col lg="3" sm="6" className="mb-4 mb-lg-0" key={index}>
+                <h5 className="mb-3 text-uppercase">{footerLink.title}</h5>
+                <ul className="list-unstyled">
+                  {footerLink.links.map((link, key) => (
+                    <li key={key} className="mb-2">
+                      <Link
+                        to={link.link}
+                        className="text-muted text-decoration-none"
+                      >
+                        {link.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </Col>
             ))}
 
-            <Col lg="3" sm="6">
-              <div className="mb-4 mb-lg-0">
-                <h5 className="mb-3 footer-list-title">Latest News</h5>
-                <div className="blog-post">
-                  <Link to="#" className="post">
-                    <div className="badge badge-soft-success font-size-11 mb-3">
-                      Cryptocurrency
-                    </div>
-                    <h5 className="post-title">Donec pede justo aliquet nec</h5>
-                    <p className="mb-0">
-                      <i className="bx bx-calendar me-1" /> 04 Mar, 2020
-                    </p>
-                  </Link>
-                  <Link to="#" className="post">
-                    <div className="badge badge-soft-success font-size-11 mb-3">
-                      Cryptocurrency
-                    </div>
-                    <h5 className="post-title">In turpis, Pellentesque</h5>
-                    <p className="mb-0">
-                      <i className="bx bx-calendar me-1" /> 12 Mar, 2020
-                    </p>
-                  </Link>
-                </div>
+            <Col lg="3" sm="6" className="mb-4 mb-lg-0">
+              <h5 className="mb-3 text-uppercase">Latest News</h5>
+              <div className="mb-3">
+                <Link to="#" className="text-decoration-none text-dark">
+                  <span className="badge bg-success mb-2">New feature</span>
+                  <h6 className="fw-semibold mb-1">
+                    Automated report reminders for overdue submissions.
+                  </h6>
+                  <p className="text-muted mb-0">
+                    <i className="bx bx-calendar me-1" /> 04 Mar, 2020
+                  </p>
+                </Link>
+              </div>
+              <div>
+                <Link to="#" className="text-decoration-none text-dark">
+                  <span className="badge bg-success mb-2">Maintenance</span>
+                  <h6 className="fw-semibold mb-1">
+                    System maintenance scheduled
+                  </h6>
+                  <p className="text-muted mb-0">
+                    <i className="bx bx-calendar me-1" /> on April 5, 2025 (2:00
+                    AM – 6:00 AM).
+                  </p>
+                </Link>
               </div>
             </Col>
           </Row>
 
-          <hr className="footer-border my-5" />
+          <hr className="my-4" />
 
-          <FooterLink />
+          <Row className="align-items-center">
+            <Col md="6">
+              <img src={logolight} alt="Logo" height="50" className="mb-3" />
+              <p className="mb-1 text-muted">
+                &copy; {new Date().getFullYear()} Skote. Design & Develop by
+                Themesbrand
+              </p>
+              <p className="small text-muted">
+                🔒 Authorized by the Oromia Bureau of Finance (BoF) ⚠ Only
+                registered CSOs and approved partners can access the system
+              </p>
+            </Col>
+          </Row>
         </Container>
       </footer>
     </React.Fragment>

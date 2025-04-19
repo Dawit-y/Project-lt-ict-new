@@ -1,53 +1,25 @@
-import PropTypes from "prop-types";
 import React from "react";
-import { Card, CardBody, Col } from "reactstrap";
+import { Col, Card, CardBody } from "reactstrap";
 
-const CardBox = (props) => {
+const CardBox = ({ info }) => {
   return (
-    <React.Fragment>
-      {props.coins.map((coin, key) => (
-        <Col md="4" key={key}>
-          <Card>
+    <>
+      {info.map((info, index) => (
+        <Col lg="3" md="6" sm="12" key={index} className="mb-4">
+          <Card className={`border shadow-sm text-center bg-light`}>
             <CardBody>
-              <div className="d-flex">
-                <div className="avatar-xs me-3">
-                  <span
-                    className={
-                      "avatar-title rounded-circle bg-" +
-                      coin.color +
-                      "-subtle text-" +
-                      coin.color +
-                      " font-size-18"
-                    }
-                  >
-                    <i className={coin.icon} />
-                  </span>
-                </div>
-                <div className="flex-grow-1">
-                  <p className="text-muted">{coin.title}</p>
-                  <h5>$ {coin.value}</h5>
-                  <p className="text-muted text-truncate mb-0">
-                    {coin.isIncrease ? "+ " : "- "} {coin.rate}{" "}
-                    <i
-                      className={
-                        coin.isIncrease
-                          ? "mdi mdi-arrow-up ms-1 text-success"
-                          : "mdi mdi-arrow-down ms-1 text-danger"
-                      }
-                    />
-                  </p>
-                </div>
+              <div className="mb-3">
+                <i className={`${info.icon} mdi-36px text-${info.color}`}></i>
               </div>
+              <h5 className="mb-1 fw-semibold">{info.title}</h5>
+              <h6 className="text-muted mb-2">{info.value}</h6>
+              <p className="text-muted small">{info.rate}</p>
             </CardBody>
           </Card>
         </Col>
       ))}
-    </React.Fragment>
+    </>
   );
-};
-
-CardBox.propTypes = {
-  coins: PropTypes.array,
 };
 
 export default CardBox;

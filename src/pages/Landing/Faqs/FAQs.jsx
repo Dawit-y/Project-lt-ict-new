@@ -56,7 +56,7 @@ const FAQs = () => {
                         }}
                       >
                         <i className="bx bx-receipt nav-icon d-block mb-2" />
-                        <p className="font-weight-bold mb-0">Token sale</p>
+                        <p className="font-weight-bold mb-0">Portal Features</p>
                       </NavLink>
 
                       <NavLink
@@ -66,7 +66,7 @@ const FAQs = () => {
                         }}
                       >
                         <i className="bx bx-timer d-block nav-icon mb-2" />
-                        <p className="font-weight-bold mb-0">Roadmap</p>
+                        <p className="font-weight-bold mb-0">How It Works</p>
                       </NavLink>
                     </Nav>
                   </Col>
@@ -74,51 +74,47 @@ const FAQs = () => {
                     <Card>
                       <CardBody>
                         <TabContent activeTab={activeTab}>
-                          <TabPane tabId="1" id="buy">
+                          <TabPane tabId="1" id="general">
                             <h4 className="card-title mb-4">
                               General Questions
                             </h4>
-
-                            {/* accoridan */}
                             <Accordian
-                              question1="What is Lorem Ipsum ?"
-                              answer1="Everyone realizes why a new common language would be desirable: one could refuse to pay expensive translators. To achieve this, it would be necessary to have uniform grammar, pronunciation and more common words."
-                              question2="Why do we use it ?"
-                              answer2="If several languages coalesce, the grammar of the resulting language is more simple and regular than that of the individual languages. The new common language will be more simple and regular than the existing European languages."
-                              question3="Where does it come from ?"
-                              answer3="It will be as simple as Occidental; in fact, it will be Occidental. To an English person, it will seem like simplified English, as a skeptical Cambridge friend of mine told me what Occidental."
-                              question4="Where can I get some ?"
-                              answer4="To an English person, it will seem like simplified English, as a skeptical Cambridge friend of mine told me what Occidental is. The European languages are members of the same family. Their separate existence is a myth."
+                              question1="What is the CSO Project Management Portal?"
+                              answer1="It’s a centralized digital platform developed by the Oromia Bureau of Finance (BoF) for Civil Society Organizations to register, submit proposals, and manage projects."
+                              question2="Who can use this portal?"
+                              answer2="Registered CSOs (local and international), Oromia BoF departments, partner sector offices (like Health and Education), and approved development partners such as UNDP and the World Bank."
+                              question3="What are the benefits of using this portal?"
+                              answer3="The portal streamlines registration, enables digital proposal submission, allows appraisal tracking, supports digital compliance reporting, and fosters collaboration with BoF."
+                              question4="Is the platform secure?"
+                              answer4="Yes. The portal is officially authorized by Oromia BoF and is designed with secure login and access features to protect your data and submissions."
                             />
                           </TabPane>
 
-                          <TabPane tabId="2">
-                            <h4 className="card-title mb-4">Token sale</h4>
-
+                          <TabPane tabId="2" id="features">
+                            <h4 className="card-title mb-4">Portal Features</h4>
                             <Accordian
-                              question1="Why do we use it ?"
-                              answer1="If several languages coalesce, the grammar of the resulting language is more simple and regular than that of the individual languages. The new common language will be more simple and regular than the existing European languages."
-                              question2="What is Lorem Ipsum ?"
-                              answer2="It will be as simple as Occidental; in fact, it will be Occidental. To an English person, it will seem like simplified English, as a skeptical Cambridge friend of mine told me what Occidental."
-                              question3="Where can I get some ?"
-                              answer3="Everyone realizes why a new common language would be desirable: one could refuse to pay expensive translators. To achieve this, it would be necessary to have uniform grammar, pronunciation and more common words."
-                              question4="Where does it come from ?"
-                              answer4="To an English person, it will seem like simplified English, as a skeptical Cambridge friend of mine told me what Occidental is. The European languages are members of the same family. Their separate existence is a myth."
+                              question1="What kind of proposals can be submitted?"
+                              answer1="The portal supports submission of various development project proposals including education, health, agriculture, climate action, and more."
+                              question2="Can I track my project's progress?"
+                              answer2="Yes. The portal includes a project tracking feature that allows users to monitor milestones and submit implementation reports."
+                              question3="How does appraisal work?"
+                              answer3="Once a proposal is submitted, it undergoes an appraisal process involving BoF and relevant sector offices. Feedback and approval status are shared via the portal."
+                              question4="What is the Transparency Dashboard?"
+                              answer4="It’s a public-facing feature that shows key impact metrics like beneficiaries reached, enabling transparency and accountability."
                             />
                           </TabPane>
 
-                          <TabPane tabId="3">
-                            <h4 className="card-title mb-4">Roadmap</h4>
-
+                          <TabPane tabId="3" id="howitworks">
+                            <h4 className="card-title mb-4">How It Works</h4>
                             <Accordian
-                              question1="Why do we use it ?"
-                              answer1="Everyone realizes why a new common language would be desirable: one could refuse to pay expensive translators. To achieve this, it would be necessary to have uniform grammar, pronunciation and more common words."
-                              question2="What is Lorem Ipsum ?"
-                              answer2="It will be as simple as Occidental; in fact, it will be Occidental. To an English person, it will seem like simplified English, as a skeptical Cambridge friend of mine told me what Occidental."
-                              question3="Where can I get some ?"
-                              answer3="To an English person, it will seem like simplified English, as a skeptical Cambridge friend of mine told me what Occidental is. The European languages are members of the same family. Their separate existence is a myth."
-                              question4="Where does it come from ?"
-                              answer4="If several languages coalesce, the grammar of the resulting language is more simple and regular than that of the individual languages. The new common language will be more simple and regular than the existing European languages."
+                              question1="How do I start using the portal?"
+                              answer1="Begin by registering your CSO through the 'Register' button. Once approved, you’ll gain access to all features."
+                              question2="What happens after I register?"
+                              answer2="You can submit proposals, request appraisals, and access the project management and reporting tools."
+                              question3="What documents are needed for proposal submission?"
+                              answer3="Typically, you’ll need a project plan, budget, and supporting documentation. Templates are available on the portal."
+                              question4="How do I receive support?"
+                              answer4="You can reach out via the support section or email ngodirectorate@oromiabof.gov.et for help. A FAQ and downloadable guides are also available."
                             />
                           </TabPane>
                         </TabContent>

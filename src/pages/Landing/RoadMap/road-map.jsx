@@ -7,6 +7,39 @@ import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import "../../../../node_modules/swiper/swiper.scss";
 // import "swiper/swiper-bundle.css";
 
+const announcements = [
+  {
+    date: "June 2025",
+    title: "Latest Update",
+    disc: "New feature Automated report reminders for overdue submissions.",
+  },
+  {
+    date: "June 2025",
+    title: "Funding",
+    disc: "Active Funding Opportunities and Highlighted Grants Section (with filters: Deadline, Amount, Sector).",
+  },
+  {
+    date: "June 2025",
+    title: "Example Grants",
+    disc: "Education Grant – $50,000 | Deadline: 30 Oct 2024 & Climate Action Fund – Open for Applications.",
+  },
+  {
+    date: "June 2025",
+    title: "Testimonials",
+    disc: "Quotes from NGOs This portal cut our reporting time by 50%!",
+  },
+  {
+    date: "June 2025",
+    title: "Case Studies",
+    disc: "Brief impact stories with photos/videos.",
+  },
+  {
+    date: "April 2025",
+    title: "Scheduled Maintenance",
+    disc: "System maintenance scheduled on April 5, 2025 (2:00 AM – 6:00 AM).",
+  },
+];
+
 const RoadMap = () => {
   return (
     <React.Fragment>
@@ -15,8 +48,8 @@ const RoadMap = () => {
           <Row>
             <Col lg="12">
               <div className="text-center mb-5">
-                <div className="small-title">Timeline</div>
-                <h4>Our Roadmap</h4>
+                <div className="small-title">Announcements 📢</div>
+                <h4>Latest Updates</h4>
               </div>
             </Col>
           </Row>
@@ -51,118 +84,23 @@ const RoadMap = () => {
                   className="owl-carousel owl-theme events navs-carousel"
                   id="timeline-carousel"
                 >
-                  <SwiperSlide className="item event-list">
-                    <div>
-                      <div className="event-date">
-                        <div className="text-primary mb-1">December, 2019</div>
-                        <h5 className="mb-4">ICO Platform Idea</h5>
-                      </div>
-                      <div className="event-down-icon">
-                        <i className="bx bx-down-arrow-circle h1 text-primary down-arrow-icon"></i>
-                      </div>
+                  {announcements.map((item, index) => (
+                    <SwiperSlide key={index} className="item event-list">
+                      <div>
+                        <div className="event-date">
+                          <div className="text-primary mb-1">{item.date}</div>
+                          <h5 className="mb-4">{item.title}</h5>
+                        </div>
+                        <div className="event-down-icon">
+                          <i className="bx bx-down-arrow-circle h1 text-primary down-arrow-icon"></i>
+                        </div>
 
-                      <div className="mt-3 px-3">
-                        <p className="text-muted">
-                          It will be as simple as occidental in fact it will be
-                          Cambridge
-                        </p>
+                        <div className="mt-3 px-3">
+                          <p className="text-muted">{item.disc}</p>
+                        </div>
                       </div>
-                    </div>
-                  </SwiperSlide>
-
-                  <SwiperSlide className="item event-list">
-                    <div>
-                      <div className="event-date">
-                        <div className="text-primary mb-1">January, 2020</div>
-                        <h5 className="mb-4">Research on project</h5>
-                      </div>
-                      <div className="event-down-icon">
-                        <i className="bx bx-down-arrow-circle h1 text-primary down-arrow-icon"></i>
-                      </div>
-
-                      <div className="mt-3 px-3">
-                        <p className="text-muted">
-                          To an English person, it will seem like simplified
-                          English existence.
-                        </p>
-                      </div>
-                    </div>
-                  </SwiperSlide>
-
-                  <SwiperSlide className="item event-list active">
-                    <div>
-                      <div className="event-date">
-                        <div className="text-primary mb-1">February, 2020</div>
-                        <h5 className="mb-4">ICO & Token Design</h5>
-                      </div>
-                      <div className="event-down-icon">
-                        <i className="bx bx-down-arrow-circle h1 text-primary down-arrow-icon"></i>
-                      </div>
-
-                      <div className="mt-3 px-3">
-                        <p className="text-muted">
-                          For science, music, sport, etc, Europe uses the same
-                          vocabulary.
-                        </p>
-                      </div>
-                    </div>
-                  </SwiperSlide>
-
-                  <SwiperSlide className="item event-list">
-                    <div>
-                      <div className="event-date">
-                        <div className="text-primary mb-1">March, 2020</div>
-                        <h5 className="mb-4">ICO Launch Platform</h5>
-                      </div>
-                      <div className="event-down-icon">
-                        <i className="bx bx-down-arrow-circle h1 text-primary down-arrow-icon"></i>
-                      </div>
-
-                      <div className="mt-3 px-3">
-                        <p className="text-muted">
-                          New common language will be more simple than existing.
-                        </p>
-                      </div>
-                    </div>
-                  </SwiperSlide>
-
-                  <SwiperSlide className="item event-list">
-                    <div>
-                      <div className="event-date">
-                        <div className="text-primary mb-1">April, 2020</div>
-                        <h5 className="mb-4">Token sale round 1</h5>
-                      </div>
-                      <div className="event-down-icon">
-                        <i className="bx bx-down-arrow-circle h1 text-primary down-arrow-icon"></i>
-                      </div>
-
-                      <div className="mt-3 px-3">
-                        <p className="text-muted">
-                          It will be as simple as occidental in fact it will be
-                          Cambridge
-                        </p>
-                      </div>
-                    </div>
-                  </SwiperSlide>
-
-                  <SwiperSlide className="item event-list">
-                    <div>
-                      <div className="event-date">
-                        <div className="text-primary mb-1">May, 2020</div>
-                        <h5 className="mb-4">Token sale round 2</h5>
-                      </div>
-                      <div className="event-down-icon">
-                        <i className="bx bx-down-arrow-circle h1 text-primary down-arrow-icon"></i>
-                      </div>
-
-                      <div className="mt-3 px-3">
-                        <p className="text-muted">
-                          To an English person, it will seem like simplified
-                          English existence.
-                        </p>
-                      </div>
-                    </div>
-                  </SwiperSlide>
+                    </SwiperSlide>
+                  ))}
                 </Swiper>
               </div>
             </Col>
