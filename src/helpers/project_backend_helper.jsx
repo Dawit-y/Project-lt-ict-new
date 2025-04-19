@@ -22,8 +22,12 @@ export const getProject = async (params = {}) => {
 
 // get child project
 export const getChildProjects = async (params = {}) => {
-  const queryString = new URLSearchParams(params).toString();
-  const url = queryString ? `${GET_CHILD_PROJECTS}?${queryString}` : GET_CHILD_PROJECTS;
+  const hasWoredaId = 'prj_owner_woreda_id' in params;
+
+  const url = hasWoredaId
+    ? `${GET_PROJECT}?${new URLSearchParams(params).toString()}`
+    : `${GET_CHILD_PROJECTS}?${new URLSearchParams(params).toString()}`;
+
   try {
     const response = await post(url);
     return response;
@@ -31,6 +35,7 @@ export const getChildProjects = async (params = {}) => {
     throw error;
   }
 };
+
 
 export const getSearchProject = async (params = {}) => {
   const queryString = new URLSearchParams(params).toString();

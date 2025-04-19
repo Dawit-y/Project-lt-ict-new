@@ -7,6 +7,7 @@ import { Tree } from "react-arborist";
 import { FaFolder, FaFile, FaChevronRight, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { Card, CardBody, Input, Label, Col, Row, Button } from "reactstrap";
 import useResizeObserver from "use-resize-observer";
+import { v4 as uuidv4 } from 'uuid';
 
 const INDENT_STEP = 15
 const levelMap = {
@@ -77,7 +78,7 @@ const formatProjectNode = (project, context = {}) => {
 
   return {
     ...project,
-    id: `${woreda_id}_${crypto.randomUUID()}`,
+    id: `${woreda_id}_${uuidv4()}`,
     name: project.prj_name_or,
     add_name_or: project.prj_name_or,
     add_name_am: project.prj_name_am,
@@ -115,15 +116,15 @@ const AddressTree = ({ onNodeSelect }) => {
       const transformData = (regions) =>
         regions.map((region) => ({
           ...region,
-          id: region.id?.toString() || crypto.randomUUID(),
+          id: region.id?.toString() || uuidv4(),
           children: region.children
             ? region.children.map((zone) => ({
               ...zone,
-              id: zone.id?.toString() || crypto.randomUUID(),
+              id: zone.id?.toString() || uuidv4(),
               children: zone.children
                 ? zone.children.map((woreda) => ({
                   ...woreda,
-                  id: woreda.id?.toString() || crypto.randomUUID(),
+                  id: woreda.id?.toString() || uuidv4(),
                   children: [
                     ...woreda.children,
                     ...clusters.map((c) => ({
