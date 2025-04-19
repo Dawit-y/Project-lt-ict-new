@@ -79,6 +79,7 @@ const TableContainer = ({
   tableClass,
   theadClass,
   divClassName,
+  isLoading = false,
   isBordered,
   isPagination,
   isGlobalFilter,
@@ -285,6 +286,24 @@ const TableContainer = ({
         </Col>
       </Row>
       <div className="position-relative">
+        {isLoading && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000
+            }}
+          >
+            <Spinner color="primary" />
+          </div>
+        )}
         {infoIcon && (
           <div style={{ position: "absolute", top: "2px", right: "-18px", zIndex: 1 }}>
             <FaCircleInfo size={18} id="info" className="" />
@@ -345,7 +364,7 @@ const TableContainer = ({
                 {data.length === 0 ? (
                   <tr>
                     <td colSpan={columns.length + 2} className="text-center py-5">
-                      No data available
+                      {!isLoading && "No data availaible."}
                     </td>
                   </tr>
                 ) : (

@@ -5,7 +5,8 @@ import {
   updateProject,
   addProject,
   deleteProject,
-  getSearchProject
+  getSearchProject,
+  getChildProjects
 } from "../helpers/project_backend_helper";
 
 export const PROJECT_QUERY_KEY = ["project"];
@@ -24,13 +25,13 @@ export const useFetchProjects = (param = {}) => {
 
 export const useSearchOnlyProjects = (param = {}) => {
   return useQuery({
-    queryKey: [...PROJECT_QUERY_KEY, "fetch", param],
+    queryKey: [...PROJECT_QUERY_KEY, "list", param],
     queryFn: () => getSearchProject(param),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled:false
+    enabled: false
   });
 };
 
@@ -48,7 +49,7 @@ export const useFetchProject = (id, userId, isActive = false) => {
 };
 
 //search project
-export const useSearchProjects = (searchParams = {}) => {
+export const useSearchProjects = (searchParams = {}, isActive) => {
   return useQuery({
     queryKey: [...PROJECT_QUERY_KEY, "search", searchParams],
     queryFn: () => getProject(searchParams),
@@ -56,7 +57,20 @@ export const useSearchProjects = (searchParams = {}) => {
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: !!Object.keys(searchParams).length,
+    enabled: isActive,
+  });
+};
+
+//child project
+export const useFetchChildProjects = (searchParams = {}, isActive) => {
+  return useQuery({
+    queryKey: [...PROJECT_QUERY_KEY, "child", searchParams],
+    queryFn: () => getChildProjects(searchParams),
+    staleTime: 1000 * 60 * 4,
+    gcTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    enabled: isActive,
   });
 };
 

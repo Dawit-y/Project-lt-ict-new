@@ -2,31 +2,113 @@ import { useEffect, useState, memo, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useFetchAddressStructures } from "../../queries/address_structure_query";
 import { getUserSectorListTree } from "../../queries/usersector_query";
-import { useSearchProgramInfos, useFetchProgramInfos } from "../../queries/programinfo_query";
+import { useFetchProjects, useSearchProjects } from "../../queries/project_query"
 import { Tree } from "react-arborist";
 import { FaFolder, FaFile, FaChevronRight, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { Card, CardBody, Input, Label, Col, Row, Button } from "reactstrap";
 import useResizeObserver from "use-resize-observer";
 
-const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
+const INDENT_STEP = 15
+const levelMap = {
+  1: "program",
+  2: "program",
+  3: "sub_program",
+  4: "output",
+  5: "project"
+}
+const levelSymbolMap = {
+  "program": "P",
+  "outcome": "OC",
+  "sub_program": "SP",
+  "output": "O",
+  "project": "PR",
+  "region": "R",
+  "zone": "Z",
+  "woreda": "W",
+  "cluster": "C",
+  "sector": "S"
+}
+
+const updateNodeChildren = (treeData, parentId, level, newChildren) => {
+  return treeData.map((region) => {
+    if (region.id === parentId && region.level === level) {
+      const existingChildrenMap = new Map(region.children.map((child) => [child.id, child]));
+
+      const newChildrenIds = new Set(newChildren.map((child) => child.id));
+
+      const updatedChildren = newChildren.map((newChild) => {
+        if (existingChildrenMap.has(newChild.id)) {
+          return {
+            ...existingChildrenMap.get(newChild.id),
+            ...newChild,
+          };
+        }
+        return newChild;
+      });
+
+      for (const [id, child] of existingChildrenMap) {
+        if (!newChildrenIds.has(id)) {
+          continue;
+        }
+        if (!newChildren.some((newChild) => newChild.id === id)) {
+          updatedChildren.push(child);
+        }
+      }
+      return {
+        ...region,
+        children: updatedChildren,
+      };
+    }
+
+    if (region.children) {
+      region.children = updateNodeChildren(region.children, parentId, level, newChildren);
+    }
+
+    return region;
+  });
+};
+
+const formatProjectNode = (project, context = {}) => {
+  const {
+    woreda_id = '',
+    region_id = '',
+    zone_id = '',
+  } = context;
+
+  return {
+    ...project,
+    id: `${woreda_id}_${crypto.randomUUID()}`,
+    name: project.prj_name_or,
+    add_name_or: project.prj_name_or,
+    add_name_am: project.prj_name_am,
+    add_name_en: project.prj_name_en,
+    region_id,
+    zone_id,
+    woreda_id,
+    level: levelMap[project.prj_object_type_id] || "unknown",
+    children: (project.children || [])
+      .filter(child => child.prj_object_type_id !== 5)
+      .map(child => formatProjectNode(child, context)),
+  };
+};
+
+
+const AddressTree = ({ onNodeSelect }) => {
   const { t, i18n } = useTranslation();
   const treeRef = useRef()
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
   const { data, isLoading, isError } = useFetchAddressStructures(userId);
   const [treeData, setTreeData] = useState([]);
-  const [programParam, setProgramParam] = useState({})
+  const [projectParams, setProjectParams] = useState({})
+
   const [selectedSector, setSelectedSector] = useState({})
   const { ref, width, height } = useResizeObserver();
   const [searchTerm, setSearchTerm] = useState(null)
 
   const { data: clusters, isLoading: isClusterLoading, isError: isClusterError } = getUserSectorListTree(userId);
-  const { data: prData, isLoading: isProgramLoading, refetch: refetchProgram } =
-    useFetchProgramInfos(programParam, Object.keys(programParam).length > 0);
-
-  useEffect(() => {
-    setIsAddressLoading(isLoading || isClusterLoading || isProgramLoading);
-  }, [isLoading, isClusterLoading, isProgramLoading, setIsAddressLoading]);
+  const { data: projects, isLoading: isProjectsLoading, refetch: refetchProjects } =
+    useSearchProjects(projectParams, Object.keys(projectParams).length > 0);
 
   useEffect(() => {
     if (data && clusters) {
@@ -75,19 +157,18 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
             }))
             : [],
         }));
-
       setTreeData(transformData(data));
     }
   }, [data, clusters]);
 
-  // Handle fetching programs when sector node is clicked
+  // Handle fetching projects when sector node is clicked
   const handleSectorClick = async (node) => {
     const { id, region_id, zone_id, woreda_id, s_id } = node.data;
-    setProgramParam({
-      pri_owner_region_id: region_id,
-      pri_owner_zone_id: zone_id,
-      pri_owner_woreda_id: woreda_id,
-      pri_sector_id: s_id
+    setProjectParams({
+      prj_owner_region_id: region_id,
+      prj_owner_zone_id: zone_id,
+      prj_owner_woreda_id: woreda_id,
+      prj_sector_id: s_id
     })
     setSelectedSector(node.data)
   };
@@ -95,94 +176,34 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data: programData } = await refetchProgram();
-        const { id, region_id, zone_id, woreda_id, s_id } = selectedSector
-        const formatedProgram = programData?.data?.map((s) => ({
-          ...s,
-          id: `${woreda_id}_${s.pri_id}_program`,
-          name: s.pri_name_or,
-          add_name_or: s.pri_name_or,
-          add_name_am: s.pri_name_am,
-          add_name_en: s.pri_name_en,
-          region_id: region_id,
-          zone_id: zone_id,
-          woreda_id: woreda_id,
-          level: "program",
-          children: []
-        }))
+        const { data: projectsData } = await refetchProjects();
+        const { id, region_id, zone_id, woreda_id } = selectedSector;
 
-        // Update tree with new program data
-        const updatedTreeData = updateNodeChildren(treeData, id, 'sector', formatedProgram);
+        const formattedProjects = projectsData?.data?.map((p) =>
+          formatProjectNode(p, { region_id, zone_id, woreda_id })
+        );
+
+        const updatedTreeData = updateNodeChildren(treeData, id, 'sector', formattedProjects);
         setTreeData(updatedTreeData);
       } catch (error) {
         console.error("Error during sector refetch:", error);
       }
     };
 
-    if (Object.keys(programParam).length > 0) {
+    if (Object.keys(projectParams).length > 0) {
       fetchData();
     }
-  }, [programParam]);
+  }, [projectParams]);
 
   useEffect(() => {
-    if (!prData || !selectedSector.id) return;
+    if (!projects || !selectedSector.id) return;
 
     const { id, region_id, zone_id, woreda_id, s_id } = selectedSector;
-    const formattedProgram = prData?.data.map((s) => ({
-      ...s,
-      id: `${s.pri_id}_program`,
-      name: s.pri_name_or,
-      add_name_or: s.pri_name_or,
-      add_name_am: s.pri_name_am,
-      add_name_en: s.pri_name_en,
-      region_id: region_id,
-      zone_id: zone_id,
-      woreda_id: woreda_id,
-      level: "program",
-      children: [],
-    }));
-
-    setTreeData((prevTreeData) => updateNodeChildren(prevTreeData, id, 'sector', formattedProgram));
-  }, [prData]);
-
-  const updateNodeChildren = (treeData, parentId, level, newChildren) => {
-    return treeData.map((region) => {
-      if (region.id === parentId && region.level === level) {
-        const existingChildrenMap = new Map(region.children.map((child) => [child.id, child]));
-
-        const newChildrenIds = new Set(newChildren.map((child) => child.id));
-
-        const updatedChildren = newChildren.map((newChild) => {
-          if (existingChildrenMap.has(newChild.id)) {
-            return {
-              ...existingChildrenMap.get(newChild.id),
-              ...newChild,
-            };
-          }
-          return newChild;
-        });
-
-        for (const [id, child] of existingChildrenMap) {
-          if (!newChildrenIds.has(id)) {
-            continue;
-          }
-          if (!newChildren.some((newChild) => newChild.id === id)) {
-            updatedChildren.push(child);
-          }
-        }
-        return {
-          ...region,
-          children: updatedChildren,
-        };
-      }
-
-      if (region.children) {
-        region.children = updateNodeChildren(region.children, parentId, level, newChildren);
-      }
-
-      return region;
-    });
-  };
+    const formattedProjects = projects?.data?.map((p) =>
+      formatProjectNode(p, { region_id, zone_id, woreda_id })
+    );
+    setTreeData((prevTreeData) => updateNodeChildren(prevTreeData, id, 'sector', formattedProjects));
+  }, [projects]);
 
   const handleSearchTerm = (e) => {
     setSearchTerm(e.target.value)
@@ -262,7 +283,7 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
               ref={treeRef}
               width={Math.max(width || 450, 450)}
               height={height || 800}
-              indent={24}
+              indent={INDENT_STEP}
               rowHeight={36}
               overscanCount={1}
             >
@@ -283,9 +304,9 @@ const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   );
 };
 
-
 const Node = ({ node, style, dragHandle, handleSectorClick, onNodeSelect }) => {
   if (!node?.data) return null;
+  const indentSize = Number.parseFloat(`${style.paddingLeft || 0}`);
   const { i18n } = useTranslation();
   const lang = i18n.language
   const isLeafNode = node.isLeaf;
@@ -308,10 +329,33 @@ const Node = ({ node, style, dragHandle, handleSectorClick, onNodeSelect }) => {
       ref={dragHandle}
       className={`${node.isSelected ? "bg-info-subtle" : ""} py-1 rounded hover-zoom`}
     >
-      {!isLeafNode && node.data.level !== "program" && <span className="me-2 ps-2">{chevronIcon}</span>}
-      <span className={`${node.data.level === "program" ? "ms-4" : ""}  me-1 text-warning`}>{icon}</span>
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: -1,
+          display: "flex",
+          alignItems: "flex-start",
+          height: "100%",
+        }}
+      >
+        {new Array(indentSize / INDENT_STEP).fill(0).map((_, index) => (
+          <div
+            key={index}
+            style={{
+              height: "100%",
+              paddingLeft: "10px",
+              borderRight: "1px solid #ccc",
+              marginRight: "4px",
+            }}
+          ></div>
+        ))}
+      </div>
+      {!isLeafNode && node.data.level !== "output" && <span className="me-2 ps-2">{chevronIcon}</span>}
+      <span className={`${node.data.level === "output" ? "ms-4" : ""}  me-1 text-warning`}>{icon}</span>
       <span className="text-danger my-auto px-1" style={{ fontWeight: 900 }}>
-        {node.data.level.charAt(0).toUpperCase()}
+        {levelSymbolMap[node.data.level] || ""}
       </span>
       <span
         style={{
