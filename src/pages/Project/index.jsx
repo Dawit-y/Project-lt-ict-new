@@ -99,28 +99,36 @@ const ProjectModel = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [project, setProject] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null)
-  const [param, setParam] = useState({});
-  const isSectorLevel = selectedNode?.data?.level === "sector";
-  useEffect(() => {
-    if (!selectedNode?.data) return;
 
+  const isSectorLevel = selectedNode?.data?.level === "sector";
+  const param = useMemo(() => {
+    if (!selectedNode?.data) return {};
     if (isSectorLevel) {
-      setParam({
+      return {
         prj_owner_region_id: selectedNode.data.region_id,
         prj_owner_zone_id: selectedNode.data.zone_id,
         prj_owner_woreda_id: selectedNode.data.woreda_id,
         prj_sector_id: selectedNode.data.s_id,
-      });
+      };
     } else {
-      setParam({
+      return {
         prj_sector_id: selectedNode.data.prj_sector_id,
         parent_id: selectedNode.data.prj_id,
-      });
+      };
     }
   }, [selectedNode]);
   const isValidParam = Object.keys(param).length > 0 &&
     Object.values(param).every((value) => value !== null && value !== undefined);
-  const { data, isLoading, error, isError, refetch } = useFetchChildProjects(param, isValidParam);
+
+  const {
+    data,
+    isLoading,
+    error,
+    isError,
+    refetch,
+  } = isSectorLevel
+      ? useSearchProjects(param, isValidParam)
+      : useFetchChildProjects(param, isValidParam);
 
   const { data: projectCategoryData, isLoading: prCategoryLoading, isError: prCategoryIsError } = useFetchProjectCategorys();
   const {
