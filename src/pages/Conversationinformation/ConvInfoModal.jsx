@@ -110,7 +110,7 @@ const Conversation = (props) => {
   const comments = data?.data || [];
 
   if (isError) {
-    <FetchErrorHandler error={error} refetch={refetch} />;
+    return <FetchErrorHandler error={error} refetch={refetch} />;
   }
 
   return (

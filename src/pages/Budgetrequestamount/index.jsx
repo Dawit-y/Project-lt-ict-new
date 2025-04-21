@@ -673,7 +673,7 @@ bra_source_other_code: Yup.string().required(t('bra_source_other_code')),*/
   }, [handleBudgetRequestAmountClick, toggleViewModal, onClickDelete]);
 
   if (isError) {
-    <FetchErrorHandler error={error} refetch={refetch} />;
+    return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
     <React.Fragment>

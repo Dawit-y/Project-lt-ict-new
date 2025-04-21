@@ -493,7 +493,7 @@ const PagesModel = () => {
   }, [handlePagesClick, toggleViewModal, onClickDelete]);
 
   if (isError) {
-    <FetchErrorHandler error={error} refetch={refetch} />;
+    return <FetchErrorHandler error={error} refetch={refetch} />;
   }
 
   return (

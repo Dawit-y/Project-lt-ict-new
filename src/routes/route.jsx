@@ -117,9 +117,9 @@ const AuthMiddleware = ({ children }) => {
     return <Navigate to="/not_found" />;
   }
 
-  if (!allowedPaths.includes(currentPath) && !isProjectPath(currentPath)) {
-    return <Navigate to="/unauthorized" />;
-  }
+  // if (!allowedPaths.includes(currentPath) && !isProjectPath(currentPath)) {
+  //   return <Navigate to="/unauthorized" />;
+  // }
 
   return <React.Fragment>{children}</React.Fragment>;
 };

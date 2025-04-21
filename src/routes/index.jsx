@@ -177,23 +177,21 @@ const CitizenshipProjectList = lazy(() =>
 const CitizenshipProjectDetail = lazy(() =>
   import("../pages/Citizenshipproject/ProjectDetail/index.jsx")
 );
-//START PROCUMENET
 const ProcurementinformationList = lazy(() => import('../pages/Procurementinformation/ProcurementInformationList'));
 const ProcurementInformation = lazy(() => import('../pages/Procurementinformation/index'));
 const ProcurementMethod = lazy(() => import('../pages/Procurementmethod/index'));
 const ProcurementParticipant = lazy(() => import('../pages/Procurementparticipant/index'));
 const ProcurementStage = lazy(() => import('../pages/Procurementstage/index'));
-import MonitoringEvaluationType from '../pages/Monitoringevaluationtype/index';
-import ProjectMonitoringEvaluation from '../pages/Projectmonitoringevaluation/index';
-import MonitoringEvaluationTypeList from '../pages/Monitoringevaluationtype/MonitoringEvaluationTypeList';
-import ProjectMonitoringEvaluationList from '../pages/Projectmonitoringevaluation/ProjectMonitoringEvaluationList';
-//END PROCUREMENT
-const authProtectedRoutes = [
- // { path: '/monitoring_evaluation_type_list', component: <MonitoringEvaluationTypeList/> },
-  { path: '/monitoring_evaluation_list', component: <ProjectMonitoringEvaluation/> },
+const MonitoringEvaluationType = lazy(() => import('../pages/Monitoringevaluationtype/index'));
+const ProjectMonitoringEvaluation = lazy(() => import('../pages/Projectmonitoringevaluation/index'));
+const MonitoringEvaluationTypeList = lazy(() => import('../pages/Monitoringevaluationtype/MonitoringEvaluationTypeList'));
+const ProjectMonitoringEvaluationList = lazy(() => import('../pages/Projectmonitoringevaluation/ProjectMonitoringEvaluationList'));
 
-  { path: '/monitoring_evaluation_type', component: <MonitoringEvaluationType/> },
-  { path: '/project_monitoring_evaluation', component: <ProjectMonitoringEvaluation/> },
+const authProtectedRoutes = [
+  // { path: '/monitoring_evaluation_type_list', component: <MonitoringEvaluationTypeList/> },
+  { path: '/monitoring_evaluation_list', component: <ProjectMonitoringEvaluationList /> },
+  { path: '/monitoring_evaluation_type', component: <MonitoringEvaluationType /> },
+  { path: '/project_monitoring_evaluation', component: <ProjectMonitoringEvaluation /> },
   { path: "/cso_information", component: <CSOInformation /> },
   { path: "/project_cso", component: <CSOProject /> },
   { path: "/project_cso_list", component: <CSOProjectList /> },

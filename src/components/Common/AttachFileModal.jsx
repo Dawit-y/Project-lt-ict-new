@@ -353,7 +353,7 @@ const AttachFileModal = ({ isOpen, toggle, ownerTypeId, ownerId, projectId }) =>
   }, [handleProjectDocumentClick, onClickDelete]);
 
   if (isError) {
-    <FetchErrorHandler error={error} refetch={refetch} />
+    return <FetchErrorHandler error={error} refetch={refetch} />
   }
 
   return (

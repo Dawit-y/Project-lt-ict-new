@@ -8,21 +8,22 @@ import {
 
 const PROJECT_MONITORING_EVALUATION_QUERY_KEY = ["projectmonitoringevaluation"];
 // Fetch project_monitoring_evaluation
-export const useFetchProjectMonitoringEvaluations = () => {
+export const useFetchProjectMonitoringEvaluations = (param, isActive) => {
   return useQuery({
-    queryKey: PROJECT_MONITORING_EVALUATION_QUERY_KEY,
-    queryFn: () => getProjectMonitoringEvaluation(),
+    queryKey: [...PROJECT_MONITORING_EVALUATION_QUERY_KEY, "fetch", param],
+    queryFn: () => getProjectMonitoringEvaluation(param),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    enabled: isActive
   });
 };
 
 //search project_monitoring_evaluation
 export const useSearchProjectMonitoringEvaluations = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...PROJECT_MONITORING_EVALUATION_QUERY_KEY, searchParams],
+    queryKey: [...PROJECT_MONITORING_EVALUATION_QUERY_KEY, "search", searchParams],
     queryFn: () => getProjectMonitoringEvaluation(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,

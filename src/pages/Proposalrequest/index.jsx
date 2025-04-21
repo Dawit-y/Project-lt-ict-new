@@ -409,7 +409,7 @@ const ProposalRequestModel = (props) => {
   }, [handleProposalRequestClick, toggleViewModal, onClickDelete]);
 
   if (isError) {
-    <FetchErrorHandler error={error} refetch={refetch} />;
+    return <FetchErrorHandler error={error} refetch={refetch} />;
   }
 
   return (
@@ -500,7 +500,7 @@ const ProposalRequestModel = (props) => {
                   value={validation.values.prr_request_status_id || ""}
                   invalid={
                     validation.touched.prr_request_status_id &&
-                    validation.errors.prr_request_status_id
+                      validation.errors.prr_request_status_id
                       ? true
                       : false
                   }
@@ -513,7 +513,7 @@ const ProposalRequestModel = (props) => {
                   ))}
                 </Input>
                 {validation.touched.prr_request_status_id &&
-                validation.errors.prr_request_status_id ? (
+                  validation.errors.prr_request_status_id ? (
                   <FormFeedback type="invalid">
                     {validation.errors.prr_request_status_id}
                   </FormFeedback>
@@ -533,7 +533,7 @@ const ProposalRequestModel = (props) => {
                   value={validation.values.prr_request_category_id || ""}
                   invalid={
                     validation.touched.prr_request_category_id &&
-                    validation.errors.prr_request_category_id
+                      validation.errors.prr_request_category_id
                       ? true
                       : false
                   }
@@ -546,7 +546,7 @@ const ProposalRequestModel = (props) => {
                   ))}
                 </Input>
                 {validation.touched.prr_request_category_id &&
-                validation.errors.prr_request_category_id ? (
+                  validation.errors.prr_request_category_id ? (
                   <FormFeedback type="invalid">
                     {validation.errors.prr_request_category_id}
                   </FormFeedback>
@@ -596,13 +596,13 @@ const ProposalRequestModel = (props) => {
                   value={validation.values.prr_description || ""}
                   invalid={
                     validation.touched.prr_description &&
-                    validation.errors.prr_description
+                      validation.errors.prr_description
                       ? true
                       : false
                   }
                 />
                 {validation.touched.prr_description &&
-                validation.errors.prr_description ? (
+                  validation.errors.prr_description ? (
                   <FormFeedback type="invalid">
                     {validation.errors.prr_description}
                   </FormFeedback>
@@ -613,7 +613,7 @@ const ProposalRequestModel = (props) => {
               <Col>
                 <div className="text-end">
                   {addProposalRequest.isPending ||
-                  updateProposalRequest.isPending ? (
+                    updateProposalRequest.isPending ? (
                     <Button
                       color="success"
                       type="submit"
