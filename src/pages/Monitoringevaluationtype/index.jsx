@@ -499,7 +499,7 @@ const MonitoringEvaluationTypeModel = () => {
                 }}
               >
                 <Row>
-                  <Col className='col-md-6 mb-3'>
+                  <Col className='col-md-4 mb-3'>
                     <Label>{t('met_name_or')}</Label>
                     <Input
                       name='met_name_or'
@@ -523,7 +523,7 @@ const MonitoringEvaluationTypeModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
+                  <Col className='col-md-4 mb-3'>
                     <Label>{t('met_name_am')}</Label>
                     <Input
                       name='met_name_am'
@@ -547,7 +547,7 @@ const MonitoringEvaluationTypeModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
+                  <Col className='col-md-4 mb-3'>
                     <Label>{t('met_name_en')}</Label>
                     <Input
                       name='met_name_en'
@@ -571,7 +571,7 @@ const MonitoringEvaluationTypeModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
+                  <Col className='col-md-4 mb-3'>
                     <Label>{t('met_code')}</Label>
                     <Input
                       name='met_code'
@@ -595,7 +595,109 @@ const MonitoringEvaluationTypeModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-6 mb-3'>
+                  <Row>
+                    <Col className="col-md-4 mb-3">
+                      <div className="form-check mb-4">
+                        <Label className="me-1" for="met_status">
+                          {t("met_status")}
+                        </Label>
+                        <Input
+                          id="met_status"
+                          name="met_status"
+                          type="checkbox"
+                          placeholder={t("met_status")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          checked={validation.values.met_status}
+                          invalid={validation.touched.met_status && validation.errors.met_status}
+                        />
+                        {validation.touched.met_status && validation.errors.met_status && (
+                          <FormFeedback type="invalid">{validation.errors.met_status}</FormFeedback>
+                        )}
+                      </div>
+                    </Col>
+                    <Col className="col-md-4 mb-3">
+                      <div className="form-check mb-4">
+                        <Label className="me-1" for="met_gov_active">
+                          {t("met_gov_active")}
+                        </Label>
+                        <Input
+                          id="met_gov_active"
+                          name="met_gov_active"
+                          type="checkbox"
+                          placeholder={t("met_gov_active")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          checked={validation.values.met_gov_active}
+                          invalid={validation.touched.met_gov_active && validation.errors.met_gov_active}
+                        />
+                        {validation.touched.met_gov_active && validation.errors.met_gov_active && (
+                          <FormFeedback type="invalid">{validation.errors.met_gov_active}</FormFeedback>
+                        )}
+                      </div>
+                    </Col>
+                    <Col className="col-md-4 mb-3">
+                      <div className="form-check mb-4">
+                        <Label className="me-1" for="met_cso_active">
+                          {t("met_cso_active")}
+                        </Label>
+                        <Input
+                          id="met_cso_active"
+                          name="met_cso_active"
+                          type="checkbox"
+                          placeholder={t("met_cso_active")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          checked={validation.values.met_cso_active}
+                          invalid={validation.touched.met_cso_active && validation.errors.met_cso_active}
+                        />
+                        {validation.touched.met_cso_active && validation.errors.met_cso_active && (
+                          <FormFeedback type="invalid">{validation.errors.met_cso_active}</FormFeedback>
+                        )}
+                      </div>
+                    </Col>
+                    <Col className="col-md-4 mb-3">
+                      <div className="form-check mb-4">
+                        <Label className="me-1" for="met_monitoring_active">
+                          {t("met_monitoring_active")}
+                        </Label>
+                        <Input
+                          id="met_monitoring_active"
+                          name="met_monitoring_active"
+                          type="checkbox"
+                          placeholder={t("met_monitoring_active")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          checked={validation.values.met_monitoring_active}
+                          invalid={validation.touched.met_monitoring_active && validation.errors.met_monitoring_active}
+                        />
+                        {validation.touched.met_monitoring_active && validation.errors.met_monitoring_active && (
+                          <FormFeedback type="invalid">{validation.errors.met_monitoring_active}</FormFeedback>
+                        )}
+                      </div>
+                    </Col>
+                    <Col className="col-md-4 mb-3">
+                      <div className="form-check mb-4">
+                        <Label className="me-1" for="met_evaluation_active">
+                          {t("met_evaluation_active")}
+                        </Label>
+                        <Input
+                          id="met_evaluation_active"
+                          name="met_evaluation_active"
+                          type="checkbox"
+                          placeholder={t("met_evaluation_active")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          checked={validation.values.met_evaluation_active}
+                          invalid={validation.touched.met_evaluation_active && validation.errors.met_evaluation_active}
+                        />
+                        {validation.touched.met_evaluation_active && validation.errors.met_evaluation_active && (
+                          <FormFeedback type="invalid">{validation.errors.met_evaluation_active}</FormFeedback>
+                        )}
+                      </div>
+                    </Col>
+                  </Row>
+                  <Col className='col-md-12 mb-3'>
                     <Label>{t('met_description')}</Label>
                     <Input
                       name='met_description'
@@ -618,106 +720,6 @@ const MonitoringEvaluationTypeModel = () => {
                         {validation.errors.met_description}
                       </FormFeedback>
                     ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <div className="form-check mb-4">
-                      <Label className="me-1" for="met_status">
-                        {t("met_status")}
-                      </Label>
-                      <Input
-                        id="met_status"
-                        name="met_status"
-                        type="checkbox"
-                        placeholder={t("met_status")}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        checked={validation.values.met_status}
-                        invalid={validation.touched.met_status && validation.errors.met_status}
-                      />
-                      {validation.touched.met_status && validation.errors.met_status && (
-                        <FormFeedback type="invalid">{validation.errors.met_status}</FormFeedback>
-                      )}
-                    </div>
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <div className="form-check mb-4">
-                      <Label className="me-1" for="met_gov_active">
-                        {t("met_gov_active")}
-                      </Label>
-                      <Input
-                        id="met_gov_active"
-                        name="met_gov_active"
-                        type="checkbox"
-                        placeholder={t("met_gov_active")}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        checked={validation.values.met_gov_active}
-                        invalid={validation.touched.met_gov_active && validation.errors.met_gov_active}
-                      />
-                      {validation.touched.met_gov_active && validation.errors.met_gov_active && (
-                        <FormFeedback type="invalid">{validation.errors.met_gov_active}</FormFeedback>
-                      )}
-                    </div>
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <div className="form-check mb-4">
-                      <Label className="me-1" for="met_cso_active">
-                        {t("met_cso_active")}
-                      </Label>
-                      <Input
-                        id="met_cso_active"
-                        name="met_cso_active"
-                        type="checkbox"
-                        placeholder={t("met_cso_active")}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        checked={validation.values.met_cso_active}
-                        invalid={validation.touched.met_cso_active && validation.errors.met_cso_active}
-                      />
-                      {validation.touched.met_cso_active && validation.errors.met_cso_active && (
-                        <FormFeedback type="invalid">{validation.errors.met_cso_active}</FormFeedback>
-                      )}
-                    </div>
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <div className="form-check mb-4">
-                      <Label className="me-1" for="met_monitoring_active">
-                        {t("met_monitoring_active")}
-                      </Label>
-                      <Input
-                        id="met_monitoring_active"
-                        name="met_monitoring_active"
-                        type="checkbox"
-                        placeholder={t("met_monitoring_active")}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        checked={validation.values.met_monitoring_active}
-                        invalid={validation.touched.met_monitoring_active && validation.errors.met_monitoring_active}
-                      />
-                      {validation.touched.met_monitoring_active && validation.errors.met_monitoring_active && (
-                        <FormFeedback type="invalid">{validation.errors.met_monitoring_active}</FormFeedback>
-                      )}
-                    </div>
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <div className="form-check mb-4">
-                      <Label className="me-1" for="met_evaluation_active">
-                        {t("met_evaluation_active")}
-                      </Label>
-                      <Input
-                        id="met_evaluation_active"
-                        name="met_evaluation_active"
-                        type="checkbox"
-                        placeholder={t("met_evaluation_active")}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        checked={validation.values.met_evaluation_active}
-                        invalid={validation.touched.met_evaluation_active && validation.errors.met_evaluation_active}
-                      />
-                      {validation.touched.met_evaluation_active && validation.errors.met_evaluation_active && (
-                        <FormFeedback type="invalid">{validation.errors.met_evaluation_active}</FormFeedback>
-                      )}
-                    </div>
                   </Col>
                 </Row>
                 <Row>
