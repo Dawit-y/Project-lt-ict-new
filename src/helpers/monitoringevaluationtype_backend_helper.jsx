@@ -1,0 +1,30 @@
+import { post} from "./api_Lists";
+
+const apiUrl = import.meta.env.VITE_BASE_API_URL;
+const GET_MONITORING_EVALUATION_TYPE = "monitoring_evaluation_type/listgrid";
+const ADD_MONITORING_EVALUATION_TYPE = "monitoring_evaluation_type/insertgrid";
+const UPDATE_MONITORING_EVALUATION_TYPE = "monitoring_evaluation_type/updategrid";
+const DELETE_MONITORING_EVALUATION_TYPE = "monitoring_evaluation_type/deletegrid";
+// get monitoring_evaluation_type
+export const getMonitoringEvaluationType = async (params = {}) => {
+  const queryString = new URLSearchParams(params).toString();
+  const url = queryString ? `${GET_MONITORING_EVALUATION_TYPE}?${queryString}` : GET_MONITORING_EVALUATION_TYPE;
+   try {
+    const response = await post(url);
+    return response;
+  } catch (error) {
+    console.log("Error in fetching data:", error);
+  }
+};
+
+// add monitoring_evaluation_type
+export const addMonitoringEvaluationType = async (objectName) =>
+  post(`${apiUrl}` + ADD_MONITORING_EVALUATION_TYPE, objectName);
+
+// update monitoring_evaluation_type
+export const updateMonitoringEvaluationType = (objectName) =>
+post(`${apiUrl}`+UPDATE_MONITORING_EVALUATION_TYPE +`?met_id=${objectName?.met_id}`, objectName);
+
+// delete  monitoring_evaluation_type
+export const deleteMonitoringEvaluationType = (objectName) =>
+  post(`${apiUrl}`+DELETE_MONITORING_EVALUATION_TYPE+`?met_id=${objectName}`);

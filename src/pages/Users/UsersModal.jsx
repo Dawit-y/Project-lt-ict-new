@@ -280,9 +280,9 @@ const UsersModal = (props) => {
                     <tr>
                       <th scope="row"> {t("usr_woreda_id")}</th>
                       <td>
-                        {transaction.usr_woreda_id === 0
+                        {transaction.woreda_name === 0
                           ? "--"
-                          : transaction.usr_woreda_id}
+                          : transaction.woreda_name}
                       </td>
                     </tr>
 
