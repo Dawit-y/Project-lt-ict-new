@@ -33,7 +33,7 @@ const UserRole = lazy(() => import("../pages/Userrole/index"));
 const Roles = lazy(() => import("../pages/Roles/index"));
 const DateSetting = lazy(() => import("../pages/Datesetting/index"));
 const CSOInformation = lazy(() => import("../pages/Csoinfo/index"));
-const CSOProject = lazy(() => import("../pages/Csoproject/index2.jsx"));
+const CSOProject = lazy(() => import("../pages/Csoproject/index.jsx"));
 const CSOProjectList = lazy(() => import("../pages/Csoproject/ProjectList"));
 const CSOProjectDetail = lazy(() => import("../pages/Csoproject/ProjectDetail/index2.jsx"));
 const CSOBudgetRequestListModel = lazy(() =>

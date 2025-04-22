@@ -12,9 +12,8 @@ import { useFormik } from "formik";
 import { Spinner, Table } from "reactstrap";
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { useFetchProjects, useAddProject, useUpdateProject, useDeleteProject, useSearchProjects } from "../../queries/cso_project_query";
+import { useFetchProjects, useAddProject, useUpdateProject, useDeleteProject, useSearchProjects, useFindProjects } from "../../queries/cso_project_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
-import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import { useTranslation } from "react-i18next";
 import Spinners from "../../components/Common/Spinner";
 import {
@@ -40,74 +39,33 @@ import { createSelectOptions, createMultiSelectOptions } from "../../utils/commo
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import DatePicker from "../../components/Common/DatePicker";
-import ProjectTabs from "./ProjectTabs2";
+import ProjectTabs from "./ProjectTabs";
 
 const ProjectModel = () => {
-  document.title = "Projects ";
-
-  const [projectMetaData, setProjectMetaData] = useState([]);
-  const [showCanvas, setShowCanvas] = useState(false);
+  document.title = "CSO Projects";
   const { t, i18n } = useTranslation();
   const lang = i18n.language
   const [modal, setModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [project, setProject] = useState(null);
-  const [isAddressLoading, setIsAddressLoading] = useState(false);
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searchError, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
+  const [currentActiveTab, setCurrentActiveTab] = useState({
+    tab: 1,
+    selectedId: null
+  });
 
-  const [projectParams, setProjectParams] = useState({});
-  const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
-  const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
-  const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
-  const [include, setInclude] = useState(0);
-
-  const [params, setParams] = useState({});
-  const [searchParams, setSearchParams] = useState({});
-  const {
-    data: searchData,
-    error: srError,
-    isError: isSrError,
-    refetch: search,
-  } = useSearchProjects(searchParams);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsSearchLoading(true);
-        await search();
-        setShowSearchResult(true);
-      } catch (error) {
-        console.error("Error during search:", error);
-      } finally {
-        setIsSearchLoading(false);
-      }
-    };
-    if (Object.keys(searchParams).length > 0) {
-      fetchData();
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    setProjectParams({
-      ...(prjLocationRegionId && {
-        prj_location_region_id: prjLocationRegionId,
-      }),
-      ...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
-      ...(prjLocationWoredaId && {
-        prj_location_woreda_id: prjLocationWoredaId,
-      }),
-      ...(include === 1 && { include: include }),
-    });
-  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
-
+  const handleTabChange = (newTab, selectedId = null) => {
+    console.log("Active tab changed to:", newTab, "Selected ID:", selectedId);
+    setCurrentActiveTab(prev => ({
+      ...prev,
+      tab: newTab,
+      selectedId: selectedId !== null ? selectedId : prev.selectedId
+    }));
+  };
 
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjects(userId);
+    useFindProjects({ object_type_id: 1 }, true, userId);
   const { data: projectCategoryData } = useFetchProjectCategorys();
   const {
     pct_name_en: projectCategoryOptionsEn,
@@ -117,13 +75,6 @@ const ProjectModel = () => {
     projectCategoryData?.data || [],
     "pct_id",
     ["pct_name_en", "pct_name_or", "pct_name_am"]
-  );
-
-  const { data: sectorInformationData } = useFetchSectorInformations();
-  const sectorInformationOptions = createSelectOptions(
-    sectorInformationData?.data || [],
-    "sci_id",
-    "sci_name_en"
   );
 
   const addProject = useAddProject();
@@ -175,16 +126,6 @@ const ProjectModel = () => {
       setDeleteModal(false);
     }
   };
-  const [allowedTabs, setAllowedTabs] = useState(data?.allowedTabs || []);
-  const allowedLinks = data?.allowedLinks || []
-
-  useEffect(() => {
-    if (projectMetaData?.prj_project_status_id <= 4) {
-      setAllowedTabs([54, 37]);
-    } else {
-      setAllowedTabs(data?.allowedTabs || []);
-    }
-  }, [projectMetaData?.prj_project_status_id, data]);
 
   // validation
   const validation = useFormik({
@@ -211,10 +152,10 @@ const ProjectModel = () => {
       prj_location_kebele_id: (project && project.prj_location_kebele_id) || "",
       prj_location_description:
         (project && project.prj_location_description) || "",
-      //prj_owner_region_id: (project && project.prj_owner_region_id) || "",
-      /*prj_owner_zone_id: (project && project.prj_owner_zone_id) || "",
+      prj_owner_region_id: (project && project.prj_owner_region_id) || "",
+      prj_owner_zone_id: (project && project.prj_owner_zone_id) || "",
       prj_owner_woreda_id: (project && project.prj_owner_woreda_id) || "",
-      prj_owner_kebele_id: (project && project.prj_owner_kebele_id) || "",*/
+      prj_owner_kebele_id: (project && project.prj_owner_kebele_id) || "",
       prj_owner_description: (project && project.prj_owner_description) || "",
       prj_start_date_et: (project && project.prj_start_date_et) || "",
       prj_start_date_gc: (project && project.prj_start_date_gc) || "",
@@ -315,9 +256,9 @@ const ProjectModel = () => {
           prj_location_woreda_id: Number(values.prj_location_woreda_id),
           prj_location_kebele_id: values.prj_location_kebele_id,
           prj_location_description: values.prj_location_description,
-          prj_owner_region_id: Number(values.pri_owner_region_id),
-          prj_owner_zone_id: Number(values.pri_owner_zone_id),
-          prj_owner_woreda_id: Number(values.pri_owner_woreda_id),
+          prj_owner_region_id: Number(values.prj_owner_region_id),
+          prj_owner_zone_id: Number(values.prj_owner_zone_id),
+          prj_owner_woreda_id: Number(values.prj_owner_woreda_id),
           prj_owner_kebele_id: values.prj_owner_kebele_id,
           prj_owner_description: values.prj_owner_description,
           prj_start_date_et: values.prj_start_date_et,
@@ -336,7 +277,9 @@ const ProjectModel = () => {
           prj_urban_ben_number: values.prj_urban_ben_number,
           prj_rural_ben_number: values.prj_rural_ben_number,
           //prj_department_id: Number(values.prj_department_id),
-          prj_program_id: Number(values.pri_id),
+          prj_program_id: 1,
+          parent_id: currentActiveTab?.tab === 1 ? 1 : currentActiveTab?.selectedId,
+          object_type_id: currentActiveTab?.tab === 1 ? 1 : 5,
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -359,9 +302,9 @@ const ProjectModel = () => {
           prj_location_woreda_id: Number(values.prj_location_woreda_id),
           prj_location_kebele_id: values.prj_location_kebele_id,
           prj_location_description: values.prj_location_description,
-          prj_owner_region_id: Number(values.pri_owner_region_id),
-          prj_owner_zone_id: Number(values.pri_owner_zone_id),
-          prj_owner_woreda_id: Number(values.pri_owner_woreda_id),
+          prj_owner_region_id: Number(values.prj_owner_region_id),
+          prj_owner_zone_id: Number(values.prj_owner_zone_id),
+          prj_owner_woreda_id: Number(values.prj_owner_woreda_id),
           prj_owner_kebele_id: values.prj_owner_kebele_id,
           prj_owner_description: values.prj_owner_description,
           prj_start_date_et: values.prj_start_date_et,
@@ -380,13 +323,16 @@ const ProjectModel = () => {
           prj_urban_ben_number: values.prj_urban_ben_number,
           prj_rural_ben_number: values.prj_rural_ben_number,
           //prj_department_id: Number(values.prj_department_id),
-          prj_program_id: Number(values.pri_id)
+          prj_program_id: 1,
+          parent_id: currentActiveTab?.tab === 1 ? 1 : currentActiveTab?.selectedId,
+          object_type_id: currentActiveTab?.tab === 1 ? 1 : 5,
         };
         // save new Project
         handleAddProject(newProject);
       }
     },
   });
+
   useEffect(() => {
     setProject(data);
   }, [data]);
@@ -397,14 +343,6 @@ const ProjectModel = () => {
       setIsEdit(false);
     }
   }, [data]);
-
-  useEffect(() => {
-    if (projectMetaData?.prj_project_status_id <= 4) {
-      setAllowedTabs([54, 37]);
-    } else {
-      setAllowedTabs(searchData?.allowedTabs || []);
-    }
-  }, [projectMetaData?.prj_project_status_id, searchData]);
 
   const toggle = () => {
     if (modal) {
@@ -463,36 +401,6 @@ const ProjectModel = () => {
     toggle();
   };
 
-  const handleNodeSelect = useCallback(
-    (node) => {
-      if (node.level === "region") {
-        setPrjLocationRegionId(node.id);
-        setPrjLocationZoneId(null);
-        setPrjLocationWoredaId(null);
-      } else if (node.level === "zone") {
-        setPrjLocationZoneId(node.id);
-        setPrjLocationWoredaId(null);
-      } else if (node.level === "woreda") {
-        setPrjLocationWoredaId(node.id);
-      }
-
-      if (showSearchResult) {
-        setShowSearchResult(false);
-      }
-    },
-    [
-      setPrjLocationRegionId,
-      setPrjLocationZoneId,
-      setPrjLocationWoredaId,
-      showSearchResult,
-      setShowSearchResult,
-    ]
-  );
-  const handleClick = (data) => {
-    setShowCanvas(!showCanvas);
-    setProjectMetaData(data);
-  };
-
   const handleProjectsClicks = () => {
     setIsEdit(false);
     setProject("");
@@ -506,23 +414,12 @@ const ProjectModel = () => {
     setDeleteModal(true);
   };
 
-  const searchConfig = useMemo(
-    () => ({
-      params,
-      projectParams,
-      showSearchResult,
-    }),
-    [params, projectParams, showSearchResult]
-  );
-
-  const handleSearch = useCallback((searchResults) => {
-    setSearchResults(searchResults);
-    setShowSearchResult(true);
-  }, []);
+  const activeTabName = currentActiveTab?.tab === 1 ? "program" : currentActiveTab?.tab === 2 ? "Activity" : "program"
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -531,448 +428,437 @@ const ProjectModel = () => {
           <div className="w-100 d-flex gap-2">
             <>
               <div className="w-100">
-                <AdvancedSearch
-                  searchHook={useSearchProjects}
-                  textSearchKeys={["prj_name", "prj_code"]}
-                  checkboxSearchKeys={[]}
-                  additionalParams={searchConfig.projectParams}
-                  setAdditionalParams={setProjectParams}
-                  setSearchResults={handleSearch}
-                  setShowSearchResult={setShowSearchResult}
-                  params={searchConfig.params}
-                  setParams={setParams}
-                  searchParams={searchParams}
-                  setSearchParams={setSearchParams}
-                />
                 {isLoading ?
                   <Spinners /> :
                   <ProjectTabs
-                    projects={data}
+                    program={data}
                     handleAddClick={handleProjectsClicks}
                     handleEditClick={handleProjectClick}
-                  />}
-                <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-                  <ModalHeader toggle={toggle} tag="h4">
-                    {!!isEdit
-                      ? t("edit") + " " + t("project")
-                      : t("add") + " " + t("project")}
-                  </ModalHeader>
-                  <ModalBody>
-                    <Form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        validation.handleSubmit();
-                        return false;
-                      }}
-                    >
-                      <Row>
-                        <Col className="col-md-12 mb-3">
-                          <CascadingDropdowns
-                            validation={validation}
-                            dropdown1name="prj_location_region_id"
-                            dropdown2name="prj_location_zone_id"
-                            dropdown3name="prj_location_woreda_id"
-                            isEdit={isEdit}
-                          />
-                        </Col>
-                        <Col className="col-md-12 mb-3">
-                          <Label>{t("prj_location_description")}</Label>
-                          <Input
-                            name="prj_location_description"
-                            type="textarea"
-                            placeholder={t("prj_location_description")}
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={
-                              validation.values.prj_location_description || ""
-                            }
-                            invalid={
-                              validation.touched.prj_location_description &&
-                                validation.errors.prj_location_description
-                                ? true
-                                : false
-                            }
-                            maxLength={200}
-                          />
-                          {validation.touched.prj_location_description &&
-                            validation.errors.prj_location_description ? (
-                            <FormFeedback type="invalid">
-                              {validation.errors.prj_location_description}
-                            </FormFeedback>
-                          ) : null}
-                        </Col>
-                        <Col className="col-md-4 mb-3">
-                          <Label>
-                            {t("prj_name")}
-                            <span className="text-danger">*</span>
-                          </Label>
-                          <Input
-                            name="prj_name"
-                            type="text"
-                            placeholder={t("prj_name")}
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.prj_name || ""}
-                            invalid={
-                              validation.touched.prj_name &&
-                                validation.errors.prj_name
-                                ? true
-                                : false
-                            }
-                            maxLength={200}
-                          />
-                          {validation.touched.prj_name &&
-                            validation.errors.prj_name ? (
-                            <FormFeedback type="invalid">
-                              {validation.errors.prj_name}
-                            </FormFeedback>
-                          ) : null}
-                        </Col>
-                        <Col className="col-md-4 mb-3">
-                          <Label>
-                            {t("prj_name_am")}
-                            <span className="text-danger">*</span>
-                          </Label>
-                          <Input
-                            name="prj_name_am"
-                            type="text"
-                            placeholder={t("prj_name_am")}
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.prj_name_am || ""}
-                            invalid={
-                              validation.touched.prj_name_am &&
-                                validation.errors.prj_name_am
-                                ? true
-                                : false
-                            }
-                            maxLength={200}
-                          />
-                          {validation.touched.prj_name_am &&
-                            validation.errors.prj_name_am ? (
-                            <FormFeedback type="invalid">
-                              {validation.errors.prj_name_am}
-                            </FormFeedback>
-                          ) : null}
-                        </Col>
-                        <Col className="col-md-4 mb-3">
-                          <Label>
-                            {t("prj_name_en")}
-                            <span className="text-danger">*</span>
-                          </Label>
-                          <Input
-                            name="prj_name_en"
-                            type="text"
-                            placeholder={t("prj_name_en")}
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.prj_name_en || ""}
-                            invalid={
-                              validation.touched.prj_name_en &&
-                                validation.errors.prj_name_en
-                                ? true
-                                : false
-                            }
-                            maxLength={200}
-                          />
-                          {validation.touched.prj_name_en &&
-                            validation.errors.prj_name_en ? (
-                            <FormFeedback type="invalid">
-                              {validation.errors.prj_name_en}
-                            </FormFeedback>
-                          ) : null}
-                        </Col>
-                        <Col className="col-md-4 mb-3">
-                          <Label>
-                            {t("prj_code")}
-                            <span className="text-danger">*</span>
-                          </Label>
-                          <Input
-                            name="prj_code"
-                            type="text"
-                            placeholder={t("prj_code")}
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.prj_code || ""}
-                            invalid={
-                              validation.touched.prj_code &&
-                                validation.errors.prj_code
-                                ? true
-                                : false
-                            }
-                            maxLength={20}
-                          />
-                          {validation.touched.prj_code &&
-                            validation.errors.prj_code ? (
-                            <FormFeedback type="invalid">
-                              {validation.errors.prj_code}
-                            </FormFeedback>
-                          ) : null}
-                        </Col>
-                        <Col className="col-md-4 mb-3">
-                          <Label>
-                            {t("prj_project_category_id")}
-                            <span className="text-danger">*</span>
-                          </Label>
-                          <Input
-                            name="prj_project_category_id"
-                            type="select"
-                            className="form-select"
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={
-                              validation.values.prj_project_category_id || ""
-                            }
-                            invalid={
-                              validation.touched.prj_project_category_id &&
-                                validation.errors.prj_project_category_id
-                                ? true
-                                : false
-                            }
-                          >
-                            <option value={null}>
-                              {t("prj_select_category")}
-                            </option>
-                            {lang === "en"
-                              ? projectCategoryOptionsEn.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                  {t(`${option.label}`)}
-                                </option>
-                              ))
-                              : lang === "am"
-                                ? projectCategoryOptionsAm.map((option) => (
-                                  <option key={option.value} value={option.value}>
-                                    {t(`${option.label}`)}
-                                  </option>
-                                ))
-                                : projectCategoryOptionsOr.map((option) => (
-                                  <option key={option.value} value={option.value}>
-                                    {t(`${option.label}`)}
-                                  </option>
-                                ))}
-                          </Input>
-                          {validation.touched.prj_project_category_id &&
-                            validation.errors.prj_project_category_id ? (
-                            <FormFeedback type="invalid">
-                              {validation.errors.prj_project_category_id}
-                            </FormFeedback>
-                          ) : null}
-                        </Col>
-                        <Col className="col-md-4 mb-3">
-                          <Label>
-                            {t("prj_total_estimate_budget")}
-                            <span className="text-danger">*</span>
-                          </Label>
-                          <Input
-                            minLength="3"
-                            maxLength="12"
-                            min="1"
-                            step=".01"
-                            name="prj_total_estimate_budget"
-                            type="number"
-                            placeholder={t("prj_total_estimate_budget")}
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={
-                              validation.values.prj_total_estimate_budget || ""
-                            }
-                            invalid={
-                              validation.touched.prj_total_estimate_budget &&
-                                validation.errors.prj_total_estimate_budget
-                                ? true
-                                : false
-                            }
-                          />
-                          {validation.touched.prj_total_estimate_budget &&
-                            validation.errors.prj_total_estimate_budget ? (
-                            <FormFeedback type="invalid">
-                              {validation.errors.prj_total_estimate_budget}
-                            </FormFeedback>
-                          ) : null}
-                        </Col>
-                        <Col className="col-md-4 mb-3">
-                          <Label>{t("prj_total_actual_budget")}</Label>
-                          <Input
-                            name="prj_total_actual_budget"
-                            type="number"
-                            step=".01"
-                            placeholder={t("prj_total_actual_budget")}
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={
-                              validation.values.prj_total_actual_budget || ""
-                            }
-                            invalid={
-                              validation.touched.prj_total_actual_budget &&
-                                validation.errors.prj_total_actual_budget
-                                ? true
-                                : false
-                            }
-                            maxLength={20}
-                          />
-                          {validation.touched.prj_total_actual_budget &&
-                            validation.errors.prj_total_actual_budget ? (
-                            <FormFeedback type="invalid">
-                              {validation.errors.prj_total_actual_budget}
-                            </FormFeedback>
-                          ) : null}
-                        </Col>
-                        <Col className="col-md-4 mb-3">
-                          <DatePicker
-                            isRequired={true}
-                            componentId={"prj_start_date_plan_gc"}
-                            validation={validation}
-                          />
-                        </Col>
-                        <Col className="col-md-4 mb-3">
-                          <DatePicker
-                            isRequired={true}
-                            componentId={"prj_end_date_plan_gc"}
-                            validation={validation}
-                            minDate={validation.values.prj_start_date_plan_gc} />
-                        </Col>
-                        <Col className="col-md-4 mb-3">
-                          <Label>{t("prj_urban_ben_number")}</Label>
-                          <Input
-                            name="prj_urban_ben_number"
-                            type="number"
-                            placeholder={t("prj_urban_ben_number")}
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.prj_urban_ben_number || ""}
-                            invalid={
-                              validation.touched.prj_urban_ben_number &&
-                                validation.errors.prj_urban_ben_number
-                                ? true
-                                : false
-                            }
-                          />
-                          {validation.touched.prj_urban_ben_number &&
-                            validation.errors.prj_urban_ben_number ? (
-                            <FormFeedback type="invalid">
-                              {validation.errors.prj_urban_ben_number}
-                            </FormFeedback>
-                          ) : null}
-                        </Col>
-                        <Col className="col-md-4 mb-3">
-                          <Label>{t("prj_rural_ben_number")}</Label>
-                          <Input
-                            name="prj_rural_ben_number"
-                            type="number"
-                            placeholder={t("prj_rural_ben_number")}
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.prj_rural_ben_number || ""}
-                            invalid={
-                              validation.touched.prj_rural_ben_number &&
-                                validation.errors.prj_rural_ben_number
-                                ? true
-                                : false
-                            }
-                          />
-                          {validation.touched.prj_rural_ben_number &&
-                            validation.errors.prj_rural_ben_number ? (
-                            <FormFeedback type="invalid">
-                              {validation.errors.prj_rural_ben_number}
-                            </FormFeedback>
-                          ) : null}
-                        </Col>
-                        <Col className="col-md-6 mb-3">
-                          <Label>{t("prj_outcome")}</Label>
-                          <Input
-                            name="prj_outcome"
-                            type="textarea"
-                            rows={3}
-                            placeholder={t("prj_outcome")}
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.prj_outcome || ""}
-                            invalid={
-                              validation.touched.prj_outcome &&
-                                validation.errors.prj_outcome
-                                ? true
-                                : false
-                            }
-                            maxLength={200}
-                          />
-                          {validation.touched.prj_outcome &&
-                            validation.errors.prj_outcome ? (
-                            <FormFeedback type="invalid">
-                              {validation.errors.prj_outcome}
-                            </FormFeedback>
-                          ) : null}
-                        </Col>
-                        <Col className="col-md-6 mb-3">
-                          <Label>{t("prj_remark")}</Label>
-                          <Input
-                            name="prj_remark"
-                            type="textarea"
-                            rows={3}
-                            placeholder={t("prj_remark")}
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.prj_remark || ""}
-                            invalid={
-                              validation.touched.prj_remark &&
-                                validation.errors.prj_remark
-                                ? true
-                                : false
-                            }
-                            maxLength={200}
-                          />
-                          {validation.touched.prj_remark &&
-                            validation.errors.prj_remark ? (
-                            <FormFeedback type="invalid">
-                              {validation.errors.prj_remark}
-                            </FormFeedback>
-                          ) : null}
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col>
-                          <div className="text-end">
-                            {addProject.isPending || updateProject.isPending ? (
-                              <Button
-                                color="success"
-                                type="submit"
-                                className="save-user"
-                                disabled={
-                                  addProject.isPending ||
-                                  updateProject.isPending ||
-                                  !validation.dirty
-                                }
-                              >
-                                <Spinner
-                                  size={"sm"}
-                                  color="light"
-                                  className="me-2"
-                                />
-                                {t("Save")}
-                              </Button>
-                            ) : (
-                              <Button
-                                color="success"
-                                type="submit"
-                                className="save-user"
-                                disabled={
-                                  addProject.isPending ||
-                                  updateProject.isPending ||
-                                  !validation.dirty
-                                }
-                              >
-                                {t("Save")}
-                              </Button>
-                            )}
-                          </div>
-                        </Col>
-                      </Row>
-                    </Form>
-                  </ModalBody>
-                </Modal>
+                    handleTabChange={handleTabChange}
+                  />
+                }
               </div>
             </>
           </div>
         </div>
+        <Modal isOpen={modal} toggle={toggle} className="modal-xl">
+          <ModalHeader toggle={toggle} tag="h4">
+            {!!isEdit
+              ? t("edit") + " " + t(activeTabName)
+              : t("add") + " " + t(activeTabName)}
+          </ModalHeader>
+          <ModalBody>
+            <Form
+              onSubmit={(e) => {
+                e.preventDefault();
+                validation.handleSubmit();
+                return false;
+              }}
+            >
+              <Row>
+                <Col className="col-md-12 mb-3">
+                  <CascadingDropdowns
+                    validation={validation}
+                    dropdown1name="prj_location_region_id"
+                    dropdown2name="prj_location_zone_id"
+                    dropdown3name="prj_location_woreda_id"
+                    isEdit={isEdit}
+                  />
+                </Col>
+                <Col className="col-md-12 mb-3">
+                  <Label>{t("prj_location_description")}</Label>
+                  <Input
+                    name="prj_location_description"
+                    type="textarea"
+                    placeholder={t("prj_location_description")}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={
+                      validation.values.prj_location_description || ""
+                    }
+                    invalid={
+                      validation.touched.prj_location_description &&
+                        validation.errors.prj_location_description
+                        ? true
+                        : false
+                    }
+                    maxLength={200}
+                  />
+                  {validation.touched.prj_location_description &&
+                    validation.errors.prj_location_description ? (
+                    <FormFeedback type="invalid">
+                      {validation.errors.prj_location_description}
+                    </FormFeedback>
+                  ) : null}
+                </Col>
+                <Col className="col-md-4 mb-3">
+                  <Label>
+                    {t("prj_name")}
+                    <span className="text-danger">*</span>
+                  </Label>
+                  <Input
+                    name="prj_name"
+                    type="text"
+                    placeholder={t("prj_name")}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.prj_name || ""}
+                    invalid={
+                      validation.touched.prj_name &&
+                        validation.errors.prj_name
+                        ? true
+                        : false
+                    }
+                    maxLength={200}
+                  />
+                  {validation.touched.prj_name &&
+                    validation.errors.prj_name ? (
+                    <FormFeedback type="invalid">
+                      {validation.errors.prj_name}
+                    </FormFeedback>
+                  ) : null}
+                </Col>
+                <Col className="col-md-4 mb-3">
+                  <Label>
+                    {t("prj_name_am")}
+                    <span className="text-danger">*</span>
+                  </Label>
+                  <Input
+                    name="prj_name_am"
+                    type="text"
+                    placeholder={t("prj_name_am")}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.prj_name_am || ""}
+                    invalid={
+                      validation.touched.prj_name_am &&
+                        validation.errors.prj_name_am
+                        ? true
+                        : false
+                    }
+                    maxLength={200}
+                  />
+                  {validation.touched.prj_name_am &&
+                    validation.errors.prj_name_am ? (
+                    <FormFeedback type="invalid">
+                      {validation.errors.prj_name_am}
+                    </FormFeedback>
+                  ) : null}
+                </Col>
+                <Col className="col-md-4 mb-3">
+                  <Label>
+                    {t("prj_name_en")}
+                    <span className="text-danger">*</span>
+                  </Label>
+                  <Input
+                    name="prj_name_en"
+                    type="text"
+                    placeholder={t("prj_name_en")}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.prj_name_en || ""}
+                    invalid={
+                      validation.touched.prj_name_en &&
+                        validation.errors.prj_name_en
+                        ? true
+                        : false
+                    }
+                    maxLength={200}
+                  />
+                  {validation.touched.prj_name_en &&
+                    validation.errors.prj_name_en ? (
+                    <FormFeedback type="invalid">
+                      {validation.errors.prj_name_en}
+                    </FormFeedback>
+                  ) : null}
+                </Col>
+                <Col className="col-md-4 mb-3">
+                  <Label>
+                    {t("prj_code")}
+                    <span className="text-danger">*</span>
+                  </Label>
+                  <Input
+                    name="prj_code"
+                    type="text"
+                    placeholder={t("prj_code")}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.prj_code || ""}
+                    invalid={
+                      validation.touched.prj_code &&
+                        validation.errors.prj_code
+                        ? true
+                        : false
+                    }
+                    maxLength={20}
+                  />
+                  {validation.touched.prj_code &&
+                    validation.errors.prj_code ? (
+                    <FormFeedback type="invalid">
+                      {validation.errors.prj_code}
+                    </FormFeedback>
+                  ) : null}
+                </Col>
+                <Col className="col-md-4 mb-3">
+                  <Label>
+                    {t("prj_project_category_id")}
+                    <span className="text-danger">*</span>
+                  </Label>
+                  <Input
+                    name="prj_project_category_id"
+                    type="select"
+                    className="form-select"
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={
+                      validation.values.prj_project_category_id || ""
+                    }
+                    invalid={
+                      validation.touched.prj_project_category_id &&
+                        validation.errors.prj_project_category_id
+                        ? true
+                        : false
+                    }
+                  >
+                    <option value={null}>
+                      {t("prj_select_category")}
+                    </option>
+                    {lang === "en"
+                      ? projectCategoryOptionsEn.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {t(`${option.label}`)}
+                        </option>
+                      ))
+                      : lang === "am"
+                        ? projectCategoryOptionsAm.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {t(`${option.label}`)}
+                          </option>
+                        ))
+                        : projectCategoryOptionsOr.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {t(`${option.label}`)}
+                          </option>
+                        ))}
+                  </Input>
+                  {validation.touched.prj_project_category_id &&
+                    validation.errors.prj_project_category_id ? (
+                    <FormFeedback type="invalid">
+                      {validation.errors.prj_project_category_id}
+                    </FormFeedback>
+                  ) : null}
+                </Col>
+                <Col className="col-md-4 mb-3">
+                  <Label>
+                    {t("prj_total_estimate_budget")}
+                    <span className="text-danger">*</span>
+                  </Label>
+                  <Input
+                    minLength="3"
+                    maxLength="12"
+                    min="1"
+                    step=".01"
+                    name="prj_total_estimate_budget"
+                    type="number"
+                    placeholder={t("prj_total_estimate_budget")}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={
+                      validation.values.prj_total_estimate_budget || ""
+                    }
+                    invalid={
+                      validation.touched.prj_total_estimate_budget &&
+                        validation.errors.prj_total_estimate_budget
+                        ? true
+                        : false
+                    }
+                  />
+                  {validation.touched.prj_total_estimate_budget &&
+                    validation.errors.prj_total_estimate_budget ? (
+                    <FormFeedback type="invalid">
+                      {validation.errors.prj_total_estimate_budget}
+                    </FormFeedback>
+                  ) : null}
+                </Col>
+                <Col className="col-md-4 mb-3">
+                  <Label>{t("prj_total_actual_budget")}</Label>
+                  <Input
+                    name="prj_total_actual_budget"
+                    type="number"
+                    step=".01"
+                    placeholder={t("prj_total_actual_budget")}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={
+                      validation.values.prj_total_actual_budget || ""
+                    }
+                    invalid={
+                      validation.touched.prj_total_actual_budget &&
+                        validation.errors.prj_total_actual_budget
+                        ? true
+                        : false
+                    }
+                    maxLength={20}
+                  />
+                  {validation.touched.prj_total_actual_budget &&
+                    validation.errors.prj_total_actual_budget ? (
+                    <FormFeedback type="invalid">
+                      {validation.errors.prj_total_actual_budget}
+                    </FormFeedback>
+                  ) : null}
+                </Col>
+                <Col className="col-md-4 mb-3">
+                  <DatePicker
+                    isRequired={true}
+                    componentId={"prj_start_date_plan_gc"}
+                    validation={validation}
+                  />
+                </Col>
+                <Col className="col-md-4 mb-3">
+                  <DatePicker
+                    isRequired={true}
+                    componentId={"prj_end_date_plan_gc"}
+                    validation={validation}
+                    minDate={validation.values.prj_start_date_plan_gc} />
+                </Col>
+                <Col className="col-md-4 mb-3">
+                  <Label>{t("prj_urban_ben_number")}</Label>
+                  <Input
+                    name="prj_urban_ben_number"
+                    type="number"
+                    placeholder={t("prj_urban_ben_number")}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.prj_urban_ben_number || ""}
+                    invalid={
+                      validation.touched.prj_urban_ben_number &&
+                        validation.errors.prj_urban_ben_number
+                        ? true
+                        : false
+                    }
+                  />
+                  {validation.touched.prj_urban_ben_number &&
+                    validation.errors.prj_urban_ben_number ? (
+                    <FormFeedback type="invalid">
+                      {validation.errors.prj_urban_ben_number}
+                    </FormFeedback>
+                  ) : null}
+                </Col>
+                <Col className="col-md-4 mb-3">
+                  <Label>{t("prj_rural_ben_number")}</Label>
+                  <Input
+                    name="prj_rural_ben_number"
+                    type="number"
+                    placeholder={t("prj_rural_ben_number")}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.prj_rural_ben_number || ""}
+                    invalid={
+                      validation.touched.prj_rural_ben_number &&
+                        validation.errors.prj_rural_ben_number
+                        ? true
+                        : false
+                    }
+                  />
+                  {validation.touched.prj_rural_ben_number &&
+                    validation.errors.prj_rural_ben_number ? (
+                    <FormFeedback type="invalid">
+                      {validation.errors.prj_rural_ben_number}
+                    </FormFeedback>
+                  ) : null}
+                </Col>
+                <Col className="col-md-6 mb-3">
+                  <Label>{t("prj_outcome")}</Label>
+                  <Input
+                    name="prj_outcome"
+                    type="textarea"
+                    rows={3}
+                    placeholder={t("prj_outcome")}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.prj_outcome || ""}
+                    invalid={
+                      validation.touched.prj_outcome &&
+                        validation.errors.prj_outcome
+                        ? true
+                        : false
+                    }
+                    maxLength={200}
+                  />
+                  {validation.touched.prj_outcome &&
+                    validation.errors.prj_outcome ? (
+                    <FormFeedback type="invalid">
+                      {validation.errors.prj_outcome}
+                    </FormFeedback>
+                  ) : null}
+                </Col>
+                <Col className="col-md-6 mb-3">
+                  <Label>{t("prj_remark")}</Label>
+                  <Input
+                    name="prj_remark"
+                    type="textarea"
+                    rows={3}
+                    placeholder={t("prj_remark")}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.prj_remark || ""}
+                    invalid={
+                      validation.touched.prj_remark &&
+                        validation.errors.prj_remark
+                        ? true
+                        : false
+                    }
+                    maxLength={200}
+                  />
+                  {validation.touched.prj_remark &&
+                    validation.errors.prj_remark ? (
+                    <FormFeedback type="invalid">
+                      {validation.errors.prj_remark}
+                    </FormFeedback>
+                  ) : null}
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <div className="text-end">
+                    {addProject.isPending || updateProject.isPending ? (
+                      <Button
+                        color="success"
+                        type="submit"
+                        className="save-user"
+                        disabled={
+                          addProject.isPending ||
+                          updateProject.isPending ||
+                          !validation.dirty
+                        }
+                      >
+                        <Spinner
+                          size={"sm"}
+                          color="light"
+                          className="me-2"
+                        />
+                        {t("Save")}
+                      </Button>
+                    ) : (
+                      <Button
+                        color="success"
+                        type="submit"
+                        className="save-user"
+                        disabled={
+                          addProject.isPending ||
+                          updateProject.isPending ||
+                          !validation.dirty
+                        }
+                      >
+                        {t("Save")}
+                      </Button>
+                    )}
+                  </div>
+                </Col>
+              </Row>
+            </Form>
+          </ModalBody>
+        </Modal>
       </div>
     </React.Fragment>
   );
