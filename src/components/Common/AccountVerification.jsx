@@ -26,9 +26,7 @@ const AccountVerification = () => {
   const { data: csoData } = useSearchCsoInfos(csoParam)
   const csoId = csoData?.data?.length > 0 ? csoData.data[0].cso_id : null;
   const csoStatus = csoData?.data?.length > 0 ? csoData.data[0].cso_status : null;
-  if ((csoStatus !== null && csoStatus !== 0) || userType === 4) {
-    return <Navigate to="/dashboard" replace />;
-  }
+
   const param = { prd_owner_type_id: PAGE_ID.CSO, prd_owner_id: csoId };
   const isQueryEnabled = Object.values(param).every(value => value !== null && value !== undefined);
   const { data, isLoading, isError, error, refetch } = useFetchProjectDocuments(param, isQueryEnabled);
@@ -207,6 +205,10 @@ const AccountVerification = () => {
     setProjectDocument("");
     toggleForm();
   };
+
+  if ((csoStatus !== null && csoStatus !== 0) || userType === 4) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />

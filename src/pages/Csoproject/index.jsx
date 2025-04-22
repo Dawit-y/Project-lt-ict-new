@@ -54,7 +54,6 @@ const ProjectModel = () => {
   });
 
   const handleTabChange = (newTab, selectedId = null) => {
-    console.log("Active tab changed to:", newTab, "Selected ID:", selectedId);
     setCurrentActiveTab(prev => ({
       ...prev,
       tab: newTab,
