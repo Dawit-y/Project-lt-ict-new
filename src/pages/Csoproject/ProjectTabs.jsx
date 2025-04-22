@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback, lazy, Suspense } from "react";
+import React, { useMemo, useState, useCallback, lazy, Suspense, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -15,14 +15,32 @@ import {
   TabPane,
 } from "reactstrap";
 import classnames from "classnames";
+import { useSearchProjects, useFindProjects } from "../../queries/cso_project_query";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 const TableContainer = lazy(() => import("../../components/Common/TableContainer"));
 const BudgetRequestRegistration = lazy(() => import("../Csobudgetrequest/BudgetRequestRegistration"));
-const ProjectTabs = ({ projects, handleAddClick, handleEditClick }) => {
+
+const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(1);
   const [passedSteps, setPassedSteps] = useState([1]);
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [selectedProjectStatus, setSelectedProjectStatus] = useState(null); // New state for selected project status
-  const { t } = useTranslation();
+  const [selectedProgram, setSelectedProgram] = useState(null);
+  const [programName, setProgramName] = useState(null)
+  const [selectedProgramStatus, setSelectedProgramStatus] = useState(null);
+  const [selectedActivity, setSelectedActivity] = useState(null)
+
+  useEffect(() => {
+    handleTabChange(activeTab, selectedProgram)
+  }, [activeTab, selectedProgram])
+
+  const storedUser = JSON.parse(localStorage.getItem("authUser"));
+  const userId = storedUser?.user.usr_id;
+
+  const param = { object_type_id: 5, parent_id: selectedProgram }
+  const isValidParam = Object.keys(param).length > 0 &&
+    Object.values(param).every((value) => value !== null && value !== undefined);
+
+  const { data, isLoading, isError, error, refetch } = useFindProjects(param, isValidParam, userId)
 
   const toggleTab = useCallback((tab) => {
     if (activeTab !== tab) {
@@ -34,10 +52,10 @@ const ProjectTabs = ({ projects, handleAddClick, handleEditClick }) => {
   }, [activeTab]);
 
   const isNextButtonDisabled = useCallback(() => {
-    return activeTab === 1 && !selectedProject;
-  }, [activeTab, selectedProject]);
+    return !selectedProgram;
+  }, [selectedProgram]);
 
-  const projectColumns = useMemo(() => {
+  const programColumns = useMemo(() => {
     const baseColumns = [
       {
         header: t("Select"),
@@ -49,15 +67,113 @@ const ProjectTabs = ({ projects, handleAddClick, handleEditClick }) => {
             <input
               type="radio"
               name="selectedRow"
-              checked={selectedProject === row.original.prj_id}
+              checked={selectedProgram === row.original.prj_id}
               onChange={() => {
-                setSelectedProject(row.original.prj_id);
-                setSelectedProjectStatus(row.original.prj_project_status_id); // Set selected project status
+                setSelectedProgram(row.original.prj_id);
+                setSelectedProgramStatus(row.original.prj_project_status_id); // Set selected project status
+                setProgramName(row.original.prj_name);
               }}
             />
           </span>
         ),
       },
+      {
+        header: "Program Name",
+        accessorKey: "prj_name",
+        enableSorting: true,
+        enableColumnFilter: false,
+        cell: ({ row, getValue }) => (
+          <span>{row.original.footer ? t("Total") : getValue()}</span>
+        ),
+      },
+      {
+        header: t("prj_code"),
+        accessorKey: "prj_code",
+        enableSorting: true,
+        enableColumnFilter: false,
+        cell: ({ row, getValue }) => (
+          <span>{row.original.footer ? t("Total") : getValue()}</span>
+        ),
+      },
+      {
+        header: t("prj_project_status_id"),
+        accessorKey: "prj_project_status_id",
+        enableSorting: true,
+        enableColumnFilter: false,
+        cell: ({ row }) => (
+          <Badge className={`font-size-12 badge-soft-${row.original.color_code}`}>
+            {row.original.status_name}
+          </Badge>
+        ),
+      },
+      {
+        header: t("prj_total_estimate_budget"),
+        accessorKey: "prj_total_estimate_budget",
+        enableSorting: true,
+        enableColumnFilter: false,
+        cell: ({ row, getValue }) => {
+          const value = getValue();
+          return (
+            <span>
+              {row.original.footer
+                ? value
+                  ? `$${value.toLocaleString()}`
+                  : ""
+                : value
+                  ? `${value.toLocaleString()}`
+                  : ""}
+            </span>
+          );
+        },
+      },
+      {
+        header: t("view_details"),
+        accessorKey: "view_details",
+        enableSorting: false,
+        enableColumnFilter: false,
+        cell: ({ row }) => {
+          if (row.original.footer) return "";
+          const { prj_id } = row.original || {};
+          return (
+            <Link to={`/projectdetail_cso/${prj_id}#proposal_request`} target="_blank">
+              <Button type="button" className="btn-sm mb-1 default" outline>
+                <i className="fa fa-eye"></i>
+              </Button>
+            </Link>
+          );
+        },
+      }
+    ];
+
+    if (program?.previledge?.is_role_editable === 1 || program?.previledge?.is_role_deletable === 1) {
+      baseColumns.push({
+        header: t("Action"),
+        accessorKey: "Action",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: ({ row }) => (
+          <div className="d-flex gap-3">
+            {(program?.previledge?.is_role_editable === 1 && row.original?.is_editable === 1 && row.original.prj_project_status_id === 1) && (
+              <Link
+                to="#"
+                className="text-success"
+                onClick={() => handleEditClick(row.original)}
+              >
+                <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                <UncontrolledTooltip placement="top" target="edittooltip">
+                  Edit
+                </UncontrolledTooltip>
+              </Link>
+            )}
+          </div>
+        ),
+      });
+    }
+    return baseColumns;
+  }, [program, t, selectedProgram]);
+
+  const activitiesColumn = useMemo(() => {
+    const baseColumns = [
       {
         header: t("prj_name"),
         accessorKey: "prj_name",
@@ -126,7 +242,7 @@ const ProjectTabs = ({ projects, handleAddClick, handleEditClick }) => {
       }
     ];
 
-    if (projects?.previledge?.is_role_editable === 1 || projects?.previledge?.is_role_deletable === 1) {
+    if (program?.previledge?.is_role_editable === 1 || program?.previledge?.is_role_deletable === 1) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: "Action",
@@ -134,7 +250,7 @@ const ProjectTabs = ({ projects, handleAddClick, handleEditClick }) => {
         enableSorting: true,
         cell: ({ row }) => (
           <div className="d-flex gap-3">
-            {(projects?.previledge?.is_role_editable === 1 && row.original?.is_editable === 1 && row.original.prj_project_status_id === 1) && (
+            {(program?.previledge?.is_role_editable === 1 && row.original?.is_editable === 1 && row.original.prj_project_status_id === 1) && (
               <Link
                 to="#"
                 className="text-success"
@@ -151,7 +267,11 @@ const ProjectTabs = ({ projects, handleAddClick, handleEditClick }) => {
       });
     }
     return baseColumns;
-  }, [projects, t, selectedProject]);
+  }, [program, t, selectedProgram]);
+
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />
+  }
 
   return (
     <Col lg="12">
@@ -159,7 +279,7 @@ const ProjectTabs = ({ projects, handleAddClick, handleEditClick }) => {
         <CardBody>
           <h4 className="card-title mb-4"></h4>
           <div className="wizard clearfix">
-           <div className="actions clearfix">
+            <div className="actions clearfix">
               <ul>
                 <li>
                   <Button
@@ -171,19 +291,13 @@ const ProjectTabs = ({ projects, handleAddClick, handleEditClick }) => {
                   </Button>
                 </li>
                 <li>
-                  {activeTab === 2 ? (
-                    <Button type="submit" color="primary" disabled>
-                      Next
-                    </Button>
-                  ) : (
-                    <Button
-                      color="primary"
-                      onClick={() => toggleTab(activeTab + 1)}
-                      disabled={isNextButtonDisabled()}
-                    >
-                      Next
-                    </Button>
-                  )}
+                  <Button
+                    color="primary"
+                    onClick={() => toggleTab(activeTab + 1)}
+                    disabled={isNextButtonDisabled() || activeTab === 3}
+                  >
+                    Next
+                  </Button>
                 </li>
               </ul>
             </div>
@@ -195,7 +309,7 @@ const ProjectTabs = ({ projects, handleAddClick, handleEditClick }) => {
                     onClick={() => setActiveTab(1)}
                     disabled={!passedSteps.includes(1)}
                   >
-                    <span className="number">1.</span> Projects
+                    <span className="number">1.</span> Programs
                   </NavLink>
                 </NavItem>
                 <NavItem className={classnames({ current: activeTab === 2 })}>
@@ -204,7 +318,16 @@ const ProjectTabs = ({ projects, handleAddClick, handleEditClick }) => {
                     onClick={() => setActiveTab(2)}
                     disabled={!passedSteps.includes(2)}
                   >
-                    <span className="number">2.</span> Proposal Request
+                    <span className="number">2.</span> Activities
+                  </NavLink>
+                </NavItem>
+                <NavItem className={classnames({ current: activeTab === 3 })}>
+                  <NavLink
+                    className={classnames({ active: activeTab === 3 })}
+                    onClick={() => setActiveTab(3)}
+                    disabled={!passedSteps.includes(3)}
+                  >
+                    <span className="number">3.</span> Proposal Request
                   </NavLink>
                 </NavItem>
               </ul>
@@ -212,17 +335,22 @@ const ProjectTabs = ({ projects, handleAddClick, handleEditClick }) => {
             <div className="content clearfix">
               <TabContent activeTab={activeTab} className="body">
                 <TabPane tabId={1}>
+                  {programName && (
+                    <h5 className="mb-3 text-primary">
+                      {t("Selected program")}: {programName}
+                    </h5>
+                  )}
                   <Suspense fallback={<div>Loading...</div>}>
                     <TableContainer
-                      columns={projectColumns}
-                      data={projects?.data || []}
-                      isAddButton={projects?.previledge?.is_role_can_add === 1}
+                      columns={programColumns}
+                      data={program?.data || []}
+                      isAddButton={program?.previledge?.is_role_can_add === 1}
                       isCustomPageSize
                       handleUserClick={handleAddClick}
                       isPagination
                       SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={`${t("add")} ${t("project")}`}
+                      buttonName={`${t("add")} ${t("program")}`}
                       tableClass="table-sm align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
@@ -234,17 +362,50 @@ const ProjectTabs = ({ projects, handleAddClick, handleEditClick }) => {
                   </Suspense>
                 </TabPane>
                 <TabPane tabId={2}>
+                  {programName && (
+                    <h5 className="mb-3 text-primary">
+                      {t("Activities for the program")}: {programName}
+                    </h5>
+                  )}
                   <Suspense fallback={<div>Loading...</div>}>
-                    <BudgetRequestRegistration projectStatus={selectedProjectStatus} projectId={selectedProject} isActive={activeTab === 2} />
+                    <TableContainer
+                      columns={activitiesColumn}
+                      data={data?.data || []}
+                      isLoading={isLoading}
+                      isAddButton={data?.previledge?.is_role_can_add === 1}
+                      isCustomPageSize
+                      handleUserClick={handleAddClick}
+                      isPagination
+                      SearchPlaceholder={t("filter_placeholder")}
+                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                      buttonName={`${t("add")} ${t("Actitvity")}`}
+                      tableClass="table-sm align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                      pagination="pagination"
+                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                      excludeKey={["is_editable", "is_deletable", "Select"]}
+                      tableName="Project Data"
+                      isExcelExport
+                      isPdfExport
+                    />
+                  </Suspense>
+                </TabPane>
+                <TabPane tabId={3}>
+                  {programName && (
+                    <h5 className="mb-3 text-primary">
+                      {t("Proposal request for the program")}: {programName}
+                    </h5>
+                  )}
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <BudgetRequestRegistration projectStatus={selectedProgramStatus} projectId={selectedProgram} isActive={activeTab === 2} />
                   </Suspense>
                 </TabPane>
               </TabContent>
             </div>
-           
           </div>
         </CardBody>
       </Card>
     </Col>
   );
 };
+
 export default ProjectTabs;

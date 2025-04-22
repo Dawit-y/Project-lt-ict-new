@@ -35,7 +35,7 @@ const UserRole = lazy(() => import("../pages/Userrole/index"));
 const Roles = lazy(() => import("../pages/Roles/index"));
 const DateSetting = lazy(() => import("../pages/Datesetting/index"));
 const CSOInformation = lazy(() => import("../pages/Csoinfo/index"));
-const CSOProject = lazy(() => import("../pages/Csoproject/index2.jsx"));
+const CSOProject = lazy(() => import("../pages/Csoproject/index.jsx"));
 const CSOProjectList = lazy(() => import("../pages/Csoproject/ProjectList"));
 const CSOProjectDetail = lazy(() => import("../pages/Csoproject/ProjectDetail/index2.jsx"));
 const CSOBudgetRequestListModel = lazy(() =>
@@ -179,22 +179,21 @@ const CitizenshipProjectList = lazy(() =>
 const CitizenshipProjectDetail = lazy(() =>
   import("../pages/Citizenshipproject/ProjectDetail/index.jsx")
 );
-//START PROCUMENET
-const ProcurementinformationList = lazy(() =>
-  import("../pages/Procurementinformation/ProcurementInformationList")
-);
-const ProcurementInformation = lazy(() =>
-  import("../pages/Procurementinformation/index")
-);
-const ProcurementMethod = lazy(() =>
-  import("../pages/Procurementmethod/index")
-);
-const ProcurementParticipant = lazy(() =>
-  import("../pages/Procurementparticipant/index")
-);
-const ProcurementStage = lazy(() => import("../pages/Procurementstage/index"));
-//END PROCUREMENT
+const ProcurementinformationList = lazy(() => import('../pages/Procurementinformation/ProcurementInformationList'));
+const ProcurementInformation = lazy(() => import('../pages/Procurementinformation/index'));
+const ProcurementMethod = lazy(() => import('../pages/Procurementmethod/index'));
+const ProcurementParticipant = lazy(() => import('../pages/Procurementparticipant/index'));
+const ProcurementStage = lazy(() => import('../pages/Procurementstage/index'));
+const MonitoringEvaluationType = lazy(() => import('../pages/Monitoringevaluationtype/index'));
+const ProjectMonitoringEvaluation = lazy(() => import('../pages/Projectmonitoringevaluation/index'));
+const MonitoringEvaluationTypeList = lazy(() => import('../pages/Monitoringevaluationtype/MonitoringEvaluationTypeList'));
+const ProjectMonitoringEvaluationList = lazy(() => import('../pages/Projectmonitoringevaluation/ProjectMonitoringEvaluationList'));
+
 const authProtectedRoutes = [
+  // { path: '/monitoring_evaluation_type_list', component: <MonitoringEvaluationTypeList/> },
+  { path: '/monitoring_evaluation_list', component: <ProjectMonitoringEvaluationList /> },
+  { path: '/monitoring_evaluation_type', component: <MonitoringEvaluationType /> },
+  { path: '/project_monitoring_evaluation', component: <ProjectMonitoringEvaluation /> },
   { path: "/cso_information", component: <CSOInformation /> },
   { path: "/project_cso", component: <CSOProject /> },
   { path: "/project_cso_list", component: <CSOProjectList /> },

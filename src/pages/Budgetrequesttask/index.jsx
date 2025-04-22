@@ -473,7 +473,7 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
   }, [handleBudgetRequestTaskClick, toggleViewModal, onClickDelete]);
 
   if (isError) {
-    <FetchErrorHandler error={error} refetch={refetch} />;
+    return <FetchErrorHandler error={error} refetch={refetch} />;
   }
 
   return (
@@ -549,14 +549,14 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                   value={validation.values.brt_task_name || ""}
                   invalid={
                     validation.touched.brt_task_name &&
-                    validation.errors.brt_task_name
+                      validation.errors.brt_task_name
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.brt_task_name &&
-                validation.errors.brt_task_name ? (
+                  validation.errors.brt_task_name ? (
                   <FormFeedback type="invalid">
                     {validation.errors.brt_task_name}
                   </FormFeedback>
@@ -576,14 +576,14 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                   value={validation.values.brt_measurement || ""}
                   invalid={
                     validation.touched.brt_measurement &&
-                    validation.errors.brt_measurement
+                      validation.errors.brt_measurement
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.brt_measurement &&
-                validation.errors.brt_measurement ? (
+                  validation.errors.brt_measurement ? (
                   <FormFeedback type="invalid">
                     {validation.errors.brt_measurement}
                   </FormFeedback>
@@ -603,14 +603,14 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                   value={validation.values.brt_previous_year_physical || ""}
                   invalid={
                     validation.touched.brt_previous_year_physical &&
-                    validation.errors.brt_previous_year_physical
+                      validation.errors.brt_previous_year_physical
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.brt_previous_year_physical &&
-                validation.errors.brt_previous_year_physical ? (
+                  validation.errors.brt_previous_year_physical ? (
                   <FormFeedback type="invalid">
                     {validation.errors.brt_previous_year_physical}
                   </FormFeedback>
@@ -630,14 +630,14 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                   value={validation.values.brt_previous_year_financial || ""}
                   invalid={
                     validation.touched.brt_previous_year_financial &&
-                    validation.errors.brt_previous_year_financial
+                      validation.errors.brt_previous_year_financial
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.brt_previous_year_financial &&
-                validation.errors.brt_previous_year_financial ? (
+                  validation.errors.brt_previous_year_financial ? (
                   <FormFeedback type="invalid">
                     {validation.errors.brt_previous_year_financial}
                   </FormFeedback>
@@ -657,14 +657,14 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                   value={validation.values.brt_current_year_physical || ""}
                   invalid={
                     validation.touched.brt_current_year_physical &&
-                    validation.errors.brt_current_year_physical
+                      validation.errors.brt_current_year_physical
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.brt_current_year_physical &&
-                validation.errors.brt_current_year_physical ? (
+                  validation.errors.brt_current_year_physical ? (
                   <FormFeedback type="invalid">
                     {validation.errors.brt_current_year_physical}
                   </FormFeedback>
@@ -684,14 +684,14 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                   value={validation.values.brt_current_year_financial || ""}
                   invalid={
                     validation.touched.brt_current_year_financial &&
-                    validation.errors.brt_current_year_financial
+                      validation.errors.brt_current_year_financial
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.brt_current_year_financial &&
-                validation.errors.brt_current_year_financial ? (
+                  validation.errors.brt_current_year_financial ? (
                   <FormFeedback type="invalid">
                     {validation.errors.brt_current_year_financial}
                   </FormFeedback>
@@ -711,14 +711,14 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                   value={validation.values.brt_next_year_physical || ""}
                   invalid={
                     validation.touched.brt_next_year_physical &&
-                    validation.errors.brt_next_year_physical
+                      validation.errors.brt_next_year_physical
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.brt_next_year_physical &&
-                validation.errors.brt_next_year_physical ? (
+                  validation.errors.brt_next_year_physical ? (
                   <FormFeedback type="invalid">
                     {validation.errors.brt_next_year_physical}
                   </FormFeedback>
@@ -738,14 +738,14 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                   value={validation.values.brt_next_year_financial || ""}
                   invalid={
                     validation.touched.brt_next_year_financial &&
-                    validation.errors.brt_next_year_financial
+                      validation.errors.brt_next_year_financial
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.brt_next_year_financial &&
-                validation.errors.brt_next_year_financial ? (
+                  validation.errors.brt_next_year_financial ? (
                   <FormFeedback type="invalid">
                     {validation.errors.brt_next_year_financial}
                   </FormFeedback>
@@ -762,14 +762,14 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
                   value={validation.values.brt_description || ""}
                   invalid={
                     validation.touched.brt_description &&
-                    validation.errors.brt_description
+                      validation.errors.brt_description
                       ? true
                       : false
                   }
                   maxLength={425}
                 />
                 {validation.touched.brt_description &&
-                validation.errors.brt_description ? (
+                  validation.errors.brt_description ? (
                   <FormFeedback type="invalid">
                     {validation.errors.brt_description}
                   </FormFeedback>
@@ -780,7 +780,7 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
               <Col>
                 <div className="text-end">
                   {addBudgetRequestTask.isPending ||
-                  updateBudgetRequestTask.isPending ? (
+                    updateBudgetRequestTask.isPending ? (
                     <Button
                       color="success"
                       type="submit"

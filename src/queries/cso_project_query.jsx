@@ -59,6 +59,19 @@ export const useSearchProjects = (searchParams = {}) => {
   });
 };
 
+//search project
+export const useFindProjects = (searchParams = {}, enabled, userId) => {
+  return useQuery({
+    queryKey: [...PROJECT_QUERY_KEY, "find", searchParams, userId],
+    queryFn: () => getProject(searchParams),
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    enabled: enabled,
+  });
+};
+
 // Add project
 export const useAddProject = () => {
   const queryClient = useQueryClient();

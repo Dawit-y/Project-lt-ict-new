@@ -21,6 +21,7 @@ import "./ag-grid.css";
 import {
   useFetchProjects,
   useSearchProjects,
+  useFetchChildProjects,
   useAddProject,
   useDeleteProject,
   useUpdateProject,
@@ -63,50 +64,72 @@ import TreeForProject from "./TreeForProject";
 import DatePicker from "../../components/Common/DatePicker";
 import AsyncSelectField from "../../components/Common/AsyncSelectField";
 
+const levels = ["region", "zone", "woreda", "cluster", "sector", "outcome", "program", "sub_program", "output", "project"];
+const objectTypeId = [1, 2, 3, 4, 5]
+function getNextLevel(currentLevel) {
+  if (currentLevel === "sector") {
+    return "Program";
+  }
+  if (currentLevel === "outcome" || currentLevel === "program") {
+    return "Sub Program";
+  }
+  const currentIndex = levels.indexOf(currentLevel);
+  if (currentIndex === -1 || currentIndex === levels.length - 1) {
+    return null;
+  }
+  return levels[currentIndex + 1];
+}
+function getNextObjectTypeId(currentId) {
+  const id = parseInt(currentId, 10);
+  if (id === 1 || id === 2) {
+    return 3;
+  }
+  const currentIndex = objectTypeId.indexOf(id);
+  if (currentIndex === -1 || currentIndex === objectTypeId.length - 1) {
+    return null;
+  }
+  return objectTypeId[currentIndex + 1];
+}
+
 const ProjectModel = () => {
   document.title = "Projects";
-  const [projectMetaData, setProjectMetaData] = useState([]);
-  const [showCanvas, setShowCanvas] = useState(false);
   const { t, i18n } = useTranslation();
   const lang = i18n.language
   const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [project, setProject] = useState(null);
-
-  const [include, setInclude] = useState(0);
-  const [projectParams, setProjectParams] = useState({});
-  const [selectedLocations, setSelectedLocations] = useState({
-    region: null,
-    zone: null,
-    woreda: null,
-    cluster: null,
-    sector: null,
-    program: null,
-  });
-
-  useEffect(() => {
-    setProjectParams({
-      ...(selectedLocations.region && { prj_location_region_id: selectedLocations.region }),
-      ...(selectedLocations.zone && { prj_location_zone_id: selectedLocations.zone }),
-      ...(selectedLocations.woreda && { prj_location_woreda_id: selectedLocations.woreda }),
-      ...(selectedLocations.cluster && { prj_location_cluster_id: selectedLocations.cluster }),
-      ...(selectedLocations.sector && { prj_location_sector_id: selectedLocations.sector }),
-      ...(selectedLocations.program && { prj_location_program_id: selectedLocations.program }),
-      ...(include === 1 && { include }),
-    });
-  }, [selectedLocations, include]);
-
-  const [selectedPage, setSelectedPage] = useState({ page: "", data: null });
   const [selectedNode, setSelectedNode] = useState(null)
-  let param = {}
-  if (selectedPage.page == "project") {
-    param = { program_id: selectedPage.data.pri_id }
-  }
-  const [isAddressLoading, setIsAddressLoading] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } =
-    useSearchProjects(param, Object.keys(param).length > 0);
+  const isSectorLevel = selectedNode?.data?.level === "sector";
+  const param = useMemo(() => {
+    if (!selectedNode?.data) return {};
+    if (isSectorLevel) {
+      return {
+        prj_owner_region_id: selectedNode.data.region_id,
+        prj_owner_zone_id: selectedNode.data.zone_id,
+        prj_owner_woreda_id: selectedNode.data.woreda_id,
+        prj_sector_id: selectedNode.data.s_id,
+      };
+    } else {
+      return {
+        prj_sector_id: selectedNode.data.prj_sector_id,
+        parent_id: selectedNode.data.prj_id,
+      };
+    }
+  }, [selectedNode]);
+  const isValidParam = Object.keys(param).length > 0 &&
+    Object.values(param).every((value) => value !== null && value !== undefined);
+
+  const {
+    data,
+    isLoading,
+    error,
+    isError,
+    refetch,
+  } = isSectorLevel
+      ? useSearchProjects(param, isValidParam)
+      : useFetchChildProjects(param, isValidParam);
+
   const { data: projectCategoryData, isLoading: prCategoryLoading, isError: prCategoryIsError } = useFetchProjectCategorys();
   const {
     pct_name_en: projectCategoryOptionsEn,
@@ -116,13 +139,6 @@ const ProjectModel = () => {
     projectCategoryData?.data || [],
     "pct_id",
     ["pct_name_en", "pct_name_or", "pct_name_am"]
-  );
-
-  const { data: sectorInformationData } = useFetchSectorInformations();
-  const sectorInformationOptions = createSelectOptions(
-    sectorInformationData?.data || [],
-    "sci_id",
-    "sci_name_en"
   );
 
   const addProject = useAddProject();
@@ -174,16 +190,6 @@ const ProjectModel = () => {
       setDeleteModal(false);
     }
   };
-  const [allowedTabs, setAllowedTabs] = useState(data?.allowedTabs || []);
-  const allowedLinks = data?.allowedLinks || []
-
-  useEffect(() => {
-    if (projectMetaData?.prj_project_status_id <= 4) {
-      setAllowedTabs([54, 37]);
-    } else {
-      setAllowedTabs(data?.allowedTabs || []);
-    }
-  }, [projectMetaData?.prj_project_status_id, data]);
 
   // validation
   const validation = useFormik({
@@ -309,15 +315,15 @@ const ProjectModel = () => {
           prj_total_estimate_budget: values.prj_total_estimate_budget,
           prj_total_actual_budget: values.prj_total_actual_budget,
           prj_geo_location: values.prj_geo_location,
-          prj_sector_id: Number(selectedPage.data.pri_sector_id),
+          prj_sector_id: isSectorLevel ? Number(selectedNode.data.s_id) : Number(selectedNode.data.prj_sector_id),
           prj_location_region_id: Number(values.prj_location_region_id),
           prj_location_zone_id: Number(values.prj_location_zone_id),
           prj_location_woreda_id: Number(values.prj_location_woreda_id),
           prj_location_kebele_id: values.prj_location_kebele_id,
           prj_location_description: values.prj_location_description,
-          prj_owner_region_id: Number(selectedPage.data.pri_owner_region_id),
-          prj_owner_zone_id: Number(selectedPage.data.pri_owner_zone_id),
-          prj_owner_woreda_id: Number(selectedPage.data.pri_owner_woreda_id),
+          prj_owner_region_id: isSectorLevel ? Number(selectedNode.data.region_id) : Number(selectedNode.data.prj_owner_region_id),
+          prj_owner_zone_id: isSectorLevel ? Number(selectedNode.data.zone_id) : Number(selectedNode.data.prj_owner_zone_id),
+          prj_owner_woreda_id: isSectorLevel ? Number(selectedNode.data.woreda_id) : Number(selectedNode.data.prj_owner_woreda_id),
           prj_owner_kebele_id: values.prj_owner_kebele_id,
           prj_owner_description: values.prj_owner_description,
           prj_start_date_et: values.prj_start_date_et,
@@ -336,9 +342,11 @@ const ProjectModel = () => {
           prj_urban_ben_number: values.prj_urban_ben_number,
           prj_rural_ben_number: values.prj_rural_ben_number,
           //prj_department_id: Number(values.prj_department_id),
-          prj_program_id: Number(selectedPage.data.pri_id),
+          prj_program_id: 1,
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
+          parent_id: isSectorLevel ? 1 : Number(selectedNode.data.prj_id),
+          object_type_id: isSectorLevel ? 1 : getNextObjectTypeId(selectedNode.data.prj_object_type_id),
         };
         // update Project
         handleUpdateProject(updateProject);
@@ -354,15 +362,15 @@ const ProjectModel = () => {
           prj_total_estimate_budget: values.prj_total_estimate_budget,
           prj_total_actual_budget: values.prj_total_actual_budget,
           prj_geo_location: values.prj_geo_location,
-          prj_sector_id: Number(selectedPage.data.pri_sector_id),
+          prj_sector_id: isSectorLevel ? Number(selectedNode.data.s_id) : Number(selectedNode.data.prj_sector_id),
           prj_location_region_id: Number(values.prj_location_region_id),
           prj_location_zone_id: Number(values.prj_location_zone_id),
           prj_location_woreda_id: Number(values.prj_location_woreda_id),
           prj_location_kebele_id: values.prj_location_kebele_id,
           prj_location_description: values.prj_location_description,
-          prj_owner_region_id: Number(selectedPage.data.pri_owner_region_id),
-          prj_owner_zone_id: Number(selectedPage.data.pri_owner_zone_id),
-          prj_owner_woreda_id: Number(selectedPage.data.pri_owner_woreda_id),
+          prj_owner_region_id: isSectorLevel ? Number(selectedNode.data.region_id) : Number(selectedNode.data.prj_owner_region_id),
+          prj_owner_zone_id: isSectorLevel ? Number(selectedNode.data.zone_id) : Number(selectedNode.data.prj_owner_zone_id),
+          prj_owner_woreda_id: isSectorLevel ? Number(selectedNode.data.woreda_id) : Number(selectedNode.data.prj_owner_woreda_id),
           prj_owner_kebele_id: values.prj_owner_kebele_id,
           prj_owner_description: values.prj_owner_description,
           prj_start_date_et: values.prj_start_date_et,
@@ -381,7 +389,9 @@ const ProjectModel = () => {
           prj_urban_ben_number: values.prj_urban_ben_number,
           prj_rural_ben_number: values.prj_rural_ben_number,
           //prj_department_id: Number(values.prj_department_id),
-          prj_program_id: Number(selectedPage.data.pri_id)
+          prj_program_id: 1,
+          parent_id: isSectorLevel ? 1 : Number(selectedNode.data.prj_id),
+          object_type_id: isSectorLevel ? 1 : getNextObjectTypeId(selectedNode.data.prj_object_type_id),
         };
         // save new Project
         handleAddProject(newProject);
@@ -427,46 +437,13 @@ const ProjectModel = () => {
     }
   }, [lang]);
 
-  const levels = ["region", "zone", "woreda", "cluster", "sector", "program"];
-
   const handleNodeSelect = useCallback(
     (node) => {
       setSelectedNode(node)
       getBreadcrumbPath(node)
-      setSelectedPage((prev) => {
-        let newState = { ...prev };
-
-        if (node.data?.level === "sector") {
-          newState = { page: "program", data: node.data };
-        } else if (node.data?.level === "program") {
-          newState = { page: "project", data: node.data };
-        } else {
-          newState = { page: "", data: null }
-        }
-
-        return newState;
-      });
-      setSelectedLocations((prev) => {
-        const newState = { ...prev };
-        const selectedIndex = levels.indexOf(node?.data?.level);
-        newState[node?.data?.level] = node.data?.id;
-        levels.slice(selectedIndex + 1).forEach((level) => {
-          newState[level] = null;
-        });
-        return newState;
-      });
-
-      // if (showSearchResult) {
-      //   setShowSearchResult(false);
-      // }
     },
     []
   );
-
-  const handleClick = (data) => {
-    setShowCanvas(!showCanvas);
-    setProjectMetaData(data);
-  };
 
   const handleProjectClick = (arg) => {
     const project = arg;
@@ -602,27 +579,31 @@ const ProjectModel = () => {
             </span>
           );
         },
-      },
-      {
-        header: t("view_details"),
-        accessorKey: "view_details",
-        enableSorting: false,
-        enableColumnFilter: false,
-        cell: (cellProps) => {
-          if (cellProps.row.original.footer) {
-            return "";
-          }
-          const { prj_id } = cellProps.row.original || {};
-          return (
-            <Link to={`/Projectdetail/${prj_id}#budget_request`} target="_blank" >
-              <Button type="button" className="btn-sm mb-1 default" outline>
-                <i className="fa fa-eye"></i>
-              </Button>
-            </Link>
-          );
-        },
       }
     ];
+    if (selectedNode?.data?.prj_object_type_id === 4) {
+      baseColumns.push(
+        {
+          header: t("view_details"),
+          accessorKey: "view_details",
+          enableSorting: false,
+          enableColumnFilter: false,
+          cell: (cellProps) => {
+            if (cellProps.row.original.footer) {
+              return "";
+            }
+            const { prj_id } = cellProps.row.original || {};
+            return (
+              <Link to={`/Projectdetail/${prj_id}#budget_request`} target="_blank" >
+                <Button type="button" className="btn-sm mb-1 default" outline>
+                  <i className="fa fa-eye"></i>
+                </Button>
+              </Link>
+            );
+          },
+        }
+      )
+    }
     if (
       data?.previledge?.is_role_editable == 1 ||
       data?.previledge?.is_role_deletable == 1
@@ -657,11 +638,16 @@ const ProjectModel = () => {
     }
     return baseColumns;
   }, [data, handleProjectClick, onClickDelete, t]);
+
   const getTranslatedName = (node) => {
     if (lang === "en" && node.add_name_en) return node.add_name_en;
     if (lang === "am" && node.add_name_am) return node.add_name_am;
     return node.name;
   };
+
+  const allowAddButton = selectedNode?.data?.level === "sector"
+    ? true
+    : data?.previledge?.is_role_can_add === 1;
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -680,11 +666,7 @@ const ProjectModel = () => {
           <div className="d-flex gap-2" style={{ display: "flex", flexWrap: "nowrap", height: "100%" }}>
             {/* Tree Section (30%) */}
             <div style={{ flex: "0 0 25%", minWidth: "250px", height: "100%" }}>
-              <TreeForProject
-                onNodeSelect={handleNodeSelect}
-                setIsAddressLoading={setIsAddressLoading}
-                setInclude={setInclude}
-              />
+              <TreeForProject onNodeSelect={handleNodeSelect} />
             </div>
 
             {/* Main Content (70%) */}
@@ -700,21 +682,22 @@ const ProjectModel = () => {
                   </CardBody>
                 </Card>
               )}
-              {selectedPage.page === "project" ? (
+              {levels.slice(-6).includes(selectedNode?.data?.level) &&
                 <div className="w-100">
                   <Card>
                     <CardBody>
                       <TableContainer
                         columns={columns}
                         data={data?.data || []}
+                        isLoading={isLoading}
                         isGlobalFilter={true}
-                        isAddButton={data?.previledge?.is_role_can_add == 1}
+                        isAddButton={allowAddButton}
                         isCustomPageSize={true}
                         handleUserClick={handleProjectClicks}
                         isPagination={true}
                         SearchPlaceholder={t("filter_placeholder")}
                         buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                        buttonName={t("add") + " " + t("project")}
+                        buttonName={t("add") + " " + getNextLevel(selectedNode?.data?.level)}
                         tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                         theadClass="table-light"
                         pagination="pagination"
@@ -725,21 +708,16 @@ const ProjectModel = () => {
                     </CardBody>
                   </Card>
                 </div>
-              ) : selectedPage.page === "program" ? (
-                <ProgramInfoModel node={selectedPage.data} />
-              ) : (
-                <div></div>
-              )}
+              }
             </div>
           </div>
         </div>
       </div>
-
       <Modal isOpen={modal} toggle={toggle} className="modal-xl">
         <ModalHeader toggle={toggle} tag="h4">
           {!!isEdit
-            ? t("edit") + " " + t("project")
-            : t("add") + " " + t("project")}
+            ? t("edit") + " " + getNextLevel(selectedNode?.data?.level)
+            : t("add") + " " + getNextLevel(selectedNode?.data?.level)}
         </ModalHeader>
         <ModalBody>
           <Form

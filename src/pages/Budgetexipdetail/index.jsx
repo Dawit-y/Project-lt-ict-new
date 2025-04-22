@@ -260,7 +260,7 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
             <span>
               {
                 expenditureCodeMap[
-                  cellProps.row.original.bed_budget_expenditure_code_id
+                cellProps.row.original.bed_budget_expenditure_code_id
                 ]
               }
             </span>
@@ -357,7 +357,7 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
   }, [handleBudgetExipDetailClick, toggleViewModal, onClickDelete]);
 
   if (isError) {
-    <FetchErrorHandler error={error} refetch={refetch} />;
+    return <FetchErrorHandler error={error} refetch={refetch} />;
   }
 
   return (
@@ -440,7 +440,7 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
                       }
                       invalid={
                         validation.touched.bed_budget_expenditure_code_id &&
-                        validation.errors.bed_budget_expenditure_code_id
+                          validation.errors.bed_budget_expenditure_code_id
                           ? true
                           : false
                       }
@@ -453,7 +453,7 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
                       ))}
                     </Input>
                     {validation.touched.bed_budget_expenditure_code_id &&
-                    validation.errors.bed_budget_expenditure_code_id ? (
+                      validation.errors.bed_budget_expenditure_code_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.bed_budget_expenditure_code_id}
                       </FormFeedback>
@@ -471,14 +471,14 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
                       value={validation.values.bed_amount || ""}
                       invalid={
                         validation.touched.bed_amount &&
-                        validation.errors.bed_amount
+                          validation.errors.bed_amount
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.bed_amount &&
-                    validation.errors.bed_amount ? (
+                      validation.errors.bed_amount ? (
                       <FormFeedback type="invalid">
                         {validation.errors.bed_amount}
                       </FormFeedback>
@@ -495,14 +495,14 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
                       value={validation.values.bed_description || ""}
                       invalid={
                         validation.touched.bed_description &&
-                        validation.errors.bed_description
+                          validation.errors.bed_description
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.bed_description &&
-                    validation.errors.bed_description ? (
+                      validation.errors.bed_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.bed_description}
                       </FormFeedback>
@@ -513,7 +513,7 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
                   <Col>
                     <div className="text-end">
                       {addBudgetExipDetail.isPending ||
-                      updateBudgetExipDetail.isPending ? (
+                        updateBudgetExipDetail.isPending ? (
                         <Button
                           color="success"
                           type="submit"

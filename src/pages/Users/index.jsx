@@ -168,7 +168,7 @@ const UsersModel = () => {
     enableReinitialize: true,
     initialValues: {
       usr_email: (users && users.usr_email) || "",
-      usr_password: (users && users.usr_password) || "",
+      usr_password: (users && users.usr_password) || "User@123",
       usr_full_name: (users && users.usr_full_name) || "",
       usr_phone_number: (users && users.usr_phone_number) || "",
       usr_role_id: (users && users.usr_role_id) || "",

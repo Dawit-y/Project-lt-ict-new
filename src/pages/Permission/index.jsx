@@ -53,8 +53,7 @@ const PermissionModel = (props) => {
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [permission, setPermission] = useState(null);
-
-  const { data, isLoading, error, isError, refetch } = useFetchPermissions(
+  const { data, isLoading, isFetching, error, isError, refetch} = useFetchPermissions(
     param,
     isActive
   );
@@ -430,7 +429,7 @@ const PermissionModel = (props) => {
   }, [handlePermissionClick, toggleViewModal, onClickDelete]);
 
   if (isError) {
-    <FetchErrorHandler error={error} refetch={refetch} />;
+    return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
     <React.Fragment>
@@ -466,6 +465,8 @@ const PermissionModel = (props) => {
               theadClass="table-light"
               pagination="pagination"
               paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+              refetch={refetch}
+              isFetching={isFetching}
             />
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">

@@ -60,7 +60,7 @@ const RolesModel = () => {
   const [showCanvas, setShowCanvas] = useState(false);
 
   const [roles, setRoles] = useState(null);
-  const { data, isLoading, error, isError, refetch } = useFetchRoles();
+  const { data, isLoading, isFetching, error, isError, refetch} = useFetchRoles();
   const addRoles = useAddRoles();
   const updateRoles = useUpdateRoles();
   const deleteRoles = useDeleteRoles();
@@ -235,6 +235,19 @@ const RolesModel = () => {
       },
       {
         header: "",
+        accessorKey: "rol_create_time",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.rol_create_time, 30) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
         accessorKey: "rol_description",
         enableColumnFilter: false,
         enableSorting: true,
@@ -385,6 +398,8 @@ const RolesModel = () => {
                       theadClass="table-light"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                      refetch={refetch}
+                      isFetching={isFetching}
                     />
                   </CardBody>
                 </Card>

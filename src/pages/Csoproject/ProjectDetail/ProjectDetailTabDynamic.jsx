@@ -2,6 +2,7 @@ import React, { useState, useEffect, Suspense, lazy } from "react";
 import { Col, Nav, NavItem, NavLink, TabContent, TabPane, Spinner } from "reactstrap";
 import classnames from "classnames";
 import { useLocation } from "react-router-dom";
+import Spinners from "../../../components/Common/Spinner";
 
 const ProjectDetailTabDynamic = ({
   name,
@@ -36,7 +37,7 @@ const ProjectDetailTabDynamic = ({
     const { component: Component } = matchedItem;
 
     return (
-      <Suspense fallback={<Spinner color="primary" />}>
+      <Suspense fallback={<Spinners top={"top-75"} />}>
         <Component
           passedId={id}
           isActive={true}
