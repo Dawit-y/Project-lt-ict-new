@@ -1372,5 +1372,13 @@
 "met_gov_active":"Gov Active",
 "met_cso_active":"Cso Active",
 "met_monitoring_active":"Monitoring Active",
-"met_evaluation_active":"Evaluation Active"
+"met_evaluation_active":"Evaluation Active",
+"prp_physical_planned":"Physical Planned",
+"prp_budget_planned":"Budget Planned",
+"prp_quarter_id":"Quarter",
+"prp_budget_by_region":"Region Budget",
+"prp_physical_by_region":"Regon Pyhsical",
+"prp_budget_baseline":"Budget Baseline",
+"prp_physical_baseline":"Physical Baseline",
+"prp_region_approved":"Is Region Approved"
 }
