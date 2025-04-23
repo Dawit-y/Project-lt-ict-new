@@ -83,12 +83,14 @@ const AuthMiddleware = ({ children }) => {
   const allowedPaths = sidedata.length > 0 ? extractPaths(sidedata) : [];
 
   const isProjectPath = (path) => {
-    const projectPathRegex = /^\/Project(detail)?\/\d+(\/\w+)?(#\w+)?$/i;
+    //const projectPathRegex = /^\/Project(detail)?\/\d+(\/\w+)?(#\w+)?$/i;
+    const projectPathRegex = /^\/(Project(detail)?|citizenship_project_detail)\/\d+(\/\w+)?(#\w+)?$/i;
     return projectPathRegex.test(path);
   };
 
   if (isProjectPath(currentPath)) {
     allowedPaths.push("/projectdetail/:id");
+    allowedPaths.push("/citizenship_project_detail/:id");
   }
 
   const isAuthenticated = localStorage.getItem("authUser");

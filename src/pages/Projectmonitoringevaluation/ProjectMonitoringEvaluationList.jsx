@@ -9,11 +9,10 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import { AgGridReact } from "ag-grid-react";
+
 import TreeForLists from "../../components/Common/TreeForLists";
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import DeleteModal from "../../components/Common/DeleteModal";
 import {
   useFetchProjectMonitoringEvaluations,
   useSearchProjectMonitoringEvaluations,
@@ -126,6 +125,33 @@ const ProjectMonitoringEvaluationList = () => {
 
   const columnDefs = [
     {
+        headerName: t("S.N"),
+        field: "sn",
+        valueGetter: (params) => params.node.rowIndex + 1,
+        sortable: false,
+        filter: false,
+        width: 60,
+      },
+      {
+        headerName: t("prj_name"),
+        field: "prj_name",
+        width: 200,
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_name, 30) || "-";
+        },
+      },
+      {
+        headerName: t("prj_code"),
+        field: "prj_code",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return truncateText(params.data.prj_code, 30) || "-";
+        },
+      },
+    /*{
       headerName: t('mne_transaction_type_id'),
       field: 'mne_transaction_type_id',
       sortable: true,
@@ -140,24 +166,18 @@ const ProjectMonitoringEvaluationList = () => {
       valueFormatter: ({ value }) => truncateText(value, 30) || '-',
     },
     {
-      headerName: t('mne_project_id'),
-      field: 'mne_project_id',
-      sortable: true,
-      filter: false,
-      valueFormatter: ({ value }) => truncateText(value, 30) || '-',
-    },
-    {
       headerName: t('mne_type_id'),
       field: 'mne_type_id',
       sortable: true,
       filter: false,
       valueFormatter: ({ value }) => truncateText(value, 30) || '-',
-    },
+    },*/
     {
       headerName: t('mne_physical'),
       field: 'mne_physical',
       sortable: true,
       filter: false,
+      width:120,
       valueFormatter: ({ value }) => truncateText(value, 30) || '-',
     },
     {
@@ -165,6 +185,7 @@ const ProjectMonitoringEvaluationList = () => {
       field: 'mne_financial',
       sortable: true,
       filter: false,
+      width:120,
       valueFormatter: ({ value }) => truncateText(value, 30) || '-',
     },
     {
@@ -172,6 +193,7 @@ const ProjectMonitoringEvaluationList = () => {
       field: 'mne_physical_region',
       sortable: true,
       filter: false,
+      width:120,
       valueFormatter: ({ value }) => truncateText(value, 30) || '-',
     },
     {
@@ -179,85 +201,24 @@ const ProjectMonitoringEvaluationList = () => {
       field: 'mne_financial_region',
       sortable: true,
       filter: false,
+      width:120,
       valueFormatter: ({ value }) => truncateText(value, 30) || '-',
     },
-    {
-      headerName: t('mne_team_members'),
-      field: 'mne_team_members',
-      sortable: true,
-      filter: false,
-      valueFormatter: ({ value }) => truncateText(value, 30) || '-',
-    },
-    {
-      headerName: t('mne_feedback'),
-      field: 'mne_feedback',
-      sortable: true,
-      filter: false,
-      valueFormatter: ({ value }) => truncateText(value, 30) || '-',
-    },
-    {
-      headerName: t('mne_weakness'),
-      field: 'mne_weakness',
-      sortable: true,
-      filter: false,
-      valueFormatter: ({ value }) => truncateText(value, 30) || '-',
-    },
-    {
-      headerName: t('mne_challenges'),
-      field: 'mne_challenges',
-      sortable: true,
-      filter: false,
-      valueFormatter: ({ value }) => truncateText(value, 30) || '-',
-    },
-    {
-      headerName: t('mne_recommendations'),
-      field: 'mne_recommendations',
-      sortable: true,
-      filter: false,
-      valueFormatter: ({ value }) => truncateText(value, 30) || '-',
-    },
-    {
-      headerName: t('mne_purpose'),
-      field: 'mne_purpose',
-      sortable: true,
-      filter: false,
-      valueFormatter: ({ value }) => truncateText(value, 30) || '-',
-    },
-    {
-      headerName: t('mne_record_date'),
-      field: 'mne_record_date',
-      sortable: true,
-      filter: false,
-      valueFormatter: ({ value }) => truncateText(value, 30) || '-',
-    },
+    
     {
       headerName: t('mne_start_date'),
       field: 'mne_start_date',
       sortable: true,
-      filter: false,
+      filter: "agDateColumnFilter",
       valueFormatter: ({ value }) => truncateText(value, 30) || '-',
     },
     {
       headerName: t('mne_end_date'),
       field: 'mne_end_date',
       sortable: true,
-      filter: false,
+      filter: "agDateColumnFilter",
       valueFormatter: ({ value }) => truncateText(value, 30) || '-',
-    },
-    {
-      headerName: t('mne_description'),
-      field: 'mne_description',
-      sortable: true,
-      filter: false,
-      valueFormatter: ({ value }) => truncateText(value, 30) || '-',
-    },
-    {
-      headerName: t('mne_status'),
-      field: 'mne_status',
-      sortable: true,
-      filter: false,
-      valueFormatter: ({ value }) => truncateText(value, 30) || '-',
-    },
+    }
   ];
 
   if (isError) {
@@ -280,39 +241,39 @@ const ProjectMonitoringEvaluationList = () => {
             <div style={{ flex: "0 0 75%" }}>
               <AdvancedSearch
                 searchHook={useSearchProjectMonitoringEvaluations}
-                textSearchKeys={["mne_type_id"]}
+                textSearchKeys={[]}
                 additionalParams={projectParams}
                 setAdditionalParams={setProjectParams}
                 onSearchResult={handleSearchResults}
                 setIsSearchLoading={setIsSearchLoading}
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
-              />
-              {isLoading || isSearchLoading ? (
-                <Spinners />
-              ) : (
-                <>
-                  <div>
-                    <AgGridContainer
-                      rowData={
-                        showSearchResult ? searchResults?.data : data?.data || []
-                      }
-                      columnDefs={columnDefs}
-                      isPagination={true}
-                      paginationPageSize={20}
-                      isGlobalFilter={true}
-                      isAddButton={false}
-                      addButtonText="Add"
-                      isExcelExport={true}
-                      isPdfExport={true}
-                      isPrint={true}
-                      tableName="Project Monitoring and Evaluation"
-                      includeKey={["usr_full_name", "usr_email", "usr_phone_number"]}
-                      excludeKey={["is_editable", "is_deletable"]}
-                    />
-                  </div>
-                </>
-              )}
+              >
+              <AgGridContainer
+                  rowData={
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
+                  columnDefs={columnDefs}
+                  isLoading={isSearchLoading}
+                  isPagination={true}
+                  rowHeight={35}
+                  paginationPageSize={10}
+                  isGlobalFilter={true}
+                  isExcelExport={true}
+                  isPdfExport={true}
+                  isPrint={true}
+                  tableName="Project Monitoring and Evaluation"
+                  includeKey={[
+                    "prj_name",
+                    "prj_code",
+                    "mne_physical",
+                    "mne_financial",
+                    "mne_start_date",
+                    "mne_end_date",
+                  ]}
+                  excludeKey={["is_editable", "is_deletable"]}
+                />
+              </AdvancedSearch>
             </div>
           </div>
         </div>

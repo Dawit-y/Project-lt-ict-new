@@ -1380,5 +1380,7 @@
 "prp_physical_by_region":"Regon Pyhsical",
 "prp_budget_baseline":"Budget Baseline",
 "prp_physical_baseline":"Physical Baseline",
-"prp_region_approved":"Is Region Approved"
+"prp_region_approved":"Is Region Approved",
+"monitoring_evaluation_list":"Monitoring and Evaluation List",
+"citizenship_project_detail":"Citizenship Project"
 }

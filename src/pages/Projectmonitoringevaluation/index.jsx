@@ -451,16 +451,6 @@ const ProjectMonitoringEvaluationModel = (props) => {
       },
       {
         header: "",
-        accessorKey: "mne_type_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          const labelKey = meTypeMap[cellProps.row.original.mne_type_id];
-          return <span>{t(labelKey)}</span>;
-        },
-      },
-      {
-        header: "",
         accessorKey: "mne_physical",
         enableColumnFilter: false,
         enableSorting: true,
@@ -587,9 +577,9 @@ const ProjectMonitoringEvaluationModel = (props) => {
           return (
             <div className="d-flex gap-3">
               {cellProps.row.original.is_editable == 1 && (
-                <Link
-                  to="#"
-                  className="text-success"
+                <Button
+                    color="none"
+                    className="text-success"
                   onClick={() => {
                     const data = cellProps.row.original;
                     handleProjectMonitoringEvaluationClick(data);
@@ -599,9 +589,9 @@ const ProjectMonitoringEvaluationModel = (props) => {
                   <UncontrolledTooltip placement="top" target="edittooltip">
                     Edit
                   </UncontrolledTooltip>
-                </Link>
+                </Button>
               )}
-              {cellProps.row.original.is_deletable == 1 && (
+              {cellProps.row.original.is_deletable == 9 && (
                 <Link
                   to="#"
                   className="text-danger"
