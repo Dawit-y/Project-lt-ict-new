@@ -7,11 +7,9 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
   useFetchProjectMonitoringEvaluations,
-  useSearchProjectMonitoringEvaluations,
   useAddProjectMonitoringEvaluation,
   useDeleteProjectMonitoringEvaluation,
   useUpdateProjectMonitoringEvaluation,
@@ -19,6 +17,9 @@ import {
 import { useFetchMonitoringEvaluationTypes } from "../../queries/monitoringevaluationtype_query";
 import ProjectMonitoringEvaluationModal from "./ProjectMonitoringEvaluationModal";
 import { useTranslation } from "react-i18next";
+import FormattedAmountField from "../../components/Common/FormattedAmountField";
+import { convertToNumericValue } from "../../utils/commonMethods";
+import { formattedAmountValidation } from "../../utils/Validation/validation";
 import {
   Button,
   Col,
@@ -65,7 +66,7 @@ const visitTypeMap = Object.fromEntries(
 const ProjectMonitoringEvaluationModel = (props) => {
   document.title = " ProjectMonitoringEvaluation";
   const { passedId, isActive, status, startDate } = props;
-  const param = { project_id: passedId ,request_type: "single" };
+  const param = { project_id: passedId, request_type: "single" };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -290,10 +291,10 @@ const ProjectMonitoringEvaluationModel = (props) => {
       mne_visit_type: Yup.string().required(t("mne_visit_type")),
       mne_project_id: Yup.string().required(t("mne_project_id")),
       mne_type_id: Yup.string().required(t("mne_type_id")),
-      mne_physical: Yup.string().required(t("mne_physical")),
-      mne_financial: Yup.string().required(t("mne_financial")),
-      mne_physical_region: Yup.string().required(t("mne_physical_region")),
-      mne_financial_region: Yup.string().required(t("mne_financial_region")),
+      mne_physical: formattedAmountValidation(1, 10000000000, true),
+      mne_financial: formattedAmountValidation(1, 10000000000, true),
+      mne_physical_region: formattedAmountValidation(1, 10000000000, true),
+      mne_financial_region: formattedAmountValidation(1, 10000000000, true),
       mne_team_members: Yup.string().required(t("mne_team_members")),
       mne_feedback: Yup.string().required(t("mne_feedback")),
       mne_weakness: Yup.string().required(t("mne_weakness")),
@@ -314,10 +315,14 @@ const ProjectMonitoringEvaluationModel = (props) => {
           mne_visit_type: values.mne_visit_type,
           mne_project_id: passedId,
           mne_type_id: values.mne_type_id,
-          mne_physical: values.mne_physical,
-          mne_financial: values.mne_financial,
-          mne_physical_region: values.mne_physical_region,
-          mne_financial_region: values.mne_financial_region,
+          mne_physical: convertToNumericValue(values.mne_physical),
+          mne_financial: convertToNumericValue(values.mne_financial),
+          mne_physical_region: convertToNumericValue(
+            values.mne_physical_region
+          ),
+          mne_financial_region: convertToNumericValue(
+            values.mne_financial_region
+          ),
           mne_team_members: values.mne_team_members,
           mne_feedback: values.mne_feedback,
           mne_weakness: values.mne_weakness,
@@ -340,10 +345,14 @@ const ProjectMonitoringEvaluationModel = (props) => {
           mne_visit_type: values.mne_visit_type,
           mne_project_id: passedId,
           mne_type_id: values.mne_type_id,
-          mne_physical: values.mne_physical,
-          mne_financial: values.mne_financial,
-          mne_physical_region: values.mne_physical_region,
-          mne_financial_region: values.mne_financial_region,
+          mne_physical: convertToNumericValue(values.mne_physical),
+          mne_financial: convertToNumericValue(values.mne_financial),
+          mne_physical_region: convertToNumericValue(
+            values.mne_physical_region
+          ),
+          mne_financial_region: convertToNumericValue(
+            values.mne_financial_region
+          ),
           mne_team_members: values.mne_team_members,
           mne_feedback: values.mne_feedback,
           mne_weakness: values.mne_weakness,
@@ -388,10 +397,18 @@ const ProjectMonitoringEvaluationModel = (props) => {
       mne_visit_type: projectMonitoringEvaluation.mne_visit_type,
       mne_project_id: projectMonitoringEvaluation.mne_project_id,
       mne_type_id: projectMonitoringEvaluation.mne_type_id,
-      mne_physical: projectMonitoringEvaluation.mne_physical,
-      mne_financial: projectMonitoringEvaluation.mne_financial,
-      mne_physical_region: projectMonitoringEvaluation.mne_physical_region,
-      mne_financial_region: projectMonitoringEvaluation.mne_financial_region,
+      mne_physical: Number(
+        projectMonitoringEvaluation.mne_physical
+      ).toLocaleString(),
+      mne_financial: Number(
+        projectMonitoringEvaluation.mne_financial
+      ).toLocaleString(),
+      mne_physical_region: Number(
+        projectMonitoringEvaluation.mne_physical_region
+      ).toLocaleString(),
+      mne_financial_region: Number(
+        projectMonitoringEvaluation.mne_financial_region
+      ).toLocaleString(),
       mne_team_members: projectMonitoringEvaluation.mne_team_members,
       mne_feedback: projectMonitoringEvaluation.mne_feedback,
       mne_weakness: projectMonitoringEvaluation.mne_weakness,
@@ -457,7 +474,10 @@ const ProjectMonitoringEvaluationModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.mne_physical, 30) || "-"}
+              {truncateText(
+                Number(cellProps.row.original.mne_physical).toLocaleString(),
+                30
+              ) || "-"}
             </span>
           );
         },
@@ -470,7 +490,10 @@ const ProjectMonitoringEvaluationModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.mne_financial, 30) || "-"}
+              {truncateText(
+                Number(cellProps.row.original.mne_financial).toLocaleString(),
+                30
+              ) || "-"}
             </span>
           );
         },
@@ -483,8 +506,12 @@ const ProjectMonitoringEvaluationModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.mne_physical_region, 30) ||
-                "-"}
+              {truncateText(
+                Number(
+                  cellProps.row.original.mne_physical_region
+                ).toLocaleString(),
+                30
+              ) || "-"}
             </span>
           );
         },
@@ -497,8 +524,12 @@ const ProjectMonitoringEvaluationModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.mne_financial_region, 30) ||
-                "-"}
+              {truncateText(
+                Number(
+                  cellProps.row.original.mne_financial_region
+                ).toLocaleString(),
+                30
+              ) || "-"}
             </span>
           );
         },
@@ -578,8 +609,8 @@ const ProjectMonitoringEvaluationModel = (props) => {
             <div className="d-flex gap-3">
               {cellProps.row.original.is_editable == 1 && (
                 <Button
-                    color="none"
-                    className="text-success"
+                  color="none"
+                  className="text-success"
                   onClick={() => {
                     const data = cellProps.row.original;
                     handleProjectMonitoringEvaluationClick(data);
@@ -747,101 +778,37 @@ const ProjectMonitoringEvaluationModel = (props) => {
                 isLoading={meTypesLoading}
                 isError={meTypesIsError}
               />
+
               <Col className="col-md-4 mb-3">
-                <Label>{t("mne_physical")}</Label>
-                <Input
-                  name="mne_physical"
-                  type="number"
-                  placeholder={t("mne_physical")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.mne_physical || ""}
-                  invalid={
-                    validation.touched.mne_physical &&
-                    validation.errors.mne_physical
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
+                <FormattedAmountField
+                  validation={validation}
+                  fieldId={"mne_physical"}
+                  isRequired={true}
                 />
-                {validation.touched.mne_physical &&
-                validation.errors.mne_physical ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.mne_physical}
-                  </FormFeedback>
-                ) : null}
               </Col>
+
               <Col className="col-md-4 mb-3">
-                <Label>{t("mne_financial")}</Label>
-                <Input
-                  name="mne_financial"
-                  type="number"
-                  placeholder={t("mne_financial")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.mne_financial || ""}
-                  invalid={
-                    validation.touched.mne_financial &&
-                    validation.errors.mne_financial
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
+                <FormattedAmountField
+                  validation={validation}
+                  fieldId={"mne_financial"}
+                  isRequired={true}
                 />
-                {validation.touched.mne_financial &&
-                validation.errors.mne_financial ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.mne_financial}
-                  </FormFeedback>
-                ) : null}
               </Col>
+
               <Col className="col-md-4 mb-3">
-                <Label>{t("mne_physical_region")}</Label>
-                <Input
-                  name="mne_physical_region"
-                  type="number"
-                  placeholder={t("mne_physical_region")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.mne_physical_region || ""}
-                  invalid={
-                    validation.touched.mne_physical_region &&
-                    validation.errors.mne_physical_region
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
+                <FormattedAmountField
+                  validation={validation}
+                  fieldId={"mne_physical_region"}
+                  isRequired={true}
                 />
-                {validation.touched.mne_physical_region &&
-                validation.errors.mne_physical_region ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.mne_physical_region}
-                  </FormFeedback>
-                ) : null}
               </Col>
+
               <Col className="col-md-4 mb-3">
-                <Label>{t("mne_financial_region")}</Label>
-                <Input
-                  name="mne_financial_region"
-                  type="number"
-                  placeholder={t("mne_financial_region")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.mne_financial_region || ""}
-                  invalid={
-                    validation.touched.mne_financial_region &&
-                    validation.errors.mne_financial_region
-                      ? true
-                      : false
-                  }
-                  maxLength={420}
+                <FormattedAmountField
+                  validation={validation}
+                  fieldId={"mne_financial_region"}
+                  isRequired={true}
                 />
-                {validation.touched.mne_financial_region &&
-                validation.errors.mne_financial_region ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.mne_financial_region}
-                  </FormFeedback>
-                ) : null}
               </Col>
               <Row>
                 <Col className="col-md-4 mb-3">
