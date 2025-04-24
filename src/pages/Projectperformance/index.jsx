@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import PropTypes from "prop-types";
+import PropTypes, { number } from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
@@ -40,11 +40,17 @@ import {
   alphanumericValidation,
   amountValidation,
   numberValidation,
+  formattedAmountValidation,
 } from "../../utils/Validation/validation";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import DatePicker from "../../components/Common/DatePicker";
+import FormattedAmountField from "../../components/Common/FormattedAmountField";
+import {
+  convertToNumericValue,
+  createMultiSelectOptions,
+} from "../../utils/commonMethods";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -55,7 +61,7 @@ const truncateText = (text, maxLength) => {
 
 const ProjectPerformanceModel = (props) => {
   const { passedId, isActive, startDate } = props;
-  const param = { prp_project_id: passedId };
+  const param = { prp_project_id: passedId, request_type: "single" };
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
   const [modal, setModal] = useState(false);
@@ -150,17 +156,18 @@ const ProjectPerformanceModel = (props) => {
       is_editable: (projectPerformance && projectPerformance.is_editable) || 1,
       prp_physical_planned:
         (projectPerformance && projectPerformance.prp_physical_planned) || "0",
-        prp_budget_planned:
+      prp_budget_planned:
         (projectPerformance && projectPerformance.prp_budget_planned) || "0",
-        prp_quarter_id:
+      prp_quarter_id:
         (projectPerformance && projectPerformance.prp_quarter_id) || "1",
-        prp_budget_by_region:
+      prp_budget_by_region:
         (projectPerformance && projectPerformance.prp_budget_by_region) || "0",
-       prp_physical_by_region:
-        (projectPerformance && projectPerformance.prp_physical_by_region) || "0",
-        prp_budget_baseline:
+      prp_physical_by_region:
+        (projectPerformance && projectPerformance.prp_physical_by_region) ||
+        "0",
+      prp_budget_baseline:
         (projectPerformance && projectPerformance.prp_budget_baseline) || "0",
-        prp_physical_baseline:
+      prp_physical_baseline:
         (projectPerformance && projectPerformance.prp_physical_baseline) || "0",
     },
 
@@ -199,7 +206,13 @@ const ProjectPerformanceModel = (props) => {
       prp_record_date_gc: Yup.date()
         .required(t("val_required"))
         .typeError("Invalid date format"),
-      prp_total_budget_used: amountValidation(0, 10000000000, true),
+      prp_total_budget_used: formattedAmountValidation(0, 10000000000, true),
+      prp_physical_planned: formattedAmountValidation(0, 10000000000, true),
+      prp_budget_planned: formattedAmountValidation(0, 10000000000, true),
+      prp_budget_by_region: formattedAmountValidation(0, 10000000000, true),
+      prp_physical_by_region: formattedAmountValidation(0, 10000000000, true),
+      prp_budget_baseline: formattedAmountValidation(0, 10000000000, true),
+      prp_physical_baseline: formattedAmountValidation(0, 10000000000, true),
       prp_physical_performance: amountValidation(0, 100, true),
       prp_description: alphanumericValidation(3, 425, false),
       // prp_status: Yup.string().required(t('prp_status')),
@@ -218,16 +231,28 @@ const ProjectPerformanceModel = (props) => {
           prp_budget_year_id: parseInt(values.prp_budget_year_id),
           //prp_record_date_ec: values.prp_record_date_ec,
           prp_record_date_gc: values.prp_record_date_gc,
-          prp_total_budget_used: values.prp_total_budget_used,
           prp_physical_performance: values.prp_physical_performance,
-
-          prp_physical_planned: values.prp_physical_planned,
-          prp_budget_planned: values.prp_budget_planned,
           prp_quarter_id: values.prp_quarter_id,
-          prp_budget_by_region: values.prp_budget_by_region,
-          prp_physical_by_region: values.prp_physical_by_region,
-          prp_budget_baseline: values.prp_budget_baseline,
-          prp_physical_baseline: values.prp_physical_baseline,
+
+          prp_total_budget_used: convertToNumericValue(
+            values.prp_total_budget_used
+          ),
+          prp_physical_planned: convertToNumericValue(
+            values.prp_physical_planned
+          ),
+          prp_budget_planned: convertToNumericValue(values.prp_budget_planned),
+          prp_budget_by_region: convertToNumericValue(
+            values.prp_budget_by_region
+          ),
+          prp_physical_by_region: convertToNumericValue(
+            values.prp_physical_by_region
+          ),
+          prp_budget_baseline: convertToNumericValue(
+            values.prp_budget_baseline
+          ),
+          prp_physical_baseline: convertToNumericValue(
+            values.prp_physical_baseline
+          ),
 
           prp_description: values.prp_description,
           prp_status: 0,
@@ -247,10 +272,28 @@ const ProjectPerformanceModel = (props) => {
           prp_budget_month_id: parseInt(values.prp_budget_month_id),
           prp_budget_year_id: parseInt(values.prp_budget_year_id),
           prp_record_date_gc: values.prp_record_date_gc,
-          prp_total_budget_used: values.prp_total_budget_used,
           prp_physical_performance: values.prp_physical_performance,
           prp_description: values.prp_description,
           prp_status: 0,
+          prp_total_budget_used: convertToNumericValue(
+            values.prp_total_budget_used
+          ),
+          prp_physical_planned: convertToNumericValue(
+            values.prp_physical_planned
+          ),
+          prp_budget_planned: convertToNumericValue(values.prp_budget_planned),
+          prp_budget_by_region: convertToNumericValue(
+            values.prp_budget_by_region
+          ),
+          prp_physical_by_region: convertToNumericValue(
+            values.prp_physical_by_region
+          ),
+          prp_budget_baseline: convertToNumericValue(
+            values.prp_budget_baseline
+          ),
+          prp_physical_baseline: convertToNumericValue(
+            values.prp_physical_baseline
+          ),
           //prp_created_date: 2024,
           //prp_termination_reason_id: values.prp_termination_reason_id,
         };
@@ -323,7 +366,9 @@ const ProjectPerformanceModel = (props) => {
       prp_project_status_id: projectPerformance.prp_project_status_id,
       prp_record_date_ec: projectPerformance.prp_record_date_ec,
       prp_record_date_gc: projectPerformance.prp_record_date_gc,
-      prp_total_budget_used: projectPerformance.prp_total_budget_used,
+      prp_total_budget_used: Number(
+        projectPerformance.prp_total_budget_used
+      ).toLocaleString(),
       prp_physical_performance: projectPerformance.prp_physical_performance,
       prp_description: projectPerformance.prp_description,
       prp_status: projectPerformance.prp_status,
@@ -331,13 +376,26 @@ const ProjectPerformanceModel = (props) => {
       prp_termination_reason_id: projectPerformance.prp_termination_reason_id,
       prp_budget_month_id: projectPerformance.prp_budget_month_id,
       prp_budget_year_id: projectPerformance.prp_budget_year_id,
-      prp_physical_planned: projectPerformance.prp_physical_planned,
-      prp_budget_planned: projectPerformance.prp_budget_planned,
+
+      prp_physical_planned: Number(
+        projectPerformance.prp_physical_planned
+      ).toLocaleString(),
+      prp_budget_planned: Number(
+        projectPerformance.prp_budget_planned
+      ).toLocaleString(),
       prp_quarter_id: projectPerformance.prp_quarter_id,
-      prp_budget_by_region: projectPerformance.prp_budget_by_region,
-      prp_physical_by_region: projectPerformance.prp_physical_by_region,
-      prp_budget_baseline: projectPerformance.prp_budget_baseline,
-      prp_physical_baseline: projectPerformance.prp_physical_baseline,
+      prp_budget_by_region: Number(
+        projectPerformance.prp_budget_by_region
+      ).toLocaleString(),
+      prp_physical_by_region: Number(
+        projectPerformance.prp_physical_by_region
+      ).toLocaleString(),
+      prp_budget_baseline: Number(
+        projectPerformance.prp_budget_baseline
+      ).toLocaleString(),
+      prp_physical_baseline: Number(
+        projectPerformance.prp_physical_baseline
+      ).toLocaleString(),
 
       is_deletable: projectPerformance.is_deletable,
       is_editable: projectPerformance.is_editable,
@@ -428,8 +486,12 @@ const ProjectPerformanceModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.prp_total_budget_used, 30) ||
-                "-"}
+              {truncateText(
+                Number(
+                  cellProps.row.original.prp_total_budget_used
+                ).toLocaleString(),
+                30
+              ) || "-"}
             </span>
           );
         },
@@ -451,19 +513,27 @@ const ProjectPerformanceModel = (props) => {
         },
       },
       {
-        header: '',
-        accessorKey: 'prp_region_approved',
+        header: "",
+        accessorKey: "prp_region_approved",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
-            <span className={cellProps.row.original.prp_region_approved === 1 ? "btn btn-sm btn-soft-success" : "btn btn-sm btn-soft-danger"}>
-            {cellProps.row.original.prp_region_approved === 1 ? t("yes") : t("no")}
-          </span>
+            <span
+              className={
+                cellProps.row.original.prp_region_approved === 1
+                  ? "btn btn-sm btn-soft-success"
+                  : "btn btn-sm btn-soft-danger"
+              }
+            >
+              {cellProps.row.original.prp_region_approved === 1
+                ? t("yes")
+                : t("no")}
+            </span>
           );
         },
-      }, 
-      
+      },
+
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -748,32 +818,13 @@ const ProjectPerformanceModel = (props) => {
                       minDate={startDate}
                     />
                   </Col>
+
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("prp_total_budget_used")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="prp_total_budget_used"
-                      type="number"
-                      placeholder={t("prp_total_budget_used")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_total_budget_used || ""}
-                      invalid={
-                        validation.touched.prp_total_budget_used &&
-                        validation.errors.prp_total_budget_used
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
+                    <FormattedAmountField
+                      validation={validation}
+                      fieldId={"prp_total_budget_used"}
+                      isRequired={true}
                     />
-                    {validation.touched.prp_total_budget_used &&
-                    validation.errors.prp_total_budget_used ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_total_budget_used}
-                      </FormFeedback>
-                    ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>
@@ -802,172 +853,54 @@ const ProjectPerformanceModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
+
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("prp_budget_planned")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="prp_budget_planned"
-                      type="number"
-                      placeholder={t("prp_budget_planned")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_budget_planned || ""}
-                      invalid={
-                        validation.touched.prp_budget_planned &&
-                        validation.errors.prp_budget_planned
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
+                    <FormattedAmountField
+                      validation={validation}
+                      fieldId={"prp_budget_planned"}
+                      isRequired={true}
                     />
-                    {validation.touched.prp_budget_planned &&
-                    validation.errors.prp_budget_planned ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_budget_planned}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("prp_physical_planned")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="prp_physical_planned"
-                      type="number"
-                      placeholder={t("prp_physical_planned")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_physical_planned || ""}
-                      invalid={
-                        validation.touched.prp_physical_planned &&
-                        validation.errors.prp_physical_planned
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prp_physical_planned &&
-                    validation.errors.prp_physical_planned ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_physical_planned}
-                      </FormFeedback>
-                    ) : null}
                   </Col>
 
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("prp_budget_by_region")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="prp_budget_by_region"
-                      type="number"
-                      placeholder={t("prp_budget_by_region")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_budget_by_region || ""}
-                      invalid={
-                        validation.touched.prp_budget_by_region &&
-                        validation.errors.prp_budget_by_region
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
+                    <FormattedAmountField
+                      validation={validation}
+                      fieldId={"prp_physical_planned"}
+                      isRequired={true}
                     />
-                    {validation.touched.prp_budget_by_region &&
-                    validation.errors.prp_budget_by_region ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_budget_by_region}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("prp_physical_by_region")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="prp_physical_by_region"
-                      type="number"
-                      placeholder={t("prp_physical_by_region")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_physical_by_region || ""}
-                      invalid={
-                        validation.touched.prp_physical_by_region &&
-                        validation.errors.prp_physical_by_region
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prp_physical_by_region &&
-                    validation.errors.prp_physical_by_region ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_physical_by_region}
-                      </FormFeedback>
-                    ) : null}
                   </Col>
 
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("prp_budget_baseline")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="prp_budget_baseline"
-                      type="number"
-                      placeholder={t("prp_budget_baseline")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_budget_baseline || ""}
-                      invalid={
-                        validation.touched.prp_budget_baseline &&
-                        validation.errors.prp_budget_baseline
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
+                    <FormattedAmountField
+                      validation={validation}
+                      fieldId={"prp_budget_by_region"}
+                      isRequired={true}
                     />
-                    {validation.touched.prp_budget_baseline &&
-                    validation.errors.prp_budget_baseline ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_budget_baseline}
-                      </FormFeedback>
-                    ) : null}
                   </Col>
+
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("prp_physical_baseline")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="prp_physical_baseline"
-                      type="number"
-                      placeholder={t("prp_physical_baseline")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_physical_baseline || ""}
-                      invalid={
-                        validation.touched.prp_physical_baseline &&
-                        validation.errors.prp_physical_baseline
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
+                    <FormattedAmountField
+                      validation={validation}
+                      fieldId={"prp_physical_by_region"}
+                      isRequired={true}
                     />
-                    {validation.touched.prp_physical_baseline &&
-                    validation.errors.prp_physical_baseline ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_physical_baseline}
-                      </FormFeedback>
-                    ) : null}
                   </Col>
 
+                  <Col className="col-md-6 mb-3">
+                    <FormattedAmountField
+                      validation={validation}
+                      fieldId={"prp_budget_baseline"}
+                      isRequired={true}
+                    />
+                  </Col>
 
+                  <Col className="col-md-6 mb-3">
+                    <FormattedAmountField
+                      validation={validation}
+                      fieldId={"prp_physical_baseline"}
+                      isRequired={true}
+                    />
+                  </Col>
 
                   <Col className="col-md-12 mb-3">
                     <Label>{t("prp_description")}</Label>

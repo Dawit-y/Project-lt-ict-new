@@ -75,9 +75,7 @@ const bytesToReadableSize = (bytes) => {
   const mb = bytes / (1024 * 1024); // Convert to MB
   const kb = bytes / 1024; // Convert to KB
 
-  return mb >= 1
-    ? `${mb.toFixed(2)} MB`
-    : `${kb.toFixed(2)} KB`;
+  return mb >= 1 ? `${mb.toFixed(2)} MB` : `${kb.toFixed(2)} KB`;
 };
 
 export const DetailsView = ({ details, keysToRemove = [], status }) => {
@@ -94,7 +92,9 @@ export const DetailsView = ({ details, keysToRemove = [], status }) => {
   const descriptionKey = Object.keys(filteredDetails).find((key) =>
     key.includes("description")
   );
-  const descriptionValue = descriptionKey ? filteredDetails[descriptionKey] : "-";
+  const descriptionValue = descriptionKey
+    ? filteredDetails[descriptionKey]
+    : "-";
 
   const sizeKey = Object.keys(filteredDetails).find((key) =>
     key.toLowerCase().includes("size")
@@ -105,8 +105,9 @@ export const DetailsView = ({ details, keysToRemove = [], status }) => {
   // Status processing
   const statusKey = status?.key;
   const statusValue = filteredDetails[statusKey];
-  const statusItem =
-    status?.values?.find((obj) => Object.hasOwn(obj, statusValue))?.[statusValue];
+  const statusItem = status?.values?.find((obj) =>
+    Object.hasOwn(obj, statusValue)
+  )?.[statusValue];
 
   return (
     <div>
@@ -114,7 +115,14 @@ export const DetailsView = ({ details, keysToRemove = [], status }) => {
         <h5 className="text-truncate font-size-15">
           {t(descriptionKey || "description")}
         </h5>
-        <p className="text-muted">{descriptionValue}</p>
+        {/* <p className="text-muted">{descriptionValue}</p> */}
+        <p className="text-muted">
+          <div
+            className="border p-3"
+            style={{ backgroundColor: "#f8f9fa", borderRadius: "0.5rem" }}
+            dangerouslySetInnerHTML={{ __html: descriptionValue }}
+          />
+        </p>
       </div>
       {statusKey && statusValue !== undefined && statusItem && (
         <div className="my-3">
@@ -176,7 +184,6 @@ DetailsView.propTypes = {
     values: PropTypes.arrayOf(PropTypes.object).isRequired,
   }),
 };
-
 
 export const PDFPreview = ({ filePath, fileSize }) => {
   const [numPages, setNumPages] = useState(null);

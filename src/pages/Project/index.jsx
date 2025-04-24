@@ -63,7 +63,7 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForProject from "./TreeForProject";
 import DatePicker from "../../components/Common/DatePicker";
 import AsyncSelectField from "../../components/Common/AsyncSelectField";
-
+import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 const levels = ["region", "zone", "woreda", "cluster", "sector", "outcome", "program", "sub_program", "output", "project"];
 const objectTypeId = [1, 2, 3, 4, 5]
 function getNextLevel(currentLevel) {
@@ -99,7 +99,7 @@ const ProjectModel = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [project, setProject] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null)
-
+  const { data: projectStatusData } = useFetchProjectStatuss();
   const isSectorLevel = selectedNode?.data?.level === "sector";
   const param = useMemo(() => {
     if (!selectedNode?.data) return {};
@@ -444,7 +444,16 @@ const ProjectModel = () => {
     },
     []
   );
-
+const projectStatusOptions = useMemo(() => {
+    return (
+      projectStatusData?.data
+        ?.filter((type) => type.prs_id === 5 || type.prs_id === 6)
+        .map((type) => ({
+          label: type.prs_status_name_or,
+          value: type.prs_id,
+        })) || []
+    );
+  }, [projectStatusData]);
   const handleProjectClick = (arg) => {
     const project = arg;
     setProject({

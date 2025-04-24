@@ -22,7 +22,7 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForLists from "../../components/Common/TreeForLists";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import AgGridContainer from "../../components/Common/AgGridContainer"
-
+import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 const ProjectModel = () => {
   document.title = "Projects List";
   const [projectMetaData, setProjectMetaData] = useState([]);
@@ -30,7 +30,7 @@ const ProjectModel = () => {
   const lang = i18n.language
   const [isEdit, setIsEdit] = useState(false);
   const [project, setProject] = useState(null);
-
+  const { data: projectStatusData } = useFetchProjectStatuss();
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState(null);
@@ -131,7 +131,16 @@ const ProjectModel = () => {
     setProject(project);
     setDeleteModal(true);
   };
-
+  const projectStatusOptions = useMemo(() => {
+    return (
+      projectStatusData?.data
+        ?.filter((type) => type.prs_id >=1 )
+        .map((type) => ({
+          label: type.prs_status_name_or,
+          value: type.prs_id,
+        })) || []
+    );
+  }, [projectStatusData]);
   const handleSearch = useCallback(({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
@@ -254,6 +263,10 @@ const ProjectModel = () => {
                         ? projectCategoryOptionsAm
                         : projectCategoryOptionsOr,
                   },
+                  {
+                      key: "prj_project_status_id",
+                      options: projectStatusOptions,
+                    }
                 ]}
                 checkboxSearchKeys={[]}
                 additionalParams={projectParams}
