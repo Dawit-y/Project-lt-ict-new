@@ -21,7 +21,7 @@ import {
   useFetchBudgetYears,
   usePopulateBudgetYears,
 } from "../../queries/budgetyear_query";
-import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
+import { useSearchRequestCategorys } from "../../queries/requestcategory_query";
 
 import { useTranslation } from "react-i18next";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
@@ -101,7 +101,8 @@ const BudgetRequestModel = (props) => {
     useFetchBudgetRequests(param);
   const { data: budgetYearData } = usePopulateBudgetYears();
   const { data: bgYearsOptionsData } = useFetchBudgetYears();
-  const { data: bgCategoryOptionsData } = useFetchRequestCategorys();
+  const categoryParam = { rqc_gov_active: 1};
+  const { data: bgCategoryOptionsData } = useSearchRequestCategorys(categoryParam);
   const addBudgetRequest = useAddBudgetRequest();
   const updateBudgetRequest = useUpdateBudgetRequest();
   const deleteBudgetRequest = useDeleteBudgetRequest();
