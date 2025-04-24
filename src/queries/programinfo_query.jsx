@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getProgramInfo,
+  getProgramTree,
   updateProgramInfo,
   addProgramInfo,
   deleteProgramInfo,
@@ -13,6 +14,17 @@ export const useFetchProgramInfos = (param = {}, isActive) => {
   return useQuery({
     queryKey: [...PROGRAM_INFO_QUERY_KEY, "fetch", param],
     queryFn: () => getProgramInfo(param),
+    staleTime: 1000 * 60 * 5,
+    meta: { persist: true },
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    enabled: isActive,
+  });
+};
+export const useFetchProgramTree = (param = {}, isActive) => {
+  return useQuery({
+    queryKey: [...PROGRAM_INFO_QUERY_KEY, "tree", param],
+    queryFn: () => getProgramTree(param),
     staleTime: 1000 * 60 * 5,
     meta: { persist: true },
     refetchOnWindowFocus: true,

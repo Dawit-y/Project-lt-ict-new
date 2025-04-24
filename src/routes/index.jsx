@@ -186,6 +186,7 @@ const MonitoringEvaluationType = lazy(() => import('../pages/Monitoringevaluatio
 const ProjectMonitoringEvaluation = lazy(() => import('../pages/Projectmonitoringevaluation/index'));
 const MonitoringEvaluationTypeList = lazy(() => import('../pages/Monitoringevaluationtype/MonitoringEvaluationTypeList'));
 const ProjectMonitoringEvaluationList = lazy(() => import('../pages/Projectmonitoringevaluation/ProjectMonitoringEvaluationList'));
+const Programs = lazy(() => import("../pages/Programs"))
 
 const authProtectedRoutes = [
   // { path: '/monitoring_evaluation_type_list', component: <MonitoringEvaluationTypeList/> },
@@ -311,6 +312,7 @@ const authProtectedRoutes = [
   { path: '/procurement_participant', component: <ProcurementParticipant /> },
   { path: '/procurement_stage', component: <ProcurementStage /> },
   { path: '/procurement_list', component: <ProcurementinformationList /> },
+  { path: "/programs", component: <Programs /> },
   //   // this route should be at the end of all other routes
   //   // eslint-disable-next-line react/display-name
   { path: "/", exact: true, component: <Navigate to="/dashboard" /> },

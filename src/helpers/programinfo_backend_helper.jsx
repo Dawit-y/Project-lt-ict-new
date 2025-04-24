@@ -2,6 +2,7 @@ import { post } from "./api_Lists";
 
 const apiUrl = import.meta.env.VITE_BASE_API_URL;
 const GET_PROGRAM_INFO = "program_info/listgrid";
+const GET_PROGRAM_TREE = "program_info/listprogramtree";
 const ADD_PROGRAM_INFO = "program_info/insertgrid";
 const UPDATE_PROGRAM_INFO = "program_info/updategrid";
 const DELETE_PROGRAM_INFO = "program_info/deletegrid";
@@ -9,6 +10,16 @@ const DELETE_PROGRAM_INFO = "program_info/deletegrid";
 export const getProgramInfo = async (params = {}) => {
   const queryString = new URLSearchParams(params).toString();
   const url = queryString ? `${GET_PROGRAM_INFO}?${queryString}` : GET_PROGRAM_INFO;
+  try {
+    const response = await post(url);
+    return response;
+  } catch (error) {
+    throw error
+  }
+};
+export const getProgramTree = async (params = {}) => {
+  const queryString = new URLSearchParams(params).toString();
+  const url = queryString ? `${GET_PROGRAM_TREE}?${queryString}` : GET_PROGRAM_TREE;
   try {
     const response = await post(url);
     return response;
