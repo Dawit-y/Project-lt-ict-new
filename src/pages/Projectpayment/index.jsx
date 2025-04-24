@@ -55,7 +55,7 @@ const truncateText = (text, maxLength) => {
 
 const ProjectPaymentModel = (props) => {
   const { passedId, isActive, status, startDate } = props;
-  const param = { project_id: passedId };
+  const param = { project_id: passedId ,request_type: "single" };
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
 

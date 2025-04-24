@@ -54,7 +54,7 @@ const truncateText = (text, maxLength) => {
 const ProjectPlanModel = () => {
   const location = useLocation();
   const id = Number(location.pathname.split("/")[2]);
-  const param = { pld_project_id: id };
+  const param = { pld_project_id: id ,request_type: "single" };
 
   const { t, i18n } = useTranslation();
   const [modal, setModal] = useState(false);

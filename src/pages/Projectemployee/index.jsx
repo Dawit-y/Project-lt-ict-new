@@ -55,7 +55,7 @@ const truncateText = (text, maxLength) => {
 
 const ProjectEmployeeModel = (props) => {
   const { passedId, isActive, startDate } = props;
-  const param = { emp_project_id: passedId };
+  const param = { emp_project_id: passedId, request_type: "single" };
 
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);

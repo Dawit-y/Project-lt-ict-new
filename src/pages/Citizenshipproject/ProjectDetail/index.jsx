@@ -26,6 +26,7 @@ const LazyComponents = {
   RequestInformationModel: lazy(() => import("../../../pages/Requestinformation")),
   BudgetRequestModel: lazy(() => import("../../../pages/Budgetrequest/BudgetRequestRegistration")),
   ProjectPlanModel: lazy(() => import("../../../pages/Projectplan/ProjectPlanRegistration")),
+  ProjectMonitoringEvaluationModel: lazy(() => import("../../Projectmonitoringevaluation/index"))
 };
 
 const ProjectsOverview = () => {
@@ -59,6 +60,11 @@ const ProjectsOverview = () => {
     59: { label: t("request_information"), component: LazyComponents.RequestInformationModel, path: "requests" },
     34: { label: t("budget_request"), component: LazyComponents.BudgetRequestModel, path: "budget_request" },
     61: { label: t("project_plan"), component: LazyComponents.ProjectPlanModel, path: "project_plan" },
+          72: {
+        label: t("project_monitoring_evaluation"),
+        component: LazyComponents.ProjectMonitoringEvaluationModel,
+        path: "project_monitoring_evaluation",
+      },
     //39: { label: t("request_information"), component: LazyComponents.RequestInformationModel, path: "information" },
   }), [t]);
 

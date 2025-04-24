@@ -65,7 +65,7 @@ const visitTypeMap = Object.fromEntries(
 const ProjectMonitoringEvaluationModel = (props) => {
   document.title = " ProjectMonitoringEvaluation";
   const { passedId, isActive, status, startDate } = props;
-  const param = { project_id: passedId };
+  const param = { project_id: passedId ,request_type: "single" };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
