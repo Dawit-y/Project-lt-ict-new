@@ -14,7 +14,7 @@ const transformData = (data) => {
   return data.map((item) => {
     return {
       ...item,
-      p_id: item.id,
+      p_id: item.sci_id,
       id: uuidv4(),
       level: "sector",
       children: []
@@ -153,16 +153,17 @@ const Programs = () => {
     setTreeData((prevTreeData) => updateNodeChildren(prevTreeData, selectedSectorId, 'sector', formattedPrograms));
   }, [programs, selectedSectorId]);
 
+
   const columns = React.useMemo(
     () => [
       {
         accessorKey: 'sci_name_or',
         header: "Name",
         cell: ({ row, getValue }) => {
-          const hasChildren = true
+          const hasChildren = row.original.level !== "output"
           const depth = row.depth;
           const indent = `${depth * 3}rem`;
-          const shouldAddOffset = !hasChildren && depth !== 2;
+          const shouldAddOffset = !hasChildren && depth !== 3;
 
           return (
             <div style={{ paddingLeft: indent }}>
@@ -259,74 +260,63 @@ const Programs = () => {
 export default Programs
 
 function RowActions({ row, toggleForm, toggleDelete, setSelectedRow }) {
+  const safeId = `action-${row.id}`;
+
   return (
     <div className="d-flex align-items-center justify-content-start gap-1">
       {row.original.level !== "output" &&
-        <Button
-          onClick={() => {
-            setSelectedRow(row.original)
-            toggleForm("add")
-          }}
-          className='text-primary'
-          style={{
-            background: 'none',
-            border: 'none',
-            padding: 2,
-            marginRight: '0.5rem',
-            cursor: 'pointer',
-          }}
-        >
-          <FaPlus id='addtooltip' />
-          <UncontrolledTooltip placement="top" target="addtooltip">
+        <>
+          <Button
+            id={`${safeId}-add`}
+            onClick={() => {
+              setSelectedRow(row.original);
+              toggleForm("add");
+            }}
+            className='text-primary'
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: 2,
+              marginRight: '0.5rem',
+              cursor: 'pointer',
+            }}
+          >
+            <FaPlus />
+          </Button>
+          <UncontrolledTooltip placement="top" target={`${safeId}-add`}>
             Add
           </UncontrolledTooltip>
-        </Button>
-      }
-      {
-        row.original.level !== "sector" &&
-        <Button
-          onClick={() => {
-            setSelectedRow(row.original)
-            toggleForm("edit")
-          }}
-          className='text-success'
-          style={{
-            background: 'none',
-            border: 'none',
-            padding: 2,
-            marginRight: '0.5rem',
-            cursor: 'pointer',
-          }}
-        >
-          <FaPen id='edittooltip' />
-          <UncontrolledTooltip placement="top" target="edittooltip">
-            Edit
-          </UncontrolledTooltip>
-        </Button>
+        </>
       }
 
-      {/* <Button
-        onClick={() => {
-          setSelectedRow(row.original)
-          toggleDelete()
-        }}
-        className='text-danger'
-        style={{
-          background: 'none',
-          border: 'none',
-          padding: 2,
-          marginRight: '0.5rem',
-          cursor: 'pointer',
-        }}
-      >
-        <FaTrash id='deletetooltip' />
-        <UncontrolledTooltip placement="top" target="deletetooltip">
-          Delete
-        </UncontrolledTooltip>
-      </Button> */}
+      {row.original.level !== "sector" &&
+        <>
+          <Button
+            id={`${safeId}-edit`}
+            onClick={() => {
+              setSelectedRow(row.original);
+              toggleForm("edit");
+            }}
+            className='text-success'
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: 2,
+              marginRight: '0.5rem',
+              cursor: 'pointer',
+            }}
+          >
+            <FaPen />
+          </Button>
+          <UncontrolledTooltip placement="top" target={`${safeId}-edit`}>
+            Edit
+          </UncontrolledTooltip>
+        </>
+      }
     </div>
-  )
+  );
 }
+
 
 const ExpandButton = ({ row, handleSectorClick, isLoading }) => {
   const handleClick = () => {

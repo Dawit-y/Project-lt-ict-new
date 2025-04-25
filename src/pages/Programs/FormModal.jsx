@@ -39,7 +39,7 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
   const { t } = useTranslation();
   const currentLevel = selectedRow?.level
   const nextLevel = getNextLevel(currentLevel)
-
+  console.log("sele", selectedRow)
   const addProgramInfo = useAddProgramInfo();
   const updateProgramInfo = useUpdateProgramInfo();
   const deleteProgramInfo = useDeleteProgramInfo();
@@ -117,13 +117,15 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
     pri_name_am: Yup.string().required(t("Field is required.")),
     pri_name_en: Yup.string().required(t("Field is required.")),
     pri_program_code: Yup.string().required(t("Field is required.")),
-    pri_start_date: currentLevel === "sub_program"
-      ? Yup.mixed().notRequired()
-      : Yup.date().required(t("Field is required.")),
+    pri_start_date:
+      currentLevel === "sector" || currentLevel === "program" || (currentLevel === "sub_program" && action === "edit")
+        ? Yup.date().required(t("Field is required."))
+        : Yup.mixed().notRequired(),
 
-    pri_end_date: currentLevel === "sub_program"
-      ? Yup.mixed().notRequired()
-      : Yup.date().required(t("Field is required.")),
+    pri_end_date:
+      currentLevel === "sector" || currentLevel === "program" || (currentLevel === "sub_program" && action === "edit")
+        ? Yup.date().required(t("Field is required."))
+        : Yup.mixed().notRequired(),
   });
   const validation = useFormik({
     enableReinitialize: true,
@@ -137,11 +139,11 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
       pri_start_date: action === "edit" ? selectedRow?.pri_start_date || "" : "",
       pri_end_date: action === "edit" ? selectedRow?.pri_end_date || "" : "",
       pri_description: action === "edit" ? selectedRow?.pri_description || "" : "",
+      pri_parent_id: ""
     },
     validationSchema,
     onSubmit: (values) => {
       if (action === "add") {
-        console.log("Add new:", values);
         const newProgramInfo = {
           pri_sector_id: currentLevel === "sector" ? selectedRow?.p_id : "",
           pri_name_or: values.pri_name_or,
@@ -156,10 +158,9 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
         }
         handleAddProgramInfo(newProgramInfo)
       } else if (action === "edit") {
-        console.log("Edit existing:", selectedRow.id, values);
         const updateProgramInfo = {
           pri_id: selectedRow?.p_id,
-          pri_sector_id: currentLevel === "sector" ? selectedRow?.p_id : "",
+          pri_sector_id: selectedRow?.pri_sector_id,
           pri_name_or: values.pri_name_or,
           pri_name_am: values.pri_name_am,
           pri_name_en: values.pri_name_en,
@@ -167,8 +168,8 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
           pri_end_date: values.pri_end_date,
           pri_program_code: values.pri_program_code,
           pri_description: values.pri_description,
-          parent_id: selectedRow?.p_id,
-          object_type_id: currentLevel === "sector" ? 1 : getNextObjectTypeId(selectedRow?.pri_object_type_id)
+          parent_id: selectedRow?.rootId,
+          object_type_id: selectedRow?.pri_object_type_id
         }
         handleUpdateProgramInfo(updateProgramInfo)
       }
@@ -289,8 +290,7 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
                     </FormFeedback>
                   ) : null}
                 </Col>
-                {
-                  currentLevel !== "sub_program" &&
+                {(currentLevel === "sector" || currentLevel === "program" || (currentLevel === "sub_program" && action === "edit")) && (
                   <>
                     <Col className='col-md-6 mb-3'>
                       <DatePicker
@@ -304,10 +304,11 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
                         isRequired={true}
                         componentId={"pri_end_date"}
                         validation={validation}
-                        minDate={validation.values.pri_start_date} />
+                        minDate={validation.values.pri_start_date}
+                      />
                     </Col>
                   </>
-                }
+                )}
                 <Col className='col-md-12 mb-3'>
                   <Label>{t('pri_description')}</Label>
                   <Input

@@ -95,7 +95,7 @@ const TreeTableContainer = ({ data, columns, setData }) => {
           </thead>
           <tbody>
             {table.getRowModel().rows.map(row => (
-              <MemoizedRow
+              <Row
                 key={row.id}
                 row={row}
               />

@@ -26,7 +26,6 @@ export const useFetchProgramTree = (param = {}, isActive) => {
     queryKey: [...PROGRAM_INFO_QUERY_KEY, "tree", param],
     queryFn: () => getProgramTree(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: true,
     refetchOnMount: true,
     enabled: isActive,
@@ -49,11 +48,16 @@ export const useSearchProgramInfos = (searchParams = {}) => {
 // Add program_info
 export const useAddProgramInfo = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: addProgramInfo,
     onSuccess: (newDataResponse) => {
-      queryClient.invalidateQueries({ queryKey: PROGRAM_INFO_QUERY_KEY })
+      queryClient.invalidateQueries({
+        queryKey: [...PROGRAM_INFO_QUERY_KEY], // this will catch all "programinfo/*"
+      });
+      queryClient.invalidateQueries({
+        queryKey: [...PROGRAM_INFO_QUERY_KEY, "tree"], // this specifically targets "programinfo/tree/*"
+        exact: false, // make sure it matches partial keys like param variants
+      });
     },
   });
 };
@@ -64,7 +68,13 @@ export const useUpdateProgramInfo = () => {
   return useMutation({
     mutationFn: updateProgramInfo,
     onSuccess: (updatedData) => {
-      queryClient.invalidateQueries({ queryKey: PROGRAM_INFO_QUERY_KEY })
+      queryClient.invalidateQueries({
+        queryKey: [...PROGRAM_INFO_QUERY_KEY], // this will catch all "programinfo/*"
+      });
+      queryClient.invalidateQueries({
+        queryKey: [...PROGRAM_INFO_QUERY_KEY, "tree"], // this specifically targets "programinfo/tree/*"
+        exact: false, // make sure it matches partial keys like param variants
+      });
     },
   });
 };
@@ -75,7 +85,7 @@ export const useDeleteProgramInfo = () => {
   return useMutation({
     mutationFn: deleteProgramInfo,
     onSuccess: (deletedData) => {
-      queryClient.invalidateQueries({ queryKey: PROGRAM_INFO_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: PROGRAM_INFO_QUERY_KEY, exact: false })
     },
   });
 };
