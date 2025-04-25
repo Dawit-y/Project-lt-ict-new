@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, Suspense, lazy  } from "react";
 import PropTypes, { number } from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty } from "lodash";
@@ -51,7 +51,9 @@ import {
   convertToNumericValue,
   createMultiSelectOptions,
 } from "../../utils/commonMethods";
-
+const AttachFileModal = lazy(() => import("../../components/Common/AttachFileModal"));
+const ConvInfoModal = lazy(() => import("../../pages/Conversationinformation/ConvInfoModal"));
+import { PAGE_ID } from "../../constants/constantFile";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -59,6 +61,10 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
+// Loader Component for Suspense
+const LazyLoader = ({ children }) => (
+  <Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
+);
 const ProjectPerformanceModel = (props) => {
   const { passedId, isActive, startDate } = props;
   const param = { prp_project_id: passedId, request_type: "single" };
@@ -83,7 +89,8 @@ const ProjectPerformanceModel = (props) => {
   const addProjectPerformance = useAddProjectPerformance();
   const updateProjectPerformance = useUpdateProjectPerformance();
   const deleteProjectPerformance = useDeleteProjectPerformance();
-
+   const [fileModal, setFileModal] = useState(false);
+  const [convModal, setConvModal] = useState(false);
   //START CRUD
   const handleAddProjectPerformance = async (data) => {
     try {
@@ -304,7 +311,8 @@ const ProjectPerformanceModel = (props) => {
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-
+   const toggleFileModal = () => setFileModal(!fileModal);
+  const toggleConvModal = () => setConvModal(!convModal);
   const budgetYearMap = useMemo(() => {
     return (
       bgYearsOptionsData?.data?.reduce((acc, year) => {
@@ -555,6 +563,48 @@ const ProjectPerformanceModel = (props) => {
           );
         },
       },
+      {
+        header: t("attach_files"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              outline
+              type="button"
+              color="success"
+              className="btn-sm"
+              onClick={() => {
+                toggleFileModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("attach_files")}
+            </Button>
+          );
+        },
+      },
+      {
+        header: t("Message"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              outline
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                toggleConvModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("Message")}
+            </Button>
+          );
+        },
+      }
     ];
     if (
       data?.previledge?.is_role_editable == 1 ||
@@ -621,6 +671,23 @@ const ProjectPerformanceModel = (props) => {
   }
   return (
     <React.Fragment>
+<LazyLoader>
+    {fileModal && (
+          <AttachFileModal
+            isOpen={fileModal}
+            toggle={toggleFileModal}
+            projectId={passedId}
+            ownerTypeId={PAGE_ID.PROJ_PERFORMANCE}
+            ownerId={transaction?.prp_id}
+          />)}
+        {convModal && (
+          <ConvInfoModal
+            isOpen={convModal}
+            toggle={toggleConvModal}
+            ownerTypeId={PAGE_ID.PROJ_PERFORMANCE}
+            ownerId={transaction?.prp_id ?? null}
+          />)}
+
       <ProjectPerformanceModal
         isOpen={modal1}
         toggle={toggleViewModal}
@@ -629,6 +696,7 @@ const ProjectPerformanceModel = (props) => {
         budgetMonthMap={budgetMonthMap}
         projectStatusMap={projectStatusMap}
       />
+      </LazyLoader>
       <DynamicDetailsModal
         isOpen={modal1}
         toggle={toggleViewModal} // Function to close the modal

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, Suspense, lazy  } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -40,7 +40,9 @@ import AsyncSelectField from "../../components/Common/AsyncSelectField";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-
+const AttachFileModal = lazy(() => import("../../components/Common/AttachFileModal"));
+const ConvInfoModal = lazy(() => import("../../pages/Conversationinformation/ConvInfoModal"));
+import { PAGE_ID } from "../../constants/constantFile";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -62,7 +64,9 @@ const visitTypes = [
 const visitTypeMap = Object.fromEntries(
   visitTypes.map(({ value, label }) => [value, label])
 );
-
+const LazyLoader = ({ children }) => (
+  <Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
+);
 const ProjectMonitoringEvaluationModel = (props) => {
   document.title = " ProjectMonitoringEvaluation";
   const { passedId, isActive, status, startDate } = props;
@@ -79,6 +83,8 @@ const ProjectMonitoringEvaluationModel = (props) => {
   const [showSearchResult, setShowSearchResult] = useState(false);
   const { data, isLoading, isFetching, error, isError, refetch } =
     useFetchProjectMonitoringEvaluations(param, isActive);
+  const [fileModal, setFileModal] = useState(false);
+  const [convModal, setConvModal] = useState(false);
   const {
     data: meTypes,
     isLoading: meTypesLoading,
@@ -370,6 +376,8 @@ const ProjectMonitoringEvaluationModel = (props) => {
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
+  const toggleFileModal = () => setFileModal(!fileModal);
+  const toggleConvModal = () => setConvModal(!convModal);
   // Fetch ProjectMonitoringEvaluation on component mount
   useEffect(() => {
     setProjectMonitoringEvaluation(data);
@@ -594,6 +602,48 @@ const ProjectMonitoringEvaluationModel = (props) => {
           );
         },
       },
+       {
+        header: t("attach_files"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              outline
+              type="button"
+              color="success"
+              className="btn-sm"
+              onClick={() => {
+                toggleFileModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("attach_files")}
+            </Button>
+          );
+        },
+      },
+      {
+        header: t("Message"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              outline
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                toggleConvModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("Message")}
+            </Button>
+          );
+        },
+      },
     ];
     if (
       data?.previledge?.is_role_editable == 1 ||
@@ -654,6 +704,24 @@ const ProjectMonitoringEvaluationModel = (props) => {
 
   return (
     <React.Fragment>
+    <LazyLoader>
+        {fileModal && (
+          <AttachFileModal
+            isOpen={fileModal}
+            toggle={toggleFileModal}
+            projectId={passedId}
+            ownerTypeId={PAGE_ID.PROJ_MONITORING}
+            ownerId={transaction?.mne_id}
+          />)}
+        {convModal && (
+          <ConvInfoModal
+            isOpen={convModal}
+            toggle={toggleConvModal}
+            ownerTypeId={PAGE_ID.PROJ_MONITORING}
+            ownerId={transaction?.mne_id ?? null}
+          />)}
+      </LazyLoader>
+
       <ProjectMonitoringEvaluationModal
         isOpen={modal1}
         toggle={toggleViewModal}

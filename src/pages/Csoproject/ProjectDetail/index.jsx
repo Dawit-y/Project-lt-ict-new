@@ -121,6 +121,7 @@ const ProjectsOverview = () => {
     </div>
   );
 };
+prj_male_participant,prj_female_participant,prj_sub_project_category_id,prj_job_opportunity,
 
 ProjectsOverview.propTypes = {
   match: PropTypes.object,

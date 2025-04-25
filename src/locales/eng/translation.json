@@ -1377,5 +1377,9 @@
 	"monitoring_evaluation_list": "Monitoring and Evaluation List",
 	"citizenship_project_detail": "Citizenship Project",
 	"pri_start_date": "Start Date",
-	"pri_end_date": "End Date"
+	"pri_end_date": "End Date",
+	"prj_male_participant":"Male Participant",
+"prj_female_participant":"Female Participant",
+"prj_sub_project_category_id":"Project Sub Category",
+"prj_job_opportunity":"Job Opportunity"
 }
