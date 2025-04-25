@@ -51,6 +51,7 @@ const TreeTableContainer = ({ data, columns, setData }) => {
             ...columnSizeVars,
             width: "100%",
           }}
+          striped
         >
           <thead
             className="sticky-top table-light p-3"

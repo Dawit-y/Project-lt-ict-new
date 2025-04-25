@@ -133,13 +133,13 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
       id: selectedRow?.id,
       parent_id: selectedRow?.rootId,
       pri_object_type_id: selectedRow?.pri_object_type_id,
-      pri_name_or: action === "edit" ? selectedRow?.name || "" : "",
+      pri_name_or: action === "edit" ? selectedRow?.pri_name_or || "" : "",
       pri_name_am: action === "edit" ? selectedRow?.pri_name_am || "" : "",
-      pri_name_en: action === "edit" ? selectedRow?.pri_name_en || "" : "",
+      pri_name_en: action === "edit" ? selectedRow?.name || "" : "",
+      pri_program_code: action === "edit" ? selectedRow?.pri_program_code || "" : "",
       pri_start_date: action === "edit" ? selectedRow?.pri_start_date || "" : "",
       pri_end_date: action === "edit" ? selectedRow?.pri_end_date || "" : "",
       pri_description: action === "edit" ? selectedRow?.pri_description || "" : "",
-      pri_parent_id: ""
     },
     validationSchema,
     onSubmit: (values) => {
@@ -153,7 +153,7 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
           pri_end_date: values.pri_end_date,
           pri_program_code: values.pri_program_code,
           pri_description: values.pri_description,
-          parent_id: selectedRow?.p_id,
+          parent_id: currentLevel === "sector" ? null : selectedRow?.p_id,
           object_type_id: currentLevel === "sector" ? 1 : getNextObjectTypeId(selectedRow?.pri_object_type_id)
         }
         handleAddProgramInfo(newProgramInfo)

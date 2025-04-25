@@ -2,7 +2,7 @@ import { useEffect, useState, memo, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useFetchAddressStructures } from "../../queries/address_structure_query";
 import { getUserSectorListTree } from "../../queries/usersector_query";
-import { useFetchProjects, useSearchProjects } from "../../queries/project_query"
+import { useFetchProgramTree } from "../../queries/programinfo_query"
 import { Tree } from "react-arborist";
 import { FaFolder, FaFile, FaChevronRight, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { Card, CardBody, Input, Label, Col, Row, Button } from "reactstrap";
@@ -75,24 +75,24 @@ const formatProjectNode = (project, context = {}) => {
     region_id = '',
     zone_id = '',
   } = context;
-
+  console.log("p", project)
   return {
     ...project,
+    pri_id: project?.id,
     id: `${woreda_id}_${uuidv4()}`,
-    name: project.prj_name_or,
-    add_name_or: project.prj_name_or,
-    add_name_am: project.prj_name_am,
-    add_name_en: project.prj_name_en,
+    name: project.name,
+    add_name_or: project.pri_name_or,
+    add_name_am: project.pri_name_am,
+    add_name_en: project.name,
     region_id,
     zone_id,
     woreda_id,
-    level: levelMap[project.prj_object_type_id] || "unknown",
+    level: levelMap[project.pri_object_type_id] || "unknown",
     children: (project.children || [])
-      .filter(child => child.prj_object_type_id !== 5)
+      .filter(child => child.pri_object_type_id !== 5)
       .map(child => formatProjectNode(child, context)),
   };
 };
-
 
 const AddressTree = ({ onNodeSelect }) => {
   const { t, i18n } = useTranslation();
@@ -109,7 +109,7 @@ const AddressTree = ({ onNodeSelect }) => {
 
   const { data: clusters, isLoading: isClusterLoading, isError: isClusterError } = getUserSectorListTree(userId);
   const { data: projects, isLoading: isProjectsLoading, refetch: refetchProjects } =
-    useSearchProjects(projectParams, Object.keys(projectParams).length > 0);
+    useFetchProgramTree(projectParams, Object.keys(projectParams).length > 0);
 
   useEffect(() => {
     if (data && clusters) {
@@ -166,10 +166,7 @@ const AddressTree = ({ onNodeSelect }) => {
   const handleSectorClick = async (node) => {
     const { id, region_id, zone_id, woreda_id, s_id } = node.data;
     setProjectParams({
-      prj_owner_region_id: region_id,
-      prj_owner_zone_id: zone_id,
-      prj_owner_woreda_id: woreda_id,
-      prj_sector_id: s_id
+      pri_sector_id: s_id
     })
     setSelectedSector(node.data)
   };

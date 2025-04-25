@@ -36,9 +36,9 @@ const formatProgramRow = (program) => {
     p_id: program.id,
     id: uuidv4(),
     name: program.name,
-    sci_name_or: program.name,
+    sci_name_or: program.pri_name_or,
     sci_name_am: program.pri_name_am,
-    sci_name_en: program.pri_name_en,
+    sci_name_en: program.name,
     level: levelMap[program.pri_object_type_id] || "unknown",
     children: (program.children || [])
       .filter(child => child.pri_object_type_id !== 5)
@@ -317,11 +317,10 @@ function RowActions({ row, toggleForm, toggleDelete, setSelectedRow }) {
   );
 }
 
-
 const ExpandButton = ({ row, handleSectorClick, isLoading }) => {
   const handleClick = () => {
-    row.toggleExpanded()
     handleSectorClick(row)
+    row.toggleExpanded()
   }
   return (
     <Button

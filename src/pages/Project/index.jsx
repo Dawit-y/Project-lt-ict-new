@@ -64,6 +64,7 @@ import TreeForProject from "./TreeForProject";
 import DatePicker from "../../components/Common/DatePicker";
 import AsyncSelectField from "../../components/Common/AsyncSelectField";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
+
 const levels = ["region", "zone", "woreda", "cluster", "sector", "outcome", "program", "sub_program", "output", "project"];
 const objectTypeId = [1, 2, 3, 4, 5]
 function getNextLevel(currentLevel) {
@@ -100,25 +101,18 @@ const ProjectModel = () => {
   const [project, setProject] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null)
   const { data: projectStatusData } = useFetchProjectStatuss();
-  const isSectorLevel = selectedNode?.data?.level === "sector";
-  const param = useMemo(() => {
-    if (!selectedNode?.data) return {};
-    if (isSectorLevel) {
-      return {
-        prj_owner_region_id: selectedNode.data.region_id,
-        prj_owner_zone_id: selectedNode.data.zone_id,
-        prj_owner_woreda_id: selectedNode.data.woreda_id,
-        prj_sector_id: selectedNode.data.s_id,
-      };
-    } else {
-      return {
-        prj_sector_id: selectedNode.data.prj_sector_id,
-        parent_id: selectedNode.data.prj_id,
-      };
-    }
+  console.log("sel", selectedNode?.data)
+  const { param, isValidParam } = useMemo(() => {
+    const param = {
+      parent_id: selectedNode?.data?.pri_id,
+    };
+
+    const isValidParam = Object.keys(param).length > 0 &&
+      Object.values(param).every((value) => value !== null && value !== undefined) &&
+      selectedNode?.data?.level === "output";
+
+    return { param, isValidParam };
   }, [selectedNode]);
-  const isValidParam = Object.keys(param).length > 0 &&
-    Object.values(param).every((value) => value !== null && value !== undefined);
 
   const {
     data,
@@ -126,9 +120,7 @@ const ProjectModel = () => {
     error,
     isError,
     refetch,
-  } = isSectorLevel
-      ? useSearchProjects(param, isValidParam)
-      : useFetchChildProjects(param, isValidParam);
+  } = useFetchChildProjects(param, isValidParam);
 
   const { data: projectCategoryData, isLoading: prCategoryLoading, isError: prCategoryIsError } = useFetchProjectCategorys();
   const {
@@ -174,6 +166,7 @@ const ProjectModel = () => {
     }
     toggle();
   };
+
   const handleDeleteProject = async () => {
     if (project && project.prj_id) {
       try {
@@ -315,15 +308,15 @@ const ProjectModel = () => {
           prj_total_estimate_budget: values.prj_total_estimate_budget,
           prj_total_actual_budget: values.prj_total_actual_budget,
           prj_geo_location: values.prj_geo_location,
-          prj_sector_id: isSectorLevel ? Number(selectedNode.data.s_id) : Number(selectedNode.data.prj_sector_id),
+          prj_sector_id: Number(selectedNode.data.pri_sector_id),
           prj_location_region_id: Number(values.prj_location_region_id),
           prj_location_zone_id: Number(values.prj_location_zone_id),
           prj_location_woreda_id: Number(values.prj_location_woreda_id),
           prj_location_kebele_id: values.prj_location_kebele_id,
           prj_location_description: values.prj_location_description,
-          prj_owner_region_id: isSectorLevel ? Number(selectedNode.data.region_id) : Number(selectedNode.data.prj_owner_region_id),
-          prj_owner_zone_id: isSectorLevel ? Number(selectedNode.data.zone_id) : Number(selectedNode.data.prj_owner_zone_id),
-          prj_owner_woreda_id: isSectorLevel ? Number(selectedNode.data.woreda_id) : Number(selectedNode.data.prj_owner_woreda_id),
+          prj_owner_region_id: Number(selectedNode.data.region_id),
+          prj_owner_zone_id: Number(selectedNode.data.zone_id),
+          prj_owner_woreda_id: Number(selectedNode.data.woreda_id),
           prj_owner_kebele_id: values.prj_owner_kebele_id,
           prj_owner_description: values.prj_owner_description,
           prj_start_date_et: values.prj_start_date_et,
@@ -345,8 +338,8 @@ const ProjectModel = () => {
           prj_program_id: 1,
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
-          parent_id: isSectorLevel ? 1 : Number(selectedNode.data.prj_id),
-          object_type_id: isSectorLevel ? 1 : getNextObjectTypeId(selectedNode.data.prj_object_type_id),
+          parent_id: Number(selectedNode.data.pri_id),
+          object_type_id: 5,
         };
         // update Project
         handleUpdateProject(updateProject);
@@ -362,15 +355,15 @@ const ProjectModel = () => {
           prj_total_estimate_budget: values.prj_total_estimate_budget,
           prj_total_actual_budget: values.prj_total_actual_budget,
           prj_geo_location: values.prj_geo_location,
-          prj_sector_id: isSectorLevel ? Number(selectedNode.data.s_id) : Number(selectedNode.data.prj_sector_id),
+          prj_sector_id: Number(selectedNode.data.pri_sector_id),
           prj_location_region_id: Number(values.prj_location_region_id),
           prj_location_zone_id: Number(values.prj_location_zone_id),
           prj_location_woreda_id: Number(values.prj_location_woreda_id),
           prj_location_kebele_id: values.prj_location_kebele_id,
           prj_location_description: values.prj_location_description,
-          prj_owner_region_id: isSectorLevel ? Number(selectedNode.data.region_id) : Number(selectedNode.data.prj_owner_region_id),
-          prj_owner_zone_id: isSectorLevel ? Number(selectedNode.data.zone_id) : Number(selectedNode.data.prj_owner_zone_id),
-          prj_owner_woreda_id: isSectorLevel ? Number(selectedNode.data.woreda_id) : Number(selectedNode.data.prj_owner_woreda_id),
+          prj_owner_region_id: Number(selectedNode.data.region_id),
+          prj_owner_zone_id: Number(selectedNode.data.zone_id),
+          prj_owner_woreda_id: Number(selectedNode.data.woreda_id),
           prj_owner_kebele_id: values.prj_owner_kebele_id,
           prj_owner_description: values.prj_owner_description,
           prj_start_date_et: values.prj_start_date_et,
@@ -390,8 +383,8 @@ const ProjectModel = () => {
           prj_rural_ben_number: values.prj_rural_ben_number,
           //prj_department_id: Number(values.prj_department_id),
           prj_program_id: 1,
-          parent_id: isSectorLevel ? 1 : Number(selectedNode.data.prj_id),
-          object_type_id: isSectorLevel ? 1 : getNextObjectTypeId(selectedNode.data.prj_object_type_id),
+          parent_id: Number(selectedNode.data.pri_id),
+          object_type_id: 5,
         };
         // save new Project
         handleAddProject(newProject);
@@ -444,7 +437,7 @@ const ProjectModel = () => {
     },
     []
   );
-const projectStatusOptions = useMemo(() => {
+  const projectStatusOptions = useMemo(() => {
     return (
       projectStatusData?.data
         ?.filter((type) => type.prs_id === 5 || type.prs_id === 6)
@@ -658,6 +651,8 @@ const projectStatusOptions = useMemo(() => {
     ? true
     : data?.previledge?.is_role_can_add === 1;
 
+  console.log("data", data)
+
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
@@ -691,7 +686,7 @@ const projectStatusOptions = useMemo(() => {
                   </CardBody>
                 </Card>
               )}
-              {levels.slice(-6).includes(selectedNode?.data?.level) &&
+              {selectedNode?.data?.level === "output" &&
                 <div className="w-100">
                   <Card>
                     <CardBody>
@@ -700,13 +695,13 @@ const projectStatusOptions = useMemo(() => {
                         data={data?.data || []}
                         isLoading={isLoading}
                         isGlobalFilter={true}
-                        isAddButton={allowAddButton}
+                        isAddButton={data?.previledge?.is_role_can_add === 1}
                         isCustomPageSize={true}
                         handleUserClick={handleProjectClicks}
                         isPagination={true}
                         SearchPlaceholder={t("filter_placeholder")}
                         buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                        buttonName={t("add") + " " + getNextLevel(selectedNode?.data?.level)}
+                        buttonName={t("add") + " " + t("project")}
                         tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                         theadClass="table-light"
                         pagination="pagination"
@@ -725,8 +720,8 @@ const projectStatusOptions = useMemo(() => {
       <Modal isOpen={modal} toggle={toggle} className="modal-xl">
         <ModalHeader toggle={toggle} tag="h4">
           {!!isEdit
-            ? t("edit") + " " + getNextLevel(selectedNode?.data?.level)
-            : t("add") + " " + getNextLevel(selectedNode?.data?.level)}
+            ? t("edit") + " " + t("project")
+            : t("add") + " " + t("project")}
         </ModalHeader>
         <ModalBody>
           <Form

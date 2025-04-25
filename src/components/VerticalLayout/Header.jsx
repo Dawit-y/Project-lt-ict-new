@@ -139,7 +139,7 @@ const Header = (props) => {
                 type="button"
                 className="btn header-item noti-icon right-bar-toggle "
               >
-                <i className="bx bx-cog bx-spin" />
+                <i className="bx bx-cog" />
               </button>
             </div>
           </div>
