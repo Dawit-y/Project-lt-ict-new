@@ -1,17 +1,33 @@
-import React, { useState, useMemo } from 'react'
-import { Link } from 'react-router-dom'
-import FileUploadField from './FileUploadField'
-import DeleteModal from './DeleteModal'
-import { useFormik } from 'formik'
-import * as Yup from "yup"
-import { useTranslation } from 'react-i18next'
-import { useAddProjectDocument, useUpdateProjectDocument, useDeleteProjectDocument, useFetchProjectDocuments } from '../../queries/projectdocument_query'
-import { Modal, ModalBody, ModalFooter, ModalHeader, Form, Col, Row, Button, Spinner, UncontrolledTooltip } from 'reactstrap'
-import { toast } from 'react-toastify'
-import TableContainer from './TableContainer'
-import Spinners from './Spinner'
-import FetchErrorHandler from './FetchErrorHandler'
-import ProjectDocumentModal from '../../pages/Projectdocument/ProjectDocumentModal'
+import React, { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
+import FileUploadField from "./FileUploadField";
+import DeleteModal from "./DeleteModal";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
+import {
+  useAddProjectDocument,
+  useUpdateProjectDocument,
+  useDeleteProjectDocument,
+  useFetchProjectDocuments,
+} from "../../queries/projectdocument_query";
+import {
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Form,
+  Col,
+  Row,
+  Button,
+  Spinner,
+  UncontrolledTooltip,
+} from "reactstrap";
+import { toast } from "react-toastify";
+import TableContainer from "./TableContainer";
+import Spinners from "./Spinner";
+import FetchErrorHandler from "./FetchErrorHandler";
+import ProjectDocumentModal from "../../pages/Projectdocument/ProjectDocumentModal";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -29,12 +45,22 @@ const formatFileSize = (bytes) => {
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 };
 
-const AttachFileModal = ({ isOpen, toggle, ownerTypeId, ownerId, projectId }) => {
-  const [projectDocument, setProjectDocument] = useState(null)
+const AttachFileModal = ({
+  isOpen,
+  toggle,
+  ownerTypeId,
+  ownerId,
+  projectId,
+}) => {
+  const [projectDocument, setProjectDocument] = useState(null);
   const [modal, setModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
 
-  const param = { project_id: projectId, prd_owner_type_id: ownerTypeId, prd_owner_id: ownerId }
+  const param = {
+    project_id: projectId,
+    prd_owner_type_id: ownerTypeId,
+    prd_owner_id: ownerId,
+  };
   const { data, isLoading, isError, error, refetch } = useFetchProjectDocuments(
     param,
     isOpen
@@ -43,7 +69,7 @@ const AttachFileModal = ({ isOpen, toggle, ownerTypeId, ownerId, projectId }) =>
   const updateProjectDocument = useUpdateProjectDocument();
   const deleteProjectDocument = useDeleteProjectDocument();
 
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const handleAddProjectDocument = async (data) => {
     try {
@@ -139,7 +165,6 @@ const AttachFileModal = ({ isOpen, toggle, ownerTypeId, ownerId, projectId }) =>
         };
         // update ProjectDocument
         handleUpdateProjectDocument(updateProjectDocument);
-
       } else {
         const newProjectDocument = {
           prd_project_id: projectId,
@@ -157,13 +182,12 @@ const AttachFileModal = ({ isOpen, toggle, ownerTypeId, ownerId, projectId }) =>
         };
         // save new ProjectDocuments
         handleAddProjectDocument(newProjectDocument);
-
       }
     },
   });
 
-  const [modal1, setModal1] = useState(false)
-  const [details, setDetails] = useState({})
+  const [modal1, setModal1] = useState(false);
+  const [details, setDetails] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
 
   const toggleForm = () => {
@@ -243,7 +267,9 @@ const AttachFileModal = ({ isOpen, toggle, ownerTypeId, ownerId, projectId }) =>
         enableSorting: true,
         cell: (cellProps) => {
           return (
-            <span>{formatFileSize(cellProps.row.original.prd_size) || "-"}</span>
+            <span>
+              {formatFileSize(cellProps.row.original.prd_size) || "-"}
+            </span>
           );
         },
       },
@@ -309,40 +335,38 @@ const AttachFileModal = ({ isOpen, toggle, ownerTypeId, ownerId, projectId }) =>
             <div className="d-flex gap-3">
               {(cellProps.row.original?.is_editable ||
                 cellProps.row.original?.is_role_editable) && (
-                  <Link
-                    to="#"
-                    className="text-success"
-                    onClick={() => {
-                      const data = cellProps.row.original;
-                      handleProjectDocumentClick(data);
-                    }}
-                  >
-                    <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                    <UncontrolledTooltip placement="top" target="edittooltip">
-                      Edit
-                    </UncontrolledTooltip>
-                  </Link>
-                )}
+                <Link
+                  className="text-success"
+                  onClick={() => {
+                    const data = cellProps.row.original;
+                    handleProjectDocumentClick(data);
+                  }}
+                >
+                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                  <UncontrolledTooltip placement="top" target="edittooltip">
+                    Edit
+                  </UncontrolledTooltip>
+                </Link>
+              )}
 
               {(cellProps.row.original?.is_deletable ||
                 cellProps.row.original?.is_role_deletable) && (
-                  <Link
-                    to="#"
-                    className="text-danger"
-                    onClick={() => {
-                      const data = cellProps.row.original;
-                      onClickDelete(data);
-                    }}
-                  >
-                    <i
-                      className="mdi mdi-delete font-size-18"
-                      id="deletetooltip"
-                    />
-                    <UncontrolledTooltip placement="top" target="deletetooltip">
-                      Delete
-                    </UncontrolledTooltip>
-                  </Link>
-                )}
+                <Link
+                  className="text-danger"
+                  onClick={() => {
+                    const data = cellProps.row.original;
+                    onClickDelete(data);
+                  }}
+                >
+                  <i
+                    className="mdi mdi-delete font-size-18"
+                    id="deletetooltip"
+                  />
+                  <UncontrolledTooltip placement="top" target="deletetooltip">
+                    Delete
+                  </UncontrolledTooltip>
+                </Link>
+              )}
             </div>
           );
         },
@@ -353,7 +377,7 @@ const AttachFileModal = ({ isOpen, toggle, ownerTypeId, ownerId, projectId }) =>
   }, [handleProjectDocumentClick, onClickDelete]);
 
   if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />
+    return <FetchErrorHandler error={error} refetch={refetch} />;
   }
 
   return (
@@ -378,7 +402,7 @@ const AttachFileModal = ({ isOpen, toggle, ownerTypeId, ownerId, projectId }) =>
         tabIndex="-1"
         toggle={toggle}
       >
-        <div className='modal-xl'>
+        <div className="modal-xl">
           <ModalHeader toggle={toggle}>{t("attach_files")}</ModalHeader>
           <ModalBody>
             {isLoading ? (
@@ -423,7 +447,7 @@ const AttachFileModal = ({ isOpen, toggle, ownerTypeId, ownerId, projectId }) =>
                       <Col>
                         <div className="text-end">
                           {addProjectDocument.isPending ||
-                            updateProjectDocument.isPending ? (
+                          updateProjectDocument.isPending ? (
                             <Button
                               color="success"
                               type="submit"
@@ -434,7 +458,11 @@ const AttachFileModal = ({ isOpen, toggle, ownerTypeId, ownerId, projectId }) =>
                                 !validation.dirty
                               }
                             >
-                              <Spinner size={"sm"} color="light" className="me-2" />
+                              <Spinner
+                                size={"sm"}
+                                color="light"
+                                className="me-2"
+                              />
                               {t("Save")}
                             </Button>
                           ) : (
@@ -462,8 +490,7 @@ const AttachFileModal = ({ isOpen, toggle, ownerTypeId, ownerId, projectId }) =>
         </div>
       </Modal>
     </>
+  );
+};
 
-  )
-}
-
-export default AttachFileModal
+export default AttachFileModal;
