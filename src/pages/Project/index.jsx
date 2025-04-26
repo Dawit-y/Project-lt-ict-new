@@ -15,9 +15,6 @@ import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 import TableContainer from "../../components/Common/TableContainer";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-import "./ag-grid.css";
 import {
   useFetchProjects,
   useSearchProjects,
@@ -29,10 +26,6 @@ import {
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import { useTranslation } from "react-i18next";
-import ProgramInfoModel from "../Programinfo";
-//import BudgetRequestModel from "../../pages/BudgetRequest";
-//import ProjectPlanModel from "../../pages/ProjectPlan";
-import { project_info } from "../../settings/printablecolumns";
 import {
   Button,
   Col,
@@ -46,51 +39,23 @@ import {
   FormFeedback,
   Label,
   Card,
-  DropdownMenu,
-  DropdownToggle,
-  UncontrolledDropdown,
   Badge
 } from "reactstrap";
 import {
   alphanumericValidation,
   amountValidation,
   numberValidation,
-  onlyAmharicValidation
+  onlyAmharicValidation,
+  formattedAmountValidation
 } from "../../utils/Validation/validation";
+import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import { toast } from "react-toastify";
-import { createSelectOptions, createMultiSelectOptions } from "../../utils/commonMethods";
+import { createSelectOptions, createMultiSelectOptions, convertToNumericValue } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForProject from "./TreeForProject";
 import DatePicker from "../../components/Common/DatePicker";
 import AsyncSelectField from "../../components/Common/AsyncSelectField";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
-
-const levels = ["region", "zone", "woreda", "cluster", "sector", "outcome", "program", "sub_program", "output", "project"];
-const objectTypeId = [1, 2, 3, 4, 5]
-function getNextLevel(currentLevel) {
-  if (currentLevel === "sector") {
-    return "Program";
-  }
-  if (currentLevel === "outcome" || currentLevel === "program") {
-    return "Sub Program";
-  }
-  const currentIndex = levels.indexOf(currentLevel);
-  if (currentIndex === -1 || currentIndex === levels.length - 1) {
-    return null;
-  }
-  return levels[currentIndex + 1];
-}
-function getNextObjectTypeId(currentId) {
-  const id = parseInt(currentId, 10);
-  if (id === 1 || id === 2) {
-    return 3;
-  }
-  const currentIndex = objectTypeId.indexOf(id);
-  if (currentIndex === -1 || currentIndex === objectTypeId.length - 1) {
-    return null;
-  }
-  return objectTypeId[currentIndex + 1];
-}
 
 const ProjectModel = () => {
   document.title = "Projects";
@@ -101,7 +66,7 @@ const ProjectModel = () => {
   const [project, setProject] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null)
   const { data: projectStatusData } = useFetchProjectStatuss();
-  console.log("sel", selectedNode?.data)
+
   const { param, isValidParam } = useMemo(() => {
     const param = {
       parent_id: selectedNode?.data?.pri_id,
@@ -273,9 +238,8 @@ const ProjectModel = () => {
       //prj_project_status_id: Yup.string().required(t('prj_project_status_id')),
       prj_project_category_id: numberValidation(1, 200, true),
       //prj_project_budget_source_id: Yup.string().required(t('prj_project_budget_source_id')),
-      //prj_total_estimate_budget: amountValidation(1000, 1000000000000, true),
-
-      prj_total_actual_budget: amountValidation(1000, 1000000000000, false),
+      prj_total_estimate_budget: formattedAmountValidation(1000, 1000000000000, false),
+      prj_total_actual_budget: formattedAmountValidation(1000, 1000000000000, false),
       //prj_geo_location: Yup.string().required(t('prj_geo_location')),
       //prj_sector_id: Yup.string().required(t("prj_sector_id")),
       prj_location_region_id: Yup.string().required(
@@ -305,10 +269,10 @@ const ProjectModel = () => {
           prj_project_status_id: values.prj_project_status_id,
           prj_project_category_id: values.prj_project_category_id,
           prj_project_budget_source_id: values.prj_project_budget_source_id,
-          prj_total_estimate_budget: values.prj_total_estimate_budget,
-          prj_total_actual_budget: values.prj_total_actual_budget,
+          prj_total_estimate_budget: convertToNumericValue(values.prj_total_estimate_budget),
+          prj_total_actual_budget: convertToNumericValue(values.prj_total_actual_budget),
           prj_geo_location: values.prj_geo_location,
-          prj_sector_id: Number(selectedNode.data.pri_sector_id),
+          prj_sector_id: Number(selectedNode?.data?.sector_id),
           prj_location_region_id: Number(values.prj_location_region_id),
           prj_location_zone_id: Number(values.prj_location_zone_id),
           prj_location_woreda_id: Number(values.prj_location_woreda_id),
@@ -352,10 +316,10 @@ const ProjectModel = () => {
           prj_project_status_id: values.prj_project_status_id,
           prj_project_category_id: values.prj_project_category_id,
           prj_project_budget_source_id: values.prj_project_budget_source_id,
-          prj_total_estimate_budget: values.prj_total_estimate_budget,
-          prj_total_actual_budget: values.prj_total_actual_budget,
+          prj_total_estimate_budget: convertToNumericValue(values.prj_total_estimate_budget),
+          prj_total_actual_budget: convertToNumericValue(values.prj_total_actual_budget),
           prj_geo_location: values.prj_geo_location,
-          prj_sector_id: Number(selectedNode.data.pri_sector_id),
+          prj_sector_id: Number(selectedNode?.data?.sector_id),
           prj_location_region_id: Number(values.prj_location_region_id),
           prj_location_zone_id: Number(values.prj_location_zone_id),
           prj_location_woreda_id: Number(values.prj_location_woreda_id),
@@ -458,8 +422,8 @@ const ProjectModel = () => {
       prj_project_status_id: project.prj_project_status_id,
       prj_project_category_id: project.prj_project_category_id,
       prj_project_budget_source_id: project.prj_project_budget_source_id,
-      prj_total_estimate_budget: project.prj_total_estimate_budget,
-      prj_total_actual_budget: project.prj_total_actual_budget,
+      prj_total_estimate_budget: Number(project.prj_total_estimate_budget).toLocaleString(),
+      prj_total_actual_budget: Number(project.prj_total_actual_budget).toLocaleString(),
       prj_geo_location: project.prj_geo_location,
       prj_sector_id: project.prj_sector_id,
       prj_location_region_id: project.prj_location_region_id,
@@ -505,6 +469,12 @@ const ProjectModel = () => {
     setIsEdit(false);
     setProject("");
     toggle();
+  };
+
+  const getTranslatedName = (node) => {
+    if (lang === "en" && node.add_name_en) return node.add_name_en;
+    if (lang === "am" && node.add_name_am) return node.add_name_am;
+    return node.name;
   };
 
   const columns = useMemo(() => {
@@ -641,21 +611,10 @@ const ProjectModel = () => {
     return baseColumns;
   }, [data, handleProjectClick, onClickDelete, t]);
 
-  const getTranslatedName = (node) => {
-    if (lang === "en" && node.add_name_en) return node.add_name_en;
-    if (lang === "am" && node.add_name_am) return node.add_name_am;
-    return node.name;
-  };
-
-  const allowAddButton = selectedNode?.data?.level === "sector"
-    ? true
-    : data?.previledge?.is_role_can_add === 1;
-
-  console.log("data", data)
-
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
+
   return (
     <div className="w-100">
       <DeleteModal
@@ -889,63 +848,18 @@ const ProjectModel = () => {
                 isError={prCategoryIsError}
               />
               <Col className="col-md-4 mb-3">
-                <Label>
-                  {t("prj_total_estimate_budget")}
-                  <span className="text-danger">*</span>
-                </Label>
-                <Input
-                  minLength="3"
-                  maxLength="12"
-                  min="1"
-                  step=".01"
-                  name="prj_total_estimate_budget"
-                  type="number"
-                  placeholder={t("prj_total_estimate_budget")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={
-                    validation.values.prj_total_estimate_budget || ""
-                  }
-                  invalid={
-                    validation.touched.prj_total_estimate_budget &&
-                      validation.errors.prj_total_estimate_budget
-                      ? true
-                      : false
-                  }
+                <FormattedAmountField
+                  validation={validation}
+                  fieldId={"prj_total_estimate_budget"}
+                  isRequired={true}
                 />
-                {validation.touched.prj_total_estimate_budget &&
-                  validation.errors.prj_total_estimate_budget ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.prj_total_estimate_budget}
-                  </FormFeedback>
-                ) : null}
               </Col>
               <Col className="col-md-4 mb-3">
-                <Label>{t("prj_total_actual_budget")}</Label>
-                <Input
-                  name="prj_total_actual_budget"
-                  type="number"
-                  step=".01"
-                  placeholder={t("prj_total_actual_budget")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={
-                    validation.values.prj_total_actual_budget || ""
-                  }
-                  invalid={
-                    validation.touched.prj_total_actual_budget &&
-                      validation.errors.prj_total_actual_budget
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
+                <FormattedAmountField
+                  validation={validation}
+                  fieldId={"prj_total_actual_budget"}
+                  isRequired={true}
                 />
-                {validation.touched.prj_total_actual_budget &&
-                  validation.errors.prj_total_actual_budget ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.prj_total_actual_budget}
-                  </FormFeedback>
-                ) : null}
               </Col>
               <Col className="col-md-4 mb-3">
                 <DatePicker

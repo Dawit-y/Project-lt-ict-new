@@ -39,7 +39,6 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
   const { t } = useTranslation();
   const currentLevel = selectedRow?.level
   const nextLevel = getNextLevel(currentLevel)
-  console.log("sele", selectedRow)
   const addProgramInfo = useAddProgramInfo();
   const updateProgramInfo = useUpdateProgramInfo();
   const deleteProgramInfo = useDeleteProgramInfo();

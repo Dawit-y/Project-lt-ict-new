@@ -74,8 +74,8 @@ const formatProjectNode = (project, context = {}) => {
     woreda_id = '',
     region_id = '',
     zone_id = '',
+    s_id = '',
   } = context;
-  console.log("p", project)
   return {
     ...project,
     pri_id: project?.id,
@@ -87,6 +87,7 @@ const formatProjectNode = (project, context = {}) => {
     region_id,
     zone_id,
     woreda_id,
+    sector_id: s_id,
     level: levelMap[project.pri_object_type_id] || "unknown",
     children: (project.children || [])
       .filter(child => child.pri_object_type_id !== 5)
@@ -175,10 +176,10 @@ const AddressTree = ({ onNodeSelect }) => {
     const fetchData = async () => {
       try {
         const { data: projectsData } = await refetchProjects();
-        const { id, region_id, zone_id, woreda_id } = selectedSector;
+        const { id, region_id, zone_id, woreda_id, s_id } = selectedSector;
 
         const formattedProjects = projectsData?.data?.map((p) =>
-          formatProjectNode(p, { region_id, zone_id, woreda_id })
+          formatProjectNode(p, { region_id, zone_id, woreda_id, s_id })
         );
 
         const updatedTreeData = updateNodeChildren(treeData, id, 'sector', formattedProjects);
@@ -198,7 +199,7 @@ const AddressTree = ({ onNodeSelect }) => {
 
     const { id, region_id, zone_id, woreda_id, s_id } = selectedSector;
     const formattedProjects = projects?.data?.map((p) =>
-      formatProjectNode(p, { region_id, zone_id, woreda_id })
+      formatProjectNode(p, { region_id, zone_id, woreda_id, s_id })
     );
     setTreeData((prevTreeData) => updateNodeChildren(prevTreeData, id, 'sector', formattedProjects));
   }, [projects]);
