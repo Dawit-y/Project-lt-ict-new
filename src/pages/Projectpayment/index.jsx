@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, Suspense, lazy } from "react";
 import PropTypes from "prop-types";
-import { isEmpty, update } from "lodash";
-import AgGridContainer from "../../components/Common/AgGridContainer";
+import { isEmpty } from "lodash";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
@@ -49,6 +48,12 @@ import { PAGE_ID } from "../../constants/constantFile";
 import { useStatusCheck } from "../../hooks/useStatusCheck";
 import TableContainer from "../../components/Common/TableContainer";
 import { convertToNumericValue } from "../../utils/commonMethods";
+const AttachFileModal = lazy(() =>
+  import("../../components/Common/AttachFileModal")
+);
+const ConvInfoModal = lazy(() =>
+  import("../../pages/Conversationinformation/ConvInfoModal")
+);
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -56,6 +61,11 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
+
+// Loader Component for Suspense
+const LazyLoader = ({ children }) => (
+  <Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
+);
 
 const ProjectPaymentModel = (props) => {
   const { passedId, isActive, status, startDate } = props;
@@ -66,6 +76,9 @@ const ProjectPaymentModel = (props) => {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+
+  const [fileModal, setFileModal] = useState(false);
+  const [convModal, setConvModal] = useState(false);
 
   const [projectPayment, setProjectPayment] = useState(null);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -81,6 +94,9 @@ const ProjectPaymentModel = (props) => {
   const updateProjectPayment = useUpdateProjectPayment();
   const deleteProjectPayment = useDeleteProjectPayment();
   const { data: paymentCategoryData } = useFetchPaymentCategorys();
+
+  const toggleFileModal = () => setFileModal(!fileModal);
+  const toggleConvModal = () => setConvModal(!convModal);
 
   const budgetYearMap = useMemo(() => {
     return (
@@ -387,6 +403,48 @@ const ProjectPaymentModel = (props) => {
           );
         },
       },
+      {
+        header: t("attach_files"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              outline
+              type="button"
+              color="success"
+              className="btn-sm"
+              onClick={() => {
+                toggleFileModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("attach_files")}
+            </Button>
+          );
+        },
+      },
+      {
+        header: t("Message"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              outline
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                toggleConvModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("Message")}
+            </Button>
+          );
+        },
+      },
     ];
     if (
       data?.previledge?.is_role_editable == 1 ||
@@ -452,6 +510,25 @@ const ProjectPaymentModel = (props) => {
 
   return (
     <React.Fragment>
+      <LazyLoader>
+        {fileModal && (
+          <AttachFileModal
+            isOpen={fileModal}
+            toggle={toggleFileModal}
+            projectId={passedId}
+            ownerTypeId={PAGE_ID.PROJ_PAYMENT}
+            ownerId={transaction?.prp_id}
+          />
+        )}
+        {convModal && (
+          <ConvInfoModal
+            isOpen={convModal}
+            toggle={toggleConvModal}
+            ownerTypeId={PAGE_ID.PROJ_PAYMENT}
+            ownerId={transaction?.prp_id ?? null}
+          />
+        )}
+      </LazyLoader>
       <DynamicDetailsModal
         isOpen={modal1}
         toggle={toggleViewModal} // Function to close the modal
