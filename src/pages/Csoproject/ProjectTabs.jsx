@@ -13,6 +13,7 @@ import {
   NavLink,
   TabContent,
   TabPane,
+  Alert
 } from "reactstrap";
 import classnames from "classnames";
 import { useSearchProjects, useFindProjects } from "../../queries/cso_project_query";
@@ -396,7 +397,11 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
                     </h5>
                   )}
                   <Suspense fallback={<div>Loading...</div>}>
-                    <BudgetRequestRegistration projectStatus={selectedProgramStatus} projectId={selectedProgram} isActive={activeTab === 2} />
+                    <BudgetRequestRegistration
+                      projectStatus={selectedProgramStatus}
+                      projectId={selectedProgram}
+                      isActive={activeTab === 3}
+                    />
                   </Suspense>
                 </TabPane>
               </TabContent>

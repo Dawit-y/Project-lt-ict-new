@@ -11,18 +11,14 @@ import {
   Badge,
   Spinner,
 } from "reactstrap";
-import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
+import AgGridContainer from "../../components/Common/AgGridContainer";
 import {
   useSearchBudgetRequestforApproval,
 } from "../../queries/cso_budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
-import { useSearchRequestFollowups, useFetchRequestFollowups } from "../../queries/requestfollowup_query";
 import { PAGE_ID } from "../../constants/constantFile";
 
 // Lazy load components
-const Spinners = lazy(() => import("../../components/Common/Spinner"));
 const Breadcrumbs = lazy(() => import("../../components/Common/Breadcrumb"));
 const AdvancedSearch = lazy(() => import("../../components/Common/AdvancedSearch"));
 const FetchErrorHandler = lazy(() => import("../../components/Common/FetchErrorHandler"));
@@ -31,6 +27,7 @@ const AttachFileModal = lazy(() => import("../../components/Common/AttachFileMod
 const ConvInfoModal = lazy(() => import("../../pages/Conversationinformation/ConvInfoModal"));
 const BudgetRequestModal = lazy(() => import("./BudgetRequestModal"));
 const ApproverBudgetRequestListModal = lazy(() => import("./ApproverBudgetRequestModal"));
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -42,13 +39,9 @@ const LazyLoader = ({ children }) => (
   <Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
 );
 const ApproverBudgetRequestList = () => {
-  document.title = " Budget Request List ";
-
+  document.title = "Budget Request List ";
   const { t } = useTranslation();
   const [modal1, setModal1] = useState(false);
-  const [quickFilterText, setQuickFilterText] = useState("");
-  const [selectedRows, setSelectedRows] = useState([]);
-  const gridRef = useRef(null);
 
   const [budgetRequestMetaData, setBudgetRequestMetaData] = useState({});
   const [detailModal, setDetailModal] = useState(false)
@@ -70,40 +63,7 @@ const ApproverBudgetRequestList = () => {
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
-  const [include, setInclude] = useState(0);
-
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const user = storedUser?.user;
-  const depId = user?.usr_officer_id > 0
-    ? user.usr_officer_id
-    : user?.usr_team_id > 0
-      ? user.usr_team_id
-      : user?.usr_directorate_id > 0
-        ? user.usr_directorate_id
-        : user?.usr_department_id > 0
-          ? user.usr_department_id
-          : null;
-
-  //const depId = 1
-  const { data: rqfData, isLoading: rqfLoading } = useFetchRequestFollowups()
-
-  function markForwardedRequests(budgetRequests, forwardedRequests, depId) {
-    const forwardedSet = new Set(
-      forwardedRequests
-        .filter(req => req.rqf_forwarding_dep_id === depId)
-        .map(req => req.rqf_request_id)
-    );
-
-    return budgetRequests.map(request => ({
-      ...request,
-      forwarded: forwardedSet.has(request.bdr_id),
-    }));
-  }
-
-  const transformedData = useMemo(() => {
-    if (!searchResults?.data || !rqfData?.data) return [];
-    return markForwardedRequests(searchResults.data, rqfData.data, depId);
-  }, [searchResults, rqfData, depId])
+  const [include, setInclude] = useState(0)
 
   const budgetYearMap = useMemo(() => {
     return (
@@ -138,24 +98,6 @@ const ApproverBudgetRequestList = () => {
   const toggleViewModal = () => setModal1(!modal1);
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
-
-
-  // When selection changes, update selectedRows
-  const onSelectionChanged = () => {
-    const selectedNodes = gridRef.current.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
-    setSelectedRows(selectedData);
-  };
-  // Filter by marked rows
-  const filterMarked = () => {
-    if (gridRef.current) {
-      gridRef.current.api.setRowData(selectedRows);
-    }
-  };
-  // Clear the filter and show all rows again
-  const clearFilter = () => {
-    gridRef.current.api.setRowData(showSearchResults ? results : data);
-  };
 
   useEffect(() => {
     setProjectParams({
@@ -234,22 +176,6 @@ const ApproverBudgetRequestList = () => {
           return truncateText(params.data.prj_code, 30) || "-";
         },
       },
-      // {
-      //   headerName: t("bdr_requested_amount"),
-      //   field: "bdr_requested_amount",
-      //   sortable: true,
-      //   filter: true,
-      //   flex: 1.2,
-      //   valueFormatter: (params) => {
-      //     if (params.value != null) {
-      //       return new Intl.NumberFormat("en-US", {
-      //         minimumFractionDigits: 2,
-      //         maximumFractionDigits: 2,
-      //       }).format(params.value);
-      //     }
-      //     return "0.00"; // Default value if null or undefined
-      //   },
-      // },
       {
         headerName: t("bdr_requested_date_gc"),
         field: "bdr_requested_date_gc",
@@ -257,31 +183,6 @@ const ApproverBudgetRequestList = () => {
         filter: "agDateColumnFilter",
         cellRenderer: (params) => {
           return truncateText(params.data.bdr_requested_date_gc, 30) || "-";
-        },
-      },
-      // {
-      //   headerName: t("bdr_released_date_gc"),
-      //   field: "bdr_released_date_gc",
-      //   sortable: true,
-      //   filter: "agDateColumnFilter",
-      //   flex: 1,
-      //   cellRenderer: (params) => {
-      //     return truncateText(params.data.bdr_released_date_gc, 30) || "-";
-      //   },
-      // },
-      {
-        headerName: t("forwarded"),
-        field: "forwarded",
-        sortable: true,
-        filter: true,
-        width: 140,
-        cellRenderer: (params) => {
-          const isForwarded = params.data.forwarded;
-          return (
-            <Badge className={`font-size-12 badge-soft-${isForwarded ? "danger" : "secondary"}`}>
-              {isForwarded ? "forwarded" : "not forwarded"}
-            </Badge>
-          );
         },
       },
       {
@@ -423,43 +324,40 @@ const ApproverBudgetRequestList = () => {
 
   return (
     <React.Fragment>
-     <LazyLoader>
-     {toggleDetailModal && (
-      <BudgetRequestModal
-        isOpen={detailModal}
-        toggle={toggleDetailModal}
-        transaction={transaction}
-      />)}
-      {modal1 && (
-      <ApproverBudgetRequestListModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-        budgetYearMap={budgetYearMap}
-      />)}
-      {fileModal && (
-      <AttachFileModal
-        isOpen={fileModal}
-        toggle={toggleFileModal}
-        projectId={transaction?.bdr_project_id}
-        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-        ownerId={transaction?.bdr_id}
-      />)}
-      {convModal && (
-      <ConvInfoModal
-        isOpen={convModal}
-        toggle={toggleConvModal}
-        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-        ownerId={transaction?.bdr_id ?? null}
-      />
-      )}
+      <LazyLoader>
+        {detailModal && (
+          <BudgetRequestModal
+            isOpen={detailModal}
+            toggle={toggleDetailModal}
+            transaction={transaction}
+          />)}
+        {modal1 && (
+          <ApproverBudgetRequestListModal
+            isOpen={modal1}
+            toggle={toggleViewModal}
+            transaction={transaction}
+            budgetYearMap={budgetYearMap}
+          />)}
+        {fileModal && (
+          <AttachFileModal
+            isOpen={fileModal}
+            toggle={toggleFileModal}
+            projectId={transaction?.bdr_project_id}
+            ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+            ownerId={transaction?.bdr_id}
+          />)}
+        {convModal && (
+          <ConvInfoModal
+            isOpen={convModal}
+            toggle={toggleConvModal}
+            ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+            ownerId={transaction?.bdr_id ?? null}
+          />
+        )}
       </LazyLoader>
       <div className="page-content">
         <div className="">
-          <Breadcrumbs
-            title={t("budget_request")}
-            breadcrumbItem={t("budget_request")}
-          />
+          <Breadcrumbs />
           <div className="w-100 d-flex gap-2">
             <TreeForLists
               onNodeSelect={handleNodeSelect}
@@ -482,49 +380,9 @@ const ApproverBudgetRequestList = () => {
                 setIsSearchLoading={setIsSearchLoading}
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
-              />
-
-              {isLoading || isSearchLoading ? (
-                <Spinners />
-              ) : (
-                <>
-                  <div
-                    className="ag-theme-alpine"
-                  >
-                    {/* Row for search input and buttons */}
-                    <Row className="mb-3">
-                      <Col sm="12" md="6">
-                        <Input
-                          type="text"
-                          placeholder="Search..."
-                          onChange={(e) => setQuickFilterText(e.target.value)}
-                          className="mb-2"
-                        />
-                      </Col>
-                    </Row>
-                    {/* AG Grid */}
-                    <div style={{ height: "600px", zoom: "90%" }}>
-                      <AgGridReact
-                        ref={gridRef}
-                        rowData={
-                          showSearchResult
-                            ? transformedData
-                            : data?.data || []
-                        }
-                        columnDefs={columnDefs}
-                        pagination={true}
-                        paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                        paginationPageSize={10}
-                        quickFilterText={quickFilterText}
-                        onSelectionChanged={onSelectionChanged}
-                        rowHeight={30}
-                        animateRows={true}
-                        domLayout="autoHeight"
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
+              >
+                <TableWrapper columnDefs={columnDefs} showSearchResult={showSearchResult} />
+              </AdvancedSearch>
             </div>
           </div>
         </div>
@@ -536,3 +394,36 @@ ApproverBudgetRequestList.propTypes = {
   preGlobalFilteredRows: PropTypes.any,
 };
 export default ApproverBudgetRequestList;
+
+const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
+
+  return (
+    <AgGridContainer
+      rowData={showSearchResult ? data?.data : []}
+      columnDefs={columnDefs}
+      isLoading={isLoading}
+      isPagination={true}
+      paginationPageSize={20}
+      isGlobalFilter={true}
+      isAddButton={false}
+      rowHeight={35}
+      addButtonText="Add"
+      isExcelExport={true}
+      isPdfExport={true}
+      isPrint={true}
+      tableName="budget_request"
+      includeKey={[
+        "bdy_name",
+        "prj_name",
+        "prj_code",
+        "bdr_request_status",
+        "bdr_requested_amount",
+        "bdr_released_amount",
+        "bdr_requested_date_gc",
+        "bdr_released_date_gc",
+        "bdr_description",
+      ]}
+      excludeKey={["is_editable", "is_deletable"]}
+    />
+  );
+};

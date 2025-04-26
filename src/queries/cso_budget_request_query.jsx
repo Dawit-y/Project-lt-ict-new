@@ -46,34 +46,17 @@ export const useSearchBudgetRequestforApproval = (searchParams = {}) => {
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: searchParams.length > 0,
   });
 };
 
 export const useUpdateBudgetRequestApproval = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: updateBudgetRequestApproval,
-    onSuccess: (updatedBudgetRequest, variables) => {
-      const allQueries = queryClient
-        .getQueriesData({ queryKey: BUDGET_REQUESTS_QUERY_KEY })
-        .map(([key, data]) => ({ key, data }));
-
-      allQueries.forEach(({ key }) => {
-        queryClient.setQueryData(key, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: oldData.data.map((BudgetRequestData) =>
-              BudgetRequestData.bdr_id === updatedBudgetRequest.data.bdr_id
-                ? { ...BudgetRequestData, ...updatedBudgetRequest.data }
-                : BudgetRequestData
-            ),
-          };
-        });
-      });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: BUDGET_REQUESTS_QUERY_KEY, exact: false, refetchType: "all" })
     },
   });
 };

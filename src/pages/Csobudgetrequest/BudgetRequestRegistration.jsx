@@ -42,8 +42,8 @@ const DeleteModal = lazy(() => import("../../components/Common/DeleteModal"));
 const BudgetRequestModal = lazy(() => import("./BudgetRequestModal"));
 const FetchErrorHandler = lazy(() => import("../../components/Common/FetchErrorHandler"));
 const RightOffCanvas = lazy(() => import("../../components/Common/RightOffCanvas"));
-const AttachFileModal = lazy(() => import("../../components/Common/AttachFileModal"));
-const ConvInfoModal = lazy(() => import("../../pages/Conversationinformation/ConvInfoModal"));
+import AttachFileModal from "../../components/Common/AttachFileModal";
+import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal";
 // const DatePicker = lazy(() => import("../../components/Common/DatePicker"));
 import DatePicker from "../../components/Common/DatePicker";
 
@@ -78,6 +78,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
   const userId = storedUser?.user.usr_id;
   const project = useFetchProject(projectId, userId, true);
   const { data: bgCategoryOptionsData } = useFetchRequestCategorys();
+
   const handleAddBudgetRequest = async (data) => {
     try {
       await addBudgetRequest.mutateAsync(data);
@@ -121,6 +122,8 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
         (budgetRequest && budgetRequest.bdr_requested_date_ec) || "",
       bdr_requested_date_gc:
         (budgetRequest && budgetRequest.bdr_requested_date_gc) || "",
+      bdr_request_category_id:
+        (budgetRequest && budgetRequest.bdr_request_category_id) || "",
 
       bdr_description: (budgetRequest && budgetRequest.bdr_description) || "",
       bdr_status: (budgetRequest && budgetRequest.bdr_status) || "",
@@ -146,6 +149,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
           bdr_requested_amount: 1000,
           bdr_requested_date_ec: values.bdr_requested_date_ec,
           bdr_requested_date_gc: values.bdr_requested_date_gc,
+          bdr_request_category_id: values.bdr_request_category_id,
           bdr_description: values.bdr_description,
           bdr_request_status: values.bdr_request_status,
           is_deletable: values.is_deletable,
@@ -159,6 +163,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
           bdr_requested_amount: 1000,
           bdr_requested_date_ec: values.bdr_requested_date_ec,
           bdr_requested_date_gc: values.bdr_requested_date_gc,
+          bdr_request_category_id: values.bdr_request_category_id,
           bdr_description: values.bdr_description,
           bdr_request_status: 1,
         };
@@ -221,6 +226,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
       bdr_project_id: budgetRequest.bdr_project_id,
       bdr_requested_date_ec: budgetRequest.bdr_requested_date_ec,
       bdr_requested_date_gc: budgetRequest.bdr_requested_date_gc,
+      bdr_request_category_id: budgetRequest.bdr_request_category_id,
       bdr_description: budgetRequest.bdr_description,
       bdr_request_status: budgetRequest.bdr_request_status,
       is_deletable: budgetRequest.is_deletable,
@@ -398,7 +404,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
         enableSorting: true,
         cell: (cellProps) => {
           return (
-            <div className="d-flex gap-3">
+            <div className="d-flex gap-1">
               {(data?.previledge?.is_role_editable == 1 && cellProps.row.original?.is_editable == 1) && (
                 <Button
                   size="sm"
@@ -415,7 +421,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
                   </UncontrolledTooltip>
                 </Button>
               )}
-              {(data?.previledge?.is_role_deletable == 9 && cellProps.row.original?.is_deletable == 9) && (
+              {(data?.previledge?.is_role_deletable == 1 && cellProps.row.original?.is_deletable == 1) && (
                 <div>
                   <Button
                     size="sm"
@@ -434,20 +440,19 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
                       Delete
                     </UncontrolledTooltip>
                   </Button>
-
-                  <Button
-                    size="sm"
-                    color="none"
-                    className="text-secondary me-2"
-                    onClick={() => handleClick(cellProps.row.original)}
-                  >
-                    <i className="mdi mdi-cog font-size-18" id="viewtooltip" />
-                    <UncontrolledTooltip placement="top" target="viewtooltip">
-                      Budget Request Detail
-                    </UncontrolledTooltip>
-                  </Button>
                 </div>
               )}
+              {/* <Button
+                size="sm"
+                color="none"
+                className="text-secondary me-2"
+                onClick={() => handleClick(cellProps.row.original)}
+              >
+                <i className="mdi mdi-cog font-size-18" id="viewtooltip" />
+                <UncontrolledTooltip placement="top" target="viewtooltip">
+                  Budget Request Detail
+                </UncontrolledTooltip>
+              </Button> */}
             </div>
           );
         },
@@ -547,6 +552,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
                   }
                   maxLength={20}
                 >
+                  <option value={null}>Select {t("bdr_request_category_id")}</option>
                   {Object.entries(RequestCatagoryMap).map(([id, name]) => (
                     <option key={id} value={id}>
                       {name}

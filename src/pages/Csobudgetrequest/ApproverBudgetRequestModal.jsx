@@ -20,7 +20,7 @@ import {
 import Select from "react-select";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { useUpdateBudgetRequestApproval } from "../../queries/budget_request_query";
+import { useUpdateBudgetRequestApproval } from "../../queries/cso_budget_request_query";
 import { useFetchRequestStatuss } from "../../queries/requeststatus_query";
 import { toast } from "react-toastify";
 import { createSelectOptions } from "../../utils/commonMethods";
@@ -54,9 +54,9 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
   const handleUpdateBudgetRequest = async (data) => {
     try {
       await mutateAsync(data);
-      toast.success(t("add_success"), { autoClose: 2000 });
+      toast.success(t("update_success"), { autoClose: 2000 });
     } catch (error) {
-      toast.error(t("add_failure"), { autoClose: 2000 });
+      toast.error(t("update_failure"), { autoClose: 2000 });
     }
     toggle();
   };
@@ -103,7 +103,7 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
     () => [
       {
         id: "take_action",
-        label: t("take_action"),
+        label: t("Approve/Reject"),
         content: (
           <Row>
             <Col xl={5}>
@@ -112,15 +112,15 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
                   <h5 className="fw-semibold">Overview</h5>
                   <Table>
                     <tbody>
-                      {[ [t("Year"), budgetYearMap[transaction.bdr_budget_year_id]],
-                        [t("prj_total_estimate_budget"), project?.data?.prj_total_estimate_budget],
-                        [t("bdr_requested_date_gc"), transaction.bdr_requested_date_gc],
-                        [t("bdr_description"), transaction.bdr_description] ].map(([label, value]) => (
-                          <tr key={label}>
-                            <th>{label}</th>
-                            <td>{value}</td>
-                          </tr>
-                        ))}
+                      {[[t("Year"), budgetYearMap[transaction.bdr_budget_year_id]],
+                      [t("prj_total_estimate_budget"), project?.data?.prj_total_estimate_budget],
+                      [t("bdr_requested_date_gc"), transaction.bdr_requested_date_gc],
+                      [t("bdr_description"), transaction.bdr_description]].map(([label, value]) => (
+                        <tr key={label}>
+                          <th>{label}</th>
+                          <td>{value}</td>
+                        </tr>
+                      ))}
                     </tbody>
                   </Table>
                 </CardBody>
@@ -163,7 +163,7 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
           </Row>
         ),
       },
-      { id: "request_followup", label: t("request_follow_up"), content: <Suspense fallback={<Spinner />}><RequestFollowupModel request={transaction} /></Suspense> },
+      // { id: "request_followup", label: t("request_follow_up"), content: <Suspense fallback={<Spinner />}><RequestFollowupModel request={transaction} /></Suspense> },
       { id: "Assign", label: "Assign", content: <Suspense fallback={<Spinner />}><AssignCsoRequests request={transaction} isActive={isOpen} budgetYearMap={budgetYearMap} /></Suspense> },
     ],
     [transaction, budgetYearMap, project, statusOptions, handleStatusChange]
@@ -179,4 +179,5 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
     </Modal>
   );
 };
+
 export default ApproverBudgetRequestListModal;

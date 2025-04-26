@@ -37,7 +37,7 @@ const DateSetting = lazy(() => import("../pages/Datesetting/index"));
 const CSOInformation = lazy(() => import("../pages/Csoinfo/index"));
 const CSOProject = lazy(() => import("../pages/Csoproject/index.jsx"));
 const CSOProjectList = lazy(() => import("../pages/Csoproject/ProjectList"));
-const CSOProjectDetail = lazy(() => import("../pages/Csoproject/ProjectDetail/index2.jsx"));
+const CSOProjectDetail = lazy(() => import("../pages/Csoproject/ProjectDetail/index.jsx"));
 const CSOBudgetRequestListModel = lazy(() =>
   import("../pages/Csobudgetrequest/BudgetRequestList.jsx")
 );

@@ -103,8 +103,8 @@ const ProjectsOverview = () => {
                   <CardBody>
                     <Suspense fallback={<Spinner size="sm" />}>
                       <ProjectDetailTabDynamic
-                        name={data?.data.pri_name_en}
-                        id={data?.data.pri_id}
+                        name={data?.data?.pri_name_en}
+                        id={data?.data?.pri_id}
                         status={1}
                         startDate={1}
                         components={dynamicComponents}

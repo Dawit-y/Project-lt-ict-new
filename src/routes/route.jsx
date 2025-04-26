@@ -44,7 +44,7 @@ const AuthMiddleware = ({ children }) => {
   const ownerId = storedUser?.user?.usr_owner_id
   const userType = storedUser?.user?.usr_user_type
   const param = ownerId ? { cso_id: ownerId } : null;
-  const { data } = useSearchCsoInfos(param)
+  const { data, isLoading: isCsoInfoLoading } = useSearchCsoInfos(param)
   const csoStatus = data?.data?.length > 0 ? data.data[0].cso_status : null;
 
   useEffect(() => {
@@ -101,7 +101,7 @@ const AuthMiddleware = ({ children }) => {
 
   const isAuthenticated = localStorage.getItem("authUser");
 
-  if (isLoading) {
+  if (isLoading || isCsoInfoLoading) {
     return (
       <div
         style={{
