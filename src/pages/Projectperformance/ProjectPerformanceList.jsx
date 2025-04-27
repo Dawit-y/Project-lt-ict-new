@@ -186,6 +186,73 @@ const ProjectPerformanceList = (props) => {
         },
       },
       {
+        headerName: t("prp_budget_planned"),
+        field: "prp_budget_planned",
+        sortable: true,
+        filter: true,
+        valueFormatter: (params) => {
+          if (params.value != null) {
+            return new Intl.NumberFormat("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(params.value);
+          }
+          return "0.00"; // Default value if null or undefined
+        },
+      },
+
+      {
+        headerName: t("prp_physical_planned"),
+        field: "prp_physical_planned",
+        sortable: true,
+        filter: true,
+        valueFormatter: (params) => {
+          if (params.value != null) {
+            return new Intl.NumberFormat("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(params.value);
+          }
+          return "0.00"; // Default value if null or undefined
+        },
+      },
+      {
+    headerName: t("baseline"), // Main header that spans both children
+    headerClass: 'txt-center', // Custom class for centering
+    children: [
+      {
+        headerName: t("prp_budget_baseline"),
+        field: "prp_budget_baseline",
+        sortable: true,
+        filter: true,
+        valueFormatter: (params) => {
+          if (params.value != null) {
+            return new Intl.NumberFormat("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(params.value);
+          }
+          return "0.00";
+        },
+      },
+      {
+        headerName: t("prp_physical_baseline"),
+        field: "prp_physical_baseline",
+        sortable: true,
+        filter: true,
+        valueFormatter: (params) => {
+          if (params.value != null) {
+            return new Intl.NumberFormat("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(params.value);
+          }
+          return "0.00";
+        },
+      },
+    ]
+  },
+      {
         headerName: t("prp_total_budget_used"),
         field: "prp_total_budget_used",
         sortable: true,

@@ -59,7 +59,7 @@ const truncateText = (text, maxLength) => {
 
 const ProjectContractorModel = (props) => {
   const { passedId, isActive, startDate } = props;
-  const param = { cni_project_id: passedId };
+  const param = { cni_project_id: passedId , request_type: "single" };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);

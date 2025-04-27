@@ -226,6 +226,9 @@ const ProjectModel = () => {
       // prj_department_id: (project && project.prj_department_id) || "",
       is_deletable: (project && project.is_deletable) || 1,
       is_editable: (project && project.is_editable) || 1,
+      prj_male_participant: (project && project.prj_male_participant) || "0",
+      prj_female_participant: (project && project.prj_female_participant) || "0",
+      prj_job_opportunity: (project && project.prj_job_opportunity) || "",
     },
 
     validationSchema: Yup.object({
@@ -332,6 +335,11 @@ const ProjectModel = () => {
           // prj_program_id: Number(selectedPage.data.pri_id),
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
+
+          prj_male_participant: values.prj_male_participant,
+          prj_female_participant: values.prj_female_participant,
+          prj_job_opportunity: values.prj_job_opportunity
+
         };
         // update Project
         handleUpdateProject(updateProject);
@@ -373,6 +381,11 @@ const ProjectModel = () => {
           prj_owner_id: values.prj_owner_id,
           prj_urban_ben_number: values.prj_urban_ben_number,
           prj_rural_ben_number: values.prj_rural_ben_number,
+
+          prj_male_participant: values.prj_male_participant,
+          prj_female_participant: values.prj_female_participant,
+          prj_job_opportunity: values.prj_job_opportunity
+
           //prj_department_id: Number(values.prj_department_id),
           // prj_program_id: Number(selectedPage.data.pri_id)
         };
@@ -470,6 +483,9 @@ const ProjectModel = () => {
       //prj_department_id: project.prj_department_id,
       is_deletable: project.is_deletable,
       is_editable: project.is_editable,
+          prj_male_participant: project.prj_male_participant,
+          prj_female_participant: project.prj_female_participant,
+          prj_job_opportunity: project.prj_job_opportunity
     });
     setIsEdit(true);
     toggle();
@@ -1073,6 +1089,75 @@ const ProjectModel = () => {
                       validation.errors.prj_rural_ben_number ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prj_rural_ben_number}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("prj_male_participant")}</Label>
+                    <Input
+                      name="prj_male_participant"
+                      type="number"
+                      placeholder={t("prj_male_participant")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prj_male_participant || ""}
+                      invalid={
+                        validation.touched.prj_male_participant &&
+                          validation.errors.prj_male_participant
+                          ? true
+                          : false
+                      }
+                    />
+                    {validation.touched.prj_male_participant &&
+                      validation.errors.prj_male_participant ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prj_male_participant}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                   <Col className="col-md-4 mb-3">
+                    <Label>{t("prj_female_participant")}</Label>
+                    <Input
+                      name="prj_female_participant"
+                      type="number"
+                      placeholder={t("prj_female_participant")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prj_female_participant || ""}
+                      invalid={
+                        validation.touched.prj_female_participant &&
+                          validation.errors.prj_female_participant
+                          ? true
+                          : false
+                      }
+                    />
+                    {validation.touched.prj_female_participant &&
+                      validation.errors.prj_female_participant ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prj_female_participant}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("prj_job_opportunity")}</Label>
+                    <Input
+                      name="prj_job_opportunity"
+                      type="textarea"
+                      placeholder={t("prj_job_opportunity")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prj_job_opportunity || ""}
+                      invalid={
+                        validation.touched.prj_job_opportunity &&
+                          validation.errors.prj_job_opportunity
+                          ? true
+                          : false
+                      }
+                    />
+                    {validation.touched.prj_job_opportunity &&
+                      validation.errors.prj_job_opportunity ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prj_job_opportunity}
                       </FormFeedback>
                     ) : null}
                   </Col>

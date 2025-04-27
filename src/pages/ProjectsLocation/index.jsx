@@ -13,8 +13,7 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import Spinners from "../../components/Common/Spinner";
 import { useTranslation } from "react-i18next";
 import {
-  useFetchProjects,
-  useSearchProjects,
+  useSearchOnlyProjects,
 } from "../../queries/project_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import {
@@ -60,7 +59,7 @@ const ProjectsLocation = () => {
   console.log("projectCategoryOptions", projectCategoryData);
 
   const { data, isLoading, error, isError, refetch } =
-    useFetchProjects(projectParams);
+    useSearchOnlyProjects(projectParams);
   const { t } = useTranslation();
 
   const parseGeoLocation = (geoLocation) => {
@@ -106,7 +105,7 @@ const ProjectsLocation = () => {
         />
         <div className="w-100">
           <AdvancedSearch
-            searchHook={useSearchProjects}
+            searchHook={useSearchOnlyProjects}
             textSearchKeys={["prj_name", "prj_code"]}
             dropdownSearchKeys={[
               {

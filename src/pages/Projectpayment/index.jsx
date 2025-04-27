@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, Suspense, lazy } from "react";
 import PropTypes from "prop-types";
-import { isEmpty, update } from "lodash";
-import AgGridContainer from "../../components/Common/AgGridContainer";
+import { isEmpty } from "lodash";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
@@ -23,9 +22,12 @@ import {
   alphanumericValidation,
   amountValidation,
   numberValidation,
+  formattedAmountValidation,
 } from "../../utils/Validation/validation";
 import { useTranslation } from "react-i18next";
 import DatePicker from "../../components/Common/DatePicker";
+import FormattedAmountField from "../../components/Common/FormattedAmountField";
+
 import {
   Button,
   Col,
@@ -45,6 +47,13 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { PAGE_ID } from "../../constants/constantFile";
 import { useStatusCheck } from "../../hooks/useStatusCheck";
 import TableContainer from "../../components/Common/TableContainer";
+import { convertToNumericValue } from "../../utils/commonMethods";
+const AttachFileModal = lazy(() =>
+  import("../../components/Common/AttachFileModal")
+);
+const ConvInfoModal = lazy(() =>
+  import("../../pages/Conversationinformation/ConvInfoModal")
+);
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -53,9 +62,14 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
+// Loader Component for Suspense
+const LazyLoader = ({ children }) => (
+  <Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
+);
+
 const ProjectPaymentModel = (props) => {
   const { passedId, isActive, status, startDate } = props;
-  const param = { project_id: passedId };
+  const param = { project_id: passedId, request_type: "single" };
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
 
@@ -63,15 +77,16 @@ const ProjectPaymentModel = (props) => {
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
 
+  const [fileModal, setFileModal] = useState(false);
+  const [convModal, setConvModal] = useState(false);
+
   const [projectPayment, setProjectPayment] = useState(null);
   const [searchLoading, setSearchLoading] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
 
   const performStatusCheck = useStatusCheck(PAGE_ID.PROJ_PAYMENT, status);
-  const { data, isLoading, isFetching, error, isError, refetch } = useFetchProjectPayments(
-    param,
-    isActive
-  );
+  const { data, isLoading, isFetching, error, isError, refetch } =
+    useFetchProjectPayments(param, isActive);
   const { data: budgetYearData } = usePopulateBudgetYears();
   const { data: bgYearsOptionsData } = useFetchBudgetYears();
 
@@ -79,6 +94,9 @@ const ProjectPaymentModel = (props) => {
   const updateProjectPayment = useUpdateProjectPayment();
   const deleteProjectPayment = useDeleteProjectPayment();
   const { data: paymentCategoryData } = useFetchPaymentCategorys();
+
+  const toggleFileModal = () => setFileModal(!fileModal);
+  const toggleConvModal = () => setConvModal(!convModal);
 
   const budgetYearMap = useMemo(() => {
     return (
@@ -186,7 +204,7 @@ const ProjectPaymentModel = (props) => {
       prp_budget_year_id: numberValidation(1, 20, true),
       // prp_payment_date_et: Yup.string().required(t("prp_payment_date_et")),
       prp_payment_date_gc: Yup.string().required(t("prp_payment_date_gc")),
-      prp_payment_amount: amountValidation(1, 10000000000, true),
+      prp_payment_amount: formattedAmountValidation(1, 10000000000, true),
       prp_payment_percentage: amountValidation(1, 100, true),
       prp_description: alphanumericValidation(3, 425, false),
       //prp_status: Yup.string().required(t("prp_status")),
@@ -202,7 +220,7 @@ const ProjectPaymentModel = (props) => {
           prp_type: values.prp_type,
           prp_payment_date_et: values.prp_payment_date_et,
           prp_payment_date_gc: values.prp_payment_date_gc,
-          prp_payment_amount: values.prp_payment_amount,
+          prp_payment_amount: convertToNumericValue(values.prp_payment_amount),
           prp_payment_percentage: values.prp_payment_percentage,
           prp_description: values.prp_description,
           prp_status: values.prp_status,
@@ -218,7 +236,7 @@ const ProjectPaymentModel = (props) => {
           prp_budget_year_id: parseInt(values.prp_budget_year_id),
           prp_payment_date_et: values.prp_payment_date_et,
           prp_payment_date_gc: values.prp_payment_date_gc,
-          prp_payment_amount: values.prp_payment_amount,
+          prp_payment_amount: convertToNumericValue(values.prp_payment_amount),
           prp_payment_percentage: values.prp_payment_percentage,
           prp_description: values.prp_description,
           prp_status: values.prp_status,
@@ -260,7 +278,9 @@ const ProjectPaymentModel = (props) => {
       prp_type: projectPayment.prp_type,
       prp_payment_date_et: projectPayment.prp_payment_date_et,
       prp_payment_date_gc: projectPayment.prp_payment_date_gc,
-      prp_payment_amount: projectPayment.prp_payment_amount,
+      prp_payment_amount: Number(
+        projectPayment.prp_payment_amount
+      ).toLocaleString(),
       prp_payment_percentage: projectPayment.prp_payment_percentage,
       prp_description: projectPayment.prp_description,
       prp_status: projectPayment.prp_status,
@@ -336,8 +356,12 @@ const ProjectPaymentModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.prp_payment_amount, 30) ||
-                "-"}
+              {truncateText(
+                Number(
+                  cellProps.row.original.prp_payment_amount
+                ).toLocaleString(),
+                30
+              ) || "-"}
             </span>
           );
         },
@@ -375,6 +399,48 @@ const ProjectPaymentModel = (props) => {
               }}
             >
               {t("view_detail")}
+            </Button>
+          );
+        },
+      },
+      {
+        header: t("attach_files"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              outline
+              type="button"
+              color="success"
+              className="btn-sm"
+              onClick={() => {
+                toggleFileModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("attach_files")}
+            </Button>
+          );
+        },
+      },
+      {
+        header: t("Message"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              outline
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                toggleConvModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("Message")}
             </Button>
           );
         },
@@ -444,6 +510,25 @@ const ProjectPaymentModel = (props) => {
 
   return (
     <React.Fragment>
+      <LazyLoader>
+        {fileModal && (
+          <AttachFileModal
+            isOpen={fileModal}
+            toggle={toggleFileModal}
+            projectId={passedId}
+            ownerTypeId={PAGE_ID.PROJ_PAYMENT}
+            ownerId={transaction?.prp_id}
+          />
+        )}
+        {convModal && (
+          <ConvInfoModal
+            isOpen={convModal}
+            toggle={toggleConvModal}
+            ownerTypeId={PAGE_ID.PROJ_PAYMENT}
+            ownerId={transaction?.prp_id ?? null}
+          />
+        )}
+      </LazyLoader>
       <DynamicDetailsModal
         isOpen={modal1}
         toggle={toggleViewModal} // Function to close the modal
@@ -596,33 +681,13 @@ const ProjectPaymentModel = (props) => {
                       minDate={startDate}
                     />
                   </Col>
+
                   <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("prp_payment_amount")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="prp_payment_amount"
-                      type="number"
-                      required="required"
-                      placeholder={t("prp_payment_amount")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_payment_amount || ""}
-                      invalid={
-                        validation.touched.prp_payment_amount &&
-                        validation.errors.prp_payment_amount
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
+                    <FormattedAmountField
+                      validation={validation}
+                      fieldId={"prp_payment_amount"}
+                      isRequired={true}
                     />
-                    {validation.touched.prp_payment_amount &&
-                    validation.errors.prp_payment_amount ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_payment_amount}
-                      </FormFeedback>
-                    ) : null}
                   </Col>
 
                   <Col className="col-md-6 mb-3">

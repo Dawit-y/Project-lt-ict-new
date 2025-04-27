@@ -60,8 +60,8 @@ const Login = () => {
 
   const validation = useFormik({
     initialValues: {
-      email: "test@gmail.com",
-      password: "12345678",
+      email: "",
+      password: "",
     },
     validationSchema: Yup.object({
       email: Yup.string()

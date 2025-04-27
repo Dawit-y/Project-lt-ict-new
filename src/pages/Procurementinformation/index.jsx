@@ -72,7 +72,7 @@ const ProcurementInformationModel = (props) => {
   document.title = " ProcurementInformation";
   const { t } = useTranslation();
   const { passedId,isActive,startDate} = props;
-  const param = { pri_project_id: passedId };
+  const param = { pri_project_id: passedId, request_type: "single" };
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);

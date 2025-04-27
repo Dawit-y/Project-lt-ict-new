@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, Suspense, lazy } from "react";
 import PropTypes from "prop-types";
 import { Link, useLocation } from "react-router-dom";
 import { isEmpty } from "lodash";
@@ -33,6 +33,13 @@ import {
   Card,
   CardBody,
 } from "reactstrap";
+const AttachFileModal = lazy(() =>
+  import("../../components/Common/AttachFileModal")
+);
+const ConvInfoModal = lazy(() =>
+  import("../../pages/Conversationinformation/ConvInfoModal")
+);
+import { PAGE_ID } from "../../constants/constantFile";
 import {
   alphanumericValidation,
   numberValidation,
@@ -50,11 +57,15 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
+// Loader Component for Suspense
+const LazyLoader = ({ children }) => (
+  <Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
+);
 
 const ProjectPlanModel = () => {
   const location = useLocation();
   const id = Number(location.pathname.split("/")[2]);
-  const param = { pld_project_id: id };
+  const param = { pld_project_id: id, request_type: "single" };
 
   const { t, i18n } = useTranslation();
   const [modal, setModal] = useState(false);
@@ -62,6 +73,9 @@ const ProjectPlanModel = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [projectPlan, setProjectPlan] = useState(null);
+
+  const [fileModal, setFileModal] = useState(false);
+  const [convModal, setConvModal] = useState(false);
 
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -78,12 +92,16 @@ const ProjectPlanModel = () => {
   const userId = storedUser?.user.usr_id;
 
   const project = useFetchProject(id, userId, true);
-  const projectStartDate = project?.data?.data?.prj_start_date_gc || ""
-  const projectStatusId = project?.data?.data?.prj_project_status_id || ""
+  const projectStartDate = project?.data?.data?.prj_start_date_gc || "";
+  const projectStatusId = project?.data?.data?.prj_project_status_id || "";
 
   const addProjectPlan = useAddProjectPlan();
   const updateProjectPlan = useUpdateProjectPlan();
   const deleteProjectPlan = useDeleteProjectPlan();
+
+  const toggleFileModal = () => setFileModal(!fileModal);
+  const toggleConvModal = () => setConvModal(!convModal);
+
   const budgetYearMap = useMemo(() => {
     return (
       budgetYearData?.data?.reduce((acc, budget_year) => {
@@ -394,6 +412,48 @@ const ProjectPlanModel = () => {
           );
         },
       },
+      {
+        header: t("attach_files"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              outline
+              type="button"
+              color="success"
+              className="btn-sm"
+              onClick={() => {
+                toggleFileModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("attach_files")}
+            </Button>
+          );
+        },
+      },
+      {
+        header: t("Message"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              outline
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                toggleConvModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("Message")}
+            </Button>
+          );
+        },
+      },
     ];
     if (
       data?.previledge?.is_role_editable &&
@@ -407,7 +467,8 @@ const ProjectPlanModel = () => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {(data?.previledge?.is_role_editable == 1 && cellProps.row.original?.is_editable ==1) && (
+              {data?.previledge?.is_role_editable == 1 &&
+                cellProps.row.original?.is_editable == 1 && (
                   <Button
                     size="sm"
                     color="none"
@@ -426,9 +487,9 @@ const ProjectPlanModel = () => {
                     </UncontrolledTooltip>
                   </Button>
                 )}
-{(data?.previledge?.is_role_deletable == 9 && cellProps.row.original?.is_deletable == 9) && (
+              {data?.previledge?.is_role_deletable == 9 &&
+                cellProps.row.original?.is_deletable == 9 && (
                   <Link
-                    to="#"
                     className="text-danger"
                     onClick={() => {
                       const data = cellProps.row.original;
@@ -459,23 +520,46 @@ const ProjectPlanModel = () => {
 
   return (
     <React.Fragment>
+      <LazyLoader>
+        {fileModal && (
+          <AttachFileModal
+            isOpen={fileModal}
+            toggle={toggleFileModal}
+            projectId={id}
+            ownerTypeId={PAGE_ID.PROJ_PROJECT_PLAN}
+            ownerId={transaction?.pld_project_id}
+          />
+        )}
+        {convModal && (
+          <ConvInfoModal
+            isOpen={convModal}
+            toggle={toggleConvModal}
+            ownerTypeId={PAGE_ID.PROJ_PROJECT_PLAN}
+            ownerId={transaction?.pld_project_id ?? null}
+          />
+        )}
+      </LazyLoader>
       <DynamicDetailsModal
         isOpen={modal1}
         toggle={toggleViewModal} // Function to close the modal
         data={transaction} // Pass transaction as data to the modal
-        title={t('project_payment')}
+        title={t("project_payment")}
         description={transaction.pld_description}
         dateInEC={transaction.prp_payment_date_gc}
         dateInGC={transaction.prp_payment_date_gc}
         fields={[
-          { label: t('pld_name'), key: "pld_name" },
-          { label: t('pld_budget_year_id'), key: "prp_type", value: budgetYearMap[transaction.pld_budget_year_id] },
-          { label: t('prp_payment_percentage'), key: "prp_payment_percentage" },
-          { label: t('pld_start_date_gc'), key: "pld_start_date_gc" },
-          { label: t('pld_end_date_gc'), key: "pld_end_date_gc" },
-          { label: t('pld_create_time'), key: "pld_create_time" }
+          { label: t("pld_name"), key: "pld_name" },
+          {
+            label: t("pld_budget_year_id"),
+            key: "prp_type",
+            value: budgetYearMap[transaction.pld_budget_year_id],
+          },
+          { label: t("prp_payment_percentage"), key: "prp_payment_percentage" },
+          { label: t("pld_start_date_gc"), key: "pld_start_date_gc" },
+          { label: t("pld_end_date_gc"), key: "pld_end_date_gc" },
+          { label: t("pld_create_time"), key: "pld_create_time" },
         ]}
-        footerText={t('close')}
+        footerText={t("close")}
       />
       <DeleteModal
         show={deleteModal}
@@ -487,16 +571,11 @@ const ProjectPlanModel = () => {
         <Spinners />
       ) : (
         <Row>
-
           {/* TableContainer for displaying data */}
           <Col lg={12}>
             <TableContainer
               columns={columns}
-              data={
-                showSearchResult
-                  ? searchResults?.data
-                  : data?.data || []
-              }
+              data={showSearchResult ? searchResults?.data : data?.data || []}
               isGlobalFilter={true}
               isAddButton={data?.previledge?.is_role_can_add == 1}
               isCustomPageSize={true}
@@ -559,15 +638,13 @@ const ProjectPlanModel = () => {
                   onBlur={validation.handleBlur}
                   value={validation.values.pld_name || ""}
                   invalid={
-                    validation.touched.pld_name &&
-                      validation.errors.pld_name
+                    validation.touched.pld_name && validation.errors.pld_name
                       ? true
                       : false
                   }
                   maxLength={200}
                 />
-                {validation.touched.pld_name &&
-                  validation.errors.pld_name ? (
+                {validation.touched.pld_name && validation.errors.pld_name ? (
                   <FormFeedback type="invalid">
                     {validation.errors.pld_name}
                   </FormFeedback>
@@ -587,7 +664,7 @@ const ProjectPlanModel = () => {
                   value={validation.values.pld_budget_year_id || ""}
                   invalid={
                     validation.touched.pld_budget_year_id &&
-                      validation.errors.pld_budget_year_id
+                    validation.errors.pld_budget_year_id
                       ? true
                       : false
                   }
@@ -600,7 +677,7 @@ const ProjectPlanModel = () => {
                   ))}
                 </Input>
                 {validation.touched.pld_budget_year_id &&
-                  validation.errors.pld_budget_year_id ? (
+                validation.errors.pld_budget_year_id ? (
                   <FormFeedback type="invalid">
                     {validation.errors.pld_budget_year_id}
                   </FormFeedback>
@@ -633,14 +710,14 @@ const ProjectPlanModel = () => {
                   value={validation.values.pld_description || ""}
                   invalid={
                     validation.touched.pld_description &&
-                      validation.errors.pld_description
+                    validation.errors.pld_description
                       ? true
                       : false
                   }
                   maxLength={425}
                 />
                 {validation.touched.pld_description &&
-                  validation.errors.pld_description ? (
+                validation.errors.pld_description ? (
                   <FormFeedback type="invalid">
                     {validation.errors.pld_description}
                   </FormFeedback>
@@ -650,8 +727,7 @@ const ProjectPlanModel = () => {
             <Row>
               <Col>
                 <div className="text-end">
-                  {addProjectPlan.isPending ||
-                    updateProjectPlan.isPending ? (
+                  {addProjectPlan.isPending || updateProjectPlan.isPending ? (
                     <Button
                       color="success"
                       type="submit"

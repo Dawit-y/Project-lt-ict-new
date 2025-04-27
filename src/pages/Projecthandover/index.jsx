@@ -55,7 +55,7 @@ const truncateText = (text, maxLength) => {
 
 const ProjectHandoverModel = (props) => {
   const { passedId, isActive, startDate } = props;
-  const param = { prh_project_id: passedId };
+  const param = { prh_project_id: passedId ,request_type: "single" };
 
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
