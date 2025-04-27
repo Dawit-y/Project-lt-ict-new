@@ -21,16 +21,15 @@ export const useFetchCsoInfos = () => {
 };
 
 //search cso_info
-export const useSearchCsoInfos = (searchParams = null) => {
+export const useSearchCsoInfos = (searchParams = {}, enabled) => {
   return useQuery({
-    queryKey: searchParams ? [...CSO_INFO_QUERY_KEY, searchParams] : [],
+    queryKey: [...CSO_INFO_QUERY_KEY, "search", searchParams],
     queryFn: () => getCsoInfo(searchParams),
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 6,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
-    enabled: true
-   // enabled: !!searchParams && !!searchParams.cso_id, // Ensures ownerId is valid
+    enabled
   });
 };
 

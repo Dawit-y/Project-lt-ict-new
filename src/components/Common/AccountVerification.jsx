@@ -22,14 +22,23 @@ const AccountVerification = () => {
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const ownerId = storedUser?.user?.usr_owner_id
   const userType = storedUser?.user?.usr_user_type
-  const csoParam = ownerId ? { cso_id: ownerId } : null;
-  const { data: csoData } = useSearchCsoInfos(csoParam)
+  const { param, isValidParam } = useMemo(() => {
+    const param = {
+      cso_id: ownerId
+    };
+
+    const isValidParam = Object.keys(param).length > 0 &&
+      Object.values(param).every((value) => value !== null && value !== undefined)
+
+    return { param, isValidParam };
+  }, [ownerId]);
+  const { data: csoData, isLoading: isCsoInfoLoading } = useSearchCsoInfos(param, isValidParam)
   const csoId = csoData?.data?.length > 0 ? csoData.data[0].cso_id : null;
   const csoStatus = csoData?.data?.length > 0 ? csoData.data[0].cso_status : null;
 
-  const param = { prd_owner_type_id: PAGE_ID.CSO, prd_owner_id: csoId };
-  const isQueryEnabled = Object.values(param).every(value => value !== null && value !== undefined);
-  const { data, isLoading, isError, error, refetch } = useFetchProjectDocuments(param, isQueryEnabled);
+  const docParams = { prd_owner_type_id: PAGE_ID.CSO, prd_owner_id: csoId };
+  const isQueryEnabled = Object.values(docParams).every(value => value !== null && value !== undefined);
+  const { data, isLoading, isError, error, refetch } = useFetchProjectDocuments(docParams, isQueryEnabled);
 
   const [projectDocument, setProjectDocument] = useState(null)
   const [modal, setModal] = useState(false);
