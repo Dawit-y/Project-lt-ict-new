@@ -47,12 +47,11 @@ const formatProgramRow = (program) => {
 };
 
 const updateNodeChildren = (treeData, parentId, level, newChildren) => {
-  return treeData.map((region) => {
-    if (region.id === parentId && region.level === level) {
-      const existingChildrenMap = new Map(region.children.map((child) => [child.id, child]));
-
+  if (!newChildren) return treeData;
+  return treeData.map((row) => {
+    if (row.id === parentId && row.level === level) {
+      const existingChildrenMap = new Map(row.children.map((child) => [child.id, child]));
       const newChildrenIds = new Set(newChildren.map((child) => child.id));
-
       const updatedChildren = newChildren.map((newChild) => {
         if (existingChildrenMap.has(newChild.id)) {
           return {
@@ -62,7 +61,6 @@ const updateNodeChildren = (treeData, parentId, level, newChildren) => {
         }
         return newChild;
       });
-
       for (const [id, child] of existingChildrenMap) {
         if (!newChildrenIds.has(id)) {
           continue;
@@ -71,17 +69,19 @@ const updateNodeChildren = (treeData, parentId, level, newChildren) => {
           updatedChildren.push(child);
         }
       }
+
       return {
-        ...region,
+        ...row,
         children: updatedChildren,
       };
     }
 
-    if (region.children) {
-      region.children = updateNodeChildren(region.children, parentId, level, newChildren);
+
+    if (row.children) {
+      row.children = updateNodeChildren(row.children, parentId, level, newChildren);
     }
 
-    return region;
+    return row;
   });
 };
 
@@ -92,7 +92,6 @@ const Programs = () => {
   const [formModal, setFormModal] = useState(false);
   const [modalAction, setModalAction] = useState(null); // "add" or "edit"
 
-  const [selectedSectorId, setSelectedSectorId] = useState(null);
   const [programParams, setProgramParams] = useState({})
 
   const toggleFormModal = (action = null) => {
@@ -106,11 +105,11 @@ const Programs = () => {
   const isValidParam = Object.keys(programParams).length > 0 &&
     Object.values(programParams).every((value) => value !== null && value !== undefined);
   const { data: programs, isLoading: isProgramLoading, isFetching, refetch: refetchPrograms } = useFetchProgramTree(programParams, isValidParam)
-
   const handleSectorClick = (row) => {
-    const { sci_id, id } = row.original;
-    setSelectedSectorId(id);
+    const { sci_id, id, level } = row.original;
+    setSelectedRow(row.original)
     setProgramParams({ pri_sector_id: sci_id });
+    row.toggleExpanded();
   };
 
   useEffect(() => {
@@ -125,6 +124,14 @@ const Programs = () => {
     }
   }, [data]);
 
+  const [lastPrograms, setLastPrograms] = useState(null);
+
+  useEffect(() => {
+    if (programs?.data) {
+      setLastPrograms(programs);
+    }
+  }, [programs]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -132,7 +139,7 @@ const Programs = () => {
         const formattedPrograms = programData?.data?.map((p) =>
           formatProgramRow(p)
         );
-        const updatedTreeData = updateNodeChildren(treeData, selectedSectorId, 'sector', formattedPrograms);
+        const updatedTreeData = updateNodeChildren(treeData, selectedRow?.id, selectedRow?.level, formattedPrograms);
         setTreeData(updatedTreeData);
       } catch (error) {
         console.error("Error during sector refetch:", error);
@@ -145,14 +152,14 @@ const Programs = () => {
   }, [programParams]);
 
   useEffect(() => {
-    if (!programs?.data || !selectedSectorId) return;
+    const sourcePrograms = programs?.data || lastPrograms?.data;
 
-    const formattedPrograms = programs?.data?.map((p) =>
+    if (!sourcePrograms || !selectedRow?.id) return;
+    const formattedPrograms = sourcePrograms?.data?.map((p) =>
       formatProgramRow(p)
     );
-    setTreeData((prevTreeData) => updateNodeChildren(prevTreeData, selectedSectorId, 'sector', formattedPrograms));
-  }, [programs, selectedSectorId]);
-
+    setTreeData((prevTreeData) => updateNodeChildren(prevTreeData, selectedRow?.id, selectedRow?.level, formattedPrograms));
+  }, [programs, lastPrograms]);
 
   const columns = React.useMemo(
     () => [
@@ -164,12 +171,30 @@ const Programs = () => {
           const depth = row.depth;
           const indent = `${depth * 3}rem`;
           const shouldAddOffset = !hasChildren && depth !== 3;
+          const showSpinner = (isProgramLoading || isFetching) && row.id === selectedRow?.id && row.getIsExpanded()
+
+          const handleClick = () => {
+            handleSectorClick(row)
+          }
 
           return (
             <div style={{ paddingLeft: indent }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 {hasChildren ? (
-                  <ExpandButton row={row} handleSectorClick={handleSectorClick} isLoading={isFetching} />
+                  <Button
+                    onClick={handleClick}
+                    className='text-secondary'
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      padding: 2,
+                      marginRight: '0.5rem',
+                      cursor: 'pointer',
+                    }}
+                    disabled={showSpinner}
+                  >
+                    {showSpinner ? <Spinner size={"sm"} /> : row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+                  </Button>
                 ) : shouldAddOffset ? (
                   <span style={{ display: 'inline-block', width: '1.5rem', marginRight: '0.5rem' }} />
                 ) : null}
@@ -222,7 +247,7 @@ const Programs = () => {
       },
 
     ],
-    []
+    [handleSectorClick, isFetching, selectedRow?.id, isProgramLoading]
   );
 
   if (isError) return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -316,25 +341,3 @@ function RowActions({ row, toggleForm, toggleDelete, setSelectedRow }) {
     </div>
   );
 }
-
-const ExpandButton = ({ row, handleSectorClick, isLoading }) => {
-  const handleClick = () => {
-    handleSectorClick(row)
-    row.toggleExpanded()
-  }
-  return (
-    <Button
-      onClick={handleClick}
-      className='text-secondary'
-      style={{
-        background: 'none',
-        border: 'none',
-        padding: 2,
-        marginRight: '0.5rem',
-        cursor: 'pointer',
-      }}
-    >
-      {isLoading && row.getIsExpanded() ? <Spinner size={"sm"} /> : row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-    </Button>
-  );
-};

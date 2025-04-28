@@ -17,6 +17,7 @@ import {
   Form,
   Label,
   Input,
+  Spinner,
 } from "reactstrap";
 
 import {
@@ -120,28 +121,9 @@ const UsersModal = (props) => {
       toast.error(`Failed to change password`, {
         autoClose: 2000,
       });
-    }
-    /*try {
-      setIsSubmitting(true);
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_API_URL}user/change_password`,
-        data
-      );
-      console.log(response);
-      setMessage("");
-      toast.success(`Password changed successfully!`, {
-        autoClose: 2000,
-      });
-      resetForm();
-      setModal_backdrop(false);
-    } catch (error) {
-      toast.error(`Error changing password. Please try again.`, {
-        autoClose: 2000,
-      });
-      setMessage("Error changing password. Please try again.");
     } finally {
-      setIsSubmitting(false);
-    }*/
+      setModal_backdrop(false)
+    }
   };
 
   const handlePasswordInput = (e) => {
@@ -456,9 +438,11 @@ const UsersModal = (props) => {
               type="button"
               color="success"
               onClick={handlePasswordChange}
-              disabled={passwordStrength === "Weak" || !newPassword}
+              disabled={passwordStrength === "Weak" || !newPassword || changeUserPassword.isPending}
             >
-              Change Password
+              {changeUserPassword.isPending ?
+                <span> <Spinner size={"sm"} />  {" Change Password"}</span>
+                : "Change Password"}
             </Button>
           </ModalFooter>
         </Modal>
