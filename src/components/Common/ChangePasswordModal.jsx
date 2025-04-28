@@ -9,25 +9,40 @@ import {
   FormFeedback,
   InputGroup,
   InputGroupText,
+  Spinner,
 } from "reactstrap";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useChangePassword } from "../../queries/users_query";
+import { checkPasswordStrength } from "../../utils/Validation/validation";
 
-const ChangePasswordModal = ({ isOpen, toggle, user }) => {
+const ChangePasswordModal = ({ isOpen, toggle }) => {
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const navigate = useNavigate();
+  const [passwordStrength, setPasswordStrength] = useState("");
 
-  const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
-  const toggleConfirmPasswordVisibility = () =>
-    setShowConfirmPassword((prev) => !prev);
+  const storedUser = JSON.parse(localStorage.getItem("authUser"));
+  const userId = storedUser?.user?.usr_id;
+
+  const { mutateAsync: changeUserPassword, isPending } = useChangePassword();
+
+  const handlePasswordChange = async (values) => {
+    try {
+      await changeUserPassword({
+        user_id: userId,
+        password: values.password,
+      });
+      toast.success("Password changed successfully!", { autoClose: 2000 });
+      toggle();
+    } catch (error) {
+      toast.error("Failed to change password", { autoClose: 2000 });
+    }
+  };
 
   const validation = useFormik({
     initialValues: {
@@ -42,44 +57,21 @@ const ChangePasswordModal = ({ isOpen, toggle, user }) => {
         .oneOf([Yup.ref("password"), null], "Passwords must match")
         .required("Please confirm your password"),
     }),
-    onSubmit: async (values) => {
-      if (!values.password) {
-        toast.error("Please enter a valid password.", { autoClose: 2000 });
-        return;
-      }
-
-      try {
-        const token = user?.authorization?.token;
-
-        await axios.post(
-          `${import.meta.env.VITE_BASE_API_URL}user/change_password`,
-          {
-            user_id: user?.user?.usr_id,
-            password: values.password,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        toast.success("Password changed successfully!", { autoClose: 2000 });
-        toggle(); // Close modal
-        navigate("/login");
-      } catch (error) {
-        toast.error("Error changing password. Please try again.", {
-          autoClose: 2000,
-        });
-      }
-    },
+    onSubmit: handlePasswordChange,
   });
+
+  const handlePasswordInputChange = (e) => {
+    validation.handleChange(e);
+    const strength = checkPasswordStrength(e.target.value);
+    setPasswordStrength(strength);
+  };
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} backdrop="static" centered>
       <ModalHeader toggle={toggle}>{t("change_password")}</ModalHeader>
       <ModalBody>
         <Form onSubmit={validation.handleSubmit}>
+          {/* New Password Field */}
           <div className="mb-3">
             <Label>{t("new_password")}</Label>
             <InputGroup>
@@ -87,7 +79,7 @@ const ChangePasswordModal = ({ isOpen, toggle, user }) => {
                 name="password"
                 type={showPassword ? "text" : "password"}
                 placeholder={t("enter_new_password")}
-                onChange={validation.handleChange}
+                onChange={handlePasswordInputChange}
                 onBlur={validation.handleBlur}
                 value={validation.values.password}
                 invalid={
@@ -95,7 +87,7 @@ const ChangePasswordModal = ({ isOpen, toggle, user }) => {
                 }
               />
               <InputGroupText
-                onClick={togglePasswordVisibility}
+                onClick={() => setShowPassword((prev) => !prev)}
                 style={{ cursor: "pointer" }}
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -104,8 +96,22 @@ const ChangePasswordModal = ({ isOpen, toggle, user }) => {
                 <FormFeedback>{validation.errors.password}</FormFeedback>
               )}
             </InputGroup>
+            {/* Password Strength Checker */}
+            {validation.values.password && (
+              <div
+                className={`mt-1 text-sm ${passwordStrength === "Strong"
+                  ? "text-success"
+                  : passwordStrength === "Moderate"
+                    ? "text-warning"
+                    : "text-danger"
+                  }`}
+              >
+                {t(passwordStrength)}
+              </div>
+            )}
           </div>
 
+          {/* Confirm Password Field */}
           <div className="mb-3">
             <Label>{t("confirm_password")}</Label>
             <InputGroup>
@@ -122,7 +128,7 @@ const ChangePasswordModal = ({ isOpen, toggle, user }) => {
                 }
               />
               <InputGroupText
-                onClick={toggleConfirmPasswordVisibility}
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
                 style={{ cursor: "pointer" }}
               >
                 {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
@@ -136,9 +142,12 @@ const ChangePasswordModal = ({ isOpen, toggle, user }) => {
             </InputGroup>
           </div>
 
+          {/* Submit Button */}
           <div className="text-end">
-            <Button color="primary" type="submit">
-              {t("change_password")}
+            <Button color="primary" type="submit" disabled={isPending}>
+              {isPending ?
+                <span><Spinner size="sm" className="me-1" /> {t("change_password")}</span>
+                : t("change_password")}
             </Button>
           </div>
         </Form>

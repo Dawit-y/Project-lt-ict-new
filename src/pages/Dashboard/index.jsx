@@ -59,7 +59,6 @@ const Dashboard = () => {
           <ChangePasswordModal
             isOpen={isPasswordModalOpen}
             toggle={() => setIsPasswordModalOpen(!isPasswordModalOpen)}
-            user={authUser}
           />
 
           {Array.isArray(data) && data.map((supersetPath, index) => (

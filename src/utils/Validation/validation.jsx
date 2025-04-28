@@ -255,3 +255,17 @@ export const checkProjectStatus = (pageId, status) => {
       return `Invalid page: ${pageId}`;
   }
 };
+
+export const checkPasswordStrength = (password) => {
+  if (password.length < 8) return "Too short";
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+  if (hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar)
+    return "Strong";
+  if (hasUpperCase && hasLowerCase && (hasNumber || hasSpecialChar))
+    return "Moderate";
+  return "Weak";
+};

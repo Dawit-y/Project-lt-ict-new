@@ -27,6 +27,7 @@ import {
 } from "../../queries/users_query";
 import { toast } from "react-toastify";
 import avatar from "../../assets/images/users/defaultAvatar.png";
+import { checkPasswordStrength } from "../../utils/Validation/validation";
 
 const modalStyle = {
   width: "100%",
@@ -88,19 +89,6 @@ const UsersModal = (props) => {
     setIsSubmitting(false);
   };
 
-  const checkPasswordStrength = (password) => {
-    if (password.length < 8) return "Too short";
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumber = /\d/.test(password);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-    if (hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar)
-      return "Strong";
-    if (hasUpperCase && hasLowerCase && (hasNumber || hasSpecialChar))
-      return "Moderate";
-    return "Weak";
-  };
   const handlePasswordChange = async () => {
     if (!newPassword) {
       setMessage("Please enter a valid password.");
