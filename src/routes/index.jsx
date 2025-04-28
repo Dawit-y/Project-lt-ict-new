@@ -186,10 +186,16 @@ const MonitoringEvaluationType = lazy(() => import('../pages/Monitoringevaluatio
 const ProjectMonitoringEvaluation = lazy(() => import('../pages/Projectmonitoringevaluation/index'));
 const MonitoringEvaluationTypeList = lazy(() => import('../pages/Monitoringevaluationtype/MonitoringEvaluationTypeList'));
 const ProjectMonitoringEvaluationList = lazy(() => import('../pages/Projectmonitoringevaluation/ProjectMonitoringEvaluationList'));
-const Programs = lazy(() => import("../pages/Programs"))
+const Programs = lazy(() => import('../pages/Programs'));
+const ProjectComponent = lazy(() => import('../pages/Projectcomponent/index'));
+const ProjectKpi = lazy(() => import('../pages/Projectkpi/index'));
+const ProjectKpiResult = lazy(() => import('../pages/Projectkpiresult/index'));
 
 const authProtectedRoutes = [
   // { path: '/monitoring_evaluation_type_list', component: <MonitoringEvaluationTypeList/> },
+  {path: '/project_component', component: <ProjectComponent/> },
+ {path: '/project_kpi', component: <ProjectKpi/> },
+ {path: '/project_kpi_result', component: <ProjectKpiResult/> },
   { path: '/monitoring_evaluation_list', component: <ProjectMonitoringEvaluationList /> },
   { path: '/monitoring_evaluation_type', component: <MonitoringEvaluationType /> },
   { path: '/project_monitoring_evaluation', component: <ProjectMonitoringEvaluation /> },

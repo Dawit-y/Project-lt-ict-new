@@ -23,6 +23,7 @@ import TreeForLists from "../../components/Common/TreeForLists";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import AgGridContainer from "../../components/Common/AgGridContainer"
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
+import { getUserSectorList } from "../../queries/usersector_query";
 const ProjectModel = () => {
   document.title = "Projects List";
   const [projectMetaData, setProjectMetaData] = useState([]);
@@ -61,6 +62,12 @@ const ProjectModel = () => {
   const [isAddressLoading, setIsAddressLoading] = useState(false);
 
   const { data, isLoading, error, isError, refetch } = useState(false);
+  const { data: sectorInformationData } = getUserSectorList();
+  const sectorInformationOptions = createSelectOptions(
+    sectorInformationData?.data || [],
+    "sci_id",
+    "sci_name_en"
+  );
   const { data: projectCategoryData } = useFetchProjectCategorys();
   const {
     pct_name_en: projectCategoryOptionsEn,
@@ -70,12 +77,6 @@ const ProjectModel = () => {
     projectCategoryData?.data || [],
     "pct_id",
     ["pct_name_en", "pct_name_or", "pct_name_am"]
-  );
-  const { data: sectorInformationData } = useFetchSectorInformations();
-  const sectorInformationOptions = createSelectOptions(
-    sectorInformationData?.data || [],
-    "sci_id",
-    "sci_name_en"
   );
   const [allowedTabs, setAllowedTabs] = useState(searchResults?.allowedTabs || []);
   const allowedLinks = searchResults?.allowedLinks || []
@@ -266,6 +267,10 @@ const ProjectModel = () => {
                   {
                       key: "prj_project_status_id",
                       options: projectStatusOptions,
+                    },
+                    {
+                      key: "prj_sector_id",
+                      options: sectorInformationOptions,
                     }
                 ]}
                 checkboxSearchKeys={[]}

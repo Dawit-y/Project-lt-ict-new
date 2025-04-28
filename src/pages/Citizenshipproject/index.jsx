@@ -14,7 +14,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "./ag-grid.css";
 import { useSearchProjects, useFetchProject, useAddProject, useUpdateProject, useDeleteProject } from "../../queries/citizenship_project_query";
-import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
+import { useSearchProjectCategorys } from "../../queries/projectcategory_query";
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import { useTranslation } from "react-i18next";
 import {
@@ -84,7 +84,8 @@ const ProjectModel = () => {
 
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const { data, isLoading, error, isError, refetch } = useState(false);
-  const { data: projectCategoryData } = useFetchProjectCategorys();
+  const param={owner_type_id: "2"};
+  const { data: projectCategoryData } = useSearchProjectCategorys(param);
   const {
     pct_name_en: projectCategoryOptionsEn,
     pct_name_or: projectCategoryOptionsOr,
@@ -698,7 +699,7 @@ const ProjectModel = () => {
                           ? projectCategoryOptionsAm
                           : projectCategoryOptionsOr
                       ,
-                    },
+                    }
                   ]}
                   checkboxSearchKeys={[]}
                   additionalParams={searchConfig.projectParams}

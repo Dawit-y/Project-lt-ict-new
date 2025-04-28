@@ -37,7 +37,7 @@ const AgGridContainer = lazy(() =>
 import { budget_request } from "../../settings/printablecolumns";
 import { useSearchBudgetRequestforApproval } from "../../queries/budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
-import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
+import { useSearchRequestCategorys } from "../../queries/requestcategory_query";
 import {
   useSearchRequestFollowups,
   useFetchRequestFollowups,
@@ -51,7 +51,8 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-
+import { getUserSectorList } from "../../queries/usersector_query";
+import { createSelectOptions } from "../../utils/commonMethods";
 const ApproverBudgetRequestList = () => {
   document.title = "Budget Request List";
   const { t } = useTranslation();
@@ -66,7 +67,8 @@ const ApproverBudgetRequestList = () => {
   const [transaction, setTransaction] = useState({});
 
   const { data: budgetYearData } = useFetchBudgetYears();
-  const { data: bgCategoryOptionsData } = useFetchRequestCategorys();
+  const param ={gov_active: "1"};
+  const { data: bgCategoryOptionsData } = useSearchRequestCategorys(param);
   const { data: projectStatusData } = useFetchProjectStatuss();
 
   const [projectParams, setProjectParams] = useState({});
@@ -75,7 +77,12 @@ const ApproverBudgetRequestList = () => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
-
+  const { data: sectorInformationData } = getUserSectorList();
+  const sectorInformationOptions = createSelectOptions(
+    sectorInformationData?.data || [],
+    "sci_id",
+    "sci_name_en"
+  );
   const budgetYearMap = useMemo(() => {
     return (
       budgetYearData?.data?.reduce((acc, year) => {
@@ -307,7 +314,7 @@ const ApproverBudgetRequestList = () => {
           const badgeClass = params.data.color_code;
           return (
             <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
-              {params.data.status_name}
+              {params.data.status_name === 'Approved' ? 'Recommended' : params.data.status_name}
             </Badge>
           );
         },
@@ -433,6 +440,10 @@ const ApproverBudgetRequestList = () => {
                       key: "bdr_request_type",
                       options: projectStatusOptions,
                     },
+                    {
+                      key: "prj_sector_id",
+                      options: sectorInformationOptions,
+                    }
                   ]}
                   additionalParams={projectParams}
                   setAdditionalParams={setProjectParams}
