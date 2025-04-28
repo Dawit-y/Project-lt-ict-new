@@ -189,7 +189,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
   const RequestCatagoryMap = useMemo(() => {
     const filteredData =
       bgCategoryOptionsData?.data?.filter((category) =>
-        projectStatus < 5 ? [5].includes(category.rqc_id) : [5, 6].includes(category.rqc_id)
+        projectStatus < 5 ? [5].includes(category.rqc_id) : [5, 6, 7,8,9,10,11,12,13,14,15,16].includes(category.rqc_id)
       ) || [];
     return filteredData.reduce((cat, category) => {
       cat[category.rqc_id] = category.rqc_name_en;
