@@ -184,7 +184,6 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
       }, {}) || {}
     );
   }, [bgYearsOptionsData]);
-
   //if status of project is 5(draft), duty free(6) can not be
   const RequestCatagoryMap = useMemo(() => {
     const filteredData =
