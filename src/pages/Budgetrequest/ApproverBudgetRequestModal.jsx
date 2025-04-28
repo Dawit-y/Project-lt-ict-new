@@ -23,7 +23,7 @@ const ApproverBudgetRequestListModal = (props) => {
   const tabs = [
     {
       id: "approve/reject",
-      label: `Approve/Reject`,
+      label: `Recommend/Reject`,
       content: <ApproveDecline request={transaction} toggleParent={toggle} />,
     },
     {

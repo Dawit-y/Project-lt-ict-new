@@ -23,13 +23,13 @@ export const useFetchProjectCategorys = () => {
 //search project_category
 export const useSearchProjectCategorys = (searchParams = {}) => {  
   return useQuery({
-    queryKey: [...PROJECT_CATEGORY_QUERY_KEY, searchParams],
+    queryKey: [...PROJECT_CATEGORY_QUERY_KEY, "search", searchParams],
     queryFn: () => getProjectCategory(searchParams),
-    staleTime: 1000 * 60 * 2,
-    gcTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    enabled: searchParams.length > 0,
+     staleTime: 1000 * 60 * 5,
+    meta: { persist: false },
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    enabled: true,
   });
 };
 

@@ -8,12 +8,14 @@ const ADD_PROJECT_CATEGORY = "project_category/insertgrid";
 const UPDATE_PROJECT_CATEGORY = "project_category/updategrid";
 const DELETE_PROJECT_CATEGORY = "project_category/deletegrid";
 // get Projects
-export const getProjectCategory = async () => {
-  try {
-    const response = await post(GET_PROJECT_CATEGORY);
+export const getProjectCategory = async (params = {}) => {
+  const queryString = new URLSearchParams(params).toString();
+  const url = queryString ? `${GET_PROJECT_CATEGORY}?${queryString}` : GET_PROJECT_CATEGORY;
+   try {
+    const response = await post(url);
     return response;
   } catch (error) {
-    console.log(error); // Handle any errors
+    console.log("Error in fetching data:", error);
   }
 };
 // add Projects

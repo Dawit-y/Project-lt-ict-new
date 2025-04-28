@@ -531,7 +531,7 @@ const ApproveDecline = ({ request, toggleParent }) => {
           <Row className='w-50 mx-auto p-2 mb-3'>
             <Col className='d-flex align-items-center justify-content-center'>
               <Button color='success' className='w-100' name='approve' onClick={handleClick}>
-                Approve
+                Recommend
               </Button>
             </Col>
             <Col className='d-flex align-items-center justify-content-center'>
@@ -543,7 +543,7 @@ const ApproveDecline = ({ request, toggleParent }) => {
           <Row>
             <Col>
               <Badge color={request.color_code} pill className='py-1 px-2 mb-2'>
-                {request?.status_name}
+                {request?.status_name === 'Approved' ? 'Recommended' : request?.status_name}
               </Badge>
             </Col>
           </Row>
@@ -774,7 +774,7 @@ const ApproveModal = ({ isOpen, toggle, isApprove, request, toggleParent }) => {
             (request.bdr_request_status === 2 &&
               request.bdr_released_amount)) && (
               <FormGroup>
-                <Label>Released Amount</Label>
+                <Label>Recommended Amount</Label>
                 <Input
                   type="number"
                   name="bdr_released_amount"
@@ -805,7 +805,7 @@ const ApproveModal = ({ isOpen, toggle, isApprove, request, toggleParent }) => {
           </FormGroup>
 
           <FormGroup>
-            <Label>{t("action_remark")}</Label>
+            <Label>{t("bdr_action_remark")}</Label>
             <Input
               type="textarea"
               name="bdr_action_remark"
