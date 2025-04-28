@@ -62,15 +62,16 @@ const Dashboard = () => {
             user={authUser}
           />
 
-          {data.map((supersetPath, index) => (
+          {Array.isArray(data) && data.map((supersetPath, index) => (
             <div key={index}>
               {supersetPath ? (
                 <SupersetDashboard dashboardPath={supersetPath.superset_url} />
               ) : (
-                <div>Loading data...</div>
+                <Spinners />
               )}
             </div>
           ))}
+
         </div>
       </div>
     </div>
