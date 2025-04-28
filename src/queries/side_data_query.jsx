@@ -29,10 +29,10 @@ export const useFetchSideData = (userId) => {
       return data;
     },
     select: (data) => buildGroupedSideData(data),
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 6,
+    staleTime: 1000 * 60 * 60,
+    gcTime: 1000 * 60 * 62,
     meta: { persist: true },
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
   });
 };

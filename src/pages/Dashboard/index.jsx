@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getProjectDashboard } from "../../helpers/Project_Backend";
+import { getProjectDashboard } from "../../helpers/dashboard_backend_helper";
 import { withTranslation } from "react-i18next";
 import SupersetDashboard from "../../pages/Dashboard/SupersetDashboard";
 import Spinners from "../../components/Common/Spinner";
