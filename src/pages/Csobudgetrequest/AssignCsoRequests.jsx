@@ -16,6 +16,7 @@ import {
 } from "reactstrap";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import { useAuthUser } from "../../hooks/useAuthUser";
 import { toast } from "react-toastify";
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns1";
 import { useUpdateProject, useFetchProject } from "../../queries/project_query";
@@ -26,8 +27,7 @@ const AssignCsoRequests = ({ request, isActive, budgetYearMap }) => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
   const projectId = request?.bdr_project_id;
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
 
   const { data: project, isLoading: isProjectLoading } = useFetchProject(projectId, userId, isActive);
   const { data: sectorData } = useFetchSectorInformations();

@@ -17,6 +17,7 @@ import {
 } from "../../queries/requestfollowup_query";
 import RequestFollowupModal from "./RequestFollowupModal";
 import { useTranslation } from "react-i18next";
+import { useAuthUser } from "../../hooks/useAuthUser";
 import {
   Button,
   Col,
@@ -75,7 +76,7 @@ const RequestFollowupModel = ({ request }) => {
     );
   }, [departmentOptionsData]);
 
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const user = storedUser?.user;
   const depId = user?.usr_officer_id > 0
     ? user.usr_officer_id
@@ -84,8 +85,8 @@ const RequestFollowupModel = ({ request }) => {
       : user?.usr_directorate_id > 0
         ? user.usr_directorate_id
         : user?.usr_department_id > 0
-        ? user.usr_department_id
-        : null;
+          ? user.usr_department_id
+          : null;
 
   const { data: subDepartments = [], isLoading: loadingSub } = useQuery({
     queryKey: ["subDepartments", depId],
@@ -398,7 +399,7 @@ const RequestFollowupModel = ({ request }) => {
                   </UncontrolledTooltip>
                 </Link>
               )}
-              {cellProps.row.original.rqf_forwarding_dep_id == depId && !request.forwarded &&(
+              {cellProps.row.original.rqf_forwarding_dep_id == depId && !request.forwarded && (
                 <Link
                   to="#"
                   className="text-danger"

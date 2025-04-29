@@ -22,6 +22,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useUpdateBudgetRequestApproval } from "../../queries/budget_request_query";
 import { useFetchRequestStatuss } from "../../queries/requeststatus_query";
+import { useAuthUser } from "../../hooks/useAuthUser";
 import { toast } from "react-toastify";
 import { createSelectOptions } from "../../utils/commonMethods";
 import { TabWrapper } from "../../components/Common/DetailViewWrapper";
@@ -47,8 +48,7 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
   );
 
   const projectId = transaction?.bdr_project_id;
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const { data: project } = useFetchProject(projectId, userId, isOpen);
 
   const handleUpdateBudgetRequest = async (data) => {
@@ -112,15 +112,15 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
                   <h5 className="fw-semibold">Overview</h5>
                   <Table>
                     <tbody>
-                      {[ [t("Year"), budgetYearMap[transaction.bdr_budget_year_id]],
-                        [t("prj_total_estimate_budget"), project?.data?.prj_total_estimate_budget],
-                        [t("bdr_requested_date_gc"), transaction.bdr_requested_date_gc],
-                        [t("bdr_description"), transaction.bdr_description] ].map(([label, value]) => (
-                          <tr key={label}>
-                            <th>{label}</th>
-                            <td>{value}</td>
-                          </tr>
-                        ))}
+                      {[[t("Year"), budgetYearMap[transaction.bdr_budget_year_id]],
+                      [t("prj_total_estimate_budget"), project?.data?.prj_total_estimate_budget],
+                      [t("bdr_requested_date_gc"), transaction.bdr_requested_date_gc],
+                      [t("bdr_description"), transaction.bdr_description]].map(([label, value]) => (
+                        <tr key={label}>
+                          <th>{label}</th>
+                          <td>{value}</td>
+                        </tr>
+                      ))}
                     </tbody>
                   </Table>
                 </CardBody>

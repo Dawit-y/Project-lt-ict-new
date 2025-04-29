@@ -7,6 +7,7 @@ import ProjectDetail from "./ProjectDetail";
 import ProjectDetailTabDynamic from "./ProjectDetailTabDynamic";
 import { useFetchProject } from "../../../queries/cso_project_query";
 import { useTranslation } from "react-i18next";
+import { useAuthUser } from "../../../hooks/useAuthUser";
 
 // Lazy Load Components
 const LazyComponents = {
@@ -34,8 +35,7 @@ const ProjectsOverview = () => {
   const location = useLocation()
   const projectId = Number(location.pathname.split("/")[2].split("#")[0]);
 
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
 
   const { data, isLoading } = useFetchProject(projectId, userId, true);
   const { t } = useTranslation();
@@ -121,10 +121,10 @@ const ProjectsOverview = () => {
     </div>
   );
 };
-prj_male_participant,prj_female_participant,prj_sub_project_category_id,prj_job_opportunity,
+prj_male_participant, prj_female_participant, prj_sub_project_category_id, prj_job_opportunity,
 
-ProjectsOverview.propTypes = {
-  match: PropTypes.object,
-};
+  ProjectsOverview.propTypes = {
+    match: PropTypes.object,
+  };
 
 export default ProjectsOverview;

@@ -7,6 +7,7 @@ import ProjectDetail from "./ProjectDetail2";
 import ProjectDetailTabDynamic from "./ProjectDetailTabDynamic";
 import { useFetchProgramInfo } from "../../../queries/programinfo_cso_query";
 import { useTranslation } from "react-i18next";
+import { useAuthUser } from "../../../hooks/useAuthUser";
 
 // Lazy Load Components
 const LazyComponents = {
@@ -34,8 +35,7 @@ const ProjectsOverview = () => {
   const location = useLocation()
   const programId = Number(location.pathname.split("/")[2].split("#")[0]);
 
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
 
   const { data, isLoading } = useFetchProgramInfo(programId, programId !== null);
   const { t } = useTranslation();

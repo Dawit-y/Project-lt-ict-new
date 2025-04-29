@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useCallback, lazy, Suspense, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAuthUser } from "../../hooks/useAuthUser";
 import {
   Button,
   Col,
@@ -33,8 +34,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
     handleTabChange(activeTab, selectedProgram)
   }, [activeTab, selectedProgram])
 
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
 
   const param = { object_type_id: 5, parent_id: selectedProgram }
   const isValidParam = Object.keys(param).length > 0 &&

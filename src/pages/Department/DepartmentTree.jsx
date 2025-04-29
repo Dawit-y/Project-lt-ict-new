@@ -20,6 +20,7 @@ import classnames from "classnames";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import { useTranslation } from "react-i18next";
+import { useAuthUser } from "../../hooks/useAuthUser";
 import DepartmentTreeNode from "./DepartmentTreeNode";
 import { LiaHandPointerSolid } from "react-icons/lia";
 import {
@@ -50,9 +51,7 @@ const DepartmentTree = () => {
   });
   const [descendants, setDescendants] = useState([]);
   const { t, i18n } = useTranslation();
-
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const { data, isLoading, isError, error, refetch } =
     useFetchDepartmentStructures(userId);
   const addFolder = useAddDepartmentStructures();

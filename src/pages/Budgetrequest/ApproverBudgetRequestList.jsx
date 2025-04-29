@@ -10,6 +10,7 @@ import React, {
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAuthUser } from "../../hooks/useAuthUser";
 import { Button, Badge } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 const Breadcrumbs = lazy(() => import("../../components/Common/Breadcrumb"));
@@ -53,6 +54,7 @@ const truncateText = (text, maxLength) => {
 };
 import { getUserSectorList } from "../../queries/usersector_query";
 import { createSelectOptions } from "../../utils/commonMethods";
+
 const ApproverBudgetRequestList = () => {
   document.title = "Budget Request List";
   const { t } = useTranslation();
@@ -67,7 +69,7 @@ const ApproverBudgetRequestList = () => {
   const [transaction, setTransaction] = useState({});
 
   const { data: budgetYearData } = useFetchBudgetYears();
-  const param ={gov_active: "1"};
+  const param = { gov_active: "1" };
   const { data: bgCategoryOptionsData } = useSearchRequestCategorys(param);
   const { data: projectStatusData } = useFetchProjectStatuss();
 
@@ -468,7 +470,7 @@ ApproverBudgetRequestList.propTypes = {
 export default ApproverBudgetRequestList;
 
 const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const user = storedUser?.user;
   const depId =
     user?.usr_officer_id > 0

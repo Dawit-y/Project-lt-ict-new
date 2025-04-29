@@ -20,6 +20,7 @@ import { useFetchProject } from "../../queries/project_query";
 import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
 import BudgetRequestModal from "./BudgetRequestModal";
 import { useTranslation } from "react-i18next";
+import { useAuthUser } from "../../hooks/useAuthUser";
 import BudgetRequestAmount from "../Budgetrequestamount/index";
 import BudgetRequestTask from "../Budgetrequesttask/index";
 import BudgetExSource from "../Budgetexsource/index";
@@ -90,8 +91,7 @@ const BudgetRequestModel = () => {
   const updateBudgetRequest = useUpdateBudgetRequest();
   const deleteBudgetRequest = useDeleteBudgetRequest();
 
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const project = useFetchProject(id, userId, true);
 
   const handleAddBudgetRequest = async (data) => {

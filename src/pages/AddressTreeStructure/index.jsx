@@ -30,6 +30,7 @@ import {
 } from "../../queries/address_structure_query";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { toast } from "react-toastify";
+import { useAuthUser } from "../../hooks/useAuthUser";
 
 const App_tree = () => {
   document.title = "Regional Address Structure";
@@ -51,8 +52,7 @@ const App_tree = () => {
   const [descendants, setDescendants] = useState([]);
   const { t, i18n } = useTranslation();
 
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const { data, isLoading, isError, error, refetch } = useFetchAddressStructures(userId);
   const addFolder = useAddAddressStructures();
   const updateFolder = useUpdateAddressStructures();

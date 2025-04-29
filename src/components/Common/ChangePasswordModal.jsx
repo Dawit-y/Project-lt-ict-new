@@ -18,6 +18,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
 import { useChangePassword } from "../../queries/users_query";
+import { useAuthUser } from "../../hooks/useAuthUser";
 import { checkPasswordStrength } from "../../utils/Validation/validation";
 
 const ChangePasswordModal = ({ isOpen, toggle }) => {
@@ -25,9 +26,7 @@ const ChangePasswordModal = ({ isOpen, toggle }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState("");
-
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user?.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
 
   const { mutateAsync: changeUserPassword, isPending } = useChangePassword();
 

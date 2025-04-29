@@ -18,6 +18,7 @@ import {
 } from "../../queries/projectplan_query";
 import { useFetchProject } from "../../queries/project_query";
 import { useTranslation } from "react-i18next";
+import { useAuthUser } from "../../hooks/useAuthUser.jsx";
 import {
   Button,
   Col,
@@ -51,6 +52,7 @@ import "flatpickr/dist/themes/material_blue.css";
 import Flatpickr from "react-flatpickr";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import DatePicker from "../../components/Common/DatePicker";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -87,9 +89,7 @@ const ProjectPlanModel = () => {
   const { data, isLoading, isFetching, error, isError, refetch } =
     useFetchProjectPlans(param);
   const { data: budgetYearData } = useFetchBudgetYears();
-
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
 
   const project = useFetchProject(id, userId, true);
   const projectStartDate = project?.data?.data?.prj_start_date_gc || "";
@@ -664,7 +664,7 @@ const ProjectPlanModel = () => {
                   value={validation.values.pld_budget_year_id || ""}
                   invalid={
                     validation.touched.pld_budget_year_id &&
-                    validation.errors.pld_budget_year_id
+                      validation.errors.pld_budget_year_id
                       ? true
                       : false
                   }
@@ -677,7 +677,7 @@ const ProjectPlanModel = () => {
                   ))}
                 </Input>
                 {validation.touched.pld_budget_year_id &&
-                validation.errors.pld_budget_year_id ? (
+                  validation.errors.pld_budget_year_id ? (
                   <FormFeedback type="invalid">
                     {validation.errors.pld_budget_year_id}
                   </FormFeedback>
@@ -710,14 +710,14 @@ const ProjectPlanModel = () => {
                   value={validation.values.pld_description || ""}
                   invalid={
                     validation.touched.pld_description &&
-                    validation.errors.pld_description
+                      validation.errors.pld_description
                       ? true
                       : false
                   }
                   maxLength={425}
                 />
                 {validation.touched.pld_description &&
-                validation.errors.pld_description ? (
+                  validation.errors.pld_description ? (
                   <FormFeedback type="invalid">
                     {validation.errors.pld_description}
                   </FormFeedback>

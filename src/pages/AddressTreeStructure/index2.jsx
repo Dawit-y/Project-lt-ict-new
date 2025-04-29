@@ -10,10 +10,10 @@ import FormModal from './FormModal';
 import FetchErrorHandler from '../../components/Common/FetchErrorHandler';
 import Spinners from "../../components/Common/Spinner"
 import { useSortable } from '@dnd-kit/sortable'
+import { useAuthUser } from '../../hooks/useAuthUser';
 
 const AddressStructure = () => {
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const { data, isLoading, isError, error, refetch } = useFetchAddressStructures(userId);
 
   const [treeData, setTreeData] = useState([])

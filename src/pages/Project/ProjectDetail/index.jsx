@@ -9,7 +9,7 @@ import { useFetchProject } from "../../../queries/project_query";
 import { useTranslation } from "react-i18next";
 import ProjectSummary from "./ProjectSummary";
 import { TabWrapper } from "../../../components/Common/DetailViewWrapper";
-
+import { useAuthUser } from "../../../hooks/useAuthUser";
 // Lazy Load Components
 const LazyComponents = {
   ProjectDocument: lazy(() =>
@@ -32,7 +32,7 @@ const LazyComponents = {
   ProjectMonitoringEvaluationModel: lazy(() => import("../../Projectmonitoringevaluation/index")),
   ProjectComponentModel: lazy(() => import("../../Projectcomponent/index")),
 
-  
+
   RequestInformationModel: lazy(() =>
     import("../../../pages/Requestinformation")
   ),
@@ -52,9 +52,7 @@ const ProjectsOverview = () => {
 
   const location = useLocation();
   const projectId = Number(location.pathname.split("/")[2].split("#")[0]);
-
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
 
   const { data, isLoading } = useFetchProject(projectId, userId, true);
   const { t } = useTranslation();
@@ -159,7 +157,7 @@ const ProjectsOverview = () => {
         component: LazyComponents.ProjectComponentModel,
         path: "project_component",
       },
-      
+
       //39: { label: t("request_information"), component: LazyComponents.RequestInformationModel, path: "information" },
     }),
     [t]

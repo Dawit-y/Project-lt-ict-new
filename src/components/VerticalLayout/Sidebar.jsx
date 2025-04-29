@@ -11,10 +11,10 @@ import {
 
 } from "../../constants/constantFile";
 import { useFetchSideData } from "../../queries/side_data_query";
+import { useAuthUser } from "../../hooks/useAuthUser";
 
 const Sidebar = (props) => {
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const { data: sidedata = [], isLoading } = useFetchSideData(userId);
 
   return (

@@ -8,13 +8,12 @@ import { withTranslation } from "react-i18next";
 
 import { connect } from "react-redux";
 import { useFetchSideData } from "../../queries/side_data_query";
+import { useAuthUser } from "../../hooks/useAuthUser";
 
 
 const Navbar = (props) => {
   const [activeMenuIndex, setActiveMenuIndex] = useState(null); // Track active menu
-
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const { data: sidedata = [], isLoading } = useFetchSideData(userId);
 
   const handleMenuClick = (index) => {

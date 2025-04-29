@@ -4,6 +4,8 @@ import App from "./App";
 import "./i18n";
 import { Provider } from "react-redux";
 import store from "./store";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./assets/scss/theme.scss";
 import QueryProvider from "./QueryProvider";

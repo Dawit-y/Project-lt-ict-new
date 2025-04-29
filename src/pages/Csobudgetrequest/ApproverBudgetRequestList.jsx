@@ -18,6 +18,7 @@ import {
   useSearchBudgetRequestforApproval,
 } from "../../queries/cso_budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
+import { useAuthUser } from "../../hooks/useAuthUser";
 import { useSearchRequestFollowups, useFetchRequestFollowups } from "../../queries/requestfollowup_query";
 import { PAGE_ID } from "../../constants/constantFile";
 
@@ -72,7 +73,7 @@ const ApproverBudgetRequestList = () => {
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
 
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const user = storedUser?.user;
   const depId = user?.usr_officer_id > 0
     ? user.usr_officer_id
@@ -423,36 +424,36 @@ const ApproverBudgetRequestList = () => {
 
   return (
     <React.Fragment>
-     <LazyLoader>
-     {toggleDetailModal && (
-      <BudgetRequestModal
-        isOpen={detailModal}
-        toggle={toggleDetailModal}
-        transaction={transaction}
-      />)}
-      {modal1 && (
-      <ApproverBudgetRequestListModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-        budgetYearMap={budgetYearMap}
-      />)}
-      {fileModal && (
-      <AttachFileModal
-        isOpen={fileModal}
-        toggle={toggleFileModal}
-        projectId={transaction?.bdr_project_id}
-        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-        ownerId={transaction?.bdr_id}
-      />)}
-      {convModal && (
-      <ConvInfoModal
-        isOpen={convModal}
-        toggle={toggleConvModal}
-        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-        ownerId={transaction?.bdr_id ?? null}
-      />
-      )}
+      <LazyLoader>
+        {toggleDetailModal && (
+          <BudgetRequestModal
+            isOpen={detailModal}
+            toggle={toggleDetailModal}
+            transaction={transaction}
+          />)}
+        {modal1 && (
+          <ApproverBudgetRequestListModal
+            isOpen={modal1}
+            toggle={toggleViewModal}
+            transaction={transaction}
+            budgetYearMap={budgetYearMap}
+          />)}
+        {fileModal && (
+          <AttachFileModal
+            isOpen={fileModal}
+            toggle={toggleFileModal}
+            projectId={transaction?.bdr_project_id}
+            ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+            ownerId={transaction?.bdr_id}
+          />)}
+        {convModal && (
+          <ConvInfoModal
+            isOpen={convModal}
+            toggle={toggleConvModal}
+            ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+            ownerId={transaction?.bdr_id ?? null}
+          />
+        )}
       </LazyLoader>
       <div className="page-content">
         <div className="">

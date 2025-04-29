@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Button, Spinner } from "reactstrap";
+import { useAuthUser } from "../../hooks/useAuthUser";
 import { useUpdateProject, useFetchProject } from "../../queries/project_query";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { toast } from "react-toastify";
@@ -48,8 +49,7 @@ const MapClickHandler = ({ onMapClick }) => {
 };
 
 const GeoLocation = ({ passedId, isActive }) => {
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const project = useFetchProject(passedId, userId, true);
 
   const fetchedLocation = project?.data?.data?.prj_geo_location;

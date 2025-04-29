@@ -3,6 +3,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { authProtectedRoutes } from ".";
 import { Spinner } from "reactstrap";
 import { useFetchSideData } from "../queries/side_data_query";
+import { useAuthUser } from "../hooks/useAuthUser";
 
 // these are paths that are allowed if the user is authenticated
 const allowedPathsIfAuthenticated = [
@@ -31,14 +32,11 @@ function extractAuthPaths(routes) {
   return routes.map((route) => route.path);
 }
 
-const SIDEDATA_CACHE_KEY = "sidedata_cache"
-
 const AuthMiddleware = ({ children }) => {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const { data: sidedata = [], isLoading } = useFetchSideData(userId);
 
   const authPaths = extractAuthPaths(authProtectedRoutes);
@@ -57,7 +55,7 @@ const AuthMiddleware = ({ children }) => {
 
   const isAuthenticated = localStorage.getItem("authUser");
 
-  if (isLoading) {
+  if (isLoading || authLoading) {
     return (
       <div
         style={{
@@ -81,9 +79,9 @@ const AuthMiddleware = ({ children }) => {
     return <Navigate to="/not_found" />;
   }
 
-  // if (!allowedPaths.includes(currentPath) && !isProjectPath(currentPath)) {
-  //   return <Navigate to="/unauthorized" />;
-  // }
+  if (!allowedPaths.includes(currentPath) && !isProjectPath(currentPath)) {
+    return <Navigate to="/unauthorized" />;
+  }
 
   return <React.Fragment>{children}</React.Fragment>;
 };

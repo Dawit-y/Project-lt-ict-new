@@ -86,6 +86,7 @@ const updateNodeChildren = (treeData, parentId, level, newChildren) => {
 };
 
 const Programs = () => {
+  document.title = "Programs"
   const [treeData, setTreeData] = useState([])
   const [selectedRow, setSelectedRow] = useState(null)
   const [deleteModal, setDeleteModal] = useState(false)

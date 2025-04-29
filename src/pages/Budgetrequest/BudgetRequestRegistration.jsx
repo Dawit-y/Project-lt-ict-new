@@ -25,6 +25,7 @@ import { useSearchRequestCategorys } from "../../queries/requestcategory_query";
 
 import { useTranslation } from "react-i18next";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
+import { useAuthUser } from "../../hooks/useAuthUser";
 
 import {
   Button,
@@ -101,14 +102,13 @@ const BudgetRequestModel = (props) => {
     useFetchBudgetRequests(param);
   const { data: budgetYearData } = usePopulateBudgetYears();
   const { data: bgYearsOptionsData } = useFetchBudgetYears();
-  const categoryParam = { rqc_gov_active: 1};
+  const categoryParam = { rqc_gov_active: 1 };
   const { data: bgCategoryOptionsData } = useSearchRequestCategorys(categoryParam);
   const addBudgetRequest = useAddBudgetRequest();
   const updateBudgetRequest = useUpdateBudgetRequest();
   const deleteBudgetRequest = useDeleteBudgetRequest();
 
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const project = useFetchProject(id, userId, true);
 
   const handleAddBudgetRequest = async (data) => {
@@ -254,13 +254,13 @@ const BudgetRequestModel = (props) => {
     return (
       projectStatusData?.data?.reduce((acc, project_status) => {
         if (project_status.prs_id === 5 || project_status.prs_id === 6) {
-        acc[project_status.pyc_id] =
-          lang === "en"
-            ? project_status.prs_status_name_en
-            : lang === "am"
-            ? project_status.prs_status_name_am
-            : project_status.prs_status_name_or;
-          }
+          acc[project_status.pyc_id] =
+            lang === "en"
+              ? project_status.prs_status_name_en
+              : lang === "am"
+                ? project_status.prs_status_name_am
+                : project_status.prs_status_name_or;
+        }
         return acc;
       }, {}) || {}
     );
@@ -775,16 +775,16 @@ const BudgetRequestModel = (props) => {
                   }
                 >
                   <option value="">{t("select_one")}</option>
-                   {projectStatusData?.data?.map((data) => (
-                        <option key={data.prs_id} value={data.prs_id}>
-                          {/* {data.pyc_name_or} */}
-                          {lang === "en"
-                            ? data.prs_status_name_en
-                            : lang === "am"
-                            ? data.prs_status_name_am
-                            : data.prs_status_name_or}
-                        </option>
-                      ))}
+                  {projectStatusData?.data?.map((data) => (
+                    <option key={data.prs_id} value={data.prs_id}>
+                      {/* {data.pyc_name_or} */}
+                      {lang === "en"
+                        ? data.prs_status_name_en
+                        : lang === "am"
+                          ? data.prs_status_name_am
+                          : data.prs_status_name_or}
+                    </option>
+                  ))}
                 </Input>
                 {validation.touched.bdr_request_type &&
                   validation.errors.bdr_request_type ? (

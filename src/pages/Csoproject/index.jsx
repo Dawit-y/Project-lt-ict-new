@@ -15,6 +15,7 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { useFetchProjects, useAddProject, useUpdateProject, useDeleteProject, useSearchProjects, useFindProjects } from "../../queries/cso_project_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import { useTranslation } from "react-i18next";
+import { useAuthUser } from "../../hooks/useAuthUser";
 import Spinners from "../../components/Common/Spinner";
 import {
   Button,
@@ -62,8 +63,7 @@ const ProjectModel = () => {
     }));
   };
 
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const { data, isLoading, error, isError, refetch } =
     useFindProjects({ object_type_id: 1 }, true, userId);
   const { data: projectCategoryData } = useFetchProjectCategorys();
