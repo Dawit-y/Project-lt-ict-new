@@ -7,6 +7,7 @@ const UPDATE_BUDGET_REQUEST = "budget_request/updategrid";
 const DELETE_BUDGET_REQUEST = "budget_request/deletegrid";
 const GET_BUDGET_REQUEST_APPROVAL = "budget_request_approval/listgrid";
 const UPDATE_BUDGET_REQUEST_APPROVAL = "budget_request_approval/updategrid";
+const BULK_UPDATE_BUDGET_REQUEST_APPROVAL = "budget_request_approval/takeaction";
 
 export const getBudgetRequest = async (params) => {
   const queryString = new URLSearchParams(params).toString();
@@ -22,16 +23,16 @@ export const getBudgetRequest = async (params) => {
 };
 
 // add project_budget_request
-export const addBudgetRequest = async (objectName) =>
-  post(`${apiUrl}` + ADD_BUDGET_REQUEST, objectName);
+export const addBudgetRequest = async (data) =>
+  post(`${apiUrl}` + ADD_BUDGET_REQUEST, data);
 
 // update project_budget_request
-export const updateBudgetRequest = (objectName) =>
-  post(`${apiUrl}` + UPDATE_BUDGET_REQUEST + `?bdr_id=${objectName?.bdr_id}`, objectName);
+export const updateBudgetRequest = (data) =>
+  post(`${apiUrl}` + UPDATE_BUDGET_REQUEST + `?bdr_id=${data?.bdr_id}`, data);
 
 // delete  project_budget_request
-export const deleteBudgetRequest = (objectName) =>
-  post(`${apiUrl}` + DELETE_BUDGET_REQUEST + `?bdr_id=${objectName}`);
+export const deleteBudgetRequest = (data) =>
+  post(`${apiUrl}` + DELETE_BUDGET_REQUEST + `?bdr_id=${data}`);
 
 export const getBudgetRequestList = async (params) => {
   const queryString = new URLSearchParams(params).toString();
@@ -60,5 +61,26 @@ export const getBudgetRequestforApproval = async (params) => {
   }
 };
 // update project_budget_request
-export const updateBudgetRequestApproval = (objectName) =>
-  post(`${apiUrl}` + UPDATE_BUDGET_REQUEST_APPROVAL + `?bdr_id=${objectName?.bdr_id}`, objectName);
+export const updateBudgetRequestApproval = (data) =>
+  post(`${apiUrl}` + UPDATE_BUDGET_REQUEST_APPROVAL + `?bdr_id=${data?.bdr_id}`, data);
+
+
+export const bulkUpdateBudgetRequestApproval = async (data) => {
+  console.log("data", data);
+
+  const params = {
+    request_status: data.request_status,
+    request_list: data.request_list.join(","), // convert array to comma-separated string
+  };
+
+  const queryString = new URLSearchParams(params).toString();
+  const url = `${BULK_UPDATE_BUDGET_REQUEST_APPROVAL}?${queryString}`;
+
+  try {
+    const response = await post(url);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+

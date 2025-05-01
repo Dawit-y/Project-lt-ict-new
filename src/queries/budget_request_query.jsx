@@ -5,7 +5,8 @@ import {
   updateBudgetRequest,
   deleteBudgetRequest,
   getBudgetRequestforApproval,
-  updateBudgetRequestApproval
+  updateBudgetRequestApproval,
+  bulkUpdateBudgetRequestApproval
 } from "../helpers/budgetrequest_backend_helper";
 import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
@@ -178,6 +179,18 @@ export const useDeleteBudgetRequest = () => {
     mutationFn: deleteBudgetRequest,
     onSuccess: (deletedData) => {
       queryClient.invalidateQueries({ queryKey: BUDGET_REQUESTS_QUERY_KEY });
+    },
+  });
+};
+
+
+export const useBulkUpdateBudgetRequestApproval = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: bulkUpdateBudgetRequestApproval,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: BUDGET_REQUESTS_QUERY_KEY, exact: false })
     },
   });
 };

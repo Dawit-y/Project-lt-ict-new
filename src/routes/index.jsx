@@ -56,6 +56,7 @@ const BudgetRequestListModel = lazy(() =>
 const ApproverBudgetRequestList = lazy(() =>
   import("../pages/Budgetrequest/ApproverSide/ApproverBudgetRequestList.jsx")
 );
+const RecommendedApprovalList = lazy(() => import("../pages/Budgetrequest/ApproverSide/RecommendedApprovalList.jsx"));
 const BudgetRequest = lazy(() => import("../pages/Budgetrequest/index"));
 const BudgetSource = lazy(() => import("../pages/Budgetsource/index"));
 const BudgetYear = lazy(() => import("../pages/Budgetyear/index"));
@@ -258,6 +259,7 @@ const authProtectedRoutes = [
     path: "/budget_request_approval",
     component: <ApproverBudgetRequestList />,
   },
+  { path: "/recommended_approval", component: <RecommendedApprovalList /> },
   { path: "/budget_source", component: <BudgetSource /> },
   { path: "/budget_year", component: <BudgetYear /> },
   {
