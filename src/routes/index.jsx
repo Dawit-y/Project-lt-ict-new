@@ -54,7 +54,7 @@ const BudgetRequestListModel = lazy(() =>
   import("../pages/Budgetrequest/BudgetRequestList")
 );
 const ApproverBudgetRequestList = lazy(() =>
-  import("../pages/Budgetrequest/ApproverBudgetRequestList")
+  import("../pages/Budgetrequest/ApproverSide/ApproverBudgetRequestList.jsx")
 );
 const BudgetRequest = lazy(() => import("../pages/Budgetrequest/index"));
 const BudgetSource = lazy(() => import("../pages/Budgetsource/index"));
@@ -193,9 +193,9 @@ const ProjectKpiResult = lazy(() => import('../pages/Projectkpiresult/index'));
 
 const authProtectedRoutes = [
   // { path: '/monitoring_evaluation_type_list', component: <MonitoringEvaluationTypeList/> },
-  {path: '/project_component', component: <ProjectComponent/> },
- {path: '/project_kpi', component: <ProjectKpi/> },
- {path: '/project_kpi_result', component: <ProjectKpiResult/> },
+  { path: '/project_component', component: <ProjectComponent /> },
+  { path: '/project_kpi', component: <ProjectKpi /> },
+  { path: '/project_kpi_result', component: <ProjectKpiResult /> },
   { path: '/monitoring_evaluation_list', component: <ProjectMonitoringEvaluationList /> },
   { path: '/monitoring_evaluation_type', component: <MonitoringEvaluationType /> },
   { path: '/project_monitoring_evaluation', component: <ProjectMonitoringEvaluation /> },

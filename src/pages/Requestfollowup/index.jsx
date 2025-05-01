@@ -42,6 +42,7 @@ import { post } from "../../helpers/api_Lists";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import DatePicker from "../../components/Common/DatePicker"
+import RecommendModal from "../../pages/Budgetrequest/ApproverSide/RecommendModal"
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -55,10 +56,19 @@ const fetchDepartmentsByParent = async (parentId) => {
   return response?.data || [];
 };
 
+const recommendationStatusMap = {
+  1: { label: "Pending", color: "secondary" },
+  2: { label: "Recommended", color: "success" },
+  3: { label: "Rejected", color: "danger" }
+};
+
+
 const RequestFollowupModel = ({ request }) => {
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
+  const [recommendModal, setRecommendModal] = useState(false)
+
   const [isEdit, setIsEdit] = useState(false);
   const [requestFollowup, setRequestFollowup] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
@@ -76,35 +86,21 @@ const RequestFollowupModel = ({ request }) => {
     );
   }, [departmentOptionsData]);
 
-  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
-  const user = storedUser?.user;
-  const depId = user?.usr_officer_id > 0
-    ? user.usr_officer_id
-    : user?.usr_team_id > 0
-      ? user.usr_team_id
-      : user?.usr_directorate_id > 0
-        ? user.usr_directorate_id
-        : user?.usr_department_id > 0
-          ? user.usr_department_id
-          : null;
-
+  const { departmentId, departmentType } = useAuthUser();
+  const isOfficerLevel = departmentType === "officer" || departmentType === "team";
   const { data: subDepartments = [], isLoading: loadingSub } = useQuery({
-    queryKey: ["subDepartments", depId],
-    queryFn: () => fetchDepartmentsByParent(depId),
-    enabled: !!depId,
+    queryKey: ["subDepartments", departmentId],
+    queryFn: () => fetchDepartmentsByParent(departmentId),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    enabled: !!departmentId,
   });
 
-  const departmentsMap = useMemo(() => {
-    return (
-      subDepartments?.reduce((acc, dept) => {
-        acc[dept.id] = dept.name;
-        return acc;
-      }, {}) || {}
-    );
-  }, [subDepartments]);
+  const param = { rqf_request_id: request.bdr_id };
+  const isValidParam = Object.keys(param).length > 0 &&
+    Object.values(param).every((value) => value !== null && value !== undefined);
+  const { data, isLoading, error, isError, refetch } = useSearchRequestFollowups(param, isValidParam);
 
-  const param = { rqf_request_id: request.bdr_id }; // add depId as a param
-  const { data, isLoading, error, isError, refetch } = useSearchRequestFollowups(param);
   const addRequestFollowup = useAddRequestFollowup();
   const updateRequestFollowup = useUpdateRequestFollowup();
   const deleteRequestFollowup = useDeleteRequestFollowup();
@@ -185,7 +181,7 @@ const RequestFollowupModel = ({ request }) => {
         const updateRequestFollowup = {
           rqf_id: requestFollowup?.rqf_id,
           rqf_request_id: request?.bdr_id,
-          rqf_forwarding_dep_id: depId,
+          rqf_forwarding_dep_id: departmentId,
           rqf_forwarded_to_dep_id: Number(values.rqf_forwarded_to_dep_id),
           rqf_forwarding_date: values.rqf_forwarding_date,
           rqf_received_date: values.rqf_received_date,
@@ -197,7 +193,7 @@ const RequestFollowupModel = ({ request }) => {
       } else {
         const newRequestFollowup = {
           rqf_request_id: request?.bdr_id,
-          rqf_forwarding_dep_id: depId,
+          rqf_forwarding_dep_id: departmentId,
           rqf_forwarded_to_dep_id: Number(values.rqf_forwarded_to_dep_id),
           rqf_forwarding_date: values.rqf_forwarding_date,
           rqf_received_date: values.rqf_received_date,
@@ -212,6 +208,7 @@ const RequestFollowupModel = ({ request }) => {
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
+  const toggleRecommendModal = () => setRecommendModal(!recommendModal)
   // Fetch RequestFollowup on component mount
   useEffect(() => {
     setRequestFollowup(data);
@@ -307,49 +304,21 @@ const RequestFollowupModel = ({ request }) => {
           );
         },
       },
-      // {
-      //   header: '',
-      //   accessorKey: 'rqf_received_date',
-      //   enableColumnFilter: false,
-      //   enableSorting: true,
-      //   cell: (cellProps) => {
-      //     return (
-      //       <span>
-      //         {truncateText(cellProps.row.original.rqf_received_date, 30) ||
-      //           '-'}
-      //       </span>
-      //     );
-      //   },
-      // },
-      // {
-      //   header: '',
-      //   accessorKey: 'rqf_description',
-      //   enableColumnFilter: false,
-      //   enableSorting: true,
-      //   cell: (cellProps) => {
-      //     return (
-      //       <span>
-      //         {truncateText(cellProps.row.original.rqf_description, 30) ||
-      //           '-'}
-      //       </span>
-      //     );
-      //   },
-      // },
-      // {
-      //   header: '',
-      //   accessorKey: 'rqf_status',
-      //   enableColumnFilter: false,
-      //   enableSorting: true,
-      //   cell: (cellProps) => {
-      //     return (
-      //       <span>
-      //         {truncateText(cellProps.row.original.rqf_status, 30) ||
-      //           '-'}
-      //       </span>
-      //     );
-      //   },
-      //},
-
+      {
+        header: '',
+        accessorKey: 'rqf_current_status',
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          const status = cellProps.row.original.rqf_current_status;
+          const statusData = recommendationStatusMap[status];
+          return (
+            <Badge pill color={statusData?.color || "light"} className="py-1 px-2 mb-2">
+              {statusData?.label || ""}
+            </Badge>
+          );
+        },
+      },
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -372,6 +341,30 @@ const RequestFollowupModel = ({ request }) => {
         },
       },
     ];
+    if (isOfficerLevel) {
+      baseColumns.push({
+        header: t("Recommend"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              type="button"
+              color="success"
+              className="btn-sm"
+              outline
+              onClick={() => {
+                const data = cellProps.row.original;
+                toggleRecommendModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("Recommend")}
+            </Button>
+          );
+        },
+      })
+    }
     if (
       data?.previledge?.is_role_editable == 1 ||
       data?.previledge?.is_role_deletable == 1
@@ -384,7 +377,7 @@ const RequestFollowupModel = ({ request }) => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {cellProps.row.original.rqf_forwarding_dep_id == depId && !request.forwarded && (
+              {cellProps.row.original.rqf_forwarding_dep_id == departmentId && !request.forwarded && (
                 <Link
                   to="#"
                   className="text-success"
@@ -399,7 +392,7 @@ const RequestFollowupModel = ({ request }) => {
                   </UncontrolledTooltip>
                 </Link>
               )}
-              {cellProps.row.original.rqf_forwarding_dep_id == depId && !request.forwarded && (
+              {cellProps.row.original.rqf_forwarding_dep_id == departmentId && !request.forwarded && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -424,12 +417,20 @@ const RequestFollowupModel = ({ request }) => {
     }
     return baseColumns;
   }, [handleRequestFollowupClick, toggleViewModal, onClickDelete]);
+
+  if (isError) return <FetchErrorHandler error={error} refetch={refetch} />
+
   return (
     <React.Fragment>
       <RequestFollowupModal
         isOpen={modal1}
         toggle={toggleViewModal}
         transaction={transaction}
+      />
+      <RecommendModal
+        isOpen={recommendModal}
+        toggle={toggleRecommendModal}
+        request={transaction}
       />
       <DeleteModal
         show={deleteModal}

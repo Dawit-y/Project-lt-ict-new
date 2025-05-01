@@ -8,8 +8,8 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { TabWrapper } from "../../components/Common/DetailViewWrapper";
-import RequestFollowupModel from "../Requestfollowup";
+import { TabWrapper } from "../../../components/Common/DetailViewWrapper";
+import RequestFollowupModel from "../../Requestfollowup";
 import ApproveDecline from "./ApproveDecline";
 
 const modalStyle = {

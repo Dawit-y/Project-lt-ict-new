@@ -10,41 +10,41 @@ import React, {
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useAuthUser } from "../../hooks/useAuthUser";
+import { useAuthUser } from "../../../hooks/useAuthUser";
 import { Button, Badge } from "reactstrap";
-import Spinners from "../../components/Common/Spinner";
-const Breadcrumbs = lazy(() => import("../../components/Common/Breadcrumb"));
+import Spinners from "../../../components/Common/Spinner";
+const Breadcrumbs = lazy(() => import("../../../components/Common/Breadcrumb"));
 const ApproverBudgetRequestListModal = lazy(() =>
   import("./ApproverBudgetRequestModal")
 );
-const BudgetRequestAnalysis = lazy(() => import("./BudgetRequestAnalysis"));
+const BudgetRequestAnalysis = lazy(() => import("../BudgetRequestAnalysis"));
 const AdvancedSearch = lazy(() =>
-  import("../../components/Common/AdvancedSearch")
+  import("../../../components/Common/AdvancedSearch")
 );
 const FetchErrorHandler = lazy(() =>
-  import("../../components/Common/FetchErrorHandler")
+  import("../../../components/Common/FetchErrorHandler")
 );
-const TreeForLists = lazy(() => import("../../components/Common/TreeForLists"));
+const TreeForLists = lazy(() => import("../../../components/Common/TreeForLists"));
 const AttachFileModal = lazy(() =>
-  import("../../components/Common/AttachFileModal")
+  import("../../../components/Common/AttachFileModal")
 );
 const ConvInfoModal = lazy(() =>
-  import("../../pages/Conversationinformation/ConvInfoModal")
+  import("../../Conversationinformation/ConvInfoModal")
 );
-const BudgetRequestModal = lazy(() => import("./BudgetRequestModal"));
+const BudgetRequestModal = lazy(() => import("../BudgetRequestModal"));
 const AgGridContainer = lazy(() =>
-  import("../../components/Common/AgGridContainer"));
+  import("../../../components/Common/AgGridContainer"));
 
-import { budget_request } from "../../settings/printablecolumns";
-import { useSearchBudgetRequestforApproval } from "../../queries/budget_request_query";
-import { useFetchBudgetYears } from "../../queries/budgetyear_query";
-import { useSearchRequestCategorys } from "../../queries/requestcategory_query";
+import { budget_request } from "../../../settings/printablecolumns";
+import { useSearchBudgetRequestforApproval } from "../../../queries/budget_request_query";
+import { useFetchBudgetYears } from "../../../queries/budgetyear_query";
+import { useSearchRequestCategorys } from "../../../queries/requestcategory_query";
 import {
   useSearchRequestFollowups,
   useFetchRequestFollowups,
-} from "../../queries/requestfollowup_query";
-import { PAGE_ID } from "../../constants/constantFile";
-import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
+} from "../../../queries/requestfollowup_query";
+import { PAGE_ID } from "../../../constants/constantFile";
+import { useFetchProjectStatuss } from "../../../queries/projectstatus_query";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -52,8 +52,8 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-import { getUserSectorList } from "../../queries/usersector_query";
-import { createSelectOptions } from "../../utils/commonMethods";
+import { getUserSectorList } from "../../../queries/usersector_query";
+import { createSelectOptions } from "../../../utils/commonMethods";
 
 const ApproverBudgetRequestList = () => {
   document.title = "Budget Request List";
@@ -301,22 +301,6 @@ const ApproverBudgetRequestList = () => {
                 }`}
             >
               {isForwarded ? t("forwarded") : t("not_forwarded")}
-            </Badge>
-          );
-        },
-      },
-      {
-        headerName: t("bdr_request_status"),
-        field: "bdr_request_status",
-        sortable: true,
-        filter: true,
-        //flex: 1,
-        width: 120,
-        cellRenderer: (params) => {
-          const badgeClass = params.data.color_code;
-          return (
-            <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
-              {params.data.status_name === 'Approved' ? 'Recommended' : params.data.status_name}
             </Badge>
           );
         },
