@@ -22,56 +22,45 @@ const ProjectPerformanceModal = ({
   budgetMonthMap,
   projectStatusMap,
 }) => {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language;
+  const { t } = useTranslation();
 
   if (!transaction) return null;
 
-  // Enhanced month names with proper ordering
+  // Month names with translation support
   const monthNames = {
-    1: "January",
-    2: "February",
-    3: "March",
-    4: "April",
-    5: "May",
-    6: "June",
-    7: "July",
-    8: "August",
-    9: "September",
-    10: "October",
-    11: "November",
-    12: "December",
+    1: t("January"),
+    2: t("February"),
+    3: t("March"),
+    4: t("April"),
+    5: t("May"),
+    6: t("June"),
+    7: t("July"),
+    8: t("August"),
+    9: t("September"),
+    10: t("October"),
+    11: t("November"),
+    12: t("December"),
   };
 
-  // Helper function to format values with improved visual presentation
   const formatValue = (value, isPercentage = false, isCurrency = false) => {
-    if (value === null || value === undefined)
-      return <span className="text-muted">-</span>;
+    if (value === null || value === undefined) return "-";
 
     const numValue = Number(value);
     if (isNaN(numValue)) return value;
 
     if (isPercentage) {
-      return (
-        <span className={numValue < 0 ? "text-danger" : ""}>
-          {`${numValue.toFixed(2)}%`}
-        </span>
-      );
+      return `${numValue.toFixed(2)}%`;
     }
     if (isCurrency) {
-      return (
-        <span className={numValue < 0 ? "text-danger" : ""}>
-          {`Birr ${numValue.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}`}
-        </span>
-      );
+      return `Birr ${numValue.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`;
     }
     return numValue.toLocaleString();
   };
 
-  // Prepare monthly data with proper ordering and enhanced structure
+  // Prepare monthly data
   const monthlyData = Array.from({ length: 12 }, (_, i) => {
     const month = i + 1;
     const plannedPhysical =
@@ -83,21 +72,18 @@ const ProjectPerformanceModal = ({
     const actualFinancial =
       Number(transaction[`prp_finan_actual_month_${month}`]) || 0;
 
-    const physicalVariance = actualPhysical - plannedPhysical;
-    const financialVariance = actualFinancial - plannedFinancial;
-
     return {
       month,
-      monthName: monthNames[month] || `Month ${month}`,
-      monthShortName: monthNames[month]?.substring(0, 3) || `M${month}`,
+      monthName: monthNames[month],
+      monthShortName: monthNames[month]?.substring(0, 3),
       plannedPhysical,
       actualPhysical,
-      physicalVariance,
+      physicalVariance: actualPhysical - plannedPhysical,
       physicalAchievement:
         plannedPhysical > 0 ? (actualPhysical / plannedPhysical) * 100 : null,
       plannedFinancial,
       actualFinancial,
-      financialVariance,
+      financialVariance: actualFinancial - plannedFinancial,
       financialAchievement:
         plannedFinancial > 0
           ? (actualFinancial / plannedFinancial) * 100
@@ -106,15 +92,18 @@ const ProjectPerformanceModal = ({
     };
   });
 
-  // Calculate quarterly summaries with enhanced data
-  const quarters = [
-    { name: "Q1", months: [11, 12, 1], color: "primary" },
-    { name: "Q2", months: [2, 3, 4], color: "primary" },
-    { name: "Q3", months: [5, 6, 7], color: "primary" },
-    { name: "Q4", months: [8, 9, 10], color: "primary" },
-  ].map((q) => {
-    const quarterMonths = monthlyData.filter((m) => q.months.includes(m.month));
+  // Calculate quarterly summaries
+  const quarters = [1, 2, 3, 4].map((qNum) => {
+    const monthRange = [
+      [11, 12, 1], // Q1 (Nov, Dec, Jan)
+      [2, 3, 4], // Q2
+      [5, 6, 7], // Q3
+      [8, 9, 10], // Q4
+    ][qNum - 1];
 
+    const quarterMonths = monthlyData.filter((m) =>
+      monthRange.includes(m.month)
+    );
     const totals = quarterMonths.reduce(
       (acc, m) => ({
         plannedPhysical: acc.plannedPhysical + m.plannedPhysical,
@@ -131,10 +120,9 @@ const ProjectPerformanceModal = ({
     );
 
     return {
-      ...q,
+      name: `Q${qNum}`,
+      months: monthRange,
       ...totals,
-      avgPhysicalPlanned: totals.plannedPhysical / 3,
-      avgPhysicalActual: totals.actualPhysical / 3,
       physicalVariance: totals.actualPhysical - totals.plannedPhysical,
       financialVariance: totals.actualFinancial - totals.plannedFinancial,
       physicalAchievement:
@@ -148,7 +136,7 @@ const ProjectPerformanceModal = ({
     };
   });
 
-  // Calculate annual totals with enhanced metrics
+  // Annual summary
   const annualSummary = {
     avgPhysicalPlanned:
       monthlyData.reduce((sum, m) => sum + m.plannedPhysical, 0) / 12,
@@ -164,14 +152,18 @@ const ProjectPerformanceModal = ({
     ),
     baselinePhysical: transaction.prp_physical_baseline,
     baselineFinancial: transaction.prp_budget_baseline,
-    physicalVariance: monthlyData.reduce(
-      (sum, m) => sum + (m.actualPhysical - m.plannedPhysical),
-      0
-    ),
-    financialVariance: monthlyData.reduce(
-      (sum, m) => sum + (m.actualFinancial - m.plannedFinancial),
-      0
-    ),
+  };
+
+  const getStatusColor = (achievement) => {
+    if (achievement === null || achievement === undefined) return "secondary";
+    if (achievement >= 100) return "success";
+    if (achievement >= 80) return "warning";
+    return "danger";
+  };
+
+  const getVarianceColor = (value) => {
+    if (value === null || value === undefined) return "";
+    return value >= 0 ? "text-success" : "text-danger";
   };
 
   return (
@@ -180,234 +172,112 @@ const ProjectPerformanceModal = ({
       toggle={toggle}
       size="xl"
       scrollable
-      className="performance-modal"
+      className="border-0"
     >
-      <ModalHeader toggle={toggle} className="border-0 pb-1 bg-light">
-        <div className="d-flex justify-content-between align-items-center w-100">
-          <div>
-            <h4 className="mb-0 text-primary">
-              <i className="bx bx-line-chart me-2"></i>
-              {t("Project Performance Details")}{" "}
-              <Badge color="primary" pill>
-                {t("Annual Report")}
-              </Badge>
-            </h4>
-            <div className="text-muted small">
-              {budgetYearMap[transaction.prp_budget_year_id]} |{" "}
-              {transaction.prp_description || t("No description")}
-            </div>
+      <ModalHeader toggle={toggle} className="border-bottom-0 pb-0">
+        <div>
+          <h5 className="mb-1 text-dark d-flex align-items-center gap-2">
+            {t("Project Performance Details")}
+            <span className="badge bg-primary text-white">
+              Annual Performance
+            </span>
+          </h5>
+          <div className="text-muted small">
+            {budgetYearMap[transaction.prp_budget_year_id]} •{" "}
+            {transaction.prp_description || t("No description")}
           </div>
         </div>
       </ModalHeader>
 
       <ModalBody className="pt-0 mt-2">
-        {/* Summary Cards with enhanced design */}
+        {/* Summary Cards */}
         <Row className="mb-4 g-3">
-          <Col md={4}>
-            <Card className="border-0 shadow-sm h-100">
-              <CardHeader
-                className="text-white py-2"
-                style={{ backgroundColor: "rgba(164, 176, 255, 0.9)" }}
-              >
-                <h6 className="mb-0">
-                  <i className="bx bx-trending-up me-2"></i>
-                  {t("Physical Performance")}
-                </h6>
-              </CardHeader>
-              <CardBody>
-                <div className="performance-metric">
-                  <div className="metric-label">{t("Baseline")}</div>
-                  <div className="metric-value text-dark">
-                    {formatValue(annualSummary.baselinePhysical, true)}
-                  </div>
-                </div>
-                <div className="performance-metric">
-                  <div className="metric-label">{t("Planned Avg")}</div>
-                  <div className="metric-value">
-                    {formatValue(annualSummary.avgPhysicalPlanned, true)}
-                  </div>
-                </div>
-                <div className="performance-metric">
-                  <div className="metric-label">{t("Actual Avg")}</div>
-                  <div
-                    className={`metric-value ${
-                      annualSummary.avgPhysicalActual <
-                      annualSummary.avgPhysicalPlanned
-                        ? "text-danger"
-                        : "text-success"
-                    }`}
-                  >
-                    {formatValue(annualSummary.avgPhysicalActual, true)}
-                    {annualSummary.physicalVariance !== 0 && (
-                      <small
-                        className={`ms-2 ${
-                          annualSummary.physicalVariance < 0
-                            ? "text-danger"
-                            : "text-success"
-                        }`}
-                      >
-                        ({annualSummary.physicalVariance > 0 ? "+" : ""}
-                        {formatValue(annualSummary.physicalVariance, true)})
-                      </small>
-                    )}
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-          </Col>
-
-          <Col md={4}>
-            <Card className="border-0 shadow-sm h-100">
-              <CardHeader
-                className=" text-white py-2"
-                style={{ backgroundColor: "rgba(7, 142, 47, 0.49)" }}
-              >
-                <h6 className="mb-0">
-                  <i className="bx bx-money me-2"></i>
-                  {t("Financial Performance")}
-                </h6>
-              </CardHeader>
-              <CardBody>
-                <div className="performance-metric">
-                  <div className="metric-label">{t("Baseline")}</div>
-                  <div className="metric-value text-dark">
-                    {formatValue(annualSummary.baselineFinancial, false, true)}
-                  </div>
-                </div>
-                <div className="performance-metric">
-                  <div className="metric-label">{t("Planned Total")}</div>
-                  <div className="metric-value">
-                    {formatValue(
-                      annualSummary.totalPlannedFinancial,
-                      false,
-                      true
-                    )}
-                  </div>
-                </div>
-                <div className="performance-metric">
-                  <div className="metric-label">{t("Actual Total")}</div>
-                  <div
-                    className={`metric-value ${
-                      annualSummary.totalActualFinancial <
-                      annualSummary.totalPlannedFinancial
-                        ? "text-danger"
-                        : "text-success"
-                    }`}
-                  >
-                    {formatValue(
-                      annualSummary.totalActualFinancial,
-                      false,
-                      true
-                    )}
-                    {annualSummary.financialVariance !== 0 && (
-                      <small
-                        className={`ms-2 ${
-                          annualSummary.financialVariance < 0
-                            ? "text-danger"
-                            : "text-success"
-                        }`}
-                      >
-                        ({annualSummary.financialVariance > 0 ? "+" : ""}
-                        {formatValue(
-                          annualSummary.financialVariance,
-                          false,
-                          true
-                        )}
-                        )
-                      </small>
-                    )}
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-          </Col>
-
-          <Col md={4}>
-            <Card className="border-0 shadow-sm h-100">
-              <CardHeader
-                className=" text-white py-2"
-                style={{ backgroundColor: "rgba(249, 188, 11, 0.5)" }}
-              >
-                <h6 className="mb-0">
-                  <i className="bx bx-bar-chart-alt-2 me-2"></i>
-                  {t("Performance Summary")}
-                </h6>
-              </CardHeader>
-              <CardBody>
-                <div className="performance-metric">
-                  <div className="metric-label">
-                    {t("Physical Achievement")}
-                  </div>
-                  <div className="metric-value">
-                    {annualSummary.avgPhysicalPlanned > 0 ? (
-                      <span
-                        className={
-                          (annualSummary.avgPhysicalActual /
-                            annualSummary.avgPhysicalPlanned) *
-                            100 <
-                          100
-                            ? "text-danger"
-                            : "text-success"
-                        }
-                      >
-                        {(
-                          (annualSummary.avgPhysicalActual /
-                            annualSummary.avgPhysicalPlanned) *
-                          100
-                        ).toFixed(2)}
-                        %
-                      </span>
-                    ) : (
-                      <span className="text-muted">N/A</span>
-                    )}
-                  </div>
-                </div>
-                <div className="performance-metric">
-                  <div className="metric-label">
-                    {t("Financial Achievement")}
-                  </div>
-                  <div className="metric-value">
-                    {annualSummary.totalPlannedFinancial > 0 ? (
-                      <span
-                        className={
-                          (annualSummary.totalActualFinancial /
-                            annualSummary.totalPlannedFinancial) *
-                            100 <
-                          100
-                            ? "text-danger"
-                            : "text-success"
-                        }
-                      >
-                        {(
-                          (annualSummary.totalActualFinancial /
-                            annualSummary.totalPlannedFinancial) *
-                          100
-                        ).toFixed(2)}
-                        %
-                      </span>
-                    ) : (
-                      <span className="text-muted">N/A</span>
-                    )}
-                  </div>
-                </div>
-                <div className="performance-metric">
-                  <div className="metric-label">{t("Overall Status")}</div>
-                  <div className="metric-value">
+          {[
+            {
+              title: t("Physical Performance"),
+              icon: "bx bx-trending-up",
+              metrics: [
+                {
+                  label: t("Baseline"),
+                  value: annualSummary.baselinePhysical,
+                  format: true,
+                },
+                {
+                  label: t("Planned Avg"),
+                  value: annualSummary.avgPhysicalPlanned,
+                  format: true,
+                },
+                {
+                  label: t("Actual Avg"),
+                  value: annualSummary.avgPhysicalActual,
+                  format: true,
+                },
+              ],
+            },
+            {
+              title: t("Financial Performance"),
+              icon: "bx bx-money",
+              metrics: [
+                {
+                  label: t("Baseline"),
+                  value: annualSummary.baselineFinancial,
+                  format: false,
+                  currency: true,
+                },
+                {
+                  label: t("Planned Total"),
+                  value: annualSummary.totalPlannedFinancial,
+                  format: false,
+                  currency: true,
+                },
+                {
+                  label: t("Actual Total"),
+                  value: annualSummary.totalActualFinancial,
+                  format: false,
+                  currency: true,
+                },
+              ],
+            },
+            {
+              title: t("Performance Summary"),
+              icon: "bx bx-bar-chart-alt-2",
+              metrics: [
+                {
+                  label: t("Physical Achievement"),
+                  value:
+                    annualSummary.avgPhysicalPlanned > 0
+                      ? (annualSummary.avgPhysicalActual /
+                          annualSummary.avgPhysicalPlanned) *
+                        100
+                      : null,
+                  isPercentage: true,
+                },
+                {
+                  label: t("Financial Achievement"),
+                  value:
+                    annualSummary.totalPlannedFinancial > 0
+                      ? (annualSummary.totalActualFinancial /
+                          annualSummary.totalPlannedFinancial) *
+                        100
+                      : null,
+                  isPercentage: true,
+                },
+                {
+                  label: t("Overall Status"),
+                  component: (
                     <Badge
-                      color={
-                        annualSummary.avgPhysicalActual >=
-                          annualSummary.avgPhysicalPlanned &&
-                        annualSummary.totalActualFinancial >=
-                          annualSummary.totalPlannedFinancial
-                          ? "success"
-                          : annualSummary.avgPhysicalActual >=
-                              annualSummary.avgPhysicalPlanned * 0.8 ||
-                            annualSummary.totalActualFinancial >=
-                              annualSummary.totalPlannedFinancial * 0.8
-                          ? "warning"
-                          : "danger"
-                      }
+                      color={getStatusColor(
+                        Math.min(
+                          (annualSummary.avgPhysicalActual /
+                            annualSummary.avgPhysicalPlanned) *
+                            100,
+                          (annualSummary.totalActualFinancial /
+                            annualSummary.totalPlannedFinancial) *
+                            100
+                        )
+                      )}
                       pill
+                      className="px-3 py-1 fw-normal"
                     >
                       {annualSummary.avgPhysicalActual >=
                         annualSummary.avgPhysicalPlanned &&
@@ -421,304 +291,289 @@ const ProjectPerformanceModal = ({
                         ? t("Needs Attention")
                         : t("At Risk")}
                     </Badge>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-
-        {/* Quarterly Breakdown with enhanced visualization */}
-        <h5 className="mb-3 d-flex align-items-center">
-          <i className="bx bx-calendar-quarter me-2 text-primary"></i>
-          {t("Quarterly Performance Breakdown")}
-        </h5>
-        <Row className="mb-4 g-3">
-          {quarters.map((q, idx) => (
-            <Col md={3} key={idx} className="quarter-col">
-              <Card
-                className={`border-0 shadow-sm h-100 border-top-4 border-${q.color}`}
-              >
-                <CardHeader className={`bg-${q.color}-subtle py-2`}>
-                  <div className="d-flex justify-content-between align-items-center">
-                    <h6 className={`mb-0 text-${q.color}`}>
-                      <i className={`bx bx-${q.name.toLowerCase()} me-2`}></i>
-                      {q.name}
-                    </h6>
-                    <Badge color={q.color} pill>
-                      {q.months
-                        .map((m) => monthNames[m].substring(0, 1))
-                        .join("")}
-                    </Badge>
-                  </div>
+                  ),
+                },
+              ],
+            },
+          ].map((section, idx) => (
+            <Col md={4} key={idx}>
+              <Card className="h-100 shadow-sm border">
+                <CardHeader className="border-bottom bg-light">
+                  <h6 className="mb-0 d-flex align-items-center">
+                    <i className={`${section.icon} me-2 text-primary`}></i>
+                    {section.title}
+                  </h6>
                 </CardHeader>
                 <CardBody>
-                  <div className="quarter-metric">
-                    <div className="metric-label small">{t("Physical")}</div>
-                    <div className="metric-value">
-                      <span className="text-muted me-2">
-                        {formatValue(q.avgPhysicalPlanned, true)}
-                      </span>
-                      <span
-                        className={
-                          q.avgPhysicalActual < q.avgPhysicalPlanned
-                            ? "text-danger"
-                            : "text-success"
-                        }
-                      >
-                        {formatValue(q.avgPhysicalActual, true)}
-                        {q.physicalVariance !== 0 && (
-                          <small
-                            className={`ms-1 ${
-                              q.physicalVariance < 0
-                                ? "text-danger"
-                                : "text-success"
-                            }`}
-                          >
-                            ({q.physicalVariance > 0 ? "+" : ""}
-                            {formatValue(q.physicalVariance, true)})
-                          </small>
-                        )}
-                      </span>
+                  {section.metrics.map((metric, i) => (
+                    <div key={i} className="mb-3">
+                      <div className="text-muted small mb-1">
+                        {metric.label}
+                      </div>
+                      {metric.component || (
+                        <div className="d-flex align-items-center">
+                          <span className="h5 mb-0 fw-semibold">
+                            {metric.isPercentage
+                              ? metric.value
+                                ? `${metric.value.toFixed(2)}%`
+                                : "N/A"
+                              : formatValue(
+                                  metric.value,
+                                  metric.format,
+                                  metric.currency
+                                )}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                  <div className="quarter-metric">
-                    <div className="metric-label small">{t("Financial")}</div>
-                    <div className="metric-value">
-                      <span className="text-muted me-2">
-                        {formatValue(q.plannedFinancial, false, true)}
-                      </span>
-                      <span
-                        className={
-                          q.actualFinancial < q.plannedFinancial
-                            ? "text-danger"
-                            : "text-success"
-                        }
-                      >
-                        {formatValue(q.actualFinancial, false, true)}
-                        {q.financialVariance !== 0 && (
-                          <small
-                            className={`ms-1 ${
-                              q.financialVariance < 0
-                                ? "text-danger"
-                                : "text-success"
-                            }`}
-                          >
-                            ({q.financialVariance > 0 ? "+" : ""}
-                            {formatValue(q.financialVariance, false, true)})
-                          </small>
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="quarter-metric small mt-2">
-                    <div className="d-flex justify-content-between">
-                      <span className="text-muted">{t("Achievement")}:</span>
-                      <span
-                        className={
-                          q.physicalAchievement < 100 ||
-                          q.financialAchievement < 100
-                            ? "text-warning"
-                            : "text-success"
-                        }
-                      >
-                        {q.physicalAchievement?.toFixed(0) ?? "N/A"}% /{" "}
-                        {q.financialAchievement?.toFixed(0) ?? "N/A"}%
-                      </span>
-                    </div>
-                  </div>
+                  ))}
                 </CardBody>
               </Card>
             </Col>
           ))}
         </Row>
 
-        {/* Monthly Details Table with enhanced design */}
-        <h5 className="mb-3 d-flex align-items-center">
+        {/* Quarterly Breakdown */}
+        <h5 className="mb-3 d-flex align-items-center text-dark">
+          <i className="bx bx-calendar-quarter me-2 text-primary"></i>
+          {t("Quarterly Performance")}
+        </h5>
+        <Row className="mb-4 g-3">
+          {quarters.map((q, idx) => {
+            const physicalColor = getVarianceColor(q.physicalVariance);
+            const financialColor = getVarianceColor(q.financialVariance);
+
+            return (
+              <Col md={3} key={idx}>
+                <Card className="h-100 border shadow-sm">
+                  <CardHeader className="border-bottom bg-light py-2">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <h6 className="mb-0 text-dark">{q.name}</h6>
+                      <span className="badge bg-primary bg-opacity-10 text-primary">
+                        {q.months.map((m) => monthNames[m]?.charAt(0)).join("")}
+                      </span>
+                    </div>
+                  </CardHeader>
+                  <CardBody>
+                    <div className="mb-3">
+                      <div className="text-muted small mb-1">
+                        {t("Physical Performance")}
+                      </div>
+                      <div className="d-flex justify-content-between align-items-end">
+                        <div>
+                          <div className="text-muted small">{t("Planned")}</div>
+                          <div>{formatValue(q.plannedPhysical / 3, true)}</div>
+                        </div>
+                        <div className="text-end">
+                          <div className="text-muted small">{t("Actual")}</div>
+                          <div className={physicalColor}>
+                            {formatValue(q.actualPhysical / 3, true)}
+                          </div>
+                        </div>
+                      </div>
+                      {q.physicalVariance !== 0 && (
+                        <div className="mt-2">
+                          <div className="text-muted small">
+                            {t("Variance")}
+                          </div>
+                          <div className={physicalColor}>
+                            {q.physicalVariance > 0 ? "+" : ""}
+                            {formatValue(q.physicalVariance, true)}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mb-2">
+                      <div className="text-muted small mb-1">
+                        {t("Financial Performance")}
+                      </div>
+                      <div className="d-flex justify-content-between align-items-end">
+                        <div>
+                          <div className="text-muted small">{t("Planned")}</div>
+                          <div>
+                            {formatValue(q.plannedFinancial, false, true)}
+                          </div>
+                        </div>
+                        <div className="text-end">
+                          <div className="text-muted small">{t("Actual")}</div>
+                          <div className={financialColor}>
+                            {formatValue(q.actualFinancial, false, true)}
+                          </div>
+                        </div>
+                      </div>
+                      {q.financialVariance !== 0 && (
+                        <div className="mt-2">
+                          <div className="text-muted small">
+                            {t("Variance")}
+                          </div>
+                          <div className={financialColor}>
+                            {q.financialVariance > 0 ? "+" : ""}
+                            {formatValue(q.financialVariance, false, true)}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </CardBody>
+                </Card>
+              </Col>
+            );
+          })}
+        </Row>
+
+        {/* Monthly Details */}
+        <h5 className="mb-3 d-flex align-items-center text-dark">
           <i className="bx bx-calendar me-2 text-primary"></i>
           {t("Monthly Performance Details")}
         </h5>
         <div className="table-responsive">
-          <Table bordered hover className="mb-0 performance-table">
+          <Table bordered hover className="mb-0">
             <thead className="table-light">
               <tr>
-                <th className="text-center">{t("Month")}</th>
-                <th className="text-center">{t("Physical")} (%)</th>
-                <th className="text-center">{t("Financial")} (Birr)</th>
-                <th className="text-center">{t("Variance")}</th>
-                <th className="text-center">{t("Achievement")}</th>
-                <th className="text-center">{t("Status")}</th>
+                <th width="15%">{t("Month")}</th>
+                <th className="text-end">{t("Planned")}</th>
+                <th className="text-end">{t("Actual")}</th>
+                <th className="text-end">{t("Variance")}</th>
+                <th className="text-end">{t("Achievement %")}</th>
+                <th width="15%">{t("Status")}</th>
               </tr>
             </thead>
             <tbody>
-              {monthlyData.map((month, idx) => (
-                <tr
-                  key={idx}
-                  className={
-                    month.actualPhysical < month.plannedPhysical ||
-                    month.actualFinancial < month.plannedFinancial
-                      ? "table-warning"
-                      : ""
-                  }
-                >
-                  <td className="text-center fw-medium">
-                    <div className="month-indicator">
-                      <div className="month-name">{month.monthName}</div>
-                      <div className="month-short">{month.monthShortName}</div>
-                    </div>
-                  </td>
-                  <td className="text-end">
-                    <div className="d-flex justify-content-between">
-                      <span className="text-muted me-2">
-                        {formatValue(month.plannedPhysical, true)}
-                      </span>
-                      <span
-                        className={
-                          month.actualPhysical < month.plannedPhysical
-                            ? "text-danger"
-                            : "text-success"
-                        }
+              {monthlyData.map((month, idx) => {
+                const physicalColor = getVarianceColor(month.physicalVariance);
+                const financialColor = getVarianceColor(
+                  month.financialVariance
+                );
+                const statusColor = getStatusColor(
+                  Math.min(
+                    month.physicalAchievement || 0,
+                    month.financialAchievement || 0
+                  )
+                );
+
+                return (
+                  <tr key={idx}>
+                    <td>
+                      <div className="fw-medium text-dark">
+                        {month.monthName}
+                      </div>
+                      <div className="small text-muted">
+                        {month.monthShortName}
+                      </div>
+                    </td>
+                    <td className="text-end">
+                      <div>
+                        <small className="d-block text-muted">
+                          {t("Physical")}
+                        </small>
+                        <span className="text-dark">
+                          {formatValue(month.plannedPhysical, true)}
+                        </span>
+                      </div>
+                      <div className="mt-1">
+                        <small className="d-block text-muted">
+                          {t("Financial")}
+                        </small>
+                        <span className="text-dark">
+                          {formatValue(month.plannedFinancial, false, true)}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="text-end">
+                      <div>
+                        <small className="d-block text-muted">
+                          {t("Physical")}
+                        </small>
+                        <span className="text-dark">
+                          {formatValue(month.actualPhysical, true)}
+                        </span>
+                      </div>
+                      <div className="mt-1">
+                        <small className="d-block text-muted">
+                          {t("Financial")}
+                        </small>
+                        <span className="text-dark">
+                          {formatValue(month.actualFinancial, false, true)}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="text-end">
+                      <div>
+                        <small className="d-block text-muted">
+                          {t("Physical")}
+                        </small>
+                        <span className={physicalColor}>
+                          {formatValue(month.physicalVariance, true)}
+                        </span>
+                      </div>
+                      <div className="mt-1">
+                        <small className="d-block text-muted">
+                          {t("Financial")}
+                        </small>
+                        <span className={financialColor}>
+                          {formatValue(month.financialVariance, false, true)}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="text-end">
+                      <div>
+                        <small className="d-block text-muted">
+                          {t("Physical")}
+                        </small>
+                        <span
+                          className={
+                            month.physicalAchievement === null
+                              ? ""
+                              : month.physicalAchievement >= 100
+                              ? "text-success"
+                              : month.physicalAchievement >= 80
+                              ? "text-warning"
+                              : "text-danger"
+                          }
+                        >
+                          {month.physicalAchievement
+                            ? `${month.physicalAchievement.toFixed(0)}%`
+                            : "N/A"}
+                        </span>
+                      </div>
+                      <div className="mt-1">
+                        <small className="d-block text-muted">
+                          {t("Financial")}
+                        </small>
+                        <span
+                          className={
+                            month.financialAchievement === null
+                              ? ""
+                              : month.financialAchievement >= 100
+                              ? "text-success"
+                              : month.financialAchievement >= 80
+                              ? "text-warning"
+                              : "text-danger"
+                          }
+                        >
+                          {month.financialAchievement
+                            ? `${month.financialAchievement.toFixed(0)}%`
+                            : "N/A"}
+                        </span>
+                      </div>
+                    </td>
+                    <td>
+                      <Badge
+                        color="light"
+                        className="w-100 py-1 fw-semibold text-muted border border-0 bg-transparent"
+                        pill
                       >
-                        {formatValue(month.actualPhysical, true)}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="text-end">
-                    <div className="d-flex justify-content-between">
-                      <span className="text-muted me-2">
-                        {formatValue(month.plannedFinancial, false, true)}
-                      </span>
-                      <span
-                        className={
-                          month.actualFinancial < month.plannedFinancial
-                            ? "text-danger"
-                            : "text-success"
-                        }
-                      >
-                        {formatValue(month.actualFinancial, false, true)}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="text-end">
-                    <div className="d-flex flex-column">
-                      <small
-                        className={
-                          month.physicalVariance < 0
-                            ? "text-danger"
-                            : "text-success"
-                        }
-                      >
-                        {formatValue(month.physicalVariance, true)}
-                      </small>
-                      <small
-                        className={
-                          month.financialVariance < 0
-                            ? "text-danger"
-                            : "text-success"
-                        }
-                      >
-                        {formatValue(month.financialVariance, false, true)}
-                      </small>
-                    </div>
-                  </td>
-                  <td className="text-center">
-                    <div className="d-flex flex-column small">
-                      <span
-                        className={
-                          month.physicalAchievement < 100
-                            ? "text-warning"
-                            : "text-success"
-                        }
-                      >
-                        {month.physicalAchievement
-                          ? `${month.physicalAchievement.toFixed(0)}%`
-                          : "N/A"}
-                      </span>
-                      <span
-                        className={
-                          month.financialAchievement < 100
-                            ? "text-warning"
-                            : "text-success"
-                        }
-                      >
-                        {month.financialAchievement
-                          ? `${month.financialAchievement.toFixed(0)}%`
-                          : "N/A"}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="text-center">
-                    <Badge
-                      color={
-                        month.actualPhysical >= month.plannedPhysical &&
-                        month.actualFinancial >= month.plannedFinancial
-                          ? "success"
-                          : month.actualPhysical >=
-                              month.plannedPhysical * 0.8 ||
-                            month.actualFinancial >=
-                              month.plannedFinancial * 0.8
-                          ? "warning"
-                          : "danger"
-                      }
-                      pill
-                    >
-                      {month.status
-                        ? projectStatusMap[month.status]
-                        : t("Not set")}
-                    </Badge>
-                  </td>
-                </tr>
-              ))}
+                        {month.status
+                          ? projectStatusMap[month.status]
+                          : t("Not set")}
+                      </Badge>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </Table>
         </div>
-
-        {/* CSS for enhanced visual presentation */}
-        <style jsx>{`
-          .performance-metric {
-            margin-bottom: 0.75rem;
-          }
-          .metric-label {
-            font-size: 0.85rem;
-            color: #6c757d;
-          }
-          .metric-value {
-            font-size: 1.1rem;
-            font-weight: 500;
-          }
-          .quarter-metric {
-            margin-bottom: 0.5rem;
-          }
-          .month-indicator {
-            display: flex;
-            flex-direction: column;
-          }
-          .month-name {
-            font-size: 0.9rem;
-          }
-          .month-short {
-            font-size: 0.75rem;
-            color: #6c757d;
-          }
-          .performance-table th {
-            white-space: nowrap;
-          }
-          .performance-table td {
-            vertical-align: middle;
-          }
-          .quarter-col:nth-child(1) .card {
-            border-top-color: #727cf5 !important;
-          }
-          .quarter-col:nth-child(2) .card {
-            border-top-color: #727cf5 !important;
-          }
-          .quarter-col:nth-child(3) .card {
-            border-top-color: #727cf5 !important;
-          }
-          .quarter-col:nth-child(4) .card {
-            border-top-color: #727cf5 !important;
-          }
-        `}</style>
       </ModalBody>
     </Modal>
   );
