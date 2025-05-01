@@ -68,7 +68,7 @@ export const useUpdateBudgetRequestApproval = () => {
   return useMutation({
     mutationFn: updateBudgetRequestApproval,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: BUDGET_REQUESTS_QUERY_KEY, exact: false })
+      queryClient.invalidateQueries({ queryKey: BUDGET_REQUESTS_QUERY_KEY, exact: false, refetchType: "all" })
     },
   });
 };

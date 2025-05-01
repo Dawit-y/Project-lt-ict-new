@@ -7,7 +7,6 @@ import { useFetchBudgetRequestAmounts } from '../../../queries/budgetrequestamou
 import { useFetchBudgetRequestTasks } from '../../../queries/budgetrequesttask_query'
 import TableContainer from '../../../components/Common/TableContainer'
 import ApproveModal from './ApproveModal'
-import RecommendModal from './RecommendModal'
 import { useAuthUser } from "../../../hooks/useAuthUser"
 
 const ApproveDecline = ({ request, toggleParent }) => {
@@ -16,16 +15,14 @@ const ApproveDecline = ({ request, toggleParent }) => {
   const [recommendModal, setRecommendModal] = useState(false)
   const toggleApproveModal = () => setApproveModal(!approveModal)
   const toggleRecommendModal = () => setRecommendModal(!recommendModal)
-  const [isApprove, setIsApprove] = useState(true)
-  const { departmentId, departmentType } = useAuthUser()
+  const [action, setAction] = useState("")
+  const { departmentType } = useAuthUser()
 
   const isDepartmentLevel = departmentType === "department" || departmentType === "directorate";
   const isOfficerLevel = departmentType === "officer" || departmentType === "team";
 
   const handleClick = (event) => {
-    const isApproveAction = event.target.name === "approve";
-    setIsApprove(isApproveAction);
-
+    setAction(event.target.name)
     if (isDepartmentLevel) {
       toggleApproveModal();
     } else if (isOfficerLevel) {
@@ -530,7 +527,7 @@ const ApproveDecline = ({ request, toggleParent }) => {
         <ApproveModal
           isOpen={approveModal}
           toggle={toggleApproveModal}
-          isApprove={isApprove}
+          action={action}
           request={request}
           toggleParent={toggleParent}
         />
@@ -545,8 +542,13 @@ const ApproveDecline = ({ request, toggleParent }) => {
                 </Button>
               </Col>
               <Col className='d-flex align-items-center justify-content-center'>
+                <Button color='secondary' className='w-100' name='recommend' onClick={handleClick}>
+                  {"Recommend"}
+                </Button>
+              </Col>
+              <Col className='d-flex align-items-center justify-content-center'>
                 <Button color='danger' className='w-100' name='reject' onClick={handleClick}>
-                  Reject
+                  {"Reject"}
                 </Button>
               </Col>
             </Row>
