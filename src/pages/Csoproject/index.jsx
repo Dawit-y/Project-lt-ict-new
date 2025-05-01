@@ -40,6 +40,7 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import DatePicker from "../../components/Common/DatePicker";
 import ProjectTabs from "./ProjectTabs";
+import RegionProjectTab from "./RegionProjectTab"
 
 const ProjectModel = () => {
   document.title = "CSO Projects";
@@ -63,6 +64,8 @@ const ProjectModel = () => {
 
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
+  const userType = storedUser?.user?.usr_user_type
+
   const { data, isLoading, error, isError, refetch } =
     useFindProjects({ object_type_id: 1 }, true, userId);
   const { data: projectCategoryData } = useFetchProjectCategorys();
@@ -429,12 +432,19 @@ const ProjectModel = () => {
               <div className="w-100">
                 {isLoading ?
                   <Spinners /> :
-                  <ProjectTabs
-                    program={data}
-                    handleAddClick={handleProjectsClicks}
-                    handleEditClick={handleProjectClick}
-                    handleTabChange={handleTabChange}
-                  />
+                  userType === 4 ?
+                    <RegionProjectTab
+                      program={data}
+                      handleAddClick={handleProjectsClicks}
+                      handleEditClick={handleProjectClick}
+                      handleTabChange={handleTabChange}
+                    /> :
+                    <ProjectTabs
+                      program={data}
+                      handleAddClick={handleProjectsClicks}
+                      handleEditClick={handleProjectClick}
+                      handleTabChange={handleTabChange}
+                    />
                 }
               </div>
             </>
