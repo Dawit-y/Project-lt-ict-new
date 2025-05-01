@@ -60,20 +60,13 @@ export const getBudgetRequestforApproval = async (params) => {
     console.log(error);
   }
 };
+
 // update project_budget_request
 export const updateBudgetRequestApproval = (data) =>
   post(`${apiUrl}` + UPDATE_BUDGET_REQUEST_APPROVAL + `?bdr_id=${data?.bdr_id}`, data);
 
-
 export const bulkUpdateBudgetRequestApproval = async (data) => {
-  console.log("data", data);
-
-  const params = {
-    request_status: data.request_status,
-    request_list: data.request_list.join(","), // convert array to comma-separated string
-  };
-
-  const queryString = new URLSearchParams(params).toString();
+  const queryString = `request_status=${data.request_status}&request_list=${data.request_list.join(",")}`;
   const url = `${BULK_UPDATE_BUDGET_REQUEST_APPROVAL}?${queryString}`;
 
   try {
@@ -83,4 +76,3 @@ export const bulkUpdateBudgetRequestApproval = async (data) => {
     throw error;
   }
 };
-

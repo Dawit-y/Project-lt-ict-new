@@ -190,7 +190,7 @@ export const useBulkUpdateBudgetRequestApproval = () => {
   return useMutation({
     mutationFn: bulkUpdateBudgetRequestApproval,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: BUDGET_REQUESTS_QUERY_KEY, exact: false })
+      queryClient.invalidateQueries({ queryKey: BUDGET_REQUESTS_QUERY_KEY, exact: false, refetchType: "all" })
     },
   });
 };
