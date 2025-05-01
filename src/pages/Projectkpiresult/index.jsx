@@ -287,6 +287,7 @@ const ProjectKpiResultModel = (props) => {
   };
 
   // Columns configuration
+
   const columns = useMemo(() => {
     const baseColumns = [
       {
@@ -305,32 +306,56 @@ const ProjectKpiResultModel = (props) => {
         cell: (cellProps) =>
           budgetYearMap[cellProps.row.original.kpr_year_id] || "",
       },
-      ...Array.from({ length: 12 }, (_, i) => [
+      // Quarter columns
+      ...[
         {
-          header: `Planned M${i + 1}`,
-          accessorKey: `kpr_planned_month_${i + 1}`,
-          enableColumnFilter: false,
-          enableSorting: true,
-          cell: (cellProps) => {
-            const value = cellProps.row.original[`kpr_planned_month_${i + 1}`];
-            return value
-              ? truncateText(Number(value).toLocaleString(), 15)
-              : "-";
-          },
+          name: "Q1",
+          months: [11, 12, 1], // Month numbers as they appear in the data
         },
         {
-          header: `Actual M${i + 1}`,
-          accessorKey: `kpr_actual_month_${i + 1}`,
-          enableColumnFilter: false,
-          enableSorting: true,
-          cell: (cellProps) => {
-            const value = cellProps.row.original[`kpr_actual_month_${i + 1}`];
-            return value
-              ? truncateText(Number(value).toLocaleString(), 15)
-              : "-";
-          },
+          name: "Q2",
+          months: [2, 3, 4],
         },
-      ]).flat(),
+        {
+          name: "Q3",
+          months: [5, 6, 7],
+        },
+        {
+          name: "Q4",
+          months: [8, 9, 10],
+        },
+      ]
+        .map((quarter) => [
+          {
+            header: `Planned ${quarter.name}`,
+            accessorKey: `planned_${quarter.name}`,
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              const sum = quarter.months.reduce((total, month) => {
+                const value =
+                  cellProps.row.original[`kpr_planned_month_${month}`];
+                return total + (Number(value) || 0);
+              }, 0);
+              return sum ? truncateText(Number(sum).toLocaleString(), 15) : "-";
+            },
+          },
+          {
+            header: `Actual ${quarter.name}`,
+            accessorKey: `actual_${quarter.name}`,
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              const sum = quarter.months.reduce((total, month) => {
+                const value =
+                  cellProps.row.original[`kpr_actual_month_${month}`];
+                return total + (Number(value) || 0);
+              }, 0);
+              return sum ? truncateText(Number(sum).toLocaleString(), 15) : "-";
+            },
+          },
+        ])
+        .flat(),
       {
         header: t("view_detail"),
         cell: (cellProps) => (
@@ -548,10 +573,10 @@ const ProjectKpiResultModel = (props) => {
               {["Quarter1", "Quarter2", "Quarter3", "Quarter4"].map(
                 (quarter) => {
                   const months = {
-                    Quarter1: [1, 2, 3],
-                    Quarter2: [4, 5, 6],
-                    Quarter3: [7, 8, 9],
-                    Quarter4: [10, 11, 12],
+                    Quarter1: [11, 12, 1],
+                    Quarter2: [2, 3, 4],
+                    Quarter3: [5, 6, 7],
+                    Quarter4: [8, 9, 10],
                   }[quarter];
 
                   return (

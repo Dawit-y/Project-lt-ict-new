@@ -40,7 +40,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -64,20 +64,21 @@ const ProjectComponentModel = (props) => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, isFetching, error, isError, refetch } = useFetchProjectComponents(param, isActive);
+  const { data, isLoading, isFetching, error, isError, refetch } =
+    useFetchProjectComponents(param, isActive);
   const addProjectComponent = useAddProjectComponent();
   const updateProjectComponent = useUpdateProjectComponent();
   const deleteProjectComponent = useDeleteProjectComponent();
-//START CRUD
+  //START CRUD
   const handleAddProjectComponent = async (data) => {
     try {
       await addProjectComponent.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.success(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -86,12 +87,12 @@ const ProjectComponentModel = (props) => {
   const handleUpdateProjectComponent = async (data) => {
     try {
       await updateProjectComponent.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
+      toast.success(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -102,11 +103,11 @@ const ProjectComponentModel = (props) => {
       try {
         const id = projectComponent.pcm_id;
         await deleteProjectComponent.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t('delete_failure'), {
+        toast.success(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -115,66 +116,66 @@ const ProjectComponentModel = (props) => {
   };
   //END CRUD
   //START FOREIGN CALLS
-  
-  
+
   // validation
   const validation = useFormik({
     // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
     initialValues: {
-     pcm_project_id:passedId, 
-pcm_component_name:(projectComponent && projectComponent.pcm_component_name) || "", 
-pcm_unit_measurement:(projectComponent && projectComponent.pcm_unit_measurement) || "", 
-pcm_amount:(projectComponent && projectComponent.pcm_amount) || "", 
-pcm_description:(projectComponent && projectComponent.pcm_description) || "", 
-pcm_status:(projectComponent && projectComponent.pcm_status) || "", 
+      pcm_project_id: passedId,
+      pcm_component_name:
+        (projectComponent && projectComponent.pcm_component_name) || "",
+      pcm_unit_measurement:
+        (projectComponent && projectComponent.pcm_unit_measurement) || "",
+      pcm_amount: (projectComponent && projectComponent.pcm_amount) || "",
+      pcm_description:
+        (projectComponent && projectComponent.pcm_description) || "",
+      pcm_status: (projectComponent && projectComponent.pcm_status) || "",
 
-     is_deletable: (projectComponent && projectComponent.is_deletable) || 1,
-     is_editable: (projectComponent && projectComponent.is_editable) || 1
-   },
-   validationSchema: Yup.object({
-    pcm_project_id: Yup.string().required(t('pcm_project_id')),
-pcm_component_name: Yup.string().required(t('pcm_component_name')),
-pcm_unit_measurement: Yup.string().required(t('pcm_unit_measurement')),
-pcm_amount: Yup.string().required(t('pcm_amount')),
-pcm_description: Yup.string().required(t('pcm_description')),
-pcm_status: Yup.string().required(t('pcm_status')),
+      is_deletable: (projectComponent && projectComponent.is_deletable) || 1,
+      is_editable: (projectComponent && projectComponent.is_editable) || 1,
+    },
+    validationSchema: Yup.object({
+      pcm_project_id: Yup.string().required(t("pcm_project_id")),
+      pcm_component_name: Yup.string().required(t("pcm_component_name")),
+      pcm_unit_measurement: Yup.string().required(t("pcm_unit_measurement")),
+      pcm_amount: Yup.string().required(t("pcm_amount")),
+      pcm_description: Yup.string().required(t("pcm_description")),
+      pcm_status: Yup.string().required(t("pcm_status")),
+    }),
+    validateOnBlur: true,
+    validateOnChange: false,
+    onSubmit: (values) => {
+      if (isEdit) {
+        const updateProjectComponent = {
+          pcm_id: projectComponent ? projectComponent.pcm_id : 0,
+          // pcm_id: projectComponent.pcm_id,
+          pcm_project_id: passedId,
+          pcm_component_name: values.pcm_component_name,
+          pcm_unit_measurement: values.pcm_unit_measurement,
+          pcm_amount: values.pcm_amount,
+          pcm_description: values.pcm_description,
+          pcm_status: values.pcm_status,
 
-  }),
-   validateOnBlur: true,
-   validateOnChange: false,
-   onSubmit: (values) => {
-    if (isEdit) {
-      const updateProjectComponent = {
-        pcm_id: projectComponent ? projectComponent.pcm_id : 0,
-        pcm_id:projectComponent.pcm_id, 
-pcm_project_id:passedId, 
-pcm_component_name:values.pcm_component_name, 
-pcm_unit_measurement:values.pcm_unit_measurement, 
-pcm_amount:values.pcm_amount, 
-pcm_description:values.pcm_description, 
-pcm_status:values.pcm_status, 
-
-        is_deletable: values.is_deletable,
-        is_editable: values.is_editable,
-      };
+          is_deletable: values.is_deletable,
+          is_editable: values.is_editable,
+        };
         // update ProjectComponent
-      handleUpdateProjectComponent(updateProjectComponent);
-    } else {
-      const newProjectComponent = {
-        pcm_project_id:passedId, 
-pcm_component_name:values.pcm_component_name, 
-pcm_unit_measurement:values.pcm_unit_measurement, 
-pcm_amount:values.pcm_amount, 
-pcm_description:values.pcm_description, 
-pcm_status:values.pcm_status, 
-
-      };
+        handleUpdateProjectComponent(updateProjectComponent);
+      } else {
+        const newProjectComponent = {
+          pcm_project_id: passedId,
+          pcm_component_name: values.pcm_component_name,
+          pcm_unit_measurement: values.pcm_unit_measurement,
+          pcm_amount: values.pcm_amount,
+          pcm_description: values.pcm_description,
+          pcm_status: values.pcm_status,
+        };
         // save new ProjectComponent
-      handleAddProjectComponent(newProjectComponent);
-    }
-  },
-});
+        handleAddProjectComponent(newProjectComponent);
+      }
+    },
+  });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
   // Fetch ProjectComponent on component mount
@@ -199,13 +200,13 @@ pcm_status:values.pcm_status,
     const projectComponent = arg;
     // console.log("handleProjectComponentClick", projectComponent);
     setProjectComponent({
-      pcm_id:projectComponent.pcm_id, 
-pcm_project_id:projectComponent.pcm_project_id, 
-pcm_component_name:projectComponent.pcm_component_name, 
-pcm_unit_measurement:projectComponent.pcm_unit_measurement, 
-pcm_amount:projectComponent.pcm_amount, 
-pcm_description:projectComponent.pcm_description, 
-pcm_status:projectComponent.pcm_status, 
+      pcm_id: projectComponent.pcm_id,
+      pcm_project_id: projectComponent.pcm_project_id,
+      pcm_component_name: projectComponent.pcm_component_name,
+      pcm_unit_measurement: projectComponent.pcm_unit_measurement,
+      pcm_amount: projectComponent.pcm_amount,
+      pcm_description: projectComponent.pcm_description,
+      pcm_status: projectComponent.pcm_status,
 
       is_deletable: projectComponent.is_deletable,
       is_editable: projectComponent.is_editable,
@@ -223,8 +224,8 @@ pcm_status:projectComponent.pcm_status,
     setIsEdit(false);
     setProjectComponent("");
     toggle();
-  }
-  ;  const handleSearchResults = ({ data, error }) => {
+  };
+  const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
@@ -232,76 +233,73 @@ pcm_status:projectComponent.pcm_status,
   //START UNCHANGED
   const columns = useMemo(() => {
     const baseColumns = [
-{
-        header: '',
-        accessorKey: 'pcm_component_name',
+      {
+        header: "",
+        accessorKey: "pcm_component_name",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.pcm_component_name, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pcm_unit_measurement',
+      },
+      {
+        header: "",
+        accessorKey: "pcm_unit_measurement",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.pcm_unit_measurement, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pcm_amount',
+      },
+      {
+        header: "",
+        accessorKey: "pcm_amount",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pcm_amount, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pcm_amount, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pcm_description',
+      },
+      {
+        header: "",
+        accessorKey: "pcm_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pcm_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pcm_description, 30) || "-"}
             </span>
           );
         },
-      }, 
-{
-        header: '',
-        accessorKey: 'pcm_status',
+      },
+      {
+        header: "",
+        accessorKey: "pcm_status",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pcm_status, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.pcm_status, 30) || "-"}
             </span>
           );
         },
-      }, 
+      },
 
       {
         header: t("view_detail"),
@@ -310,25 +308,25 @@ pcm_status:projectComponent.pcm_status,
         cell: (cellProps) => {
           return (
             <Button
-            type="button"
-            color="primary"
-            className="btn-sm"
-            onClick={() => {
-              const data = cellProps.row.original;
-              toggleViewModal(data);
-              setTransaction(cellProps.row.original);
-            }}
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                const data = cellProps.row.original;
+                toggleViewModal(data);
+                setTransaction(cellProps.row.original);
+              }}
             >
-            {t("view_detail")}
+              {t("view_detail")}
             </Button>
-            );
+          );
         },
       },
-      ];
+    ];
     if (
-      data?.previledge?.is_role_editable==1 ||
-      data?.previledge?.is_role_deletable==1
-      ) {
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
+    ) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -337,262 +335,257 @@ pcm_status:projectComponent.pcm_status,
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-            {cellProps.row.original.is_editable==1 && (
-              <Link
-              to="#"
-              className="text-success"
-              onClick={() => {
-                const data = cellProps.row.original;                    
-                handleProjectComponentClick(data);
-              }}
-              >
-              <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-              <UncontrolledTooltip placement="top" target="edittooltip">
-              Edit
-              </UncontrolledTooltip>
-              </Link>
+              {cellProps.row.original.is_editable == 1 && (
+                <Link
+                  className="text-success"
+                  onClick={() => {
+                    const data = cellProps.row.original;
+                    handleProjectComponentClick(data);
+                  }}
+                >
+                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                  <UncontrolledTooltip placement="top" target="edittooltip">
+                    Edit
+                  </UncontrolledTooltip>
+                </Link>
               )}
-            {cellProps.row.original.is_deletable==1 && (
-              <Link
-              to="#"
-              className="text-danger"
-              onClick={() => {
-                const data = cellProps.row.original;
-                onClickDelete(data);
-              }}
-              >
-              <i
-              className="mdi mdi-delete font-size-18"
-              id="deletetooltip"
-              />
-              <UncontrolledTooltip placement="top" target="deletetooltip">
-              Delete
-              </UncontrolledTooltip>
-              </Link>
+              {cellProps.row.original.is_deletable == 1 && (
+                <Link
+                  className="text-danger"
+                  onClick={() => {
+                    const data = cellProps.row.original;
+                    onClickDelete(data);
+                  }}
+                >
+                  <i
+                    className="mdi mdi-delete font-size-18"
+                    id="deletetooltip"
+                  />
+                  <UncontrolledTooltip placement="top" target="deletetooltip">
+                    Delete
+                  </UncontrolledTooltip>
+                </Link>
               )}
             </div>
-            );
+          );
         },
       });
-  }
-  return baseColumns;
-}, [handleProjectComponentClick, toggleViewModal, onClickDelete]);
+    }
+    return baseColumns;
+  }, [handleProjectComponentClick, toggleViewModal, onClickDelete]);
   return (
     <React.Fragment>
-    <ProjectComponentModal
-    isOpen={modal1}
-    toggle={toggleViewModal}
-    transaction={transaction}
-    />
-    <DeleteModal
-    show={deleteModal}
-    onDeleteClick={handleDeleteProjectComponent}
-    onCloseClick={() => setDeleteModal(false)}
-    isLoading={deleteProjectComponent.isPending}
-    />
-    {isLoading || isSearchLoading ? (
-      <Spinners />
-      ) : (
-      
-      <TableContainer
-      columns={columns}
-      data={
-        showSearchResult
-        ? searchResults?.data
-        : data?.data || []
-      }
-      isGlobalFilter={true}
-      isAddButton={data?.previledge?.is_role_can_add==1}
-      isCustomPageSize={true}
-      handleUserClick={handleProjectComponentClicks}
-      isPagination={true}
-                      // SearchPlaceholder="26 records..."
-      SearchPlaceholder={26 + " " + t("Results") + "..."}
-      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-      buttonName={t("add")}
-      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-      theadClass="table-light"
-      pagination="pagination"
-      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-      refetch={refetch}
-      isFetching={isFetching}
+      <ProjectComponentModal
+        isOpen={modal1}
+        toggle={toggleViewModal}
+        transaction={transaction}
       />
+      <DeleteModal
+        show={deleteModal}
+        onDeleteClick={handleDeleteProjectComponent}
+        onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteProjectComponent.isPending}
+      />
+      {isLoading || isSearchLoading ? (
+        <Spinners />
+      ) : (
+        <TableContainer
+          columns={columns}
+          data={showSearchResult ? searchResults?.data : data?.data || []}
+          isGlobalFilter={true}
+          isAddButton={data?.previledge?.is_role_can_add == 1}
+          isCustomPageSize={true}
+          handleUserClick={handleProjectComponentClicks}
+          isPagination={true}
+          // SearchPlaceholder="26 records..."
+          SearchPlaceholder={26 + " " + t("Results") + "..."}
+          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+          buttonName={t("add")}
+          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+          theadClass="table-light"
+          pagination="pagination"
+          paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+          refetch={refetch}
+          isFetching={isFetching}
+        />
       )}
       <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-      <ModalHeader toggle={toggle} tag="h4">
-      {!!isEdit ? (t("edit") + " "+t("project_component")) : (t("add") +" "+t("project_component"))}
-      </ModalHeader>
-      <ModalBody>
-      <Form
-      onSubmit={(e) => {
-        e.preventDefault();
-        validation.handleSubmit();
-        return false;
-      }}
-      >
-      <Row>
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pcm_component_name')}</Label>
-                      <Input
-                        name='pcm_component_name'
-                        type='text'
-                        placeholder={t('pcm_component_name')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pcm_component_name || ''}
-                        invalid={
-                          validation.touched.pcm_component_name &&
-                          validation.errors.pcm_component_name
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pcm_component_name &&
-                      validation.errors.pcm_component_name ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pcm_component_name}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pcm_unit_measurement')}</Label>
-                      <Input
-                        name='pcm_unit_measurement'
-                        type='text'
-                        placeholder={t('pcm_unit_measurement')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pcm_unit_measurement || ''}
-                        invalid={
-                          validation.touched.pcm_unit_measurement &&
-                          validation.errors.pcm_unit_measurement
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pcm_unit_measurement &&
-                      validation.errors.pcm_unit_measurement ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pcm_unit_measurement}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pcm_amount')}</Label>
-                      <Input
-                        name='pcm_amount'
-                        type='text'
-                        placeholder={t('pcm_amount')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pcm_amount || ''}
-                        invalid={
-                          validation.touched.pcm_amount &&
-                          validation.errors.pcm_amount
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pcm_amount &&
-                      validation.errors.pcm_amount ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pcm_amount}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pcm_description')}</Label>
-                      <Input
-                        name='pcm_description'
-                        type='text'
-                        placeholder={t('pcm_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pcm_description || ''}
-                        invalid={
-                          validation.touched.pcm_description &&
-                          validation.errors.pcm_description
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pcm_description &&
-                      validation.errors.pcm_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pcm_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-<Col className='col-md-6 mb-3'>
-                      <Label>{t('pcm_status')}</Label>
-                      <Input
-                        name='pcm_status'
-                        type='text'
-                        placeholder={t('pcm_status')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.pcm_status || ''}
-                        invalid={
-                          validation.touched.pcm_status &&
-                          validation.errors.pcm_status
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.pcm_status &&
-                      validation.errors.pcm_status ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.pcm_status}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-                
-      </Row>
-      <Row>
-      <Col>
-      <div className="text-end">
-      {addProjectComponent.isPending || updateProjectComponent.isPending ? (
-        <Button
-        color="success"
-        type="submit"
-        className="save-user"
-        disabled={
-          addProjectComponent.isPending ||
-          updateProjectComponent.isPending ||
-          !validation.dirty
-        }
-        >
-        <Spinner size={"sm"} color="light" className="me-2" />
-        {t("Save")}
-        </Button>
-        ) : (
-        <Button
-        color="success"
-        type="submit"
-        className="save-user"
-        disabled={
-          addProjectComponent.isPending ||
-          updateProjectComponent.isPending ||
-          !validation.dirty
-        }
-        >
-        {t("Save")}
-        </Button>
-        )}
-        </div>
-        </Col>
-        </Row>
-        </Form>
+        <ModalHeader toggle={toggle} tag="h4">
+          {!!isEdit
+            ? t("edit") + " " + t("project_component")
+            : t("add") + " " + t("project_component")}
+        </ModalHeader>
+        <ModalBody>
+          <Form
+            onSubmit={(e) => {
+              e.preventDefault();
+              validation.handleSubmit();
+              return false;
+            }}
+          >
+            <Row>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("pcm_component_name")}</Label>
+                <Input
+                  name="pcm_component_name"
+                  type="text"
+                  placeholder={t("pcm_component_name")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.pcm_component_name || ""}
+                  invalid={
+                    validation.touched.pcm_component_name &&
+                    validation.errors.pcm_component_name
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                />
+                {validation.touched.pcm_component_name &&
+                validation.errors.pcm_component_name ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.pcm_component_name}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("pcm_unit_measurement")}</Label>
+                <Input
+                  name="pcm_unit_measurement"
+                  type="text"
+                  placeholder={t("pcm_unit_measurement")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.pcm_unit_measurement || ""}
+                  invalid={
+                    validation.touched.pcm_unit_measurement &&
+                    validation.errors.pcm_unit_measurement
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                />
+                {validation.touched.pcm_unit_measurement &&
+                validation.errors.pcm_unit_measurement ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.pcm_unit_measurement}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("pcm_amount")}</Label>
+                <Input
+                  name="pcm_amount"
+                  type="text"
+                  placeholder={t("pcm_amount")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.pcm_amount || ""}
+                  invalid={
+                    validation.touched.pcm_amount &&
+                    validation.errors.pcm_amount
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                />
+                {validation.touched.pcm_amount &&
+                validation.errors.pcm_amount ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.pcm_amount}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("pcm_description")}</Label>
+                <Input
+                  name="pcm_description"
+                  type="text"
+                  placeholder={t("pcm_description")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.pcm_description || ""}
+                  invalid={
+                    validation.touched.pcm_description &&
+                    validation.errors.pcm_description
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                />
+                {validation.touched.pcm_description &&
+                validation.errors.pcm_description ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.pcm_description}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-6 mb-3">
+                <Label>{t("pcm_status")}</Label>
+                <Input
+                  name="pcm_status"
+                  type="text"
+                  placeholder={t("pcm_status")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.pcm_status || ""}
+                  invalid={
+                    validation.touched.pcm_status &&
+                    validation.errors.pcm_status
+                      ? true
+                      : false
+                  }
+                  maxLength={20}
+                />
+                {validation.touched.pcm_status &&
+                validation.errors.pcm_status ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.pcm_status}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <div className="text-end">
+                  {addProjectComponent.isPending ||
+                  updateProjectComponent.isPending ? (
+                    <Button
+                      color="success"
+                      type="submit"
+                      className="save-user"
+                      disabled={
+                        addProjectComponent.isPending ||
+                        updateProjectComponent.isPending ||
+                        !validation.dirty
+                      }
+                    >
+                      <Spinner size={"sm"} color="light" className="me-2" />
+                      {t("Save")}
+                    </Button>
+                  ) : (
+                    <Button
+                      color="success"
+                      type="submit"
+                      className="save-user"
+                      disabled={
+                        addProjectComponent.isPending ||
+                        updateProjectComponent.isPending ||
+                        !validation.dirty
+                      }
+                    >
+                      {t("Save")}
+                    </Button>
+                  )}
+                </div>
+              </Col>
+            </Row>
+          </Form>
         </ModalBody>
-        </Modal>
-        <ToastContainer />
-        </React.Fragment>
-        );
+      </Modal>
+      <ToastContainer />
+    </React.Fragment>
+  );
 };
 ProjectComponentModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

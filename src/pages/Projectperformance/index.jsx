@@ -569,7 +569,7 @@ const ProjectPerformanceModel = (props) => {
             </UncontrolledTooltip>
 
             <Button
-              color="warning"
+              color="secondary"
               size="sm"
               onClick={() => handleAddActuals(cellProps.row.original)}
               id={`addActuals-${cellProps.row.id}`}
