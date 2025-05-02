@@ -43,6 +43,7 @@ import {
   useSearchRequestFollowups,
   useFetchRequestFollowups,
 } from "../../../queries/requestfollowup_query";
+import { useFetchRequestStatuss } from "../../../queries/requeststatus_query";
 import { PAGE_ID } from "../../../constants/constantFile";
 import { useFetchProjectStatuss } from "../../../queries/projectstatus_query";
 
@@ -53,11 +54,12 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 import { getUserSectorList } from "../../../queries/usersector_query";
-import { createSelectOptions } from "../../../utils/commonMethods";
+import { createSelectOptions, createMultiSelectOptions } from "../../../utils/commonMethods";
+
 
 const ApproverBudgetRequestList = () => {
   document.title = "Budget Request List";
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [modal1, setModal1] = useState(false);
   const [fileModal, setFileModal] = useState(false);
   const [convModal, setConvModal] = useState(false);
@@ -85,6 +87,18 @@ const ApproverBudgetRequestList = () => {
     "sci_id",
     "sci_name_en"
   );
+
+  const { data: requestStatus } = useFetchRequestStatuss()
+  const {
+    rqs_name_en: requestStatusOptionsEn,
+    rqs_name_or: requestStatusOptionsOr,
+    rqs_name_am: requestStatusOptionsAm,
+  } = createMultiSelectOptions(
+    requestStatus?.data || [],
+    "rqs_id",
+    ["rqs_name_en", "rqs_name_or", "rqs_name_am"]
+  );
+
   const budgetYearMap = useMemo(() => {
     return (
       budgetYearData?.data?.reduce((acc, year) => {
@@ -429,6 +443,15 @@ const ApproverBudgetRequestList = () => {
                     {
                       key: "prj_sector_id",
                       options: sectorInformationOptions,
+                    },
+                    {
+                      key: "bdr_request_status",
+                      options:
+                        i18n.language === "en"
+                          ? requestStatusOptionsEn
+                          : i18n.language === "am"
+                            ? requestStatusOptionsAm
+                            : requestStatusOptionsOr,
                     }
                   ]}
                   additionalParams={projectParams}

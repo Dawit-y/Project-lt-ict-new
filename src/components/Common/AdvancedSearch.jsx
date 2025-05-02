@@ -41,7 +41,7 @@ const AdvancedSearch = ({
   const toggle = () => setIsOpen(!isOpen);
   const [params, setParams] = useState({});
   const [searchParams, setSearchParams] = useState({});
-  const { data = [], isLoading, refetch, isError, error } = searchHook(searchParams);
+  const { data = [], isLoading, isFetching, refetch, isError, error } = searchHook(searchParams);
 
   const flatpickrStartRef = useRef(null);
   const flatpickrEndRef = useRef(null);
@@ -119,7 +119,20 @@ const AdvancedSearch = ({
     if (Object.keys(searchParams).length > 0) {
       fetchData();
     }
-  }, [searchParams, t]);
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (dropdownSearchKeys) {
+      const defaultParams = {};
+      dropdownSearchKeys.forEach(({ key, defaultValue }) => {
+        if (defaultValue !== undefined) {
+          defaultParams[key] = defaultValue;
+        }
+      });
+      setParams((prev) => ({ ...defaultParams, ...prev }));
+    }
+  }, []);
+
 
   const handleClear = () => {
     setParams({});
@@ -470,7 +483,7 @@ const AdvancedSearch = ({
         </CardBody>
       </Card>
       <div>
-        {children && React.cloneElement(children, { data, isLoading })}
+        {children && React.cloneElement(children, { data, isLoading: isFetching })}
       </div>
     </React.Fragment>
   );
