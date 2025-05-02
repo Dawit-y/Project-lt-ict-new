@@ -156,6 +156,13 @@ const ProjectModel = () => {
 
       },
       {
+        field: "cso_name",
+        headerName: "CSO Name",
+        sortable: true,
+        filter: "agTextColumnFilter",
+
+      },
+      {
         field: "prj_code",
         headerName: t("prj_code"),
         sortable: true,
