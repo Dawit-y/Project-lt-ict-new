@@ -3,7 +3,6 @@ import {
   Row,
   Col,
   FormGroup,
-  Label,
   Input,
   Card,
   CardBody,
@@ -13,22 +12,36 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import TreeForLists from "../../components/Common/TreeForLists";
 import TableContainer from "../../components/Common/TableContainer";
-import { useSearchDepartments } from "../../queries/department_query";
-import { useSearchUserss } from "../../queries/users_query";
-import { useSearchProjects } from "../../queries/project_query";
 import { useSearchReport } from "../../queries/report_query";
 import Greenbook from "./ReportDesign/Greenbook";
+import FinancialProjectsTable from "../Report/ProjectFinanicialReportsTable";
+import FinancialProjectsTable2 from "../Report/ProjectFinanicialReportsTable2";
+import FinancialProjectsTable3 from "../Report/ProjectFinanicialReportsTable3";
+import ProjectPhysicalPerformanceReportsTable from "../Report/ProjectPhysicalPerformanceReportsTable";
+import ProjectFinancialPerformanceReportsTable from "../Report/ProjectFinancialPerformanceReportsTable";
+
+import ProjectEmployeeReportsTable from "../Report/ProjectEmployeeReportsTable";
+import ProjectsBudgetPlanTable from "../Report/ProjectsBudgetPlanTable";
+import ProjectsBudgetExpenditureTable from "../Report/ProjectsBudgetExpenditureTable";
+import ProjectsBudgetSourceTable from "../Report/ProjectsBudgetSourceTable";
+import ProjectsContractorTable from "../Report/ProjectsContractorTable";
+import ProjectsPaymentTable from "../Report/ProjectsPaymentTable";
+import { useFetchBudgetYears } from "../../queries/budgetyear_query";
+import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
+import { useFetchContractorTypes } from "../../queries/contractortype_query";
+import { createSelectOptions } from "../../utils/commonMethods";
+
+import { useTranslation } from "react-i18next";
+
 const truncateText = (text, maxLength) => {
-  if (typeof text !== "string") {
-    return text;
-  }
+  if (typeof text !== "string") return text;
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-import { useTranslation } from "react-i18next";
 const Report = () => {
-  const { t, i18n } = useTranslation();
-  const [endpoints, setEndpoints] = useState([
+  const { t } = useTranslation();
+
+  const [endpoints] = useState([
     { name: "project_stat", url: "uuuu" },
     { name: "employee_stat", url: "uuuu" },
     { name: "budget_plan_stat", url: "uuuu" },
@@ -36,6 +49,12 @@ const Report = () => {
     { name: "budget_source_stat", url: "uuuu" },
     { name: "budget_contractor_stat", url: "uuuu" },
     { name: "project_payment_stat", url: "uuuu" },
+    { name: "project_financial_report", url: "uuuu" },
+    { name: "project_financial_report2", url: "uuuu" },
+    { name: "project_financial_report3", url: "uuuu" },
+    { name: "project_physical_performance_report", url: "uuuu" },
+    { name: "project_financial_performance_report", url: "uuuu" },
+
   ]);
 
   const [searchResults, setSearchResults] = useState([]);
@@ -53,113 +72,232 @@ const Report = () => {
   const [searchHook, setSearchHook] = useState(null);
   const [textSearchKeys, setTextSearchKeys] = useState([]);
   const [dateSearchKeys, setDateSearchKeys] = useState([]);
-
-  /* const [searchHook, setSearchHook] = useState(() => useSearchProjects); // Default hook
-  const [textSearchKeys, setTextSearchKeys] = useState([
-    "prj_name",
-    "prj_code",
-  ]);
-  const [dateSearchKeys, setDateSearchKeys] = useState(["prj_date"]);*/
-
   const [selectedEndpoint, setSelectedEndpoint] = useState("");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [dropdownSearchKeys, setDropdownSearchKeys] = useState([]);
 
-  // Map for endpoints and their respective configurations
+ const { data: budgetYearData } = useFetchBudgetYears();
+  const budgetYearOptions = createSelectOptions(
+    budgetYearData?.data || [],
+    "bdy_id",
+    "bdy_name"
+  );
+const { data: sectorInformationData } = useFetchSectorInformations();
+  const sectorInformationOptions = createSelectOptions(
+    sectorInformationData?.data || [],
+    "sci_id",
+    "sci_name_or"
+  );
+  const { data: contractorTypeData } = useFetchContractorTypes();
+  const contractorTypeOptions = createSelectOptions(
+    contractorTypeData?.data || [],
+    "cnt_id",
+    "cnt_type_name_or"
+  );
+  
   const endpointConfigs = {
     project_stat: {
-      //textKeys: ["prj_name", "prj_code"],
-      //dateKeys: ["prj_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+
       reportTypeIndex: 1,
     },
     employee_stat: {
       textKeys: ["prj_name", "prj_code"],
-      //dateKeys: ["prj_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+       dropdownSearchKeys: [
+        {
+          key: "prj_sector_id",
+          options: sectorInformationOptions,
+        },
+        ],
       reportTypeIndex: 2,
     },
     budget_plan_stat: {
-      textKeys: ["prj_name", "prj_code"],
-      //dateKeys: ["prj_date"],
+      textKeys: ["prj_name"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+       dropdownSearchKeys: [
+        {
+          key: "bdr_budget_year_id",
+          options: budgetYearOptions,
+        },
+        {
+          key: "prj_sector_id",
+          options: sectorInformationOptions,
+        },
+         ],
       reportTypeIndex: 3,
     },
     budget_expenditure_stat: {
-      textKeys: ["prj_name", "prj_code"],
-      //dateKeys: ["prj_date"],
+      textKeys: ["prj_name"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+       dropdownSearchKeys: [
+        {
+          key: "pbe_budget_year_id",
+          options: budgetYearOptions,
+        },
+        {
+          key: "prj_sector_id",
+          options: sectorInformationOptions,
+        },
+      ],
       reportTypeIndex: 4,
     },
     budget_source_stat: {
-      textKeys: ["prj_name", "prj_code"],
-      //dateKeys: ["prj_date"],
+      textKeys: ["prj_name"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+     dropdownSearchKeys: [
+      {
+          key: "prj_sector_id",
+          options: sectorInformationOptions,
+        },
+      ],
       reportTypeIndex: 5,
     },
     budget_contractor_stat: {
       textKeys: ["prj_name", "prj_code"],
-      //dateKeys: ["prj_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+        dropdownSearchKeys: [
+        {
+          key: "cni_contractor_type_id",
+          options: contractorTypeOptions,
+        },
+      ],
       reportTypeIndex: 6,
     },
     project_payment_stat: {
-      //textKeys: ["prj_name", "prj_code"],
       dateKeys: ["payment_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
         woreda: "prj_location_woreda_id",
       },
+      dropdownSearchKeys: [
+        {
+          key: "bdr_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
       reportTypeIndex: 7,
     },
+    project_financial_report: {
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      dropdownSearchKeys: [
+        {
+          key: "bdr_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
+      reportTypeIndex: 8,
+    },
+    project_financial_report2: {
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      dropdownSearchKeys: [
+        {
+          key: "bdr_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
+      reportTypeIndex: 9,
+    },
+  project_financial_report3: {
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      dropdownSearchKeys: [
+        {
+          key: "bdr_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
+      reportTypeIndex: 10,
+    },
+project_physical_performance_report: {
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      dropdownSearchKeys: [
+        {
+          key: "prp_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
+      reportTypeIndex: 11,
+    },
+project_financial_performance_report: {
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      dropdownSearchKeys: [
+        {
+          key: "prp_budget_year_id",
+          options: budgetYearOptions,
+        },
+      ],
+      reportTypeIndex: 12,
+    },
+
   };
-  // Handle dropdown selection
+
   const handleSelectionChange = (event) => {
     const selectedValue = event.target.value;
     setSelectedEndpoint(selectedValue);
     const config = endpointConfigs[selectedValue];
     if (config) {
-      setSearchHook(() => config.hook);
-      setTextSearchKeys(config.textKeys);
-      setDateSearchKeys(config.dateKeys);
+      setSearchHook(() => useSearchReport);
+      setTextSearchKeys(config.textKeys || []);
+      setDropdownSearchKeys(config.dropdownSearchKeys);
+      setDateSearchKeys(config.dateKeys || []);
       setReportTypeId(config.reportTypeIndex);
     }
   };
+
   const handleSearchResults = ({ data, error }) => {
     setLoading(true);
-    // setData(data?.data || []);
     setSearchResults(data?.data);
-    //setSearchError(error);
     setSearchError(error);
     setShowSearchResult(true);
     setLoading(false);
   };
-  // Update projectParams dynamically based on selected endpoint and location params
+
   useEffect(() => {
     const updatedParams = {};
     if (LocationRegionId && locationParams.region) {
@@ -183,214 +321,293 @@ const Report = () => {
     locationParams,
   ]);
 
-  // Handle node selection dynamically based on selected endpoint's location keys
   const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setLocationRegionId(node.id);
-      setLocationZoneId(null); // Clear dependent states
+      setLocationZoneId(null);
       setLocationWoredaId(null);
     } else if (node.level === "zone") {
       setLocationZoneId(node.id);
-      setLocationWoredaId(null); // Clear dependent state
+      setLocationWoredaId(null);
     } else if (node.level === "woreda") {
       setLocationWoredaId(node.id);
     }
 
-    if (showSearchResult) {
-      setShowSearchResult(false);
-    }
+    if (showSearchResult) setShowSearchResult(false);
   };
 
-  // Update locationParams when selected endpoint changes
   useEffect(() => {
     if (selectedEndpoint && endpointConfigs[selectedEndpoint]) {
       const config = endpointConfigs[selectedEndpoint];
       setLocationParams(config.locationParams || {});
     } else {
-      setLocationParams({}); // Clear if no location params
+      setLocationParams({});
     }
   }, [selectedEndpoint]);
 
   useEffect(() => {
-    setData([]); // Clear data when the endpoint changes
+    setData([]);
   }, [selectedEndpoint]);
-  //START COLUMN
+
   const columns = useMemo(() => {
-    const baseColumns = [
+    return [
       {
         header: "",
         accessorKey: "prj_name",
         enableColumnFilter: false,
         enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_name, 30) || "-"}
-            </span>
-          );
-        },
+        cell: ({ row }) => <span>{truncateText(row.original.prj_name, 30) || "-"}</span>,
       },
       {
         header: "",
         accessorKey: "prj_code",
         enableColumnFilter: false,
         enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prj_code, 30) || "-"}
-            </span>
-          );
-        },
+        cell: ({ row }) => <span>{truncateText(row.original.prj_code, 30) || "-"}</span>,
       },
       {
         header: "",
         accessorKey: "sector_category",
         enableColumnFilter: false,
         enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.sector_category, 30) || "-"}
-            </span>
-          );
-        },
+        cell: ({ row }) => <span>{truncateText(row.original.sector_category, 30) || "-"}</span>,
       },
       {
         header: "",
         accessorKey: "bdr_requested_amount",
         enableColumnFilter: false,
         enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bdr_requested_amount, 30) ||
-                "-"}
-            </span>
-          );
-        },
+        cell: ({ row }) => (
+          <span>{truncateText(row.original.bdr_requested_amount, 30) || "-"}</span>
+        ),
       },
     ];
-    return baseColumns;
   }, []);
-  //END COLUMN
+
   return (
     <div className="page-content">
-      <div className="">
-        <Breadcrumbs
-          title={t("Report")}
-          breadcrumbItem={t("Statistical Report")}
-        />
-        <div className="w-100 d-flex gap-2">
-          <TreeForLists
-            onNodeSelect={handleNodeSelect}
-            setIsAddressLoading={setIsAddressLoading}
+      <Breadcrumbs title={t("Report")} breadcrumbItem={t("Statistical Report")} />
+      <div className="d-flex" style={{ gap: "20px" }}>
+        {/* TreeForLists with fixed width */}
+        <div style={{ width: "250px", flexShrink: 0 }}>
+          <TreeForLists 
+            onNodeSelect={handleNodeSelect} 
+            setIsAddressLoading={setIsAddressLoading} 
           />
-          <div className="w-100">
-            <Row>
-              <Col xs="2" sm="2" lg="2">
-                <Card className="job-filter">
-                  <CardBody>
-                    <FormGroup>
-                      <Input
-                        type="select"
-                        name="endpoint"
-                        id="api-endpoints"
-                        value={selectedEndpoint.name}
-                        onChange={handleSelectionChange}
-                        className="mb-1"
-                      >
-                        <option value="">{t("select_stat")}</option>
-                        {endpoints.map((endpoint, index) => (
-                          <option key={index} value={endpoint.name}>
-                            {t(endpoint.name)}
-                          </option>
-                        ))}
-                      </Input>
-                    </FormGroup>
-                  </CardBody>
-                </Card>
-              </Col>
-              <Col xs="10" sm="10" lg="10">
-                <AdvancedSearch
-                  searchHook={useSearchReport}
-                  textSearchKeys={textSearchKeys}
-                  dateSearchKeys={dateSearchKeys}
-                  dropdownSearchKeys={[]}
-                  checkboxSearchKeys={[]}
-                  additionalParams={projectParams}
-                  setAdditionalParams={setProjectParams}
-                  onSearchResult={handleSearchResults}
-                  setIsSearchLoading={setIsSearchLoading}
-                  setSearchResults={setSearchResults}
-                  setShowSearchResult={setShowSearchResult}
-                />
-              </Col>
-            </Row>
-            <Row></Row>
-            <Col xs="12">
-              {loading || isSearchLoading ? (
-                <div className="d-flex justify-content-center">
-                  <Spinner color="primary" />
-                </div>
-              ) : (
-                <>
-                  {!loading &&
-                    searchResults?.length > 0 &&
-                    showSearchResult && (
-                      <Card>
-                        <CardBody>
-                          {ReportTypeId === 1 && (
-                            <Greenbook
-                              columns={columns}
-                              data={searchResults}
-                              isGlobalFilter={true}
-                              isAddButton={true}
-                              isCustomPageSize={true}
-                              isPagination={true}
-                              SearchPlaceholder={t("filter_placeholder")}
-                              buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                              buttonName={t("add") + " " + t("budget_source")}
-                              tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                              theadClass="table-info"
-                              pagination="pagination"
-                              paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                            />
-                          )}
-                          {ReportTypeId === 2 && (
-                            <TableContainer
-                              columns={columns}
-                              data={searchResults}
-                              isGlobalFilter={true}
-                              isAddButton={true}
-                              isCustomPageSize={true}
-                              isPagination={true}
-                              SearchPlaceholder={t("filter_placeholder")}
-                              buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                              buttonName={t("add") + " " + t("budget_source")}
-                              tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                              theadClass="table-light"
-                              pagination="pagination"
-                              paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                            />
-                          )}
-                        </CardBody>
-                      </Card>
-                    )}
-                  {searchResults && searchResults.length === 0 && (
-                    <p>
-                      {t(
-                        "No data available for the selected endpoint please select related Address Structure and click Search button."
-                      )}
-                    </p>
-                  )}
-                </>
-              )}
+        </div>
+
+        {/* Main content area */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <Row>
+            <Col xs="2">
+              <Card className="job-filter">
+                <CardBody>
+                  <FormGroup>
+                    <Input
+                      type="select"
+                      name="endpoint"
+                      id="api-endpoints"
+                      value={selectedEndpoint}
+                      onChange={handleSelectionChange}
+                      className="mb-1"
+                    >
+                      <option value="">{t("select_stat")}</option>
+                      {endpoints.map((endpoint, index) => (
+                        <option key={index} value={endpoint.name}>
+                          {t(endpoint.name)}
+                        </option>
+                      ))}
+                    </Input>
+                  </FormGroup>
+                </CardBody>
+              </Card>
             </Col>
-          </div>
+            <Col xs="10">
+              <AdvancedSearch
+                searchHook={useSearchReport}
+                textSearchKeys={textSearchKeys}
+                dateSearchKeys={dateSearchKeys}
+                dropdownSearchKeys={dropdownSearchKeys}
+                checkboxSearchKeys={[]}
+                additionalParams={projectParams}
+                setAdditionalParams={setProjectParams}
+                onSearchResult={handleSearchResults}
+                setIsSearchLoading={setIsSearchLoading}
+                setSearchResults={setSearchResults}
+                setShowSearchResult={setShowSearchResult}
+              />
+            </Col>
+          </Row>
+
+          <Col xs="12">
+            {loading || isSearchLoading ? (
+              <div className="d-flex justify-content-center">
+                <Spinner color="primary" />
+              </div>
+            ) : (
+              <>
+                {searchResults?.length > 0 && showSearchResult && (
+                  <Card>
+                    <CardBody style={{ padding: "10px" }}>
+                      {ReportTypeId === 1 && (
+                        <Greenbook
+                          columns={columns}
+                          data={searchResults}
+                          isGlobalFilter
+                          isAddButton
+                          isCustomPageSize
+                          isPagination
+                          SearchPlaceholder={t("filter_placeholder")}
+                          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                          buttonName={`${t("add")} ${t("budget_source")}`}
+                          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                          theadClass="table-info"
+                          pagination="pagination"
+                          paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                        />
+                      )}
+                       {ReportTypeId === 2 && (
+                        <ProjectEmployeeReportsTable
+                          data={searchResults}
+                          isGlobalFilter
+                          SearchPlaceholder={t("filter_placeholder")}
+                          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                          theadClass="table-light"
+                          t={t}
+                        />
+                      )}
+                        {ReportTypeId === 3 && (
+                        <ProjectsBudgetPlanTable
+                          data={searchResults}
+                          isGlobalFilter
+                          SearchPlaceholder={t("filter_placeholder")}
+                          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                          theadClass="table-light"
+                          t={t}
+                        />
+                      )}
+
+                       {ReportTypeId === 4 && (
+                        <ProjectsBudgetExpenditureTable
+                          data={searchResults}
+                          isGlobalFilter
+                          SearchPlaceholder={t("filter_placeholder")}
+                          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                          theadClass="table-light"
+                          t={t}
+                        />
+                      )}
+                      
+                      {ReportTypeId === 5 && (
+                        <ProjectsBudgetSourceTable
+                          data={searchResults}
+                          isGlobalFilter
+                          SearchPlaceholder={t("filter_placeholder")}
+                          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                          theadClass="table-light"
+                          t={t}
+                        />
+                      )}
+
+                       {ReportTypeId === 6 && (
+                        <ProjectsContractorTable
+                          data={searchResults}
+                          isGlobalFilter
+                          SearchPlaceholder={t("filter_placeholder")}
+                          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                          theadClass="table-light"
+                          t={t}
+                        />
+                      )}
+                       {ReportTypeId === 7 && (
+                        <ProjectsPaymentTable
+                          data={searchResults}
+                          isGlobalFilter
+                          SearchPlaceholder={t("filter_placeholder")}
+                          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                          theadClass="table-light"
+                          t={t}
+                        />
+                      )}
+                      {ReportTypeId === 8 && (
+                        <FinancialProjectsTable
+                          data={searchResults}
+                          isGlobalFilter
+                          SearchPlaceholder={t("filter_placeholder")}
+                          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                          theadClass="table-light"
+                          t={t}
+                        />
+                      )}
+                       {ReportTypeId === 9 && (
+                        <FinancialProjectsTable2
+                          data={searchResults}
+                          isGlobalFilter
+                          SearchPlaceholder={t("filter_placeholder")}
+                          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                          theadClass="table-light"
+                          t={t}
+                        />
+                      )}
+                      {ReportTypeId === 10 && (
+                        <FinancialProjectsTable3
+                          data={searchResults}
+                          isGlobalFilter
+                          SearchPlaceholder={t("filter_placeholder")}
+                          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                          theadClass="table-light"
+                          t={t}
+                        />
+                      )}
+
+                     {ReportTypeId === 11 && (
+                        <ProjectPhysicalPerformanceReportsTable
+                          data={searchResults}
+                          isGlobalFilter
+                          SearchPlaceholder={t("filter_placeholder")}
+                          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                          theadClass="table-light"
+                          t={t}
+                        />
+                      )}
+
+                        {ReportTypeId === 12 && (
+                        <ProjectFinancialPerformanceReportsTable
+                          data={searchResults}
+                          isGlobalFilter
+                          SearchPlaceholder={t("filter_placeholder")}
+                          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                          theadClass="table-light"
+                          t={t}
+                        />
+                      )}
+                      
+                    </CardBody>
+                  </Card>
+                )}
+                {searchResults?.length === 0 && (
+                  <p>
+                    {t("No data available for the selected endpoint please select related Address Structure and click Search button.")}
+                  </p>
+                )}
+              </>
+            )}
+          </Col>
         </div>
       </div>
     </div>
   );
 };
+
 export default Report;

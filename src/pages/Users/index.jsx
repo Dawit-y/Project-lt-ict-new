@@ -167,6 +167,7 @@ const UsersModel = () => {
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
+      usr_copied_from_id: (users && users.usr_id) || "",
       usr_email: (users && users.usr_email) || "",
       usr_password: (users && users.usr_password) || "User@123",
       usr_full_name: (users && users.usr_full_name) || "",
@@ -269,15 +270,18 @@ const UsersModel = () => {
         };
         handleUpdateUsers(updateUsers);
       } else if (isDuplicateModalOpen) {
+        alert(users?.usr_id);
         const duplcateuser = {
-          usr_email: "",
+          usr_copied_from_id: users?.usr_id,
+          usr_email: values.usr_email,
           usr_password: values.usr_password,
+          usr_email: values.usr_email,
           usr_full_name: values.usr_full_name,
           usr_phone_number: values.usr_phone_number,
           usr_role_id: values.usr_role_id,
           usr_region_id: Number(values.usr_region_id),
-          usr_zone_id: Number(values.usr_zone_id),
           usr_woreda_id: Number(values.usr_woreda_id),
+          usr_zone_id: Number(values.usr_zone_id),
           usr_sector_id: Number(values.usr_sector_id),
           usr_is_active: Number(values.usr_is_active),
           usr_picture: values.usr_picture,
@@ -391,33 +395,37 @@ const UsersModel = () => {
     toggle();
   };
   const handleUsersDuplicateClick = (arg) => {
-    const users = arg;
+    const user = arg;
     setUsers({
-      usr_id: users.usr_id,
+      //usr_id: user.usr_id,
+      usr_copied_from_id: user.usr_id,
       usr_email: "",
-      usr_password: users.usr_password,
-      usr_full_name: users.usr_full_name,
-      usr_phone_number: users.usr_phone_number,
-      usr_role_id: Number(users.usr_role_id),
-      usr_region_id: Number(users.usr_region_id),
-      usr_woreda_id: Number(users.usr_woreda_id),
-      usr_sector_id: Number(users.usr_sector_id),
-      usr_is_active: users.usr_is_active,
-      usr_picture: users.usr_picture,
-      usr_last_logged_in: users.usr_last_logged_in,
-      usr_ip: users.usr_ip,
-      usr_remember_token: users.usr_remember_token,
-      usr_notified: users.usr_notified,
-      usr_description: users.usr_description,
-      usr_status: users.usr_status,
-      usr_department_id: Number(users.usr_department_id),
-      usr_directorate_id: Number(users.usr_directorate_id),
-      usr_team_id: Number(users.usr_team_id),
-      usr_officer_id: Number(users.usr_officer_id),
-      is_deletable: users.is_deletable,
-      is_editable: users.is_editable,
-      usr_user_type: Number(users.usr_user_type),
-      usr_owner_id: Number(users.usr_owner_id),
+      usr_password: "User@123",
+      usr_full_name: user.usr_full_name,
+      usr_phone_number: Number(
+        user.usr_phone_number.toString().replace(/^(\+?251)/, "")
+      ),
+      usr_role_id: Number(user.usr_role_id),
+      usr_region_id: Number(user.usr_region_id),
+      usr_zone_id: Number(user.usr_zone_id),
+      usr_woreda_id: Number(user.usr_woreda_id),
+      usr_sector_id: Number(user.usr_sector_id),
+      usr_is_active: user.usr_is_active,
+      usr_picture: user.usr_picture,
+      usr_last_logged_in: user.usr_last_logged_in,
+      usr_ip: user.usr_ip,
+      usr_remember_token: user.usr_remember_token,
+      usr_notified: user.usr_notified,
+      usr_description: user.usr_description,
+      usr_status: user.usr_status,
+      usr_department_id: Number(user.usr_department_id),
+      is_deletable: user.is_deletable,
+      is_editable: user.is_editable,
+      usr_directorate_id: Number(user.usr_directorate_id),
+      usr_team_id: Number(user.usr_team_id),
+      usr_officer_id: Number(user.usr_officer_id),
+      usr_user_type: Number(user.usr_user_type),
+      usr_owner_id: Number(user.usr_owner_id),
     });
     setIsDuplicateModalOpen(true);
     toggle();
@@ -553,9 +561,9 @@ const UsersModel = () => {
             )}
             {/* added duplicat  */}
             {/* Add duplicate project icon */}
-            {params.data?.is_editable == 90 &&
-              params.data?.is_role_editable && (
-                <Link
+
+            
+                {/*<Link
                   to="#"
                   className="text-primary"
                   onClick={() => {
@@ -572,8 +580,8 @@ const UsersModel = () => {
                   >
                     Duplicate
                   </UncontrolledTooltip>
-                </Link>
-              )}
+                </Link>*/}
+             
             {/* End of duplicate project icon */}
           </div>
         ),
