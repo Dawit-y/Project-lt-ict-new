@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Card, CardBody, Table, Row, Col, Button, TabContent, TabPane, Nav, NavItem, CardTitle, NavLink, Spinner, Badge } from 'reactstrap'
+import { Card, CardBody, Table, Row, Col, Button, TabContent, TabPane, Nav, NavItem, CardTitle, NavLink, Spinner, Badge, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
 import classnames from "classnames"
 import { useFetchBudgetExSources } from '../../../queries/budgetexsource_query'
 import { useFetchBudgetRequestAmounts } from '../../../queries/budgetrequestamount_query'
@@ -9,27 +9,8 @@ import TableContainer from '../../../components/Common/TableContainer'
 import ApproveModal from './ApproveModal'
 import { useAuthUser } from "../../../hooks/useAuthUser"
 
-const ApproveDecline = ({ request, toggleParent }) => {
+const RequestDetail = ({ request, isOpen, toggle }) => {
   const { t } = useTranslation()
-  const [approveModal, setApproveModal] = useState(false)
-  const [recommendModal, setRecommendModal] = useState(false)
-  const toggleApproveModal = () => setApproveModal(!approveModal)
-  const toggleRecommendModal = () => setRecommendModal(!recommendModal)
-  const [action, setAction] = useState("")
-  const { departmentType } = useAuthUser()
-
-  const isDirector = departmentType === "directorate"
-  const isDepartmentLevel = departmentType === "department" || departmentType === "directorate";
-  const isOfficerLevel = departmentType === "officer" || departmentType === "team";
-
-  const handleClick = (event) => {
-    setAction(event.target.name)
-    if (isDepartmentLevel) {
-      toggleApproveModal();
-    } else if (isOfficerLevel) {
-      toggleRecommendModal();
-    }
-  };
   const excludedKeys = [
     "is_editable",
     "is_deletable",
@@ -523,199 +504,182 @@ const ApproveDecline = ({ request, toggleParent }) => {
   }, []);
 
   return (
-    <>
-      {isDepartmentLevel && (
-        <ApproveModal
-          isOpen={approveModal}
-          toggle={toggleApproveModal}
-          action={action}
-          request={request}
-          toggleParent={toggleParent}
-        />
-      )}
-      <Card>
-        <CardBody>
-          {isDepartmentLevel &&
-            <Row className='w-50 mx-auto p-2 mb-3'>
-              {!isDirector &&
-                <Col className='d-flex align-items-center justify-content-center'>
-                  <Button color='success' className='w-100' name='approve' onClick={handleClick}>
-                    {"Approve"}
-                  </Button>
-                </Col>
-              }
-              <Col className='d-flex align-items-center justify-content-center'>
-                <Button color='secondary' className='w-100' name='recommend' onClick={handleClick}>
-                  {"Recommend"}
-                </Button>
-              </Col>
-              <Col className='d-flex align-items-center justify-content-center'>
-                <Button color='danger' className='w-100' name='reject' onClick={handleClick}>
-                  {"Reject"}
-                </Button>
+    <Modal
+      isOpen={isOpen}
+      centered
+      className="modal-xl"
+      toggle={toggle}
+    >
+      <ModalHeader toggle={toggle}>{t("take_action")}</ModalHeader>
+      <ModalBody>
+        <Card>
+          <CardBody>
+            <Row>
+              <Col>
+                <Badge color={request.color_code} pill className='py-1 px-2 mb-2'>
+                  {request?.status_name}
+                </Badge>
               </Col>
             </Row>
-          }
-          <Row>
-            <Col>
-              <Badge color={request.color_code} pill className='py-1 px-2 mb-2'>
-                {request?.status_name}
-              </Badge>
-            </Col>
-          </Row>
-          <Row className='d-flex align-items-center justify-content-center'>
-            <Col md={8} className="border-end border-secondary pe-3" >
-              {filteredDataArray &&
-                <div>
-                  <Table className="table-sm">
-                    <tbody>
-                      {filteredDataArray?.reduce((rows, [key, value], index) => {
-                        const currentRowIndex = Math.floor(index / 2);
-                        if (!rows[currentRowIndex]) rows[currentRowIndex] = [];
-                        rows[currentRowIndex].push([key, value]);
-                        return rows;
-                      }, []).map((row, rowIndex) => (
-                        <tr key={rowIndex}>
-                          {row.map(([key, value], colIndex) => (
-                            <>
-                              <td key={`key-${rowIndex}-${colIndex}`}>{t(key)} : </td>
-                              <td key={`value-${rowIndex}-${colIndex}`}>{value?.toString()}</td>
-                            </>
-                          ))}
-                          {Array.from({ length: 3 - row.length }).map((_, i) => (
-                            <>
-                              <td key={`empty-key-${rowIndex}-${i}`}></td>
-                              <td key={`empty-value-${rowIndex}-${i}`}></td>
-                            </>
-                          ))}
-                        </tr>
-                      ))}
+            <Row className='d-flex align-items-center justify-content-center'>
+              <Col md={8} className="border-end border-secondary pe-3" >
+                {filteredDataArray &&
+                  <div>
+                    <Table className="table-sm">
+                      <tbody>
+                        {filteredDataArray?.reduce((rows, [key, value], index) => {
+                          const currentRowIndex = Math.floor(index / 2);
+                          if (!rows[currentRowIndex]) rows[currentRowIndex] = [];
+                          rows[currentRowIndex].push([key, value]);
+                          return rows;
+                        }, []).map((row, rowIndex) => (
+                          <tr key={rowIndex}>
+                            {row.map(([key, value], colIndex) => (
+                              <>
+                                <td key={`key-${rowIndex}-${colIndex}`}>{t(key)} : </td>
+                                <td key={`value-${rowIndex}-${colIndex}`}>{value?.toString()}</td>
+                              </>
+                            ))}
+                            {Array.from({ length: 3 - row.length }).map((_, i) => (
+                              <>
+                                <td key={`empty-key-${rowIndex}-${i}`}></td>
+                                <td key={`empty-value-${rowIndex}-${i}`}></td>
+                              </>
+                            ))}
+                          </tr>
+                        ))}
 
-                    </tbody>
-                  </Table>
-                </div>
-              }
-            </Col>
-            <Col md={4}>
-              <Table className='table-sm'>
-                <tbody>
-                  <tr>
-                    <td>{t("bdr_released_amount")}:</td>
-                    <td>{request.bdr_released_amount}</td>
-                  </tr>
-                  <tr>
-                    <td>{t("bdr_released_date_gc")}:</td>
-                    <td>{request.bdr_released_date_gc}</td>
-                  </tr>
-                  <tr>
-                    <td>{t("bdr_action_remark")}:</td>
-                    <td>{request.bdr_action_remark}</td>
-                  </tr>
-                </tbody>
-              </Table>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <CardTitle className="h4 m-3">Details</CardTitle>
-              <Row>
-                <Col md="3">
-                  <Nav pills className="flex-column" style={{ minHeight: "300px" }}>
-                    <NavItem>
-                      <NavLink style={{ cursor: "pointer" }} className={classnames({ "mb-2": true, active: verticalActiveTab === "1", })} onClick={() => { toggleVertical("1"); }}>
-                        Budget Request Amounts
-                      </NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink style={{ cursor: "pointer" }} className={classnames({ "mb-2": true, active: verticalActiveTab === "2", })} onClick={() => { toggleVertical("2"); }}>
-                        Budget Request Tasks
-                      </NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink style={{ cursor: "pointer" }} className={classnames({ "mb-2": true, active: verticalActiveTab === "3", })} onClick={() => { toggleVertical("3"); }}>
-                        Budget Request External Sources
-                      </NavLink>
-                    </NavItem>
-                  </Nav>
-                </Col>
-                <Col md="9">
-                  <TabContent
-                    activeTab={verticalActiveTab}
-                    className="text-muted mt-4 mt-md-0"
-                  >
-                    <TabPane tabId="1">
-                      {brAmounts?.isLoading ? (
-                        <div className="w-100 d-flex align-items-center justify-content-center">
-                          <Spinner color="primary" />
-                        </div>
-                      ) : (
-                        <TableContainer
-                          columns={braColumns}
-                          data={brAmounts?.data?.data || []}
-                          isGlobalFilter={true}
-                          isCustomPageSize={true}
-                          isPagination={true}
-                          SearchPlaceholder={t("filter_placeholder")}
-                          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                          buttonName={t("add")}
-                          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                          theadClass="table-light"
-                          pagination="pagination"
-                          paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                        />
-                      )}
-                    </TabPane>
-                    <TabPane tabId="2">
-                      {brTasks?.isLoading ? (
-                        <div className="w-100 d-flex align-items-center justify-content-center">
-                          <Spinner color="primary" />
-                        </div>
-                      ) : (
-                        <TableContainer
-                          columns={brTasksColumns}
-                          data={brTasks?.data?.data || []}
-                          isGlobalFilter={true}
-                          isCustomPageSize={true}
-                          isPagination={true}
-                          SearchPlaceholder={t("filter_placeholder")}
-                          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                          theadClass="table-light"
-                          pagination="pagination"
-                          paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                        />
-                      )}
-                    </TabPane>
-                    <TabPane tabId="3">
-                      {brExSources?.isLoading ? (
-                        <div className="w-100 d-flex align-items-center justify-content-center">
-                          <Spinner color="primary" />
-                        </div>
-                      ) : (
-                        <TableContainer
-                          columns={brExSourceColumns}
-                          data={brExSources?.data?.data || []}
-                          isGlobalFilter={true}
-                          isCustomPageSize={true}
-                          isPagination={true}
-                          SearchPlaceholder={t("filter_placeholder")}
-                          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                          theadClass="table-light"
-                          pagination="pagination"
-                          paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                        />
-                      )}
-                    </TabPane>
-                  </TabContent>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-        </CardBody>
-      </Card>
-    </>
+                      </tbody>
+                    </Table>
+                  </div>
+                }
+              </Col>
+              <Col md={4}>
+                <Table className='table-sm'>
+                  <tbody>
+                    <tr>
+                      <td>{t("bdr_released_amount")}:</td>
+                      <td>{request.bdr_released_amount}</td>
+                    </tr>
+                    <tr>
+                      <td>{t("bdr_released_date_gc")}:</td>
+                      <td>{request.bdr_released_date_gc}</td>
+                    </tr>
+                    <tr>
+                      <td>{t("bdr_action_remark")}:</td>
+                      <td>{request.bdr_action_remark}</td>
+                    </tr>
+                  </tbody>
+                </Table>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <CardTitle className="h4 m-3">Details</CardTitle>
+                <Row>
+                  <Col md="3">
+                    <Nav pills className="flex-column" style={{ minHeight: "300px" }}>
+                      <NavItem>
+                        <NavLink style={{ cursor: "pointer" }} className={classnames({ "mb-2": true, active: verticalActiveTab === "1", })} onClick={() => { toggleVertical("1"); }}>
+                          Budget Request Amounts
+                        </NavLink>
+                      </NavItem>
+                      <NavItem>
+                        <NavLink style={{ cursor: "pointer" }} className={classnames({ "mb-2": true, active: verticalActiveTab === "2", })} onClick={() => { toggleVertical("2"); }}>
+                          Budget Request Tasks
+                        </NavLink>
+                      </NavItem>
+                      <NavItem>
+                        <NavLink style={{ cursor: "pointer" }} className={classnames({ "mb-2": true, active: verticalActiveTab === "3", })} onClick={() => { toggleVertical("3"); }}>
+                          Budget Request External Sources
+                        </NavLink>
+                      </NavItem>
+                    </Nav>
+                  </Col>
+                  <Col md="9">
+                    <TabContent
+                      activeTab={verticalActiveTab}
+                      className="text-muted mt-4 mt-md-0"
+                    >
+                      <TabPane tabId="1">
+                        {brAmounts?.isLoading ? (
+                          <div className="w-100 d-flex align-items-center justify-content-center">
+                            <Spinner color="primary" />
+                          </div>
+                        ) : (
+                          <TableContainer
+                            columns={braColumns}
+                            data={brAmounts?.data?.data || []}
+                            isGlobalFilter={true}
+                            isCustomPageSize={true}
+                            isPagination={true}
+                            SearchPlaceholder={t("filter_placeholder")}
+                            buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                            buttonName={t("add")}
+                            tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                            theadClass="table-light"
+                            pagination="pagination"
+                            paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                          />
+                        )}
+                      </TabPane>
+                      <TabPane tabId="2">
+                        {brTasks?.isLoading ? (
+                          <div className="w-100 d-flex align-items-center justify-content-center">
+                            <Spinner color="primary" />
+                          </div>
+                        ) : (
+                          <TableContainer
+                            columns={brTasksColumns}
+                            data={brTasks?.data?.data || []}
+                            isGlobalFilter={true}
+                            isCustomPageSize={true}
+                            isPagination={true}
+                            SearchPlaceholder={t("filter_placeholder")}
+                            buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                            tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                            theadClass="table-light"
+                            pagination="pagination"
+                            paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                          />
+                        )}
+                      </TabPane>
+                      <TabPane tabId="3">
+                        {brExSources?.isLoading ? (
+                          <div className="w-100 d-flex align-items-center justify-content-center">
+                            <Spinner color="primary" />
+                          </div>
+                        ) : (
+                          <TableContainer
+                            columns={brExSourceColumns}
+                            data={brExSources?.data?.data || []}
+                            isGlobalFilter={true}
+                            isCustomPageSize={true}
+                            isPagination={true}
+                            SearchPlaceholder={t("filter_placeholder")}
+                            buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                            tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                            theadClass="table-light"
+                            pagination="pagination"
+                            paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                          />
+                        )}
+                      </TabPane>
+                    </TabContent>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+          </CardBody>
+        </Card>
+      </ModalBody>
+      <ModalFooter>
+        <Button type="button" color="secondary" onClick={toggle}>
+          {t("Close")}
+        </Button>
+      </ModalFooter>
+    </Modal>
   )
 }
 
-export default ApproveDecline
+export default RequestDetail

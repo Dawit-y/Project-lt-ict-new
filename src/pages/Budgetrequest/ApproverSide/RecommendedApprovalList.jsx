@@ -9,10 +9,9 @@ import React, {
   memo,
 } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuthUser } from "../../../hooks/useAuthUser";
-import { Button, Badge, Row, Col, Input, Spinner } from "reactstrap";
+import { Button, Badge, Row, Col, Input, Spinner, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import Spinners from "../../../components/Common/Spinner";
 const Breadcrumbs = lazy(() => import("../../../components/Common/Breadcrumb"));
 const ApproverBudgetRequestListModal = lazy(() =>
@@ -50,6 +49,7 @@ import { useFetchProjectStatuss } from "../../../queries/projectstatus_query";
 import { getUserSectorList } from "../../../queries/usersector_query";
 import { createSelectOptions, createMultiSelectOptions } from "../../../utils/commonMethods";
 import { toast } from "react-toastify";
+import RequestDetail from "./RequestDetail";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -76,6 +76,8 @@ const ApproverBudgetRequestList = () => {
   const param = { gov_active: "1" };
   const { data: bgCategoryOptionsData } = useSearchRequestCategorys(param);
   const { data: projectStatusData } = useFetchProjectStatuss();
+  const { data: requestStatus } = useFetchRequestStatuss()
+  const { data: sectorInformationData } = getUserSectorList();
 
   const [projectParams, setProjectParams] = useState({});
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
@@ -83,23 +85,28 @@ const ApproverBudgetRequestList = () => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
-  const { data: sectorInformationData } = getUserSectorList();
-  const sectorInformationOptions = createSelectOptions(
+
+  const {
+    sci_name_en: sectorInfoOptionsEn,
+    sci_name_or: sectorInfoOptionsOr,
+    sci_name_am: sectorInfoOptionsAm,
+  } = createMultiSelectOptions(
     sectorInformationData?.data || [],
     "sci_id",
-    "sci_name_en"
+    ["sci_name_en", "sci_name_or", "sci_name_am"]
   );
 
-  const { data: requestStatus } = useFetchRequestStatuss()
+  const filteredData = (requestStatus?.data || []).filter(item => item.rqs_id !== 1);
   const {
     rqs_name_en: requestStatusOptionsEn,
     rqs_name_or: requestStatusOptionsOr,
     rqs_name_am: requestStatusOptionsAm,
   } = createMultiSelectOptions(
-    requestStatus?.data || [],
+    filteredData,
     "rqs_id",
     ["rqs_name_en", "rqs_name_or", "rqs_name_am"]
   );
+
 
   const budgetYearMap = useMemo(() => {
     return (
@@ -119,14 +126,15 @@ const ApproverBudgetRequestList = () => {
     );
   }, [budgetYearData]);
 
-  const requestCategoryOptions = useMemo(() => {
-    return (
-      bgCategoryOptionsData?.data?.map((category) => ({
-        label: category.rqc_name_en,
-        value: category.rqc_id,
-      })) || []
-    );
-  }, [bgCategoryOptionsData]);
+  const {
+    rqc_name_en: requestCategoryOptionsEn,
+    rqc_name_or: requestCategoryOptionsOr,
+    rqc_name_am: requestCategoryOptionsAm,
+  } = createMultiSelectOptions(
+    bgCategoryOptionsData?.data || [],
+    "rqc_id",
+    ["rqc_name_en", "rqc_name_or", "rqc_name_am"]
+  );
 
   const projectStatusOptions = useMemo(() => {
     return (
@@ -201,32 +209,32 @@ const ApproverBudgetRequestList = () => {
           return truncateText(params.data.bdy_name, 30) || "-";
         },
       },
-      {
-        headerName: t("bdr_request_category_id"),
-        field: "bdr_request_category_id",
-        sortable: true,
-        filter: true,
-        //flex: 1,
-        cellRenderer: (params) => {
-          const category = requestCategoryOptions.find(
-            (option) => option.value === params.data.bdr_request_category_id
-          );
-          return category ? truncateText(category.label, 30) : "-";
-        },
-      },
-      {
-        headerName: t("bdr_request_type"),
-        field: "bdr_request_type",
-        sortable: true,
-        filter: true,
+      // {
+      //   headerName: t("bdr_request_category_id"),
+      //   field: "bdr_request_category_id",
+      //   sortable: true,
+      //   filter: true,
+      //   //flex: 1,
+      //   cellRenderer: (params) => {
+      //     const category = requestCategoryOptions.find(
+      //       (option) => option.value === params.data.bdr_request_category_id
+      //     );
+      //     return category ? truncateText(category.label, 30) : "-";
+      //   },
+      // },
+      // {
+      //   headerName: t("bdr_request_type"),
+      //   field: "bdr_request_type",
+      //   sortable: true,
+      //   filter: true,
 
-        cellRenderer: (params) => {
-          const requestType = projectStatusOptions.find(
-            (option) => option.value === params.data.bdr_request_type
-          );
-          return requestType ? truncateText(requestType.label, 30) : "-";
-        },
-      },
+      //   cellRenderer: (params) => {
+      //     const requestType = projectStatusOptions.find(
+      //       (option) => option.value === params.data.bdr_request_type
+      //     );
+      //     return requestType ? truncateText(requestType.label, 30) : "-";
+      //   },
+      // },
       {
         headerName: t("prj_name"),
         field: "prj_name",
@@ -300,27 +308,24 @@ const ApproverBudgetRequestList = () => {
         },
       },
       {
-        headerName: t("forwarded"),
-        field: "forwarded",
+        headerName: t("Status"),
+        field: "status_name",
         sortable: true,
         filter: true,
         //flex: 1,
         width: 130,
         cellRenderer: (params) => {
-          const isForwarded = params.data.forwarded;
+          const { status_name, color_code } = params.data
           return (
-            <Badge
-              className={`font-size-12 badge-soft-${isForwarded ? "danger" : "secondary"
-                }`}
-            >
-              {isForwarded ? t("forwarded") : t("not_forwarded")}
+            <Badge color={color_code}>
+              {status_name}
             </Badge>
           );
         },
       },
       {
-        headerName: t("take_action"),
-        field: "take_action",
+        headerName: t("view_detail"),
+        field: "view_detail",
         //flex: 1,
         width: 120,
         cellRenderer: (params) => {
@@ -328,6 +333,7 @@ const ApproverBudgetRequestList = () => {
             <Button
               type="button"
               color="primary"
+              outline
               className="btn-sm my-auto"
               onClick={() => {
                 const data = params.data;
@@ -335,55 +341,96 @@ const ApproverBudgetRequestList = () => {
                 setTransaction(data);
               }}
             >
-              {t("take_action")}
+              {t("view_detail")}
             </Button>
           );
         },
       },
-      {
-        headerName: t("attach_files"),
-        field: "attach_files",
-        //flex: 1,
-        width: 80,
-        cellRenderer: (params) => {
-          return (
-            <Button
-              outline
-              type="button"
-              color="success"
-              className="btn-sm"
-              onClick={() => {
-                toggleFileModal();
-                setTransaction(params.data);
-              }}
-            >
-              {t("attach_files")}
-            </Button>
-          );
-        },
-      },
-      {
-        headerName: t("Message"),
-        field: "Message",
-        //flex: 1,
-        width: 100,
-        cellRenderer: (params) => {
-          return (
-            <Button
-              outline
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                toggleConvModal();
-                setTransaction(params.data);
-              }}
-            >
-              {t("Message")}
-            </Button>
-          );
-        },
-      },
+      // {
+      //   headerName: t("forwarded"),
+      //   field: "forwarded",
+      //   sortable: true,
+      //   filter: true,
+      //   //flex: 1,
+      //   width: 130,
+      //   cellRenderer: (params) => {
+      //     const isForwarded = params.data.forwarded;
+      //     return (
+      //       <Badge
+      //         className={`font-size-12 badge-soft-${isForwarded ? "danger" : "secondary"
+      //           }`}
+      //       >
+      //         {isForwarded ? t("forwarded") : t("not_forwarded")}
+      //       </Badge>
+      //     );
+      //   },
+      // },
+      // {
+      //   headerName: t("take_action"),
+      //   field: "take_action",
+      //   //flex: 1,
+      //   width: 120,
+      //   cellRenderer: (params) => {
+      //     return (
+      //       <Button
+      //         type="button"
+      //         color="primary"
+      //         className="btn-sm my-auto"
+      //         onClick={() => {
+      //           const data = params.data;
+      //           toggleViewModal();
+      //           setTransaction(data);
+      //         }}
+      //       >
+      //         {t("take_action")}
+      //       </Button>
+      //     );
+      //   },
+      // },
+      // {
+      //   headerName: t("attach_files"),
+      //   field: "attach_files",
+      //   //flex: 1,
+      //   width: 80,
+      //   cellRenderer: (params) => {
+      //     return (
+      //       <Button
+      //         outline
+      //         type="button"
+      //         color="success"
+      //         className="btn-sm"
+      //         onClick={() => {
+      //           toggleFileModal();
+      //           setTransaction(params.data);
+      //         }}
+      //       >
+      //         {t("attach_files")}
+      //       </Button>
+      //     );
+      //   },
+      // },
+      // {
+      //   headerName: t("Message"),
+      //   field: "Message",
+      //   //flex: 1,
+      //   width: 100,
+      //   cellRenderer: (params) => {
+      //     return (
+      //       <Button
+      //         outline
+      //         type="button"
+      //         color="primary"
+      //         className="btn-sm"
+      //         onClick={() => {
+      //           toggleConvModal();
+      //           setTransaction(params.data);
+      //         }}
+      //       >
+      //         {t("Message")}
+      //       </Button>
+      //     );
+      //   },
+      // },
     ];
     return baseColumnDefs;
   }, []);
@@ -391,7 +438,12 @@ const ApproverBudgetRequestList = () => {
   return (
     <Suspense fallback={<Spinners />}>
       <React.Fragment>
-        <ApproverBudgetRequestListModal
+        <RequestDetail
+          isOpen={modal1}
+          toggle={toggleViewModal}
+          request={transaction}
+        />
+        {/* <ApproverBudgetRequestListModal
           isOpen={modal1}
           toggle={toggleViewModal}
           transaction={transaction}
@@ -409,7 +461,7 @@ const ApproverBudgetRequestList = () => {
           toggle={toggleConvModal}
           ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
           ownerId={transaction?.bdr_id ?? null}
-        />
+        /> */}
         <div className="page-content">
           <div className="">
             <Breadcrumbs />
@@ -424,7 +476,7 @@ const ApproverBudgetRequestList = () => {
               <div style={{ flex: "0 0 75%" }}>
                 <AdvancedSearch
                   searchHook={useSearchBudgetRequestforApproval}
-                  dateSearchKeys={["budget_request_date"]}
+                  // dateSearchKeys={["budget_request_date"]}
                   textSearchKeys={["prj_name"]}
                   dropdownSearchKeys={[
                     {
@@ -433,7 +485,12 @@ const ApproverBudgetRequestList = () => {
                     },
                     {
                       key: "bdr_request_category_id",
-                      options: requestCategoryOptions,
+                      options:
+                        i18n.language === "en"
+                          ? requestCategoryOptionsEn
+                          : i18n.language === "am"
+                            ? requestCategoryOptionsAm
+                            : requestCategoryOptionsOr,
                     },
                     {
                       key: "bdr_request_type",
@@ -441,7 +498,12 @@ const ApproverBudgetRequestList = () => {
                     },
                     {
                       key: "prj_sector_id",
-                      options: sectorInformationOptions,
+                      options:
+                        i18n.language === "en"
+                          ? sectorInfoOptionsEn
+                          : i18n.language === "am"
+                            ? sectorInfoOptionsAm
+                            : sectorInfoOptionsOr,
                     },
                     {
                       key: "bdr_request_status",
@@ -487,21 +549,20 @@ const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
   const { data: rqfData, isLoading: rqfLoading } = useFetchRequestFollowups();
   const gridRef = useRef()
   const [quickFilterText, setQuickFilterText] = useState("")
-  const [selectedCount, setSelectedCount] = useState(0);
-  const [selectedRowIds, setSelectedRowIds] = useState([])
+  const [modalOpen, setModalOpen] = useState(false);
+  const [actionType, setActionType] = useState(null);
+  const [selected, setSelected] = useState()
 
   const selectedRowsRef = useRef({
     selectedRowIds: [],
     selectedCount: 0,
   });
 
-
   const onSelectionChanged = () => {
     const selectedRows = gridRef.current.api.getSelectedRows();
     selectedRowsRef.current.selectedRowIds = selectedRows.map((row) => row.bdr_id);
     selectedRowsRef.current.selectedCount = selectedRows.length;
   };
-
 
   function markForwardedRequests(budgetRequests = [], forwardedRequests = [], departmentId) {
     const forwardedSet = new Set(
@@ -521,26 +582,19 @@ const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
     transformedData = markForwardedRequests(data.data, rqfData.data, departmentId);
   }
 
-
   const rowSelection = useMemo(() => {
     return {
       mode: "multiRow",
     };
   }, []);
 
-  const handleClick = async (event) => {
-    const { selectedRowIds } = selectedRowsRef.current;
+  const handleClick = (event) => {
+    const { selectedCount } = selectedRowsRef.current;
 
-    const data = {
-      request_list: selectedRowIds,
-      request_status: event.target.name === "approve" ? 3 : 4,
-    };
-
-    if (selectedRowIds.length === 0) {
-      return
-    }
-
-    handleUpdateBudgetRequest(data);
+    if (selectedCount === 0) return;
+    setSelected(selectedRowsRef.current.selectedRowIds)
+    setActionType(event.target.name); // "approve" or "reject"
+    setModalOpen(true);
   };
 
 
@@ -551,17 +605,41 @@ const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
       toast.success(t("update_success"), {
         autoClose: 2000,
       });
-      // validation.resetForm();
     } catch (error) {
       toast.success(t("update_failure"), {
         autoClose: 2000,
       });
     }
-    // toggle();
+  };
+
+  const confirmAction = async () => {
+    const data = {
+      request_list: selected,
+      request_status: actionType === "approve" ? 3 : 4,
+    };
+    setModalOpen(false);
+    await handleUpdateBudgetRequest(data);
   };
 
   return (
     <div>
+      <Modal isOpen={modalOpen} toggle={() => setModalOpen(false)} centered>
+        <ModalHeader toggle={() => setModalOpen(false)}>
+          <strong> Confirm {actionType === "approve" ? "Approval" : "Rejection"}</strong>
+        </ModalHeader>
+        <ModalBody>
+          <h5>Are you sure you want to <strong>{actionType}</strong> {selectedRowsRef.current.selectedCount} request(s)?</h5>
+        </ModalBody>
+        <ModalFooter>
+          <Button color={actionType === "approve" ? "success" : "danger"} onClick={confirmAction} disabled={updateBudgetRequest.isPending}>
+            Yes, {actionType}
+          </Button>
+          <Button color="secondary" onClick={() => setModalOpen(false)}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
+
       <>
         <div
           className="ag-theme-alpine"

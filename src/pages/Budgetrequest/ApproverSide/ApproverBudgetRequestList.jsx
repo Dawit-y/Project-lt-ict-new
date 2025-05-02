@@ -74,6 +74,8 @@ const ApproverBudgetRequestList = () => {
   const param = { gov_active: "1" };
   const { data: bgCategoryOptionsData } = useSearchRequestCategorys(param);
   const { data: projectStatusData } = useFetchProjectStatuss();
+  const { data: requestStatus } = useFetchRequestStatuss()
+  const { data: sectorInformationData } = getUserSectorList();
 
   const [projectParams, setProjectParams] = useState({});
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
@@ -81,14 +83,16 @@ const ApproverBudgetRequestList = () => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
-  const { data: sectorInformationData } = getUserSectorList();
-  const sectorInformationOptions = createSelectOptions(
+
+  const {
+    sci_name_en: sectorInfoOptionsEn,
+    sci_name_or: sectorInfoOptionsOr,
+    sci_name_am: sectorInfoOptionsAm,
+  } = createMultiSelectOptions(
     sectorInformationData?.data || [],
     "sci_id",
-    "sci_name_en"
+    ["sci_name_en", "sci_name_or", "sci_name_am"]
   );
-
-  const { data: requestStatus } = useFetchRequestStatuss()
   const {
     rqs_name_en: requestStatusOptionsEn,
     rqs_name_or: requestStatusOptionsOr,
@@ -108,24 +112,20 @@ const ApproverBudgetRequestList = () => {
     );
   }, [budgetYearData]);
 
-  const budgetYearOptions = useMemo(() => {
-    return (
-      budgetYearData?.data?.map((year) => ({
-        label: year.bdy_name,
-        value: year.bdy_id,
-      })) || []
-    );
-  }, [budgetYearData]);
-
-  const requestCategoryOptions = useMemo(() => {
-    return (
-      bgCategoryOptionsData?.data?.map((category) => ({
-        label: category.rqc_name_en,
-        value: category.rqc_id,
-      })) || []
-    );
-  }, [bgCategoryOptionsData]);
-
+  const budgetYearOptions = createSelectOptions(
+    budgetYearData?.data || [],
+    "bdy_id",
+    "bdy_name"
+  );
+  const {
+    rqc_name_en: requestCategoryOptionsEn,
+    rqc_name_or: requestCategoryOptionsOr,
+    rqc_name_am: requestCategoryOptionsAm,
+  } = createMultiSelectOptions(
+    bgCategoryOptionsData?.data || [],
+    "rqc_id",
+    ["rqc_name_en", "rqc_name_or", "rqc_name_am"]
+  );
   const projectStatusOptions = useMemo(() => {
     return (
       projectStatusData?.data
@@ -199,33 +199,33 @@ const ApproverBudgetRequestList = () => {
           return truncateText(params.data.bdy_name, 30) || "-";
         },
       },
-      {
-        headerName: t("bdr_request_category_id"),
-        field: "bdr_request_category_id",
-        sortable: true,
-        filter: true,
-        //flex: 1,
-        cellRenderer: (params) => {
-          const category = requestCategoryOptions.find(
-            (option) => option.value === params.data.bdr_request_category_id
-          );
-          return category ? truncateText(category.label, 30) : "-";
-        },
-      },
+      // {
+      //   headerName: t("bdr_request_category_id"),
+      //   field: "bdr_request_category_id",
+      //   sortable: true,
+      //   filter: true,
+      //   //flex: 1,
+      //   cellRenderer: (params) => {
+      //     const category = requestCategoryOptions.find(
+      //       (option) => option.value === params.data.bdr_request_category_id
+      //     );
+      //     return category ? truncateText(category.label, 30) : "-";
+      //   },
+      // },
 
-      {
-        headerName: t("bdr_request_type"),
-        field: "bdr_request_type",
-        sortable: true,
-        filter: true,
+      // {
+      //   headerName: t("bdr_request_type"),
+      //   field: "bdr_request_type",
+      //   sortable: true,
+      //   filter: true,
 
-        cellRenderer: (params) => {
-          const requestType = projectStatusOptions.find(
-            (option) => option.value === params.data.bdr_request_type
-          );
-          return requestType ? truncateText(requestType.label, 30) : "-";
-        },
-      },
+      //   cellRenderer: (params) => {
+      //     const requestType = projectStatusOptions.find(
+      //       (option) => option.value === params.data.bdr_request_type
+      //     );
+      //     return requestType ? truncateText(requestType.label, 30) : "-";
+      //   },
+      // },
 
       {
         headerName: t("prj_name"),
@@ -315,6 +315,22 @@ const ApproverBudgetRequestList = () => {
                 }`}
             >
               {isForwarded ? t("forwarded") : t("not_forwarded")}
+            </Badge>
+          );
+        },
+      },
+      {
+        headerName: t("Status"),
+        field: "status_name",
+        sortable: true,
+        filter: true,
+        //flex: 1,
+        width: 130,
+        cellRenderer: (params) => {
+          const { status_name, color_code } = params.data
+          return (
+            <Badge color={color_code}>
+              {status_name}
             </Badge>
           );
         },
@@ -425,7 +441,7 @@ const ApproverBudgetRequestList = () => {
               <div style={{ flex: "0 0 75%" }}>
                 <AdvancedSearch
                   searchHook={useSearchBudgetRequestforApproval}
-                  dateSearchKeys={["budget_request_date"]}
+                  // dateSearchKeys={["budget_request_date"]}
                   textSearchKeys={["prj_name"]}
                   dropdownSearchKeys={[
                     {
@@ -434,7 +450,12 @@ const ApproverBudgetRequestList = () => {
                     },
                     {
                       key: "bdr_request_category_id",
-                      options: requestCategoryOptions,
+                      options:
+                        i18n.language === "en"
+                          ? requestCategoryOptionsEn
+                          : i18n.language === "am"
+                            ? requestCategoryOptionsAm
+                            : requestCategoryOptionsOr,
                     },
                     {
                       key: "bdr_request_type",
@@ -442,7 +463,12 @@ const ApproverBudgetRequestList = () => {
                     },
                     {
                       key: "prj_sector_id",
-                      options: sectorInformationOptions,
+                      options:
+                        i18n.language === "en"
+                          ? sectorInfoOptionsEn
+                          : i18n.language === "am"
+                            ? sectorInfoOptionsAm
+                            : sectorInfoOptionsOr,
                     },
                     {
                       key: "bdr_request_status",
