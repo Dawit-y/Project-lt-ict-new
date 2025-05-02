@@ -175,7 +175,7 @@ const ProjectPerformanceModel = (props) => {
             ).toLocaleString()
           : "0",
         [`prp_status_month_${i + 1}`]:
-          projectPerformance?.[`prp_status_month_${i + 1}`] || "8",
+          projectPerformance?.[`prp_status_month_${i + 1}`] || "",
       })).reduce((acc, curr) => ({ ...acc, ...curr })),
       // Summary fields
       prp_physical_planned: projectPerformance?.prp_physical_planned
@@ -216,9 +216,25 @@ const ProjectPerformanceModel = (props) => {
           ? formattedAmountValidation(0, 10000000000, true)
           : Yup.string().notRequired(),
         [`prp_status_month_${i + 1}`]: isActual
-          ? Yup.number().required()
+          ? Yup.number().test(
+              "status-required",
+              t("Status is required when actual values are entered"),
+              function (value) {
+                const physicalActual =
+                  this.parent[`prp_pyhsical_actual_month_${i + 1}`];
+                const financialActual =
+                  this.parent[`prp_finan_actual_month_${i + 1}`];
+                // Status is required if either physical or financial actual has a value
+                return (!physicalActual || Number(physicalActual) === 0) &&
+                  (!financialActual || Number(financialActual) === 0)
+                  ? true
+                  : !!value;
+              }
+            )
           : Yup.number().notRequired(),
       })).reduce((acc, curr) => ({ ...acc, ...curr })),
+      //   [`prp_status_month_${i + 1}`]: isActual && Yup.number().notRequired(),
+      // })).reduce((acc, curr) => ({ ...acc, ...curr })),
       prp_description: Yup.string().notRequired(),
       // Summary fields validation
       prp_budget_year_id: Yup.number().required(t("Year is required")),
@@ -404,7 +420,7 @@ const ProjectPerformanceModel = (props) => {
         ]
           ? Number(data[`prp_finan_actual_month_${i + 1}`]).toLocaleString()
           : "0",
-        [`prp_status_month_${i + 1}`]: data[`prp_status_month_${i + 1}`] || "8",
+        [`prp_status_month_${i + 1}`]: data[`prp_status_month_${i + 1}`] || "",
       })).reduce((acc, curr) => ({ ...acc, ...curr })),
       // Summary fields
       prp_physical_planned: DEFAULT_PHYSICAL_PLANNED.toString(),
@@ -793,7 +809,7 @@ const ProjectPerformanceModel = (props) => {
                                           label={t("Financial Actual")}
                                           isRequired={true}
                                         />
-                                        <div className="mb-3">
+                                        {/* <div className="mb-3">
                                           <Label>{t("Status")}</Label>
                                           <Input
                                             name={`prp_status_month_${month}`}
@@ -823,6 +839,76 @@ const ProjectPerformanceModel = (props) => {
                                               )
                                             )}
                                           </Input>
+                                        </div> */}
+                                        <div className="mb-3">
+                                          <Label>
+                                            {t("Status")}
+                                            {(validation.values[
+                                              `prp_pyhsical_actual_month_${month}`
+                                            ] &&
+                                              Number(
+                                                validation.values[
+                                                  `prp_pyhsical_actual_month_${month}`
+                                                ]
+                                              ) > 0) ||
+                                            (validation.values[
+                                              `prp_finan_actual_month_${month}`
+                                            ] &&
+                                              Number(
+                                                validation.values[
+                                                  `prp_finan_actual_month_${month}`
+                                                ]
+                                              ) > 0) ? (
+                                              <span className="text-danger">
+                                                {" "}
+                                                *
+                                              </span>
+                                            ) : null}
+                                          </Label>
+                                          <Input
+                                            name={`prp_status_month_${month}`}
+                                            type="select"
+                                            onChange={validation.handleChange}
+                                            onBlur={validation.handleBlur}
+                                            value={
+                                              validation.values[
+                                                `prp_status_month_${month}`
+                                              ]
+                                            }
+                                            invalid={
+                                              validation.touched[
+                                                `prp_status_month_${month}`
+                                              ] &&
+                                              !!validation.errors[
+                                                `prp_status_month_${month}`
+                                              ]
+                                            }
+                                          >
+                                            <option value="">
+                                              {t("select")}
+                                            </option>
+                                            {projectStatusData?.data?.map(
+                                              (status) => (
+                                                <option
+                                                  key={status.prs_id}
+                                                  value={status.prs_id}
+                                                >
+                                                  {lang === "en"
+                                                    ? status.prs_status_name_en
+                                                    : lang === "am"
+                                                    ? status.prs_status_name_am
+                                                    : status.prs_status_name_or}
+                                                </option>
+                                              )
+                                            )}
+                                          </Input>
+                                          <FormFeedback>
+                                            {
+                                              validation.errors[
+                                                `prp_status_month_${month}`
+                                              ]
+                                            }
+                                          </FormFeedback>
                                         </div>
                                       </>
                                     )}
