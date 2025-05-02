@@ -175,7 +175,7 @@ const ProjectPerformanceModel = (props) => {
             ).toLocaleString()
           : "0",
         [`prp_status_month_${i + 1}`]:
-          projectPerformance?.[`prp_status_month_${i + 1}`] || "8",
+          projectPerformance?.[`prp_status_month_${i + 1}`] || "",
       })).reduce((acc, curr) => ({ ...acc, ...curr })),
       // Summary fields
       prp_physical_planned: projectPerformance?.prp_physical_planned
@@ -215,8 +215,34 @@ const ProjectPerformanceModel = (props) => {
         [`prp_finan_actual_month_${i + 1}`]: isActual
           ? formattedAmountValidation(0, 10000000000, true)
           : Yup.string().notRequired(),
+
         [`prp_status_month_${i + 1}`]: isActual
-          ? Yup.number().required()
+          ? Yup.number().test(
+              "status-validation",
+              t(
+                'Status is required when actual values are entered & Only "New" or "No" status is allowed when both actuals are 0'
+              ),
+              function (value) {
+                const physicalActual = convertToNumericValue(
+                  this.parent[`prp_pyhsical_actual_month_${i + 1}`] || "0"
+                );
+                const financialActual = convertToNumericValue(
+                  this.parent[`prp_finan_actual_month_${i + 1}`] || "0"
+                );
+
+                // When both are 0: allow empty or status=5 only
+                if (physicalActual === 0 && financialActual === 0) {
+                  return !value || value === 5;
+                }
+
+                // When any actual > 0: status becomes required
+                if (physicalActual > 0 || financialActual > 0) {
+                  return !!value;
+                }
+
+                return true;
+              }
+            )
           : Yup.number().notRequired(),
       })).reduce((acc, curr) => ({ ...acc, ...curr })),
       prp_description: Yup.string().notRequired(),
@@ -404,7 +430,7 @@ const ProjectPerformanceModel = (props) => {
         ]
           ? Number(data[`prp_finan_actual_month_${i + 1}`]).toLocaleString()
           : "0",
-        [`prp_status_month_${i + 1}`]: data[`prp_status_month_${i + 1}`] || "8",
+        [`prp_status_month_${i + 1}`]: data[`prp_status_month_${i + 1}`] || "",
       })).reduce((acc, curr) => ({ ...acc, ...curr })),
       // Summary fields
       prp_physical_planned: DEFAULT_PHYSICAL_PLANNED.toString(),
@@ -793,26 +819,100 @@ const ProjectPerformanceModel = (props) => {
                                           label={t("Financial Actual")}
                                           isRequired={true}
                                         />
+
                                         <div className="mb-3">
-                                          <Label>{t("Status")}</Label>
+                                          {/* Label with dynamic rules */}
+                                          <Label
+                                            htmlFor={`prp_status_month_${month}`}
+                                            className="form-label mb-1 fw-medium"
+                                          >
+                                            {t("Status")}
+
+                                            {/* Conditional red asterisk */}
+                                            {(convertToNumericValue(
+                                              validation.values[
+                                                `prp_pyhsical_actual_month_${month}`
+                                              ] || "0"
+                                            ) > 0 ||
+                                              convertToNumericValue(
+                                                validation.values[
+                                                  `prp_finan_actual_month_${month}`
+                                                ] || "0"
+                                              ) > 0) && (
+                                              <span className="text-danger ms-1">
+                                                *
+                                              </span>
+                                            )}
+
+                                            {/* Dynamic tooltip */}
+                                            <span
+                                              id={`status-tooltip-${month}`}
+                                              className="ms-1 text-muted cursor-help"
+                                            >
+                                              <i className="ri-information-line"></i>
+                                            </span>
+                                            <UncontrolledTooltip
+                                              target={`status-tooltip-${month}`}
+                                            >
+                                              {t(
+                                                convertToNumericValue(
+                                                  validation.values[
+                                                    `prp_pyhsical_actual_month_${month}`
+                                                  ] || "0"
+                                                ) > 0 ||
+                                                  convertToNumericValue(
+                                                    validation.values[
+                                                      `prp_finan_actual_month_${month}`
+                                                    ] || "0"
+                                                  ) > 0
+                                                  ? "Status is required when actual values exist"
+                                                  : "Optional when both actuals are 0 (can select 'New' or leave empty)"
+                                              )}
+                                            </UncontrolledTooltip>
+                                          </Label>
+
+                                          {/* Dropdown */}
                                           <Input
+                                            id={`prp_status_month_${month}`}
                                             name={`prp_status_month_${month}`}
                                             type="select"
-                                            onChange={validation.handleChange}
                                             value={
                                               validation.values[
                                                 `prp_status_month_${month}`
-                                              ]
+                                              ] || ""
                                             }
+                                            onChange={validation.handleChange}
+                                            onBlur={validation.handleBlur}
+                                            invalid={Boolean(
+                                              validation.touched[
+                                                `prp_status_month_${month}`
+                                              ] &&
+                                                validation.errors[
+                                                  `prp_status_month_${month}`
+                                                ]
+                                            )}
                                           >
                                             <option value="">
-                                              {t("select")}
+                                              {t("No Status")}
                                             </option>
                                             {projectStatusData?.data?.map(
                                               (status) => (
                                                 <option
                                                   key={status.prs_id}
                                                   value={status.prs_id}
+                                                  disabled={
+                                                    convertToNumericValue(
+                                                      validation.values[
+                                                        `prp_pyhsical_actual_month_${month}`
+                                                      ] || "0"
+                                                    ) === 0 &&
+                                                    convertToNumericValue(
+                                                      validation.values[
+                                                        `prp_finan_actual_month_${month}`
+                                                      ] || "0"
+                                                    ) === 0 &&
+                                                    status.prs_id !== 5
+                                                  }
                                                 >
                                                   {lang === "en"
                                                     ? status.prs_status_name_en
@@ -823,6 +923,19 @@ const ProjectPerformanceModel = (props) => {
                                               )
                                             )}
                                           </Input>
+
+                                          {/* Error Message */}
+                                          {validation.errors[
+                                            `prp_status_month_${month}`
+                                          ] && (
+                                            <div className="text-danger small mt-1">
+                                              {
+                                                validation.errors[
+                                                  `prp_status_month_${month}`
+                                                ]
+                                              }
+                                            </div>
+                                          )}
                                         </div>
                                       </>
                                     )}

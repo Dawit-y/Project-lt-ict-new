@@ -114,14 +114,14 @@ const ProjectKpiResultModel = (props) => {
           ? Number(
               projectKpiResult[`kpr_planned_month_${i + 1}`]
             ).toLocaleString()
-          : "",
+          : "0", // Default to "0" instead of empty string
         [`kpr_actual_month_${i + 1}`]: projectKpiResult?.[
           `kpr_actual_month_${i + 1}`
         ]
           ? Number(
               projectKpiResult[`kpr_actual_month_${i + 1}`]
             ).toLocaleString()
-          : "",
+          : "0", // Default to "0" instead of empty string
       })).reduce((acc, curr) => ({ ...acc, ...curr })),
       kpr_description: projectKpiResult?.kpr_description || "",
       is_deletable: projectKpiResult?.is_deletable || 1,
@@ -271,16 +271,15 @@ const ProjectKpiResultModel = (props) => {
       ...Array.from({ length: 12 }, (_, i) => ({
         [`kpr_planned_month_${i + 1}`]: data[`kpr_planned_month_${i + 1}`]
           ? Number(data[`kpr_planned_month_${i + 1}`]).toLocaleString()
-          : "",
+          : "0", // Default to "0"
         [`kpr_actual_month_${i + 1}`]: data[`kpr_actual_month_${i + 1}`]
           ? Number(data[`kpr_actual_month_${i + 1}`]).toLocaleString()
-          : "",
+          : "0", // Default to "0"
       })).reduce((acc, curr) => ({ ...acc, ...curr })),
       kpr_description: data.kpr_description,
     };
     validation.setValues(values);
   };
-
   const onClickDelete = (result) => {
     setProjectKpiResult(result);
     setDeleteModal(true);
