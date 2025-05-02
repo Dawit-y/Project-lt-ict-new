@@ -197,6 +197,9 @@ const ProjectModel = () => {
       // prj_department_id: (project && project.prj_department_id) || "",
       is_deletable: (project && project.is_deletable) || 1,
       is_editable: (project && project.is_editable) || 1,
+      prj_measurement_unit: (project && project.prj_measurement_unit) || "",
+      prj_measured_figure: (project && project.prj_measured_figure) || "0",
+      
     },
 
     validationSchema: Yup.object({
@@ -226,7 +229,8 @@ const ProjectModel = () => {
           );
         }
       ),
-      prj_code: alphanumericValidation(3, 20, true).test(
+      prj_code: alphanumericValidation(3, 20, false),
+      /*test(
         "unique-prj_code",
         t("Already exists"),
         (value) => {
@@ -234,7 +238,7 @@ const ProjectModel = () => {
             (item) => item.prj_code == value && item.prj_id !== project?.prj_id
           );
         }
-      ),
+      ),*/
       //prj_project_status_id: Yup.string().required(t('prj_project_status_id')),
       prj_project_category_id: numberValidation(1, 200, true),
       //prj_project_budget_source_id: Yup.string().required(t('prj_project_budget_source_id')),
@@ -304,6 +308,8 @@ const ProjectModel = () => {
           is_editable: values.is_editable,
           parent_id: Number(selectedNode.data.pri_id),
           object_type_id: 5,
+          prj_measurement_unit: values.prj_measurement_unit,
+      prj_measured_figure: convertToNumericValue(values.prj_measured_figure)
         };
         // update Project
         handleUpdateProject(updateProject);
@@ -349,6 +355,8 @@ const ProjectModel = () => {
           prj_program_id: 1,
           parent_id: Number(selectedNode.data.pri_id),
           object_type_id: 5,
+          prj_measurement_unit: values.prj_measurement_unit,
+      prj_measured_figure: convertToNumericValue(values.prj_measured_figure)
         };
         // save new Project
         handleAddProject(newProject);
@@ -454,6 +462,8 @@ const ProjectModel = () => {
       //prj_department_id: project.prj_department_id,
       is_deletable: project.is_deletable,
       is_editable: project.is_editable,
+      prj_measurement_unit: project.prj_measurement_unit,
+      prj_measured_figure: project.prj_measured_figure
     });
     setIsEdit(true);
     toggle();
@@ -810,7 +820,6 @@ const ProjectModel = () => {
               <Col className="col-md-4 mb-3">
                 <Label>
                   {t("prj_code")}
-                  <span className="text-danger">*</span>
                 </Label>
                 <Input
                   name="prj_code"
@@ -858,7 +867,7 @@ const ProjectModel = () => {
                 <FormattedAmountField
                   validation={validation}
                   fieldId={"prj_total_actual_budget"}
-                  isRequired={true}
+                  isRequired={false}
                 />
               </Col>
               <Col className="col-md-4 mb-3">
@@ -875,7 +884,7 @@ const ProjectModel = () => {
                   validation={validation}
                   minDate={validation.values.prj_start_date_plan_gc} />
               </Col>
-              <Col className="col-md-4 mb-3">
+              <Col className="col-md-2 mb-3">
                 <Label>{t("prj_urban_ben_number")}</Label>
                 <Input
                   name="prj_urban_ben_number"
@@ -898,8 +907,7 @@ const ProjectModel = () => {
                   </FormFeedback>
                 ) : null}
               </Col>
-
-              <Col className="col-md-4 mb-3">
+              <Col className="col-md-2 mb-3">
                 <Label>{t("prj_rural_ben_number")}</Label>
                 <Input
                   name="prj_rural_ben_number"
@@ -922,6 +930,37 @@ const ProjectModel = () => {
                   </FormFeedback>
                 ) : null}
               </Col>
+              <Col className="col-md-4 mb-3">
+                <Label>{t("prj_measurement_unit")}</Label>
+                <Input
+                  name="prj_measurement_unit"
+                  type="text"
+                  placeholder={t("prj_measurement_unit")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.prj_measurement_unit || ""}
+                  invalid={
+                    validation.touched.prj_measurement_unit &&
+                      validation.errors.prj_measurement_unit
+                      ? true
+                      : false
+                  }
+                />
+                {validation.touched.prj_measurement_unit &&
+                  validation.errors.prj_measurement_unit ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.prj_measurement_unit}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-4 mb-3">
+                <FormattedAmountField
+                  validation={validation}
+                  fieldId={"prj_measured_figure"}
+                  isRequired={false}
+                />
+              </Col>
+              
               <Col className="col-md-6 mb-3">
                 <Label>{t("prj_outcome")}</Label>
                 <Input
