@@ -70,6 +70,7 @@ const ProjectModel = () => {
   const { param, isValidParam } = useMemo(() => {
     const param = {
       parent_id: selectedNode?.data?.pri_id,
+      prj_woreda_id: selectedNode?.data?.woreda_id
     };
 
     const isValidParam = Object.keys(param).length > 0 &&
@@ -199,7 +200,7 @@ const ProjectModel = () => {
       is_editable: (project && project.is_editable) || 1,
       prj_measurement_unit: (project && project.prj_measurement_unit) || "",
       prj_measured_figure: (project && project.prj_measured_figure) || "0",
-      
+
     },
 
     validationSchema: Yup.object({
@@ -309,7 +310,7 @@ const ProjectModel = () => {
           parent_id: Number(selectedNode.data.pri_id),
           object_type_id: 5,
           prj_measurement_unit: values.prj_measurement_unit,
-      prj_measured_figure: convertToNumericValue(values.prj_measured_figure)
+          prj_measured_figure: convertToNumericValue(values.prj_measured_figure)
         };
         // update Project
         handleUpdateProject(updateProject);
@@ -356,7 +357,7 @@ const ProjectModel = () => {
           parent_id: Number(selectedNode.data.pri_id),
           object_type_id: 5,
           prj_measurement_unit: values.prj_measurement_unit,
-      prj_measured_figure: convertToNumericValue(values.prj_measured_figure)
+          prj_measured_figure: convertToNumericValue(values.prj_measured_figure)
         };
         // save new Project
         handleAddProject(newProject);
@@ -960,7 +961,7 @@ const ProjectModel = () => {
                   isRequired={false}
                 />
               </Col>
-              
+
               <Col className="col-md-6 mb-3">
                 <Label>{t("prj_outcome")}</Label>
                 <Input
