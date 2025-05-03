@@ -895,33 +895,29 @@ const ProjectPerformanceModel = (props) => {
                                             <option value="">
                                               {t("No Status")}
                                             </option>
-                                            {projectStatusData?.data?.map(
-                                              (status) => (
-                                                <option
-                                                  key={status.prs_id}
-                                                  value={status.prs_id}
-                                                  disabled={
-                                                    convertToNumericValue(
-                                                      validation.values[
-                                                        `prp_pyhsical_actual_month_${month}`
-                                                      ] || "0"
-                                                    ) === 0 &&
-                                                    convertToNumericValue(
-                                                      validation.values[
-                                                        `prp_finan_actual_month_${month}`
-                                                      ] || "0"
-                                                    ) === 0 &&
-                                                    status.prs_id !== 5
-                                                  }
-                                                >
-                                                  {lang === "en"
-                                                    ? status.prs_status_name_en
-                                                    : lang === "am"
-                                                    ? status.prs_status_name_am
-                                                    : status.prs_status_name_or}
-                                                </option>
-                                              )
-                                            )}
+                                            {projectStatusData?.data
+      ?.filter((status) => status.prs_id >= 5)
+      .map((status) => (
+        <option
+          key={status.prs_id}
+          value={status.prs_id}
+          disabled={
+            convertToNumericValue(
+              validation.values[`prp_pyhsical_actual_month_${month}`] || "0"
+            ) === 0 &&
+            convertToNumericValue(
+              validation.values[`prp_finan_actual_month_${month}`] || "0"
+            ) === 0 &&
+            status.prs_id !== 5
+          }
+        >
+          {lang === "en"
+            ? status.prs_status_name_en
+            : lang === "am"
+            ? status.prs_status_name_am
+            : status.prs_status_name_or}
+        </option>
+      ))}
                                           </Input>
 
                                           {/* Error Message */}
