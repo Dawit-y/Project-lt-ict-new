@@ -775,16 +775,18 @@ const BudgetRequestModel = (props) => {
                   }
                 >
                   <option value="">{t("select_one")}</option>
-                  {projectStatusData?.data?.map((data) => (
-                    <option key={data.prs_id} value={data.prs_id}>
-                      {/* {data.pyc_name_or} */}
-                      {lang === "en"
-                        ? data.prs_status_name_en
-                        : lang === "am"
-                          ? data.prs_status_name_am
-                          : data.prs_status_name_or}
-                    </option>
-                  ))}
+                  {projectStatusData?.data
+  ?.filter((data) => data.prs_id === 5 || data.prs_id === 6)
+  .map((data) => (
+    <option key={data.prs_id} value={data.prs_id}>
+      {lang === "en"
+        ? data.prs_status_name_en
+        : lang === "am"
+          ? data.prs_status_name_am
+          : data.prs_status_name_or}
+    </option>
+  ))}
+
                 </Input>
                 {validation.touched.bdr_request_type &&
                   validation.errors.bdr_request_type ? (

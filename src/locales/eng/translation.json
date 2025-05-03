@@ -639,7 +639,7 @@
 	"prh_delete_time": "Delete Time",
 	"prh_created_by": "Created By",
 	"prh_status": "Status",
-	"project_performance": "Project Performance",
+	"project_performance": "Project Plan/Performance",
 	"prp_id": "Id",
 	"prp_project_id": "Project",
 	"prp_project_status_id": "Project Status",
@@ -785,7 +785,7 @@
 	"budget_request_date_start": "Request Start Date",
 	"budget_request_date_end": "Request End Date",
 	"project_handover_list": "Project Handover List",
-	"project_performance_list": "Project Performance List",
+	"project_performance_list": "Project Plan/Performance List",
 	"project_variation_list": "Project Variation List",
 	"project_budget_source_list": "Project Budget Source List",
 	"project_supplimentary_list": "Project Supplimentary List",
@@ -1476,7 +1476,7 @@
 	"Not_set": "Not set",
 	"edit_planned": "Edit Planned",
 	"enter_actuals": "Enter Actual",
-	"add_planned": "Add Planned",
+	"add_planned": "Add Plan",
 	"quarter_1_physical_planned": "Quarter 1 Physical Planned",
 	"quarter_1_financial_planned": "Quarter 1 Financial Planned",
 	"quarter_1_physical_actual": "Quarter 1 Physical Actual",
@@ -1586,5 +1586,9 @@
     "project_financial_report2":"Financial Report Two",
     "project_financial_report3":"Financial Report Three",
     "project_physical_performance_report":"Physical Performance Report",
-    "project_financial_performance_report":"Financial Performance Report"
+    "project_financial_performance_report":"Financial Performance Report",
+    "cni_financial_start":"Financial Performance at Start",
+"cni_physical_start":"Physical Performance at Start(%)",
+"cni_financial_end":"Financial at Termination",
+"cni_physical_end":"Physical at Termination(%)"
 }
