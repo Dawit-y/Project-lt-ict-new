@@ -275,7 +275,6 @@ const UsersModel = () => {
           usr_copied_from_id: users?.usr_id,
           usr_email: values.usr_email,
           usr_password: values.usr_password,
-          usr_email: values.usr_email,
           usr_full_name: values.usr_full_name,
           usr_phone_number: values.usr_phone_number,
           usr_role_id: values.usr_role_id,

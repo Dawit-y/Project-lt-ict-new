@@ -9,10 +9,10 @@ import {
   ModalHeader,
   Table,
 } from "reactstrap"
+import { DetailsView } from "../../components/Common/DetailViewWrapper";
 
 const modalStyle = {
   width: '100%',
-  height: '100%',
 };
 
 const RequestFollowupModal = (props) => {
@@ -33,43 +33,18 @@ const RequestFollowupModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('rqf_request_id')}: <span className="text-primary">{transaction.rqf_request_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('rqf_forwarding_dep_id')}: <span className="text-primary">{transaction.rqf_forwarding_dep_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('rqf_forwarded_to_dep_id')}: <span className="text-primary">{transaction.rqf_forwarded_to_dep_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('rqf_forwarding_date')}: <span className="text-primary">{transaction.rqf_forwarding_date}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('rqf_received_date')}: <span className="text-primary">{transaction.rqf_received_date}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('rqf_description')}: <span className="text-primary">{transaction.rqf_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('rqf_status')}: <span className="text-primary">{transaction.rqf_status}</span>
-          </p>
-          </tr>
-
-          {transaction.is_deletable === 1 && (
-            <p className="text-danger">data is deletable</p>
-          )}
-          
-          {transaction.is_editable === 1 && (
-            <p className="text-success">Editable</p>
-          )}
+          <DetailsView
+            details={transaction}
+            keysToRemove={[
+              "is_editable",
+              "is_deletable",
+              "rqf_create_time",
+              "rqf_update_time",
+              "rqf_delete_time",
+              "rqf_created_by",
+              "rqf_id",
+              "rqf_status"
+            ]} />
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>

@@ -306,6 +306,19 @@ const RequestFollowupModel = ({ request }) => {
       },
       {
         header: '',
+        accessorKey: 'rqf_recommended_amount',
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {cellProps.row.original.rqf_recommended_amount}
+            </span>
+          );
+        },
+      },
+      {
+        header: '',
         accessorKey: 'rqf_current_status',
         enableColumnFilter: false,
         enableSorting: true,

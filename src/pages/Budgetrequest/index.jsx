@@ -639,31 +639,6 @@ const BudgetRequestModel = () => {
                       isRequired={true}
                     />
                   </Col>
-                  {/* <Col className="col-md-6 mb-3">
-                  <Label>{t("bdr_released_amount")}</Label>
-                  <Input
-                    name="bdr_released_amount"
-                    type="text"
-                    placeholder={t("insert_status_name_amharic")}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.bdr_released_amount || ""}
-                    invalid={
-                      validation.touched.bdr_released_amount &&
-                      validation.errors.bdr_released_amount
-                        ? true
-                        : false
-                    }
-                    maxLength={20}
-                  />
-                  {validation.touched.bdr_released_amount &&
-                  validation.errors.bdr_released_amount ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.bdr_released_amount}
-                    </FormFeedback>
-                  ) : null}
-                </Col> */}
-
                   <Col className="col-md-6 mb-3">
                     <DatePicker
                       isRequired="true"
@@ -671,54 +646,6 @@ const BudgetRequestModel = () => {
                       componentId="bdr_requested_date_gc"
                     />
                   </Col>
-                  {/* <Col className="col-md-6 mb-3">
-                  <Label>{t("bdr_released_date_ec")}</Label>
-                  <Input
-                    name="bdr_released_date_ec"
-                    type="text"
-                    placeholder={t("insert_status_name_amharic")}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.bdr_released_date_ec || ""}
-                    invalid={
-                      validation.touched.bdr_released_date_ec &&
-                      validation.errors.bdr_released_date_ec
-                        ? true
-                        : false
-                    }
-                    maxLength={20}
-                  />
-                  {validation.touched.bdr_released_date_ec &&
-                  validation.errors.bdr_released_date_ec ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.bdr_released_date_ec}
-                    </FormFeedback>
-                  ) : null}
-                </Col> */}
-                  {/* <Col className="col-md-6 mb-3">
-                  <Label>{t("bdr_released_date_gc")}</Label>
-                  <Input
-                    name="bdr_released_date_gc"
-                    type="text"
-                    placeholder={t("insert_status_name_amharic")}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.bdr_released_date_gc || ""}
-                    invalid={
-                      validation.touched.bdr_released_date_gc &&
-                      validation.errors.bdr_released_date_gc
-                        ? true
-                        : false
-                    }
-                    maxLength={20}
-                  />
-                  {validation.touched.bdr_released_date_gc &&
-                  validation.errors.bdr_released_date_gc ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.bdr_released_date_gc}
-                    </FormFeedback>
-                  ) : null}
-                </Col> */}
                   <Col className="col-md-6 mb-3">
                     <Label>{t("bdr_description")}</Label>
                     <Input
@@ -743,32 +670,6 @@ const BudgetRequestModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  {/* <Col className="col-md-6 mb-3">
-                  <Label>{t("bdr_request_status")}</Label>
-                  <Input
-                    name="bdr_request_status"
-                    type="select"
-                    className="form-select"
-                    onChange={(e) => {
-                      validation.setFieldValue(
-                        "bdr_request_status",
-                        Number(e.target.value)
-                      );
-                    }}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.bdr_request_status}
-                  >
-                    <option value={""}>Select status</option>
-                    <option value={"Approved"}>{t("Approved")}</option>
-                    <option value={"Rejected"}>{t("Rejected")}</option>
-                  </Input>
-                  {validation.touched.bdr_request_status &&
-                  validation.errors.bdr_request_status ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.bdr_request_status}
-                    </FormFeedback>
-                  ) : null}
-                </Col> */}
                 </Row>
                 <Row>
                   <Col>
