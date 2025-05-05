@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, lazy, Suspense } from "react";
 import PropTypes from "prop-types";
 import { isEmpty } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
@@ -40,11 +40,18 @@ import {
   CardHeader,
   Badge,
 } from "reactstrap";
+import { PAGE_ID } from "../../constants/constantFile";
 import { formattedAmountValidation } from "../../utils/Validation/validation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import { convertToNumericValue } from "../../utils/commonMethods";
+const AttachFileModal = lazy(() =>
+  import("../../components/Common/AttachFileModal")
+);
+const ConvInfoModal = lazy(() =>
+  import("../../pages/Conversationinformation/ConvInfoModal")
+);
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -52,6 +59,10 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
+
+const LazyLoader = ({ children }) => (
+  <Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
+);
 
 const ProjectPerformanceModel = (props) => {
   document.title = "Project Performance";
@@ -70,6 +81,8 @@ const ProjectPerformanceModel = (props) => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [activeTab, setActiveTab] = useState("Quarter1");
   const [selectedYear, setSelectedYear] = useState("");
+  const [fileModal, setFileModal] = useState(false);
+  const [convModal, setConvModal] = useState(false);
 
   // Default values for hidden fields
 
@@ -90,6 +103,9 @@ const ProjectPerformanceModel = (props) => {
   const { data: bgYearsOptionsData } = usePopulateBudgetYears();
   const { data: budgetMonthData } = useFetchBudgetMonths();
   const { data: projectStatusData } = useFetchProjectStatuss();
+
+  const toggleFileModal = () => setFileModal(!fileModal);
+  const toggleConvModal = () => setConvModal(!convModal);
 
   // Mappings
   const budgetYearMap = useMemo(() => {
@@ -575,6 +591,48 @@ const ProjectPerformanceModel = (props) => {
           </Button>
         ),
       },
+      {
+        header: t("attach_files"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              outline
+              type="button"
+              color="success"
+              className="btn-sm"
+              onClick={() => {
+                toggleFileModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("attach_files")}
+            </Button>
+          );
+        },
+      },
+      {
+        header: t("Message"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              outline
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                toggleConvModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("Message")}
+            </Button>
+          );
+        },
+      },
     ];
 
     if (data?.previledge?.is_role_editable == 1) {
@@ -583,24 +641,26 @@ const ProjectPerformanceModel = (props) => {
         cell: (cellProps) => (
           <div className="d-flex gap-2">
             <Button
-              color="success"
+              color="none"
+              className="text-success"
               size="sm"
               onClick={() => handleEditPlanned(cellProps.row.original)}
               id={`editPlanned-${cellProps.row.id}`}
             >
-              <i className="mdi mdi-pencil" />
+              <i className="mdi mdi-pencil font-size-18" />
             </Button>
             <UncontrolledTooltip target={`editPlanned-${cellProps.row.id}`}>
               Edit Planned Values
             </UncontrolledTooltip>
 
             <Button
-              color="secondary"
+              color="none"
+              className="text-primary"
               size="sm"
               onClick={() => handleAddActuals(cellProps.row.original)}
               id={`addActuals-${cellProps.row.id}`}
             >
-              <i className="mdi mdi-chart-line" />
+              <i className="mdi mdi-chart-line font-size-18" />
             </Button>
             <UncontrolledTooltip target={`addActuals-${cellProps.row.id}`}>
               Enter Actual Values
@@ -608,12 +668,13 @@ const ProjectPerformanceModel = (props) => {
             {cellProps.row.original.is_deletable == 1 && (
               <>
                 <Button
-                  color="danger"
+                  color="none"
+                  className="text-danger"
                   size="sm"
                   onClick={() => onClickDelete(cellProps.row.original)}
                   id={`delete-${cellProps.row.id}`}
                 >
-                  <i className="mdi mdi-delete-outline" />
+                  <i className="mdi mdi-delete font-size-18" />
                 </Button>
                 <UncontrolledTooltip target={`delete-${cellProps.row.id}`}>
                   Delete
@@ -637,6 +698,25 @@ const ProjectPerformanceModel = (props) => {
 
   return (
     <React.Fragment>
+      <LazyLoader>
+        {fileModal && (
+          <AttachFileModal
+            isOpen={fileModal}
+            toggle={toggleFileModal}
+            projectId={passedId}
+            ownerTypeId={PAGE_ID.PROJ_PERFORMANCE}
+            ownerId={transaction?.prp_id}
+          />
+        )}
+        {convModal && (
+          <ConvInfoModal
+            isOpen={convModal}
+            toggle={toggleConvModal}
+            ownerTypeId={PAGE_ID.PROJ_PERFORMANCE}
+            ownerId={transaction?.prp_id ?? null}
+          />
+        )}
+      </LazyLoader>
       <ProjectPerformanceModal
         isOpen={modal1}
         toggle={toggleViewModal}
@@ -896,28 +976,34 @@ const ProjectPerformanceModel = (props) => {
                                               {t("No Status")}
                                             </option>
                                             {projectStatusData?.data
-      ?.filter((status) => status.prs_id >= 5)
-      .map((status) => (
-        <option
-          key={status.prs_id}
-          value={status.prs_id}
-          disabled={
-            convertToNumericValue(
-              validation.values[`prp_pyhsical_actual_month_${month}`] || "0"
-            ) === 0 &&
-            convertToNumericValue(
-              validation.values[`prp_finan_actual_month_${month}`] || "0"
-            ) === 0 &&
-            status.prs_id !== 5
-          }
-        >
-          {lang === "en"
-            ? status.prs_status_name_en
-            : lang === "am"
-            ? status.prs_status_name_am
-            : status.prs_status_name_or}
-        </option>
-      ))}
+                                              ?.filter(
+                                                (status) => status.prs_id >= 5
+                                              )
+                                              .map((status) => (
+                                                <option
+                                                  key={status.prs_id}
+                                                  value={status.prs_id}
+                                                  disabled={
+                                                    convertToNumericValue(
+                                                      validation.values[
+                                                        `prp_pyhsical_actual_month_${month}`
+                                                      ] || "0"
+                                                    ) === 0 &&
+                                                    convertToNumericValue(
+                                                      validation.values[
+                                                        `prp_finan_actual_month_${month}`
+                                                      ] || "0"
+                                                    ) === 0 &&
+                                                    status.prs_id !== 5
+                                                  }
+                                                >
+                                                  {lang === "en"
+                                                    ? status.prs_status_name_en
+                                                    : lang === "am"
+                                                    ? status.prs_status_name_am
+                                                    : status.prs_status_name_or}
+                                                </option>
+                                              ))}
                                           </Input>
 
                                           {/* Error Message */}

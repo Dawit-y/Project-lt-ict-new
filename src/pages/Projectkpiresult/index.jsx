@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, Suspense, lazy } from "react";
 import PropTypes from "prop-types";
 import { isEmpty } from "lodash";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -20,6 +20,13 @@ import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import { convertToNumericValue } from "../../utils/commonMethods";
 import ProjectKpiResultModal from "./ProjectKpiResultModal";
 import { useTranslation } from "react-i18next";
+import { PAGE_ID } from "../../constants/constantFile";
+const AttachFileModal = lazy(() =>
+  import("../../components/Common/AttachFileModal")
+);
+const ConvInfoModal = lazy(() =>
+  import("../../pages/Conversationinformation/ConvInfoModal")
+);
 import {
   Button,
   Col,
@@ -54,6 +61,11 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
+// Loader Component for Suspense
+const LazyLoader = ({ children }) => (
+  <Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
+);
+
 const ProjectKpiResultModel = (props) => {
   document.title = "Project KPI Results";
   const { passedId, isActive, status, startDate } = props;
@@ -70,6 +82,9 @@ const ProjectKpiResultModel = (props) => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [activeTab, setActiveTab] = useState("Quarter1");
 
+  const [fileModal, setFileModal] = useState(false);
+  const [convModal, setConvModal] = useState(false);
+
   const [showSearchResult, setShowSearchResult] = useState(false);
 
   // Data fetching
@@ -80,6 +95,9 @@ const ProjectKpiResultModel = (props) => {
   const deleteProjectKpiResult = useDeleteProjectKpiResult();
   const { data: bgYearsOptionsData } = usePopulateBudgetYears();
   const { data: kpiOptionsData } = useFetchProjectKpis();
+
+  const toggleFileModal = () => setFileModal(!fileModal);
+  const toggleConvModal = () => setConvModal(!convModal);
 
   // Mappings
   const budgetYearMap = useMemo(() => {
@@ -370,6 +388,48 @@ const ProjectKpiResultModel = (props) => {
           </Button>
         ),
       },
+      {
+        header: t("attach_files"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              outline
+              type="button"
+              color="success"
+              className="btn-sm"
+              onClick={() => {
+                toggleFileModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("attach_files")}
+            </Button>
+          );
+        },
+      },
+      {
+        header: t("Message"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              outline
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                toggleConvModal();
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("Message")}
+            </Button>
+          );
+        },
+      },
     ];
 
     if (data?.previledge?.is_role_editable == 1) {
@@ -379,24 +439,26 @@ const ProjectKpiResultModel = (props) => {
           <div className="d-flex gap-2">
             <>
               <Button
-                color="success"
+                color="none"
+                className="text-success"
                 size="sm"
                 onClick={() => handleEditPlanned(cellProps.row.original)}
                 id={`editPlanned-${cellProps.row.id}`}
               >
-                <i className="mdi mdi-pencil" />
+                <i className="mdi mdi-pencil font-size-18" />
               </Button>
               <UncontrolledTooltip target={`editPlanned-${cellProps.row.id}`}>
                 Edit Planned Values
               </UncontrolledTooltip>
 
               <Button
-                color="secondary"
+                color="none"
+                className="text-primary"
                 size="sm"
                 onClick={() => handleAddActuals(cellProps.row.original)}
                 id={`addActuals-${cellProps.row.id}`}
               >
-                <i className="mdi mdi-chart-line" />
+                <i className="mdi mdi-chart-line font-size-18" />
               </Button>
               <UncontrolledTooltip target={`addActuals-${cellProps.row.id}`}>
                 Enter Actual Values
@@ -405,12 +467,13 @@ const ProjectKpiResultModel = (props) => {
               {cellProps.row.original.is_deletable == 1 && (
                 <>
                   <Button
-                    color="danger"
+                    color="none"
+                    className="text-danger"
                     size="sm"
                     onClick={() => onClickDelete(cellProps.row.original)}
                     id={`delete-${cellProps.row.id}`}
                   >
-                    <i className="mdi mdi-delete-outline" />
+                    <i className="mdi mdi-delete font-size-18" />
                   </Button>
                   <UncontrolledTooltip target={`delete-${cellProps.row.id}`}>
                     Delete
@@ -435,6 +498,25 @@ const ProjectKpiResultModel = (props) => {
 
   return (
     <React.Fragment>
+      <LazyLoader>
+        {fileModal && (
+          <AttachFileModal
+            isOpen={fileModal}
+            toggle={toggleFileModal}
+            projectId={passedId}
+            ownerTypeId={PAGE_ID.PROJ_KPI_RESULT}
+            ownerId={transaction?.kpr_id}
+          />
+        )}
+        {convModal && (
+          <ConvInfoModal
+            isOpen={convModal}
+            toggle={toggleConvModal}
+            ownerTypeId={PAGE_ID.PROJ_KPI_RESULT}
+            ownerId={transaction?.kpr_id ?? null}
+          />
+        )}
+      </LazyLoader>
       <ProjectKpiResultModal
         isOpen={modal1}
         toggle={toggleViewModal}
