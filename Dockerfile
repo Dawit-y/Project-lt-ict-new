@@ -13,7 +13,8 @@ WORKDIR /app
 COPY package*.json ./
 
 RUN npm install --legacy-peer-deps
-
+# Add this to increase memory
+ENV NODE_OPTIONS=--max-old-space-size=4096
 
 #  4) Copy the rest of your source code (including .env, src, etc.)
 COPY . .
