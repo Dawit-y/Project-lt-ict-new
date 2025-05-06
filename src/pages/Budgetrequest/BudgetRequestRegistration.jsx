@@ -62,6 +62,7 @@ import DatePicker from "../../components/Common/DatePicker";
 import { PAGE_ID } from "../../constants/constantFile";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import { convertToNumericValue, createMultiSelectOptions } from "../../utils/commonMethods";
+import EthiopianDatePicker from "../../components/Common/EthiopianDatePicker";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -849,9 +850,16 @@ const BudgetRequestModel = (props) => {
                   isRequired={true}
                 />
               </Col>
-              <Col className="col-md-4 mb-3">
+              {/* <Col className="col-md-4 mb-3">
                 <DatePicker
                   isRequired="true"
+                  validation={validation}
+                  componentId="bdr_requested_date_gc"
+                />
+              </Col> */}
+              <Col className="col-md-4 mb-3 pt-3">
+                <EthiopianDatePicker
+                  isRequired={true}
                   validation={validation}
                   componentId="bdr_requested_date_gc"
                 />
