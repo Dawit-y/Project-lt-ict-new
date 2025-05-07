@@ -18,7 +18,9 @@ const LazyComponents = {
   ProjectPayment: lazy(() => import("../../../pages/Projectpayment")),
   ProjectStakeholder: lazy(() => import("../../../pages/Projectstakeholder")),
   Projectcontractor: lazy(() => import("../../../pages/Projectcontractor")),
-  GeoLocation: lazy(() => import("../../../pages/GeoLocation")),
+  GeoLocation: lazy(() =>
+    import("../../../pages/GeoLocation/CitizenshipGeoLocation")
+  ),
   ProjectBudgetExpenditureModel: lazy(() =>
     import("../../Projectbudgetexpenditure")
   ),
@@ -29,7 +31,9 @@ const LazyComponents = {
   ProjectVariationModel: lazy(() => import("../../Projectvariation")),
   ProposalRequestModel: lazy(() => import("../../../pages/Proposalrequest")),
   Conversation: lazy(() => import("../../Conversationinformation/index1")),
-  ProjectMonitoringEvaluationModel: lazy(() => import("../../Projectmonitoringevaluation/index")),
+  ProjectMonitoringEvaluationModel: lazy(() =>
+    import("../../Projectmonitoringevaluation/index")
+  ),
   ProjectKpiResultModel: lazy(() => import("../../Projectkpiresult/index")),
   RequestInformationModel: lazy(() =>
     import("../../../pages/Requestinformation")

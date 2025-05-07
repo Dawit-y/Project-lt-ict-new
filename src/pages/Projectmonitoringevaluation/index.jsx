@@ -855,6 +855,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
                 <Row>
                   <Col className="col-md-4 mb-1">
                     <Label>{t("mne_transaction_type_id")}</Label>
+                    <span className="text-danger ms-1">*</span>
                     <Input
                       name="mne_transaction_type_id"
                       type="select"
@@ -885,6 +886,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
                   </Col>
                   <Col className="col-md-4 mb-3">
                     <Label>{t("mne_visit_type")}</Label>
+                    <span className="text-danger ms-1">*</span>
                     <Input
                       name="mne_visit_type"
                       type="select"
