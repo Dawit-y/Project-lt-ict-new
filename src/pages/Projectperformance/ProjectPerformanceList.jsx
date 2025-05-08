@@ -15,6 +15,7 @@ import {
 const AgGridContainer = lazy(() =>
   import("../../components/Common/AgGridContainer")
 );
+import ProjectPerformanceAnalysis from "./ProjectPerformanceAnalysis";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -49,6 +50,14 @@ const ProjectPerformanceList = (props) => {
   const { data: budgetYearData } = useFetchBudgetYears();
   const { data: budgetMonthData } = useFetchBudgetMonths();
   const { data: projectStatusData } = useFetchProjectStatuss();
+
+  const [selectedRowData, setSelectedRowData] = useState(null);
+  const [chartType, setChartType] = useState("bar"); // Track chart type globally
+
+  // Handle row selection
+  const handleViewDetails = (rowData) => {
+    setSelectedRowData(rowData);
+  };
 
   const {
     prs_status_name_en: projectStatusOptionsEn,
@@ -217,41 +226,41 @@ const ProjectPerformanceList = (props) => {
         },
       },
       {
-    headerName: t("baseline"), // Main header that spans both children
-    headerClass: 'txt-center', // Custom class for centering
-    children: [
-      {
-        headerName: t("prp_budget_baseline"),
-        field: "prp_budget_baseline",
-        sortable: true,
-        filter: true,
-        valueFormatter: (params) => {
-          if (params.value != null) {
-            return new Intl.NumberFormat("en-US", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(params.value);
-          }
-          return "0.00";
-        },
+        headerName: t("baseline"), // Main header that spans both children
+        headerClass: "txt-center", // Custom class for centering
+        children: [
+          {
+            headerName: t("prp_budget_baseline"),
+            field: "prp_budget_baseline",
+            sortable: true,
+            filter: true,
+            valueFormatter: (params) => {
+              if (params.value != null) {
+                return new Intl.NumberFormat("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }).format(params.value);
+              }
+              return "0.00";
+            },
+          },
+          {
+            headerName: t("prp_physical_baseline"),
+            field: "prp_physical_baseline",
+            sortable: true,
+            filter: true,
+            valueFormatter: (params) => {
+              if (params.value != null) {
+                return new Intl.NumberFormat("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }).format(params.value);
+              }
+              return "0.00";
+            },
+          },
+        ],
       },
-      {
-        headerName: t("prp_physical_baseline"),
-        field: "prp_physical_baseline",
-        sortable: true,
-        filter: true,
-        valueFormatter: (params) => {
-          if (params.value != null) {
-            return new Intl.NumberFormat("en-US", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(params.value);
-          }
-          return "0.00";
-        },
-      },
-    ]
-  },
       {
         headerName: t("prp_total_budget_used"),
         field: "prp_total_budget_used",
@@ -276,9 +285,29 @@ const ProjectPerformanceList = (props) => {
           return truncateText(params.data.prp_physical_performance, 30) || "-";
         },
       },
+      {
+        headerName: "Actions",
+        field: "actions",
+        cellRenderer: (params) => (
+          <button
+            className="btn btn-sm btn-primary"
+            onClick={() => handleViewDetails(params.data)}
+          >
+            Analysis
+          </button>
+        ),
+        width: 120,
+        sortable: false,
+        filter: false,
+      },
     ];
     return baseColumnDefs;
   });
+
+  // Automatically clear selection when data changes
+  useEffect(() => {
+    setSelectedRowData(null);
+  }, [data]);
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -356,6 +385,18 @@ const ProjectPerformanceList = (props) => {
                   excludeKey={["is_editable", "is_deletable"]}
                 />
               </AdvancedSearch>
+              {/* Performance Analysis Section - Automatically switches views */}
+              {showSearchResult && (
+                <ProjectPerformanceAnalysis
+                  performanceData={selectedRowData}
+                  allData={
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
+                  isOverallView={!selectedRowData}
+                  chartType={chartType}
+                  onChartTypeChange={setChartType}
+                />
+              )}
             </div>
           </div>
         </div>
