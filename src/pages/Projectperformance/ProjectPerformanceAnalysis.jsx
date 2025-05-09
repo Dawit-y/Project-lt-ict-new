@@ -26,7 +26,7 @@ const ProjectPerformanceAnalysis = ({
   chartType,
   onChartTypeChange,
 }) => {
-  const [selectedView, setSelectedView] = useState("financial"); // 'physical' or 'financial'
+  const [selectedView, setSelectedView] = useState("financial");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
   const toggleDropdown = () => setDropdownOpen((prevState) => !prevState);
@@ -463,7 +463,6 @@ const ProjectPerformanceAnalysis = ({
                   >
                     <i className="mdi mdi-chart-bar"></i> Bar
                   </button>
-
                   <button
                     className={`btn btn-light ${
                       chartType === "pie" ? "active" : ""
@@ -497,6 +496,18 @@ const ProjectPerformanceAnalysis = ({
                   Monthly Progress
                 </NavLink>
               </NavItem>
+              {isOverallView && (
+                <NavItem>
+                  <NavLink
+                    className={classnames({ active: activeTab === "4" })}
+                    onClick={() => {
+                      toggleTab("4");
+                    }}
+                  >
+                    Yearly Progress
+                  </NavLink>
+                </NavItem>
+              )}
               <NavItem>
                 <NavLink
                   className={classnames({ active: activeTab === "3" })}
@@ -619,7 +630,6 @@ const ProjectPerformanceAnalysis = ({
                           {selectedView === "physical" ? "Physical" : "Budget"}
                         </th>
                         <th>Variance</th>
-                        {/* <th>%</th> */}
                       </tr>
                     </thead>
                     <tbody>
@@ -678,9 +688,6 @@ const ProjectPerformanceAnalysis = ({
                               ] || 0) / 1000000;
 
                         const variance = actual - planned;
-                        // const variancePercentage = planned
-                        //   ? (variance / planned) * 100
-                        //   : 0;
 
                         return (
                           <tr key={month}>
@@ -705,7 +712,6 @@ const ProjectPerformanceAnalysis = ({
                                 : `${formatNumber(Math.abs(variance))}M Birr`}
                               {getStatusIndicator(variance)}
                             </td>
-                            {/* <td>{formatNumber(variancePercentage)}%</td> */}
                           </tr>
                         );
                       })}
@@ -713,6 +719,81 @@ const ProjectPerformanceAnalysis = ({
                   </table>
                 </div>
               </TabPane>
+              {isOverallView && (
+                <TabPane tabId="4">
+                  <div className="table-responsive">
+                    <table className="table table-bordered table-striped">
+                      <thead className="table-light">
+                        <tr>
+                          <th>Year</th>
+                          <th>
+                            Total Planned (
+                            {selectedView === "physical" ? "%" : "Birr"})
+                          </th>
+                          <th>
+                            Total Actual (
+                            {selectedView === "physical" ? "%" : "Birr"})
+                          </th>
+                          <th>Variance</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Array.from(
+                          new Set(allData?.map((item) => item.year_name))
+                        ).map((year) => {
+                          const yearData = allData.filter(
+                            (item) => item.year_name === year
+                          );
+                          const yearTotals = calculateOverallTotals(yearData);
+
+                          return (
+                            <tr key={year}>
+                              <td>{year}</td>
+                              <td>
+                                {selectedView === "physical"
+                                  ? `${formatNumber(
+                                      yearTotals.physical.planned
+                                    )}%`
+                                  : `${formatNumber(
+                                      yearTotals.financial.planned
+                                    )} Birr`}
+                              </td>
+                              <td>
+                                {selectedView === "physical"
+                                  ? `${formatNumber(
+                                      yearTotals.physical.actual
+                                    )}%`
+                                  : `${formatNumber(
+                                      yearTotals.financial.actual
+                                    )} Birr`}
+                              </td>
+                              <td
+                                className={
+                                  yearTotals[selectedView].variance >= 0
+                                    ? "text-success"
+                                    : "text-danger"
+                                }
+                              >
+                                {selectedView === "physical"
+                                  ? `${formatNumber(
+                                      Math.abs(yearTotals.physical.variance)
+                                    )}%`
+                                  : `${formatNumber(
+                                      Math.abs(yearTotals.financial.variance)
+                                    )} Birr`}
+                                {getStatusIndicator(
+                                  yearTotals[selectedView].variance
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </TabPane>
+              )}
+
               <TabPane tabId="3">
                 <Row>
                   <Col md="6">
