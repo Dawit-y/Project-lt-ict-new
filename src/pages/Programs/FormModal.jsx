@@ -208,7 +208,7 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
                         ? true
                         : false
                     }
-                    maxLength={20}
+                    maxLength={200}
                   />
                   {validation.touched.pri_name_or &&
                     validation.errors.pri_name_or ? (
@@ -232,7 +232,7 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
                         ? true
                         : false
                     }
-                    maxLength={20}
+                    maxLength={200}
                   />
                   {validation.touched.pri_name_am &&
                     validation.errors.pri_name_am ? (
@@ -256,7 +256,7 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
                         ? true
                         : false
                     }
-                    maxLength={20}
+                    maxLength={200}
                   />
                   {validation.touched.pri_name_en &&
                     validation.errors.pri_name_en ? (
@@ -324,7 +324,7 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
                         ? true
                         : false
                     }
-                    maxLength={20}
+                    maxLength={400}
                   />
                   {validation.touched.pri_description &&
                     validation.errors.pri_description ? (
