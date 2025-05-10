@@ -10,15 +10,11 @@ import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-import {
-  alphanumericValidation,
-  amountValidation,
-  numberValidation,
-} from "../../utils/Validation/validation";
+import { alphanumericValidation } from "../../utils/Validation/validation";
+import { useFetchSectorCategorys } from "../../queries/sectorcategory_query";
 
 import {
   useFetchProjectCategorys,
-  useSearchProjectCategorys,
   useAddProjectCategory,
   useDeleteProjectCategory,
   useUpdateProjectCategory,
@@ -40,8 +36,6 @@ import {
   Label,
   Card,
   CardBody,
-  FormGroup,
-  Badge,
 } from "reactstrap";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -66,12 +60,21 @@ const ProjectCategoryModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
+  const { data: sectorCategoryData } = useFetchSectorCategorys();
+
   const { data, isLoading, isFetching, error, isError, refetch } =
     useFetchProjectCategorys();
 
   const addProjectCategory = useAddProjectCategory();
   const updateProjectCategory = useUpdateProjectCategory();
   const deleteProjectCategory = useDeleteProjectCategory();
+
+  // const sectorCategoryOptions = createSelectOptions(
+  //   sectorCategoryData?.data || [],
+  //   "psc_id",
+  //   "psc_name"
+  // );
+
   //START CRUD
   const handleAddProjectCategory = async (data) => {
     try {
@@ -127,6 +130,7 @@ const ProjectCategoryModel = () => {
     enableReinitialize: true,
 
     initialValues: {
+      pct_parent_id: (projectCategory && projectCategory.pct_parent_id) || "",
       pct_name_or: (projectCategory && projectCategory.pct_name_or) || "",
       pct_name_am: (projectCategory && projectCategory.pct_name_am) || "",
       pct_name_en: (projectCategory && projectCategory.pct_name_en) || "",
@@ -139,6 +143,7 @@ const ProjectCategoryModel = () => {
     },
 
     validationSchema: Yup.object({
+      pct_parent_id: Yup.string().required(t("pct_parent_id")),
       pct_name_or: alphanumericValidation(2, 100, true).test(
         "unique-pct_name_or",
         t("Already exists"),
@@ -160,6 +165,7 @@ const ProjectCategoryModel = () => {
       if (isEdit) {
         const updateProjectCategory = {
           pct_id: projectCategory?.pct_id,
+          pct_parent_id: parseInt(values.pct_parent_id),
           pct_name_or: values.pct_name_or,
           pct_name_am: values.pct_name_am,
           pct_name_en: values.pct_name_en,
@@ -174,6 +180,7 @@ const ProjectCategoryModel = () => {
         handleUpdateProjectCategory(updateProjectCategory);
       } else {
         const newProjectCategory = {
+          pct_parent_id: parseInt(values.pct_parent_id),
           pct_name_or: values.pct_name_or,
           pct_name_am: values.pct_name_am,
           pct_name_en: values.pct_name_en,
@@ -213,6 +220,7 @@ const ProjectCategoryModel = () => {
     // console.log("handleProjectCategoryClick", projectCategory);
     setProjectCategory({
       pct_id: projectCategory.pct_id,
+      pct_parent_id: projectCategory.pct_parent_id,
       pct_name_or: projectCategory.pct_name_or,
       pct_name_am: projectCategory.pct_name_am,
       pct_name_en: projectCategory.pct_name_en,
@@ -226,6 +234,15 @@ const ProjectCategoryModel = () => {
     setIsEdit(true);
     toggle();
   };
+
+  const sectorCategoryMap = useMemo(() => {
+    return (
+      sectorCategoryData?.data?.reduce((acc, category) => {
+        acc[category.psc_id] = category.psc_name;
+        return acc;
+      }, {}) || {}
+    );
+  }, [sectorCategoryData]);
 
   //delete projects
   const [deleteModal, setDeleteModal] = useState(false);
@@ -288,6 +305,19 @@ const ProjectCategoryModel = () => {
       },
       {
         header: "",
+        accessorKey: "pct_parent_id",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {sectorCategoryMap[cellProps.row.original.pct_parent_id] || ""}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
         accessorKey: "pct_code",
         enableColumnFilter: false,
         enableSorting: true,
@@ -299,17 +329,20 @@ const ProjectCategoryModel = () => {
           );
         },
       },
-     {
-        header: t('is_deleted'),        
+      {
+        header: t("is_deleted"),
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
-            <span className={cellProps.row.original.pct_status === 1 ? "btn btn-sm btn-soft-danger" : ""}>
-              {cellProps.row.original.pct_status == 1
-                ? t("yes")
-                : t("no")
+            <span
+              className={
+                cellProps.row.original.pct_status === 1
+                  ? "btn btn-sm btn-soft-danger"
+                  : ""
               }
+            >
+              {cellProps.row.original.pct_status == 1 ? t("yes") : t("no")}
             </span>
           );
         },
@@ -364,7 +397,7 @@ const ProjectCategoryModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable == 9 && (
+              {cellProps.row.original.is_deletable === 1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -462,7 +495,41 @@ const ProjectCategoryModel = () => {
                 }}
               >
                 <Row>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
+                    <Label>
+                      {t("pct_parent_id")}
+                      <span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      name="pct_parent_id"
+                      type="select"
+                      placeholder={t("pct_parent_id")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pct_parent_id || ""}
+                      invalid={
+                        validation.touched.pct_parent_id &&
+                        validation.errors.pct_parent_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    >
+                      <option value="">Select Sector Category</option>
+                      {sectorCategoryData?.data?.map((data) => (
+                        <option key={data.psc_id} value={data.psc_id}>
+                          {data.psc_name}
+                        </option>
+                      ))}
+                    </Input>
+                    {validation.touched.pct_parent_id &&
+                    validation.errors.pct_parent_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pct_parent_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
                     <Label>
                       {t("pct_name_or")}
                       <span className="text-danger">*</span>
@@ -489,7 +556,7 @@ const ProjectCategoryModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>
                       {t("pct_name_am")}
                       <span className="text-danger">*</span>
@@ -516,7 +583,7 @@ const ProjectCategoryModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>
                       {t("pct_name_en")}
                       <span className="text-danger">*</span>
@@ -543,7 +610,7 @@ const ProjectCategoryModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("pct_code")}</Label>
                     <Input
                       name="pct_code"
@@ -567,8 +634,8 @@ const ProjectCategoryModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                   <Col className="col-md-6 mb-3">
-                  <div className="form-check mb-4">
+                  <Col className="col-md-4 mb-3">
+                    <div className="form-check mb-4">
                       <Label className="me-1" for="pct_status">
                         {t("is_deleted")}
                       </Label>
@@ -593,9 +660,9 @@ const ProjectCategoryModel = () => {
                           {validation.errors.pct_status}
                         </FormFeedback>
                       ) : null}
-                      </div>
-                    </Col>
-                  <Col className="col-md-6 mb-3">
+                    </div>
+                  </Col>
+                  <Col className="col-md-12 mb-3">
                     <Label>{t("pct_description")}</Label>
                     <Input
                       name="pct_description"
