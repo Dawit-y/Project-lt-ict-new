@@ -143,7 +143,6 @@ const ProjectCategoryModel = () => {
     },
 
     validationSchema: Yup.object({
-      pct_parent_id: Yup.string().required(t("pct_parent_id")),
       pct_name_or: alphanumericValidation(2, 100, true).test(
         "unique-pct_name_or",
         t("Already exists"),
@@ -496,10 +495,7 @@ const ProjectCategoryModel = () => {
               >
                 <Row>
                   <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("pct_parent_id")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                    <Label>{t("pct_parent_id")}</Label>
                     <Input
                       name="pct_parent_id"
                       type="select"

@@ -93,6 +93,7 @@ const BudgetRequestAnalysis = ({
       const totals = {
         financial: { requested: 0, released: 0, variance: 0 },
         baseline: { financial: 0, physical: 0 },
+        physical: { planned: 0, approved: 0 },
         status: { approved: 0, rejected: 0, recommended: 0, requested: 0 },
         requestCount: data.length,
       };
@@ -102,6 +103,8 @@ const BudgetRequestAnalysis = ({
         totals.financial.released += request.bdr_released_amount || 0;
         totals.baseline.financial += request.bdr_financial_baseline || 0;
         totals.baseline.physical += request.bdr_physical_baseline || 0;
+        totals.physical.planned += request.bdr_physical_planned || 0;
+        totals.physical.approved += request.bdr_physical_approved || 0;
 
         if (request.status_name === "Approved") totals.status.approved++;
         else if (request.status_name === "Rejected") totals.status.rejected++;
@@ -119,6 +122,8 @@ const BudgetRequestAnalysis = ({
 
       totals.baseline.financial = totals.baseline.financial / data.length;
       totals.baseline.physical = totals.baseline.physical / data.length;
+      totals.physical.planned = totals.physical.planned / data.length;
+      totals.physical.approved = totals.physical.approved / data.length;
 
       return totals;
     },
@@ -150,8 +155,6 @@ const BudgetRequestAnalysis = ({
     calculateSingleRequestTotals,
   ]);
 
-  // Memoized yearly data for tab 2
-  // Update the yearlyData calculation in the useMemo hook
   const yearlyData = useMemo(() => {
     if (!allData) return [];
 
@@ -179,16 +182,15 @@ const BudgetRequestAnalysis = ({
     return Array.from(yearMap.entries())
       .map(([year, data]) => ({
         year,
-        ...data,
+        requested: data.requested,
+        released: data.released,
         variance: data.released - data.requested,
         variancePercentage: calculatePercentage(data.released, data.requested),
-        // Calculate averages for physical metrics
-        avgPhysicalPlanned: data.physicalPlanned / data.count,
-        avgPhysicalApproved: data.physicalApproved / data.count,
+        physicalPlanned: data.physicalPlanned / data.count, // Average physical planned
+        physicalApproved: data.physicalApproved / data.count, // Average physical approved
       }))
       .sort((a, b) => a.year - b.year);
   }, [allData, calculatePercentage]);
-
   // For single request, we'll create yearly data from the single request's year
   const singleRequestYearlyData = useMemo(() => {
     if (isOverallView || !budgetRequestData) return [];
@@ -633,6 +635,37 @@ const BudgetRequestAnalysis = ({
                           Birr
                         </small>
                       </div>
+                      {isOverallView && (
+                        <Row className="mt-4">
+                          <Col xs="6">
+                            <div className="border-end pe-3">
+                              <p className="text-muted mb-2">
+                                Avg. Physical Planned
+                              </p>
+                              <h4 className="text-primary">
+                                {memoizedFormatNumber(
+                                  totals?.physical?.planned || 0
+                                )}
+                                %
+                              </h4>
+                            </div>
+                          </Col>
+
+                          <Col xs="6">
+                            <div className="pe-3">
+                              <p className="text-muted mb-2">
+                                Avg. Physical Approved
+                              </p>
+                              <h4 className="text-primary">
+                                {memoizedFormatNumber(
+                                  totals?.physical?.approved || 0
+                                )}
+                                %
+                              </h4>
+                            </div>
+                          </Col>
+                        </Row>
+                      )}
 
                       {isOverallView && (
                         <div className="mt-4">
@@ -683,8 +716,8 @@ const BudgetRequestAnalysis = ({
                         <th>Total Requested (Birr)</th>
                         <th>Total Released (Birr)</th>
                         <th>Variance</th>
-                        <th>Physical Planned (%)</th>
-                        <th>Physical Approved (%)</th>
+                        <th>Avg. Physical Planned (%)</th>
+                        <th>Avg. Physical Approved (%)</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -707,18 +740,10 @@ const BudgetRequestAnalysis = ({
                             {getStatusIndicator(yearData.variance)}
                           </td>
                           <td>
-                            {memoizedFormatNumber(
-                              isOverallView
-                                ? yearData.avgPhysicalPlanned
-                                : yearData.physicalPlanned
-                            )}
+                            {memoizedFormatNumber(yearData.physicalPlanned)}
                           </td>
                           <td>
-                            {memoizedFormatNumber(
-                              isOverallView
-                                ? yearData.avgPhysicalApproved
-                                : yearData.physicalApproved
-                            )}
+                            {memoizedFormatNumber(yearData.physicalApproved)}
                           </td>
                         </tr>
                       ))}
