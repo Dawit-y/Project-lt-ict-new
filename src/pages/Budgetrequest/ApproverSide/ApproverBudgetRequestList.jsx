@@ -17,7 +17,7 @@ const Breadcrumbs = lazy(() => import("../../../components/Common/Breadcrumb"));
 const ApproverBudgetRequestListModal = lazy(() =>
   import("./ApproverBudgetRequestModal")
 );
-// const BudgetRequestAnalysis = lazy(() => import("../BudgetRequestAnalysis"));
+
 const BudgetRequestAnalysis = lazy(() => import("./BudgetRequestAnalysis"));
 const AdvancedSearch = lazy(() =>
   import("../../../components/Common/AdvancedSearch")

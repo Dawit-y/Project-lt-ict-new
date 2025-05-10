@@ -7,6 +7,7 @@ import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
 import { useTranslation } from "react-i18next";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import { Card, CardBody, Button } from "reactstrap";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import {
   createMultiSelectOptions,
@@ -385,17 +386,47 @@ const ProjectPerformanceList = (props) => {
                   excludeKey={["is_editable", "is_deletable"]}
                 />
               </AdvancedSearch>
-              {/* Performance Analysis Section - Automatically switches views */}
-              {showSearchResult && (
-                <ProjectPerformanceAnalysis
-                  performanceData={selectedRowData}
-                  allData={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
-                  isOverallView={!selectedRowData}
-                  chartType={chartType}
-                  onChartTypeChange={setChartType}
-                />
+              {/* Performance Analysis Section */}
+
+              {selectedRowData ? (
+                <Card>
+                  <CardBody>
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                      <h4 className="card-title mb-0">
+                        <Button
+                          color="link"
+                          size="sm"
+                          onClick={() => setSelectedRowData(null)}
+                        >
+                          <i className="mdi mdi-arrow-left"></i> Back to
+                          Overview
+                        </Button>
+                      </h4>
+                    </div>
+                    <ProjectPerformanceAnalysis
+                      performanceData={selectedRowData}
+                      allData={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
+                      isOverallView={false}
+                      chartType={chartType}
+                      onChartTypeChange={setChartType}
+                    />
+                  </CardBody>
+                </Card>
+              ) : (
+                showSearchResult && (
+                  <ProjectPerformanceAnalysis
+                    allData={
+                      showSearchResult ? searchResults?.data : data?.data || []
+                    }
+                    isOverallView={true}
+                    chartType={chartType}
+                    onChartTypeChange={setChartType}
+                  />
+                )
               )}
             </div>
           </div>

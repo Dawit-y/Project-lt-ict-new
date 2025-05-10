@@ -11,20 +11,32 @@ import React, {
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import { useAuthUser } from "../../../hooks/useAuthUser";
-import { Button, Badge, Row, Col, Input, Spinner, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import {
+  Button,
+  Badge,
+  Row,
+  Col,
+  Input,
+  Spinner,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "reactstrap";
 import Spinners from "../../../components/Common/Spinner";
 const Breadcrumbs = lazy(() => import("../../../components/Common/Breadcrumb"));
 const ApproverBudgetRequestListModal = lazy(() =>
   import("./ApproverBudgetRequestModal")
 );
-const BudgetRequestAnalysis = lazy(() => import("../BudgetRequestAnalysis"));
 const AdvancedSearch = lazy(() =>
   import("../../../components/Common/AdvancedSearch")
 );
 const FetchErrorHandler = lazy(() =>
   import("../../../components/Common/FetchErrorHandler")
 );
-const TreeForLists = lazy(() => import("../../../components/Common/TreeForLists"));
+const TreeForLists = lazy(() =>
+  import("../../../components/Common/TreeForLists")
+);
 const AttachFileModal = lazy(() =>
   import("../../../components/Common/AttachFileModal")
 );
@@ -33,10 +45,14 @@ const ConvInfoModal = lazy(() =>
 );
 const BudgetRequestModal = lazy(() => import("../BudgetRequestModal"));
 const AgGridContainer = lazy(() =>
-  import("../../../components/Common/AgGridContainer"));
+  import("../../../components/Common/AgGridContainer")
+);
 import { AgGridReact } from "ag-grid-react";
 import { budget_request } from "../../../settings/printablecolumns";
-import { useSearchBudgetRequestforApproval, useBulkUpdateBudgetRequestApproval } from "../../../queries/budget_request_query";
+import {
+  useSearchBudgetRequestforApproval,
+  useBulkUpdateBudgetRequestApproval,
+} from "../../../queries/budget_request_query";
 import { useFetchBudgetYears } from "../../../queries/budgetyear_query";
 import { useSearchRequestCategorys } from "../../../queries/requestcategory_query";
 import {
@@ -47,7 +63,10 @@ import { useFetchRequestStatuss } from "../../../queries/requeststatus_query";
 import { PAGE_ID } from "../../../constants/constantFile";
 import { useFetchProjectStatuss } from "../../../queries/projectstatus_query";
 import { getUserSectorList } from "../../../queries/usersector_query";
-import { createSelectOptions, createMultiSelectOptions } from "../../../utils/commonMethods";
+import {
+  createSelectOptions,
+  createMultiSelectOptions,
+} from "../../../utils/commonMethods";
 import { toast } from "react-toastify";
 import RequestDetail from "./RequestDetail";
 
@@ -57,7 +76,6 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-
 
 const ApproverBudgetRequestList = () => {
   document.title = "Recommended Requests List";
@@ -76,7 +94,7 @@ const ApproverBudgetRequestList = () => {
   const param = { gov_active: "1" };
   const { data: bgCategoryOptionsData } = useSearchRequestCategorys(param);
   const { data: projectStatusData } = useFetchProjectStatuss();
-  const { data: requestStatus } = useFetchRequestStatuss()
+  const { data: requestStatus } = useFetchRequestStatuss();
   const { data: sectorInformationData } = getUserSectorList();
 
   const [projectParams, setProjectParams] = useState({});
@@ -90,23 +108,24 @@ const ApproverBudgetRequestList = () => {
     sci_name_en: sectorInfoOptionsEn,
     sci_name_or: sectorInfoOptionsOr,
     sci_name_am: sectorInfoOptionsAm,
-  } = createMultiSelectOptions(
-    sectorInformationData?.data || [],
-    "sci_id",
-    ["sci_name_en", "sci_name_or", "sci_name_am"]
-  );
+  } = createMultiSelectOptions(sectorInformationData?.data || [], "sci_id", [
+    "sci_name_en",
+    "sci_name_or",
+    "sci_name_am",
+  ]);
 
-  const filteredData = (requestStatus?.data || []).filter(item => item.rqs_id !== 1);
+  const filteredData = (requestStatus?.data || []).filter(
+    (item) => item.rqs_id !== 1
+  );
   const {
     rqs_name_en: requestStatusOptionsEn,
     rqs_name_or: requestStatusOptionsOr,
     rqs_name_am: requestStatusOptionsAm,
-  } = createMultiSelectOptions(
-    filteredData,
-    "rqs_id",
-    ["rqs_name_en", "rqs_name_or", "rqs_name_am"]
-  );
-
+  } = createMultiSelectOptions(filteredData, "rqs_id", [
+    "rqs_name_en",
+    "rqs_name_or",
+    "rqs_name_am",
+  ]);
 
   const budgetYearMap = useMemo(() => {
     return (
@@ -130,11 +149,11 @@ const ApproverBudgetRequestList = () => {
     rqc_name_en: requestCategoryOptionsEn,
     rqc_name_or: requestCategoryOptionsOr,
     rqc_name_am: requestCategoryOptionsAm,
-  } = createMultiSelectOptions(
-    bgCategoryOptionsData?.data || [],
-    "rqc_id",
-    ["rqc_name_en", "rqc_name_or", "rqc_name_am"]
-  );
+  } = createMultiSelectOptions(bgCategoryOptionsData?.data || [], "rqc_id", [
+    "rqc_name_en",
+    "rqc_name_or",
+    "rqc_name_am",
+  ]);
 
   const projectStatusOptions = useMemo(() => {
     return (
@@ -146,7 +165,6 @@ const ApproverBudgetRequestList = () => {
         })) || []
     );
   }, [projectStatusData]);
-
 
   const handleSearch = useCallback(({ data, error }) => {
     setSearchResults(data);
@@ -315,12 +333,8 @@ const ApproverBudgetRequestList = () => {
         //flex: 1,
         width: 130,
         cellRenderer: (params) => {
-          const { status_name, color_code } = params.data
-          return (
-            <Badge color={color_code}>
-              {status_name}
-            </Badge>
-          );
+          const { status_name, color_code } = params.data;
+          return <Badge color={color_code}>{status_name}</Badge>;
         },
       },
       {
@@ -489,8 +503,8 @@ const ApproverBudgetRequestList = () => {
                         i18n.language === "en"
                           ? requestCategoryOptionsEn
                           : i18n.language === "am"
-                            ? requestCategoryOptionsAm
-                            : requestCategoryOptionsOr,
+                          ? requestCategoryOptionsAm
+                          : requestCategoryOptionsOr,
                     },
                     {
                       key: "bdr_request_type",
@@ -502,8 +516,8 @@ const ApproverBudgetRequestList = () => {
                         i18n.language === "en"
                           ? sectorInfoOptionsEn
                           : i18n.language === "am"
-                            ? sectorInfoOptionsAm
-                            : sectorInfoOptionsOr,
+                          ? sectorInfoOptionsAm
+                          : sectorInfoOptionsOr,
                     },
                     {
                       key: "bdr_request_status",
@@ -511,10 +525,10 @@ const ApproverBudgetRequestList = () => {
                         i18n.language === "en"
                           ? requestStatusOptionsEn
                           : i18n.language === "am"
-                            ? requestStatusOptionsAm
-                            : requestStatusOptionsOr,
-                      defaultValue: 2
-                    }
+                          ? requestStatusOptionsAm
+                          : requestStatusOptionsOr,
+                      defaultValue: 2,
+                    },
                   ]}
                   additionalParams={projectParams}
                   setAdditionalParams={setProjectParams}
@@ -523,7 +537,10 @@ const ApproverBudgetRequestList = () => {
                   setSearchResults={setSearchResults}
                   setShowSearchResult={setShowSearchResult}
                 >
-                  <MemoizedTableWrapper columnDefs={columnDefs} showSearchResult={showSearchResult} />
+                  <MemoizedTableWrapper
+                    columnDefs={columnDefs}
+                    showSearchResult={showSearchResult}
+                  />
                 </AdvancedSearch>
               </div>
             </div>
@@ -538,20 +555,19 @@ ApproverBudgetRequestList.propTypes = {
 };
 export default ApproverBudgetRequestList;
 
-
 const LoadingOverlay = () => {
-  return <Spinner color="primary" />
-}
+  return <Spinner color="primary" />;
+};
 
 const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
   const { departmentId } = useAuthUser();
   const { t } = useTranslation();
   const { data: rqfData, isLoading: rqfLoading } = useFetchRequestFollowups();
-  const gridRef = useRef()
-  const [quickFilterText, setQuickFilterText] = useState("")
+  const gridRef = useRef();
+  const [quickFilterText, setQuickFilterText] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [actionType, setActionType] = useState(null);
-  const [selected, setSelected] = useState()
+  const [selected, setSelected] = useState();
 
   const selectedRowsRef = useRef({
     selectedRowIds: [],
@@ -560,11 +576,17 @@ const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
 
   const onSelectionChanged = () => {
     const selectedRows = gridRef.current.api.getSelectedRows();
-    selectedRowsRef.current.selectedRowIds = selectedRows.map((row) => row.bdr_id);
+    selectedRowsRef.current.selectedRowIds = selectedRows.map(
+      (row) => row.bdr_id
+    );
     selectedRowsRef.current.selectedCount = selectedRows.length;
   };
 
-  function markForwardedRequests(budgetRequests = [], forwardedRequests = [], departmentId) {
+  function markForwardedRequests(
+    budgetRequests = [],
+    forwardedRequests = [],
+    departmentId
+  ) {
     const forwardedSet = new Set(
       forwardedRequests
         .filter((req) => req.rqf_forwarding_dep_id === departmentId)
@@ -579,7 +601,11 @@ const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
 
   let transformedData = data?.data || [];
   if (data?.data && rqfData?.data) {
-    transformedData = markForwardedRequests(data.data, rqfData.data, departmentId);
+    transformedData = markForwardedRequests(
+      data.data,
+      rqfData.data,
+      departmentId
+    );
   }
 
   const rowSelection = useMemo(() => {
@@ -592,13 +618,12 @@ const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
     const { selectedCount } = selectedRowsRef.current;
 
     if (selectedCount === 0) return;
-    setSelected(selectedRowsRef.current.selectedRowIds)
+    setSelected(selectedRowsRef.current.selectedRowIds);
     setActionType(event.target.name); // "approve" or "reject"
     setModalOpen(true);
   };
 
-
-  const updateBudgetRequest = useBulkUpdateBudgetRequestApproval()
+  const updateBudgetRequest = useBulkUpdateBudgetRequestApproval();
   const handleUpdateBudgetRequest = async (data) => {
     try {
       await updateBudgetRequest.mutateAsync(data);
@@ -625,13 +650,23 @@ const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
     <div>
       <Modal isOpen={modalOpen} toggle={() => setModalOpen(false)} centered>
         <ModalHeader toggle={() => setModalOpen(false)}>
-          <strong> Confirm {actionType === "approve" ? "Approval" : "Rejection"}</strong>
+          <strong>
+            {" "}
+            Confirm {actionType === "approve" ? "Approval" : "Rejection"}
+          </strong>
         </ModalHeader>
         <ModalBody>
-          <h5>Are you sure you want to <strong>{actionType}</strong> {selectedRowsRef.current.selectedCount} request(s)?</h5>
+          <h5>
+            Are you sure you want to <strong>{actionType}</strong>{" "}
+            {selectedRowsRef.current.selectedCount} request(s)?
+          </h5>
         </ModalBody>
         <ModalFooter>
-          <Button color={actionType === "approve" ? "success" : "danger"} onClick={confirmAction} disabled={updateBudgetRequest.isPending}>
+          <Button
+            color={actionType === "approve" ? "success" : "danger"}
+            onClick={confirmAction}
+            disabled={updateBudgetRequest.isPending}
+          >
             Yes, {actionType}
           </Button>
           <Button color="secondary" onClick={() => setModalOpen(false)}>
@@ -641,9 +676,7 @@ const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
       </Modal>
 
       <>
-        <div
-          className="ag-theme-alpine"
-        >
+        <div className="ag-theme-alpine">
           {/* Row for search input and buttons */}
           <Row className="mb-1 d-flex align-items-center justify-content-between">
             <Col sm="12" md="6">
@@ -654,14 +687,21 @@ const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
                 className="mb-2"
               />
             </Col>
-            <Col className="mb-2 d-flex align-items-center justify-content-end gap-3" md={6}>
-              <Button color="success" name="approve"
+            <Col
+              className="mb-2 d-flex align-items-center justify-content-end gap-3"
+              md={6}
+            >
+              <Button
+                color="success"
+                name="approve"
                 onClick={handleClick}
                 disabled={updateBudgetRequest.isPending}
               >
                 Approve
               </Button>
-              <Button color="danger" name="reject"
+              <Button
+                color="danger"
+                name="reject"
                 onClick={handleClick}
                 disabled={updateBudgetRequest.isPending}
               >
@@ -673,11 +713,7 @@ const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
           <div>
             <AgGridReact
               ref={gridRef}
-              rowData={
-                showSearchResult
-                  ? transformedData
-                  : []
-              }
+              rowData={showSearchResult ? transformedData : []}
               loading={isLoading}
               loadingOverlayComponent={LoadingOverlay}
               columnDefs={columnDefs}
@@ -698,4 +734,4 @@ const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
   );
 };
 
-const MemoizedTableWrapper = memo(TableWrapper)
+const MemoizedTableWrapper = memo(TableWrapper);

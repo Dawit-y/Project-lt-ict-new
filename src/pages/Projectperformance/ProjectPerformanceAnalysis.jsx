@@ -182,9 +182,12 @@ const ProjectPerformanceAnalysis = ({
       tooltip: {
         y: {
           formatter: function (val) {
+            // Format the number to have maximum 2 decimal places
+            const formattedValue = Number(val).toFixed(2);
+
             return selectedView === "physical"
-              ? `${val}%`
-              : `${val}${chartType === "pie" ? "M" : ""} Birr`;
+              ? `${formattedValue}%`
+              : `${formattedValue}${chartType === "pie" ? "M" : "M"} Birr`;
           },
         },
       },
@@ -284,6 +287,16 @@ const ProjectPerformanceAnalysis = ({
               selectedView === "physical"
                 ? "Physical Progress (%)"
                 : "Budget (Millions)",
+          },
+          labels: {
+            formatter: function (val) {
+              // Format the number to have maximum 2 decimal places
+              const formattedValue = Number(val).toFixed(2);
+
+              return selectedView === "physical"
+                ? `${formattedValue}%`
+                : `${formattedValue}${chartType === "pie" ? "M" : "M"} Birr`;
+            },
           },
         },
         fill: {
