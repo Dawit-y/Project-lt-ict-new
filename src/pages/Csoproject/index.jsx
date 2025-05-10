@@ -434,7 +434,6 @@ const ProjectModel = () => {
                   <Spinners /> :
                   userType === 4 ?
                     <RegionProjectTab
-                      program={data}
                       handleAddClick={handleProjectsClicks}
                       handleEditClick={handleProjectClick}
                       handleTabChange={handleTabChange}

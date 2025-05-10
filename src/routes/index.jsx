@@ -41,6 +41,9 @@ const CSOProjectDetail = lazy(() => import("../pages/Csoproject/ProjectDetail/in
 const CSOBudgetRequestListModel = lazy(() =>
   import("../pages/Csobudgetrequest/BudgetRequestList.jsx")
 );
+const CsoProposalRequestList = lazy(() =>
+  import("../pages/Csobudgetrequest/ProposalRequestList.jsx")
+);
 const CSOApproverBudgetRequestList = lazy(() =>
   import("../pages/Csobudgetrequest/ApproverBudgetRequestList.jsx")
 );
@@ -200,6 +203,7 @@ const authProtectedRoutes = [
   { path: "/project_cso_list", component: <CSOProjectList /> },
   { path: "/projectdetail_cso/:id", component: <CSOProjectDetail /> },
   { path: "/cso_proposal_request", component: <CSOBudgetRequestListModel /> },
+  { path: "/cso_proposal_request_list", component: <CsoProposalRequestList /> },
   {
     path: "/cso_proposal_request_approval",
     component: <CSOApproverBudgetRequestList />,

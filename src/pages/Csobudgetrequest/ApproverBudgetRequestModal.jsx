@@ -16,6 +16,7 @@ import {
   Label,
   Input,
   Spinner,
+  CardTitle,
 } from "reactstrap";
 import Select from "react-select";
 import * as Yup from "yup";
@@ -25,7 +26,7 @@ import { useFetchRequestStatuss } from "../../queries/requeststatus_query";
 import { toast } from "react-toastify";
 import { createSelectOptions } from "../../utils/commonMethods";
 import { TabWrapper } from "../../components/Common/DetailViewWrapper";
-import { useFetchProject } from "../../queries/project_query";
+import { useFetchProject } from "../../queries/cso_project_query";
 import DatePicker from "../../components/Common/DatePicker";
 
 const RequestFollowupModel = lazy(() => import("../Requestfollowup"));
@@ -106,16 +107,37 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
         label: t("Approve/Reject"),
         content: (
           <Row>
-            <Col xl={5}>
+            <Col xl={7}>
               <Card>
                 <CardBody>
-                  <h5 className="fw-semibold">Overview</h5>
-                  <Table>
+                  <CardTitle>Overview</CardTitle>
+                  <Table size="sm" className="mb-3">
                     <tbody>
                       {[[t("Year"), budgetYearMap[transaction.bdr_budget_year_id]],
-                      [t("prj_total_estimate_budget"), project?.data?.prj_total_estimate_budget],
                       [t("bdr_requested_date_gc"), transaction.bdr_requested_date_gc],
                       [t("bdr_description"), transaction.bdr_description]].map(([label, value]) => (
+                        <tr key={label}>
+                          <th>{label}</th>
+                          <td>{value}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                  <br />
+                  <Table size="sm">
+                    <tbody>
+                      {[
+                        [t("prj_name"), project?.data?.prj_name],
+                        [t("prj_code"), project?.data?.prj_code],
+                        [t("prj_project_category_id"), project?.data?.prj_project_category_id],
+                        [t("prj_total_estimate_budget"), project?.data?.prj_total_estimate_budget],
+                        [t("prj_total_actual_budget"), project?.data?.prj_total_actual_budget],
+                        [t("prj_start_date_plan_gc"), project?.data?.prj_start_date_plan_gc],
+                        [t("prj_outcome"), project?.data?.prj_outcome],
+                        [t("prj_remark"), project?.data?.prj_remark],
+                        [t("prj_urban_ben_number"), project?.data?.prj_urban_ben_number],
+                        [t("prj_rural_ben_number"), project?.data?.prj_rural_ben_number],
+                      ].map(([label, value]) => (
                         <tr key={label}>
                           <th>{label}</th>
                           <td>{value}</td>
@@ -126,7 +148,7 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
                 </CardBody>
               </Card>
             </Col>
-            <Col xl={7}>
+            <Col xl={5}>
               <Card>
                 <CardBody>
                   <h5 className="fw-semibold">Take Action</h5>

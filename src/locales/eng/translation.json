@@ -1388,8 +1388,10 @@
 	"citizenship_project_detail": "Citizenship Project",
 	"pri_start_date": "Start Date",
 	"pri_end_date": "End Date",
-	"prj_male_participant":"Male Participant",
-"prj_female_participant":"Female Participant",
-"prj_sub_project_category_id":"Project Sub Category",
-"prj_job_opportunity":"Job Opportunity"
+	"prj_male_participant": "Male Participant",
+	"prj_female_participant": "Female Participant",
+	"prj_sub_project_category_id": "Project Sub Category",
+	"prj_job_opportunity": "Job Opportunity",
+	"prj_assigned_sectors": "Assigned Sectors",
+	"cso_proposal_request_list": "CSO Proposal Request List"
 }
