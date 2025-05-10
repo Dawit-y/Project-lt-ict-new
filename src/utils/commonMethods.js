@@ -99,3 +99,20 @@ export const formatNumber = (num, decimals = 2) => {
     maximumFractionDigits: decimals,
   });
 };
+
+export function formatLargeNumber(num) {
+  if (typeof num !== "number" && typeof num !== "string") return "0";
+
+  // Convert string to number if needed
+  const number = typeof num === "string" ? parseFloat(num) : num;
+
+  if (isNaN(number)) return "0";
+
+  // Format based on size
+  if (number >= 1e12) return (number / 1e12).toFixed(1) + "T";
+  if (number >= 1e9) return (number / 1e9).toFixed(1) + "B";
+  if (number >= 1e6) return (number / 1e6).toFixed(1) + "M";
+  if (number >= 1e3) return (number / 1e3).toFixed(1) + "K";
+
+  return number.toString();
+}
