@@ -151,8 +151,9 @@ const BudgetRequestAnalysis = ({
   ]);
 
   // Memoized yearly data for tab 2
+  // Update the yearlyData calculation in the useMemo hook
   const yearlyData = useMemo(() => {
-    if (!isOverallView || !allData) return [];
+    if (!allData) return [];
 
     const yearMap = new Map();
 
@@ -163,11 +164,15 @@ const BudgetRequestAnalysis = ({
           requested: 0,
           released: 0,
           count: 0,
+          physicalPlanned: 0,
+          physicalApproved: 0,
         });
       }
       const yearData = yearMap.get(year);
       yearData.requested += item.bdr_requested_amount || 0;
       yearData.released += item.bdr_released_amount || 0;
+      yearData.physicalPlanned += item.bdr_physical_planned || 0;
+      yearData.physicalApproved += item.bdr_physical_approved || 0;
       yearData.count++;
     });
 
@@ -177,9 +182,34 @@ const BudgetRequestAnalysis = ({
         ...data,
         variance: data.released - data.requested,
         variancePercentage: calculatePercentage(data.released, data.requested),
+        // Calculate averages for physical metrics
+        avgPhysicalPlanned: data.physicalPlanned / data.count,
+        avgPhysicalApproved: data.physicalApproved / data.count,
       }))
       .sort((a, b) => a.year - b.year);
-  }, [allData, isOverallView, calculatePercentage]);
+  }, [allData, calculatePercentage]);
+
+  // For single request, we'll create yearly data from the single request's year
+  const singleRequestYearlyData = useMemo(() => {
+    if (isOverallView || !budgetRequestData) return [];
+
+    return [
+      {
+        year: budgetRequestData.bdy_name,
+        requested: budgetRequestData.bdr_requested_amount || 0,
+        released: budgetRequestData.bdr_released_amount || 0,
+        variance:
+          (budgetRequestData.bdr_released_amount || 0) -
+          (budgetRequestData.bdr_requested_amount || 0),
+        variancePercentage: calculatePercentage(
+          budgetRequestData.bdr_released_amount || 0,
+          budgetRequestData.bdr_requested_amount || 0
+        ),
+        physicalPlanned: budgetRequestData.bdr_physical_planned || 0,
+        physicalApproved: budgetRequestData.bdr_physical_approved || 0,
+      },
+    ];
+  }, [budgetRequestData, isOverallView, calculatePercentage]);
 
   // Memoized chart data
   const { chartOptions, chartSeries } = useMemo(() => {
@@ -474,17 +504,16 @@ const BudgetRequestAnalysis = ({
                   <i className="mdi mdi-chart-areaspline me-1"></i> Summary
                 </NavLink>
               </NavItem>
-              {isOverallView && (
-                <NavItem>
-                  <NavLink
-                    className={classnames({ active: activeTab === "2" })}
-                    onClick={() => toggleTab("2")}
-                  >
-                    <i className="mdi mdi-calendar-clock me-1"></i> Yearly
-                    Progress
-                  </NavLink>
-                </NavItem>
-              )}
+
+              <NavItem>
+                <NavLink
+                  className={classnames({ active: activeTab === "2" })}
+                  onClick={() => toggleTab("2")}
+                >
+                  <i className="mdi mdi-calendar-clock me-1"></i> Yearly
+                  Progress
+                </NavLink>
+              </NavItem>
 
               <NavItem>
                 <NavLink
@@ -646,41 +675,56 @@ const BudgetRequestAnalysis = ({
               </TabPane>
 
               <TabPane tabId="2">
-                {isOverallView && (
-                  <div className="table-responsive">
-                    <table className="table table-bordered table-hover table-striped">
-                      <thead className="table-light">
-                        <tr>
-                          <th>Year</th>
-                          <th>Total Requested (Birr)</th>
-                          <th>Total Released (Birr)</th>
-                          <th>Variance</th>
+                <div className="table-responsive">
+                  <table className="table table-bordered table-hover table-striped">
+                    <thead className="table-light">
+                      <tr>
+                        <th>Year</th>
+                        <th>Total Requested (Birr)</th>
+                        <th>Total Released (Birr)</th>
+                        <th>Variance</th>
+                        <th>Physical Planned (%)</th>
+                        <th>Physical Approved (%)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(isOverallView
+                        ? yearlyData
+                        : singleRequestYearlyData
+                      ).map((yearData) => (
+                        <tr key={yearData.year}>
+                          <td>{yearData.year}</td>
+                          <td>{memoizedFormatNumber(yearData.requested)}</td>
+                          <td>{memoizedFormatNumber(yearData.released)}</td>
+                          <td
+                            className={
+                              yearData.variance >= 0
+                                ? "text-success"
+                                : "text-danger"
+                            }
+                          >
+                            {memoizedFormatNumber(Math.abs(yearData.variance))}
+                            {getStatusIndicator(yearData.variance)}
+                          </td>
+                          <td>
+                            {memoizedFormatNumber(
+                              isOverallView
+                                ? yearData.avgPhysicalPlanned
+                                : yearData.physicalPlanned
+                            )}
+                          </td>
+                          <td>
+                            {memoizedFormatNumber(
+                              isOverallView
+                                ? yearData.avgPhysicalApproved
+                                : yearData.physicalApproved
+                            )}
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {yearlyData.map((yearData) => (
-                          <tr key={yearData.year}>
-                            <td>{yearData.year}</td>
-                            <td>{memoizedFormatNumber(yearData.requested)}</td>
-                            <td>{memoizedFormatNumber(yearData.released)}</td>
-                            <td
-                              className={
-                                yearData.variance >= 0
-                                  ? "text-success"
-                                  : "text-danger"
-                              }
-                            >
-                              {memoizedFormatNumber(
-                                Math.abs(yearData.variance)
-                              )}
-                              {getStatusIndicator(yearData.variance)}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </TabPane>
 
               <TabPane tabId="3">
