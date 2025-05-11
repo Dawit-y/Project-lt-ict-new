@@ -143,6 +143,35 @@ const ProjectPerformanceModel = (props) => {
   const isPlanned = entryMode === "planned";
   const isActual = entryMode === "actual";
 
+  const validateUniqueYear = (yearId) => {
+    if (!yearId) return true; // Skip if no year selected
+
+    // Ensure we have data and it's an array
+    if (!data?.data || !Array.isArray(data.data)) return true;
+
+    // Convert yearId to number for consistent comparison
+    const numericYearId = Number(yearId);
+
+    // Check if this year already exists in the data
+    const existingEntries = data.data.filter(
+      (item) => Number(item.prp_budget_year_id) === numericYearId
+    );
+
+    // If editing, we should have exactly 0 or 1 matching entries (the current one)
+    if (isEdit && projectPerformance) {
+      const currentEntryYear = Number(projectPerformance.prp_budget_year_id);
+      if (currentEntryYear === numericYearId) {
+        // If editing the same year, it's valid
+        return existingEntries.length <= 1;
+      }
+      // If changing to a different year, check if it exists
+      return existingEntries.length === 0;
+    }
+
+    // For new entries, just check if the year exists
+    return existingEntries.length === 0;
+  };
+
   // Form validation
   const validation = useFormik({
     enableReinitialize: true,
@@ -152,9 +181,15 @@ const ProjectPerformanceModel = (props) => {
       prp_budget_year_id: projectPerformance?.prp_budget_year_id || "",
       prp_budget_month_id:
         projectPerformance?.prp_budget_month_id || DEFAULT_MONTH,
+
+      is_new_actual_entry:
+        projectPerformance?.prp_record_date_gc &&
+        projectPerformance.prp_record_date_gc !==
+          new Date().toISOString().split("T")[0],
       prp_record_date_gc:
         projectPerformance?.prp_record_date_gc ||
         new Date().toISOString().split("T")[0],
+
       prp_description: projectPerformance?.prp_description || "",
       prp_physical_performance:
         projectPerformance?.prp_physical_performance ||
@@ -262,10 +297,30 @@ const ProjectPerformanceModel = (props) => {
           : Yup.number().notRequired(),
       })).reduce((acc, curr) => ({ ...acc, ...curr })),
       prp_description: Yup.string().notRequired(),
-      // Summary fields validation
-      prp_budget_year_id: Yup.number().required(t("Year is required")),
+
+      prp_budget_year_id: Yup.number()
+        .required(t("Year is required"))
+        .test(
+          "unique-year",
+          t("This year already has an entry. Please select a different year."),
+          function (value) {
+            // Use this.parent to access other form values if needed
+            return validateUniqueYear(value);
+          }
+        ),
+
       prp_physical_baseline: formattedAmountValidation(0, 100, true),
       prp_budget_baseline: formattedAmountValidation(0, 10000000000, true),
+
+      is_new_actual_entry: Yup.boolean(),
+      prp_record_date_gc: Yup.date().when("is_new_actual_entry", {
+        is: true,
+        then: (schema) =>
+          schema
+            .required(t("Entry date is required for new actual entries"))
+            .max(new Date(), t("Entry date cannot be in the future")),
+        otherwise: (schema) => schema.notRequired(),
+      }),
     }),
 
     validateOnBlur: true,
@@ -277,7 +332,11 @@ const ProjectPerformanceModel = (props) => {
         prp_project_status_id: "1",
         prp_budget_year_id: values.prp_budget_year_id,
         prp_budget_month_id: DEFAULT_MONTH,
-        prp_record_date_gc: new Date().toISOString().split("T")[0],
+
+        prp_record_date_gc: values.is_new_actual_entry
+          ? values.prp_record_date_gc
+          : new Date().toISOString().split("T")[0],
+
         prp_description: values.prp_description || null,
         prp_physical_performance: DEFAULT_PHYSICAL_PERFORMANCE,
         prp_quarter_id: values.prp_quarter_id,
@@ -415,12 +474,19 @@ const ProjectPerformanceModel = (props) => {
   };
 
   const populateForm = (data) => {
+    const hasCustomDate =
+      data.prp_record_date_gc &&
+      data.prp_record_date_gc !== new Date().toISOString().split("T")[0];
     const values = {
       prp_project_id: passedId,
       prp_project_status_id: "1",
       prp_budget_year_id: data.prp_budget_year_id,
       prp_budget_month_id: DEFAULT_MONTH,
-      prp_record_date_gc: new Date().toISOString().split("T")[0],
+
+      is_new_actual_entry: hasCustomDate,
+      prp_record_date_gc:
+        data.prp_record_date_gc || new Date().toISOString().split("T")[0],
+
       prp_description: data.prp_description,
       prp_physical_performance: DEFAULT_PHYSICAL_PERFORMANCE,
       prp_quarter_id: data.prp_quarter_id,
@@ -483,6 +549,13 @@ const ProjectPerformanceModel = (props) => {
         enableSorting: true,
         cell: (cellProps) =>
           budgetYearMap[cellProps.row.original.prp_budget_year_id] || "-",
+      },
+      {
+        header: "Entry Date",
+        accessorKey: "prp_record_date_gc",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => cellProps.row.original.prp_record_date_gc || "-",
       },
       // Create quarter columns based on custom definitions
       ...quarterDefinitions
@@ -825,6 +898,63 @@ const ProjectPerformanceModel = (props) => {
                     />
                   </Col>
                 </Row>
+
+                {/* New Actual Entry Checkbox and Date Picker - Only show in actual mode */}
+                {entryMode === "actual" && (
+                  <Row className="mt-3">
+                    <Col md={4}>
+                      <div className="form-check">
+                        <Input
+                          type="checkbox"
+                          id="is_new_actual_entry"
+                          name="is_new_actual_entry"
+                          className="form-check-input"
+                          checked={validation.values.is_new_actual_entry}
+                          onChange={(e) => {
+                            validation.setFieldValue(
+                              "is_new_actual_entry",
+                              e.target.checked
+                            );
+                            if (!e.target.checked) {
+                              validation.setFieldValue(
+                                "prp_record_date_gc",
+                                new Date().toISOString().split("T")[0]
+                              );
+                            }
+                          }}
+                        />
+                        <Label
+                          htmlFor="is_new_actual_entry"
+                          className="form-check-label fw-medium"
+                        >
+                          {t("New actual entry")}
+                        </Label>
+                      </div>
+                    </Col>
+                    {validation.values.is_new_actual_entry && (
+                      <Col md={4}>
+                        <Label className="fw-medium">{t("Entry Date")}</Label>
+                        <Input
+                          name="prp_record_date_gc"
+                          type="date"
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.prp_record_date_gc}
+                          max={new Date().toISOString().split("T")[0]}
+                          invalid={
+                            validation.touched.prp_record_date_gc &&
+                            !!validation.errors.prp_record_date_gc
+                          }
+                        />
+                        {validation.errors.prp_record_date_gc && (
+                          <div className="text-danger small mt-1">
+                            {validation.errors.prp_record_date_gc}
+                          </div>
+                        )}
+                      </Col>
+                    )}
+                  </Row>
+                )}
               </CardBody>
             </Card>
             {/* Quarterly Tabs */}
