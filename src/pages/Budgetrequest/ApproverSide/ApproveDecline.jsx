@@ -12,23 +12,18 @@ import { useAuthUser } from "../../../hooks/useAuthUser"
 const ApproveDecline = ({ request, toggleParent }) => {
   const { t } = useTranslation()
   const [approveModal, setApproveModal] = useState(false)
-  const [recommendModal, setRecommendModal] = useState(false)
   const toggleApproveModal = () => setApproveModal(!approveModal)
-  const toggleRecommendModal = () => setRecommendModal(!recommendModal)
   const [action, setAction] = useState("")
   const { departmentType } = useAuthUser()
 
   const isDirector = departmentType === "directorate"
+  const isDepartment = departmentType === "department"
   const isDepartmentLevel = departmentType === "department" || departmentType === "directorate";
   const isOfficerLevel = departmentType === "officer" || departmentType === "team";
 
   const handleClick = (event) => {
     setAction(event.target.name)
-    if (isDepartmentLevel) {
-      toggleApproveModal();
-    } else if (isOfficerLevel) {
-      toggleRecommendModal();
-    }
+    toggleApproveModal();
   };
   const excludedKeys = [
     "is_editable",
@@ -544,11 +539,13 @@ const ApproveDecline = ({ request, toggleParent }) => {
                   </Button>
                 </Col>
               }
-              <Col className='d-flex align-items-center justify-content-center'>
-                <Button color='secondary' className='w-100' name='recommend' onClick={handleClick}>
-                  {"Recommend"}
-                </Button>
-              </Col>
+              {!isDepartment &&
+                <Col className='d-flex align-items-center justify-content-center'>
+                  <Button color='secondary' className='w-100' name='recommend' onClick={handleClick}>
+                    {"Recommend"}
+                  </Button>
+                </Col>
+              }
               <Col className='d-flex align-items-center justify-content-center'>
                 <Button color='danger' className='w-100' name='reject' onClick={handleClick}>
                   {"Reject"}
@@ -590,7 +587,6 @@ const ApproveDecline = ({ request, toggleParent }) => {
                           ))}
                         </tr>
                       ))}
-
                     </tbody>
                   </Table>
                 </div>

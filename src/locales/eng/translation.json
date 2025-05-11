@@ -1565,7 +1565,6 @@
 	"prj_start_year": "Start Year",
 	"prj_end_year": "End Year",
 	"prj_location_description": "Specific Site",
-
 	"Feb": "Feb",
 	"Mar": "Mar",
 	"Apr": "Apr",
@@ -1583,7 +1582,7 @@
 	"Q3": "Quarter 3",
 	"Q4": "Quarter 4",
 	"Sum": "Sum",
-	"pct_parent_id":"Sector Category",
+	"pct_parent_id": "Sector Category",
 	"project_financial_report": "Financial Report One",
 	"project_financial_report2": "Financial Report Two",
 	"project_financial_report3": "Financial Report Three",
@@ -1624,5 +1623,9 @@
 	"rqf_recommended_by": "Recommended By",
 	"bdr_physical_planned": "Physical Planned",
 	"bdr_financial_baseline": "Financial Baseline",
-	"bdr_physical_baseline": "Physical Baseline"
+	"bdr_physical_baseline": "Physical Baseline",
+	"bdr_physical_recommended": "Physical Recommended",
+	"bdr_financial_recommended": "Financial Recommended",
+	"bdr_physical_approved": "Physical Approved",
+	"rqf_recommended_physical": "Recommended Physical"
 }
