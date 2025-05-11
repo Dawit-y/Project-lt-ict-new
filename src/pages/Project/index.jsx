@@ -255,8 +255,8 @@ const ProjectModel = () => {
         t("prj_location_woreda_id")
       ),
       //prj_department_id: Yup.string().required(t("prj_department_id")),
-      prj_urban_ben_number: numberValidation(10, 10000000, false),
-      prj_rural_ben_number: numberValidation(10, 10000000, false),
+      prj_urban_ben_number: numberValidation(0, 10000000, false),
+      prj_rural_ben_number: numberValidation(0, 10000000, false),
       prj_location_description: alphanumericValidation(3, 425, false),
       //prj_outcome: alphanumericValidation(3, 425, true),
       prj_remark: alphanumericValidation(3, 425, false),
@@ -893,13 +893,14 @@ const ProjectModel = () => {
                   placeholder={t("prj_urban_ben_number")}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
-                  value={validation.values.prj_urban_ben_number || ""}
+                  value={validation.values.prj_urban_ben_number ?? ""}
                   invalid={
                     validation.touched.prj_urban_ben_number &&
                       validation.errors.prj_urban_ben_number
                       ? true
                       : false
                   }
+                  min={0}
                 />
                 {validation.touched.prj_urban_ben_number &&
                   validation.errors.prj_urban_ben_number ? (
@@ -916,13 +917,14 @@ const ProjectModel = () => {
                   placeholder={t("prj_rural_ben_number")}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
-                  value={validation.values.prj_rural_ben_number || ""}
+                  value={validation.values.prj_rural_ben_number ?? ""}
                   invalid={
                     validation.touched.prj_rural_ben_number &&
                       validation.errors.prj_rural_ben_number
                       ? true
                       : false
                   }
+                  min={0}
                 />
                 {validation.touched.prj_rural_ben_number &&
                   validation.errors.prj_rural_ben_number ? (
@@ -931,7 +933,19 @@ const ProjectModel = () => {
                   </FormFeedback>
                 ) : null}
               </Col>
-              <Col className="col-md-4 mb-3">
+              <Col className="col-md-2 mb-3">
+                <Label>{t("Total Beneficiaries")}</Label>
+                <Input
+                  type="number"
+                  readOnly
+                  value={
+                    (Number(validation.values.prj_urban_ben_number) || 0) +
+                    (Number(validation.values.prj_rural_ben_number) || 0)
+                  }
+                  className="bg-light"
+                />
+              </Col>
+              <Col className="col-md-3 mb-3">
                 <Label>{t("prj_measurement_unit")}</Label>
                 <Input
                   name="prj_measurement_unit"
@@ -954,7 +968,7 @@ const ProjectModel = () => {
                   </FormFeedback>
                 ) : null}
               </Col>
-              <Col className="col-md-4 mb-3">
+              <Col className="col-md-3 mb-3">
                 <FormattedAmountField
                   validation={validation}
                   fieldId={"prj_measured_figure"}
