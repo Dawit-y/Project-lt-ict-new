@@ -477,6 +477,7 @@ const ProjectModel = () => {
   };
 
   const handleProjectClicks = () => {
+    validation.resetForm()
     setIsEdit(false);
     setProject("");
     toggle();

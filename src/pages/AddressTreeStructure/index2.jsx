@@ -198,7 +198,7 @@ function RowActions({ row, toggleForm, toggleDelete, setSelectedRow }) {
           Edit
         </UncontrolledTooltip>
       </Button>
-
+      {/* 
       <Button
         onClick={() => {
           setSelectedRow(row.original)
@@ -217,7 +217,7 @@ function RowActions({ row, toggleForm, toggleDelete, setSelectedRow }) {
         <UncontrolledTooltip placement="top" target="deletetooltip">
           Delete
         </UncontrolledTooltip>
-      </Button>
+      </Button> */}
     </div>
   )
 }
