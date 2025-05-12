@@ -66,8 +66,12 @@ const LazyLoader = ({ children }) => (
 
 const ProjectPerformanceModel = (props) => {
   document.title = "Project Performance";
-  const { passedId, isActive, startDate } = props;
-  const param = { prp_project_id: passedId, request_type: "single" };
+  const { passedId, isActive, startDate, totalActualBudget } = props;
+  const param = {
+    prp_project_id: passedId,
+    request_type: "single",
+    prj_total_actual_budget: totalActualBudget,
+  };
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
 
@@ -177,6 +181,7 @@ const ProjectPerformanceModel = (props) => {
     enableReinitialize: true,
     initialValues: {
       prp_project_id: passedId,
+      prj_total_actual_budget: totalActualBudget,
       prp_project_status_id: projectPerformance?.prp_project_status_id || "1",
       prp_budget_year_id: projectPerformance?.prp_budget_year_id || "",
       prp_budget_month_id:
@@ -266,7 +271,6 @@ const ProjectPerformanceModel = (props) => {
         [`prp_finan_actual_month_${i + 1}`]: isActual
           ? formattedAmountValidation(0, 10000000000, true)
           : Yup.string().notRequired(),
-
         [`prp_status_month_${i + 1}`]: isActual
           ? Yup.number().test(
               "status-validation",
@@ -281,21 +285,106 @@ const ProjectPerformanceModel = (props) => {
                   this.parent[`prp_finan_actual_month_${i + 1}`] || "0"
                 );
 
-                // When both are 0: allow empty or status=5 only
                 if (physicalActual === 0 && financialActual === 0) {
                   return !value || value === 5;
                 }
-
-                // When any actual > 0: status becomes required
-                if (physicalActual > 0 || financialActual > 0) {
-                  return !!value;
-                }
-
-                return true;
+                return !!value;
               }
             )
           : Yup.number().notRequired(),
       })).reduce((acc, curr) => ({ ...acc, ...curr })),
+
+      // Physical Baseline validation
+      prp_physical_baseline: Yup.string().test(
+        "physical-baseline-range",
+        t("Physical baseline must be between 0 and 100"),
+        function (value) {
+          const numValue = convertToNumericValue(value || "0");
+          return numValue >= 0 && numValue <= 100;
+        }
+      ),
+
+      // Budget Baseline validation
+      prp_budget_baseline: Yup.string().test(
+        "budget-baseline-range",
+        t("Budget baseline must be a positive number"),
+        function (value) {
+          const numValue = convertToNumericValue(value || "0");
+          return numValue >= 0;
+        }
+      ),
+
+      // Add new form-level validation fields for the sums
+      _sumPhysicalPlanned: Yup.string().when([], {
+        is: () => isPlanned,
+        then: () =>
+          Yup.string().test("sum-physical-planned", function () {
+            const sum = Array.from({ length: 12 }, (_, i) =>
+              convertToNumericValue(
+                this.parent[`prp_pyhsical_planned_month_${i + 1}`] || "0"
+              )
+            ).reduce((a, b) => a + b, 0);
+
+            if (sum > 100) {
+              return this.createError({
+                message: t(
+                  `Sum of physical planned values (${sum}%) exceeds 100%`
+                ),
+              });
+            }
+            return true;
+          }),
+      }),
+
+      _sumFinancialPlanned: Yup.string().when([], {
+        is: () => isPlanned,
+        then: () =>
+          Yup.string().test("sum-financial-planned", function () {
+            const sum = Array.from({ length: 12 }, (_, i) =>
+              convertToNumericValue(
+                this.parent[`prp_finan_planned_month_${i + 1}`] || "0"
+              )
+            ).reduce((a, b) => a + b, 0);
+            const totalBudget = convertToNumericValue(totalActualBudget || "0");
+
+            if (totalBudget <= 0) {
+              return this.createError({
+                message: t("Total project budget is not available or invalid"),
+              });
+            }
+
+            if (sum > totalBudget) {
+              return this.createError({
+                message: t(
+                  `Sum of financial planned values (${sum.toLocaleString()}) exceeds total project budget (${totalBudget.toLocaleString()})`
+                ),
+              });
+            }
+            return true;
+          }),
+      }),
+
+      _sumPhysicalActual: Yup.string().when([], {
+        is: () => isActual,
+        then: () =>
+          Yup.string().test("sum-physical-actual", function () {
+            const sum = Array.from({ length: 12 }, (_, i) =>
+              convertToNumericValue(
+                this.parent[`prp_pyhsical_actual_month_${i + 1}`] || "0"
+              )
+            ).reduce((a, b) => a + b, 0);
+
+            if (sum > 100) {
+              return this.createError({
+                message: t(
+                  `Sum of physical actual values (${sum}%) exceeds 100%`
+                ),
+              });
+            }
+            return true;
+          }),
+      }),
+
       prp_description: Yup.string().notRequired(),
 
       prp_budget_year_id: Yup.number()
@@ -304,23 +393,22 @@ const ProjectPerformanceModel = (props) => {
           "unique-year",
           t("This year already has an entry. Please select a different year."),
           function (value) {
-            // Use this.parent to access other form values if needed
             return validateUniqueYear(value);
           }
         ),
 
-      prp_physical_baseline: formattedAmountValidation(0, 100, true),
-      prp_budget_baseline: formattedAmountValidation(0, 10000000000, true),
-
       is_new_actual_entry: Yup.boolean(),
-      prp_record_date_gc: Yup.date().when("is_new_actual_entry", {
-        is: true,
-        then: (schema) =>
-          schema
-            .required(t("Entry date is required for new actual entries"))
-            .max(new Date(), t("Entry date cannot be in the future")),
-        otherwise: (schema) => schema.notRequired(),
-      }),
+
+      prp_record_date_gc: Yup.date()
+        .when("is_new_actual_entry", {
+          is: true,
+          then: (schema) =>
+            schema
+              .required(t("Entry date is required for new actual entries"))
+              .max(new Date(), t("Entry date cannot be in the future")),
+          otherwise: (schema) => schema.notRequired(),
+        })
+        .nullable(),
     }),
 
     validateOnBlur: true,
@@ -329,6 +417,7 @@ const ProjectPerformanceModel = (props) => {
     onSubmit: (values) => {
       const payload = {
         prp_project_id: passedId,
+        prj_total_actual_budget: totalActualBudget,
         prp_project_status_id: "1",
         prp_budget_year_id: values.prp_budget_year_id,
         prp_budget_month_id: DEFAULT_MONTH,
@@ -479,6 +568,7 @@ const ProjectPerformanceModel = (props) => {
       data.prp_record_date_gc !== new Date().toISOString().split("T")[0];
     const values = {
       prp_project_id: passedId,
+      prj_total_actual_budget: totalActualBudget,
       prp_project_status_id: "1",
       prp_budget_year_id: data.prp_budget_year_id,
       prp_budget_month_id: DEFAULT_MONTH,
@@ -557,6 +647,7 @@ const ProjectPerformanceModel = (props) => {
         enableSorting: true,
         cell: (cellProps) => cellProps.row.original.prp_record_date_gc || "-",
       },
+
       // Create quarter columns based on custom definitions
       ...quarterDefinitions
         .map((quarterMonths, quarterIndex) => [
@@ -852,6 +943,10 @@ const ProjectPerformanceModel = (props) => {
             <Card className="mt-3 border-light shadow-sm">
               <CardHeader className="bg-light">
                 <h5 className="mb-0">{t("Baseline Values")}</h5>
+                <small className="text-muted">
+                  {t("Total Project Budget")}:{" "}
+                  {Number(totalActualBudget).toLocaleString()}
+                </small>
               </CardHeader>
               <CardBody>
                 <Row>
@@ -974,6 +1069,86 @@ const ProjectPerformanceModel = (props) => {
                 )
               )}
             </Nav>
+
+            <Card className="mt-3 border-light shadow-sm">
+              <CardHeader className="bg-light">
+                <h6 className="mb-0">{t("Budget Summary")}</h6>
+              </CardHeader>
+              <CardBody>
+                <Row>
+                  <Col md={4}>
+                    <div className="d-flex justify-content-between">
+                      <span className="fw-medium">
+                        {t("Total Physical Planned You Entered")}:
+                      </span>
+                      <span>
+                        {Array.from({ length: 12 }, (_, i) =>
+                          convertToNumericValue(
+                            validation.values[
+                              `prp_pyhsical_planned_month_${i + 1}`
+                            ] || "0"
+                          )
+                        ).reduce((a, b) => a + b, 0)}
+                        %
+                      </span>
+                    </div>
+                    {validation.errors._sumPhysicalPlanned && (
+                      <div className="text-danger small mt-1">
+                        {validation.errors._sumPhysicalPlanned}
+                      </div>
+                    )}
+                  </Col>
+
+                  <Col md={4}>
+                    <div className="d-flex justify-content-between">
+                      <span className="fw-medium">
+                        {t("Total Financial Planned You Entered")}:
+                      </span>
+                      <span>
+                        {Array.from({ length: 12 }, (_, i) =>
+                          convertToNumericValue(
+                            validation.values[
+                              `prp_finan_planned_month_${i + 1}`
+                            ] || "0"
+                          )
+                        )
+                          .reduce((a, b) => a + b, 0)
+                          .toLocaleString()}{" "}
+                        Birr
+                      </span>
+                    </div>
+                    {validation.errors._sumFinancialPlanned && (
+                      <div className="text-danger small mt-1">
+                        {validation.errors._sumFinancialPlanned}
+                      </div>
+                    )}
+                  </Col>
+
+                  <Col md={4}>
+                    <div className="d-flex justify-content-between">
+                      <span className="fw-medium">
+                        {t("Total Physical Actual You Entered")}:
+                      </span>
+                      <span>
+                        {Array.from({ length: 12 }, (_, i) =>
+                          convertToNumericValue(
+                            validation.values[
+                              `prp_pyhsical_actual_month_${i + 1}`
+                            ] || "0"
+                          )
+                        ).reduce((a, b) => a + b, 0)}
+                        %
+                      </span>
+                    </div>
+                    {validation.errors._sumPhysicalActual && (
+                      <div className="text-danger small mt-1">
+                        {validation.errors._sumPhysicalActual}
+                      </div>
+                    )}
+                  </Col>
+                </Row>
+              </CardBody>
+            </Card>
 
             {/* Quarterly Input Groups */}
             <TabContent activeTab={activeTab}>

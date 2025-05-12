@@ -58,19 +58,26 @@ export const formatDateHyphen = (date) => {
   return `${year}-${month}-${day}`;
 };
 
-export const convertToNumericValue = (amount) => {
-  if (!amount || typeof amount !== "string") {
-    console.warn("Invalid input: Amount must be a non-empty string");
-    return null;
-  }
+// export const convertToNumericValue = (amount) => {
+//   if (!amount || typeof amount !== "string") {
+//     console.warn("Invalid input: Amount must be a non-empty string");
+//     return null;
+//   }
 
-  const numericAmount = Number(amount.replace(/,/g, ""));
-  if (isNaN(numericAmount)) {
-    console.error("Invalid number input:", amount);
-    return null;
-  }
+//   const numericAmount = Number(amount.replace(/,/g, ""));
+//   if (isNaN(numericAmount)) {
+//     console.error("Invalid number input:", amount);
+//     return null;
+//   }
 
-  return numericAmount;
+//   return numericAmount;
+// };
+
+export const convertToNumericValue = (value) => {
+  if (value === null || value === undefined || value === "") return 0;
+  // Remove any formatting (commas, currency symbols, etc.)
+  const numericString = String(value).replace(/[^0-9.-]/g, "");
+  return parseFloat(numericString) || 0;
 };
 
 export const calculatePercentage = (value, total) => {

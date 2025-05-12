@@ -29,9 +29,10 @@ const LazyComponents = {
   ProjectVariationModel: lazy(() => import("../../Projectvariation")),
   ProposalRequestModel: lazy(() => import("../../../pages/Proposalrequest")),
   Conversation: lazy(() => import("../../Conversationinformation/index1")),
-  ProjectMonitoringEvaluationModel: lazy(() => import("../../Projectmonitoringevaluation/index")),
+  ProjectMonitoringEvaluationModel: lazy(() =>
+    import("../../Projectmonitoringevaluation/index")
+  ),
   ProjectComponentModel: lazy(() => import("../../Projectcomponent/index")),
-
 
   RequestInformationModel: lazy(() =>
     import("../../../pages/Requestinformation")
@@ -222,6 +223,7 @@ const ProjectsOverview = () => {
                         canvasWidth={84}
                         name={data?.data.prj_name}
                         id={data?.data.prj_id}
+                        totalActualBudget={data?.data?.prj_total_actual_budget}
                         status={data?.data.prj_project_status_id}
                         startDate={data?.data.prj_start_date_gc}
                         components={dynamicComponents}

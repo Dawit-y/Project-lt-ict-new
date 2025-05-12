@@ -91,7 +91,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const [activeTab, setActiveTab] = useState("1");
+  const [activeTab, setActiveTab] = useState("2");
   const { data, isLoading, isFetching, error, isError, refetch } =
     useFetchProjectMonitoringEvaluations(param, isActive);
   const [fileModal, setFileModal] = useState(false);
@@ -946,17 +946,6 @@ const ProjectMonitoringEvaluationModel = (props) => {
                 >
                   <NavItem>
                     <NavLink
-                      className={classnames({ active: activeTab === "1" })}
-                      onClick={() => {
-                        toggleTab("1");
-                      }}
-                    >
-                      <i className="mdi mdi-map-marker-radius me-1"></i>
-                      {t("woreda_level")}
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
                       className={classnames({ active: activeTab === "2" })}
                       onClick={() => {
                         toggleTab("2");
@@ -977,36 +966,21 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       {t("zonal_level")}
                     </NavLink>
                   </NavItem>
+                  <NavItem>
+                    <NavLink
+                      className={classnames({ active: activeTab === "1" })}
+                      onClick={() => {
+                        toggleTab("1");
+                      }}
+                    >
+                      <i className="mdi mdi-map-marker-radius me-1"></i>
+                      {t("woreda_level")}
+                    </NavLink>
+                  </NavItem>
                 </Nav>
 
                 <TabContent activeTab={activeTab}>
-                  {/* Woreda Level Tab */}
-                  <TabPane tabId="1">
-                    <Row>
-                      <Col md={6}>
-                        <div className="border p-3 mb-3 rounded mt-3">
-                          <FormattedAmountField
-                            validation={validation}
-                            fieldId={"mne_physical"}
-                            isRequired={true}
-                            label={t("woreda_physical")}
-                          />
-                        </div>
-                      </Col>
-                      <Col md={6}>
-                        <div className="border p-3 mb-3 rounded mt-3">
-                          <FormattedAmountField
-                            validation={validation}
-                            fieldId={"mne_financial"}
-                            isRequired={true}
-                            label={t("woreda_financial")}
-                          />
-                        </div>
-                      </Col>
-                    </Row>
-                  </TabPane>
-
-                  {/* Region Level Tab */}
+                  {/* Region Level Tab - Now first */}
                   <TabPane tabId="2">
                     <Row>
                       <Col md={6}>
@@ -1032,7 +1006,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
                     </Row>
                   </TabPane>
 
-                  {/* Zone Level Tab */}
+                  {/* Zone Level Tab - Now second */}
                   <TabPane tabId="3">
                     <Row>
                       <Col md={6}>
@@ -1052,6 +1026,32 @@ const ProjectMonitoringEvaluationModel = (props) => {
                             fieldId={"mne_financial_zone"}
                             isRequired={true}
                             label={t("zonal_financial")}
+                          />
+                        </div>
+                      </Col>
+                    </Row>
+                  </TabPane>
+
+                  {/* Woreda Level Tab - Now third */}
+                  <TabPane tabId="1">
+                    <Row>
+                      <Col md={6}>
+                        <div className="border p-3 mb-3 rounded mt-3">
+                          <FormattedAmountField
+                            validation={validation}
+                            fieldId={"mne_physical"}
+                            isRequired={true}
+                            label={t("woreda_physical")}
+                          />
+                        </div>
+                      </Col>
+                      <Col md={6}>
+                        <div className="border p-3 mb-3 rounded mt-3">
+                          <FormattedAmountField
+                            validation={validation}
+                            fieldId={"mne_financial"}
+                            isRequired={true}
+                            label={t("woreda_financial")}
                           />
                         </div>
                       </Col>
