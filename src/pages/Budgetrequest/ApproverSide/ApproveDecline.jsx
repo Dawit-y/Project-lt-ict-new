@@ -532,17 +532,17 @@ const ApproveDecline = ({ request, toggleParent }) => {
         <CardBody>
           {isDepartmentLevel &&
             <Row className='w-50 mx-auto p-2 mb-3'>
-              {!isDirector &&
-                <Col className='d-flex align-items-center justify-content-center'>
-                  <Button color='success' className='w-100' name='approve' onClick={handleClick}>
-                    {"Approve"}
-                  </Button>
-                </Col>
-              }
               {!isDepartment &&
                 <Col className='d-flex align-items-center justify-content-center'>
                   <Button color='secondary' className='w-100' name='recommend' onClick={handleClick}>
                     {"Recommend"}
+                  </Button>
+                </Col>
+              }
+              {!isDirector &&
+                <Col className='d-flex align-items-center justify-content-center'>
+                  <Button color='success' className='w-100' name='approve' onClick={handleClick}>
+                    {"Approve"}
                   </Button>
                 </Col>
               }

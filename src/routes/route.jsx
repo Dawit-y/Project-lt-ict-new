@@ -4,6 +4,7 @@ import { authProtectedRoutes } from ".";
 import { Spinner } from "reactstrap";
 import { useFetchSideData } from "../queries/side_data_query";
 import { useAuthUser } from "../hooks/useAuthUser";
+import { useIsRestoring } from "@tanstack/react-query";
 
 // these are paths that are allowed if the user is authenticated
 const allowedPathsIfAuthenticated = [
@@ -33,6 +34,7 @@ function extractAuthPaths(routes) {
 }
 
 const AuthMiddleware = ({ children }) => {
+  const isRestoring = useIsRestoring();
   const location = useLocation();
   const currentPath = location.pathname;
 
@@ -55,7 +57,7 @@ const AuthMiddleware = ({ children }) => {
 
   const isAuthenticated = localStorage.getItem("authUser");
 
-  if (isLoading || authLoading) {
+  if (isRestoring || isLoading || authLoading) {
     return (
       <div
         style={{

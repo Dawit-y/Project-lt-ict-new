@@ -16,9 +16,8 @@ export const useFetchProjects = (param = {}) => {
     queryKey: [...PROJECT_QUERY_KEY, "fetch", param],
     queryFn: () => getProject(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 

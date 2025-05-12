@@ -14,9 +14,8 @@ export const useFetchRequestCategorys = () => {
     queryKey: REQUEST_CATEGORY_QUERY_KEY,
     queryFn: () => getRequestCategory(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 

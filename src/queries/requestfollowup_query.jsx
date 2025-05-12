@@ -14,9 +14,8 @@ export const useFetchRequestFollowups = () => {
     queryKey: REQUEST_FOLLOWUP_QUERY_KEY,
     queryFn: () => getRequestFollowup(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: false },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 

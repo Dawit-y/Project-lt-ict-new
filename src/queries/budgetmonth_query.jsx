@@ -14,9 +14,8 @@ export const useFetchBudgetMonths = () => {
     queryKey: BUDGET_MONTH_QUERY_KEY,
     queryFn: () => getBudgetMonth(),
     staleTime: 1000,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 
@@ -40,7 +39,7 @@ export const useAddBudgetMonth = () => {
   return useMutation({
     mutationFn: addBudgetMonth,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( BUDGET_MONTH_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(BUDGET_MONTH_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,

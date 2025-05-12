@@ -14,9 +14,8 @@ export const useFetchRequestStatuss = () => {
     queryKey: REQUEST_STATUS_QUERY_KEY,
     queryFn: () => getRequestStatus(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 

@@ -14,9 +14,7 @@ export const useFetchProjectSupplimentarys = (param = {}, isActive) => {
     queryKey: [...PROJECT_SUPPLIMENTARY_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectSupplimentary(param),
     staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 60,
-    meta: { persist: true },
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     refetchOnMount: true,
     enabled: isActive,
   });

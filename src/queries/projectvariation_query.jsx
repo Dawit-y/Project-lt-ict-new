@@ -14,8 +14,7 @@ export const useFetchProjectVariations = (param = {}, isActive) => {
     queryKey: [...PROJECT_VARIATION_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectVariation(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     refetchOnMount: true,
     enabled: isActive,
   });

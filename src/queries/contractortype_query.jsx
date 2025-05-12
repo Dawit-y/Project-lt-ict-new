@@ -14,9 +14,8 @@ export const useFetchContractorTypes = () => {
     queryKey: CONTRACTOR_TYPE_QUERY_KEY,
     queryFn: () => getContractorType(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 

@@ -13,13 +13,7 @@ export const useFetchProjectEmployees = (param = {}, isActive) => {
   return useQuery({
     queryKey: [...PROJECT_EMPLOYEE_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectEmployee(param),
-    /*staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    enabled: isActive,*/
-    staleTime: 0,
-    meta: { persist: true },
+    staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
     enabled: isActive,
