@@ -206,15 +206,7 @@ const ProjectModel = () => {
           );
         }
       ),
-      prj_code: alphanumericValidation(3, 20, true).test(
-        "unique-prj_code",
-        t("Already exists"),
-        (value) => {
-          return !data?.data.some(
-            (item) => item.prj_code == value && item.prj_id !== project?.prj_id
-          );
-        }
-      ),
+      prj_code: alphanumericValidation(3, 20, false),
       //prj_project_status_id: Yup.string().required(t('prj_project_status_id')),
       prj_project_category_id: numberValidation(1, 200, true),
       //prj_project_budget_source_id: Yup.string().required(t('prj_project_budget_source_id')),
@@ -404,6 +396,7 @@ const ProjectModel = () => {
   };
 
   const handleProjectsClicks = () => {
+    validation.resetForm()
     setIsEdit(false);
     setProject("");
     toggle();
@@ -416,7 +409,7 @@ const ProjectModel = () => {
     setDeleteModal(true);
   };
 
-  const activeTabName = currentActiveTab?.tab === 1 ? "program" : currentActiveTab?.tab === 2 ? "Activity" : "program"
+  const activeTabName = currentActiveTab?.tab === 2 ? "Program" : "Activity"
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
