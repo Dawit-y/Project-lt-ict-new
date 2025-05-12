@@ -84,7 +84,7 @@ const ProjectModel = () => {
 
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const { data, isLoading, error, isError, refetch } = useState(false);
-  const param={owner_type_id: "2"};
+  const param = { owner_type_id: "2" };
   const { data: projectCategoryData } = useSearchProjectCategorys(param);
   const {
     pct_name_en: projectCategoryOptionsEn,
@@ -484,9 +484,9 @@ const ProjectModel = () => {
       //prj_department_id: project.prj_department_id,
       is_deletable: project.is_deletable,
       is_editable: project.is_editable,
-          prj_male_participant: project.prj_male_participant,
-          prj_female_participant: project.prj_female_participant,
-          prj_job_opportunity: project.prj_job_opportunity
+      prj_male_participant: project.prj_male_participant,
+      prj_female_participant: project.prj_female_participant,
+      prj_job_opportunity: project.prj_job_opportunity
     });
     setIsEdit(true);
     toggle();
@@ -1062,6 +1062,7 @@ const ProjectModel = () => {
                           ? true
                           : false
                       }
+                      min={1}
                     />
                     {validation.touched.prj_urban_ben_number &&
                       validation.errors.prj_urban_ben_number ? (
@@ -1085,6 +1086,7 @@ const ProjectModel = () => {
                           ? true
                           : false
                       }
+                      min={1}
                     />
                     {validation.touched.prj_rural_ben_number &&
                       validation.errors.prj_rural_ben_number ? (
@@ -1116,7 +1118,7 @@ const ProjectModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                   <Col className="col-md-4 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>{t("prj_female_participant")}</Label>
                     <Input
                       name="prj_female_participant"

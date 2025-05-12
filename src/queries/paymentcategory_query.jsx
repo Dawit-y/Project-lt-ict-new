@@ -14,9 +14,9 @@ export const useFetchPaymentCategorys = () => {
     queryKey: PAYMENT_CATEGORY_QUERY_KEY,
     queryFn: () => getPaymentCategory(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
+    gcTime: 1000 * 60 * 6,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 //search payment_category
@@ -37,7 +37,7 @@ export const useAddPaymentCategory = () => {
   return useMutation({
     mutationFn: addPaymentCategory,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( PAYMENT_CATEGORY_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(PAYMENT_CATEGORY_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,

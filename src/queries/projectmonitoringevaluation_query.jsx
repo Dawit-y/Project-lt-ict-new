@@ -13,10 +13,9 @@ export const useFetchProjectMonitoringEvaluations = (param, isActive) => {
     queryKey: [...PROJECT_MONITORING_EVALUATION_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectMonitoringEvaluation(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    enabled: isActive
+    refetchOnMount: true,
+    enabled: isActive,
   });
 };
 

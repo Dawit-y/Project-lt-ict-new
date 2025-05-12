@@ -14,9 +14,8 @@ export const useFetchProjectStatuss = () => {
     queryKey: PROJECT_STATUS_QUERY_KEY,
     queryFn: () => getProjectStatus(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 
@@ -40,7 +39,7 @@ export const useAddProjectStatus = () => {
   return useMutation({
     mutationFn: addProjectStatus,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( PROJECT_STATUS_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(PROJECT_STATUS_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,

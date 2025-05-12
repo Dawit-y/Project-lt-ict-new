@@ -13,9 +13,9 @@ export const useFetchMonitoringEvaluationTypes = () => {
     queryKey: MONITORING_EVALUATION_TYPE_QUERY_KEY,
     queryFn: () => getMonitoringEvaluationType(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
+    gcTime: 1000 * 60 * 6,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 

@@ -16,9 +16,8 @@ export const useFetchProjectPerformances = (param = {}, isActive) => {
     queryFn: () => getProjectPerformance(param),
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
-    meta: { persist: false },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: isActive,
   });
 };

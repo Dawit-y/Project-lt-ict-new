@@ -3,6 +3,8 @@ import { Modal, ModalHeader, ModalBody, Button } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { publicRoutes } from "../../../routes/index";
+import { useQueryClient } from "@tanstack/react-query";
+
 
 // Create the context
 export const SessionTimeoutContext = createContext();
@@ -12,6 +14,8 @@ export const SessionTimeoutProvider = ({ children }) => {
   const [modal, setModal] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
+
 
   let inactivityTimeout;
 
@@ -21,6 +25,7 @@ export const SessionTimeoutProvider = ({ children }) => {
     setModal(true); // Show the modal
     // Clear the authentication token from localStorage to fully log out the user
     localStorage.removeItem("authUser");
+    queryClient.removeQueries({ queryKey: ["sideData"], exact: false });
   };
 
   // Start the inactivity timer
