@@ -1024,7 +1024,7 @@ const ProjectModel = () => {
                   <Col className="col-md-4 mb-3">
                     <DatePicker
                       isRequired={true}
-                      componentId={"prj_end_date_actual_gc"}
+                      componentId={"prj_start_date_gc"}
                       validation={validation}
                     />
                   </Col>

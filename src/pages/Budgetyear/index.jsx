@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useState, useCallback } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -38,8 +36,7 @@ import {
   Card,
   CardBody,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const truncateText = (text, maxLength) => {
@@ -48,6 +45,13 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
+
+function getCurrentEthiopianYear() {
+  const today = new Date();
+  const ethYear = today.getFullYear() - 8;
+  const month = today.getMonth() + 1;
+  return month >= 9 ? ethYear + 1 : ethYear;
+}
 
 const BudgetYearModel = React.memo(() => {
   document.title = "BudgetYear";
@@ -118,6 +122,41 @@ const BudgetYearModel = React.memo(() => {
     }
   }, [budgetYear, deleteBudgetYear, t]);
 
+  const minYear = 2010;
+  const maxYear = getCurrentEthiopianYear() + 1;
+
+  const validationSchema = Yup.object({
+    bdy_name: Yup.number()
+      .typeError("Budget year must be a number")
+      .required("Budget year is required")
+      .integer("Budget year must be an integer")
+      .test("len", "Budget year must be a 4-digit number", (val) => String(val).length === 4)
+      .min(minYear, `Budget year must be >= ${minYear}`)
+      .max(maxYear, `Budget year must not be beyond ${maxYear}`)
+      .test("unique-bdy_name", t("Already exists"), function (value) {
+        const existing = data?.data || [];
+        return !existing.some(
+          (item) =>
+            item.bdy_name === value &&
+            (!isEdit || item.bdy_id !== budgetYear?.bdy_id)
+        );
+      }),
+
+    bdy_code: Yup.string()
+      .max(10, "Code must be at most 10 characters")
+      .test("unique-bdy_code", t("Already exists"), function (value) {
+        if (!value) return true;
+        const existing = data?.data || [];
+        return !existing.some(
+          (item) =>
+            item.bdy_code === value &&
+            (!isEdit || item.bdy_id !== budgetYear?.bdy_id)
+        );
+      }),
+
+    bdy_description: alphanumericValidation(3, 425, false),
+  });
+
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -128,12 +167,9 @@ const BudgetYearModel = React.memo(() => {
       is_deletable: budgetYear?.is_deletable || 1,
       is_editable: budgetYear?.is_editable || 1,
     },
-    validationSchema: Yup.object({
-      bdy_name: numberValidation(2017, 2040, true),
-      bdy_description: alphanumericValidation(3, 425, false),
-    }),
+    validationSchema,
     validateOnBlur: true,
-    validateOnChange: false,
+    validateOnChange: true,
     onSubmit: (values) => {
       if (isEdit) {
         const updateBudgetYear = {
@@ -152,8 +188,6 @@ const BudgetYearModel = React.memo(() => {
           bdy_code: values.bdy_code,
           bdy_description: values.bdy_description,
           bdy_status: values.bdy_status ? 1 : 0,
-          is_deletable: 1,
-          is_editable: 1,
         };
         handleAddBudgetYear(newBudgetYear);
       }

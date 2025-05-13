@@ -52,17 +52,7 @@ export const useAddBudgetYear = () => {
   return useMutation({
     mutationFn: addBudgetYear,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( BUDGET_YEAR_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
-      });
+      queryClient.invalidateQueries({ queryKey: BUDGET_YEAR_QUERY_KEY })
     },
   });
 };
@@ -73,18 +63,7 @@ export const useUpdateBudgetYear = () => {
   return useMutation({
     mutationFn: updateBudgetYear,
     onSuccess: (updatedBudgetYear) => {
-      queryClient.setQueryData(BUDGET_YEAR_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-
-        return {
-          ...oldData,
-          data: oldData.data.map((BudgetYearData) =>
-            BudgetYearData.bdy_id === updatedBudgetYear.data.bdy_id
-              ? { ...BudgetYearData, ...updatedBudgetYear.data }
-              : BudgetYearData
-          ),
-        };
-      });
+      queryClient.invalidateQueries({ queryKey: BUDGET_YEAR_QUERY_KEY })
     },
   });
 };
@@ -95,15 +74,7 @@ export const useDeleteBudgetYear = () => {
   return useMutation({
     mutationFn: deleteBudgetYear,
     onSuccess: (deletedData) => {
-      queryClient.setQueryData(BUDGET_YEAR_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (BudgetYearData) => BudgetYearData.bdy_id !== parseInt(deletedData.deleted_id)
-          ),
-        };
-      });
+      queryClient.invalidateQueries({ queryKey: BUDGET_YEAR_QUERY_KEY })
     },
   });
 };
