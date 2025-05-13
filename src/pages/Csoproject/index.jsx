@@ -51,20 +51,23 @@ const ProjectModel = () => {
   const [project, setProject] = useState(null);
   const [currentActiveTab, setCurrentActiveTab] = useState({
     tab: 1,
-    selectedId: null
+    selectedId: null,
+    selectedCsoId: null
   });
 
-  const handleTabChange = (newTab, selectedId = null) => {
+  const handleTabChange = (newTab, selectedId = null, selectedCsoId) => {
     setCurrentActiveTab(prev => ({
       ...prev,
       tab: newTab,
-      selectedId: selectedId !== null ? selectedId : prev.selectedId
+      selectedId: selectedId !== null ? selectedId : prev.selectedId,
+      selectedCsoId: selectedCsoId !== null ? selectedCsoId : prev.selectedCsoId,
     }));
   };
 
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
   const userType = storedUser?.user?.usr_user_type
+  const csoId = storedUser?.user?.usr_owner_id
 
   const { data, isLoading, error, isError, refetch } =
     useFindProjects({ object_type_id: 1 }, true, userId);
@@ -267,13 +270,13 @@ const ProjectModel = () => {
           prj_deleted: values.prj_deleted,
           prj_remark: values.prj_remark,
           prj_created_date: values.prj_created_date,
-          prj_owner_id: values.prj_owner_id,
+          prj_owner_id: userType === 4 ? currentActiveTab.selectedCsoId : csoId,
           prj_urban_ben_number: values.prj_urban_ben_number,
           prj_rural_ben_number: values.prj_rural_ben_number,
           //prj_department_id: Number(values.prj_department_id),
           prj_program_id: 1,
-          parent_id: currentActiveTab?.tab === 1 ? 1 : currentActiveTab?.selectedId,
-          object_type_id: currentActiveTab?.tab === 1 ? 1 : 5,
+          parent_id: userType === 4 ? currentActiveTab?.tab === 2 ? 1 : currentActiveTab?.selectedId : currentActiveTab?.tab === 1 ? 1 : currentActiveTab?.selectedId,
+          object_type_id: userType === 4 ? currentActiveTab?.tab === 2 ? 1 : 5 : currentActiveTab?.tab === 1 ? 1 : 5,
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -313,20 +316,19 @@ const ProjectModel = () => {
           prj_deleted: values.prj_deleted,
           prj_remark: values.prj_remark,
           prj_created_date: values.prj_created_date,
-          prj_owner_id: values.prj_owner_id,
+          prj_owner_id: userType === 4 ? currentActiveTab.selectedCsoId : csoId,
           prj_urban_ben_number: values.prj_urban_ben_number,
           prj_rural_ben_number: values.prj_rural_ben_number,
           //prj_department_id: Number(values.prj_department_id),
           prj_program_id: 1,
-          parent_id: currentActiveTab?.tab === 1 ? 1 : currentActiveTab?.selectedId,
-          object_type_id: currentActiveTab?.tab === 1 ? 1 : 5,
+          parent_id: userType === 4 ? currentActiveTab?.tab === 2 ? 1 : currentActiveTab?.selectedId : currentActiveTab?.tab === 1 ? 1 : currentActiveTab?.selectedId,
+          object_type_id: userType === 4 ? currentActiveTab?.tab === 2 ? 1 : 5 : currentActiveTab?.tab === 1 ? 1 : 5,
         };
         // save new Project
         handleAddProject(newProject);
       }
     },
   });
-
   useEffect(() => {
     setProject(data);
   }, [data]);
@@ -409,7 +411,7 @@ const ProjectModel = () => {
     setDeleteModal(true);
   };
 
-  const activeTabName = currentActiveTab?.tab === 2 ? "Program" : "Activity"
+  const activeTabName = userType === 4 ? currentActiveTab?.tab === 2 ? "Program" : "Activity" : currentActiveTab?.tab === 1 ? "Program" : "Activity"
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;

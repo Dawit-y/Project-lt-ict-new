@@ -32,7 +32,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
   const [selectedProgramStatus, setSelectedProgramStatus] = useState(null);
 
   useEffect(() => {
-    handleTabChange(activeTab, selectedProgram)
+    handleTabChange(activeTab, selectedProgram, selectedCsoId)
   }, [activeTab, selectedProgram])
 
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
