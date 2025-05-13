@@ -226,6 +226,7 @@ const ProjectsOverview = () => {
                         id={data?.data.prj_id}
                         status={data?.data.prj_project_status_id}
                         startDate={data?.data.prj_start_date_gc}
+                        totalActualBudget={data?.data?.prj_total_actual_budget}
                         components={dynamicComponents}
                       />
                     </Suspense>

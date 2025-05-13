@@ -25,10 +25,10 @@ export const useSearchProjectKpiResults = (searchParams = {}) => {
     queryKey: [...PROJECT_KPI_RESULT_QUERY_KEY, searchParams],
     queryFn: () => getProjectKpiResult(searchParams),
     staleTime: 1000 * 60 * 2,
-    gcTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
+    //gcTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: true,
     refetchOnMount: false,
-    enabled: searchParams.length > 0,
+    enabled: false,
   });
 };
 // Add project_kpi_result

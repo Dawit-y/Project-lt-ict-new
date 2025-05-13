@@ -88,7 +88,7 @@ const ProjectModel = () => {
 
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const { data, isLoading, error, isError, refetch } = useState(false);
-  const param = { owner_type_id: "2" };
+  const param = { owner_type_id: "3" };
   const { data: projectCategoryData } = useSearchProjectCategorys(param);
   const {
     pct_name_en: projectCategoryOptionsEn,

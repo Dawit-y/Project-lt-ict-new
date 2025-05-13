@@ -346,7 +346,7 @@ const ProjectPerformanceModel = (props) => {
               )
             ).reduce((a, b) => a + b, 0);
             const totalBudget = convertToNumericValue(totalActualBudget || "0");
-
+console.log("amount "+ totalBudget);
             if (totalBudget <= 0) {
               return this.createError({
                 message: t("Total project budget is not available or invalid"),

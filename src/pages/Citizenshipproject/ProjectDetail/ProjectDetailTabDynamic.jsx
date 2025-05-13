@@ -7,6 +7,7 @@ const ProjectDetailTabDynamic = ({
   canvasWidth,
   name,
   id,
+  totalActualBudget,
   status = null,
   startDate = null,
   components
@@ -42,6 +43,7 @@ const ProjectDetailTabDynamic = ({
           passedId={id}
           isActive={true}
           projectName={name}
+          totalActualBudget={totalActualBudget}
           status={status}
           startDate={startDate}
         />
