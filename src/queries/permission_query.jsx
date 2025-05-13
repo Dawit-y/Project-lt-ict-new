@@ -18,9 +18,8 @@ export const useFetchPermissions = (param = {}, isActive) => {
     queryKey: [...PERMISSION_QUERY_KEY, "fetch", param],
     queryFn: () => getPermission(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: isActive,
   });
 };
@@ -30,9 +29,8 @@ export const useFetchRoleAssignedPermissions = (param = {}, isActive) => {
     queryKey: [...ROLE_ASSIGNED_PERMISSION_QUERY_KEY, "fetch", param],
     queryFn: () => getRoleAssignedPermission(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: isActive,
   });
 };
@@ -42,7 +40,7 @@ export const useFetchUserAssignedPermissions = (param = {}, isActive) => {
     queryKey: [...USER_ASSIGNED_PERMISSION_QUERY_KEY, "fetch", param],
     queryFn: () => getUserAssignedPermission(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
+
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     enabled: true,

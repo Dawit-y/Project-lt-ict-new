@@ -14,22 +14,21 @@ export const useFetchProjectCategorys = () => {
     queryKey: PROJECT_CATEGORY_QUERY_KEY,
     queryFn: () => getProjectCategory(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 
 //search project_category
-export const useSearchProjectCategorys = (searchParams = {}) => {  
+export const useSearchProjectCategorys = (searchParams = {}) => {
   return useQuery({
     queryKey: [...PROJECT_CATEGORY_QUERY_KEY, "search", searchParams],
     queryFn: () => getProjectCategory(searchParams),
-     staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 5,
     meta: { persist: false },
     refetchOnWindowFocus: true,
     refetchOnMount: true,
-    enabled: true,
+    enabled: Object.keys(searchParams).length > 0
   });
 };
 
@@ -40,7 +39,7 @@ export const useAddProjectCategory = () => {
   return useMutation({
     mutationFn: addProjectCategory,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( PROJECT_CATEGORY_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(PROJECT_CATEGORY_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,

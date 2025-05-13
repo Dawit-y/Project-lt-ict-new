@@ -14,9 +14,8 @@ export const useFetchSmsTemplates = () => {
     queryKey: SMS_TEMPLATE_QUERY_KEY,
     queryFn: () => getSmsTemplate(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 
@@ -40,7 +39,7 @@ export const useAddSmsTemplate = () => {
   return useMutation({
     mutationFn: addSmsTemplate,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( SMS_TEMPLATE_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(SMS_TEMPLATE_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,

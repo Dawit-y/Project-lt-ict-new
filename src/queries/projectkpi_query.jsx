@@ -13,9 +13,8 @@ export const useFetchProjectKpis = () => {
     queryKey: PROJECT_KPI_QUERY_KEY,
     queryFn: () => getProjectKpi(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 

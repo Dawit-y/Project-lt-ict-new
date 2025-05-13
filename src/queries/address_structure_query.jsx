@@ -13,9 +13,8 @@ export const useFetchAddressStructures = (userId) => {
     queryFn: () => getAddressStructure(),
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 6,
-    meta: { persist: true },
     select: (data) => buildTree(data?.data),
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
   });
 };

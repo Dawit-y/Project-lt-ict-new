@@ -14,9 +14,8 @@ export const useFetchAccessLogs = () => {
     queryKey: ACCESS_LOG_QUERY_KEY,
     queryFn: () => getAccessLog(),
     staleTime: 0,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 
@@ -26,7 +25,7 @@ export const useFetchAccessLogsByProps = (param = {}, isActive) => {
     queryFn: () => getAccessLog(param),
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: isActive,
   });
 };

@@ -14,10 +14,9 @@ export const useFetchProjectContractors = (param = {}, isActive) => {
     queryKey: [...PROJECT_CONTRACTOR_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectContractor(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-     enabled: isActive,
+    refetchOnMount: true,
+    enabled: isActive,
   });
 };
 
@@ -41,7 +40,7 @@ export const useAddProjectContractor = () => {
   return useMutation({
     mutationFn: addProjectContractor,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( PROJECT_CONTRACTOR_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(PROJECT_CONTRACTOR_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,

@@ -14,8 +14,7 @@ export const useFetchSectorInformations = (param = {}, isActive) => {
     queryKey: [...SECTOR_INFORMATION_QUERY_KEY, "fetch", param],
     queryFn: () => getSectorInformation(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     refetchOnMount: true,
     enabled: isActive,
   });

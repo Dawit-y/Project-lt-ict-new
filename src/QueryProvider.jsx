@@ -71,6 +71,7 @@ const QueryProvider = ({ children }) => {
         dehydrateOptions: {
           shouldDehydrateQuery: (query) => query.meta?.persist === true,
         },
+        buster: "1"
       }}
     >
       {children}

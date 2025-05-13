@@ -14,9 +14,8 @@ export const useFetchSectorCategorys = () => {
     queryKey: SECTOR_CATEGORY_QUERY_KEY,
     queryFn: () => getSectorCategory(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 
@@ -28,7 +27,7 @@ export const useSearchSectorCategorys = (searchParams = {}) => {
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: searchParams.length > 0,
   });
 };
@@ -40,7 +39,7 @@ export const useAddSectorCategory = () => {
   return useMutation({
     mutationFn: addSectorCategory,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( SECTOR_CATEGORY_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(SECTOR_CATEGORY_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,

@@ -27,7 +27,6 @@ export const useSearchOnlyProjects = (param = {}) => {
     queryKey: [...PROJECT_QUERY_KEY, "fetch", param],
     queryFn: () => getSearchProject(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });

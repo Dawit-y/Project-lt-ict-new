@@ -14,7 +14,6 @@ export const useFetchPagess = () => {
     queryKey: PAGES_QUERY_KEY,
     queryFn: () => getPages(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: true,
   });
@@ -40,7 +39,7 @@ export const useAddPages = () => {
   return useMutation({
     mutationFn: addPages,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( PAGES_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(PAGES_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,

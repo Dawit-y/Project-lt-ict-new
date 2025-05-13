@@ -15,8 +15,7 @@ export const useFetchProgramInfos = (param = {}, isActive) => {
     queryKey: [...PROGRAM_INFO_QUERY_KEY, "fetch", param],
     queryFn: () => getProgramInfo(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     refetchOnMount: true,
     enabled: isActive,
   });
@@ -28,8 +27,7 @@ export const useFetchProgramInfo = (id, isActive) => {
     queryKey: [...PROGRAM_INFO_QUERY_KEY, "detail"],
     queryFn: () => getSingleProgramInfo(id),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     refetchOnMount: true,
     enabled: isActive,
   });

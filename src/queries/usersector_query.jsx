@@ -15,9 +15,8 @@ export const useFetchUserSectors = (params = {}, isActive) => {
     queryKey: [...USER_SECTOR_QUERY_KEY, "fetch", params],
     queryFn: () => getUserSector(params),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: isActive
   });
 };

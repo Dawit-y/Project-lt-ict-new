@@ -13,9 +13,8 @@ export const useFetchProcurementMethods = () => {
     queryKey: PROCUREMENT_METHOD_QUERY_KEY,
     queryFn: () => getProcurementMethod(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 
@@ -27,7 +26,7 @@ export const useSearchProcurementMethods = (searchParams = {}) => {
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: searchParams.length > 0,
   });
 };
