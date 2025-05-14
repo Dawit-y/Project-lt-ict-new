@@ -18,20 +18,24 @@ const ProjectFinancialPerformanceTable = ({
     if (!searchTerm) return data;
     const lowerSearchTerm = searchTerm.toLowerCase();
     return data.filter((project) =>
-      (project.sector && project.sector.toLowerCase().includes(lowerSearchTerm)) ||
+      (project.sectorcategory && project.sectorcategory.toLowerCase().includes(lowerSearchTerm)) ||
       (project.prj_name && project.prj_name.toLowerCase().includes(lowerSearchTerm)) ||
-      (project.prj_code && project.prj_code.toLowerCase().includes(lowerSearchTerm))
+      (project.pct_name_or && project.pct_name_or.toLowerCase().includes(lowerSearchTerm))
     );
   }, [data, searchTerm]);
 
   const groupedData = useMemo(() => {
     if (!filteredData) return {};
     return filteredData.reduce((acc, project) => {
-      const sector = project.sector || t("Unknown Sector");
-      const projectKey = `${project.prj_code}_${project.prj_name}`;
-      if (!acc[sector]) acc[sector] = {};
-      if (!acc[sector][projectKey]) acc[sector][projectKey] = { entries: [] };
-      acc[sector][projectKey].entries.push(project);
+      const sectorcategory = project.sectorcategory || t("---");
+      const projectKey = `${project.prj_name}`;
+      const pctKey = `${project.pct_name_or}`;
+      
+      if (!acc[sectorcategory]) acc[sectorcategory] = {};
+      if (!acc[sectorcategory][projectKey]) acc[sectorcategory][projectKey] = {};
+      if (!acc[sectorcategory][projectKey][pctKey]) acc[sectorcategory][projectKey][pctKey] = { entries: [] };
+      
+      acc[sectorcategory][projectKey][pctKey].entries.push(project);
       return acc;
     }, {});
   }, [filteredData, t]);
@@ -39,29 +43,43 @@ const ProjectFinancialPerformanceTable = ({
   const allRows = useMemo(() => {
     const rows = [];
     let projectCounter = 1;
+    let pctCounter = 1;
 
-    Object.entries(groupedData || {}).forEach(([sectorName, projects]) => {
-      rows.push({ type: "sector", sectorName });
+    Object.entries(groupedData || {}).forEach(([sectorcategoryName, projects]) => {
+      rows.push({ type: "sectorcategory", sectorcategoryName });
 
-      Object.entries(projects || {}).forEach(([projectKey, projectData]) => {
-        const projectList = Array.isArray(projectData.entries) ? projectData.entries : [projectData];
-        const rowSpan = projectList.length;
+      Object.entries(projects || {}).forEach(([projectKey, pcts]) => {
+        const projectEntries = Object.values(pcts).flatMap(pct => pct.entries);
+        const projectRowSpan = projectEntries.length;
 
-        const commonValues = {
-          prj_code: projectList[0]?.prj_code || " ",
-          prj_name: projectList[0]?.prj_name || " ",
-          prj_measured_figure: projectList[0]?.prj_measured_figure || " ",
-          rowSpan,
+        const projectCommonValues = {
+          prj_name: projectEntries[0]?.prj_name || " ",
+          rowSpan: projectRowSpan,
         };
 
-        projectList.forEach((proj, index) => {
-          rows.push({
-            type: "project",
-            ...proj,
-            projectSN: index === 0 ? projectCounter : null,
-            showMergedCells: index === 0,
-            commonValues,
+        Object.entries(pcts || {}).forEach(([pctKey, pctData]) => {
+          const pctList = Array.isArray(pctData.entries) ? pctData.entries : [pctData];
+          const pctRowSpan = pctList.length;
+
+          const pctCommonValues = {
+            pct_name_or: pctList[0]?.pct_name_or || " ",
+            rowSpan: pctRowSpan,
+          };
+
+          pctList.forEach((proj, index) => {
+            rows.push({
+              type: "project",
+              ...proj,
+              projectSN: index === 0 ? projectCounter : null,
+              pctSN: index === 0 ? pctCounter : null,
+              showProjectCells: index === 0,
+              showPctCells: index === 0,
+              projectCommonValues,
+              pctCommonValues,
+            });
           });
+
+          pctCounter++;
         });
 
         projectCounter++;
@@ -124,23 +142,32 @@ const ProjectFinancialPerformanceTable = ({
             border-right: 3px solid #ffc107;
           }
         `}</style>
-        <ExportToExcel tableId="financial-projects-table" filename="ProjectFinancialPerformanceTable" />
-         <table id="financial-projects-table" className={`table table-bordered table-hover ${tableClass}`}
-         style={{ width: "100%", fontSize: "0.85rem", minWidth: "1000px" }}>
-
-         <thead className={theadClass} style={{ position: "sticky", top: 0, backgroundColor: "#f8f9fa", zIndex: 1 }}>
+        <ExportToExcel tableId="projects-plan_table" filename="ProjectPlanTable" />
+        <table 
+          id="projects-plan_table" 
+          className={`table table-bordered table-hover ${tableClass}`}
+          style={{ width: "100%", fontSize: "0.85rem", minWidth: "1000px" }}
+        >
+          <thead className={theadClass} style={{ position: "sticky", top: 0, backgroundColor: "#f8f9fa", zIndex: 1 }}>
+             <tr>
+              <th colSpan="2"></th> 
+              <th>Gosa Hojii</th> 
+              <th colSpan="4"></th> 
+               <th colSpan="18">{t("Plan")}</th>
+            </tr>
             <tr>
               <th rowSpan="2">{t("SN")}</th>
-              <th rowSpan="2">{t("prj_code")}</th>
               <th rowSpan="2">{t("prj_name")}</th>
+              <th rowSpan="2">{t("")}</th>
               <th rowSpan="2">{t("prj_measurement_unit")}</th>
+              <th rowSpan="2">{t("KPI")}</th>
               <th rowSpan="2">{t("prp_budget_year_id")}</th>
-              <th rowSpan="2">{t("prp_physical_baseline")}</th>
-              <th rowSpan="2">{t("prp_physical_planned")}</th>
+              <th rowSpan="2">{t("Plan")}</th>
               <th colSpan="4">{t("Q1")}</th>
               <th colSpan="4">{t("Q2")}</th>
               <th colSpan="4">{t("Q3")}</th>
               <th colSpan="4">{t("Q4")}</th>
+              <th colSpan="2">{t("kpr_description")}</th>
             </tr>
             <tr>
               <th>{t("Sep")}</th>
@@ -159,67 +186,83 @@ const ProjectFinancialPerformanceTable = ({
               <th>{t("Jul")}</th>
               <th>{t("Aug")}</th>
               <th>{t("Sum")}</th>
+              <th></th>
             </tr>
           </thead>
 
           <tbody>
             {currentRows.length > 0 ? (
               currentRows.map((row, index) => {
-                if (row.type === "sector") {
+                if (row.type === "sectorcategory") {
                   return (
-                    <tr key={`sector-${row.sectorName}`} style={{ backgroundColor: "#e8f4f0", fontWeight: "bold", fontSize: "0.9rem" }}>
-                      <td colSpan="24">{row.sectorName}</td>
+                    <tr key={`sectorcategory-${row.sectorcategoryName}`} style={{ backgroundColor: "#e8f4f0", fontWeight: "bold", fontSize: "0.9rem" }}>
+                      <td colSpan="25">{row.sectorcategoryName}</td>
                     </tr>
                   );
                 }
 
                 const hasNoProjectName = !row.prj_name || row.prj_name.trim() === "";
+                const hasNoPctName = !row.pct_name_or || row.pct_name_or.trim() === "";
 
                 return (
-                  <tr key={row.id || index} className={hasNoProjectName ? "no-project-name" : ""} style={{ textAlign: "center" }}>
-                    {row.showMergedCells && (
+                  <tr 
+                    key={row.id || index} 
+                    className={`${hasNoProjectName ? "no-project-name" : ""} ${hasNoPctName ? "no-pct-name" : ""}`} 
+                    style={{ textAlign: "center" }}
+                  >
+                    {row.showProjectCells && (
                       <>
-                        <td rowSpan={row.commonValues.rowSpan}>{row.projectSN}</td>
-                        <td rowSpan={row.commonValues.rowSpan}><b>{row.commonValues.prj_code}</b></td>
-                        <td rowSpan={row.commonValues.rowSpan}>
+                        <td rowSpan={row.projectCommonValues.rowSpan}>{row.projectSN}</td>
+                        <td rowSpan={row.projectCommonValues.rowSpan}>
                           <b>
-                            {row.commonValues.prj_name || (
+                            {row.projectCommonValues.prj_name || (
                               <span style={{ color: "#6c757d", fontStyle: "italic" }}>{t("Unnamed Project")}</span>
                             )}
                           </b>
                         </td>
-                        <td rowSpan={row.commonValues.rowSpan}>{row.commonValues.prj_measurement_unit}</td>
                       </>
                     )}
+                    {row.showPctCells && (
+                      <td rowSpan={row.pctCommonValues.rowSpan}>
+                        <b>
+                          {row.pctCommonValues.pct_name_or || (
+                            <span style={{ color: "#6c757d", fontStyle: "italic" }}>{t("Unnamed PCT")}</span>
+                          )}
+                        </b>
+                      </td>
+                    )}
+                    <td>{row.kpi_unit_measurement}</td>
+                    <td>{row.kpi_name_or}</td>
                     <td>{row.budgetyear}</td>
-                    <td>{row.prp_physical_baseline}</td>
-                    <td>{row.prp_physical_planned}</td>
-                    
-                    <td>{row.prp_finan_planned_month_1 || " "}</td>
-                    <td>{row.prp_finan_planned_month_2 || " "}</td>
-                    <td>{row.prp_finan_planned_month_3 || " "}</td>
-                    <td><strong>{row.quarter1total || " "}</strong></td>
-                    
-                    <td>{row.prp_finan_planned_month_4 || " "}</td>
-                    <td>{row.prp_finan_planned_month_5 || " "}</td>
-                    <td>{row.prp_finan_planned_month_6 || " "}</td>
-                    <td><strong>{row.quarter2total || " "}</strong></td>
-                    
-                    <td>{row.prp_finan_planned_month_7 || " "}</td>
-                    <td>{row.prp_finan_planned_month_8 || " "}</td>
-                    <td>{row.prp_finan_planned_month_9 || " "}</td>
-                    <td><strong>{row.quarter3total || " "}</strong></td>
-                    
-                    <td>{row.prp_finan_planned_month_10 || " "}</td>
-                    <td>{row.prp_finan_planned_month_11 || " "}</td>
-                    <td>{row.prp_finan_planned_month_12 || " "}</td>
-                    <td><strong>{row.quarter4total || " "}</strong></td>
+                   <td><strong>{Number(row.totalplan)?.toLocaleString() || " "}</strong></td>
+
+                   <td>{Number(row.kpr_planned_month_1)?.toLocaleString() || " "}</td>
+                  <td>{Number(row.kpr_planned_month_2)?.toLocaleString() || " "}</td>
+                  <td>{Number(row.kpr_planned_month_3)?.toLocaleString() || " "}</td>
+                  <td><strong>{Number(row.quarter1total)?.toLocaleString() || " "}</strong></td>
+
+                  <td>{Number(row.kpr_planned_month_4)?.toLocaleString() || " "}</td>
+                  <td>{Number(row.kpr_planned_month_5)?.toLocaleString() || " "}</td>
+                  <td>{Number(row.kpr_planned_month_6)?.toLocaleString() || " "}</td>
+                  <td><strong>{Number(row.quarter2total)?.toLocaleString() || " "}</strong></td>
+
+                  <td>{Number(row.kpr_planned_month_7)?.toLocaleString() || " "}</td>
+                  <td>{Number(row.kpr_planned_month_8)?.toLocaleString() || " "}</td>
+                  <td>{Number(row.kpr_planned_month_9)?.toLocaleString() || " "}</td>
+                  <td><strong>{Number(row.quarter3total)?.toLocaleString() || " "}</strong></td>
+
+                  <td>{Number(row.kpr_planned_month_10)?.toLocaleString() || " "}</td>
+                  <td>{Number(row.kpr_planned_month_11)?.toLocaleString() || " "}</td>
+                  <td>{Number(row.kpr_planned_month_12)?.toLocaleString() || " "}</td>
+                  <td><strong>{Number(row.quarter4total)?.toLocaleString() || " "}</strong></td>
+                  <td>{row.kpr_description}</td>
+
                   </tr>
                 );
               })
             ) : (
               <tr>
-                <td colSpan="24" style={{ textAlign: "center", padding: "2rem" }}>
+                <td colSpan="25" style={{ textAlign: "center", padding: "2rem" }}>
                   {searchTerm
                     ? t("No projects match your search criteria.")
                     : t("No data available. Please select related Address Structure and click Search button.")}

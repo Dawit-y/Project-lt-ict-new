@@ -19,7 +19,8 @@ import FinancialProjectsTable2 from "../Report/ProjectFinanicialReportsTable2";
 import FinancialProjectsTable3 from "../Report/ProjectFinanicialReportsTable3";
 import ProjectPhysicalPerformanceReportsTable from "../Report/ProjectPhysicalPerformanceReportsTable";
 import ProjectFinancialPerformanceReportsTable from "../Report/ProjectFinancialPerformanceReportsTable";
-
+import ProjectPlanTable from "../Report/ProjectPlanTable";
+ 
 import ProjectEmployeeReportsTable from "../Report/ProjectEmployeeReportsTable";
 import ProjectsBudgetPlanTable from "../Report/ProjectsBudgetPlanTable";
 import ProjectsBudgetExpenditureTable from "../Report/ProjectsBudgetExpenditureTable";
@@ -28,6 +29,8 @@ import ProjectsContractorTable from "../Report/ProjectsContractorTable";
 import ProjectsPaymentTable from "../Report/ProjectsPaymentTable";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
+import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
+import { useFetchSectorCategorys } from "../../queries/sectorcategory_query";
 import { useFetchContractorTypes } from "../../queries/contractortype_query";
 import { createSelectOptions } from "../../utils/commonMethods";
 
@@ -54,6 +57,7 @@ const Report = () => {
     { name: "project_financial_report3", url: "uuuu" },
     { name: "project_physical_performance_report", url: "uuuu" },
     { name: "project_financial_performance_report", url: "uuuu" },
+    { name: "project_plan_report", url: "uuuu" },
 
   ]);
 
@@ -94,6 +98,20 @@ const { data: sectorInformationData } = useFetchSectorInformations();
     contractorTypeData?.data || [],
     "cnt_id",
     "cnt_type_name_or"
+  );
+
+  const { data: projectCategoryData } = useFetchProjectCategorys();
+  const projectCategoryOptions = createSelectOptions(
+    projectCategoryData?.data || [],
+    "pct_id",
+    "pct_name_or"
+  );
+
+  const { data: sectorCategoryData } = useFetchSectorCategorys();
+  const sectorCategoryOptions = createSelectOptions(
+    sectorCategoryData?.data || [],
+    "psc_id",
+    "psc_name"
   );
   
   const endpointConfigs = {
@@ -215,6 +233,10 @@ const { data: sectorInformationData } = useFetchSectorInformations();
           key: "bdr_budget_year_id",
           options: budgetYearOptions,
         },
+        {
+          key: "prj_sector_id",
+          options: sectorInformationOptions,
+        },
       ],
       reportTypeIndex: 8,
     },
@@ -228,6 +250,10 @@ const { data: sectorInformationData } = useFetchSectorInformations();
         {
           key: "bdr_budget_year_id",
           options: budgetYearOptions,
+        },
+        {
+          key: "prj_sector_id",
+          options: sectorInformationOptions,
         },
       ],
       reportTypeIndex: 9,
@@ -243,6 +269,11 @@ const { data: sectorInformationData } = useFetchSectorInformations();
           key: "bdr_budget_year_id",
           options: budgetYearOptions,
         },
+
+         {
+          key: "prj_sector_id",
+          options: sectorInformationOptions,
+        },
       ],
       reportTypeIndex: 10,
     },
@@ -256,6 +287,10 @@ project_physical_performance_report: {
         {
           key: "prp_budget_year_id",
           options: budgetYearOptions,
+        },
+         {
+          key: "prj_sector_id",
+          options: sectorInformationOptions,
         },
       ],
       reportTypeIndex: 11,
@@ -271,8 +306,38 @@ project_financial_performance_report: {
           key: "prp_budget_year_id",
           options: budgetYearOptions,
         },
+         {
+          key: "prj_sector_id",
+          options: sectorInformationOptions,
+        },
       ],
       reportTypeIndex: 12,
+    },
+
+    project_plan_report: {
+      locationParams: {
+        region: "prj_location_region_id",
+        zone: "prj_location_zone_id",
+        woreda: "prj_location_woreda_id",
+      },
+      dropdownSearchKeys: [
+        {
+          key: "prp_budget_year_id",
+          options: budgetYearOptions,
+        },
+
+         {
+          key: "prj_project_category_id",
+          options: projectCategoryOptions,
+        },
+
+         {
+          key: "sector_category",
+          options: sectorCategoryOptions,
+        },
+         
+      ],
+      reportTypeIndex: 13,
     },
 
   };
@@ -583,6 +648,18 @@ project_financial_performance_report: {
 
                         {ReportTypeId === 12 && (
                         <ProjectFinancialPerformanceReportsTable
+                          data={searchResults}
+                          isGlobalFilter
+                          SearchPlaceholder={t("filter_placeholder")}
+                          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                          theadClass="table-light"
+                          t={t}
+                        />
+                      )}
+
+                        {ReportTypeId === 13 && (
+                        <ProjectPlanTable
                           data={searchResults}
                           isGlobalFilter
                           SearchPlaceholder={t("filter_placeholder")}
