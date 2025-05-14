@@ -153,7 +153,7 @@ export const dropdownValidation = (minLength, maxLength, isRequired = true) => {
 
 export const websiteUrlValidation = (required = false) => {
   let schema = Yup.string().matches(
-    /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
+    /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/i,
     "Invalid website URL"
   );
 
@@ -163,6 +163,7 @@ export const websiteUrlValidation = (required = false) => {
 
   return schema;
 };
+
 export const emailValidation = (isRequired = true) => {
   const { t } = useTranslation();
 

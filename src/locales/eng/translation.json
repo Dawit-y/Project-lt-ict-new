@@ -1393,5 +1393,9 @@
 	"prj_sub_project_category_id": "Project Sub Category",
 	"prj_job_opportunity": "Job Opportunity",
 	"prj_assigned_sectors": "Assigned Sectors",
-	"cso_proposal_request_list": "CSO Proposal Request List"
+	"cso_proposal_request_list": "CSO Proposal Request List",
+	"prj_funding_agency": "Funding Agency",
+	"prj_consortium_members": "Consortium Members",
+	"prj_admin_cost": "Admin Cost",
+	"prj_program_cost": "Program Cost"
 }

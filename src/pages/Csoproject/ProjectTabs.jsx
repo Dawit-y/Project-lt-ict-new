@@ -310,7 +310,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
                     onClick={() => setActiveTab(1)}
                     disabled={!passedSteps.includes(1)}
                   >
-                    <span className="number">1.</span> Programs
+                    <span className="number">1.</span> Projects
                   </NavLink>
                 </NavItem>
                 <NavItem className={classnames({ current: activeTab === 2 })}>
@@ -351,7 +351,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
                       isPagination
                       SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={`${t("add")} ${t("program")}`}
+                      buttonName={`${t("add")} ${t("project")}`}
                       tableClass="table-sm align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"

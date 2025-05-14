@@ -394,7 +394,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
                     onClick={() => setActiveTab(2)}
                     disabled={!passedSteps.includes(2)}
                   >
-                    <span className="number">2.</span> Programs
+                    <span className="number">2.</span> Projects
                   </NavLink>
                 </NavItem>
                 <NavItem className={classnames({ current: activeTab === 3 })}>
@@ -445,7 +445,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
                 <TabPane tabId={2}>
                   {programName && (
                     <h5 className="mb-3 text-primary">
-                      {t("Selected program")}: {programName}
+                      {t("Selected project")}: {programName}
                     </h5>
                   )}
                   <Suspense fallback={<div>Loading...</div>}>
@@ -459,7 +459,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
                       isPagination
                       SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={`${t("add")} ${t("program")}`}
+                      buttonName={`${t("add")} ${t("project")}`}
                       tableClass="table-sm align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
@@ -473,7 +473,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
                 <TabPane tabId={3}>
                   {programName && (
                     <h5 className="mb-3 text-primary">
-                      {t("Activities for the program")}: {programName}
+                      {t("Activities for the project")}: {programName}
                     </h5>
                   )}
                   <Suspense fallback={<div>Loading...</div>}>
@@ -501,7 +501,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
                 <TabPane tabId={4}>
                   {programName && (
                     <h5 className="mb-3 text-primary">
-                      {t("Proposal request for the program")}: {programName}
+                      {t("Proposal request for the project")}: {programName}
                     </h5>
                   )}
                   <Suspense fallback={<div>Loading...</div>}>

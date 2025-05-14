@@ -477,7 +477,7 @@ const CsoInfoModel = () => {
               >
                 <Row>
                   <Col className='col-md-6 mb-3'>
-                    <Label>{t('cso_name')}</Label>
+                    <Label>{t('cso_name')}<span className="text-danger">*</span></Label>
                     <Input
                       name='cso_name'
                       type='text'
@@ -500,7 +500,7 @@ const CsoInfoModel = () => {
                     ) : null}
                   </Col>
                   <Col className='col-md-6 mb-3'>
-                    <Label>{t('cso_code')}</Label>
+                    <Label>{t('cso_code')}<span className="text-danger">*</span></Label>
                     <Input
                       name='cso_code'
                       type='text'
@@ -523,7 +523,7 @@ const CsoInfoModel = () => {
                     ) : null}
                   </Col>
                   <Col className='col-md-6 mb-3'>
-                    <Label>{t('cso_address')}</Label>
+                    <Label>{t('cso_address')}<span className="text-danger">*</span></Label>
                     <Input
                       name='cso_address'
                       type='text'
@@ -581,7 +581,7 @@ const CsoInfoModel = () => {
                     </InputGroup>
                   </Col>
                   <Col className='col-md-6 mb-3'>
-                    <Label>{t('cso_email')}</Label>
+                    <Label>{t('cso_email')}<span className="text-danger">*</span></Label>
                     <Input
                       name='cso_email'
                       type='text'
@@ -604,11 +604,11 @@ const CsoInfoModel = () => {
                     ) : null}
                   </Col>
                   <Col className='col-md-6 mb-3'>
-                    <Label>{t('cso_website')}</Label>
+                    <Label>{t('cso_website')}<span className="text-danger">*</span></Label>
                     <Input
                       name='cso_website'
                       type='text'
-                      placeholder={t('cso_website')}
+                      placeholder={t('www.example.com')}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.cso_website || ''}

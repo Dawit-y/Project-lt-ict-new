@@ -42,6 +42,18 @@ import DatePicker from "../../components/Common/DatePicker";
 import ProjectTabs from "./ProjectTabs";
 import RegionProjectTab from "./RegionProjectTab"
 
+const addMonths = (date, months) => {
+  const newDate = new Date(date);
+  newDate.setMonth(newDate.getMonth() + months);
+  return newDate;
+};
+
+const addYears = (date, years) => {
+  const newDate = new Date(date);
+  newDate.setFullYear(newDate.getFullYear() + years);
+  return newDate;
+};
+
 const ProjectModel = () => {
   document.title = "CSO Projects";
   const { t, i18n } = useTranslation();
@@ -183,32 +195,9 @@ const ProjectModel = () => {
     },
 
     validationSchema: Yup.object({
-      prj_name: alphanumericValidation(3, 200, true).test(
-        "unique-prj_name",
-        t("Already exists"),
-        (value) => {
-          return !data?.data.some(
-            (item) => item.prj_name == value && item.prj_id !== project?.prj_id
-          );
-        }
-      ),
-      prj_name_am: onlyAmharicValidation(3, 200, true)
-        .test("unique-prj_name_am", t("Already exists"), (value) => {
-          return !data?.data.some(
-            (item) =>
-              item.prj_name_am == value && item.prj_id !== project?.prj_id
-          );
-        }),
-      prj_name_en: alphanumericValidation(3, 200, true).test(
-        "unique-prj_name_en",
-        t("Already exists"),
-        (value) => {
-          return !data?.data.some(
-            (item) =>
-              item.prj_name_en == value && item.prj_id !== project?.prj_id
-          );
-        }
-      ),
+      prj_name: alphanumericValidation(3, 200, true),
+      prj_name_am: onlyAmharicValidation(3, 200, true),
+      prj_name_en: alphanumericValidation(3, 200, true),
       prj_code: alphanumericValidation(3, 20, false),
       //prj_project_status_id: Yup.string().required(t('prj_project_status_id')),
       prj_project_category_id: numberValidation(1, 200, true),
@@ -226,8 +215,8 @@ const ProjectModel = () => {
         t("prj_location_woreda_id")
       ),
       //prj_department_id: Yup.string().required(t("prj_department_id")),
-      prj_urban_ben_number: numberValidation(10, 10000000, false),
-      prj_rural_ben_number: numberValidation(10, 10000000, false),
+      prj_urban_ben_number: numberValidation(0, 10000000, false),
+      prj_rural_ben_number: numberValidation(0, 10000000, false),
       prj_location_description: alphanumericValidation(3, 425, false),
       //prj_outcome: alphanumericValidation(3, 425, true),
       prj_remark: alphanumericValidation(3, 425, false),
@@ -411,7 +400,15 @@ const ProjectModel = () => {
     setDeleteModal(true);
   };
 
-  const activeTabName = userType === 4 ? currentActiveTab?.tab === 2 ? "Program" : "Activity" : currentActiveTab?.tab === 1 ? "Program" : "Activity"
+  const activeTabName = userType === 4 ? currentActiveTab?.tab === 2 ? "Project" : "Activity" : currentActiveTab?.tab === 1 ? "Project" : "Activity"
+
+  const rawStartDate = validation.values.prj_start_date_plan_gc;
+  const startDate = rawStartDate
+    ? new Date(rawStartDate.replace(/\//g, "-"))
+    : null;
+
+  const minEndDate = startDate ? addMonths(startDate, 1) : null;
+  const maxEndDate = startDate ? addYears(startDate, 5) : null;
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -503,7 +500,10 @@ const ProjectModel = () => {
                     name="prj_name"
                     type="text"
                     placeholder={t("prj_name")}
-                    onChange={validation.handleChange}
+                    onChange={(e) => {
+                      validation.handleChange(e);
+                      validation.setFieldValue("prj_name_en", e.target.value);
+                    }}
                     onBlur={validation.handleBlur}
                     value={validation.values.prj_name || ""}
                     invalid={
@@ -722,7 +722,9 @@ const ProjectModel = () => {
                     isRequired={true}
                     componentId={"prj_end_date_plan_gc"}
                     validation={validation}
-                    minDate={validation.values.prj_start_date_plan_gc} />
+                    minDate={minEndDate}
+                    maxDate={maxEndDate}
+                  />
                 </Col>
                 <Col className="col-md-4 mb-3">
                   <Label>{t("prj_urban_ben_number")}</Label>
@@ -732,13 +734,14 @@ const ProjectModel = () => {
                     placeholder={t("prj_urban_ben_number")}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
-                    value={validation.values.prj_urban_ben_number || ""}
+                    value={validation.values.prj_urban_ben_number ?? ""}
                     invalid={
                       validation.touched.prj_urban_ben_number &&
                         validation.errors.prj_urban_ben_number
                         ? true
                         : false
                     }
+                    min={0}
                   />
                   {validation.touched.prj_urban_ben_number &&
                     validation.errors.prj_urban_ben_number ? (
@@ -755,13 +758,14 @@ const ProjectModel = () => {
                     placeholder={t("prj_rural_ben_number")}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
-                    value={validation.values.prj_rural_ben_number || ""}
+                    value={validation.values.prj_rural_ben_number ?? ""}
                     invalid={
                       validation.touched.prj_rural_ben_number &&
                         validation.errors.prj_rural_ben_number
                         ? true
                         : false
                     }
+                    min={0}
                   />
                   {validation.touched.prj_rural_ben_number &&
                     validation.errors.prj_rural_ben_number ? (

@@ -61,11 +61,11 @@ const ProjectsOverview = () => {
     //70: { label: t("proposal_request"), component: LazyComponents.BudgetRequestModel, path: "proposal_request" },
     61: { label: t("project_plan"), component: LazyComponents.ProjectPlanModel, path: "project_plan" },
     59: { label: t("request_information"), component: LazyComponents.RequestInformationModel, path: "information" },
-     72: {
-        label: t("project_monitoring_evaluation"),
-        component: LazyComponents.ProjectMonitoringEvaluationModel,
-        path: "project_monitoring_evaluation",
-      },
+    72: {
+      label: t("project_monitoring_evaluation"),
+      component: LazyComponents.ProjectMonitoringEvaluationModel,
+      path: "project_monitoring_evaluation",
+    },
   }), [t]);
 
   // Allowed tabs based on project data

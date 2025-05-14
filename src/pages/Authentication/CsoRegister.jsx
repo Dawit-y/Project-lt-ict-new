@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { post } from "../../helpers/api_Lists";
 import {
   Row,
@@ -47,6 +47,7 @@ const CsoRegister = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [csoInfo] = useState("");
   const { t } = useTranslation();
+  const navigate = useNavigate()
 
   const togglePasswordVisibility = () =>
     setShowPassword((prevState) => !prevState);
@@ -65,6 +66,7 @@ const CsoRegister = () => {
       await addCsoInfo.mutateAsync(data);
       toast.success(t("add_success"), { autoClose: 2000 });
       validation.resetForm();
+      navigate("/login")
     } catch {
       toast.error(t("add_failure"), { autoClose: 2000 });
     }

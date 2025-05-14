@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, Suspense, lazy  } from "react";
+import React, { useEffect, useMemo, useState, Suspense, lazy } from "react";
 import PropTypes, { number } from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty } from "lodash";
@@ -89,7 +89,7 @@ const ProjectPerformanceModel = (props) => {
   const addProjectPerformance = useAddProjectPerformance();
   const updateProjectPerformance = useUpdateProjectPerformance();
   const deleteProjectPerformance = useDeleteProjectPerformance();
-   const [fileModal, setFileModal] = useState(false);
+  const [fileModal, setFileModal] = useState(false);
   const [convModal, setConvModal] = useState(false);
   //START CRUD
   const handleAddProjectPerformance = async (data) => {
@@ -195,7 +195,7 @@ const ProjectPerformanceModel = (props) => {
           );
         }
       ),
-      prp_budget_year_id: numberValidation(1, 20, true),
+      prp_budget_year_id: Yup.number().required(t("prp_budget_year_id")),
       prp_budget_month_id: numberValidation(1, 20, true).test(
         "unique-month-id",
         t("Already exists."),
@@ -311,7 +311,7 @@ const ProjectPerformanceModel = (props) => {
   });
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
-   const toggleFileModal = () => setFileModal(!fileModal);
+  const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
   const budgetYearMap = useMemo(() => {
     return (
@@ -329,8 +329,8 @@ const ProjectPerformanceModel = (props) => {
           lang === "en"
             ? project_status.prs_status_name_en
             : lang === "am"
-            ? project_status.prs_status_name_am
-            : project_status.prs_status_name_or;
+              ? project_status.prs_status_name_am
+              : project_status.prs_status_name_or;
         return acc;
       }, {}) || {}
     );
@@ -671,8 +671,8 @@ const ProjectPerformanceModel = (props) => {
   }
   return (
     <React.Fragment>
-<LazyLoader>
-    {fileModal && (
+      <LazyLoader>
+        {fileModal && (
           <AttachFileModal
             isOpen={fileModal}
             toggle={toggleFileModal}
@@ -688,14 +688,14 @@ const ProjectPerformanceModel = (props) => {
             ownerId={transaction?.prp_id ?? null}
           />)}
 
-      <ProjectPerformanceModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-        budgetYearMap={budgetYearMap}
-        budgetMonthMap={budgetMonthMap}
-        projectStatusMap={projectStatusMap}
-      />
+        <ProjectPerformanceModal
+          isOpen={modal1}
+          toggle={toggleViewModal}
+          transaction={transaction}
+          budgetYearMap={budgetYearMap}
+          budgetMonthMap={budgetMonthMap}
+          projectStatusMap={projectStatusMap}
+        />
       </LazyLoader>
       <DynamicDetailsModal
         isOpen={modal1}
@@ -787,7 +787,7 @@ const ProjectPerformanceModel = (props) => {
                       value={validation.values.prp_budget_year_id || ""}
                       invalid={
                         validation.touched.prp_budget_year_id &&
-                        validation.errors.prp_budget_year_id
+                          validation.errors.prp_budget_year_id
                           ? true
                           : false
                       }
@@ -801,7 +801,7 @@ const ProjectPerformanceModel = (props) => {
                       ))}
                     </Input>
                     {validation.touched.prp_budget_year_id &&
-                    validation.errors.prp_budget_year_id ? (
+                      validation.errors.prp_budget_year_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_budget_year_id}
                       </FormFeedback>
@@ -821,7 +821,7 @@ const ProjectPerformanceModel = (props) => {
                       value={validation.values.prp_budget_month_id || ""}
                       invalid={
                         validation.touched.prp_budget_month_id &&
-                        validation.errors.prp_budget_month_id
+                          validation.errors.prp_budget_month_id
                           ? true
                           : false
                       }
@@ -835,7 +835,7 @@ const ProjectPerformanceModel = (props) => {
                       ))}
                     </Input>
                     {validation.touched.prp_budget_month_id &&
-                    validation.errors.prp_budget_month_id ? (
+                      validation.errors.prp_budget_month_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_budget_month_id}
                       </FormFeedback>
@@ -855,7 +855,7 @@ const ProjectPerformanceModel = (props) => {
                       value={validation.values.prp_project_status_id || ""}
                       invalid={
                         validation.touched.prp_project_status_id &&
-                        validation.errors.prp_project_status_id
+                          validation.errors.prp_project_status_id
                           ? true
                           : false
                       }
@@ -866,13 +866,13 @@ const ProjectPerformanceModel = (props) => {
                           {lang === "en"
                             ? data.prs_status_name_en
                             : lang === "am"
-                            ? data.prs_status_name_am
-                            : data.prs_status_name_or}
+                              ? data.prs_status_name_am
+                              : data.prs_status_name_or}
                         </option>
                       ))}
                     </Input>
                     {validation.touched.prp_project_status_id &&
-                    validation.errors.prp_project_status_id ? (
+                      validation.errors.prp_project_status_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_project_status_id}
                       </FormFeedback>
@@ -908,14 +908,14 @@ const ProjectPerformanceModel = (props) => {
                       value={validation.values.prp_physical_performance || ""}
                       invalid={
                         validation.touched.prp_physical_performance &&
-                        validation.errors.prp_physical_performance
+                          validation.errors.prp_physical_performance
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prp_physical_performance &&
-                    validation.errors.prp_physical_performance ? (
+                      validation.errors.prp_physical_performance ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_physical_performance}
                       </FormFeedback>
@@ -982,14 +982,14 @@ const ProjectPerformanceModel = (props) => {
                       value={validation.values.prp_description || ""}
                       invalid={
                         validation.touched.prp_description &&
-                        validation.errors.prp_description
+                          validation.errors.prp_description
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prp_description &&
-                    validation.errors.prp_description ? (
+                      validation.errors.prp_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prp_description}
                       </FormFeedback>
@@ -1000,7 +1000,7 @@ const ProjectPerformanceModel = (props) => {
                   <Col>
                     <div className="text-end">
                       {addProjectPerformance.isPending ||
-                      updateProjectPerformance.isPending ? (
+                        updateProjectPerformance.isPending ? (
                         <Button
                           color="success"
                           type="submit"
