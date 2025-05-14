@@ -210,7 +210,7 @@ const TreeTableContainer = ({ data, columns, setData }) => {
             </thead>
             <tbody>
               {table.getRowModel().rows.map(row => (
-                <MemoizedDraggableRow
+                <DraggableRow
                   key={row.id}
                   row={row}
                   isDraggable={row.original.level === 'woreda'}
