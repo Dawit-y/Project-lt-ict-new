@@ -25,7 +25,7 @@ import { useUpdateAddressStructures } from '../../queries/address_structure_quer
 import { toast } from 'react-toastify';
 import { FaArrowsUpDownLeftRight } from 'react-icons/fa6';
 
-const TreeTableContainer = ({ data, columns, setData }) => {
+const TreeTableContainer = ({ data, columns, setData, refetch }) => {
   const [expanded, setExpanded] = useState({});
   const [confirmModal, setConfirmModal] = useState(false);
   const [dragInfo, setDragInfo] = useState(null);
@@ -108,12 +108,7 @@ const TreeTableContainer = ({ data, columns, setData }) => {
     if (!dragInfo) return;
 
     try {
-      await handleUpdateFolder({
-        id: dragInfo.woreda.id,
-        rootId: dragInfo.newZone.id
-      });
-
-      // Optimistic UI update
+      // Optimistic update
       setData(prevData => {
         const newData = JSON.parse(JSON.stringify(prevData));
 
@@ -133,8 +128,18 @@ const TreeTableContainer = ({ data, columns, setData }) => {
 
         return newData;
       });
+
+      // Perform the actual update
+      await handleUpdateFolder({
+        id: dragInfo.woreda.id,
+        rootId: dragInfo.newZone.id
+      });
+
+      // Refetch to ensure data consistency
+      await refetch();
     } catch (error) {
-      // Error already handled in handleUpdateFolder
+      // If there's an error, refetch to revert optimistic update
+      await refetch();
     } finally {
       setConfirmModal(false);
       setDragInfo(null);
@@ -210,7 +215,7 @@ const TreeTableContainer = ({ data, columns, setData }) => {
             </thead>
             <tbody>
               {table.getRowModel().rows.map(row => (
-                <DraggableRow
+                <MemoizedDraggableRow
                   key={row.id}
                   row={row}
                   isDraggable={row.original.level === 'woreda'}
@@ -342,7 +347,9 @@ const areEqual = (prevProps, nextProps) => {
     prevProps.row.id === nextProps.row.id &&
     prevProps.isDraggable === nextProps.isDraggable &&
     prevProps.isDroppable === nextProps.isDroppable &&
-    prevProps.row.original === nextProps.row.original
+    prevProps.row.original === nextProps.row.original &&
+    prevProps.row.getIsExpanded() === nextProps.row.getIsExpanded() &&
+    prevProps.row.getToggleExpandedHandler() === nextProps.row.getToggleExpandedHandler()
   );
 };
 

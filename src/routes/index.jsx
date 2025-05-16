@@ -14,7 +14,7 @@ const ProjectsTreeView = lazy(() => import("../pages/ProjectStatusTree/index"));
 const Logout = lazy(() => import("../pages/Authentication/Logout"));
 
 const AddressStructure = lazy(() =>
-  import("../pages/AddressTreeStructure/index2.jsx")
+  import("../pages/AddressTreeStructure/index.jsx")
 );
 const DocumentType = lazy(() => import("../pages/Documenttype/index"));
 const Project = lazy(() => import("../pages/Project/index"));
