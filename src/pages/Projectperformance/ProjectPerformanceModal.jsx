@@ -26,21 +26,29 @@ const ProjectPerformanceModal = ({
 
   if (!transaction) return null;
 
-  // Month names with translation support
-  const monthNames = {
-    1: t("January"),
-    2: t("February"),
-    3: t("March"),
-    4: t("April"),
-    5: t("May"),
-    6: t("June"),
-    7: t("July"),
-    8: t("August"),
-    9: t("September"),
-    10: t("October"),
-    11: t("November"),
-    12: t("December"),
+  // Ethiopian months in order (Hamle to Sene)
+  const ETHIOPIAN_MONTHS = {
+    1: t("Meskerem"), // September 6 - October 5
+    2: t("Tikimt"), // October 6 - November 4
+    3: t("Hidar"), // November 5 - December 4
+    4: t("Tahesas"), // December 5 - January 3
+    5: t("Tir"), // January 4 - February 2
+    6: t("Yekatit"), // February 3 - March 4
+    7: t("Megabit"), // March 5 - April 3
+    8: t("Miyazya"), // April 4 - May 3
+    9: t("Ginbot"), // May 4 - June 2
+    10: t("Sene"), // June 3 - July 7
+    11: t("Hamle"), // July 8 - August 6
+    12: t("Nehase"), // August 7 - September 5
   };
+
+  // Ethiopian quarters (aligned with fiscal year)
+  const ETHIOPIAN_QUARTERS = [
+    [11, 12, 1], // Q1: Hamle, Nehase, Meskerem (Jul-Sep)
+    [2, 3, 4], // Q2: Tikimt, Hidar, Tahesas (Oct-Dec)
+    [5, 6, 7], // Q3: Tir, Yekatit, Megabit (Jan-Mar)
+    [8, 9, 10], // Q4: Miyazya, Ginbot, Sene (Apr-Jun)
+  ];
 
   const formatValue = (value, isPercentage = false, isCurrency = false) => {
     if (value === null || value === undefined) return "-";
@@ -60,7 +68,7 @@ const ProjectPerformanceModal = ({
     return numValue.toLocaleString();
   };
 
-  // Prepare monthly data
+  // Prepare monthly data with Ethiopian month names
   const monthlyData = Array.from({ length: 12 }, (_, i) => {
     const month = i + 1;
     const plannedPhysical =
@@ -74,8 +82,8 @@ const ProjectPerformanceModal = ({
 
     return {
       month,
-      monthName: monthNames[month],
-      monthShortName: monthNames[month]?.substring(0, 3),
+      monthName: ETHIOPIAN_MONTHS[month],
+      monthShortName: ETHIOPIAN_MONTHS[month]?.substring(0, 3),
       plannedPhysical,
       actualPhysical,
       physicalVariance: actualPhysical - plannedPhysical,
@@ -92,19 +100,17 @@ const ProjectPerformanceModal = ({
     };
   });
 
-  // Calculate quarterly summaries
-  const quarters = [1, 2, 3, 4].map((qNum) => {
-    const monthRange = [
-      [11, 12, 1], // Q1 (Nov, Dec, Jan)
-      [2, 3, 4], // Q2
-      [5, 6, 7], // Q3
-      [8, 9, 10], // Q4
-    ][qNum - 1];
+  // Reordered for display (Hamle to Sene)
+  const displayMonthlyData = [11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(
+    (month) => monthlyData.find((m) => m.month === month)
+  );
 
-    const quarterMonths = monthlyData.filter((m) =>
-      monthRange.includes(m.month)
+  // Calculate quarterly summaries using Ethiopian fiscal quarters
+  const quarters = ETHIOPIAN_QUARTERS.map((quarterMonths, qNum) => {
+    const quarterData = monthlyData.filter((m) =>
+      quarterMonths.includes(m.month)
     );
-    const totals = quarterMonths.reduce(
+    const totals = quarterData.reduce(
       (acc, m) => ({
         plannedPhysical: acc.plannedPhysical + m.plannedPhysical,
         actualPhysical: acc.actualPhysical + m.actualPhysical,
@@ -120,8 +126,8 @@ const ProjectPerformanceModal = ({
     );
 
     return {
-      name: `Q${qNum}`,
-      months: monthRange,
+      name: `Q${qNum + 1}`,
+      months: quarterMonths,
       ...totals,
       physicalVariance: totals.actualPhysical - totals.plannedPhysical,
       financialVariance: totals.actualFinancial - totals.plannedFinancial,
@@ -136,8 +142,16 @@ const ProjectPerformanceModal = ({
     };
   });
 
-  // Annual summary
+  // Annual summary (fixed calculation for average)
   const annualSummary = {
+    TotalPhysicalPlanned: monthlyData.reduce(
+      (sum, m) => sum + m.plannedPhysical,
+      0
+    ),
+    TotalPhysicalActual: monthlyData.reduce(
+      (sum, m) => sum + m.actualPhysical,
+      0
+    ),
     avgPhysicalPlanned:
       monthlyData.reduce((sum, m) => sum + m.plannedPhysical, 0) / 12,
     avgPhysicalActual:
@@ -203,13 +217,13 @@ const ProjectPerformanceModal = ({
                   format: true,
                 },
                 {
-                  label: t("Planned Avg"),
-                  value: annualSummary.avgPhysicalPlanned,
+                  label: t("Total Planned"),
+                  value: annualSummary.TotalPhysicalPlanned,
                   format: true,
                 },
                 {
-                  label: t("Actual Avg"),
-                  value: annualSummary.avgPhysicalActual,
+                  label: t("Total Actual"),
+                  value: annualSummary.TotalPhysicalActual,
                   format: true,
                 },
               ],
@@ -350,7 +364,9 @@ const ProjectPerformanceModal = ({
                     <div className="d-flex justify-content-between align-items-center">
                       <h6 className="mb-0 text-dark">{q.name}</h6>
                       <span className="badge bg-primary bg-opacity-10 text-primary">
-                        {q.months.map((m) => monthNames[m]?.charAt(0)).join("")}
+                        {q.months
+                          .map((m) => ETHIOPIAN_MONTHS[m]?.charAt(0))
+                          .join("")}
                       </span>
                     </div>
                   </CardHeader>
@@ -361,11 +377,15 @@ const ProjectPerformanceModal = ({
                       </div>
                       <div className="d-flex justify-content-between align-items-end">
                         <div>
-                          <div className="text-muted small">{t("Planned")}</div>
+                          <div className="text-muted small">
+                            {t("Avg.Planned")}
+                          </div>
                           <div>{formatValue(q.plannedPhysical / 3, true)}</div>
                         </div>
                         <div className="text-end">
-                          <div className="text-muted small">{t("Actual")}</div>
+                          <div className="text-muted small">
+                            {t("Avg.Actual")}
+                          </div>
                           <div className={physicalColor}>
                             {formatValue(q.actualPhysical / 3, true)}
                           </div>
@@ -378,7 +398,7 @@ const ProjectPerformanceModal = ({
                           </div>
                           <div className={physicalColor}>
                             {q.physicalVariance > 0 ? "+" : ""}
-                            {formatValue(q.physicalVariance, true)}
+                            {formatValue(q.physicalVariance / 3, true)}
                           </div>
                         </div>
                       )}
@@ -439,7 +459,7 @@ const ProjectPerformanceModal = ({
               </tr>
             </thead>
             <tbody>
-              {monthlyData.map((month, idx) => {
+              {displayMonthlyData.map((month, idx) => {
                 const physicalColor = getVarianceColor(month.physicalVariance);
                 const financialColor = getVarianceColor(
                   month.financialVariance
@@ -515,6 +535,7 @@ const ProjectPerformanceModal = ({
                         </span>
                       </div>
                     </td>
+
                     <td className="text-end">
                       <div>
                         <small className="d-block text-muted">
@@ -557,6 +578,7 @@ const ProjectPerformanceModal = ({
                         </span>
                       </div>
                     </td>
+
                     <td>
                       <Badge
                         color="light"

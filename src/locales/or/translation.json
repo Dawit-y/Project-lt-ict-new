@@ -1344,5 +1344,18 @@
 	"change_password":"Jecha darbii Jijjiiri",
 	"new_password":"Jecha darbii haaraa",
 	"enter_new_password":"Jecha darbii haaraa galchi",
-	"confirm_password":"Jecha darbii mirkaneessi"
+	"confirm_password":"Jecha darbii mirkaneessi",
+  "Meskerem": "Fulbaana",
+  "Tikimt": "Onkololeessa",
+  "Hidar": "Sadaasa",
+  "Tahesas": "Muddee",
+  "Tir": "Amajjii",
+  "Yekatit": "Guraandhala",
+  "Megabit": "Bitootessa",
+  "Miyazya": "Ebla",
+  "Ginbot": "Caamsa",
+  "Sene": "Waxabajjii",
+  "Hamle": "Adooleessa",
+  "Nehase": "Hagayya"
+
 }
