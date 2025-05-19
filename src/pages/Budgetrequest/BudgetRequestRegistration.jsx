@@ -61,8 +61,10 @@ import {
 import DatePicker from "../../components/Common/DatePicker";
 import { PAGE_ID } from "../../constants/constantFile";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
-import { convertToNumericValue, createMultiSelectOptions } from "../../utils/commonMethods";
+import { createKeyValueMap, createMultiLangKeyValueMap } from "../../utils/commonMethods";
 import EthiopianDatePicker from "../../components/Common/EthiopianDatePicker";
+import AsyncSelectField from "../../components/Common/AsyncSelectField";
+import InputField from "../../components/Common/InputField";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -87,29 +89,24 @@ const BudgetRequestModel = (props) => {
   const [fileModal, setFileModal] = useState(false);
   const [convModal, setConvModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(true);
   const [budgetRequest, setBudgetRequest] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(false); // Search-specific loading state
-  const [showSearchResults, setShowSearchResults] = useState(false); // To determine if search results should be displayed
 
   const [budgetRequestMetaData, setBudgetRequestMetaData] = useState([]);
   const [showCanvas, setShowCanvas] = useState(false);
 
-  const { data: projectStatusData } = useFetchProjectStatuss();
+  const { data: projectStatusData, isLoading: isPrsLoading, isError: isPrsError } = useFetchProjectStatuss();
 
   const { data, isLoading, isFetching, isError, error, refetch } =
     useFetchBudgetRequests(param);
-  const { data: budgetYearData } = usePopulateBudgetYears();
-  const { data: bgYearsOptionsData } = useFetchBudgetYears();
+  const { data: budgetYearData, isLoading: bdyLoading, isError: bdyIsError } = usePopulateBudgetYears();
+
   const categoryParam = { rqc_gov_active: 1 };
-  const { data: bgCategoryOptionsData } = useSearchRequestCategorys(categoryParam);
+  const { data: bgCategoryOptionsData, isLoading: isBcLoading, isBcError } = useSearchRequestCategorys(categoryParam);
   const addBudgetRequest = useAddBudgetRequest();
   const updateBudgetRequest = useUpdateBudgetRequest();
   const deleteBudgetRequest = useDeleteBudgetRequest();
 
-  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
+  const { userId } = useAuthUser();
   const project = useFetchProject(id, userId, true);
 
   const handleAddBudgetRequest = async (data) => {
@@ -144,7 +141,6 @@ const BudgetRequestModel = (props) => {
 
   // validation
   const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
     enableReinitialize: true,
     initialValues: {
       bdr_budget_year_id:
@@ -174,11 +170,19 @@ const BudgetRequestModel = (props) => {
 
     validationSchema: Yup.object({
       bdr_budget_year_id: Yup.string().required(t("bdr_budget_year_id")),
+      bdr_request_type: Yup.string().required(t("bdr_request_type")),
+      bdr_request_category_id: Yup.string().required(t("bdr_request_category_id")),
       bdr_requested_amount: formattedAmountValidation(1000, 10000000000, true),
       bdr_requested_date_gc: Yup.string().required(t("bdr_requested_date_gc")),
-      bdr_physical_baseline: Yup.number().min(0).required(t("bdr_physical_baseline")),
-      bdr_physical_planned: Yup.number().min(0).required(t("bdr_physical_planned")),
-      bdr_financial_baseline: Yup.number().min(0).required(t("bdr_financial_baseline")),
+      bdr_physical_baseline: Yup.number()
+        .min(0, t("min_error", { field: t("bdr_physical_baseline"), min: 0 }))
+        .max(100, t("max_error", { field: t("bdr_physical_baseline"), max: 100 }))
+        .required(t("bdr_physical_baseline")),
+      bdr_physical_planned: Yup.number()
+        .min(1, t("min_error", { field: t("bdr_physical_planned"), min: 1 }))
+        .max(100, t("max_error", { field: t("bdr_physical_planned"), max: 100 }))
+        .required(t("bdr_physical_planned")),
+      bdr_financial_baseline: formattedAmountValidation(0, 10000000000, true),
       bdr_description: alphanumericValidation(3, 425, false),
     }),
     validateOnBlur: true,
@@ -188,18 +192,15 @@ const BudgetRequestModel = (props) => {
         const updatedBudgetRequest = {
           bdr_id: budgetRequest ? budgetRequest.bdr_id : 0,
           bdr_budget_year_id: parseInt(values.bdr_budget_year_id),
-          bdr_requested_amount: convertToNumericValue(
-            values.bdr_requested_amount
-          ),
+          bdr_requested_amount: parseFloat(values.bdr_requested_amount),
           bdr_requested_date_ec: values.bdr_requested_date_ec,
           bdr_requested_date_gc: values.bdr_requested_date_gc,
           bdr_description: values.bdr_description,
           bdr_request_status: values.bdr_request_status,
-          // bdr_request_type:values.bdr_request_type,
           bdr_request_type: parseInt(values.bdr_request_type),
           bdr_physical_baseline: parseInt(values.bdr_physical_baseline),
           bdr_physical_planned: parseInt(values.bdr_physical_planned),
-          bdr_financial_baseline: parseInt(values.bdr_financial_baseline),
+          bdr_financial_baseline: parseFloat(values.bdr_financial_baseline),
           bdr_request_category_id: values.bdr_request_category_id,
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -209,14 +210,11 @@ const BudgetRequestModel = (props) => {
         const newBudgetRequest = {
           bdr_budget_year_id: parseInt(values.bdr_budget_year_id),
           bdr_project_id: id,
-          // bdr_request_type:values.bdr_request_type,
           bdr_request_type: parseInt(values.bdr_request_type),
           bdr_physical_baseline: parseInt(values.bdr_physical_baseline),
           bdr_physical_planned: parseInt(values.bdr_physical_planned),
-          bdr_financial_baseline: parseInt(values.bdr_financial_baseline),
-          bdr_requested_amount: convertToNumericValue(
-            values.bdr_requested_amount
-          ),
+          bdr_financial_baseline: parseFloat(values.bdr_financial_baseline),
+          bdr_requested_amount: parseFloat(values.bdr_requested_amount),
           bdr_requested_date_ec: values.bdr_requested_date_ec,
           bdr_requested_date_gc: values.bdr_requested_date_gc,
           bdr_description: values.bdr_description,
@@ -233,60 +231,37 @@ const BudgetRequestModel = (props) => {
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
 
-
   const budgetYearMap = useMemo(() => {
-    return (
-      bgYearsOptionsData?.data?.reduce((acc, year) => {
-        acc[year.bdy_id] = year.bdy_name;
-        return acc;
-      }, {}) || {}
-    );
-  }, [bgYearsOptionsData]);
-
-  /*  const RequestCatagoryMap = useMemo(() => {
-    return (
-      bgCategoryOptionsData?.data?.reduce((cat, category) => {
-        cat[category.rqc_id] = category.rqc_name_en;
-        return cat;
-      }, {}) || {}
-    );
-  }, [bgCategoryOptionsData]);*/
-  const {
-    prs_status_name_en: projectStatusOptionsEn,
-
-    prs_status_name_or: projectStatusOptionsOr,
-    prs_status_name_am: projectStatusOptionsAm,
-  } = createMultiSelectOptions(projectStatusData?.data || [], "prs_id", [
-    "prs_status_name_en",
-    "prs_status_name_or",
-    "prs_status_name_am",
-  ]);
+    return createKeyValueMap(budgetYearData?.data || [], "bdy_id", "bdy_name");
+  }, [budgetYearData]);
 
   const projectStatusMap = useMemo(() => {
-    return (
-      projectStatusData?.data?.reduce((acc, project_status) => {
-        if (project_status.prs_id === 5 || project_status.prs_id === 6) {
-          acc[project_status.pyc_id] =
-            lang === "en"
-              ? project_status.prs_status_name_en
-              : lang === "am"
-                ? project_status.prs_status_name_am
-                : project_status.prs_status_name_or;
-        }
-        return acc;
-      }, {}) || {}
+    return createMultiLangKeyValueMap(
+      projectStatusData?.data || [],
+      "prs_id",
+      {
+        en: "prs_status_name_en",
+        am: "prs_status_name_am",
+        or: "prs_status_name_or",
+      },
+      lang,
+      (item) => item.prs_id === 5 || item.prs_id === 6
     );
   }, [projectStatusData, lang]);
+
   const RequestCatagoryMap = useMemo(() => {
-    const filteredData =
-      bgCategoryOptionsData?.data?.filter((category) =>
-        status < 5 ? [1].includes(category.rqc_id) : true
-      ) || [];
-    return filteredData.reduce((cat, category) => {
-      cat[category.rqc_id] = category.rqc_name_en;
-      return cat;
-    }, {});
-  }, [bgCategoryOptionsData, status]);
+    return createMultiLangKeyValueMap(
+      bgCategoryOptionsData?.data || [],
+      "rqc_id",
+      {
+        en: "rqc_name_en",
+        am: "rqc_name_am",
+        or: "rqc_name_or",
+      },
+      lang,
+      (category) => (status < 5 ? [1].includes(category.rqc_id) : true)
+    );
+  }, [bgCategoryOptionsData, status, lang]);
 
   useEffect(() => {
     setBudgetRequest(data?.data);
@@ -313,9 +288,7 @@ const BudgetRequestModel = (props) => {
     setBudgetRequest({
       bdr_id: budgetRequest.bdr_id,
       bdr_budget_year_id: budgetRequest.bdr_budget_year_id,
-      bdr_requested_amount: Number(
-        budgetRequest.bdr_requested_amount
-      ).toLocaleString(),
+      bdr_requested_amount: budgetRequest.bdr_requested_amount,
       bdr_project_id: budgetRequest.bdr_project_id,
       bdr_request_type: budgetRequest.bdr_request_type,
       bdr_physical_baseline: budgetRequest.bdr_physical_baseline,
@@ -697,7 +670,7 @@ const BudgetRequestModel = (props) => {
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteBudgetRequest.isPending}
       />
-      {isLoading || isSearchLoading || project.isLoading ? (
+      {isLoading || project.isLoading ? (
         <Spinners />
       ) : (
         <TableContainer
@@ -735,128 +708,63 @@ const BudgetRequestModel = (props) => {
             }}
           >
             <Row>
-              <Col className="col-md-4 mb-3">
-                <Label>
-                  {t("bdr_budget_year_id")}
-                  <span className="text-danger">*</span>
-                </Label>
-                <Input
-                  name="bdr_budget_year_id"
-                  type="select"
-                  placeholder={t("bdr_budget_year_id")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.bdr_budget_year_id || ""}
-                  invalid={
-                    validation.touched.bdr_budget_year_id &&
-                      validation.errors.bdr_budget_year_id
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
-                >
-                  <option value="">Select Budget Year</option>
-                  {budgetYearData?.data?.map((data) => (
-                    <option key={data.bdy_id} value={data.bdy_id}>
-                      {data.bdy_name}
-                    </option>
-                  ))}
-                </Input>
-                {validation.touched.bdr_budget_year_id &&
-                  validation.errors.bdr_budget_year_id ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.bdr_budget_year_id}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-
-              <Col className="col-md-4 mb-3">
-                <Label>
-                  {t("bdr_request_type")}
-                  <span className="text-danger">*</span>
-                </Label>
-                <Input
-                  name="bdr_request_type"
-                  type="select"
-                  className="form-select"
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.bdr_request_type || ""}
-                  invalid={
-                    validation.touched.bdr_request_type &&
-                      validation.errors.bdr_request_type
-                      ? true
-                      : false
-                  }
-                >
-                  <option value="">{t("select_one")}</option>
-                  {projectStatusData?.data
-                    ?.filter((data) => data.prs_id === 5 || data.prs_id === 6)
-                    .map((data) => (
-                      <option key={data.prs_id} value={data.prs_id}>
-                        {lang === "en"
-                          ? data.prs_status_name_en
-                          : lang === "am"
-                            ? data.prs_status_name_am
-                            : data.prs_status_name_or}
-                      </option>
-                    ))}
-
-                </Input>
-                {validation.touched.bdr_request_type &&
-                  validation.errors.bdr_request_type ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.bdr_request_type}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-4 mb-3">
-                <Label>
-                  {t("bdr_request_category_id")}
-                  <span className="text-danger">*</span>
-                </Label>
-                <Input
-                  name="bdr_request_category_id"
-                  type="select"
-                  placeholder={t("bdr_request_category_id")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.bdr_request_category_id || ""}
-                  invalid={
-                    validation.touched.bdr_request_category_id &&
-                      validation.errors.bdr_request_category_id
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
-                >
-                  {Object.entries(RequestCatagoryMap).map(([id, name]) => (
-                    <option key={id} value={id}>
-                      {name}
-                    </option>
-                  ))}
-                </Input>
-                {validation.touched.bdr_request_category_id &&
-                  validation.errors.bdr_request_category_id ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.bdr_request_category_id}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-4 mb-3">
-                <FormattedAmountField
-                  validation={validation}
-                  fieldId={"bdr_requested_amount"}
-                  isRequired={true}
-                />
-              </Col>
-              {/* <Col className="col-md-4 mb-3">
-                <DatePicker
-                  isRequired="true"
-                  validation={validation}
-                  componentId="bdr_requested_date_gc"
-                />
-              </Col> */}
+              <AsyncSelectField
+                fieldId="bdr_budget_year_id"
+                validation={validation}
+                isRequired
+                className="col-md-4 mb-3"
+                optionMap={budgetYearMap}
+                isLoading={bdyLoading}
+                isError={bdyIsError}
+              />
+              <AsyncSelectField
+                fieldId="bdr_request_type"
+                validation={validation}
+                isRequired
+                className="col-md-4 mb-3"
+                optionMap={projectStatusMap}
+                isLoading={isPrsLoading}
+                isError={isPrsError}
+              />
+              <AsyncSelectField
+                fieldId="bdr_request_category_id"
+                validation={validation}
+                isRequired
+                className="col-md-4 mb-3"
+                optionMap={RequestCatagoryMap}
+                isLoading={isBcLoading}
+                isError={isBcError}
+              />
+              <FormattedAmountField
+                validation={validation}
+                fieldId={"bdr_requested_amount"}
+                isRequired={true}
+                className="col-md-4 mb-3"
+                allowDecimal={true}
+              />
+              <FormattedAmountField
+                validation={validation}
+                fieldId={"bdr_physical_planned"}
+                label={t("bdr_physical_planned") + " " + t("in_percent")}
+                isRequired={true}
+                className="col-md-4 mb-3"
+                allowDecimal={true}
+              />
+              <FormattedAmountField
+                validation={validation}
+                fieldId={"bdr_physical_baseline"}
+                label={t("bdr_physical_baseline") + " " + t("in_percent")}
+                isRequired={true}
+                className="col-md-4 mb-3"
+                allowDecimal={true}
+              />
+              <FormattedAmountField
+                validation={validation}
+                fieldId={"bdr_financial_baseline"}
+                isRequired={true}
+                className="col-md-4 mb-3"
+                allowDecimal={true}
+              />
               <Col className="col-md-4 mb-3 pt-3">
                 <EthiopianDatePicker
                   isRequired={true}
@@ -864,102 +772,14 @@ const BudgetRequestModel = (props) => {
                   componentId="bdr_requested_date_gc"
                 />
               </Col>
-              <Col className="col-md-4 mb-3">
-                <Label>{t("bdr_physical_baseline")}</Label>
-                <Input
-                  name="bdr_physical_baseline"
-                  type="number"
-                  placeholder={t("bdr_physical_baseline")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.bdr_physical_baseline ?? ""}
-                  invalid={
-                    validation.touched.bdr_physical_baseline &&
-                      validation.errors.bdr_physical_baseline
-                      ? true
-                      : false
-                  }
-                  min={0}
-                />
-                {validation.touched.bdr_physical_baseline &&
-                  validation.errors.bdr_physical_baseline ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.bdr_physical_baseline}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-4 mb-3">
-                <Label>{t("bdr_financial_baseline")}</Label>
-                <Input
-                  name="bdr_financial_baseline"
-                  type="number"
-                  placeholder={t("bdr_financial_baseline")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.bdr_financial_baseline ?? ""}
-                  invalid={
-                    validation.touched.bdr_financial_baseline &&
-                      validation.errors.bdr_financial_baseline
-                      ? true
-                      : false
-                  }
-                  min={0}
-                />
-                {validation.touched.bdr_financial_baseline &&
-                  validation.errors.bdr_financial_baseline ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.bdr_financial_baseline}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-4 mb-3">
-                <Label>{t("bdr_physical_planned")}</Label>
-                <Input
-                  name="bdr_physical_planned"
-                  type="number"
-                  placeholder={t("bdr_physical_planned")}
-                  onChange={validation.handleChange}
-                  value={validation.values.bdr_physical_planned || ""}
-                  invalid={
-                    validation.touched.bdr_physical_planned &&
-                      validation.errors.bdr_physical_planned
-                      ? true
-                      : false
-                  }
-                  min={1}
-                />
-                {validation.touched.bdr_physical_planned &&
-                  validation.errors.bdr_physical_planned ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.bdr_physical_planned}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-12 mb-3">
-                <Label>{t("bdr_description")}</Label>
-                <Input
-                  name="bdr_description"
-                  type="textarea"
-                  rows={4}
-                  placeholder={t("bdr_description")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.bdr_description || ""}
-                  invalid={
-                    validation.touched.bdr_description &&
-                      validation.errors.bdr_description
-                      ? true
-                      : false
-                  }
-                  maxLength={200}
-                />
-                {validation.touched.bdr_description &&
-                  validation.errors.bdr_description ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.bdr_description}
-                  </FormFeedback>
-                ) : null}
-              </Col>
+              <InputField
+                type="textarea"
+                validation={validation}
+                fieldId={"bdr_description"}
+                isRequired={false}
+                className="col-md-12 mb-3"
+                maxLength={400}
+              />
             </Row>
             <Row>
               <Col>

@@ -61,7 +61,7 @@ const truncateText = (text, maxLength) => {
 
 const ProjectContractorModel = (props) => {
   const { passedId, isActive, startDate } = props;
-  const param = { cni_project_id: passedId , request_type: "single" };
+  const param = { cni_project_id: passedId, request_type: "single" };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -185,15 +185,15 @@ const ProjectContractorModel = (props) => {
 
       is_deletable: (projectContractor && projectContractor.is_deletable) || 1,
       is_editable: (projectContractor && projectContractor.is_editable) || 1,
-        cni_financial_start:
+      cni_financial_start:
         (projectContractor && projectContractor.cni_financial_start) || "0",
-        cni_physical_start:
+      cni_physical_start:
         (projectContractor && projectContractor.cni_physical_start) || "0",
-        cni_financial_end:
+      cni_financial_end:
         (projectContractor && projectContractor.cni_financial_end) || "0",
-        cni_physical_end:
+      cni_physical_end:
         (projectContractor && projectContractor.cni_physical_end) || "0"
-      },
+    },
 
     validationSchema: Yup.object({
       cni_name: Yup.string().required(t("cni_name")),
@@ -257,7 +257,7 @@ const ProjectContractorModel = (props) => {
 
         // update ProjectContractor
         handleUpdateProjectContractor(updateProjectContractor);
-        
+
       } else {
         const newProjectContractor = {
           cni_name: values.cni_name,
@@ -344,10 +344,10 @@ const ProjectContractorModel = (props) => {
         projectContractor.cni_bid_contract_signing_date,
       cni_description: projectContractor.cni_description,
       cni_status: projectContractor.cni_status,
-        cni_financial_start: projectContractor.cni_financial_start,
-          cni_physical_start: projectContractor.cni_physical_start,
-          cni_financial_end: projectContractor.cni_financial_end,
-          cni_physical_end: projectContractor.cni_physical_end,
+      cni_financial_start: projectContractor.cni_financial_start,
+      cni_physical_start: projectContractor.cni_physical_start,
+      cni_financial_end: projectContractor.cni_financial_end,
+      cni_physical_end: projectContractor.cni_physical_end,
       is_deletable: projectContractor.is_deletable,
       is_editable: projectContractor.is_editable,
     });
@@ -388,22 +388,22 @@ const ProjectContractorModel = (props) => {
           );
         },
       },
-     /* {
-        header: "",
-        accessorKey: "cni_contractor_type_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.cni_contractor_type_id,
-                30
-              ) || "-"}
-            </span>
-          );
-        },
-      },*/
+      /* {
+         header: "",
+         accessorKey: "cni_contractor_type_id",
+         enableColumnFilter: false,
+         enableSorting: true,
+         cell: (cellProps) => {
+           return (
+             <span>
+               {truncateText(
+                 cellProps.row.original.cni_contractor_type_id,
+                 30
+               ) || "-"}
+             </span>
+           );
+         },
+       },*/
       {
         header: "",
         accessorKey: "cni_tin_num",
@@ -517,8 +517,8 @@ const ProjectContractorModel = (props) => {
       },
     ];
     if (
-     data?.previledge?.is_role_editable==1 ||
-     data?.previledge?.is_role_deletable==1
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -529,25 +529,25 @@ const ProjectContractorModel = (props) => {
           return (
             <div className="d-flex gap-3">
               {(data?.previledge?.is_role_editable == 1 && cellProps.row.original?.is_editable == 1) && (
-                 <Button
-                    size="sm"
-                    color="none"
-                    className="text-success"
-                    onClick={() => {
-                      const data = cellProps.row.original;
-                      handleProjectContractorClick(data);
-                    }}
-                  >
-                    <i
-                      className="mdi mdi-pencil font-size-18"
-                      id="edittooltip"
-                    />
-                    <UncontrolledTooltip placement="top" target="edittooltip">
-                      Edit
-                    </UncontrolledTooltip>
-                  </Button>
+                <Button
+                  size="sm"
+                  color="none"
+                  className="text-success"
+                  onClick={() => {
+                    const data = cellProps.row.original;
+                    handleProjectContractorClick(data);
+                  }}
+                >
+                  <i
+                    className="mdi mdi-pencil font-size-18"
+                    id="edittooltip"
+                  />
+                  <UncontrolledTooltip placement="top" target="edittooltip">
+                    Edit
+                  </UncontrolledTooltip>
+                </Button>
               )}
-{(data?.previledge?.is_role_deletable == 9 && cellProps.row.original?.is_deletable == 9) && (
+              {(data?.previledge?.is_role_deletable == 9 && cellProps.row.original?.is_deletable == 9) && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -957,11 +957,10 @@ const ProjectContractorModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                    <Col md={3}>
+                  <Col md={3}>
                     <FormattedAmountField
                       validation={validation}
                       fieldId="cni_financial_start"
-                      label={t("cni_financial_start")}
                       isRequired={true}
                       max={100}
                     />
@@ -970,7 +969,6 @@ const ProjectContractorModel = (props) => {
                     <FormattedAmountField
                       validation={validation}
                       fieldId="cni_physical_start"
-                      label={t("cni_physical_start")}
                       isRequired={true}
                       max={100}
                     />
@@ -980,7 +978,6 @@ const ProjectContractorModel = (props) => {
                     <FormattedAmountField
                       validation={validation}
                       fieldId="cni_financial_end"
-                      label={t("cni_financial_end")}
                       isRequired={false}
                       max={100}
                     />
@@ -989,7 +986,6 @@ const ProjectContractorModel = (props) => {
                     <FormattedAmountField
                       validation={validation}
                       fieldId="cni_physical_end"
-                      label={t("cni_physical_end")}
                       isRequired={false}
                       max={100}
                     />

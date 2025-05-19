@@ -50,7 +50,7 @@ import {
 } from "../../utils/Validation/validation";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import { toast } from "react-toastify";
-import { createSelectOptions, createMultiSelectOptions, convertToNumericValue } from "../../utils/commonMethods";
+import { createSelectOptions, createMultiSelectOptions, convertToNumericValue, createMultiLangKeyValueMap } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForProject from "./TreeForProject";
 import DatePicker from "../../components/Common/DatePicker";
@@ -89,15 +89,18 @@ const ProjectModel = () => {
   } = useFetchChildProjects(param, isValidParam);
 
   const { data: projectCategoryData, isLoading: prCategoryLoading, isError: prCategoryIsError } = useFetchProjectCategorys();
-  const {
-    pct_name_en: projectCategoryOptionsEn,
-    pct_name_or: projectCategoryOptionsOr,
-    pct_name_am: projectCategoryOptionsAm,
-  } = createMultiSelectOptions(
-    projectCategoryData?.data || [],
-    "pct_id",
-    ["pct_name_en", "pct_name_or", "pct_name_am"]
-  );
+  const projectCategoryMap = useMemo(() => {
+    return createMultiLangKeyValueMap(
+      projectCategoryData?.data || [],
+      "pct_id",
+      {
+        en: "pct_name_en",
+        am: "pct_name_am",
+        or: "pct_name_or",
+      },
+      lang,
+    );
+  }, [projectCategoryData, lang]);
 
   const addProject = useAddProject();
   const updateProject = useUpdateProject();
@@ -274,8 +277,8 @@ const ProjectModel = () => {
           prj_project_status_id: values.prj_project_status_id,
           prj_project_category_id: values.prj_project_category_id,
           prj_project_budget_source_id: values.prj_project_budget_source_id,
-          prj_total_estimate_budget: convertToNumericValue(values.prj_total_estimate_budget),
-          prj_total_actual_budget: convertToNumericValue(values.prj_total_actual_budget),
+          prj_total_estimate_budget: parseFloat(values.prj_total_estimate_budget),
+          prj_total_actual_budget: parseFloat(values.prj_total_actual_budget),
           prj_geo_location: values.prj_geo_location,
           prj_sector_id: Number(selectedNode?.data?.sector_id),
           prj_location_region_id: Number(values.prj_location_region_id),
@@ -323,8 +326,8 @@ const ProjectModel = () => {
           prj_project_status_id: values.prj_project_status_id,
           prj_project_category_id: values.prj_project_category_id,
           prj_project_budget_source_id: values.prj_project_budget_source_id,
-          prj_total_estimate_budget: convertToNumericValue(values.prj_total_estimate_budget),
-          prj_total_actual_budget: convertToNumericValue(values.prj_total_actual_budget),
+          prj_total_estimate_budget: parseFloat(values.prj_total_estimate_budget),
+          prj_total_actual_budget: parseFloat(values.prj_total_actual_budget),
           prj_geo_location: values.prj_geo_location,
           prj_sector_id: Number(selectedNode?.data?.sector_id),
           prj_location_region_id: Number(values.prj_location_region_id),
@@ -431,8 +434,8 @@ const ProjectModel = () => {
       prj_project_status_id: project.prj_project_status_id,
       prj_project_category_id: project.prj_project_category_id,
       prj_project_budget_source_id: project.prj_project_budget_source_id,
-      prj_total_estimate_budget: Number(project.prj_total_estimate_budget).toLocaleString(),
-      prj_total_actual_budget: Number(project.prj_total_actual_budget).toLocaleString(),
+      prj_total_estimate_budget: project.prj_total_estimate_budget,
+      prj_total_actual_budget: project.prj_total_actual_budget,
       prj_geo_location: project.prj_geo_location,
       prj_sector_id: project.prj_sector_id,
       prj_location_region_id: project.prj_location_region_id,
@@ -846,15 +849,11 @@ const ProjectModel = () => {
                 ) : null}
               </Col>
               <AsyncSelectField
-                name="prj_project_category_id"
+                fieldId="prj_project_category_id"
                 validation={validation}
                 isRequired
                 className="col-md-4 mb-3"
-                optionsByLang={{
-                  en: projectCategoryOptionsEn,
-                  am: projectCategoryOptionsAm,
-                  or: projectCategoryOptionsOr
-                }}
+                optionMap={projectCategoryMap}
                 isLoading={prCategoryLoading}
                 isError={prCategoryIsError}
               />
@@ -863,6 +862,7 @@ const ProjectModel = () => {
                   validation={validation}
                   fieldId={"prj_total_estimate_budget"}
                   isRequired={true}
+                  allowDecimal={true}
                 />
               </Col>
               <Col className="col-md-4 mb-3">
@@ -870,6 +870,7 @@ const ProjectModel = () => {
                   validation={validation}
                   fieldId={"prj_total_actual_budget"}
                   isRequired={false}
+                  allowDecimal={true}
                 />
               </Col>
               <Col className="col-md-4 mb-3">
@@ -974,6 +975,7 @@ const ProjectModel = () => {
                   validation={validation}
                   fieldId={"prj_measured_figure"}
                   isRequired={false}
+                  allowDecimal={true}
                 />
               </Col>
 

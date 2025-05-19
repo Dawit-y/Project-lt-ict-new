@@ -54,6 +54,7 @@ import DatePicker from "../../components/Common/DatePicker";
 import { PAGE_ID } from "../../constants/constantFile";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import { convertToNumericValue } from "../../utils/commonMethods";
+import InputField from "../../components/Common/InputField";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -161,7 +162,7 @@ const BudgetRequestModel = () => {
         const updatedBudgetRequest = {
           bdr_id: budgetRequest ? budgetRequest.bdr_id : 0,
           bdr_budget_year_id: parseInt(values.bdr_budget_year_id),
-          bdr_requested_amount: convertToNumericValue(values.bdr_requested_amount),
+          bdr_requested_amount: parseFloat(values.bdr_requested_amount),
           bdr_requested_date_ec: values.bdr_requested_date_ec,
           bdr_requested_date_gc: values.bdr_requested_date_gc,
           bdr_description: values.bdr_description,
@@ -174,7 +175,7 @@ const BudgetRequestModel = () => {
         const newBudgetRequest = {
           bdr_budget_year_id: parseInt(values.bdr_budget_year_id),
           bdr_project_id: id,
-          bdr_requested_amount: convertToNumericValue(values.bdr_requested_amount),
+          bdr_requested_amount: parseFloat(values.bdr_requested_amount),
           bdr_requested_date_ec: values.bdr_requested_date_ec,
           bdr_requested_date_gc: values.bdr_requested_date_gc,
           bdr_description: values.bdr_description,
@@ -224,7 +225,7 @@ const BudgetRequestModel = () => {
     setBudgetRequest({
       bdr_id: budgetRequest.bdr_id,
       bdr_budget_year_id: budgetRequest.bdr_budget_year_id,
-      bdr_requested_amount: Number(budgetRequest.bdr_requested_amount).toLocaleString(),
+      bdr_requested_amount: budgetRequest.bdr_requested_amount,
       bdr_project_id: budgetRequest.bdr_project_id,
       bdr_requested_date_ec: budgetRequest.bdr_requested_date_ec,
       bdr_requested_date_gc: budgetRequest.bdr_requested_date_gc,
@@ -637,6 +638,7 @@ const BudgetRequestModel = () => {
                       validation={validation}
                       fieldId={"bdr_requested_amount"}
                       isRequired={true}
+                      allowDecimal={true}
                     />
                   </Col>
                   <Col className="col-md-6 mb-3">

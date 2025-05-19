@@ -1628,5 +1628,8 @@
 	"bdr_financial_recommended": "Financial Recommended",
 	"bdr_physical_approved": "Physical Approved",
 	"rqf_recommended_physical": "Recommended Physical",
-	"prj_name_or": "Project Name in Oromo"
+	"prj_name_or": "Project Name in Oromo",
+	"in_percent": "(In Percent)",
+	"min_error": "{{field}} must be at least {{min}}.",
+	"max_error": "{{field}} must be at most {{max}}."
 }

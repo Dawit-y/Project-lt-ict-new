@@ -130,15 +130,15 @@ const ProjectKpiResultModel = (props) => {
           `kpr_planned_month_${i + 1}`
         ]
           ? Number(
-              projectKpiResult[`kpr_planned_month_${i + 1}`]
-            ).toLocaleString()
+            projectKpiResult[`kpr_planned_month_${i + 1}`]
+          ).toLocaleString()
           : "0", // Default to "0" instead of empty string
         [`kpr_actual_month_${i + 1}`]: projectKpiResult?.[
           `kpr_actual_month_${i + 1}`
         ]
           ? Number(
-              projectKpiResult[`kpr_actual_month_${i + 1}`]
-            ).toLocaleString()
+            projectKpiResult[`kpr_actual_month_${i + 1}`]
+          ).toLocaleString()
           : "0", // Default to "0" instead of empty string
       })).reduce((acc, curr) => ({ ...acc, ...curr })),
       kpr_description: projectKpiResult?.kpr_description || "",
@@ -558,8 +558,8 @@ const ProjectKpiResultModel = (props) => {
           <h4 className="mb-0">
             {isEdit
               ? `${t(
-                  entryMode === "planned" ? "edit_planned" : "enter_actuals"
-                )}`
+                entryMode === "planned" ? "edit_planned" : "enter_actuals"
+              )}`
               : `${t("add_planned")}`}
             <Badge
               color={entryMode === "planned" ? "info" : "success"}
@@ -637,9 +637,8 @@ const ProjectKpiResultModel = (props) => {
                 (quarter, idx) => (
                   <NavItem key={idx} className="mx-3">
                     <NavLink
-                      className={`cursor-pointer ${
-                        activeTab === quarter ? "active" : ""
-                      }`}
+                      className={`cursor-pointer ${activeTab === quarter ? "active" : ""
+                        }`}
                       onClick={() => setActiveTab(quarter)}
                     >
                       {quarter}
@@ -730,7 +729,7 @@ const ProjectKpiResultModel = (props) => {
                 }
               >
                 {addProjectKpiResult.isPending ||
-                updateProjectKpiResult.isPending ? (
+                  updateProjectKpiResult.isPending ? (
                   <>
                     <Spinner size="sm" className="me-2" />
                     {t("saving")}...

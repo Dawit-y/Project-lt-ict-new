@@ -1,91 +1,78 @@
-import React from 'react'
 import PropTypes from 'prop-types'
 import { Col, Label, Input, FormFeedback } from 'reactstrap'
 import { useTranslation } from 'react-i18next'
 
 /**
- * AsyncSelectField is a reusable language-aware dropdown component.
- * It integrates with Formik (or similar) validation,
- * supports dynamic loading/error states, and language-based or static options.
+ * AsyncSelectField renders a select input based on a key-value map.
+ * The map is expected in the format: { [value]: label, ... }
  *
  * @component
  *
  * @param {Object} props
- * @param {string} props.name - Name of the field, used for `name`, `id`, and validation lookup.
- * @param {Object} props.validation - Formik-like validation object containing values, handlers, touched, and errors.
- * @param {boolean} [props.isRequired=false] - Whether the field is required (adds a red asterisk to the label).
- * @param {string} [props.className] - Optional CSS class (e.g., Bootstrap grid classes).
- * @param {Object.<string, Array<{value: string|number, label: string}>>} [props.optionsByLang={}] - Language-based option map keyed by language code (`en`, `am`, etc.).
- * @param {Array<{value: string|number, label: string}>} [props.staticOptions=[]] - Fallback options used when language-specific options are not provided.
- * @param {boolean} [props.isLoading=false] - Whether options are being fetched. Disables input and shows loading placeholder.
- * @param {boolean} [props.isError=false] - Whether there was an error fetching options. Disables input and shows error placeholder.
+ * @param {string} props.fieldId - Form field name.
+ * @param {Object} props.validation - Formik-like validation object.
+ * @param {boolean} [props.isRequired=false] - Show asterisk on the label if true.
+ * @param {string} [props.className] - Optional class for layout.
+ * @param {Object.<string|number, string>} props.optionMap - Map of value-label pairs.
+ * @param {boolean} [props.isLoading=false] - Show loading placeholder.
+ * @param {boolean} [props.isError=false] - Show error placeholder.
  *
- * @returns {JSX.Element} The rendered select input field.
+ * @returns {JSX.Element}
  */
 const AsyncSelectField = ({
-  name,
+  fieldId,
   validation,
   isRequired = false,
   className,
-  optionsByLang = {},
-  staticOptions = [],
+  optionMap = {},
   isLoading = false,
   isError = false,
 }) => {
-  const { t, i18n } = useTranslation()
-  const lang = i18n.language
-
-  // Select options based on current language or fallback to static
-  const options = optionsByLang ? (optionsByLang[lang] || []) : staticOptions
+  const { t } = useTranslation()
 
   return (
     <Col className={className}>
-      <Label htmlFor={name}>
-        {t(name)} {isRequired && <span className="text-danger">*</span>}
+      <Label htmlFor={fieldId}>
+        {t(fieldId)} {isRequired && <span className="text-danger">*</span>}
       </Label>
 
       <Input
-        name={name}
+        name={fieldId}
         type="select"
         className="form-select"
-        id={name}
+        id={fieldId}
         disabled={isLoading || isError}
         onChange={validation.handleChange}
         onBlur={validation.handleBlur}
-        value={validation.values[name] || ""}
+        value={validation.values[fieldId] || ""}
         invalid={
-          validation.touched[name] && validation.errors[name] ? true : false
+          validation.touched[fieldId] && validation.errors[fieldId] ? true : false
         }
       >
-        {isLoading && (
-          <option value="">{t("Loading")}...</option>
-        )}
-
-        {isError && (
-          <option value="">{t("Failed to load options")}</option>
-        )}
+        {isLoading && <option value="">{t("Loading")}...</option>}
+        {isError && <option value="">{t("Failed to load options")}</option>}
 
         {!isLoading && !isError && (
           <>
-            <option value="">{t("Select")} {t(name)}</option>
-            {options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {t(option.label)}
+            <option value="">{t("Select")} {t(fieldId)}</option>
+            {Object.entries(optionMap).map(([value, label]) => (
+              <option key={value} value={value}>
+                {t(label)}
               </option>
             ))}
           </>
         )}
       </Input>
 
-      {validation.touched[name] && validation.errors[name] && (
-        <FormFeedback>{validation.errors[name]}</FormFeedback>
+      {validation.touched[fieldId] && validation.errors[fieldId] && (
+        <FormFeedback>{validation.errors[fieldId]}</FormFeedback>
       )}
     </Col>
   )
 }
 
 AsyncSelectField.propTypes = {
-  name: PropTypes.string.isRequired,
+  fieldId: PropTypes.string.isRequired,
   validation: PropTypes.shape({
     values: PropTypes.object.isRequired,
     handleChange: PropTypes.func.isRequired,
@@ -95,22 +82,7 @@ AsyncSelectField.propTypes = {
   }).isRequired,
   isRequired: PropTypes.bool,
   className: PropTypes.string,
-  optionsByLang: PropTypes.objectOf(
-    PropTypes.arrayOf(
-      PropTypes.shape({
-        value: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-          .isRequired,
-        label: PropTypes.string.isRequired,
-      })
-    )
-  ),
-  staticOptions: PropTypes.arrayOf(
-    PropTypes.shape({
-      value: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-        .isRequired,
-      label: PropTypes.string.isRequired,
-    })
-  ),
+  optionMap: PropTypes.objectOf(PropTypes.string).isRequired,
   isLoading: PropTypes.bool,
   isError: PropTypes.bool,
 }

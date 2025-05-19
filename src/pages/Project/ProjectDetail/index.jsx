@@ -206,7 +206,7 @@ const ProjectsOverview = () => {
       <Container fluid>
         <Breadcrumbs title="Projects" breadcrumbItem="Project Overview" />
         {isLoading ? (
-          <Spinner className="position-absolute top-50 start-50" size="md" />
+          <Spinner className="position-absolute top-50 start-50" color="primary" />
         ) : (
           <>
             <Row>

@@ -73,6 +73,7 @@ export const phoneValidation = (isRequired = true) => {
 //   }
 //   return schema;
 // };
+
 export const amountValidation = (minLength, maxLength, isRequired = true) => {
   const { t } = useTranslation();
   let schema = Yup.number()
@@ -103,22 +104,35 @@ export const formattedAmountValidation = (
 ) => {
   const { t } = useTranslation();
 
+  const cleanValue = (value) => {
+    if (typeof value !== "string") {
+      // Convert numbers to strings
+      if (typeof value === "number") return value.toString();
+      return "";
+    }
+    let val = value.replace(/,/g, "");
+    // Remove trailing dot if no decimals follow
+    if (val.endsWith(".")) {
+      val = val.slice(0, -1);
+    }
+    return val;
+  };
+
   let schema = Yup.mixed()
     .test("is-numeric", t("val_invalid_number"), (value) => {
       if (value === undefined || value === "") return true;
-      if (typeof value === "number") value = value.toString();
-      const cleanValue = value.replace(/,/g, "");
-      return /^\d+(\.\d{1,2})?$/.test(cleanValue);
+      const val = cleanValue(value);
+      return /^\d+(\.\d{1,2})?$/.test(val);
     })
     .test("min-value", `${t("val_min_amount")}: ${minLength}`, (value) => {
       if (value === undefined || value === "") return true;
-      const cleanValue = value.replace(/,/g, "");
-      return parseFloat(cleanValue) >= minLength;
+      const val = cleanValue(value);
+      return parseFloat(val) >= minLength;
     })
     .test("max-value", `${t("val_max_amount")}: ${maxLength}`, (value) => {
       if (value === undefined || value === "") return true;
-      const cleanValue = value.replace(/,/g, "");
-      return parseFloat(cleanValue) <= maxLength;
+      const val = cleanValue(value);
+      return parseFloat(val) <= maxLength;
     });
 
   if (isRequired) {
@@ -163,6 +177,7 @@ export const websiteUrlValidation = (required = false) => {
 
   return schema;
 };
+
 export const emailValidation = (isRequired = true) => {
   const { t } = useTranslation();
 

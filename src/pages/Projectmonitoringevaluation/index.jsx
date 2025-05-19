@@ -41,7 +41,7 @@ import {
 } from "reactstrap";
 import { toast } from "react-toastify";
 import DatePicker from "../../components/Common/DatePicker";
-import { createMultiSelectOptions } from "../../utils/commonMethods";
+import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
 import AsyncSelectField from "../../components/Common/AsyncSelectField";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import ReactQuill from "react-quill";
@@ -81,7 +81,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
   document.title = " ProjectMonitoringEvaluation";
   const { passedId, isActive, status, startDate } = props;
   const param = { project_id: passedId, request_type: "single" };
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -101,29 +101,25 @@ const ProjectMonitoringEvaluationModel = (props) => {
     isLoading: meTypesLoading,
     isError: meTypesIsError,
   } = useFetchMonitoringEvaluationTypes();
-  const {
-    met_name_en: meTypesOptionsEn,
-    met_name_or: meTypesOptionsOr,
-    met_name_am: meTypesOptionsAm,
-  } = createMultiSelectOptions(meTypes?.data || [], "met_id", [
-    "met_name_en",
-    "met_name_or",
-    "met_name_am",
-  ]);
+
+  const meTypeMap = useMemo(() => {
+    return createMultiLangKeyValueMap(
+      meTypes?.data || [],
+      "met_id",
+      {
+        en: "met_name_en",
+        am: "met_name_am",
+        or: "met_name_or",
+      },
+      i18n.language,
+    );
+  }, [meTypes, i18n.language]);
+
   const addProjectMonitoringEvaluation = useAddProjectMonitoringEvaluation();
   const updateProjectMonitoringEvaluation =
     useUpdateProjectMonitoringEvaluation();
   const deleteProjectMonitoringEvaluation =
     useDeleteProjectMonitoringEvaluation();
-
-  const meTypeMap = useMemo(() => {
-    return (
-      meTypes?.data?.reduce((acc, type) => {
-        acc[type.met_id] = type.met_name_or;
-        return acc;
-      }, {}) || {}
-    );
-  }, [meTypes]);
 
   const handleAddProjectMonitoringEvaluation = async (data) => {
     try {
@@ -865,7 +861,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_transaction_type_id || ""}
                       invalid={
                         validation.touched.mne_transaction_type_id &&
-                        validation.errors.mne_transaction_type_id
+                          validation.errors.mne_transaction_type_id
                           ? true
                           : false
                       }
@@ -878,7 +874,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       ))}
                     </Input>
                     {validation.touched.mne_transaction_type_id &&
-                    validation.errors.mne_transaction_type_id ? (
+                      validation.errors.mne_transaction_type_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_transaction_type_id}
                       </FormFeedback>
@@ -896,7 +892,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_visit_type || ""}
                       invalid={
                         validation.touched.mne_visit_type &&
-                        validation.errors.mne_visit_type
+                          validation.errors.mne_visit_type
                           ? true
                           : false
                       }
@@ -910,22 +906,18 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       ))}
                     </Input>
                     {validation.touched.mne_visit_type &&
-                    validation.errors.mne_visit_type ? (
+                      validation.errors.mne_visit_type ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_visit_type}
                       </FormFeedback>
                     ) : null}
                   </Col>
                   <AsyncSelectField
-                    name="mne_type_id"
+                    fieldId="mne_type_id"
                     validation={validation}
                     isRequired
                     className="col-md-4 mb-3"
-                    optionsByLang={{
-                      en: meTypesOptionsEn,
-                      am: meTypesOptionsAm,
-                      or: meTypesOptionsOr,
-                    }}
+                    optionMap={meTypeMap}
                     isLoading={meTypesLoading}
                     isError={meTypesIsError}
                   />
@@ -1115,14 +1107,14 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_team_members || ""}
                       invalid={
                         validation.touched.mne_team_members &&
-                        validation.errors.mne_team_members
+                          validation.errors.mne_team_members
                           ? true
                           : false
                       }
                       maxLength={420}
                     />
                     {validation.touched.mne_team_members &&
-                    validation.errors.mne_team_members ? (
+                      validation.errors.mne_team_members ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_team_members}
                       </FormFeedback>
@@ -1150,14 +1142,14 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_feedback || ""}
                       invalid={
                         validation.touched.mne_feedback &&
-                        validation.errors.mne_feedback
+                          validation.errors.mne_feedback
                           ? true
                           : false
                       }
                       maxLength={420}
                     />
                     {validation.touched.mne_feedback &&
-                    validation.errors.mne_feedback ? (
+                      validation.errors.mne_feedback ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_feedback}
                       </FormFeedback>
@@ -1174,14 +1166,14 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_weakness || ""}
                       invalid={
                         validation.touched.mne_weakness &&
-                        validation.errors.mne_weakness
+                          validation.errors.mne_weakness
                           ? true
                           : false
                       }
                       maxLength={420}
                     />
                     {validation.touched.mne_weakness &&
-                    validation.errors.mne_weakness ? (
+                      validation.errors.mne_weakness ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_weakness}
                       </FormFeedback>
@@ -1198,14 +1190,14 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_challenges || ""}
                       invalid={
                         validation.touched.mne_challenges &&
-                        validation.errors.mne_challenges
+                          validation.errors.mne_challenges
                           ? true
                           : false
                       }
                       maxLength={420}
                     />
                     {validation.touched.mne_challenges &&
-                    validation.errors.mne_challenges ? (
+                      validation.errors.mne_challenges ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_challenges}
                       </FormFeedback>
@@ -1222,14 +1214,14 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_recommendations || ""}
                       invalid={
                         validation.touched.mne_recommendations &&
-                        validation.errors.mne_recommendations
+                          validation.errors.mne_recommendations
                           ? true
                           : false
                       }
                       maxLength={420}
                     />
                     {validation.touched.mne_recommendations &&
-                    validation.errors.mne_recommendations ? (
+                      validation.errors.mne_recommendations ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_recommendations}
                       </FormFeedback>
@@ -1246,14 +1238,14 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_purpose || ""}
                       invalid={
                         validation.touched.mne_purpose &&
-                        validation.errors.mne_purpose
+                          validation.errors.mne_purpose
                           ? true
                           : false
                       }
                       maxLength={420}
                     />
                     {validation.touched.mne_purpose &&
-                    validation.errors.mne_purpose ? (
+                      validation.errors.mne_purpose ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_purpose}
                       </FormFeedback>
@@ -1270,14 +1262,14 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_strength || ""}
                       invalid={
                         validation.touched.mne_strength &&
-                        validation.errors.mne_strength
+                          validation.errors.mne_strength
                           ? true
                           : false
                       }
                       maxLength={420}
                     />
                     {validation.touched.mne_strength &&
-                    validation.errors.mne_strength ? (
+                      validation.errors.mne_strength ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_strength}
                       </FormFeedback>
@@ -1288,7 +1280,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
                     <div
                       className={
                         validation.touched.mne_description &&
-                        validation.errors.mne_description
+                          validation.errors.mne_description
                           ? "is-invalid"
                           : ""
                       }
@@ -1322,7 +1314,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
               <Col>
                 <div className="text-end">
                   {addProjectMonitoringEvaluation.isPending ||
-                  updateProjectMonitoringEvaluation.isPending ? (
+                    updateProjectMonitoringEvaluation.isPending ? (
                     <Button
                       color="primary"
                       type="submit"
