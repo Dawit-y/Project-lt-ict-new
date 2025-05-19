@@ -18,6 +18,7 @@ import {
 import classnames from "classnames";
 import ReactApexChart from "react-apexcharts";
 import { formatNumber, calculatePercentage } from "../../utils/commonMethods";
+import { useTranslation } from "react-i18next";
 
 const ProjectPerformanceAnalysis = ({
   performanceData,
@@ -32,7 +33,25 @@ const ProjectPerformanceAnalysis = ({
   const toggleDropdown = () => setDropdownOpen((prevState) => !prevState);
   const toggleTab = (tab) => activeTab !== tab && setActiveTab(tab);
 
-  // Extract month-wise data
+  const { t } = useTranslation();
+
+  // Ethiopian months in order (Hamle to Sene)
+  const ETHIOPIAN_MONTHS = [
+    t("Meskerem"), // Month 1 (September 6 - October 5)
+    t("Tikimt"), // Month 2 (October 6 - November 4)
+    t("Hidar"), // Month 3 (November 5 - December 4)
+    t("Tahesas"), // Month 4 (December 5 - January 3)
+    t("Tir"), // Month 5 (January 4 - February 2)
+    t("Yekatit"), // Month 6 (February 3 - March 4)
+    t("Megabit"), // Month 7 (March 5 - April 3)
+    t("Miyazya"), // Month 8 (April 4 - May 3)
+    t("Ginbot"), // Month 9 (May 4 - June 2)
+    t("Sene"), // Month 10 (June 3 - July 7)
+    t("Hamle"), // Month 11 (July 8 - August 6)
+    t("Nehase"), // Month 12 (August 7 - September 5)
+  ];
+
+  // Extract month-wise data (still using 1-12 for data structure)
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
   // Calculate totals for single project
@@ -156,7 +175,7 @@ const ProjectPerformanceAnalysis = ({
 
   // Prepare chart data and options
   const { chartOptions, chartSeries, totals } = useMemo(() => {
-    const categories = months.map((month) => `Month ${month}`);
+    const categories = ETHIOPIAN_MONTHS; // Using Ethiopian months instead of "Month X"
     let series = [];
     let options = {
       chart: {
@@ -182,9 +201,7 @@ const ProjectPerformanceAnalysis = ({
       tooltip: {
         y: {
           formatter: function (val) {
-            // Format the number to have maximum 2 decimal places
             const formattedValue = Number(val).toFixed(2);
-
             return selectedView === "physical"
               ? `${formattedValue}%`
               : `${formattedValue}${chartType === "pie" ? "M" : "M"} Birr`;
@@ -194,7 +211,6 @@ const ProjectPerformanceAnalysis = ({
     };
 
     if (chartType === "pie") {
-      // Pie chart specific options
       options = {
         ...options,
         labels: categories,
@@ -210,7 +226,6 @@ const ProjectPerformanceAnalysis = ({
         },
       };
 
-      // Pie chart data - show only actual values
       if (selectedView === "physical") {
         const data = isOverallView
           ? allData.reduce((acc, project) => {
@@ -246,7 +261,6 @@ const ProjectPerformanceAnalysis = ({
         series = data;
       }
     } else {
-      // Bar/Line chart options
       options = {
         ...options,
         plotOptions:
@@ -290,9 +304,7 @@ const ProjectPerformanceAnalysis = ({
           },
           labels: {
             formatter: function (val) {
-              // Format the number to have maximum 2 decimal places
               const formattedValue = Number(val).toFixed(2);
-
               return selectedView === "physical"
                 ? `${formattedValue}%`
                 : `${formattedValue}${chartType === "pie" ? "M" : "M"} Birr`;
@@ -304,7 +316,6 @@ const ProjectPerformanceAnalysis = ({
         },
       };
 
-      // Bar/Line chart data - show both planned and actual
       if (selectedView === "physical") {
         const planned = isOverallView
           ? allData.reduce((acc, project) => {
@@ -392,7 +403,6 @@ const ProjectPerformanceAnalysis = ({
       }
     }
 
-    // Calculate totals
     const calculatedTotals = isOverallView
       ? calculateOverallTotals(allData)
       : performanceData
@@ -422,7 +432,6 @@ const ProjectPerformanceAnalysis = ({
     };
   }, [performanceData, allData, isOverallView, selectedView, chartType]);
 
-  // Status indicators
   const getStatusIndicator = (value) => {
     if (value > 0) {
       return <i className="mdi mdi-arrow-up ms-1 text-success" />;
@@ -704,7 +713,8 @@ const ProjectPerformanceAnalysis = ({
 
                         return (
                           <tr key={month}>
-                            <td>Month {month}</td>
+                            <td>{ETHIOPIAN_MONTHS[month - 1]}</td>{" "}
+                            {/* Changed to Ethiopian month name */}
                             <td>
                               {selectedView === "physical"
                                 ? `${planned}%`

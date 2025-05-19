@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -10,7 +9,7 @@ import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 //import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
+
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
   useFetchProjectComponents,
@@ -21,8 +20,6 @@ import {
 } from "../../queries/projectcomponent_query";
 import ProjectComponentModal from "./ProjectComponentModal";
 import { useTranslation } from "react-i18next";
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
 import {
   Button,
   Col,
@@ -35,21 +32,19 @@ import {
   Input,
   FormFeedback,
   Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+
+const RequiredIndicator = () => <span className="text-danger">*</span>;
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
+
 const ProjectComponentModel = (props) => {
   //meta title
   document.title = " ProjectComponent";
@@ -69,6 +64,7 @@ const ProjectComponentModel = (props) => {
   const addProjectComponent = useAddProjectComponent();
   const updateProjectComponent = useUpdateProjectComponent();
   const deleteProjectComponent = useDeleteProjectComponent();
+
   //START CRUD
   const handleAddProjectComponent = async (data) => {
     try {
@@ -84,6 +80,7 @@ const ProjectComponentModel = (props) => {
     }
     toggle();
   };
+
   const handleUpdateProjectComponent = async (data) => {
     try {
       await updateProjectComponent.mutateAsync(data);
@@ -98,6 +95,7 @@ const ProjectComponentModel = (props) => {
     }
     toggle();
   };
+
   const handleDeleteProjectComponent = async () => {
     if (projectComponent && projectComponent.pcm_id) {
       try {
@@ -115,7 +113,6 @@ const ProjectComponentModel = (props) => {
     }
   };
   //END CRUD
-  //START FOREIGN CALLS
 
   // validation
   const validation = useFormik({
@@ -130,8 +127,6 @@ const ProjectComponentModel = (props) => {
       pcm_amount: (projectComponent && projectComponent.pcm_amount) || "",
       pcm_description:
         (projectComponent && projectComponent.pcm_description) || "",
-      pcm_status: (projectComponent && projectComponent.pcm_status) || "",
-
       is_deletable: (projectComponent && projectComponent.is_deletable) || 1,
       is_editable: (projectComponent && projectComponent.is_editable) || 1,
     },
@@ -140,8 +135,6 @@ const ProjectComponentModel = (props) => {
       pcm_component_name: Yup.string().required(t("pcm_component_name")),
       pcm_unit_measurement: Yup.string().required(t("pcm_unit_measurement")),
       pcm_amount: Yup.string().required(t("pcm_amount")),
-      pcm_description: Yup.string().required(t("pcm_description")),
-      pcm_status: Yup.string().required(t("pcm_status")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -149,14 +142,11 @@ const ProjectComponentModel = (props) => {
       if (isEdit) {
         const updateProjectComponent = {
           pcm_id: projectComponent ? projectComponent.pcm_id : 0,
-          // pcm_id: projectComponent.pcm_id,
           pcm_project_id: passedId,
           pcm_component_name: values.pcm_component_name,
           pcm_unit_measurement: values.pcm_unit_measurement,
           pcm_amount: values.pcm_amount,
           pcm_description: values.pcm_description,
-          pcm_status: values.pcm_status,
-
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -169,25 +159,28 @@ const ProjectComponentModel = (props) => {
           pcm_unit_measurement: values.pcm_unit_measurement,
           pcm_amount: values.pcm_amount,
           pcm_description: values.pcm_description,
-          pcm_status: values.pcm_status,
         };
         // save new ProjectComponent
         handleAddProjectComponent(newProjectComponent);
       }
     },
   });
+
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = () => setModal1(!modal1);
+
   // Fetch ProjectComponent on component mount
   useEffect(() => {
     setProjectComponent(data);
   }, [data]);
+
   useEffect(() => {
     if (!isEmpty(data) && !!isEdit) {
       setProjectComponent(data);
       setIsEdit(false);
     }
   }, [data]);
+
   const toggle = () => {
     if (modal) {
       setModal(false);
@@ -196,9 +189,9 @@ const ProjectComponentModel = (props) => {
       setModal(true);
     }
   };
+
   const handleProjectComponentClick = (arg) => {
     const projectComponent = arg;
-    // console.log("handleProjectComponentClick", projectComponent);
     setProjectComponent({
       pcm_id: projectComponent.pcm_id,
       pcm_project_id: projectComponent.pcm_project_id,
@@ -206,30 +199,26 @@ const ProjectComponentModel = (props) => {
       pcm_unit_measurement: projectComponent.pcm_unit_measurement,
       pcm_amount: projectComponent.pcm_amount,
       pcm_description: projectComponent.pcm_description,
-      pcm_status: projectComponent.pcm_status,
-
       is_deletable: projectComponent.is_deletable,
       is_editable: projectComponent.is_editable,
     });
     setIsEdit(true);
     toggle();
   };
+
   //delete projects
   const [deleteModal, setDeleteModal] = useState(false);
   const onClickDelete = (projectComponent) => {
     setProjectComponent(projectComponent);
     setDeleteModal(true);
   };
+
   const handleProjectComponentClicks = () => {
     setIsEdit(false);
     setProjectComponent("");
     toggle();
   };
-  const handleSearchResults = ({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
-  };
+
   //START UNCHANGED
   const columns = useMemo(() => {
     const baseColumns = [
@@ -287,20 +276,6 @@ const ProjectComponentModel = (props) => {
           );
         },
       },
-      {
-        header: "",
-        accessorKey: "pcm_status",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pcm_status, 30) || "-"}
-            </span>
-          );
-        },
-      },
-
       {
         header: t("view_detail"),
         enableColumnFilter: false,
@@ -373,6 +348,7 @@ const ProjectComponentModel = (props) => {
     }
     return baseColumns;
   }, [handleProjectComponentClick, toggleViewModal, onClickDelete]);
+
   return (
     <React.Fragment>
       <ProjectComponentModal
@@ -397,7 +373,6 @@ const ProjectComponentModel = (props) => {
           isCustomPageSize={true}
           handleUserClick={handleProjectComponentClicks}
           isPagination={true}
-          // SearchPlaceholder="26 records..."
           SearchPlaceholder={26 + " " + t("Results") + "..."}
           buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
           buttonName={t("add")}
@@ -425,7 +400,9 @@ const ProjectComponentModel = (props) => {
           >
             <Row>
               <Col className="col-md-6 mb-3">
-                <Label>{t("pcm_component_name")}</Label>
+                <Label>
+                  {t("pcm_component_name")} <RequiredIndicator />
+                </Label>
                 <Input
                   name="pcm_component_name"
                   type="text"
@@ -439,7 +416,6 @@ const ProjectComponentModel = (props) => {
                       ? true
                       : false
                   }
-                  maxLength={20}
                 />
                 {validation.touched.pcm_component_name &&
                 validation.errors.pcm_component_name ? (
@@ -449,7 +425,9 @@ const ProjectComponentModel = (props) => {
                 ) : null}
               </Col>
               <Col className="col-md-6 mb-3">
-                <Label>{t("pcm_unit_measurement")}</Label>
+                <Label>
+                  {t("pcm_unit_measurement")} <RequiredIndicator />
+                </Label>
                 <Input
                   name="pcm_unit_measurement"
                   type="text"
@@ -463,7 +441,6 @@ const ProjectComponentModel = (props) => {
                       ? true
                       : false
                   }
-                  maxLength={20}
                 />
                 {validation.touched.pcm_unit_measurement &&
                 validation.errors.pcm_unit_measurement ? (
@@ -473,7 +450,9 @@ const ProjectComponentModel = (props) => {
                 ) : null}
               </Col>
               <Col className="col-md-6 mb-3">
-                <Label>{t("pcm_amount")}</Label>
+                <Label>
+                  {t("pcm_amount")} <RequiredIndicator />
+                </Label>
                 <Input
                   name="pcm_amount"
                   type="text"
@@ -487,7 +466,6 @@ const ProjectComponentModel = (props) => {
                       ? true
                       : false
                   }
-                  maxLength={20}
                 />
                 {validation.touched.pcm_amount &&
                 validation.errors.pcm_amount ? (
@@ -500,7 +478,7 @@ const ProjectComponentModel = (props) => {
                 <Label>{t("pcm_description")}</Label>
                 <Input
                   name="pcm_description"
-                  type="text"
+                  type="textarea"
                   placeholder={t("pcm_description")}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
@@ -511,36 +489,12 @@ const ProjectComponentModel = (props) => {
                       ? true
                       : false
                   }
-                  maxLength={20}
+                  rows="3"
                 />
                 {validation.touched.pcm_description &&
                 validation.errors.pcm_description ? (
                   <FormFeedback type="invalid">
                     {validation.errors.pcm_description}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>{t("pcm_status")}</Label>
-                <Input
-                  name="pcm_status"
-                  type="text"
-                  placeholder={t("pcm_status")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.pcm_status || ""}
-                  invalid={
-                    validation.touched.pcm_status &&
-                    validation.errors.pcm_status
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
-                />
-                {validation.touched.pcm_status &&
-                validation.errors.pcm_status ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.pcm_status}
                   </FormFeedback>
                 ) : null}
               </Col>
@@ -587,7 +541,9 @@ const ProjectComponentModel = (props) => {
     </React.Fragment>
   );
 };
+
 ProjectComponentModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,
 };
+
 export default ProjectComponentModel;

@@ -1371,5 +1371,17 @@
 	"confirm_password": "የይለፍ ቃል አረጋግጥ",
 	"in_percent": "(በመቶኛ)",
 	"min_error": "{{field}} ቢያንስ {{min}} መሆን አለበት",
-	"max_error": "{{field}} ቢበዛ  {{max}} መሆን አለበት"
+	"max_error": "{{field}} ቢበዛ  {{max}} መሆን አለበት",
+	"Meskerem": "መስከረም",
+	"Tikimt": "ጥቅምት",
+	"Hidar": "ኅዳር",
+	"Tahesas": "ታኅሣሥ",
+	"Tir": "ጥር",
+	"Yekatit": "የካቲት",
+	"Megabit": "መጋቢት",
+	"Miyazya": "ሚያዝያ",
+	"Ginbot": "ግንቦት",
+	"Sene": "ሰኔ",
+	"Hamle": "ሐምሌ",
+	"Nehase": "ነሐሴ"
 }

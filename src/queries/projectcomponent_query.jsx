@@ -8,10 +8,10 @@ import {
 
 const PROJECT_COMPONENT_QUERY_KEY = ["projectcomponent"];
 // Fetch project_component
-export const useFetchProjectComponents = () => {
+export const useFetchProjectComponents = (param = {}, isActive) => {
   return useQuery({
-    queryKey: PROJECT_COMPONENT_QUERY_KEY,
-    queryFn: () => getProjectComponent(),
+    queryKey: [...PROJECT_COMPONENT_QUERY_KEY, "fetch", param],
+    queryFn: () => getProjectComponent(param),
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     refetchOnMount: true,
@@ -99,7 +99,8 @@ export const useDeleteProjectComponent = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (deletedData) => deletedData.pcm_id !== parseInt(deletedData.deleted_id)
+              (deletedData) =>
+                deletedData.pcm_id !== parseInt(deletedData.deleted_id)
             ),
           };
         });
