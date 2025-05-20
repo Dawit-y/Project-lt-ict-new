@@ -41,18 +41,18 @@ import {
   Badge,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { alphanumericValidation } from "../../utils/Validation/validation";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-const RequestStatusModel = () => {
-  document.title = " Request Status";
 
+const RequestStatusModel = () => {
+  document.title = "Request Status";
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);

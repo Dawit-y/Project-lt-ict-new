@@ -8,8 +8,8 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { TabWrapper } from "../../components/Common/DetailViewWrapper";
-import RequestFollowupModel from "../Requestfollowup";
+import { TabWrapper } from "../../../components/Common/DetailViewWrapper";
+import RequestFollowupModel from "../../Requestfollowup";
 import ApproveDecline from "./ApproveDecline";
 
 const modalStyle = {
@@ -23,7 +23,7 @@ const ApproverBudgetRequestListModal = (props) => {
   const tabs = [
     {
       id: "approve/reject",
-      label: `Approve/Reject`,
+      label: `Actions`,
       content: <ApproveDecline request={transaction} toggleParent={toggle} />,
     },
     {

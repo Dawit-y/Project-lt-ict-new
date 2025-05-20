@@ -14,9 +14,8 @@ export const useFetchProposalRequests = (param = {}, isActive) => {
     queryKey: [...PROPOSAL_REQUEST_QUERY_KEY, "fetch", param],
     queryFn: () => getProposalRequest(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: isActive,
   });
 };

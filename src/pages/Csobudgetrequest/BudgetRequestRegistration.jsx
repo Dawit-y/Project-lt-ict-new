@@ -4,6 +4,7 @@ import { isEmpty, update } from "lodash";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
+import { useAuthUser } from "../../hooks/useAuthUser";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -74,8 +75,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
   const updateBudgetRequest = useUpdateBudgetRequest();
   const deleteBudgetRequest = useDeleteBudgetRequest();
 
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const project = useFetchProject(projectId, userId, true);
   const { data: bgCategoryOptionsData } = useFetchRequestCategorys();
 

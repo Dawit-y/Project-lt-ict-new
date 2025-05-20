@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, memo } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { Row, Col, Input, Button } from "reactstrap";
 import ExportToExcel from "./ExportToExcel";
@@ -29,6 +29,9 @@ const AgGridContainer = ({
   addButtonText = "Add",
   isAddButton = false,
   rowHeight = 32,
+  rowSelection,
+  onSelectionChanged,
+  onGridReady,
   isExcelExport = false,
   isPdfExport = false,
   isPrint = true,
@@ -139,8 +142,16 @@ const AgGridContainer = ({
           paginationPageSize={paginationPageSize}
           quickFilterText={quickFilterText}
           rowHeight={rowHeight}
+          rowSelection={rowSelection}
+          onSelectionChanged={onSelectionChanged}
           animateRows={true}
           domLayout="autoHeight"
+          onGridReady={(params) => {
+            gridRef.current = params.api;
+            if (typeof onGridReady === "function") {
+              onGridReady(params.api); // Expose API to parent
+            }
+          }}
         />
       </div>
     </div>

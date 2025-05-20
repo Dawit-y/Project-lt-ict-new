@@ -14,9 +14,8 @@ export const useFetchUserRoles = (param = {}, isActive) => {
     queryKey: [...USER_ROLE_QUERY_KEY, "fetch", param],
     queryFn: () => getUserRole(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: isActive,
   });
 };

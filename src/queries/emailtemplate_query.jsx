@@ -14,7 +14,6 @@ export const useFetchEmailTemplates = () => {
     queryKey: EMAIL_TEMPLATE_QUERY_KEY,
     queryFn: () => getEmailTemplate(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
@@ -28,7 +27,7 @@ export const useSearchEmailTemplates = (searchParams = {}) => {
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: searchParams.length > 0,
   });
 };
@@ -40,7 +39,7 @@ export const useAddEmailTemplate = () => {
   return useMutation({
     mutationFn: addEmailTemplate,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( EMAIL_TEMPLATE_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(EMAIL_TEMPLATE_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,

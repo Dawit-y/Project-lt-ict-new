@@ -11,7 +11,12 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { UncontrolledTooltip, UncontrolledDropdown, DropdownMenu, DropdownToggle } from "reactstrap";
+import {
+  UncontrolledTooltip,
+  UncontrolledDropdown,
+  DropdownMenu,
+  DropdownToggle,
+} from "reactstrap";
 import { rankItem } from "@tanstack/match-sorter-utils";
 import ExportToExcel from "../../components/Common/ExportToExcel";
 import PrintHtmlPage from "../../components/Common/PrintHtmlPage";
@@ -223,10 +228,7 @@ const TableContainer = ({
             {(isExcelExport || isPdfExport || isPrint) && (
               <>
                 <UncontrolledDropdown>
-                  <DropdownToggle
-                    color="primary"
-                    id="export_toggle"
-                  >
+                  <DropdownToggle color="primary" id="export_toggle">
                     <FaFileExport size={18} />
                   </DropdownToggle>
                   <DropdownMenu end className="py-2 mt-1">
@@ -261,7 +263,7 @@ const TableContainer = ({
                 </UncontrolledTooltip>
               </>
             )}
-            {refetch &&
+            {refetch && (
               <>
                 <Button
                   id="refresh_btn"
@@ -281,31 +283,25 @@ const TableContainer = ({
                   Refresh
                 </UncontrolledTooltip>
               </>
-            }
+            )}
           </div>
         </Col>
       </Row>
       <div className="position-relative">
         {isLoading && (
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(255, 255, 255, 0.7)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 1000
-            }}
-          >
+          <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-light bg-opacity-75" style={{ zIndex: 1000 }}>
             <Spinner color="primary" />
           </div>
         )}
         {infoIcon && (
-          <div style={{ position: "absolute", top: "2px", right: "-18px", zIndex: 1 }}>
+          <div
+            style={{
+              position: "absolute",
+              top: "2px",
+              right: "-18px",
+              zIndex: 1,
+            }}
+          >
             <FaCircleInfo size={18} id="info" className="" />
             <UncontrolledTooltip placement="left" target="info">
               Sample Info
@@ -313,7 +309,7 @@ const TableContainer = ({
           </div>
         )}
         <div className={divClassName ? divClassName : "table-responsive"}>
-          <div id='printable-table'>
+          <div id="printable-table">
             <Table
               hover
               className={`${tableClass} table-sm table-bordered table-striped`}
@@ -327,10 +323,11 @@ const TableContainer = ({
                       <th
                         key={header.id}
                         colSpan={header.colSpan}
-                        className={`${header.column.columnDef.enableSorting
-                          ? "sorting sorting_desc"
-                          : ""
-                          }`}
+                        className={`${
+                          header.column.columnDef.enableSorting
+                            ? "sorting sorting_desc"
+                            : ""
+                        }`}
                       >
                         {header.isPlaceholder ? null : (
                           <Fragment>
@@ -339,7 +336,8 @@ const TableContainer = ({
                                 className: header.column.getCanSort()
                                   ? "cursor-pointer select-none"
                                   : "",
-                                onClick: header.column.getToggleSortingHandler(),
+                                onClick:
+                                  header.column.getToggleSortingHandler(),
                               }}
                             >
                               {flexRender(t(header.id), header.getContext())}
@@ -363,7 +361,10 @@ const TableContainer = ({
               <tbody style={{ height: "auto" }}>
                 {data.length === 0 ? (
                   <tr>
-                    <td colSpan={columns.length + 2} className="text-center py-5">
+                    <td
+                      colSpan={columns.length + 2}
+                      className="text-center py-5"
+                    >
                       {!isLoading && "No data availaible."}
                     </td>
                   </tr>
@@ -391,8 +392,9 @@ const TableContainer = ({
                 <div className="dataTables_info">
                   {paginationState.pageSize > data.length
                     ? `${t("Showing")} ${data.length} of ${data.length}`
-                    : `${t("Showing")} ${paginationState.pageSize} of ${data.length
-                    }`}
+                    : `${t("Showing")} ${paginationState.pageSize} of ${
+                        data.length
+                      }`}
                 </div>
               </Col>
               <Col sm={12} md={7}>
@@ -400,10 +402,11 @@ const TableContainer = ({
                   <ul className={pagination}>
                     {/* Previous Button */}
                     <li
-                      className={`paginate_button page-item previous ${!getCanPreviousPage() ? "disabled" : ""
-                        }`}
+                      className={`paginate_button page-item previous ${
+                        !getCanPreviousPage() ? "disabled" : ""
+                      }`}
                     >
-                      <Link to="#" className="page-link" onClick={handlePrevious}>
+                      <Link className="page-link" onClick={handlePrevious}>
                         <i className="mdi mdi-chevron-left"></i>
                       </Link>
                     </li>
@@ -412,11 +415,11 @@ const TableContainer = ({
                     {visiblePageNumbers.map((item) => (
                       <li
                         key={item}
-                        className={`paginate_button page-item ${currentPage === item ? "active" : ""
-                          }`}
+                        className={`paginate_button page-item ${
+                          currentPage === item ? "active" : ""
+                        }`}
                       >
                         <Link
-                          to="#"
                           className="page-link"
                           onClick={() => {
                             pageIndexRef.current = item;
@@ -430,10 +433,11 @@ const TableContainer = ({
 
                     {/* Next Button */}
                     <li
-                      className={`paginate_button page-item next ${!getCanNextPage() ? "disabled" : ""
-                        }`}
+                      className={`paginate_button page-item next ${
+                        !getCanNextPage() ? "disabled" : ""
+                      }`}
                     >
-                      <Link to="#" className="page-link" onClick={handleNext}>
+                      <Link className="page-link" onClick={handleNext}>
                         <i className="mdi mdi-chevron-right"></i>
                       </Link>
                     </li>
@@ -444,7 +448,6 @@ const TableContainer = ({
           )}
         </div>
       </div>
-
     </Fragment>
   );
 };

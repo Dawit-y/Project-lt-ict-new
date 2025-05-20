@@ -15,22 +15,22 @@ const DatePicker = ({
   componentId,
   minDate,
   maxDate,
+  label
 }) => {
   const { t } = useTranslation();
 
   return (
     <React.Fragment>
       <Label>
-        {t(componentId)}
+        {label ? t(label) : t(componentId)}
         {isRequired && <span className="text-danger">*</span>}
       </Label>
       <InputGroup>
         <div
-          className={`d-flex w-100 ${
-            validation.touched[componentId] && validation.errors[componentId]
-              ? "border border-danger rounded"
-              : ""
-          }`}
+          className={`d-flex w-100 ${validation.touched[componentId] && validation.errors[componentId]
+            ? "border border-danger rounded"
+            : ""
+            }`}
         >
           <Flatpickr
             id={componentId}

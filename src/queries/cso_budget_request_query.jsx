@@ -16,9 +16,9 @@ export const useFetchBudgetRequests = (params = {}) => {
     queryKey: [...BUDGET_REQUESTS_QUERY_KEY, params],
     queryFn: () => getBudgetRequest(params),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
+    gcTime: 100 * 60 * 6,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 

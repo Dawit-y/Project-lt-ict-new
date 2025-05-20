@@ -14,9 +14,8 @@ export const useFetchRequestInformations = (param = {}, isActive) => {
     queryKey: [...REQUEST_INFORMATION_QUERY_KEY, "fetch", param],
     queryFn: () => getRequestInformation(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: isActive,
   });
 };
@@ -29,7 +28,7 @@ export const useSearchRequestInformations = (searchParams = {}) => {
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: searchParams.length > 0,
   });
 };
@@ -86,11 +85,11 @@ export const useUpdateRequestInformation = () => {
             ...oldData,
             data: oldData.data.map((RequestInformationData) =>
               RequestInformationData.rqi_id ===
-              updatedRequestInformation.data.rqi_id
+                updatedRequestInformation.data.rqi_id
                 ? {
-                    ...RequestInformationData,
-                    ...updatedRequestInformation.data,
-                  }
+                  ...RequestInformationData,
+                  ...updatedRequestInformation.data,
+                }
                 : RequestInformationData
             ),
           };

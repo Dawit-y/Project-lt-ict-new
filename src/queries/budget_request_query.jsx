@@ -5,16 +5,9 @@ import {
   updateBudgetRequest,
   deleteBudgetRequest,
   getBudgetRequestforApproval,
-  updateBudgetRequestApproval
+  updateBudgetRequestApproval,
+  bulkUpdateBudgetRequestApproval
 } from "../helpers/budgetrequest_backend_helper";
-import { useSelector } from "react-redux";
-import { createSelector } from "reselect";
-
-const selectBudgetRequestStatus = createSelector(
-  (state) => state.budgetRequest,
-  (budgetRequest) => budgetRequest
-);
-
 
 const BUDGET_REQUESTS_QUERY_KEY = ["budgetrequest"];
 
@@ -24,9 +17,8 @@ export const useFetchBudgetRequests = (params = {}) => {
     queryKey: [...BUDGET_REQUESTS_QUERY_KEY, params],
     queryFn: () => getBudgetRequest(params),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 
@@ -48,16 +40,16 @@ export const useSearchBudgetRequests = (searchParams = {}) => {
     enabled: true, // Always enable the query
   });
 };
+
 export const useSearchBudgetRequestforApproval = (searchParams = {}) => {
-  const budgetRequest = useSelector(selectBudgetRequestStatus);
   return useQuery({
-    queryKey: [...BUDGET_REQUESTS_QUERY_KEY, searchParams],
+    queryKey: [...BUDGET_REQUESTS_QUERY_KEY, "search", searchParams],
     queryFn: () => getBudgetRequestforApproval(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: searchParams.length > 0 || budgetRequest,
+    enabled: Object.keys(searchParams).length > 0,
   });
 };
 
@@ -67,7 +59,7 @@ export const useUpdateBudgetRequestApproval = () => {
   return useMutation({
     mutationFn: updateBudgetRequestApproval,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: BUDGET_REQUESTS_QUERY_KEY, exact: false })
+      queryClient.invalidateQueries({ queryKey: BUDGET_REQUESTS_QUERY_KEY, exact: false, refetchType: "all" })
     },
   });
 };
@@ -178,6 +170,18 @@ export const useDeleteBudgetRequest = () => {
     mutationFn: deleteBudgetRequest,
     onSuccess: (deletedData) => {
       queryClient.invalidateQueries({ queryKey: BUDGET_REQUESTS_QUERY_KEY });
+    },
+  });
+};
+
+
+export const useBulkUpdateBudgetRequestApproval = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: bulkUpdateBudgetRequestApproval,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: BUDGET_REQUESTS_QUERY_KEY, exact: false, refetchType: "all" })
     },
   });
 };

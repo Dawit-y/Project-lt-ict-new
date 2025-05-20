@@ -14,14 +14,13 @@ export const useFetchRequestFollowups = () => {
     queryKey: REQUEST_FOLLOWUP_QUERY_KEY,
     queryFn: () => getRequestFollowup(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: false },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 
 //search request_followup
-export const useSearchRequestFollowups = (searchParams = {}) => {
+export const useSearchRequestFollowups = (searchParams = {}, enabled) => {
   return useQuery({
     queryKey: [...REQUEST_FOLLOWUP_QUERY_KEY, searchParams],
     queryFn: () => getRequestFollowup(searchParams),
@@ -29,7 +28,7 @@ export const useSearchRequestFollowups = (searchParams = {}) => {
     gcTime: 1000 * 60 * 10,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
-    enabled: Object.keys(searchParams).length > 0
+    enabled
   });
 };
 

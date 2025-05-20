@@ -19,6 +19,11 @@ const SupersetListReport = (dashboardPath) => {
 
     //const baseUrl=dashboardPath.dashboardPath;
     const baseUrl = "https://report.pms.oro.gov.et/superset/dashboard/16";
+// Force HTTPS if somehow HTTP sneaks in
+if (baseUrl.startsWith("http://")) {
+  baseUrl = baseUrl.replace("http://", "https://");
+}
+
     const url = new URL(baseUrl);
     // Add query parameters
     url.searchParams.set("standalone", "true");

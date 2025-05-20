@@ -49,7 +49,9 @@ import { createSelectOptions } from "../../utils/commonMethods";
 import { formatDate } from "../../utils/commonMethods";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import DatePicker from "../../components/Common/DatePicker";
-
+import { formattedAmountValidation } from "../../utils/Validation/validation";
+import FormattedAmountField from "../../components/Common/FormattedAmountField";
+import { convertToNumericValue } from "../../utils/commonMethods";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -59,7 +61,7 @@ const truncateText = (text, maxLength) => {
 
 const ProjectContractorModel = (props) => {
   const { passedId, isActive, startDate } = props;
-  const param = { cni_project_id: passedId , request_type: "single" };
+  const param = { cni_project_id: passedId, request_type: "single" };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -94,6 +96,7 @@ const ProjectContractorModel = (props) => {
       toast.success(`Data added successfully`, {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
       toast.error("Failed to add data", {
         autoClose: 2000,
@@ -108,6 +111,7 @@ const ProjectContractorModel = (props) => {
       toast.success(`data updated successfully`, {
         autoClose: 2000,
       });
+      validation.resetForm();
     } catch (error) {
       toast.error(`Failed to update Data`, {
         autoClose: 2000,
@@ -181,6 +185,14 @@ const ProjectContractorModel = (props) => {
 
       is_deletable: (projectContractor && projectContractor.is_deletable) || 1,
       is_editable: (projectContractor && projectContractor.is_editable) || 1,
+      cni_financial_start:
+        (projectContractor && projectContractor.cni_financial_start) || "0",
+      cni_physical_start:
+        (projectContractor && projectContractor.cni_physical_start) || "0",
+      cni_financial_end:
+        (projectContractor && projectContractor.cni_financial_end) || "0",
+      cni_physical_end:
+        (projectContractor && projectContractor.cni_physical_end) || "0"
     },
 
     validationSchema: Yup.object({
@@ -235,13 +247,17 @@ const ProjectContractorModel = (props) => {
           cni_bid_contract_signing_date: values.cni_bid_contract_signing_date,
           cni_description: values.cni_description,
           cni_status: values.cni_status,
-
+          cni_financial_start: convertToNumericValue(values.cni_financial_start),
+          cni_physical_start: convertToNumericValue(values.cni_physical_start),
+          cni_financial_end: convertToNumericValue(values.cni_financial_end),
+          cni_physical_end: convertToNumericValue(values.cni_physical_end),
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
+
         // update ProjectContractor
         handleUpdateProjectContractor(updateProjectContractor);
-        validation.resetForm();
+
       } else {
         const newProjectContractor = {
           cni_name: values.cni_name,
@@ -267,10 +283,13 @@ const ProjectContractorModel = (props) => {
           cni_bid_contract_signing_date: values.cni_bid_contract_signing_date,
           cni_description: values.cni_description,
           cni_status: values.cni_status,
+          cni_financial_start: convertToNumericValue(values.cni_financial_start),
+          cni_physical_start: convertToNumericValue(values.cni_physical_start),
+          cni_financial_end: convertToNumericValue(values.cni_financial_end),
+          cni_physical_end: convertToNumericValue(values.cni_physical_end),
         };
         // save new ProjectContractor
         handleAddProjectContractor(newProjectContractor);
-        validation.resetForm();
       }
     },
   });
@@ -325,7 +344,10 @@ const ProjectContractorModel = (props) => {
         projectContractor.cni_bid_contract_signing_date,
       cni_description: projectContractor.cni_description,
       cni_status: projectContractor.cni_status,
-
+      cni_financial_start: projectContractor.cni_financial_start,
+      cni_physical_start: projectContractor.cni_physical_start,
+      cni_financial_end: projectContractor.cni_financial_end,
+      cni_physical_end: projectContractor.cni_physical_end,
       is_deletable: projectContractor.is_deletable,
       is_editable: projectContractor.is_editable,
     });
@@ -366,23 +388,22 @@ const ProjectContractorModel = (props) => {
           );
         },
       },
-
-      {
-        header: "",
-        accessorKey: "cni_contractor_type_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.cni_contractor_type_id,
-                30
-              ) || "-"}
-            </span>
-          );
-        },
-      },
+      /* {
+         header: "",
+         accessorKey: "cni_contractor_type_id",
+         enableColumnFilter: false,
+         enableSorting: true,
+         cell: (cellProps) => {
+           return (
+             <span>
+               {truncateText(
+                 cellProps.row.original.cni_contractor_type_id,
+                 30
+               ) || "-"}
+             </span>
+           );
+         },
+       },*/
       {
         header: "",
         accessorKey: "cni_tin_num",
@@ -496,8 +517,8 @@ const ProjectContractorModel = (props) => {
       },
     ];
     if (
-     data?.previledge?.is_role_editable==1 ||
-     data?.previledge?.is_role_deletable==1
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -508,25 +529,25 @@ const ProjectContractorModel = (props) => {
           return (
             <div className="d-flex gap-3">
               {(data?.previledge?.is_role_editable == 1 && cellProps.row.original?.is_editable == 1) && (
-                 <Button
-                    size="sm"
-                    color="none"
-                    className="text-success"
-                    onClick={() => {
-                      const data = cellProps.row.original;
-                      handleProjectContractorClick(data);
-                    }}
-                  >
-                    <i
-                      className="mdi mdi-pencil font-size-18"
-                      id="edittooltip"
-                    />
-                    <UncontrolledTooltip placement="top" target="edittooltip">
-                      Edit
-                    </UncontrolledTooltip>
-                  </Button>
+                <Button
+                  size="sm"
+                  color="none"
+                  className="text-success"
+                  onClick={() => {
+                    const data = cellProps.row.original;
+                    handleProjectContractorClick(data);
+                  }}
+                >
+                  <i
+                    className="mdi mdi-pencil font-size-18"
+                    id="edittooltip"
+                  />
+                  <UncontrolledTooltip placement="top" target="edittooltip">
+                    Edit
+                  </UncontrolledTooltip>
+                </Button>
               )}
-{(data?.previledge?.is_role_deletable == 9 && cellProps.row.original?.is_deletable == 9) && (
+              {(data?.previledge?.is_role_deletable == 9 && cellProps.row.original?.is_deletable == 9) && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -583,6 +604,11 @@ const ProjectContractorModel = (props) => {
           { label: t('cni_bid_opening_date'), key: "cni_bid_opening_date" },
           { label: t('cni_bid_award_date'), key: "cni_bid_award_date" },
           { label: t('cni_bid_contract_signing_date'), key: "cni_bid_contract_signing_date" },
+
+          { label: t('cni_financial_start'), key: "cni_financial_start" },
+          { label: t('cni_physical_start'), key: "cni_physical_start" },
+          { label: t('cni_financial_end'), key: "cni_financial_end" },
+          { label: t('cni_physical_end'), key: "cni_physical_end" },
           //{ label: t('prp_payment_percentage'), key: "prp_status" },
         ]}
         footerText={t('close')}
@@ -931,7 +957,39 @@ const ProjectContractorModel = (props) => {
                       </FormFeedback>
                     ) : null}
                   </Col>
+                  <Col md={3}>
+                    <FormattedAmountField
+                      validation={validation}
+                      fieldId="cni_financial_start"
+                      isRequired={true}
+                      max={100}
+                    />
+                  </Col>
+                  <Col md={3}>
+                    <FormattedAmountField
+                      validation={validation}
+                      fieldId="cni_physical_start"
+                      isRequired={true}
+                      max={100}
+                    />
+                  </Col>
 
+                  <Col md={3}>
+                    <FormattedAmountField
+                      validation={validation}
+                      fieldId="cni_financial_end"
+                      isRequired={false}
+                      max={100}
+                    />
+                  </Col>
+                  <Col md={3}>
+                    <FormattedAmountField
+                      validation={validation}
+                      fieldId="cni_physical_end"
+                      isRequired={false}
+                      max={100}
+                    />
+                  </Col>
                   <Col className="col-md-12 mb-3">
                     <Card>
                       <CardHeader

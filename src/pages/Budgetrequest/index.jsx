@@ -20,6 +20,7 @@ import { useFetchProject } from "../../queries/project_query";
 import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
 import BudgetRequestModal from "./BudgetRequestModal";
 import { useTranslation } from "react-i18next";
+import { useAuthUser } from "../../hooks/useAuthUser";
 import BudgetRequestAmount from "../Budgetrequestamount/index";
 import BudgetRequestTask from "../Budgetrequesttask/index";
 import BudgetExSource from "../Budgetexsource/index";
@@ -53,6 +54,7 @@ import DatePicker from "../../components/Common/DatePicker";
 import { PAGE_ID } from "../../constants/constantFile";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import { convertToNumericValue } from "../../utils/commonMethods";
+import InputField from "../../components/Common/InputField";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -90,8 +92,7 @@ const BudgetRequestModel = () => {
   const updateBudgetRequest = useUpdateBudgetRequest();
   const deleteBudgetRequest = useDeleteBudgetRequest();
 
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const project = useFetchProject(id, userId, true);
 
   const handleAddBudgetRequest = async (data) => {
@@ -161,7 +162,7 @@ const BudgetRequestModel = () => {
         const updatedBudgetRequest = {
           bdr_id: budgetRequest ? budgetRequest.bdr_id : 0,
           bdr_budget_year_id: parseInt(values.bdr_budget_year_id),
-          bdr_requested_amount: convertToNumericValue(values.bdr_requested_amount),
+          bdr_requested_amount: parseFloat(values.bdr_requested_amount),
           bdr_requested_date_ec: values.bdr_requested_date_ec,
           bdr_requested_date_gc: values.bdr_requested_date_gc,
           bdr_description: values.bdr_description,
@@ -174,7 +175,7 @@ const BudgetRequestModel = () => {
         const newBudgetRequest = {
           bdr_budget_year_id: parseInt(values.bdr_budget_year_id),
           bdr_project_id: id,
-          bdr_requested_amount: convertToNumericValue(values.bdr_requested_amount),
+          bdr_requested_amount: parseFloat(values.bdr_requested_amount),
           bdr_requested_date_ec: values.bdr_requested_date_ec,
           bdr_requested_date_gc: values.bdr_requested_date_gc,
           bdr_description: values.bdr_description,
@@ -224,7 +225,7 @@ const BudgetRequestModel = () => {
     setBudgetRequest({
       bdr_id: budgetRequest.bdr_id,
       bdr_budget_year_id: budgetRequest.bdr_budget_year_id,
-      bdr_requested_amount: Number(budgetRequest.bdr_requested_amount).toLocaleString(),
+      bdr_requested_amount: budgetRequest.bdr_requested_amount,
       bdr_project_id: budgetRequest.bdr_project_id,
       bdr_requested_date_ec: budgetRequest.bdr_requested_date_ec,
       bdr_requested_date_gc: budgetRequest.bdr_requested_date_gc,
@@ -637,33 +638,9 @@ const BudgetRequestModel = () => {
                       validation={validation}
                       fieldId={"bdr_requested_amount"}
                       isRequired={true}
+                      allowDecimal={true}
                     />
                   </Col>
-                  {/* <Col className="col-md-6 mb-3">
-                  <Label>{t("bdr_released_amount")}</Label>
-                  <Input
-                    name="bdr_released_amount"
-                    type="text"
-                    placeholder={t("insert_status_name_amharic")}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.bdr_released_amount || ""}
-                    invalid={
-                      validation.touched.bdr_released_amount &&
-                      validation.errors.bdr_released_amount
-                        ? true
-                        : false
-                    }
-                    maxLength={20}
-                  />
-                  {validation.touched.bdr_released_amount &&
-                  validation.errors.bdr_released_amount ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.bdr_released_amount}
-                    </FormFeedback>
-                  ) : null}
-                </Col> */}
-
                   <Col className="col-md-6 mb-3">
                     <DatePicker
                       isRequired="true"
@@ -671,54 +648,6 @@ const BudgetRequestModel = () => {
                       componentId="bdr_requested_date_gc"
                     />
                   </Col>
-                  {/* <Col className="col-md-6 mb-3">
-                  <Label>{t("bdr_released_date_ec")}</Label>
-                  <Input
-                    name="bdr_released_date_ec"
-                    type="text"
-                    placeholder={t("insert_status_name_amharic")}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.bdr_released_date_ec || ""}
-                    invalid={
-                      validation.touched.bdr_released_date_ec &&
-                      validation.errors.bdr_released_date_ec
-                        ? true
-                        : false
-                    }
-                    maxLength={20}
-                  />
-                  {validation.touched.bdr_released_date_ec &&
-                  validation.errors.bdr_released_date_ec ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.bdr_released_date_ec}
-                    </FormFeedback>
-                  ) : null}
-                </Col> */}
-                  {/* <Col className="col-md-6 mb-3">
-                  <Label>{t("bdr_released_date_gc")}</Label>
-                  <Input
-                    name="bdr_released_date_gc"
-                    type="text"
-                    placeholder={t("insert_status_name_amharic")}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.bdr_released_date_gc || ""}
-                    invalid={
-                      validation.touched.bdr_released_date_gc &&
-                      validation.errors.bdr_released_date_gc
-                        ? true
-                        : false
-                    }
-                    maxLength={20}
-                  />
-                  {validation.touched.bdr_released_date_gc &&
-                  validation.errors.bdr_released_date_gc ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.bdr_released_date_gc}
-                    </FormFeedback>
-                  ) : null}
-                </Col> */}
                   <Col className="col-md-6 mb-3">
                     <Label>{t("bdr_description")}</Label>
                     <Input
@@ -743,32 +672,6 @@ const BudgetRequestModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  {/* <Col className="col-md-6 mb-3">
-                  <Label>{t("bdr_request_status")}</Label>
-                  <Input
-                    name="bdr_request_status"
-                    type="select"
-                    className="form-select"
-                    onChange={(e) => {
-                      validation.setFieldValue(
-                        "bdr_request_status",
-                        Number(e.target.value)
-                      );
-                    }}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.bdr_request_status}
-                  >
-                    <option value={""}>Select status</option>
-                    <option value={"Approved"}>{t("Approved")}</option>
-                    <option value={"Rejected"}>{t("Rejected")}</option>
-                  </Input>
-                  {validation.touched.bdr_request_status &&
-                  validation.errors.bdr_request_status ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.bdr_request_status}
-                    </FormFeedback>
-                  ) : null}
-                </Col> */}
                 </Row>
                 <Row>
                   <Col>

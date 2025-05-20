@@ -1,35 +1,30 @@
 import React, { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Card, CardBody, Table, Row, Col, Button, TabContent, TabPane, Nav, NavItem, CardTitle, NavLink, Spinner, Modal, ModalBody, ModalHeader, ModalFooter, Form, FormGroup, FormFeedback, Label, Input, Badge } from 'reactstrap'
+import { Card, CardBody, Table, Row, Col, Button, TabContent, TabPane, Nav, NavItem, CardTitle, NavLink, Spinner, Badge } from 'reactstrap'
 import classnames from "classnames"
-import { useFetchBudgetExSources } from '../../queries/budgetexsource_query'
-import { useFetchBudgetRequestAmounts } from '../../queries/budgetrequestamount_query'
-import { useFetchBudgetRequestTasks } from '../../queries/budgetrequesttask_query'
-import TableContainer from '../../components/Common/TableContainer'
-import * as Yup from "yup";
-import { useFormik } from "formik";
-import { useUpdateBudgetRequestApproval } from "../../queries/budget_request_query";
-import { toast } from "react-toastify"
-import DatePicker from "../../components/Common/DatePicker";
-import { useDispatch } from 'react-redux'
-import { changeBudgetRequest } from "../../store/queryEnabler/reducer"
+import { useFetchBudgetExSources } from '../../../queries/budgetexsource_query'
+import { useFetchBudgetRequestAmounts } from '../../../queries/budgetrequestamount_query'
+import { useFetchBudgetRequestTasks } from '../../../queries/budgetrequesttask_query'
+import TableContainer from '../../../components/Common/TableContainer'
+import ApproveModal from './ApproveModal'
+import { useAuthUser } from "../../../hooks/useAuthUser"
 
 const ApproveDecline = ({ request, toggleParent }) => {
   const { t } = useTranslation()
-  const [modal, setModal] = useState(false)
-  const toggleModal = () => setModal(!modal)
-  const [isApprove, setIsApprove] = useState(true)
+  const [approveModal, setApproveModal] = useState(false)
+  const toggleApproveModal = () => setApproveModal(!approveModal)
+  const [action, setAction] = useState("")
+  const { departmentType } = useAuthUser()
+
+  const isDirector = departmentType === "directorate"
+  const isDepartment = departmentType === "department"
+  const isDepartmentLevel = departmentType === "department" || departmentType === "directorate";
+  const isOfficerLevel = departmentType === "officer" || departmentType === "team";
 
   const handleClick = (event) => {
-    if (event.target.name === "approve") {
-      setIsApprove(true)
-      toggleModal()
-    } else {
-      setIsApprove(false)
-      toggleModal()
-    }
-  }
-
+    setAction(event.target.name)
+    toggleApproveModal();
+  };
   const excludedKeys = [
     "is_editable",
     "is_deletable",
@@ -522,24 +517,42 @@ const ApproveDecline = ({ request, toggleParent }) => {
     return baseColumns;
   }, []);
 
-
   return (
     <>
-      <ApproveModal isOpen={modal} toggle={toggleModal} isApprove={isApprove} request={request} toggleParent={toggleParent} />
+      {isDepartmentLevel && (
+        <ApproveModal
+          isOpen={approveModal}
+          toggle={toggleApproveModal}
+          action={action}
+          request={request}
+          toggleParent={toggleParent}
+        />
+      )}
       <Card>
         <CardBody>
-          <Row className='w-50 mx-auto p-2 mb-3'>
-            <Col className='d-flex align-items-center justify-content-center'>
-              <Button color='success' className='w-100' name='approve' onClick={handleClick}>
-                Approve
-              </Button>
-            </Col>
-            <Col className='d-flex align-items-center justify-content-center'>
-              <Button color='danger' className='w-100' name='reject' onClick={handleClick}>
-                Reject
-              </Button>
-            </Col>
-          </Row>
+          {isDepartmentLevel &&
+            <Row className='w-50 mx-auto p-2 mb-3'>
+              {!isDepartment &&
+                <Col className='d-flex align-items-center justify-content-center'>
+                  <Button color='secondary' className='w-100' name='recommend' onClick={handleClick}>
+                    {"Recommend"}
+                  </Button>
+                </Col>
+              }
+              {!isDirector &&
+                <Col className='d-flex align-items-center justify-content-center'>
+                  <Button color='success' className='w-100' name='approve' onClick={handleClick}>
+                    {"Approve"}
+                  </Button>
+                </Col>
+              }
+              <Col className='d-flex align-items-center justify-content-center'>
+                <Button color='danger' className='w-100' name='reject' onClick={handleClick}>
+                  {"Reject"}
+                </Button>
+              </Col>
+            </Row>
+          }
           <Row>
             <Col>
               <Badge color={request.color_code} pill className='py-1 px-2 mb-2'>
@@ -574,7 +587,6 @@ const ApproveDecline = ({ request, toggleParent }) => {
                           ))}
                         </tr>
                       ))}
-
                     </tbody>
                   </Table>
                 </div>
@@ -703,147 +715,3 @@ const ApproveDecline = ({ request, toggleParent }) => {
 }
 
 export default ApproveDecline
-
-const ApproveModal = ({ isOpen, toggle, isApprove, request, toggleParent }) => {
-  const { t } = useTranslation()
-  const dispatch = useDispatch()
-  const { mutateAsync, isPending } = useUpdateBudgetRequestApproval();
-  const handleUpdateBudgetRequest = async (data) => {
-    dispatch(changeBudgetRequest(true))
-    try {
-      await mutateAsync(data);
-      toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
-    } catch (error) {
-      toast.error(t("update_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-    toggleParent()
-  };
-
-  const validationSchema = Yup.object().shape({
-    bdr_released_amount: Yup.number()
-      .min(0, "Released amount must be greater or equal to 0")
-      .max(
-        request.bdr_requested_amount,
-        "Can not release more than requested"
-      )
-      .when("bdr_request_status", {
-        is: 2,
-        then: (schema) => schema.required("Released amount is required"),
-        otherwise: (schema) => schema.optional(),
-      }),
-    bdr_released_date_gc: Yup.date().required("Action date is required"),
-    bdr_action_remark: Yup.string().required("Action remark is required"),
-  });
-
-  const formik = useFormik({
-    initialValues: {
-      bdr_id: request.bdr_id || "",
-      bdr_request_status: isApprove ? 2 : 3,
-      bdr_released_amount:
-        request.bdr_request_status == 2
-          ? request.bdr_released_amount || ""
-          : "",
-      bdr_released_date_gc: request.bdr_released_date_gc || "",
-      bdr_action_remark: request.bdr_action_remark || "",
-    },
-    validationSchema,
-    enableReinitialize: true,
-    onSubmit: (values) => {
-      handleUpdateBudgetRequest(values);
-      formik.resetForm();
-      toggle();
-    },
-  });
-
-  return (
-    <Modal
-      isOpen={isOpen}
-      centered
-      className=""
-      toggle={toggle}
-    >
-      <ModalHeader toggle={toggle}>{isApprove ? t("approve") : t("reject")}</ModalHeader>
-      <ModalBody>
-        <Form onSubmit={formik.handleSubmit}>
-          {(formik.values.bdr_request_status === 2 ||
-            (request.bdr_request_status === 2 &&
-              request.bdr_released_amount)) && (
-              <FormGroup>
-                <Label>Released Amount</Label>
-                <Input
-                  type="number"
-                  name="bdr_released_amount"
-                  onChange={formik.handleChange}
-                  value={formik.values.bdr_released_amount}
-                  invalid={
-                    formik.touched.bdr_released_amount &&
-                      formik.errors.bdr_released_amount
-                      ? true
-                      : false
-                  }
-                />
-                {formik.errors.bdr_released_amount &&
-                  formik.touched.bdr_released_amount && (
-                    <div className="text-danger">
-                      {formik.errors.bdr_released_amount}
-                    </div>
-                  )}
-              </FormGroup>
-            )}
-          <FormGroup>
-            <DatePicker
-              isRequired={true}
-              componentId={"bdr_released_date_gc"}
-              validation={formik}
-              minDate={request?.bdr_requested_date_gc}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label>{t("action_remark")}</Label>
-            <Input
-              type="textarea"
-              name="bdr_action_remark"
-              rows={4}
-              onChange={formik.handleChange}
-              value={formik.values.bdr_action_remark}
-              invalid={
-                formik.touched.bdr_action_remark &&
-                  formik.errors.bdr_action_remark
-                  ? true
-                  : false
-              }
-            />
-            {formik.errors.bdr_action_remark &&
-              formik.touched.bdr_action_remark && (
-                <div className="text-danger">
-                  {formik.errors.bdr_action_remark}
-                </div>
-              )}
-          </FormGroup>
-          <div className='d-flex gap-2 align-items-center justify-content-end'>
-            <Button type="button" color="secondary" onClick={toggle}>
-              {t("Close")}
-            </Button>
-            <Button
-              type="submit"
-              color={isApprove ? "success" : "danger"}
-              className="w-md"
-              disabled={isPending}
-            >
-              <span className="flex align-items-center justify-content-center">
-                {isPending ? <Spinner size={"sm"} /> : ""}
-                <span className="ms-2">{isApprove ? t("approve") : t("reject")}</span>
-              </span>
-            </Button>
-          </div>
-        </Form>
-      </ModalBody>
-    </Modal>
-  )
-}

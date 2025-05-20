@@ -20,6 +20,7 @@ import {
 import { useFetchProject } from "../../queries/project_query";
 import ProjectPlanModal from "./ProjectPlanModal";
 import { useTranslation } from "react-i18next";
+import { useAuthUser } from "../../hooks/useAuthUser.jsx";
 import {
   Button,
   Col,
@@ -81,9 +82,7 @@ const ProjectPlanModel = () => {
   const { data, isLoading, error, isError, refetch } =
     useFetchProjectPlans(param);
   const { data: budgetYearData } = useFetchBudgetYears();
-
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
 
   const project = useFetchProject(id, userId, true);
   const projectStartDate = project?.data?.data?.prj_start_date_gc || ""

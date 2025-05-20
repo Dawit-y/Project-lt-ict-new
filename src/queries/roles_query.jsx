@@ -14,9 +14,8 @@ export const useFetchRoles = () => {
     queryKey: ROLES_QUERY_KEY,
     queryFn: () => getRoles(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 
@@ -28,7 +27,7 @@ export const useSearchRoles = (searchParams = {}) => {
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: searchParams.length > 0,
   });
 };

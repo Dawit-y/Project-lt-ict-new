@@ -14,17 +14,16 @@ export const useFetchProjectBudgetSources = (param = {}, isActive) => {
     queryKey: [...PROJECT_BUDGET_SOURCE_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectBudgetSource(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-     enabled: isActive,
+    refetchOnMount: true,
+    enabled: isActive,
   });
 };
 
 //search project_budget_source
 export const useSearchProjectBudgetSources = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...PROJECT_BUDGET_SOURCE_QUERY_KEY, "search",searchParams],
+    queryKey: [...PROJECT_BUDGET_SOURCE_QUERY_KEY, "search", searchParams],
     queryFn: () => getProjectBudgetSource(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
@@ -41,7 +40,7 @@ export const useAddProjectBudgetSource = () => {
   return useMutation({
     mutationFn: addProjectBudgetSource,
     onSuccess: (newDataResponse) => {
-    const queries = queryClient.getQueriesData({
+      const queries = queryClient.getQueriesData({
         queryKey: PROJECT_BUDGET_SOURCE_QUERY_KEY,
       });
 

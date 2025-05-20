@@ -127,22 +127,12 @@ const Row = ({ row }) => {
   );
 };
 
-const areEqual = (prevProps, nextProps) => {
-  return (
-    prevProps.row.id === nextProps.row.id &&
-    prevProps.row.original === nextProps.row.original
-  );
-};
-
 export const MemoizedRow = memo(Row);
 
 function Filter({
   column,
   table,
 }) {
-  const firstValue = table
-    .getPreFilteredRowModel()
-    .flatRows[0]?.getValue(column.id)
 
   const columnFilterValue = column.getFilterValue()
 

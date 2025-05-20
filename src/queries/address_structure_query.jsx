@@ -11,10 +11,10 @@ export const useFetchAddressStructures = (userId) => {
   return useQuery({
     queryKey: ["folders", userId],
     queryFn: () => getAddressStructure(),
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    meta: { persist: true },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 6,
     select: (data) => buildTree(data?.data),
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
   });
 };

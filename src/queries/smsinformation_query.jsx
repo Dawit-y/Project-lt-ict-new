@@ -14,9 +14,8 @@ export const useFetchSmsInformations = () => {
     queryKey: SMS_INFORMATION_QUERY_KEY,
     queryFn: () => getSmsInformation(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 
@@ -40,7 +39,7 @@ export const useAddSmsInformation = () => {
   return useMutation({
     mutationFn: addSmsInformation,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( SMS_INFORMATION_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(SMS_INFORMATION_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,

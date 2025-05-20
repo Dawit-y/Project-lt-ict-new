@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Modal, ModalHeader, ModalBody, Col, ModalFooter, Button } from "reactstrap";
 import GanttChart from "../GanttChart";
 import { useFetchProject } from "../../queries/project_query";
+import { useAuthUser } from "../../hooks/useAuthUser";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import Spinners from "../../components/Common/Spinner";
 
@@ -17,8 +18,7 @@ const GanttModal = (props) => {
   const { isOpen, toggle, projectPlan } = props;
 
   const projectId = projectPlan?.pld_project_id
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const { data, isLoading, isError, error, refetch } = useFetchProject(projectId, userId, isOpen);
   const projectStatusId = data?.data?.prj_project_status_id || ""
 

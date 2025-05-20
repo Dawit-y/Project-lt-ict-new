@@ -14,9 +14,8 @@ export const useFetchEmailInformations = () => {
     queryKey: EMAIL_INFORMATION_QUERY_KEY,
     queryFn: () => getEmailInformation(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 
@@ -40,7 +39,7 @@ export const useAddEmailInformation = () => {
   return useMutation({
     mutationFn: addEmailInformation,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( EMAIL_INFORMATION_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(EMAIL_INFORMATION_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,

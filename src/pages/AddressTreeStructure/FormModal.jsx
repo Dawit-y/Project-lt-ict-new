@@ -102,10 +102,8 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
     validationSchema,
     onSubmit: (values) => {
       if (action === "add") {
-        console.log("Add new:", values);
         handleAddFolder(values)
       } else if (action === "edit") {
-        console.log("Edit existing:", selectedRow.id, values);
         handleUpdateFolder(values)
       }
     },
@@ -127,14 +125,14 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
         onDeleteClick={handleDeleteFolder}
         isLoading={deleteFolder.isPending}
       />
-      <Modal size="md" isOpen={show} toggle={toggle}>
+      <Modal size="md" isOpen={show} toggle={toggle} centered>
         <div className="">
+          <ModalHeader toggle={toggle}>
+            {action === "add"
+              ? `${t("add")} ${selectedRow?.name ? ` ${nextLevel} under ${selectedRow.name}` : ""}`
+              : `${t("edit")} - ${selectedRow?.name || ""}`}
+          </ModalHeader>
           <ModalBody className="">
-            <ModalHeader toggle={toggle}>
-              {action === "add"
-                ? `${t("add")} ${selectedRow?.name ? ` ${nextLevel} under ${selectedRow.name}` : ""}`
-                : `${t("edit")} - ${selectedRow?.name || ""}`}
-            </ModalHeader>
             <Form onSubmit={formik.handleSubmit}>
               <Row>
                 <Col md={12} className="mb-3">

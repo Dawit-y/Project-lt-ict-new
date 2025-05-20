@@ -9,6 +9,7 @@ import { useFetchProject } from "../../../queries/citizenship_project_query";
 import { useTranslation } from "react-i18next";
 import ProjectSummary from "./ProjectSummary";
 import { TabWrapper } from "../../../components/Common/DetailViewWrapper";
+import { useAuthUser } from "../../../hooks/useAuthUser";
 // Lazy Load Components
 const LazyComponents = {
   ProjectDocument: lazy(() =>
@@ -17,7 +18,9 @@ const LazyComponents = {
   ProjectPayment: lazy(() => import("../../../pages/Projectpayment")),
   ProjectStakeholder: lazy(() => import("../../../pages/Projectstakeholder")),
   Projectcontractor: lazy(() => import("../../../pages/Projectcontractor")),
-  GeoLocation: lazy(() => import("../../../pages/GeoLocation")),
+  GeoLocation: lazy(() =>
+    import("../../../pages/GeoLocation/CitizenshipGeoLocation")
+  ),
   ProjectBudgetExpenditureModel: lazy(() =>
     import("../../Projectbudgetexpenditure")
   ),
@@ -28,7 +31,10 @@ const LazyComponents = {
   ProjectVariationModel: lazy(() => import("../../Projectvariation")),
   ProposalRequestModel: lazy(() => import("../../../pages/Proposalrequest")),
   Conversation: lazy(() => import("../../Conversationinformation/index1")),
-  ProjectMonitoringEvaluationModel: lazy(() => import("../../Projectmonitoringevaluation/index")),
+  ProjectMonitoringEvaluationModel: lazy(() =>
+    import("../../Projectmonitoringevaluation/index")
+  ),
+  ProjectKpiResultModel: lazy(() => import("../../Projectkpiresult/index")),
   RequestInformationModel: lazy(() =>
     import("../../../pages/Requestinformation")
   ),
@@ -49,8 +55,7 @@ const ProjectsOverview = () => {
   const location = useLocation();
   const projectId = Number(location.pathname.split("/")[2].split("#")[0]);
 
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
 
   const { data, isLoading } = useFetchProject(projectId, userId, true);
   const { t } = useTranslation();
@@ -150,7 +155,11 @@ const ProjectsOverview = () => {
         component: LazyComponents.ProjectMonitoringEvaluationModel,
         path: "project_monitoring_evaluation",
       },
-      
+      77: {
+        label: t("kpi_result"),
+        component: LazyComponents.ProjectKpiResultModel,
+        path: "kpi_result",
+      },
       //39: { label: t("request_information"), component: LazyComponents.RequestInformationModel, path: "information" },
     }),
     [t]
@@ -217,6 +226,7 @@ const ProjectsOverview = () => {
                         id={data?.data.prj_id}
                         status={data?.data.prj_project_status_id}
                         startDate={data?.data.prj_start_date_gc}
+                        totalActualBudget={data?.data?.prj_total_actual_budget}
                         components={dynamicComponents}
                       />
                     </Suspense>

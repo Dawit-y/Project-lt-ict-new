@@ -4,58 +4,17 @@ import { Row, Col, Collapse } from "reactstrap";
 import { Link } from "react-router-dom";
 import withRouter from "../Common/withRouter";
 import classname from "classnames";
-import { post } from "../../helpers/api_Lists";
-// i18n
 import { withTranslation } from "react-i18next";
 
 import { connect } from "react-redux";
+import { useFetchSideData } from "../../queries/side_data_query";
+import { useAuthUser } from "../../hooks/useAuthUser";
 
-export const SIDEDATA_CACHE_KEY = "sidedata_cache";
+
 const Navbar = (props) => {
   const [activeMenuIndex, setActiveMenuIndex] = useState(null); // Track active menu
-
-  const [sidedata, setSidedata] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const cachedData = localStorage.getItem(SIDEDATA_CACHE_KEY);
-    if (cachedData) {
-      setSidedata(JSON.parse(cachedData));
-      setIsLoading(false);
-    } else {
-      fetchSidedata();
-    }
-  }, []);
-
-  const fetchSidedata = async () => {
-    try {
-      const { data } = await post(`menus`);
-      // Group data by `parent_menu`
-      const groupedData = data.reduce((acc, curr) => {
-        const { parent_menu, link_name, link_url, link_icon } = curr;
-        if (!acc[parent_menu]) {
-          acc[parent_menu] = {
-            title: parent_menu,
-            icon: link_icon,
-            submenu: [],
-          };
-        }
-        acc[parent_menu].submenu.push({
-          name: link_name.replace(/-/g, " "),
-          path: `/${link_url}`,
-        });
-        return acc;
-      }, {});
-
-      const groupedSidedata = Object.values(groupedData);
-      setSidedata(groupedSidedata);
-      localStorage.setItem(SIDEDATA_CACHE_KEY, JSON.stringify(groupedSidedata));
-    } catch (error) {
-      console.error("Error fetching sidedata:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
+  const { data: sidedata = [], isLoading } = useFetchSideData(userId);
 
   const handleMenuClick = (index) => {
     setActiveMenuIndex(index === activeMenuIndex ? null : index); // Toggle active menu

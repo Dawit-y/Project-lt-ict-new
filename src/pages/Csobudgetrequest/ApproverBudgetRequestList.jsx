@@ -16,6 +16,7 @@ import {
   useSearchBudgetRequestforApproval,
 } from "../../queries/cso_budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
+import { useAuthUser } from "../../hooks/useAuthUser";
 import { useFetchRequestStatuss } from "../../queries/requeststatus_query";
 import { PAGE_ID } from "../../constants/constantFile";
 import {
@@ -68,7 +69,40 @@ const ApproverBudgetRequestList = () => {
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
-  const [include, setInclude] = useState(0)
+  const [include, setInclude] = useState(0);
+
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
+  const user = storedUser?.user;
+  const depId = user?.usr_officer_id > 0
+    ? user.usr_officer_id
+    : user?.usr_team_id > 0
+      ? user.usr_team_id
+      : user?.usr_directorate_id > 0
+        ? user.usr_directorate_id
+        : user?.usr_department_id > 0
+          ? user.usr_department_id
+          : null;
+
+  //const depId = 1
+  const { data: rqfData, isLoading: rqfLoading } = useFetchRequestFollowups()
+
+  function markForwardedRequests(budgetRequests, forwardedRequests, depId) {
+    const forwardedSet = new Set(
+      forwardedRequests
+        .filter(req => req.rqf_forwarding_dep_id === depId)
+        .map(req => req.rqf_request_id)
+    );
+
+    return budgetRequests.map(request => ({
+      ...request,
+      forwarded: forwardedSet.has(request.bdr_id),
+    }));
+  }
+
+  const transformedData = useMemo(() => {
+    if (!searchResults?.data || !rqfData?.data) return [];
+    return markForwardedRequests(searchResults.data, rqfData.data, depId);
+  }, [searchResults, rqfData, depId])
 
   const budgetYearMap = useMemo(() => {
     return (
@@ -341,7 +375,7 @@ const ApproverBudgetRequestList = () => {
   return (
     <React.Fragment>
       <LazyLoader>
-        {detailModal && (
+        {toggleDetailModal && (
           <BudgetRequestModal
             isOpen={detailModal}
             toggle={toggleDetailModal}

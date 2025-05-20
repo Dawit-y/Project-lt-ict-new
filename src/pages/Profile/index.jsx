@@ -58,7 +58,6 @@ const UsersProfile = () => {
       <ChangePasswordModal
         isOpen={isPasswordModalOpen}
         toggle={() => setIsPasswordModalOpen(!isPasswordModalOpen)}
-        user={authUser}
       />
 
       <div className="page-content">

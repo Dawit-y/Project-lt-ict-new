@@ -16,9 +16,9 @@ export const useFetchProjects = (userId) => {
     queryKey: [...PROJECT_QUERY_KEY, "fetch", userId],
     queryFn: () => getProject(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
+    gcTime: 1000 * 60 * 6,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 
@@ -27,7 +27,6 @@ export const useSearchOnlyProjects = (param = {}) => {
     queryKey: [...PROJECT_QUERY_KEY, "fetch", param],
     queryFn: () => getSearchProject(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
@@ -39,9 +38,8 @@ export const useFetchProject = (id, userId, isActive = false) => {
     queryKey: [...PROJECT_QUERY_KEY, "detail", id, userId],
     queryFn: () => fetchProject(id),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: !!id && !!userId && isActive,
   });
 };

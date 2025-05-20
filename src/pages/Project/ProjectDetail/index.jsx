@@ -9,7 +9,7 @@ import { useFetchProject } from "../../../queries/project_query";
 import { useTranslation } from "react-i18next";
 import ProjectSummary from "./ProjectSummary";
 import { TabWrapper } from "../../../components/Common/DetailViewWrapper";
-
+import { useAuthUser } from "../../../hooks/useAuthUser";
 // Lazy Load Components
 const LazyComponents = {
   ProjectDocument: lazy(() =>
@@ -29,7 +29,11 @@ const LazyComponents = {
   ProjectVariationModel: lazy(() => import("../../Projectvariation")),
   ProposalRequestModel: lazy(() => import("../../../pages/Proposalrequest")),
   Conversation: lazy(() => import("../../Conversationinformation/index1")),
-  ProjectMonitoringEvaluationModel: lazy(() => import("../../Projectmonitoringevaluation/index")),
+  ProjectMonitoringEvaluationModel: lazy(() =>
+    import("../../Projectmonitoringevaluation/index")
+  ),
+  ProjectComponentModel: lazy(() => import("../../Projectcomponent/index")),
+
   RequestInformationModel: lazy(() =>
     import("../../../pages/Requestinformation")
   ),
@@ -49,9 +53,7 @@ const ProjectsOverview = () => {
 
   const location = useLocation();
   const projectId = Number(location.pathname.split("/")[2].split("#")[0]);
-
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
 
   const { data, isLoading } = useFetchProject(projectId, userId, true);
   const { t } = useTranslation();
@@ -151,7 +153,12 @@ const ProjectsOverview = () => {
         component: LazyComponents.ProjectMonitoringEvaluationModel,
         path: "project_monitoring_evaluation",
       },
-      
+      75: {
+        label: t("project_component"),
+        component: LazyComponents.ProjectComponentModel,
+        path: "project_component",
+      },
+
       //39: { label: t("request_information"), component: LazyComponents.RequestInformationModel, path: "information" },
     }),
     [t]
@@ -199,7 +206,7 @@ const ProjectsOverview = () => {
       <Container fluid>
         <Breadcrumbs title="Projects" breadcrumbItem="Project Overview" />
         {isLoading ? (
-          <Spinner className="position-absolute top-50 start-50" size="md" />
+          <Spinner className="position-absolute top-50 start-50" color="primary" />
         ) : (
           <>
             <Row>
@@ -216,6 +223,7 @@ const ProjectsOverview = () => {
                         canvasWidth={84}
                         name={data?.data.prj_name}
                         id={data?.data.prj_id}
+                        totalActualBudget={data?.data?.prj_total_actual_budget}
                         status={data?.data.prj_project_status_id}
                         startDate={data?.data.prj_start_date_gc}
                         components={dynamicComponents}

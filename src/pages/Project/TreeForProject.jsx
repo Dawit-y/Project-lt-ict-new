@@ -1,5 +1,6 @@
 import { useEffect, useState, memo, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { useAuthUser } from "../../hooks/useAuthUser";
 import { useFetchAddressStructures } from "../../queries/address_structure_query";
 import { getUserSectorListTree } from "../../queries/usersector_query";
 import { useFetchProgramTree } from "../../queries/programinfo_query"
@@ -98,8 +99,7 @@ const formatProjectNode = (project, context = {}) => {
 const AddressTree = ({ onNodeSelect }) => {
   const { t, i18n } = useTranslation();
   const treeRef = useRef()
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const { data, isLoading, isError } = useFetchAddressStructures(userId);
   const [treeData, setTreeData] = useState([]);
   const [projectParams, setProjectParams] = useState({})

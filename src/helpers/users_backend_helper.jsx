@@ -1,6 +1,5 @@
 import { post } from "./api_Lists";
 
-const apiUrl = import.meta.env.VITE_BASE_API_URL;
 const GET_USERS = "users/listgrid";
 const GET_USER = "users/getuserinfo";
 const ADD_USERS = "users/insertgrid";
@@ -18,7 +17,7 @@ export const getUsers = async (params = {}) => {
     const response = await post(url);
     return response;
   } catch (error) {
-    console.log("Error in fetching data:", error);
+    throw error
   }
 };
 
@@ -30,53 +29,48 @@ export const getUser = async (params = {}) => {
     const response = await post(url);
     return response;
   } catch (error) {
-    console.log("Error in fetching data:", error);
+    throw error
   }
 };
 
 // add users
-export const addUsers = async (objectName) => {
+export const addUsers = async (data) => {
   try {
-    const response = await post(ADD_USERS, objectName, {
+    const response = await post(ADD_USERS, data, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
     return response;
   } catch (error) {
-    console.error("Failed to update grid:", error);
     throw error;
   }
 };
 
 // update users
-export const updateUsers = (objectName) =>
-  post(UPDATE_USERS + `?usr_id=${objectName?.usr_id}`, objectName, {
+export const updateUsers = (data) =>
+  post(UPDATE_USERS + `?usr_id=${data?.usr_id}`, data, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
   });
 
 // update profile
-export const updateProfile = (objectName) =>
-  post(UPDATE_PROFILE + `?id=${objectName?.usr_id}`, objectName, {
+export const updateProfile = (data) =>
+  post(UPDATE_PROFILE + `?id=${data?.usr_id}`, data, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
   });
 
 // change password
-export const changeUserStatus = (objectName) =>
-  post(
-    `${apiUrl}` + UPDATE_USER_STATUS + `?usr_id=${objectName?.usr_id}`,
-    objectName
-  );
+export const changeUserStatus = (data) =>
+  post(UPDATE_USER_STATUS + `?usr_id=${data?.usr_id}`, data);
+
 // change password
-export const changePassword = (objectName) =>
-  post(
-    `${apiUrl}` + CHANGE_PASSWORD + `?usr_id=${objectName?.user_id}`,
-    objectName
-  );
+export const changePassword = (data) =>
+  post(CHANGE_PASSWORD + `?usr_id=${data?.user_id}`, data);
+
 // delete  users
-export const deleteUsers = (objectName) =>
-  post(`${apiUrl}` + DELETE_USERS + `?usr_id=${objectName}`);
+export const deleteUsers = (data) =>
+  post(DELETE_USERS + `?usr_id=${data}`);

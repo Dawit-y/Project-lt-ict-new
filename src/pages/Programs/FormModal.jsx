@@ -12,6 +12,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import DatePicker from "../../components/Common/DatePicker"
+import { addYears } from "../../utils/commonMethods";
 
 const levels = ["sector", "program", "sub_program", "output"];
 function getNextLevel(currentLevel) {
@@ -175,6 +176,8 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
     },
   });
 
+  const minEndDateForProgram = addYears(validation.values.pri_start_date, 3)
+
   return (
     <>
       <DeleteModal
@@ -208,7 +211,7 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
                         ? true
                         : false
                     }
-                    maxLength={20}
+                    maxLength={200}
                   />
                   {validation.touched.pri_name_or &&
                     validation.errors.pri_name_or ? (
@@ -232,7 +235,7 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
                         ? true
                         : false
                     }
-                    maxLength={20}
+                    maxLength={200}
                   />
                   {validation.touched.pri_name_am &&
                     validation.errors.pri_name_am ? (
@@ -256,7 +259,7 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
                         ? true
                         : false
                     }
-                    maxLength={20}
+                    maxLength={200}
                   />
                   {validation.touched.pri_name_en &&
                     validation.errors.pri_name_en ? (
@@ -303,7 +306,7 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
                         isRequired={true}
                         componentId={"pri_end_date"}
                         validation={validation}
-                        minDate={validation.values.pri_start_date}
+                        minDate={currentLevel === "sector" ? minEndDateForProgram : validation.values.pri_start_date}
                       />
                     </Col>
                   </>
@@ -324,7 +327,7 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
                         ? true
                         : false
                     }
-                    maxLength={20}
+                    maxLength={400}
                   />
                   {validation.touched.pri_description &&
                     validation.errors.pri_description ? (

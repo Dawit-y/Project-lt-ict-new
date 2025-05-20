@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import {
   getProgramInfo,
   getProgramTree,
@@ -15,8 +15,7 @@ export const useFetchProgramInfos = (param = {}, isActive) => {
     queryKey: [...PROGRAM_INFO_QUERY_KEY, "fetch", param],
     queryFn: () => getProgramInfo(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     refetchOnMount: true,
     enabled: isActive,
   });
@@ -26,7 +25,8 @@ export const useFetchProgramTree = (param = {}, isActive) => {
     queryKey: [...PROGRAM_INFO_QUERY_KEY, "tree", param],
     queryFn: () => getProgramTree(param),
     staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: true,
+    gcTime: 1000 * 60 * 7,
+    refetchOnWindowFocus: false,
     refetchOnMount: true,
     enabled: isActive,
   });
@@ -50,14 +50,12 @@ export const useAddProgramInfo = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: addProgramInfo,
-    onSuccess: (newDataResponse) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [...PROGRAM_INFO_QUERY_KEY], // this will catch all "programinfo/*"
+        queryKey: [...PROGRAM_INFO_QUERY_KEY],
+        refetchType: "all"
       });
-      queryClient.invalidateQueries({
-        queryKey: [...PROGRAM_INFO_QUERY_KEY, "tree"], // this specifically targets "programinfo/tree/*"
-        exact: false, // make sure it matches partial keys like param variants
-      });
+
     },
   });
 };
@@ -67,14 +65,12 @@ export const useUpdateProgramInfo = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateProgramInfo,
-    onSuccess: (updatedData) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [...PROGRAM_INFO_QUERY_KEY], // this will catch all "programinfo/*"
+        queryKey: [...PROGRAM_INFO_QUERY_KEY],
+        refetchType: "all"
       });
-      queryClient.invalidateQueries({
-        queryKey: [...PROGRAM_INFO_QUERY_KEY, "tree"], // this specifically targets "programinfo/tree/*"
-        exact: false, // make sure it matches partial keys like param variants
-      });
+
     },
   });
 };
@@ -84,7 +80,7 @@ export const useDeleteProgramInfo = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteProgramInfo,
-    onSuccess: (deletedData) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PROGRAM_INFO_QUERY_KEY, exact: false })
     },
   });

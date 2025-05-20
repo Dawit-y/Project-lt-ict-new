@@ -14,7 +14,6 @@ export const useFetchProjectPayments = (param = {}, isActive) => {
     queryKey: [...PROJECT_PAYMENT_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectPayment(param),
     staleTime: 0,
-    meta: { persist: false },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     enabled: isActive,

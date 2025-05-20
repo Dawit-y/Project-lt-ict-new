@@ -14,9 +14,9 @@ export const useFetchCsoInfos = () => {
     queryKey: CSO_INFO_QUERY_KEY,
     queryFn: () => getCsoInfo(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
+    gcTime: 1000 * 60 * 6,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 

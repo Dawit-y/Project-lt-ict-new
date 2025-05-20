@@ -23,6 +23,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useUpdateBudgetRequestApproval } from "../../queries/cso_budget_request_query";
 import { useFetchRequestStatuss } from "../../queries/requeststatus_query";
+import { useAuthUser } from "../../hooks/useAuthUser";
 import { toast } from "react-toastify";
 import { createSelectOptions } from "../../utils/commonMethods";
 import { TabWrapper } from "../../components/Common/DetailViewWrapper";
@@ -48,8 +49,7 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
   );
 
   const projectId = transaction?.bdr_project_id;
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const { data: project } = useFetchProject(projectId, userId, isOpen);
 
   const handleUpdateBudgetRequest = async (data) => {
@@ -103,7 +103,7 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
   const tabs = useMemo(
     () => [
       // { id: "request_followup", label: t("request_follow_up"), content: <Suspense fallback={<Spinner />}><RequestFollowupModel request={transaction} /></Suspense> },
-      { id:   "Assign", label: "Assign", content: <Suspense fallback={<Spinner />}><AssignCsoRequests request={transaction} isActive={isOpen} budgetYearMap={budgetYearMap} /></Suspense> },
+      { id: "Assign", label: "Assign", content: <Suspense fallback={<Spinner />}><AssignCsoRequests request={transaction} isActive={isOpen} budgetYearMap={budgetYearMap} /></Suspense> },
       {
         id: "take_action",
         label: t("Approve/Reject"),

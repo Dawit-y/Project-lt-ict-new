@@ -7,12 +7,12 @@ import { Tree } from "react-arborist";
 import { FaFolder, FaFile, FaChevronRight, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { Card, CardBody, Input, Label, Col, Row, Button } from "reactstrap";
 import { v4 as uuidv4 } from 'uuid';
+import { useAuthUser } from "../../hooks/useAuthUser";
 
 const AddressTree = ({ onNodeSelect, setIsAddressLoading, setInclude }) => {
   const { t, i18n } = useTranslation();
   const treeRef = useRef()
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
-  const userId = storedUser?.user.usr_id;
+  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const { data, isLoading } = useFetchAddressStructures(userId);
   const [treeData, setTreeData] = useState([]);
   const [programParam, setProgramParam] = useState({})

@@ -15,9 +15,8 @@ export const useFetchUserSectors = (params = {}, isActive) => {
     queryKey: [...USER_SECTOR_QUERY_KEY, "fetch", params],
     queryFn: () => getUserSector(params),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: isActive
   });
 };
@@ -34,7 +33,19 @@ export const useSearchUserSectors = (searchParams = {}) => {
     enabled: searchParams.length > 0,
   });
 };
-
+//search user_sector
+export const getUserSectorList = (searchParams = {}) => {
+  return useQuery({
+    queryKey: [...USER_SECTOR_QUERY_KEY, "search", searchParams],
+    queryFn: () => getUserSectorTree(searchParams),
+    cacheTime: 0,          // Don't keep it in memory
+    staleTime: 0,          // Always stale
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: 'always',
+    refetchOnReconnect: 'always',
+    keepPreviousData: false, // Don't keep any previous results
+  });
+};
 export const getUserSectorListTree = (userId) => {
   return useQuery({
     queryKey: [...USER_SECTOR_QUERY_KEY, "tree", userId],

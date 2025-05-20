@@ -50,7 +50,7 @@ import {
 } from "../../utils/Validation/validation";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import { toast } from "react-toastify";
-import { createSelectOptions, createMultiSelectOptions, convertToNumericValue } from "../../utils/commonMethods";
+import { createSelectOptions, createMultiSelectOptions, convertToNumericValue, createMultiLangKeyValueMap } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForProject from "./TreeForProject";
 import DatePicker from "../../components/Common/DatePicker";
@@ -70,6 +70,7 @@ const ProjectModel = () => {
   const { param, isValidParam } = useMemo(() => {
     const param = {
       parent_id: selectedNode?.data?.pri_id,
+      prj_woreda_id: selectedNode?.data?.woreda_id
     };
 
     const isValidParam = Object.keys(param).length > 0 &&
@@ -88,15 +89,18 @@ const ProjectModel = () => {
   } = useFetchChildProjects(param, isValidParam);
 
   const { data: projectCategoryData, isLoading: prCategoryLoading, isError: prCategoryIsError } = useFetchProjectCategorys();
-  const {
-    pct_name_en: projectCategoryOptionsEn,
-    pct_name_or: projectCategoryOptionsOr,
-    pct_name_am: projectCategoryOptionsAm,
-  } = createMultiSelectOptions(
-    projectCategoryData?.data || [],
-    "pct_id",
-    ["pct_name_en", "pct_name_or", "pct_name_am"]
-  );
+  const projectCategoryMap = useMemo(() => {
+    return createMultiLangKeyValueMap(
+      projectCategoryData?.data || [],
+      "pct_id",
+      {
+        en: "pct_name_en",
+        am: "pct_name_am",
+        or: "pct_name_or",
+      },
+      lang,
+    );
+  }, [projectCategoryData, lang]);
 
   const addProject = useAddProject();
   const updateProject = useUpdateProject();
@@ -197,6 +201,9 @@ const ProjectModel = () => {
       // prj_department_id: (project && project.prj_department_id) || "",
       is_deletable: (project && project.is_deletable) || 1,
       is_editable: (project && project.is_editable) || 1,
+      prj_measurement_unit: (project && project.prj_measurement_unit) || "",
+      prj_measured_figure: (project && project.prj_measured_figure) || "0",
+
     },
 
     validationSchema: Yup.object({
@@ -226,7 +233,8 @@ const ProjectModel = () => {
           );
         }
       ),
-      prj_code: alphanumericValidation(3, 20, true).test(
+      prj_code: alphanumericValidation(3, 20, false),
+      /*test(
         "unique-prj_code",
         t("Already exists"),
         (value) => {
@@ -234,7 +242,7 @@ const ProjectModel = () => {
             (item) => item.prj_code == value && item.prj_id !== project?.prj_id
           );
         }
-      ),
+      ),*/
       //prj_project_status_id: Yup.string().required(t('prj_project_status_id')),
       prj_project_category_id: numberValidation(1, 200, true),
       //prj_project_budget_source_id: Yup.string().required(t('prj_project_budget_source_id')),
@@ -250,8 +258,8 @@ const ProjectModel = () => {
         t("prj_location_woreda_id")
       ),
       //prj_department_id: Yup.string().required(t("prj_department_id")),
-      prj_urban_ben_number: numberValidation(10, 10000000, false),
-      prj_rural_ben_number: numberValidation(10, 10000000, false),
+      prj_urban_ben_number: numberValidation(0, 10000000, false),
+      prj_rural_ben_number: numberValidation(0, 10000000, false),
       prj_location_description: alphanumericValidation(3, 425, false),
       //prj_outcome: alphanumericValidation(3, 425, true),
       prj_remark: alphanumericValidation(3, 425, false),
@@ -269,8 +277,8 @@ const ProjectModel = () => {
           prj_project_status_id: values.prj_project_status_id,
           prj_project_category_id: values.prj_project_category_id,
           prj_project_budget_source_id: values.prj_project_budget_source_id,
-          prj_total_estimate_budget: convertToNumericValue(values.prj_total_estimate_budget),
-          prj_total_actual_budget: convertToNumericValue(values.prj_total_actual_budget),
+          prj_total_estimate_budget: parseFloat(values.prj_total_estimate_budget),
+          prj_total_actual_budget: parseFloat(values.prj_total_actual_budget),
           prj_geo_location: values.prj_geo_location,
           prj_sector_id: Number(selectedNode?.data?.sector_id),
           prj_location_region_id: Number(values.prj_location_region_id),
@@ -304,6 +312,8 @@ const ProjectModel = () => {
           is_editable: values.is_editable,
           parent_id: Number(selectedNode.data.pri_id),
           object_type_id: 5,
+          prj_measurement_unit: values.prj_measurement_unit,
+          prj_measured_figure: convertToNumericValue(values.prj_measured_figure)
         };
         // update Project
         handleUpdateProject(updateProject);
@@ -316,8 +326,8 @@ const ProjectModel = () => {
           prj_project_status_id: values.prj_project_status_id,
           prj_project_category_id: values.prj_project_category_id,
           prj_project_budget_source_id: values.prj_project_budget_source_id,
-          prj_total_estimate_budget: convertToNumericValue(values.prj_total_estimate_budget),
-          prj_total_actual_budget: convertToNumericValue(values.prj_total_actual_budget),
+          prj_total_estimate_budget: parseFloat(values.prj_total_estimate_budget),
+          prj_total_actual_budget: parseFloat(values.prj_total_actual_budget),
           prj_geo_location: values.prj_geo_location,
           prj_sector_id: Number(selectedNode?.data?.sector_id),
           prj_location_region_id: Number(values.prj_location_region_id),
@@ -349,6 +359,8 @@ const ProjectModel = () => {
           prj_program_id: 1,
           parent_id: Number(selectedNode.data.pri_id),
           object_type_id: 5,
+          prj_measurement_unit: values.prj_measurement_unit,
+          prj_measured_figure: convertToNumericValue(values.prj_measured_figure)
         };
         // save new Project
         handleAddProject(newProject);
@@ -422,8 +434,8 @@ const ProjectModel = () => {
       prj_project_status_id: project.prj_project_status_id,
       prj_project_category_id: project.prj_project_category_id,
       prj_project_budget_source_id: project.prj_project_budget_source_id,
-      prj_total_estimate_budget: Number(project.prj_total_estimate_budget).toLocaleString(),
-      prj_total_actual_budget: Number(project.prj_total_actual_budget).toLocaleString(),
+      prj_total_estimate_budget: project.prj_total_estimate_budget,
+      prj_total_actual_budget: project.prj_total_actual_budget,
       prj_geo_location: project.prj_geo_location,
       prj_sector_id: project.prj_sector_id,
       prj_location_region_id: project.prj_location_region_id,
@@ -454,6 +466,8 @@ const ProjectModel = () => {
       //prj_department_id: project.prj_department_id,
       is_deletable: project.is_deletable,
       is_editable: project.is_editable,
+      prj_measurement_unit: project.prj_measurement_unit,
+      prj_measured_figure: project.prj_measured_figure
     });
     setIsEdit(true);
     toggle();
@@ -466,6 +480,7 @@ const ProjectModel = () => {
   };
 
   const handleProjectClicks = () => {
+    validation.resetForm()
     setIsEdit(false);
     setProject("");
     toggle();
@@ -810,7 +825,6 @@ const ProjectModel = () => {
               <Col className="col-md-4 mb-3">
                 <Label>
                   {t("prj_code")}
-                  <span className="text-danger">*</span>
                 </Label>
                 <Input
                   name="prj_code"
@@ -835,15 +849,11 @@ const ProjectModel = () => {
                 ) : null}
               </Col>
               <AsyncSelectField
-                name="prj_project_category_id"
+                fieldId="prj_project_category_id"
                 validation={validation}
                 isRequired
                 className="col-md-4 mb-3"
-                optionsByLang={{
-                  en: projectCategoryOptionsEn,
-                  am: projectCategoryOptionsAm,
-                  or: projectCategoryOptionsOr
-                }}
+                optionMap={projectCategoryMap}
                 isLoading={prCategoryLoading}
                 isError={prCategoryIsError}
               />
@@ -852,13 +862,15 @@ const ProjectModel = () => {
                   validation={validation}
                   fieldId={"prj_total_estimate_budget"}
                   isRequired={true}
+                  allowDecimal={true}
                 />
               </Col>
               <Col className="col-md-4 mb-3">
                 <FormattedAmountField
                   validation={validation}
                   fieldId={"prj_total_actual_budget"}
-                  isRequired={true}
+                  isRequired={false}
+                  allowDecimal={true}
                 />
               </Col>
               <Col className="col-md-4 mb-3">
@@ -875,7 +887,7 @@ const ProjectModel = () => {
                   validation={validation}
                   minDate={validation.values.prj_start_date_plan_gc} />
               </Col>
-              <Col className="col-md-4 mb-3">
+              <Col className="col-md-2 mb-3">
                 <Label>{t("prj_urban_ben_number")}</Label>
                 <Input
                   name="prj_urban_ben_number"
@@ -883,13 +895,14 @@ const ProjectModel = () => {
                   placeholder={t("prj_urban_ben_number")}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
-                  value={validation.values.prj_urban_ben_number || ""}
+                  value={validation.values.prj_urban_ben_number ?? ""}
                   invalid={
                     validation.touched.prj_urban_ben_number &&
                       validation.errors.prj_urban_ben_number
                       ? true
                       : false
                   }
+                  min={0}
                 />
                 {validation.touched.prj_urban_ben_number &&
                   validation.errors.prj_urban_ben_number ? (
@@ -898,8 +911,7 @@ const ProjectModel = () => {
                   </FormFeedback>
                 ) : null}
               </Col>
-
-              <Col className="col-md-4 mb-3">
+              <Col className="col-md-2 mb-3">
                 <Label>{t("prj_rural_ben_number")}</Label>
                 <Input
                   name="prj_rural_ben_number"
@@ -907,13 +919,14 @@ const ProjectModel = () => {
                   placeholder={t("prj_rural_ben_number")}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
-                  value={validation.values.prj_rural_ben_number || ""}
+                  value={validation.values.prj_rural_ben_number ?? ""}
                   invalid={
                     validation.touched.prj_rural_ben_number &&
                       validation.errors.prj_rural_ben_number
                       ? true
                       : false
                   }
+                  min={0}
                 />
                 {validation.touched.prj_rural_ben_number &&
                   validation.errors.prj_rural_ben_number ? (
@@ -922,6 +935,50 @@ const ProjectModel = () => {
                   </FormFeedback>
                 ) : null}
               </Col>
+              <Col className="col-md-2 mb-3">
+                <Label>{t("Total Beneficiaries")}</Label>
+                <Input
+                  type="number"
+                  readOnly
+                  value={
+                    (Number(validation.values.prj_urban_ben_number) || 0) +
+                    (Number(validation.values.prj_rural_ben_number) || 0)
+                  }
+                  className="bg-light"
+                />
+              </Col>
+              <Col className="col-md-3 mb-3">
+                <Label>{t("prj_measurement_unit")}</Label>
+                <Input
+                  name="prj_measurement_unit"
+                  type="text"
+                  placeholder={t("prj_measurement_unit")}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.prj_measurement_unit || ""}
+                  invalid={
+                    validation.touched.prj_measurement_unit &&
+                      validation.errors.prj_measurement_unit
+                      ? true
+                      : false
+                  }
+                />
+                {validation.touched.prj_measurement_unit &&
+                  validation.errors.prj_measurement_unit ? (
+                  <FormFeedback type="invalid">
+                    {validation.errors.prj_measurement_unit}
+                  </FormFeedback>
+                ) : null}
+              </Col>
+              <Col className="col-md-3 mb-3">
+                <FormattedAmountField
+                  validation={validation}
+                  fieldId={"prj_measured_figure"}
+                  isRequired={false}
+                  allowDecimal={true}
+                />
+              </Col>
+
               <Col className="col-md-6 mb-3">
                 <Label>{t("prj_outcome")}</Label>
                 <Input

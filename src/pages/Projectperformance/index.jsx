@@ -1,6 +1,5 @@
-import React, { useEffect, useMemo, useState, Suspense, lazy } from "react";
-import PropTypes, { number } from "prop-types";
-import { Link } from "react-router-dom";
+import React, { useEffect, useMemo, useState, lazy, Suspense } from "react";
+import PropTypes from "prop-types";
 import { isEmpty } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
@@ -10,16 +9,12 @@ import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
   useFetchProjectPerformances,
-  useSearchProjectPerformances,
   useAddProjectPerformance,
   useDeleteProjectPerformance,
   useUpdateProjectPerformance,
 } from "../../queries/projectperformance_query";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
-import {
-  useFetchBudgetYears,
-  usePopulateBudgetYears,
-} from "../../queries/budgetyear_query";
+import { usePopulateBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
 import ProjectPerformanceModal from "./ProjectPerformanceModal";
 import { useTranslation } from "react-i18next";
@@ -35,25 +30,29 @@ import {
   Input,
   FormFeedback,
   Label,
+  Card,
+  CardBody,
+  Nav,
+  NavItem,
+  NavLink,
+  TabContent,
+  TabPane,
+  CardHeader,
+  Badge,
 } from "reactstrap";
-import {
-  alphanumericValidation,
-  amountValidation,
-  numberValidation,
-  formattedAmountValidation,
-} from "../../utils/Validation/validation";
-import { toast } from "react-toastify";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
-import DatePicker from "../../components/Common/DatePicker";
-import FormattedAmountField from "../../components/Common/FormattedAmountField";
-import {
-  convertToNumericValue,
-  createMultiSelectOptions,
-} from "../../utils/commonMethods";
-const AttachFileModal = lazy(() => import("../../components/Common/AttachFileModal"));
-const ConvInfoModal = lazy(() => import("../../pages/Conversationinformation/ConvInfoModal"));
 import { PAGE_ID } from "../../constants/constantFile";
+import { formattedAmountValidation } from "../../utils/Validation/validation";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import FormattedAmountField from "../../components/Common/FormattedAmountField";
+import { convertToNumericValue } from "../../utils/commonMethods";
+const AttachFileModal = lazy(() =>
+  import("../../components/Common/AttachFileModal")
+);
+const ConvInfoModal = lazy(() =>
+  import("../../pages/Conversationinformation/ConvInfoModal")
+);
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -61,258 +60,58 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-// Loader Component for Suspense
 const LazyLoader = ({ children }) => (
   <Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
 );
+
 const ProjectPerformanceModel = (props) => {
-  const { passedId, isActive, startDate } = props;
-  const param = { prp_project_id: passedId, request_type: "single" };
+  document.title = "Project Performance";
+  const { passedId, isActive, startDate, totalActualBudget } = props;
+  const param = {
+    prp_project_id: passedId,
+    request_type: "single",
+    prj_total_actual_budget: totalActualBudget,
+  };
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
+
+  // State management
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
+  const [entryMode, setEntryMode] = useState("planned"); // 'planned' or 'actual'
   const [isEdit, setIsEdit] = useState(false);
   const [projectPerformance, setProjectPerformance] = useState(null);
+  const [transaction, setTransaction] = useState({});
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [activeTab, setActiveTab] = useState("Quarter1");
+  const [selectedYear, setSelectedYear] = useState("");
+  const [fileModal, setFileModal] = useState(false);
+  const [convModal, setConvModal] = useState(false);
 
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
+  // Default values for hidden fields
 
+  const DEFAULT_MONTH = 1; // January as default
+  const DEFAULT_PHYSICAL_PERFORMANCE = 0;
+  const DEFAULT_PHYSICAL_PLANNED = 0;
+  const DEFAULT_REGION_PHYSICAL = 0;
+  const DEFAULT_TOTAL_BUDGET_USED = 0;
+  const DEFAULT_BUDGET_PLANNED = 0;
+  const DEFAULT_REGION_BUDGET = 0;
+
+  // Data fetching
   const { data, isLoading, isFetching, error, isError, refetch } =
     useFetchProjectPerformances(param, isActive);
-  const { data: budgetYearData } = usePopulateBudgetYears();
-  const { data: bgYearsOptionsData } = useFetchBudgetYears();
-  const { data: budgetMonthData } = useFetchBudgetMonths();
-  const { data: projectStatusData } = useFetchProjectStatuss();
   const addProjectPerformance = useAddProjectPerformance();
   const updateProjectPerformance = useUpdateProjectPerformance();
   const deleteProjectPerformance = useDeleteProjectPerformance();
-  const [fileModal, setFileModal] = useState(false);
-  const [convModal, setConvModal] = useState(false);
-  //START CRUD
-  const handleAddProjectPerformance = async (data) => {
-    try {
-      await addProjectPerformance.mutateAsync(data);
-      toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleUpdateProjectPerformance = async (data) => {
-    try {
-      await updateProjectPerformance.mutateAsync(data);
-      toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleDeleteProjectPerformance = async () => {
-    if (projectPerformance && projectPerformance.prp_id) {
-      try {
-        const id = projectPerformance.prp_id;
-        await deleteProjectPerformance.mutateAsync(id);
-        toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
-      } catch (error) {
-        toast.error(t("delete_failure"), {
-          autoClose: 2000,
-        });
-      }
-      setDeleteModal(false);
-    }
-  };
+  const { data: bgYearsOptionsData } = usePopulateBudgetYears();
+  const { data: budgetMonthData } = useFetchBudgetMonths();
+  const { data: projectStatusData } = useFetchProjectStatuss();
 
-  const validation = useFormik({
-    enableReinitialize: true,
-    initialValues: {
-      prp_project_id:
-        (projectPerformance && projectPerformance.prp_project_id) || "",
-      prp_budget_year_id:
-        (projectPerformance && projectPerformance.prp_budget_year_id) || "",
-      prp_budget_month_id:
-        (projectPerformance && projectPerformance.prp_budget_month_id) || "",
-      prp_project_status_id:
-        (projectPerformance && projectPerformance.prp_project_status_id) || "",
-      prp_record_date_gc:
-        (projectPerformance && projectPerformance.prp_record_date_gc) || "",
-      prp_total_budget_used:
-        (projectPerformance && projectPerformance.prp_total_budget_used) || "0",
-      prp_physical_performance:
-        (projectPerformance && projectPerformance.prp_physical_performance) ||
-        "0",
-      prp_description:
-        (projectPerformance && projectPerformance.prp_description) || "",
-      prp_status: (projectPerformance && projectPerformance.prp_status) || "",
-      is_deletable:
-        (projectPerformance && projectPerformance.is_deletable) || 1,
-      is_editable: (projectPerformance && projectPerformance.is_editable) || 1,
-      prp_physical_planned:
-        (projectPerformance && projectPerformance.prp_physical_planned) || "0",
-      prp_budget_planned:
-        (projectPerformance && projectPerformance.prp_budget_planned) || "0",
-      prp_quarter_id:
-        (projectPerformance && projectPerformance.prp_quarter_id) || "1",
-      prp_budget_by_region:
-        (projectPerformance && projectPerformance.prp_budget_by_region) || "0",
-      prp_physical_by_region:
-        (projectPerformance && projectPerformance.prp_physical_by_region) ||
-        "0",
-      prp_budget_baseline:
-        (projectPerformance && projectPerformance.prp_budget_baseline) || "0",
-      prp_physical_baseline:
-        (projectPerformance && projectPerformance.prp_physical_baseline) || "0",
-    },
-
-    validationSchema: Yup.object({
-      // prp_project_id: Yup.string().required(t('prp_project_id')),
-      prp_project_status_id: numberValidation(1, 20, true).test(
-        "unique-status-id",
-        t("Status already exists for the selected budget"),
-        function (value) {
-          const { prp_budget_year_id, prp_budget_month_id } = this.parent;
-          if (!data?.data) return true;
-          return !data?.data.some(
-            (item) =>
-              item.prp_project_status_id === value &&
-              item.prp_budget_year_id === prp_budget_year_id &&
-              item.prp_budget_month_id === prp_budget_month_id &&
-              item.prp_id !== projectPerformance.prp_id
-          );
-        }
-      ),
-      prp_budget_year_id: Yup.number().required(t("prp_budget_year_id")),
-      prp_budget_month_id: numberValidation(1, 20, true).test(
-        "unique-month-id",
-        t("Already exists."),
-        function (value) {
-          const { prp_budget_year_id } = this.parent;
-          return !data?.data.some(
-            (item) =>
-              item.prp_budget_month_id == value &&
-              item.prp_budget_year_id == prp_budget_year_id &&
-              item.prp_id !== projectPerformance?.prp_id
-          );
-        }
-      ),
-      //prp_record_date_ec: Yup.string().required(t('prp_record_date_ec')),
-      prp_record_date_gc: Yup.date()
-        .required(t("val_required"))
-        .typeError("Invalid date format"),
-      prp_total_budget_used: formattedAmountValidation(0, 10000000000, true),
-      prp_physical_planned: formattedAmountValidation(0, 10000000000, true),
-      prp_budget_planned: formattedAmountValidation(0, 10000000000, true),
-      prp_budget_by_region: formattedAmountValidation(0, 10000000000, true),
-      prp_physical_by_region: formattedAmountValidation(0, 10000000000, true),
-      prp_budget_baseline: formattedAmountValidation(0, 10000000000, true),
-      prp_physical_baseline: formattedAmountValidation(0, 10000000000, true),
-      prp_physical_performance: amountValidation(0, 100, true),
-      prp_description: alphanumericValidation(3, 425, false),
-      // prp_status: Yup.string().required(t('prp_status')),
-      //prp_created_date: Yup.string().required(t('prp_created_date')),
-      //prp_termination_reason_id: Yup.string().required(t('prp_termination_reason_id')),
-    }),
-    validateOnBlur: true,
-    validateOnChange: true,
-    onSubmit: (values) => {
-      if (isEdit) {
-        const updateProjectPerformance = {
-          prp_id: projectPerformance?.prp_id,
-          //prp_project_id: passedId,
-          prp_project_status_id: parseInt(values.prp_project_status_id),
-          prp_budget_month_id: parseInt(values.prp_budget_month_id),
-          prp_budget_year_id: parseInt(values.prp_budget_year_id),
-          //prp_record_date_ec: values.prp_record_date_ec,
-          prp_record_date_gc: values.prp_record_date_gc,
-          prp_physical_performance: values.prp_physical_performance,
-          prp_quarter_id: values.prp_quarter_id,
-
-          prp_total_budget_used: convertToNumericValue(
-            values.prp_total_budget_used
-          ),
-          prp_physical_planned: convertToNumericValue(
-            values.prp_physical_planned
-          ),
-          prp_budget_planned: convertToNumericValue(values.prp_budget_planned),
-          prp_budget_by_region: convertToNumericValue(
-            values.prp_budget_by_region
-          ),
-          prp_physical_by_region: convertToNumericValue(
-            values.prp_physical_by_region
-          ),
-          prp_budget_baseline: convertToNumericValue(
-            values.prp_budget_baseline
-          ),
-          prp_physical_baseline: convertToNumericValue(
-            values.prp_physical_baseline
-          ),
-
-          prp_description: values.prp_description,
-          prp_status: 0,
-          //prp_created_date: values.prp_created_date,
-          //prp_termination_reason_id: values.prp_termination_reason_id,
-
-          is_deletable: values.is_deletable,
-          is_editable: values.is_editable,
-        };
-        // update ProjectPerformance
-        handleUpdateProjectPerformance(updateProjectPerformance);
-      } else {
-        const newProjectPerformance = {
-          prp_project_id: passedId,
-          prp_project_status_id: parseInt(values.prp_project_status_id),
-          //prp_record_date_ec: values.prp_record_date_ec,
-          prp_budget_month_id: parseInt(values.prp_budget_month_id),
-          prp_budget_year_id: parseInt(values.prp_budget_year_id),
-          prp_record_date_gc: values.prp_record_date_gc,
-          prp_physical_performance: values.prp_physical_performance,
-          prp_description: values.prp_description,
-          prp_status: 0,
-          prp_total_budget_used: convertToNumericValue(
-            values.prp_total_budget_used
-          ),
-          prp_physical_planned: convertToNumericValue(
-            values.prp_physical_planned
-          ),
-          prp_budget_planned: convertToNumericValue(values.prp_budget_planned),
-          prp_budget_by_region: convertToNumericValue(
-            values.prp_budget_by_region
-          ),
-          prp_physical_by_region: convertToNumericValue(
-            values.prp_physical_by_region
-          ),
-          prp_budget_baseline: convertToNumericValue(
-            values.prp_budget_baseline
-          ),
-          prp_physical_baseline: convertToNumericValue(
-            values.prp_physical_baseline
-          ),
-          //prp_created_date: 2024,
-          //prp_termination_reason_id: values.prp_termination_reason_id,
-        };
-        // save new ProjectPerformance
-        handleAddProjectPerformance(newProjectPerformance);
-      }
-    },
-  });
-  const [transaction, setTransaction] = useState({});
-  const toggleViewModal = () => setModal1(!modal1);
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
+
+  // Mappings
   const budgetYearMap = useMemo(() => {
     return (
       bgYearsOptionsData?.data?.reduce((acc, year) => {
@@ -321,20 +120,6 @@ const ProjectPerformanceModel = (props) => {
       }, {}) || {}
     );
   }, [bgYearsOptionsData]);
-
-  const projectStatusMap = useMemo(() => {
-    return (
-      projectStatusData?.data?.reduce((acc, project_status) => {
-        acc[project_status.prs_id] =
-          lang === "en"
-            ? project_status.prs_status_name_en
-            : lang === "am"
-              ? project_status.prs_status_name_am
-              : project_status.prs_status_name_or;
-        return acc;
-      }, {}) || {}
-    );
-  }, [projectStatusData, lang]);
 
   const budgetMonthMap = useMemo(() => {
     return (
@@ -345,223 +130,630 @@ const ProjectPerformanceModel = (props) => {
     );
   }, [budgetMonthData]);
 
-  // Fetch ProjectPerformance on component mount
-  useEffect(() => {
-    setProjectPerformance(data);
-  }, [data]);
+  const projectStatusMap = useMemo(() => {
+    return (
+      projectStatusData?.data?.reduce((acc, status) => {
+        acc[status.prs_id] =
+          lang === "en"
+            ? status.prs_status_name_en
+            : lang === "am"
+              ? status.prs_status_name_am
+              : status.prs_status_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [projectStatusData, lang]);
 
-  useEffect(() => {
-    if (!isEmpty(data) && !!isEdit) {
-      setProjectPerformance(data);
-      setIsEdit(false);
+  const isPlanned = entryMode === "planned";
+  const isActual = entryMode === "actual";
+
+  const validateUniqueYear = (yearId) => {
+    if (!yearId) return true; // Skip if no year selected
+
+    // Ensure we have data and it's an array
+    if (!data?.data || !Array.isArray(data.data)) return true;
+
+    // Convert yearId to number for consistent comparison
+    const numericYearId = Number(yearId);
+
+    // Check if this year already exists in the data
+    const existingEntries = data.data.filter(
+      (item) => Number(item.prp_budget_year_id) === numericYearId
+    );
+
+    // If editing, we should have exactly 0 or 1 matching entries (the current one)
+    if (isEdit && projectPerformance) {
+      const currentEntryYear = Number(projectPerformance.prp_budget_year_id);
+      if (currentEntryYear === numericYearId) {
+        // If editing the same year, it's valid
+        return existingEntries.length <= 1;
+      }
+      // If changing to a different year, check if it exists
+      return existingEntries.length === 0;
     }
-  }, [data]);
 
+    // For new entries, just check if the year exists
+    return existingEntries.length === 0;
+  };
+
+  // Form validation
+  const validation = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      prp_project_id: passedId,
+      prj_total_actual_budget: totalActualBudget,
+      prp_project_status_id: projectPerformance?.prp_project_status_id || "1",
+      prp_budget_year_id: projectPerformance?.prp_budget_year_id || "",
+      prp_budget_month_id:
+        projectPerformance?.prp_budget_month_id || DEFAULT_MONTH,
+
+      is_new_actual_entry:
+        projectPerformance?.prp_record_date_gc &&
+        projectPerformance.prp_record_date_gc !==
+        new Date().toISOString().split("T")[0],
+      prp_record_date_gc:
+        projectPerformance?.prp_record_date_gc ||
+        new Date().toISOString().split("T")[0],
+
+      prp_description: projectPerformance?.prp_description || "",
+      prp_physical_performance:
+        projectPerformance?.prp_physical_performance ||
+        DEFAULT_PHYSICAL_PERFORMANCE,
+      prp_quarter_id: projectPerformance?.prp_quarter_id || "1",
+      // Monthly values
+      ...Array.from({ length: 12 }, (_, i) => ({
+        [`prp_pyhsical_planned_month_${i + 1}`]: projectPerformance?.[
+          `prp_pyhsical_planned_month_${i + 1}`
+        ]
+          ? Number(
+            projectPerformance[`prp_pyhsical_planned_month_${i + 1}`]
+          ).toLocaleString()
+          : "0",
+        [`prp_pyhsical_actual_month_${i + 1}`]: projectPerformance?.[
+          `prp_pyhsical_actual_month_${i + 1}`
+        ]
+          ? Number(
+            projectPerformance[`prp_pyhsical_actual_month_${i + 1}`]
+          ).toLocaleString()
+          : "0",
+        [`prp_finan_planned_month_${i + 1}`]: projectPerformance?.[
+          `prp_finan_planned_month_${i + 1}`
+        ]
+          ? Number(
+            projectPerformance[`prp_finan_planned_month_${i + 1}`]
+          ).toLocaleString()
+          : "0",
+        [`prp_finan_actual_month_${i + 1}`]: projectPerformance?.[
+          `prp_finan_actual_month_${i + 1}`
+        ]
+          ? Number(
+            projectPerformance[`prp_finan_actual_month_${i + 1}`]
+          ).toLocaleString()
+          : "0",
+        [`prp_status_month_${i + 1}`]:
+          projectPerformance?.[`prp_status_month_${i + 1}`] || "",
+      })).reduce((acc, curr) => ({ ...acc, ...curr })),
+      // Summary fields
+      prp_physical_planned: projectPerformance?.prp_physical_planned
+        ? Number(projectPerformance.prp_physical_planned).toLocaleString()
+        : DEFAULT_PHYSICAL_PLANNED.toString(),
+      prp_budget_planned: projectPerformance?.prp_budget_planned
+        ? Number(projectPerformance.prp_budget_planned).toLocaleString()
+        : DEFAULT_BUDGET_PLANNED.toString(),
+      prp_budget_by_region: projectPerformance?.prp_budget_by_region
+        ? Number(projectPerformance.prp_budget_by_region).toLocaleString()
+        : DEFAULT_REGION_BUDGET.toString(),
+      prp_physical_by_region: projectPerformance?.prp_physical_by_region
+        ? Number(projectPerformance.prp_physical_by_region).toLocaleString()
+        : DEFAULT_REGION_PHYSICAL.toString(),
+      prp_budget_baseline: projectPerformance?.prp_budget_baseline
+        ? Number(projectPerformance.prp_budget_baseline).toLocaleString()
+        : "0",
+      prp_physical_baseline: projectPerformance?.prp_physical_baseline
+        ? Number(projectPerformance.prp_physical_baseline).toLocaleString()
+        : "0",
+      prp_total_budget_used: projectPerformance?.prp_total_budget_used
+        ? Number(projectPerformance.prp_total_budget_used).toLocaleString()
+        : DEFAULT_TOTAL_BUDGET_USED.toString(),
+    },
+
+    validationSchema: Yup.object().shape({
+      ...Array.from({ length: 12 }, (_, i) => ({
+        [`prp_pyhsical_planned_month_${i + 1}`]: isPlanned
+          ? formattedAmountValidation(0, 100, true)
+          : Yup.string().notRequired(),
+        [`prp_pyhsical_actual_month_${i + 1}`]: isActual
+          ? formattedAmountValidation(0, 100, true)
+          : Yup.string().notRequired(),
+        [`prp_finan_planned_month_${i + 1}`]: isPlanned
+          ? formattedAmountValidation(0, 10000000000, true)
+          : Yup.string().notRequired(),
+        [`prp_finan_actual_month_${i + 1}`]: isActual
+          ? formattedAmountValidation(0, 10000000000, true)
+          : Yup.string().notRequired(),
+        [`prp_status_month_${i + 1}`]: isActual
+          ? Yup.number().test(
+            "status-validation",
+            t(
+              'Status is required when actual values are entered & Only "New" or "No" status is allowed when both actuals are 0'
+            ),
+            function (value) {
+              const physicalActual = convertToNumericValue(
+                this.parent[`prp_pyhsical_actual_month_${i + 1}`] || "0"
+              );
+              const financialActual = convertToNumericValue(
+                this.parent[`prp_finan_actual_month_${i + 1}`] || "0"
+              );
+
+              if (physicalActual === 0 && financialActual === 0) {
+                return !value || value === 5;
+              }
+              return !!value;
+            }
+          )
+          : Yup.number().notRequired(),
+      })).reduce((acc, curr) => ({ ...acc, ...curr })),
+
+      // Physical Baseline validation
+      prp_physical_baseline: Yup.string().test(
+        "physical-baseline-range",
+        t("Physical baseline must be between 0 and 100"),
+        function (value) {
+          const numValue = convertToNumericValue(value || "0");
+          return numValue >= 0 && numValue <= 100;
+        }
+      ),
+
+      // Budget Baseline validation
+      prp_budget_baseline: Yup.string().test(
+        "budget-baseline-range",
+        t("Budget baseline must be a positive number"),
+        function (value) {
+          const numValue = convertToNumericValue(value || "0");
+          return numValue >= 0;
+        }
+      ),
+
+      // Add new form-level validation fields for the sums
+      _sumPhysicalPlanned: Yup.string().when([], {
+        is: () => isPlanned,
+        then: () =>
+          Yup.string().test("sum-physical-planned", function () {
+            const sum = Array.from({ length: 12 }, (_, i) =>
+              convertToNumericValue(
+                this.parent[`prp_pyhsical_planned_month_${i + 1}`] || "0"
+              )
+            ).reduce((a, b) => a + b, 0);
+
+            if (sum > 100) {
+              return this.createError({
+                message: t(
+                  `Sum of physical planned values (${sum}%) exceeds 100%`
+                ),
+              });
+            }
+            return true;
+          }),
+      }),
+
+      _sumFinancialPlanned: Yup.string().when([], {
+        is: () => isPlanned,
+        then: () =>
+          Yup.string().test("sum-financial-planned", function () {
+            const sum = Array.from({ length: 12 }, (_, i) =>
+              convertToNumericValue(
+                this.parent[`prp_finan_planned_month_${i + 1}`] || "0"
+              )
+            ).reduce((a, b) => a + b, 0);
+            const totalBudget = convertToNumericValue(totalActualBudget || "0");
+            console.log("amount " + totalBudget);
+            if (totalBudget <= 0) {
+              return this.createError({
+                message: t("Total project budget is not available or invalid"),
+              });
+            }
+
+            if (sum > totalBudget) {
+              return this.createError({
+                message: t(
+                  `Sum of financial planned values (${sum.toLocaleString()}) exceeds total project budget (${totalBudget.toLocaleString()})`
+                ),
+              });
+            }
+            return true;
+          }),
+      }),
+
+      _sumPhysicalActual: Yup.string().when([], {
+        is: () => isActual,
+        then: () =>
+          Yup.string().test("sum-physical-actual", function () {
+            const sum = Array.from({ length: 12 }, (_, i) =>
+              convertToNumericValue(
+                this.parent[`prp_pyhsical_actual_month_${i + 1}`] || "0"
+              )
+            ).reduce((a, b) => a + b, 0);
+
+            if (sum > 100) {
+              return this.createError({
+                message: t(
+                  `Sum of physical actual values (${sum}%) exceeds 100%`
+                ),
+              });
+            }
+            return true;
+          }),
+      }),
+
+      prp_description: Yup.string().notRequired(),
+
+      prp_budget_year_id: Yup.number()
+        .required(t("Year is required"))
+        .test(
+          "unique-year",
+          t("This year already has an entry. Please select a different year."),
+          function (value) {
+            return validateUniqueYear(value);
+          }
+        ),
+
+      is_new_actual_entry: Yup.boolean(),
+
+      prp_record_date_gc: Yup.date()
+        .when("is_new_actual_entry", {
+          is: true,
+          then: (schema) =>
+            schema
+              .required(t("Entry date is required for new actual entries"))
+              .max(new Date(), t("Entry date cannot be in the future")),
+          otherwise: (schema) => schema.notRequired(),
+        })
+        .nullable(),
+    }),
+
+    validateOnBlur: true,
+    validateOnChange: false,
+
+    onSubmit: (values) => {
+      const payload = {
+        prp_project_id: passedId,
+        prj_total_actual_budget: totalActualBudget,
+        prp_project_status_id: "1",
+        prp_budget_year_id: values.prp_budget_year_id,
+        prp_budget_month_id: DEFAULT_MONTH,
+
+        prp_record_date_gc: values.is_new_actual_entry
+          ? values.prp_record_date_gc
+          : new Date().toISOString().split("T")[0],
+
+        prp_description: values.prp_description || null,
+        prp_physical_performance: DEFAULT_PHYSICAL_PERFORMANCE,
+        prp_quarter_id: values.prp_quarter_id,
+        // Summary fields with default values
+        prp_physical_planned: DEFAULT_PHYSICAL_PLANNED,
+        prp_budget_planned: DEFAULT_BUDGET_PLANNED,
+        prp_budget_by_region: DEFAULT_REGION_BUDGET,
+        prp_physical_by_region: DEFAULT_REGION_PHYSICAL,
+        prp_budget_baseline: convertToNumericValue(values.prp_budget_baseline),
+        prp_physical_baseline: convertToNumericValue(
+          values.prp_physical_baseline
+        ),
+        prp_total_budget_used: DEFAULT_TOTAL_BUDGET_USED,
+      };
+
+      // Add monthly values
+      for (let i = 1; i <= 12; i++) {
+        // Physical and financial values
+        payload[`prp_pyhsical_planned_month_${i}`] = convertToNumericValue(
+          values[`prp_pyhsical_planned_month_${i}`] || "0"
+        );
+        payload[`prp_pyhsical_actual_month_${i}`] = convertToNumericValue(
+          values[`prp_pyhsical_actual_month_${i}`] || "0"
+        );
+        payload[`prp_finan_planned_month_${i}`] = convertToNumericValue(
+          values[`prp_finan_planned_month_${i}`] || "0"
+        );
+        payload[`prp_finan_actual_month_${i}`] = convertToNumericValue(
+          values[`prp_finan_actual_month_${i}`] || "0"
+        );
+        // Status values - use project status for all months when in planned mode
+        if (
+          entryMode === "actual" &&
+          values[`prp_status_month_${i}`] !== undefined
+        ) {
+          payload[`prp_status_month_${i}`] = values[`prp_status_month_${i}`];
+        }
+      }
+
+      if (isEdit && projectPerformance?.prp_id) {
+        payload.prp_id = projectPerformance.prp_id;
+      }
+
+      if (isEdit) {
+        handleUpdateProjectPerformance(payload);
+      } else {
+        handleAddProjectPerformance(payload);
+      }
+    },
+  });
+
+  // Handle year change to filter months
+  const handleYearChange = (e) => {
+    const yearId = e.target.value;
+    setSelectedYear(yearId);
+    validation.setFieldValue("prp_budget_year_id", yearId);
+  };
+  // CRUD Operations
+  const handleAddProjectPerformance = async (data) => {
+    try {
+      await addProjectPerformance.mutateAsync(data);
+      toast.success(t("add_success"), { autoClose: 2000 });
+      validation.resetForm();
+    } catch (error) {
+      toast.error(t("add_failure"), { autoClose: 2000 });
+    }
+    toggle();
+  };
+
+  const handleUpdateProjectPerformance = async (data) => {
+    try {
+      await updateProjectPerformance.mutateAsync(data);
+      toast.success(t("update_success"), { autoClose: 2000 });
+      validation.resetForm();
+    } catch (error) {
+      toast.error(t("update_failure"), { autoClose: 2000 });
+    }
+    toggle();
+  };
+
+  const handleDeleteProjectPerformance = async () => {
+    if (projectPerformance?.prp_id) {
+      try {
+        await deleteProjectPerformance.mutateAsync(projectPerformance.prp_id);
+        toast.success(t("delete_success"), { autoClose: 2000 });
+      } catch (error) {
+        toast.error(t("delete_failure"), { autoClose: 2000 });
+      }
+      setDeleteModal(false);
+    }
+  };
+  const onClickDelete = (result) => {
+    setProjectPerformance(result);
+    setDeleteModal(true);
+  };
+
+  // UI Handlers
   const toggle = () => {
     if (modal) {
       setModal(false);
       setProjectPerformance(null);
+      setEntryMode("planned");
+      setSelectedYear("");
     } else {
       setModal(true);
     }
   };
 
-  const handleProjectPerformanceClick = (arg) => {
-    const projectPerformance = arg;
-    setProjectPerformance({
-      prp_id: projectPerformance.prp_id,
-      prp_project_id: projectPerformance.prp_project_id,
-      prp_project_status_id: projectPerformance.prp_project_status_id,
-      prp_record_date_ec: projectPerformance.prp_record_date_ec,
-      prp_record_date_gc: projectPerformance.prp_record_date_gc,
-      prp_total_budget_used: Number(
-        projectPerformance.prp_total_budget_used
-      ).toLocaleString(),
-      prp_physical_performance: projectPerformance.prp_physical_performance,
-      prp_description: projectPerformance.prp_description,
-      prp_status: projectPerformance.prp_status,
-      prp_created_date: projectPerformance.prp_created_date,
-      prp_termination_reason_id: projectPerformance.prp_termination_reason_id,
-      prp_budget_month_id: projectPerformance.prp_budget_month_id,
-      prp_budget_year_id: projectPerformance.prp_budget_year_id,
+  const toggleViewModal = () => setModal1(!modal1);
 
-      prp_physical_planned: Number(
-        projectPerformance.prp_physical_planned
-      ).toLocaleString(),
-      prp_budget_planned: Number(
-        projectPerformance.prp_budget_planned
-      ).toLocaleString(),
-      prp_quarter_id: projectPerformance.prp_quarter_id,
-      prp_budget_by_region: Number(
-        projectPerformance.prp_budget_by_region
-      ).toLocaleString(),
-      prp_physical_by_region: Number(
-        projectPerformance.prp_physical_by_region
-      ).toLocaleString(),
-      prp_budget_baseline: Number(
-        projectPerformance.prp_budget_baseline
-      ).toLocaleString(),
-      prp_physical_baseline: Number(
-        projectPerformance.prp_physical_baseline
-      ).toLocaleString(),
-
-      is_deletable: projectPerformance.is_deletable,
-      is_editable: projectPerformance.is_editable,
-    });
+  const handleEditPlanned = (data) => {
+    setProjectPerformance(data);
+    setEntryMode("planned");
+    setSelectedYear(data.prp_budget_year_id);
+    populateForm(data);
     setIsEdit(true);
     toggle();
   };
 
-  //delete projects
-  const [deleteModal, setDeleteModal] = useState(false);
-  const onClickDelete = (projectPerformance) => {
-    setProjectPerformance(projectPerformance);
-    setDeleteModal(true);
-  };
-
-  const handleProjectPerformanceClicks = () => {
-    setIsEdit(false);
-    setProjectPerformance("");
+  const handleAddActuals = (data) => {
+    setProjectPerformance(data);
+    setEntryMode("actual");
+    setSelectedYear(data.prp_budget_year_id);
+    populateForm(data);
+    setIsEdit(true);
     toggle();
   };
-  const handleSearchResults = ({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
+
+  const handleAddNew = () => {
+    setProjectPerformance(null);
+    setEntryMode("planned");
+    setSelectedYear("");
+    setIsEdit(false);
+    toggle();
   };
-  //START UNCHANGED
+
+  const populateForm = (data) => {
+    const hasCustomDate =
+      data.prp_record_date_gc &&
+      data.prp_record_date_gc !== new Date().toISOString().split("T")[0];
+    const values = {
+      prp_project_id: passedId,
+      prj_total_actual_budget: totalActualBudget,
+      prp_project_status_id: "1",
+      prp_budget_year_id: data.prp_budget_year_id,
+      prp_budget_month_id: DEFAULT_MONTH,
+
+      is_new_actual_entry: hasCustomDate,
+      prp_record_date_gc:
+        data.prp_record_date_gc || new Date().toISOString().split("T")[0],
+
+      prp_description: data.prp_description,
+      prp_physical_performance: DEFAULT_PHYSICAL_PERFORMANCE,
+      prp_quarter_id: data.prp_quarter_id,
+      // Monthly values
+      ...Array.from({ length: 12 }, (_, i) => ({
+        [`prp_pyhsical_planned_month_${i + 1}`]: data[
+          `prp_pyhsical_planned_month_${i + 1}`
+        ]
+          ? Number(data[`prp_pyhsical_planned_month_${i + 1}`]).toLocaleString()
+          : "0",
+        [`prp_pyhsical_actual_month_${i + 1}`]: data[
+          `prp_pyhsical_actual_month_${i + 1}`
+        ]
+          ? Number(data[`prp_pyhsical_actual_month_${i + 1}`]).toLocaleString()
+          : "0",
+        [`prp_finan_planned_month_${i + 1}`]: data[
+          `prp_finan_planned_month_${i + 1}`
+        ]
+          ? Number(data[`prp_finan_planned_month_${i + 1}`]).toLocaleString()
+          : "0",
+        [`prp_finan_actual_month_${i + 1}`]: data[
+          `prp_finan_actual_month_${i + 1}`
+        ]
+          ? Number(data[`prp_finan_actual_month_${i + 1}`]).toLocaleString()
+          : "0",
+        [`prp_status_month_${i + 1}`]: data[`prp_status_month_${i + 1}`] || "",
+      })).reduce((acc, curr) => ({ ...acc, ...curr })),
+      // Summary fields
+      prp_physical_planned: DEFAULT_PHYSICAL_PLANNED.toString(),
+      prp_budget_planned: DEFAULT_BUDGET_PLANNED.toString(),
+      prp_budget_by_region: DEFAULT_REGION_BUDGET.toString(),
+      prp_physical_by_region: DEFAULT_REGION_PHYSICAL.toString(),
+      prp_budget_baseline: data.prp_budget_baseline
+        ? Number(data.prp_budget_baseline).toLocaleString()
+        : "0",
+      prp_physical_baseline: data.prp_physical_baseline
+        ? Number(data.prp_physical_baseline).toLocaleString()
+        : "0",
+      prp_total_budget_used: DEFAULT_TOTAL_BUDGET_USED.toString(),
+    };
+    validation.setValues(values);
+  };
+
+  // Columns configuration - Simplified to show only relevant fields
+
   const columns = useMemo(() => {
+    // Define the month groupings for each quarter
+    const quarterDefinitions = [
+      [11, 12, 1], // Q1
+      [2, 3, 4], // Q2
+      [5, 6, 7], // Q3
+      [8, 9, 10], // Q4
+    ];
+
     const baseColumns = [
       {
-        header: "",
+        header: "Year",
         accessorKey: "prp_budget_year_id",
         enableColumnFilter: false,
         enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {budgetYearMap[cellProps.row.original.prp_budget_year_id] || ""}
-            </span>
-          );
-        },
+        cell: (cellProps) =>
+          budgetYearMap[cellProps.row.original.prp_budget_year_id] || "-",
       },
       {
-        header: "",
-        accessorKey: "prp_budget_month_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {budgetMonthMap[cellProps.row.original.prp_budget_month_id] || ""}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "prp_project_status_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {projectStatusMap[cellProps.row.original.prp_project_status_id] ||
-                ""}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
+        header: "Entry Date",
         accessorKey: "prp_record_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prp_record_date_gc, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "prp_total_budget_used",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                Number(
-                  cellProps.row.original.prp_total_budget_used
-                ).toLocaleString(),
-                30
-              ) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "prp_physical_performance",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.prp_physical_performance,
-                30
-              ) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "prp_region_approved",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span
-              className={
-                cellProps.row.original.prp_region_approved === 1
-                  ? "btn btn-sm btn-soft-success"
-                  : "btn btn-sm btn-soft-danger"
-              }
-            >
-              {cellProps.row.original.prp_region_approved === 1
-                ? t("yes")
-                : t("no")}
-            </span>
-          );
-        },
+        cell: (cellProps) => cellProps.row.original.prp_record_date_gc || "-",
       },
 
+      // Create quarter columns based on custom definitions
+      ...quarterDefinitions
+        .map((quarterMonths, quarterIndex) => [
+          {
+            header: `Q${quarterIndex + 1} Physical Planned`,
+            accessorKey: `quarter_${quarterIndex + 1}_physical_planned`,
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              // Sum the 3 months for this quarter
+              const sum = quarterMonths.reduce((total, month) => {
+                const value =
+                  cellProps.row.original[
+                  `prp_pyhsical_planned_month_${month}`
+                  ] || 0;
+                return total + Number(value);
+              }, 0);
+              return sum ? truncateText(sum.toLocaleString(), 15) : "-";
+            },
+          },
+          {
+            header: `Q${quarterIndex + 1} Financial Planned`,
+            accessorKey: `quarter_${quarterIndex + 1}_financial_planned`,
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              const sum = quarterMonths.reduce((total, month) => {
+                const value =
+                  cellProps.row.original[`prp_finan_planned_month_${month}`] ||
+                  0;
+                return total + Number(value);
+              }, 0);
+              return sum ? truncateText(sum.toLocaleString(), 15) : "-";
+            },
+          },
+          {
+            header: `Q${quarterIndex + 1} Physical Actual`,
+            accessorKey: `quarter_${quarterIndex + 1}_physical_actual`,
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              const sum = quarterMonths.reduce((total, month) => {
+                const value =
+                  cellProps.row.original[
+                  `prp_pyhsical_actual_month_${month}`
+                  ] || 0;
+                return total + Number(value);
+              }, 0);
+              return sum ? truncateText(sum.toLocaleString(), 15) : "-";
+            },
+          },
+          {
+            header: `Q${quarterIndex + 1} Financial Actual`,
+            accessorKey: `quarter_${quarterIndex + 1}_financial_actual`,
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              const sum = quarterMonths.reduce((total, month) => {
+                const value =
+                  cellProps.row.original[`prp_finan_actual_month_${month}`] ||
+                  0;
+                return total + Number(value);
+              }, 0);
+              return sum ? truncateText(sum.toLocaleString(), 15) : "-";
+            },
+          },
+        ])
+        .flat(),
       {
-        header: t("view_detail"),
+        header: "Baseline Budget",
+        accessorKey: "prp_budget_baseline",
         enableColumnFilter: false,
         enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
+        cell: (cellProps) =>
+          truncateText(
+            Number(cellProps.row.original.prp_budget_baseline).toLocaleString(),
+            15
+          ) || "-",
+      },
+      {
+        header: "Baseline Physical",
+        accessorKey: "prp_physical_baseline",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) =>
+          truncateText(
+            Number(
+              cellProps.row.original.prp_physical_baseline
+            ).toLocaleString(),
+            15
+          ) || "-",
+      },
+      {
+        header: t("view_detail"),
+        cell: (cellProps) => (
+          <Button
+            color="primary"
+            size="sm"
+            onClick={() => {
+              setTransaction(cellProps.row.original);
+              toggleViewModal();
+            }}
+          >
+            {t("view_detail")}
+          </Button>
+        ),
       },
       {
         header: t("attach_files"),
@@ -604,71 +796,70 @@ const ProjectPerformanceModel = (props) => {
             </Button>
           );
         },
-      }
+      },
     ];
-    if (
-      data?.previledge?.is_role_editable == 1 ||
-      data?.previledge?.is_role_deletable == 1
-    ) {
+
+    if (data?.previledge?.is_role_editable == 1) {
       baseColumns.push({
         header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <div className="d-flex gap-3">
-              {data?.previledge?.is_role_editable == 1 &&
-                cellProps.row.original?.is_editable == 1 && (
-                  <Button
-                    size="sm"
-                    color="none"
-                    className="text-success"
-                    onClick={() => {
-                      const data = cellProps.row.original;
-                      handleProjectPerformanceClick(data);
-                    }}
-                  >
-                    <i
-                      className="mdi mdi-pencil font-size-18"
-                      id="edittooltip"
-                    />
-                    <UncontrolledTooltip placement="top" target="edittooltip">
-                      Edit
-                    </UncontrolledTooltip>
-                  </Button>
-                )}
-              {data?.previledge?.is_role_deletable == 9 &&
-                cellProps.row.original?.is_deletable == 9 && (
-                  <Button
-                    size="sm"
-                    color="none"
-                    className="text-danger"
-                    onClick={() => {
-                      const data = cellProps.row.original;
-                      onClickDelete(data);
-                    }}
-                  >
-                    <i
-                      className="mdi mdi-delete font-size-18"
-                      id="deletetooltip"
-                    />
-                    <UncontrolledTooltip placement="top" target="deletetooltip">
-                      Delete
-                    </UncontrolledTooltip>
-                  </Button>
-                )}
-            </div>
-          );
-        },
+        cell: (cellProps) => (
+          <div className="d-flex gap-2">
+            <Button
+              color="none"
+              className="text-success"
+              size="sm"
+              onClick={() => handleEditPlanned(cellProps.row.original)}
+              id={`editPlanned-${cellProps.row.id}`}
+            >
+              <i className="mdi mdi-pencil font-size-18" />
+            </Button>
+            <UncontrolledTooltip target={`editPlanned-${cellProps.row.id}`}>
+              Edit Planned Values
+            </UncontrolledTooltip>
+
+            <Button
+              color="none"
+              className="text-primary"
+              size="sm"
+              onClick={() => handleAddActuals(cellProps.row.original)}
+              id={`addActuals-${cellProps.row.id}`}
+            >
+              <i className="mdi mdi-chart-line font-size-18" />
+            </Button>
+            <UncontrolledTooltip target={`addActuals-${cellProps.row.id}`}>
+              Enter Actual Values
+            </UncontrolledTooltip>
+            {cellProps.row.original.is_deletable == 1 && (
+              <>
+                <Button
+                  color="none"
+                  className="text-danger"
+                  size="sm"
+                  onClick={() => onClickDelete(cellProps.row.original)}
+                  id={`delete-${cellProps.row.id}`}
+                >
+                  <i className="mdi mdi-delete font-size-18" />
+                </Button>
+                <UncontrolledTooltip target={`delete-${cellProps.row.id}`}>
+                  Delete
+                </UncontrolledTooltip>
+              </>
+            )}
+          </div>
+        ),
       });
     }
-    return baseColumns;
-  }, [handleProjectPerformanceClick, toggleViewModal, onClickDelete]);
 
-  if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
-  }
+    return baseColumns;
+  }, [projectStatusMap, budgetYearMap, budgetMonthMap, data]);
+
+  // Effect to populate form when projectPerformance changes
+  useEffect(() => {
+    if (projectPerformance) {
+      populateForm(projectPerformance);
+    }
+  }, [projectPerformance]);
+
   return (
     <React.Fragment>
       <LazyLoader>
@@ -679,366 +870,522 @@ const ProjectPerformanceModel = (props) => {
             projectId={passedId}
             ownerTypeId={PAGE_ID.PROJ_PERFORMANCE}
             ownerId={transaction?.prp_id}
-          />)}
+          />
+        )}
         {convModal && (
           <ConvInfoModal
             isOpen={convModal}
             toggle={toggleConvModal}
             ownerTypeId={PAGE_ID.PROJ_PERFORMANCE}
             ownerId={transaction?.prp_id ?? null}
-          />)}
-
-        <ProjectPerformanceModal
-          isOpen={modal1}
-          toggle={toggleViewModal}
-          transaction={transaction}
-          budgetYearMap={budgetYearMap}
-          budgetMonthMap={budgetMonthMap}
-          projectStatusMap={projectStatusMap}
-        />
+          />
+        )}
       </LazyLoader>
-      <DynamicDetailsModal
+      <ProjectPerformanceModal
         isOpen={modal1}
-        toggle={toggleViewModal} // Function to close the modal
-        data={transaction} // Pass transaction as data to the modal
-        title={t("project_performance")}
-        description={transaction.prp_description}
-        dateInGC={transaction.prp_record_date_gc}
-        fields={[
-          {
-            label: t("prp_budget_year_id"),
-            key: "prp_budget_year_id",
-            value: budgetYearMap[transaction.prp_budget_year_id],
-          },
-          {
-            label: t("prp_budget_month_id"),
-            key: "prp_budget_month_id",
-            value: budgetMonthMap[transaction.prp_budget_month_id],
-          },
-          {
-            label: t("prp_project_status_id"),
-            key: "prp_project_status_id",
-            value: projectStatusMap[transaction.prp_project_status_id],
-          },
-          { label: t("prp_total_budget_used"), key: "prp_total_budget_used" },
-          {
-            label: t("prp_physical_performance"),
-            key: "prp_physical_performance",
-          },
-        ]}
-        footerText={t("close")}
+        toggle={toggleViewModal}
+        transaction={transaction}
+        budgetYearMap={budgetYearMap}
+        budgetMonthMap={budgetMonthMap}
+        projectStatusMap={projectStatusMap}
       />
+
       <DeleteModal
         show={deleteModal}
         onDeleteClick={handleDeleteProjectPerformance}
         onCloseClick={() => setDeleteModal(false)}
         isLoading={deleteProjectPerformance.isPending}
       />
-      <div className="page-content1">
-        <div className="container-fluid1">
-          {isLoading || isSearchLoading ? (
-            <Spinners top={isActive ? "top-70" : ""} />
-          ) : (
-            <TableContainer
-              columns={columns}
-              data={showSearchResult ? searchResults?.data : data?.data || []}
-              isGlobalFilter={true}
-              isAddButton={data?.previledge?.is_role_can_add == 1}
-              isCustomPageSize={true}
-              handleUserClick={handleProjectPerformanceClicks}
-              isPagination={true}
-              // SearchPlaceholder="26 records..."
-              SearchPlaceholder={t("filter_placeholder")}
-              buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-              buttonName={t("add")}
-              tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-              theadClass="table-light"
-              pagination="pagination"
-              paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-              refetch={refetch}
-              isFetching={isFetching}
-            />
-          )}
-          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-            <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit
-                ? t("edit") + " " + t("project_performance")
-                : t("add") + " " + t("project_performance")}
-            </ModalHeader>
-            <ModalBody>
-              <Form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  validation.handleSubmit();
-                  return false;
-                }}
-              >
+
+      {isLoading ? (
+        <Spinners />
+      ) : (
+        <TableContainer
+          columns={columns}
+          data={data?.data || []}
+          isGlobalFilter={true}
+          isAddButton={data?.previledge?.is_role_can_add == 1}
+          isCustomPageSize={true}
+          handleUserClick={handleAddNew}
+          isPagination={true}
+          SearchPlaceholder={t("filter_placeholder")}
+          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+          buttonName={t("add_planned")}
+          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+          theadClass="table-light"
+          pagination="pagination"
+          paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+          refetch={refetch}
+          isFetching={isFetching}
+        />
+      )}
+
+      <Modal isOpen={modal} toggle={toggle} size="xl">
+        <ModalHeader toggle={toggle} className="border-0 pb-0">
+          <h4 className="mb-0">
+            {isEdit
+              ? `${t(
+                entryMode === "planned" ? "edit_planned" : "enter_actuals"
+              )}`
+              : `${t("add_planned")}`}
+            <Badge
+              color={entryMode === "planned" ? "info" : "success"}
+              className="ms-2"
+            >
+              {t(entryMode)}
+            </Badge>
+          </h4>
+        </ModalHeader>
+
+        <ModalBody className="pt-1">
+          <Form onSubmit={validation.handleSubmit}>
+            {/* Summary Section - Only show baseline fields */}
+            <Card className="mt-3 border-light shadow-sm">
+              <CardHeader className="bg-light">
+                <h5 className="mb-0">{t("Baseline Values")}</h5>
+                <small className="text-muted">
+                  {t("Total Project Budget")}:{" "}
+                  {Number(totalActualBudget).toLocaleString()}
+                </small>
+              </CardHeader>
+              <CardBody>
                 <Row>
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("prp_budget_year_id")}
-                      <span className="text-danger">*</span>
-                    </Label>
+                  <Col md={4}>
+                    <Label className="fw-medium">{t("Year")}</Label>
                     <Input
                       name="prp_budget_year_id"
                       type="select"
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
+                      className="form-select"
+                      onChange={handleYearChange}
                       value={validation.values.prp_budget_year_id || ""}
                       invalid={
                         validation.touched.prp_budget_year_id &&
-                          validation.errors.prp_budget_year_id
-                          ? true
-                          : false
+                        !!validation.errors.prp_budget_year_id
                       }
-                      maxLength={20}
+                      disabled={isEdit}
                     >
-                      <option value="">{t("select_one")}</option>
-                      {budgetYearData?.data?.map((data) => (
+                      <option value="">{t("select")}</option>
+                      {bgYearsOptionsData?.data?.map((data) => (
                         <option key={data.bdy_id} value={data.bdy_id}>
                           {data.bdy_name}
                         </option>
                       ))}
                     </Input>
-                    {validation.touched.prp_budget_year_id &&
-                      validation.errors.prp_budget_year_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_budget_year_id}
-                      </FormFeedback>
-                    ) : null}
+                    <FormFeedback>
+                      {validation.errors.prp_budget_year_id}
+                    </FormFeedback>
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("prp_budget_month_id")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="prp_budget_month_id"
-                      type="select"
-                      placeholder={t("insert_status_name_amharic")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_budget_month_id || ""}
-                      invalid={
-                        validation.touched.prp_budget_month_id &&
-                          validation.errors.prp_budget_month_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    >
-                      <option value="">{t("select_one")}</option>
-                      {budgetMonthData?.data?.map((data) => (
-                        <option key={data.bdm_id} value={data.bdm_id}>
-                          {data.bdm_month}
-                        </option>
-                      ))}
-                    </Input>
-                    {validation.touched.prp_budget_month_id &&
-                      validation.errors.prp_budget_month_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_budget_month_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("prp_project_status_id")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="prp_project_status_id"
-                      type="select"
-                      className="form-select"
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_project_status_id || ""}
-                      invalid={
-                        validation.touched.prp_project_status_id &&
-                          validation.errors.prp_project_status_id
-                          ? true
-                          : false
-                      }
-                    >
-                      <option value="">{t("select_one")}</option>
-                      {projectStatusData?.data?.map((data) => (
-                        <option key={data.prs_id} value={data.prs_id}>
-                          {lang === "en"
-                            ? data.prs_status_name_en
-                            : lang === "am"
-                              ? data.prs_status_name_am
-                              : data.prs_status_name_or}
-                        </option>
-                      ))}
-                    </Input>
-                    {validation.touched.prp_project_status_id &&
-                      validation.errors.prp_project_status_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_project_status_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <DatePicker
-                      isRequired="true"
-                      validation={validation}
-                      componentId="prp_record_date_gc"
-                      minDate={startDate}
-                    />
-                  </Col>
-
-                  <Col className="col-md-6 mb-3">
+                  <Col md={4}>
                     <FormattedAmountField
                       validation={validation}
-                      fieldId={"prp_total_budget_used"}
+                      fieldId="prp_physical_baseline"
+                      label={t("Physical Baseline %")}
                       isRequired={true}
+                      max={100}
                     />
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("prp_physical_performance")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="prp_physical_performance"
-                      type="number"
-                      placeholder={t("prp_physical_performance")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_physical_performance || ""}
-                      invalid={
-                        validation.touched.prp_physical_performance &&
-                          validation.errors.prp_physical_performance
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prp_physical_performance &&
-                      validation.errors.prp_physical_performance ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_physical_performance}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-
-                  <Col className="col-md-6 mb-3">
+                  <Col md={4}>
                     <FormattedAmountField
                       validation={validation}
-                      fieldId={"prp_budget_planned"}
+                      fieldId="prp_budget_baseline"
+                      label={t("Budget Baseline")}
                       isRequired={true}
                     />
-                  </Col>
-
-                  <Col className="col-md-6 mb-3">
-                    <FormattedAmountField
-                      validation={validation}
-                      fieldId={"prp_physical_planned"}
-                      isRequired={true}
-                    />
-                  </Col>
-
-                  <Col className="col-md-6 mb-3">
-                    <FormattedAmountField
-                      validation={validation}
-                      fieldId={"prp_budget_by_region"}
-                      isRequired={true}
-                    />
-                  </Col>
-
-                  <Col className="col-md-6 mb-3">
-                    <FormattedAmountField
-                      validation={validation}
-                      fieldId={"prp_physical_by_region"}
-                      isRequired={true}
-                    />
-                  </Col>
-
-                  <Col className="col-md-6 mb-3">
-                    <FormattedAmountField
-                      validation={validation}
-                      fieldId={"prp_budget_baseline"}
-                      isRequired={true}
-                    />
-                  </Col>
-
-                  <Col className="col-md-6 mb-3">
-                    <FormattedAmountField
-                      validation={validation}
-                      fieldId={"prp_physical_baseline"}
-                      isRequired={true}
-                    />
-                  </Col>
-
-                  <Col className="col-md-12 mb-3">
-                    <Label>{t("prp_description")}</Label>
-                    <Input
-                      name="prp_description"
-                      type="textarea"
-                      rows={4}
-                      placeholder={t("prp_description")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.prp_description || ""}
-                      invalid={
-                        validation.touched.prp_description &&
-                          validation.errors.prp_description
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.prp_description &&
-                      validation.errors.prp_description ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.prp_description}
-                      </FormFeedback>
-                    ) : null}
                   </Col>
                 </Row>
+
+                {/* New Actual Entry Checkbox and Date Picker - Only show in actual mode */}
+                {entryMode === "actual" && (
+                  <Row className="mt-3">
+                    <Col md={4}>
+                      <div className="form-check">
+                        <Input
+                          type="checkbox"
+                          id="is_new_actual_entry"
+                          name="is_new_actual_entry"
+                          className="form-check-input"
+                          checked={validation.values.is_new_actual_entry}
+                          onChange={(e) => {
+                            validation.setFieldValue(
+                              "is_new_actual_entry",
+                              e.target.checked
+                            );
+                            if (!e.target.checked) {
+                              validation.setFieldValue(
+                                "prp_record_date_gc",
+                                new Date().toISOString().split("T")[0]
+                              );
+                            }
+                          }}
+                        />
+                        <Label
+                          htmlFor="is_new_actual_entry"
+                          className="form-check-label fw-medium"
+                        >
+                          {t("New actual entry")}
+                        </Label>
+                      </div>
+                    </Col>
+                    {validation.values.is_new_actual_entry && (
+                      <Col md={4}>
+                        <Label className="fw-medium">{t("Entry Date")}</Label>
+                        <Input
+                          name="prp_record_date_gc"
+                          type="date"
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.prp_record_date_gc}
+                          max={new Date().toISOString().split("T")[0]}
+                          invalid={
+                            validation.touched.prp_record_date_gc &&
+                            !!validation.errors.prp_record_date_gc
+                          }
+                        />
+                        {validation.errors.prp_record_date_gc && (
+                          <div className="text-danger small mt-1">
+                            {validation.errors.prp_record_date_gc}
+                          </div>
+                        )}
+                      </Col>
+                    )}
+                  </Row>
+                )}
+              </CardBody>
+            </Card>
+            {/* Quarterly Tabs */}
+            <Nav tabs className="nav-tabs-custom mb-3 justify-content-center">
+              {["Quarter1", "Quarter2", "Quarter3", "Quarter4"].map(
+                (quarter, idx) => (
+                  <NavItem key={idx} className="mx-3">
+                    <NavLink
+                      className={`cursor-pointer ${activeTab === quarter ? "active" : ""
+                        }`}
+                      onClick={() => setActiveTab(quarter)}
+                    >
+                      {quarter}
+                    </NavLink>
+                  </NavItem>
+                )
+              )}
+            </Nav>
+
+            <Card className="mt-3 border-light shadow-sm">
+              <CardHeader className="bg-light">
+                <h6 className="mb-0">{t("Budget Summary")}</h6>
+              </CardHeader>
+              <CardBody>
                 <Row>
-                  <Col>
-                    <div className="text-end">
-                      {addProjectPerformance.isPending ||
-                        updateProjectPerformance.isPending ? (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addProjectPerformance.isPending ||
-                            updateProjectPerformance.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          <Spinner size={"sm"} color="light" className="me-2" />
-                          {t("Save")}
-                        </Button>
-                      ) : (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addProjectPerformance.isPending ||
-                            updateProjectPerformance.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          {t("Save")}
-                        </Button>
-                      )}
+                  <Col md={4}>
+                    <div className="d-flex justify-content-between">
+                      <span className="fw-medium">
+                        {t("Total Physical Planned You Entered")}:
+                      </span>
+                      <span>
+                        {Array.from({ length: 12 }, (_, i) =>
+                          convertToNumericValue(
+                            validation.values[
+                            `prp_pyhsical_planned_month_${i + 1}`
+                            ] || "0"
+                          )
+                        ).reduce((a, b) => a + b, 0)}
+                        %
+                      </span>
                     </div>
+                    {validation.errors._sumPhysicalPlanned && (
+                      <div className="text-danger small mt-1">
+                        {validation.errors._sumPhysicalPlanned}
+                      </div>
+                    )}
+                  </Col>
+
+                  <Col md={4}>
+                    <div className="d-flex justify-content-between">
+                      <span className="fw-medium">
+                        {t("Total Financial Planned You Entered")}:
+                      </span>
+                      <span>
+                        {Array.from({ length: 12 }, (_, i) =>
+                          convertToNumericValue(
+                            validation.values[
+                            `prp_finan_planned_month_${i + 1}`
+                            ] || "0"
+                          )
+                        )
+                          .reduce((a, b) => a + b, 0)
+                          .toLocaleString()}{" "}
+                        Birr
+                      </span>
+                    </div>
+                    {validation.errors._sumFinancialPlanned && (
+                      <div className="text-danger small mt-1">
+                        {validation.errors._sumFinancialPlanned}
+                      </div>
+                    )}
+                  </Col>
+
+                  <Col md={4}>
+                    <div className="d-flex justify-content-between">
+                      <span className="fw-medium">
+                        {t("Total Physical Actual You Entered")}:
+                      </span>
+                      <span>
+                        {Array.from({ length: 12 }, (_, i) =>
+                          convertToNumericValue(
+                            validation.values[
+                            `prp_pyhsical_actual_month_${i + 1}`
+                            ] || "0"
+                          )
+                        ).reduce((a, b) => a + b, 0)}
+                        %
+                      </span>
+                    </div>
+                    {validation.errors._sumPhysicalActual && (
+                      <div className="text-danger small mt-1">
+                        {validation.errors._sumPhysicalActual}
+                      </div>
+                    )}
                   </Col>
                 </Row>
-              </Form>
-            </ModalBody>
-          </Modal>
-        </div>
-      </div>
+              </CardBody>
+            </Card>
+
+            {/* Quarterly Input Groups */}
+            <TabContent activeTab={activeTab}>
+              {["Quarter1", "Quarter2", "Quarter3", "Quarter4"].map(
+                (quarter) => {
+                  const months = {
+                    Quarter1: [11, 12, 1],
+                    Quarter2: [2, 3, 4],
+                    Quarter3: [5, 6, 7],
+                    Quarter4: [8, 9, 10],
+                  }[quarter];
+
+                  return (
+                    <TabPane tabId={quarter} key={quarter}>
+                      <Card className="border-light shadow-sm">
+                        <CardBody>
+                          <Row>
+                            {months.map((month) => (
+                              <Col md={4} key={month} className="mb-3">
+                                <Card className="h-100">
+                                  <CardHeader className="bg-light py-2">
+                                    <h6 className="mb-0">Month {month}</h6>
+                                  </CardHeader>
+                                  <CardBody>
+                                    {entryMode === "planned" ? (
+                                      <>
+                                        <FormattedAmountField
+                                          validation={validation}
+                                          fieldId={`prp_pyhsical_planned_month_${month}`}
+                                          label={t("Physical Planned %")}
+                                          isRequired={true}
+                                          max={100}
+                                        />
+                                        <FormattedAmountField
+                                          validation={validation}
+                                          fieldId={`prp_finan_planned_month_${month}`}
+                                          label={t("Financial Planned")}
+                                          isRequired={true}
+                                        />
+                                      </>
+                                    ) : (
+                                      <>
+                                        <FormattedAmountField
+                                          validation={validation}
+                                          fieldId={`prp_pyhsical_actual_month_${month}`}
+                                          label={t("Physical Actual %")}
+                                          isRequired={true}
+                                          max={100}
+                                        />
+                                        <FormattedAmountField
+                                          validation={validation}
+                                          fieldId={`prp_finan_actual_month_${month}`}
+                                          label={t("Financial Actual")}
+                                          isRequired={true}
+                                        />
+
+                                        <div className="mb-3">
+                                          {/* Label with dynamic rules */}
+                                          <Label
+                                            htmlFor={`prp_status_month_${month}`}
+                                            className="form-label mb-1 fw-medium"
+                                          >
+                                            {t("Status")}
+
+                                            {/* Conditional red asterisk */}
+                                            {(convertToNumericValue(
+                                              validation.values[
+                                              `prp_pyhsical_actual_month_${month}`
+                                              ] || "0"
+                                            ) > 0 ||
+                                              convertToNumericValue(
+                                                validation.values[
+                                                `prp_finan_actual_month_${month}`
+                                                ] || "0"
+                                              ) > 0) && (
+                                                <span className="text-danger ms-1">
+                                                  *
+                                                </span>
+                                              )}
+
+                                            {/* Dynamic tooltip */}
+                                            <span
+                                              id={`status-tooltip-${month}`}
+                                              className="ms-1 text-muted cursor-help"
+                                            >
+                                              <i className="ri-information-line"></i>
+                                            </span>
+                                            <UncontrolledTooltip
+                                              target={`status-tooltip-${month}`}
+                                            >
+                                              {t(
+                                                convertToNumericValue(
+                                                  validation.values[
+                                                  `prp_pyhsical_actual_month_${month}`
+                                                  ] || "0"
+                                                ) > 0 ||
+                                                  convertToNumericValue(
+                                                    validation.values[
+                                                    `prp_finan_actual_month_${month}`
+                                                    ] || "0"
+                                                  ) > 0
+                                                  ? "Status is required when actual values exist"
+                                                  : "Optional when both actuals are 0 (can select 'New' or leave empty)"
+                                              )}
+                                            </UncontrolledTooltip>
+                                          </Label>
+
+                                          {/* Dropdown */}
+                                          <Input
+                                            id={`prp_status_month_${month}`}
+                                            name={`prp_status_month_${month}`}
+                                            type="select"
+                                            value={
+                                              validation.values[
+                                              `prp_status_month_${month}`
+                                              ] || ""
+                                            }
+                                            onChange={validation.handleChange}
+                                            onBlur={validation.handleBlur}
+                                            invalid={Boolean(
+                                              validation.touched[
+                                              `prp_status_month_${month}`
+                                              ] &&
+                                              validation.errors[
+                                              `prp_status_month_${month}`
+                                              ]
+                                            )}
+                                          >
+                                            <option value="">
+                                              {t("No Status")}
+                                            </option>
+                                            {projectStatusData?.data
+                                              ?.filter(
+                                                (status) => status.prs_id >= 5
+                                              )
+                                              .map((status) => (
+                                                <option
+                                                  key={status.prs_id}
+                                                  value={status.prs_id}
+                                                  disabled={
+                                                    convertToNumericValue(
+                                                      validation.values[
+                                                      `prp_pyhsical_actual_month_${month}`
+                                                      ] || "0"
+                                                    ) === 0 &&
+                                                    convertToNumericValue(
+                                                      validation.values[
+                                                      `prp_finan_actual_month_${month}`
+                                                      ] || "0"
+                                                    ) === 0 &&
+                                                    status.prs_id !== 5
+                                                  }
+                                                >
+                                                  {lang === "en"
+                                                    ? status.prs_status_name_en
+                                                    : lang === "am"
+                                                      ? status.prs_status_name_am
+                                                      : status.prs_status_name_or}
+                                                </option>
+                                              ))}
+                                          </Input>
+
+                                          {/* Error Message */}
+                                          {validation.errors[
+                                            `prp_status_month_${month}`
+                                          ] && (
+                                              <div className="text-danger small mt-1">
+                                                {
+                                                  validation.errors[
+                                                  `prp_status_month_${month}`
+                                                  ]
+                                                }
+                                              </div>
+                                            )}
+                                        </div>
+                                      </>
+                                    )}
+                                  </CardBody>
+                                </Card>
+                              </Col>
+                            ))}
+                          </Row>
+                        </CardBody>
+                      </Card>
+                    </TabPane>
+                  );
+                }
+              )}
+            </TabContent>
+
+            {/* Description */}
+            <Card className="mt-3 border-light shadow-sm">
+              <CardBody>
+                <Label className="fw-medium">
+                  {t("Description")}
+                  <small className="text-muted ms-1">({t("optional")})</small>
+                </Label>
+                <Input
+                  name="prp_description"
+                  type="textarea"
+                  rows="5"
+                  placeholder={t("description")}
+                  onChange={validation.handleChange}
+                  value={validation.values.prp_description || ""}
+                />
+              </CardBody>
+            </Card>
+
+            {/* Submit Button */}
+            <div className="text-end mt-4">
+              <Button
+                color="primary"
+                type="submit"
+                disabled={
+                  addProjectPerformance.isPending ||
+                  updateProjectPerformance.isPending ||
+                  !validation.dirty
+                }
+              >
+                {addProjectPerformance.isPending ||
+                  updateProjectPerformance.isPending ? (
+                  <>
+                    <Spinner size="sm" className="me-2" />
+                    {t("saving")}...
+                  </>
+                ) : (
+                  t("save")
+                )}
+              </Button>
+            </div>
+          </Form>
+        </ModalBody>
+      </Modal>
+      <ToastContainer />
     </React.Fragment>
   );
 };
+
 ProjectPerformanceModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,
 };

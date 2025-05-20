@@ -14,9 +14,8 @@ export const useFetchProjectBudgetPlans = (param = {}, isActive) => {
     queryKey: [...PROJECT_BUDGET_PLAN_QUERY_KEY, "fetch", param],
     queryFn: () => getProjectBudgetPlan(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: isActive,
   });
 };
@@ -29,7 +28,7 @@ export const useSearchProjectBudgetPlans = (searchParams = {}) => {
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     enabled: searchParams.length > 0,
   });
 };
@@ -69,7 +68,7 @@ export const useUpdateProjectBudgetPlan = () => {
           ...oldData,
           data: oldData.data.map((ProjectBudgetPlanData) =>
             ProjectBudgetPlanData.bpl_id ===
-            updatedProjectBudgetPlan.data.bpl_id
+              updatedProjectBudgetPlan.data.bpl_id
               ? { ...ProjectBudgetPlanData, ...updatedProjectBudgetPlan.data }
               : ProjectBudgetPlanData
           ),

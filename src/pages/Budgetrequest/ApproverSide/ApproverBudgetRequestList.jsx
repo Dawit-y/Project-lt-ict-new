@@ -10,40 +10,46 @@ import React, {
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Button, Badge } from "reactstrap";
-import Spinners from "../../components/Common/Spinner";
-const Breadcrumbs = lazy(() => import("../../components/Common/Breadcrumb"));
+import { useAuthUser } from "../../../hooks/useAuthUser";
+import { Button, Badge, Card, CardBody } from "reactstrap";
+import Spinners from "../../../components/Common/Spinner";
+const Breadcrumbs = lazy(() => import("../../../components/Common/Breadcrumb"));
 const ApproverBudgetRequestListModal = lazy(() =>
   import("./ApproverBudgetRequestModal")
 );
+
 const BudgetRequestAnalysis = lazy(() => import("./BudgetRequestAnalysis"));
 const AdvancedSearch = lazy(() =>
-  import("../../components/Common/AdvancedSearch")
+  import("../../../components/Common/AdvancedSearch")
 );
 const FetchErrorHandler = lazy(() =>
-  import("../../components/Common/FetchErrorHandler")
+  import("../../../components/Common/FetchErrorHandler")
 );
-const TreeForLists = lazy(() => import("../../components/Common/TreeForLists"));
+const TreeForLists = lazy(() =>
+  import("../../../components/Common/TreeForLists")
+);
 const AttachFileModal = lazy(() =>
-  import("../../components/Common/AttachFileModal")
+  import("../../../components/Common/AttachFileModal")
 );
 const ConvInfoModal = lazy(() =>
-  import("../../pages/Conversationinformation/ConvInfoModal")
+  import("../../Conversationinformation/ConvInfoModal")
 );
-const BudgetRequestModal = lazy(() => import("./BudgetRequestModal"));
+const BudgetRequestModal = lazy(() => import("../BudgetRequestModal"));
 const AgGridContainer = lazy(() =>
-  import("../../components/Common/AgGridContainer"));
+  import("../../../components/Common/AgGridContainer")
+);
 
-import { budget_request } from "../../settings/printablecolumns";
-import { useSearchBudgetRequestforApproval } from "../../queries/budget_request_query";
-import { useFetchBudgetYears } from "../../queries/budgetyear_query";
-import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
+import { budget_request } from "../../../settings/printablecolumns";
+import { useSearchBudgetRequestforApproval } from "../../../queries/budget_request_query";
+import { useFetchBudgetYears } from "../../../queries/budgetyear_query";
+import { useSearchRequestCategorys } from "../../../queries/requestcategory_query";
 import {
   useSearchRequestFollowups,
   useFetchRequestFollowups,
-} from "../../queries/requestfollowup_query";
-import { PAGE_ID } from "../../constants/constantFile";
-import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
+} from "../../../queries/requestfollowup_query";
+import { useFetchRequestStatuss } from "../../../queries/requeststatus_query";
+import { PAGE_ID } from "../../../constants/constantFile";
+import { useFetchProjectStatuss } from "../../../queries/projectstatus_query";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -51,10 +57,15 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
+import { getUserSectorList } from "../../../queries/usersector_query";
+import {
+  createSelectOptions,
+  createMultiSelectOptions,
+} from "../../../utils/commonMethods";
 
 const ApproverBudgetRequestList = () => {
   document.title = "Budget Request List";
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [modal1, setModal1] = useState(false);
   const [fileModal, setFileModal] = useState(false);
   const [convModal, setConvModal] = useState(false);
@@ -66,8 +77,11 @@ const ApproverBudgetRequestList = () => {
   const [transaction, setTransaction] = useState({});
 
   const { data: budgetYearData } = useFetchBudgetYears();
-  const { data: bgCategoryOptionsData } = useFetchRequestCategorys();
+  const param = { gov_active: "1" };
+  const { data: bgCategoryOptionsData } = useSearchRequestCategorys(param);
   const { data: projectStatusData } = useFetchProjectStatuss();
+  const { data: requestStatus } = useFetchRequestStatuss();
+  const { data: sectorInformationData } = getUserSectorList();
 
   const [projectParams, setProjectParams] = useState({});
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
@@ -75,6 +89,28 @@ const ApproverBudgetRequestList = () => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
+
+  const [chartType, setChartType] = useState("bar");
+  const [selectedRequest, setSelectedRequest] = useState(null);
+
+  const {
+    sci_name_en: sectorInfoOptionsEn,
+    sci_name_or: sectorInfoOptionsOr,
+    sci_name_am: sectorInfoOptionsAm,
+  } = createMultiSelectOptions(sectorInformationData?.data || [], "sci_id", [
+    "sci_name_en",
+    "sci_name_or",
+    "sci_name_am",
+  ]);
+  const {
+    rqs_name_en: requestStatusOptionsEn,
+    rqs_name_or: requestStatusOptionsOr,
+    rqs_name_am: requestStatusOptionsAm,
+  } = createMultiSelectOptions(requestStatus?.data || [], "rqs_id", [
+    "rqs_name_en",
+    "rqs_name_or",
+    "rqs_name_am",
+  ]);
 
   const budgetYearMap = useMemo(() => {
     return (
@@ -85,24 +121,20 @@ const ApproverBudgetRequestList = () => {
     );
   }, [budgetYearData]);
 
-  const budgetYearOptions = useMemo(() => {
-    return (
-      budgetYearData?.data?.map((year) => ({
-        label: year.bdy_name,
-        value: year.bdy_id,
-      })) || []
-    );
-  }, [budgetYearData]);
-
-  const requestCategoryOptions = useMemo(() => {
-    return (
-      bgCategoryOptionsData?.data?.map((category) => ({
-        label: category.rqc_name_en,
-        value: category.rqc_id,
-      })) || []
-    );
-  }, [bgCategoryOptionsData]);
-
+  const budgetYearOptions = createSelectOptions(
+    budgetYearData?.data || [],
+    "bdy_id",
+    "bdy_name"
+  );
+  const {
+    rqc_name_en: requestCategoryOptionsEn,
+    rqc_name_or: requestCategoryOptionsOr,
+    rqc_name_am: requestCategoryOptionsAm,
+  } = createMultiSelectOptions(bgCategoryOptionsData?.data || [], "rqc_id", [
+    "rqc_name_en",
+    "rqc_name_or",
+    "rqc_name_am",
+  ]);
   const projectStatusOptions = useMemo(() => {
     return (
       projectStatusData?.data
@@ -113,7 +145,6 @@ const ApproverBudgetRequestList = () => {
         })) || []
     );
   }, [projectStatusData]);
-
 
   const handleSearch = useCallback(({ data, error }) => {
     setSearchResults(data);
@@ -176,33 +207,33 @@ const ApproverBudgetRequestList = () => {
           return truncateText(params.data.bdy_name, 30) || "-";
         },
       },
-      {
-        headerName: t("bdr_request_category_id"),
-        field: "bdr_request_category_id",
-        sortable: true,
-        filter: true,
-        //flex: 1,
-        cellRenderer: (params) => {
-          const category = requestCategoryOptions.find(
-            (option) => option.value === params.data.bdr_request_category_id
-          );
-          return category ? truncateText(category.label, 30) : "-";
-        },
-      },
+      // {
+      //   headerName: t("bdr_request_category_id"),
+      //   field: "bdr_request_category_id",
+      //   sortable: true,
+      //   filter: true,
+      //   //flex: 1,
+      //   cellRenderer: (params) => {
+      //     const category = requestCategoryOptions.find(
+      //       (option) => option.value === params.data.bdr_request_category_id
+      //     );
+      //     return category ? truncateText(category.label, 30) : "-";
+      //   },
+      // },
 
-      {
-        headerName: t("bdr_request_type"),
-        field: "bdr_request_type",
-        sortable: true,
-        filter: true,
+      // {
+      //   headerName: t("bdr_request_type"),
+      //   field: "bdr_request_type",
+      //   sortable: true,
+      //   filter: true,
 
-        cellRenderer: (params) => {
-          const requestType = projectStatusOptions.find(
-            (option) => option.value === params.data.bdr_request_type
-          );
-          return requestType ? truncateText(requestType.label, 30) : "-";
-        },
-      },
+      //   cellRenderer: (params) => {
+      //     const requestType = projectStatusOptions.find(
+      //       (option) => option.value === params.data.bdr_request_type
+      //     );
+      //     return requestType ? truncateText(requestType.label, 30) : "-";
+      //   },
+      // },
 
       {
         headerName: t("prj_name"),
@@ -288,8 +319,9 @@ const ApproverBudgetRequestList = () => {
           const isForwarded = params.data.forwarded;
           return (
             <Badge
-              className={`font-size-12 badge-soft-${isForwarded ? "danger" : "secondary"
-                }`}
+              className={`font-size-12 badge-soft-${
+                isForwarded ? "danger" : "secondary"
+              }`}
             >
               {isForwarded ? t("forwarded") : t("not_forwarded")}
             </Badge>
@@ -297,19 +329,15 @@ const ApproverBudgetRequestList = () => {
         },
       },
       {
-        headerName: t("bdr_request_status"),
-        field: "bdr_request_status",
+        headerName: t("Status"),
+        field: "status_name",
         sortable: true,
         filter: true,
         //flex: 1,
-        width: 120,
+        width: 130,
         cellRenderer: (params) => {
-          const badgeClass = params.data.color_code;
-          return (
-            <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
-              {params.data.status_name}
-            </Badge>
-          );
+          const { status_name, color_code } = params.data;
+          return <Badge color={color_code}>{status_name}</Badge>;
         },
       },
       {
@@ -333,6 +361,20 @@ const ApproverBudgetRequestList = () => {
             </Button>
           );
         },
+      },
+      {
+        headerName: t("View"),
+        field: "view",
+        width: 120,
+        cellRenderer: (params) => (
+          <Button
+            color="primary"
+            size="sm"
+            onClick={() => setSelectedRequest(params.data)}
+          >
+            {t("Analysis")}
+          </Button>
+        ),
       },
       {
         headerName: t("attach_files"),
@@ -418,7 +460,7 @@ const ApproverBudgetRequestList = () => {
               <div style={{ flex: "0 0 75%" }}>
                 <AdvancedSearch
                   searchHook={useSearchBudgetRequestforApproval}
-                  dateSearchKeys={["budget_request_date"]}
+                  // dateSearchKeys={["budget_request_date"]}
                   textSearchKeys={["prj_name"]}
                   dropdownSearchKeys={[
                     {
@@ -427,11 +469,34 @@ const ApproverBudgetRequestList = () => {
                     },
                     {
                       key: "bdr_request_category_id",
-                      options: requestCategoryOptions,
+                      options:
+                        i18n.language === "en"
+                          ? requestCategoryOptionsEn
+                          : i18n.language === "am"
+                          ? requestCategoryOptionsAm
+                          : requestCategoryOptionsOr,
                     },
                     {
                       key: "bdr_request_type",
                       options: projectStatusOptions,
+                    },
+                    {
+                      key: "prj_sector_id",
+                      options:
+                        i18n.language === "en"
+                          ? sectorInfoOptionsEn
+                          : i18n.language === "am"
+                          ? sectorInfoOptionsAm
+                          : sectorInfoOptionsOr,
+                    },
+                    {
+                      key: "bdr_request_status",
+                      options:
+                        i18n.language === "en"
+                          ? requestStatusOptionsEn
+                          : i18n.language === "am"
+                          ? requestStatusOptionsAm
+                          : requestStatusOptionsOr,
                     },
                   ]}
                   additionalParams={projectParams}
@@ -441,7 +506,14 @@ const ApproverBudgetRequestList = () => {
                   setSearchResults={setSearchResults}
                   setShowSearchResult={setShowSearchResult}
                 >
-                  <TableWrapper columnDefs={columnDefs} showSearchResult={showSearchResult} />
+                  <TableWrapper
+                    columnDefs={columnDefs}
+                    showSearchResult={showSearchResult}
+                    setSelectedRequest={setSelectedRequest} // Pass the setter function
+                    selectedRequest={selectedRequest} // Pass the selected request
+                    chartType={chartType}
+                    setChartType={setChartType}
+                  />
                 </AdvancedSearch>
               </div>
             </div>
@@ -456,23 +528,36 @@ ApproverBudgetRequestList.propTypes = {
 };
 export default ApproverBudgetRequestList;
 
-const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
-  const storedUser = JSON.parse(localStorage.getItem("authUser"));
+const TableWrapper = ({
+  data,
+  isLoading,
+  columnDefs,
+  showSearchResult,
+  setSelectedRequest,
+  selectedRequest,
+  chartType,
+  setChartType,
+}) => {
+  const { user: storedUser } = useAuthUser();
   const user = storedUser?.user;
   const depId =
     user?.usr_officer_id > 0
       ? user.usr_officer_id
       : user?.usr_team_id > 0
-        ? user.usr_team_id
-        : user?.usr_directorate_id > 0
-          ? user.usr_directorate_id
-          : user?.usr_department_id > 0
-            ? user.usr_department_id
-            : null;
+      ? user.usr_team_id
+      : user?.usr_directorate_id > 0
+      ? user.usr_directorate_id
+      : user?.usr_department_id > 0
+      ? user.usr_department_id
+      : null;
 
-  const { data: rqfData, isLoading: rqfLoading } = useFetchRequestFollowups();
+  const { data: rqfData } = useFetchRequestFollowups();
 
-  function markForwardedRequests(budgetRequests = [], forwardedRequests = [], depId) {
+  function markForwardedRequests(
+    budgetRequests = [],
+    forwardedRequests = [],
+    depId
+  ) {
     const forwardedSet = new Set(
       forwardedRequests
         .filter((req) => req.rqf_forwarding_dep_id === depId)
@@ -491,32 +576,78 @@ const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
   }
 
   return (
-    <AgGridContainer
-      rowData={showSearchResult ? transformedData : []}
-      columnDefs={columnDefs}
-      isLoading={isLoading}
-      isPagination={true}
-      paginationPageSize={20}
-      isGlobalFilter={true}
-      isAddButton={false}
-      rowHeight={35}
-      addButtonText="Add"
-      isExcelExport={true}
-      isPdfExport={true}
-      isPrint={true}
-      tableName="budget_request"
-      includeKey={[
-        "bdy_name",
-        "prj_name",
-        "prj_code",
-        "bdr_request_status",
-        "bdr_requested_amount",
-        "bdr_released_amount",
-        "bdr_requested_date_gc",
-        "bdr_released_date_gc",
-        "bdr_description",
-      ]}
-      excludeKey={["is_editable", "is_deletable"]}
-    />
+    <div className="d-flex flex-column" style={{ gap: "20px" }}>
+      <AgGridContainer
+        rowData={showSearchResult ? transformedData : []}
+        columnDefs={columnDefs}
+        isLoading={isLoading}
+        isPagination={true}
+        paginationPageSize={10}
+        isGlobalFilter={true}
+        isAddButton={false}
+        rowHeight={35}
+        addButtonText="Add"
+        isExcelExport={true}
+        isPdfExport={true}
+        isPrint={true}
+        tableName="budget_request"
+        includeKey={[
+          "bdy_name",
+          "prj_name",
+          "prj_code",
+          "bdr_request_status",
+          "bdr_requested_amount",
+          "bdr_released_amount",
+          "bdr_requested_date_gc",
+          "bdr_released_date_gc",
+          "bdr_description",
+        ]}
+        excludeKey={["is_editable", "is_deletable"]}
+      />
+
+      {/* Analysis View */}
+      {selectedRequest ? (
+        <Card>
+          <CardBody>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h4 className="card-title mb-0">
+                Single Analysis
+                <Button
+                  color="link"
+                  size="sm"
+                  onClick={() => setSelectedRequest(null)}
+                >
+                  <i className="mdi mdi-arrow-left"></i> Back to Overview
+                </Button>
+              </h4>
+            </div>
+            <BudgetRequestAnalysis
+              budgetRequestData={selectedRequest}
+              allData={transformedData}
+              isOverallView={false}
+              chartType={chartType}
+              onChartTypeChange={setChartType}
+            />
+          </CardBody>
+        </Card>
+      ) : (
+        showSearchResult &&
+        transformedData.length > 0 && (
+          <Card>
+            <CardBody>
+              <h4 className="card-title mb-4">
+                Overall Budget Requests Analysis
+              </h4>
+              <BudgetRequestAnalysis
+                allData={transformedData}
+                isOverallView={true}
+                chartType={chartType}
+                onChartTypeChange={setChartType}
+              />
+            </CardBody>
+          </Card>
+        )
+      )}
+    </div>
   );
 };

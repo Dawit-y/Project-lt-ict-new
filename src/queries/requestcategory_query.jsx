@@ -14,9 +14,8 @@ export const useFetchRequestCategorys = () => {
     queryKey: REQUEST_CATEGORY_QUERY_KEY,
     queryFn: () => getRequestCategory(),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
   });
 };
 
@@ -25,11 +24,11 @@ export const useSearchRequestCategorys = (searchParams = {}) => {
   return useQuery({
     queryKey: [...REQUEST_CATEGORY_QUERY_KEY, searchParams],
     queryFn: () => getRequestCategory(searchParams),
-    staleTime: 1000 * 60 * 2,
-    gcTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 6,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: searchParams.length > 0,
+    enabled: Object.keys(searchParams).length > 0,
   });
 };
 
@@ -40,7 +39,7 @@ export const useAddRequestCategory = () => {
   return useMutation({
     mutationFn: addRequestCategory,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( REQUEST_CATEGORY_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(REQUEST_CATEGORY_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,

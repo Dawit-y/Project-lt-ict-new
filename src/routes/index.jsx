@@ -16,7 +16,7 @@ const ProjectsTreeView = lazy(() => import("../pages/ProjectStatusTree/index"));
 const Logout = lazy(() => import("../pages/Authentication/Logout"));
 
 const AddressStructure = lazy(() =>
-  import("../pages/AddressTreeStructure/index2.jsx")
+  import("../pages/AddressTreeStructure/index.jsx")
 );
 const DocumentType = lazy(() => import("../pages/Documenttype/index"));
 const Project = lazy(() => import("../pages/Project/index"));
@@ -59,8 +59,9 @@ const BudgetRequestListModel = lazy(() =>
   import("../pages/Budgetrequest/BudgetRequestList")
 );
 const ApproverBudgetRequestList = lazy(() =>
-  import("../pages/Budgetrequest/ApproverBudgetRequestList")
+  import("../pages/Budgetrequest/ApproverSide/ApproverBudgetRequestList.jsx")
 );
+const RecommendedApprovalList = lazy(() => import("../pages/Budgetrequest/ApproverSide/RecommendedApprovalList.jsx"));
 const BudgetRequest = lazy(() => import("../pages/Budgetrequest/index"));
 const BudgetSource = lazy(() => import("../pages/Budgetsource/index"));
 const BudgetYear = lazy(() => import("../pages/Budgetyear/index"));
@@ -191,10 +192,16 @@ const MonitoringEvaluationType = lazy(() => import('../pages/Monitoringevaluatio
 const ProjectMonitoringEvaluation = lazy(() => import('../pages/Projectmonitoringevaluation/index'));
 const MonitoringEvaluationTypeList = lazy(() => import('../pages/Monitoringevaluationtype/MonitoringEvaluationTypeList'));
 const ProjectMonitoringEvaluationList = lazy(() => import('../pages/Projectmonitoringevaluation/ProjectMonitoringEvaluationList'));
-const Programs = lazy(() => import("../pages/Programs"))
+const Programs = lazy(() => import('../pages/Programs'));
+const ProjectComponent = lazy(() => import('../pages/Projectcomponent/index'));
+const ProjectKpi = lazy(() => import('../pages/Projectkpi/index'));
+const ProjectKpiResult = lazy(() => import('../pages/Projectkpiresult/index'));
 
 const authProtectedRoutes = [
   // { path: '/monitoring_evaluation_type_list', component: <MonitoringEvaluationTypeList/> },
+  { path: '/project_component', component: <ProjectComponent /> },
+  { path: '/project_kpi', component: <ProjectKpi /> },
+  { path: '/project_kpi_result', component: <ProjectKpiResult /> },
   { path: '/monitoring_evaluation_list', component: <ProjectMonitoringEvaluationList /> },
   { path: '/monitoring_evaluation_type', component: <MonitoringEvaluationType /> },
   { path: '/project_monitoring_evaluation', component: <ProjectMonitoringEvaluation /> },
@@ -261,6 +268,7 @@ const authProtectedRoutes = [
     path: "/budget_request_approval",
     component: <ApproverBudgetRequestList />,
   },
+  { path: "/recommended_approval", component: <RecommendedApprovalList /> },
   { path: "/budget_source", component: <BudgetSource /> },
   { path: "/budget_year", component: <BudgetYear /> },
   {
