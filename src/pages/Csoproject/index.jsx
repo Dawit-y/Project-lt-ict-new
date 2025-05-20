@@ -77,7 +77,9 @@ const ProjectModel = () => {
     }));
   };
 
-  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
+  const { user: storedUser, userId } = useAuthUser();
+  const userType = storedUser?.user?.usr_user_type
+  const csoId = storedUser?.user?.usr_owner_id
   const { data, isLoading, error, isError, refetch } =
     useFindProjects({ object_type_id: 1 }, true, userId);
   const { data: projectCategoryData } = useFetchProjectCategorys();
