@@ -388,77 +388,6 @@ const MonitoringEvaluationAnalysis = ({
     ],
   };
 
-  const progressRadialChart = (value, color, title, isCurrency = false) => ({
-    options: {
-      chart: {
-        type: "radialBar",
-        height: 350,
-        fontFamily: "inherit",
-      },
-      plotOptions: {
-        radialBar: {
-          startAngle: -135,
-          endAngle: 135,
-          hollow: {
-            margin: 0,
-            size: "65%",
-            background: "transparent",
-          },
-          track: {
-            background: "#f1f1f1",
-            strokeWidth: "97%",
-            margin: 5,
-          },
-          dataLabels: {
-            name: {
-              fontSize: "16px",
-              color: "#495057",
-              offsetY: 120,
-              fontFamily: "inherit",
-            },
-            value: {
-              offsetY: 76,
-              fontSize: "28px",
-              fontWeight: 600,
-              color: color,
-              fontFamily: "inherit",
-              formatter: (val) =>
-                isCurrency ? `ETB ${formatNumber(val)}` : `${val}%`,
-            },
-          },
-        },
-      },
-      colors: [color],
-      fill: {
-        type: "gradient",
-        gradient: {
-          shade: "dark",
-          shadeIntensity: 0.15,
-          inverseColors: false,
-          opacityFrom: 1,
-          opacityTo: 0.8,
-          stops: [0, 50, 65, 91],
-          colorStops: [
-            {
-              offset: 0,
-              color: color,
-              opacity: 1,
-            },
-            {
-              offset: 100,
-              color: color,
-              opacity: 0.7,
-            },
-          ],
-        },
-      },
-      stroke: {
-        lineCap: "round",
-      },
-    },
-    series: [value],
-  });
-
   const evaluationTypeChart = {
     options: {
       chart: {
@@ -585,31 +514,42 @@ const MonitoringEvaluationAnalysis = ({
     options: {
       chart: {
         type: "radialBar",
-        height: 350,
-        fontFamily: "inherit",
+        height: 320,
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        foreColor: "#334155",
+
+        animations: {
+          enabled: true,
+          easing: "easeinout",
+          speed: 800,
+          animateGradually: {
+            enabled: true,
+            delay: 150,
+          },
+        },
       },
       plotOptions: {
         radialBar: {
           offsetY: 0,
-          startAngle: 0,
-          endAngle: 270,
+          startAngle: -90,
+          endAngle: 90,
           hollow: {
-            margin: 5,
-            size: "30%",
+            margin: 15,
+            size: "40%",
             background: "transparent",
+            image: undefined,
           },
           dataLabels: {
             name: {
               show: true,
               fontSize: "13px",
-              fontFamily: "inherit",
+              fontWeight: 600,
               offsetY: 10,
             },
             value: {
               show: true,
-              fontSize: "20px",
-              fontFamily: "inherit",
-              fontWeight: 600,
+              fontSize: "22px",
+              fontWeight: 700,
               formatter: function (val) {
                 return val;
               },
@@ -617,60 +557,43 @@ const MonitoringEvaluationAnalysis = ({
             },
             total: {
               show: true,
-              label: "Total Projects",
-              color: colors.dark,
-              fontSize: "14px",
-              fontFamily: "inherit",
+              label: "TOTAL",
+              color: "#1E293B",
+              fontSize: "13px",
+              fontWeight: 600,
               formatter: function (w) {
-                return overallStats.totalProjects;
+                return overallStats.totalProjects.toLocaleString();
               },
             },
           },
           track: {
-            background: "#f1f1f1",
-            strokeWidth: "97%",
+            background: "#F1F5F9",
+            strokeWidth: "90%",
+            margin: 10,
           },
         },
       },
       colors: [
-        colors.primary,
-        colors.success,
-        colors.warning,
-        colors.info,
-        colors.danger,
+        "#6366F1", // indigo-500
+        "#10B981", // emerald-500
+        "#F59E0B", // amber-500
+        "#3B82F6", // blue-500
+        "#EF4444", // red-500
       ],
+      stroke: {
+        lineCap: "round",
+        width: 3,
+      },
       labels: overallStats.periodTypes.map((type) => type.met_name_en),
       legend: {
-        position: "right",
-        offsetY: 0,
-        height: 300,
-        fontFamily: "inherit",
-        markers: {
-          radius: 3,
-        },
-        itemMargin: {
-          vertical: 10,
-        },
-        formatter: function (seriesName, opts) {
-          const type = overallStats.periodTypes[opts.seriesIndex];
-          return [
-            seriesName,
-            `Projects: ${type.count}`,
-            `Avg Physical: ${Math.round(type.avgPhysical)}%`,
-            `Avg Financial: ETB ${formatNumber(Math.round(type.avgFinancial))}`,
-          ].join("\n");
-        },
+        show: false,
       },
       responsive: [
         {
-          breakpoint: 768,
+          breakpoint: 992,
           options: {
             chart: {
-              height: 500,
-            },
-            legend: {
-              position: "bottom",
-              height: "auto",
+              height: 300,
             },
           },
         },
@@ -922,23 +845,93 @@ const MonitoringEvaluationAnalysis = ({
 
                 <Row className="mb-4">
                   <Col lg={12}>
-                    <Card className="shadow-none border">
-                      <CardBody>
-                        <h5 className="card-title d-flex align-items-center">
-                          <i className="mdi mdi-calendar-multiple-check me-2 text-info"></i>
-                          Evaluation Periods Analysis
-                        </h5>
-                        <Chart
-                          options={periodTypeChart.options}
-                          series={periodTypeChart.series}
-                          type="radialBar"
-                          height={350}
-                        />
-                        <div className="mt-3 text-center text-muted small">
-                          <i className="mdi mdi-information-outline me-1"></i>
-                          Hover over the legend items to see detailed metrics
-                          for each period type
+                    <Card className="border-0 shadow-sm">
+                      <CardBody className="p-4">
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                          <div>
+                            <h5 className="card-title mb-1 d-flex align-items-center">
+                              <i
+                                className="mdi mdi-chart-arc me-2"
+                                style={{ color: "#6366F1", fontSize: "1.5rem" }}
+                              ></i>
+                              <span style={{ fontWeight: 600 }}>
+                                Project Evaluation Metrics
+                              </span>
+                            </h5>
+                            <p className="text-muted mb-0">
+                              Performance analysis by evaluation period
+                            </p>
+                          </div>
+                          <Badge pill bg="light" className="fw-medium">
+                            <i className="mdi mdi-calendar-range me-1"></i>
+                            Period Analysis
+                          </Badge>
                         </div>
+
+                        <Row>
+                          <Col lg={6} className="pe-lg-4">
+                            <div className="chart-container position-relative">
+                              <Chart
+                                options={periodTypeChart.options}
+                                series={periodTypeChart.series}
+                                type="radialBar"
+                                height={320}
+                              />
+                            </div>
+                          </Col>
+
+                          <Col lg={6} className="ps-lg-4 mt-4 mt-lg-0">
+                            <div className="table-responsive">
+                              <table className="table table-hover table-sm align-middle">
+                                <thead className="bg-light">
+                                  <tr>
+                                    <th className="ps-3">Period Type</th>
+                                    <th className="text-end">Projects</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {overallStats.periodTypes.map(
+                                    (type, index) => (
+                                      <tr key={index}>
+                                        <td
+                                          className="ps-3 fw-medium"
+                                          style={{
+                                            color:
+                                              periodTypeChart.options.colors[
+                                                index
+                                              ],
+                                          }}
+                                        >
+                                          <i className="mdi mdi-circle-small me-1"></i>
+                                          {type.met_name_en}
+                                        </td>
+                                        <td className="text-end">
+                                          {type.count.toLocaleString()}
+                                        </td>
+                                      </tr>
+                                    )
+                                  )}
+                                  <tr className="bg-light fw-semibold">
+                                    <td className="ps-3">Total/Average</td>
+                                    <td className="text-end">
+                                      {overallStats.totalProjects.toLocaleString()}
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+
+                            <div className="mt-3">
+                              <div className="d-flex align-items-center text-muted">
+                                <i className="mdi mdi-information-outline me-2"></i>
+                                <small>
+                                  Financial values represent average expenditure
+                                  per project
+                                </small>
+                              </div>
+                            </div>
+                          </Col>
+                        </Row>
                       </CardBody>
                     </Card>
                   </Col>
