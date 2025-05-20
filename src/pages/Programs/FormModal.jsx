@@ -12,6 +12,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import DatePicker from "../../components/Common/DatePicker"
+import { addYears } from "../../utils/commonMethods";
 
 const levels = ["sector", "program", "sub_program", "output"];
 function getNextLevel(currentLevel) {
@@ -175,6 +176,8 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
     },
   });
 
+  const minEndDateForProgram = addYears(validation.values.pri_start_date, 3)
+
   return (
     <>
       <DeleteModal
@@ -303,7 +306,7 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
                         isRequired={true}
                         componentId={"pri_end_date"}
                         validation={validation}
-                        minDate={validation.values.pri_start_date}
+                        minDate={currentLevel === "sector" ? minEndDateForProgram : validation.values.pri_start_date}
                       />
                     </Col>
                   </>

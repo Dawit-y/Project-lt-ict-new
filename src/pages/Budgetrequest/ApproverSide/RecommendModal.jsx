@@ -5,8 +5,9 @@ import { useFormik } from "formik";
 import { useUpdateRequestFollowup } from "../../../queries/requestfollowup_query"
 import { toast } from "react-toastify"
 import DatePicker from "../../../components/Common/DatePicker";
+import FormattedAmountField from "../../../components/Common/FormattedAmountField"
 
-const RecommendModal = ({ isOpen, toggle, request }) => {
+const RecommendModal = ({ isOpen, toggle, request, requestedAmount }) => {
   const { t } = useTranslation()
 
   const updateRequestFollowup = useUpdateRequestFollowup()
@@ -30,14 +31,20 @@ const RecommendModal = ({ isOpen, toggle, request }) => {
     rqf_recommended_date: Yup.string().required(t('rqf_recommended_date')),
     rqf_current_status: Yup.string().required(t('rqf_current_status')),
     rqf_recommended_amount: Yup.number()
-      .min(0, "Recommended amount must be greater or equal to 0")
-      .when("rqf_current_status", {
-        is: "2", // Recommend
-        then: (schema) => schema.required("Recommended amount is required"),
-        otherwise: (schema) => schema.optional(),
+      .when("rqf_current_status", ([rqf_current_status], schema) => {
+        if (rqf_current_status === "2") {
+          return schema
+            .required("Recommended amount is required")
+            .max(
+              parseFloat(requestedAmount),
+              `Recommended amount must be less or equal to the Requested amount, ${parseInt(requestedAmount).toLocaleString()}`
+            );
+        }
+        return schema.optional();
       }),
     rqf_recommended_physical: Yup.number()
       .min(0, "Recommended physical must be greater or equal to 0")
+      .max(100, "Recommended physical must be less or equal to 100")
       .when("rqf_current_status", {
         is: "2",
         then: (schema) => schema.required("Recommended physical is required"),
@@ -114,41 +121,21 @@ const RecommendModal = ({ isOpen, toggle, request }) => {
           </Row>
           {formik.values.rqf_current_status !== "3" && (
             <Row>
-              <Col className="col-md-6 mb-3">
-                <Label>{t('rqf_recommended_amount')}</Label>
-                <Input
-                  name='rqf_recommended_amount'
-                  type='number'
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.rqf_recommended_amount}
-                  invalid={formik.touched.rqf_recommended_amount && !!formik.errors.rqf_recommended_amount}
-                  min={0}
-                />
-                {formik.touched.rqf_recommended_amount && formik.errors.rqf_recommended_amount && (
-                  <FormFeedback type='invalid'>
-                    {formik.errors.rqf_recommended_amount}
-                  </FormFeedback>
-                )}
-              </Col>
-
-              <Col className="col-md-6 mb-3">
-                <Label>{t('rqf_recommended_physical')}</Label>
-                <Input
-                  name='rqf_recommended_physical'
-                  type='number'
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.rqf_recommended_physical}
-                  invalid={formik.touched.rqf_recommended_physical && !!formik.errors.rqf_recommended_physical}
-                  min={0}
-                />
-                {formik.touched.rqf_recommended_physical && formik.errors.rqf_recommended_physical && (
-                  <FormFeedback type='invalid'>
-                    {formik.errors.rqf_recommended_physical}
-                  </FormFeedback>
-                )}
-              </Col>
+              <FormattedAmountField
+                validation={formik}
+                fieldId={"rqf_recommended_amount"}
+                isRequired={true}
+                className="col-md-6 mb-3"
+                allowDecimal={true}
+              />
+              <FormattedAmountField
+                validation={formik}
+                fieldId={"rqf_recommended_physical"}
+                label={t("rqf_recommended_physical") + " " + t("in_percent")}
+                isRequired={true}
+                className="col-md-6 mb-3"
+                allowDecimal={true}
+              />
             </Row>
           )}
 

@@ -38,6 +38,8 @@ const RequestFollowupModal = (props) => {
             keysToRemove={[
               "is_editable",
               "is_deletable",
+              "is_role_editable",
+              "is_role_deletable",
               "rqf_create_time",
               "rqf_update_time",
               "rqf_delete_time",

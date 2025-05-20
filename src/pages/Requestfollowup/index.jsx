@@ -99,7 +99,7 @@ const RequestFollowupModel = ({ request }) => {
   const param = { rqf_request_id: request.bdr_id };
   const isValidParam = Object.keys(param).length > 0 &&
     Object.values(param).every((value) => value !== null && value !== undefined);
-  const { data, isLoading, error, isError, refetch } = useSearchRequestFollowups(param, isValidParam);
+  const { data, isLoading, error, isError, isFetching, refetch } = useSearchRequestFollowups(param, isValidParam);
 
   const addRequestFollowup = useAddRequestFollowup();
   const updateRequestFollowup = useUpdateRequestFollowup();
@@ -261,7 +261,17 @@ const RequestFollowupModel = ({ request }) => {
     setSearchError(error);
     setShowSearchResult(true);
   };
-  //START UNCHANGED
+
+  const isAddAllowed = () => {
+    if (data?.previledge?.is_role_can_add !== 1) {
+      return false
+    }
+    if (departmentType === "officer") {
+      return false
+    }
+    return true
+  }
+
   const columns = useMemo(() => {
     const baseColumns = [
       {
@@ -312,7 +322,7 @@ const RequestFollowupModel = ({ request }) => {
         cell: (cellProps) => {
           return (
             <span>
-              {cellProps.row.original.rqf_recommended_amount}
+              {parseFloat(cellProps.row.original.rqf_recommended_amount).toLocaleString()}
             </span>
           );
         },
@@ -353,31 +363,38 @@ const RequestFollowupModel = ({ request }) => {
           );
         },
       },
-    ];
-    if (isOfficerLevel) {
-      baseColumns.push({
+      {
         header: t("Recommend"),
         enableColumnFilter: false,
-        enableSorting: true,
+        enableSorting: false,
         cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="success"
-              className="btn-sm"
-              outline
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleRecommendModal();
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("Recommend")}
-            </Button>
-          );
+          const row = cellProps.row.original;
+
+          if (
+            isOfficerLevel &&
+            row.rqf_forwarding_dep_id !== departmentId
+          ) {
+            return (
+              <Button
+                type="button"
+                color="success"
+                className="btn-sm"
+                outline
+                onClick={() => {
+                  toggleRecommendModal();
+                  setTransaction(row);
+                }}
+              >
+                {t("Recommend")}
+              </Button>
+            );
+          }
+
+          return null;
         },
-      })
-    }
+      }
+    ];
+
     if (
       data?.previledge?.is_role_editable == 1 ||
       data?.previledge?.is_role_deletable == 1
@@ -444,6 +461,7 @@ const RequestFollowupModel = ({ request }) => {
         isOpen={recommendModal}
         toggle={toggleRecommendModal}
         request={transaction}
+        requestedAmount={request?.bdr_requested_amount}
       />
       <DeleteModal
         show={deleteModal}
@@ -468,7 +486,7 @@ const RequestFollowupModel = ({ request }) => {
                           : data?.data || []
                       }
                       isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add == 1 && !request.forwarded}
+                      isAddButton={isAddAllowed()}
                       isCustomPageSize={true}
                       handleUserClick={handleRequestFollowupClicks}
                       isPagination={true}
@@ -479,6 +497,8 @@ const RequestFollowupModel = ({ request }) => {
                       theadClass="table-light"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                      refetch={refetch}
+                      isFetching={isFetching}
                     />
                   </CardBody>
                 </Card>

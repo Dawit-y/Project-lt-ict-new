@@ -1643,5 +1643,6 @@
 	"Nehase": "August",
 	"in_percent": "(In Percent)",
 	"min_error": "{{field}} must be at least {{min}}.",
-	"max_error": "{{field}} must be at most {{max}}."
+	"max_error": "{{field}} must be at most {{max}}.",
+	"request_followup": "Request FollowUp"
 }

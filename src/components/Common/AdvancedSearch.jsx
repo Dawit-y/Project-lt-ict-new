@@ -337,7 +337,7 @@ const AdvancedSearch = ({
                             >
                               <option value={""}>{t("Select") + " " + t(`${key}`)}</option>
                               {options.map((option) => (
-                                <option key={option.value} value={option.value}>
+                                <option key={`${option.value}-${key}`} value={option.value}>
                                   {t(`${option.label}`)}
                                 </option>
                               ))}

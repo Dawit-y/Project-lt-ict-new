@@ -6,6 +6,18 @@ export const formatDate = (date) => {
 	return `${year}/${month}/${day}`;
 };
 
+export const addMonths = (date, months) => {
+	const newDate = new Date(date);
+	newDate.setMonth(newDate.getMonth() + months);
+	return newDate;
+};
+
+export const addYears = (date, years) => {
+	const newDate = new Date(date);
+	newDate.setFullYear(newDate.getFullYear() + years);
+	return newDate;
+};
+
 /**
  * Transforms an array of objects into options for react-select.
  *

@@ -1,10 +1,11 @@
 import { useTranslation } from 'react-i18next'
-import { Spinner, Modal, ModalBody, ModalHeader, Form, FormGroup, Label, Input, Button } from 'reactstrap'
+import { Spinner, Modal, ModalBody, ModalHeader, Form, FormGroup, Label, Input, Button, Row, Col } from 'reactstrap'
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useUpdateBudgetRequestApproval } from "../../../queries/budget_request_query";
 import { toast } from "react-toastify"
 import DatePicker from "../../../components/Common/DatePicker";
+import FormattedAmountField from '../../../components/Common/FormattedAmountField';
 
 const ApproveModal = ({ isOpen, toggle, request, toggleParent, action }) => {
   const { t } = useTranslation()
@@ -28,25 +29,30 @@ const ApproveModal = ({ isOpen, toggle, request, toggleParent, action }) => {
       ? Yup.number()
         .required("Released amount is required")
         .min(0, "Released amount must be greater or equal to 0")
-        .max(request.bdr_requested_amount, "Can not release more than requested")
+        .max(request.bdr_requested_amount,
+          `Can not release more than requested, ${parseFloat(request.bdr_requested_amount).toLocaleString()}`)
       : Yup.number().optional(),
 
     bdr_physical_approved: action === "approve"
       ? Yup.number()
         .required("Physical approved amount is required")
         .min(0, "Must be greater or equal to 0")
+        .max(100, "Must be less or equal to 100")
       : Yup.number().optional(),
 
     bdr_financial_recommended: action === "recommend"
       ? Yup.number()
         .required("Financial recommended amount is required")
         .min(0, "Must be greater or equal to 0")
+        .max(parseFloat(request.bdr_requested_amount),
+          `Recommended amount must be less or equal to the Requested amount, ${parseFloat(request.bdr_requested_amount).toLocaleString()}`)
       : Yup.number().optional(),
 
     bdr_physical_recommended: action === "recommend"
       ? Yup.number()
         .required("Physical recommended amount is required")
         .min(0, "Must be greater or equal to 0")
+        .max(100, "Recommended physical must be less or equal to 100")
       : Yup.number().optional(),
 
     bdr_released_date_gc: Yup.date().required("Action date is required"),
@@ -84,107 +90,65 @@ const ApproveModal = ({ isOpen, toggle, request, toggleParent, action }) => {
       <ModalHeader toggle={toggle}>{action === "recommend" ? t("Recommend") : action === "approve" ? t("Approve") : t("Reject")}</ModalHeader>
       <ModalBody>
         <Form onSubmit={formik.handleSubmit}>
-          {action === "approve" && (
-            <FormGroup>
-              <Label className='d-flex align-items-center justify-content-between'>
-                <span>Released Amount</span>
+          <Row>
+            {action === "approve" && (
+              <Col md={6}>
                 <small className="text-muted">
                   Recommended: {request.bdr_financial_recommended ?? "N/A"}
                 </small>
-              </Label>
-              <Input
-                type="number"
-                name="bdr_released_amount"
-                onChange={formik.handleChange}
-                value={formik.values.bdr_released_amount}
-                invalid={
-                  formik.touched.bdr_released_amount &&
-                  formik.errors.bdr_released_amount
-                }
-              />
-              {formik.errors.bdr_released_amount &&
-                formik.touched.bdr_released_amount && (
-                  <div className="text-danger">
-                    {formik.errors.bdr_released_amount}
-                  </div>
-                )}
-            </FormGroup>
-          )}
-          {action === "approve" && (
-            <FormGroup>
-              <Label className='d-flex align-items-center justify-content-between'>
-                <span> Physical Approved Amount{" "}</span>
+                <FormattedAmountField
+                  validation={formik}
+                  fieldId={"bdr_released_amount"}
+                  isRequired={true}
+                  className="col-md-12 mb-3"
+                  allowDecimal={true}
+                />
+              </Col>
+            )}
+            {action === "approve" && (
+              <Col md={6}>
                 <small className="text-muted">
                   Recommended: {request.bdr_physical_recommended ?? "N/A"}
                 </small>
-              </Label>
-              <Input
-                type="number"
-                name="bdr_physical_approved"
-                onChange={formik.handleChange}
-                value={formik.values.bdr_physical_approved}
-                invalid={
-                  formik.touched.bdr_physical_approved &&
-                  formik.errors.bdr_physical_approved
-                }
+                <FormattedAmountField
+                  validation={formik}
+                  fieldId={"bdr_physical_approved"}
+                  label={t("bdr_physical_approved") + " " + t("in_percent")}
+                  isRequired={true}
+                  className="col-md-12 mb-3"
+                  allowDecimal={true}
+                />
+              </Col>
+            )}
+          </Row>
+          <Row>
+            {action === "recommend" && (
+              <FormattedAmountField
+                validation={formik}
+                fieldId={"bdr_financial_recommended"}
+                isRequired={true}
+                className="col-md-6 mb-3"
+                allowDecimal={true}
               />
-              {formik.errors.bdr_physical_approved &&
-                formik.touched.bdr_physical_approved && (
-                  <div className="text-danger">
-                    {formik.errors.bdr_physical_approved}
-                  </div>
-                )}
-            </FormGroup>
-          )}
-          {action === "recommend" && (
-            <FormGroup>
-              <Label>Financial Recommended Amount</Label>
-              <Input
-                type="number"
-                name="bdr_financial_recommended"
-                onChange={formik.handleChange}
-                value={formik.values.bdr_financial_recommended}
-                invalid={
-                  formik.touched.bdr_financial_recommended &&
-                  formik.errors.bdr_financial_recommended
-                }
+            )}
+            {action === "recommend" && (
+              <FormattedAmountField
+                validation={formik}
+                fieldId={"bdr_physical_recommended"}
+                label={t("bdr_physical_recommended") + " " + t("in_percent")}
+                isRequired={true}
+                className="col-md-6 mb-3"
+                allowDecimal={true}
               />
-              {formik.errors.bdr_financial_recommended &&
-                formik.touched.bdr_financial_recommended && (
-                  <div className="text-danger">
-                    {formik.errors.bdr_financial_recommended}
-                  </div>
-                )}
-            </FormGroup>
-          )}
-          {action === "recommend" && (
-            <FormGroup>
-              <Label>Physical Recommended Amount</Label>
-              <Input
-                type="number"
-                name="bdr_physical_recommended"
-                onChange={formik.handleChange}
-                value={formik.values.bdr_physical_recommended}
-                invalid={
-                  formik.touched.bdr_physical_recommended &&
-                  formik.errors.bdr_physical_recommended
-                }
-              />
-              {formik.errors.bdr_physical_recommended &&
-                formik.touched.bdr_physical_recommended && (
-                  <div className="text-danger">
-                    {formik.errors.bdr_physical_recommended}
-                  </div>
-                )}
-            </FormGroup>
-          )}
+            )}
+          </Row>
           <FormGroup>
             <DatePicker
               isRequired={true}
               componentId={"bdr_released_date_gc"}
               validation={formik}
               minDate={request?.bdr_requested_date_gc}
-              label={action === "approve" ? "bdr_released_date_gc" : "Rejection Date"}
+              label={action === "approve" ? "bdr_released_date_gc" : action === "reject" ? "Rejection Date" : "Recommendation Date"}
             />
           </FormGroup>
           <FormGroup>

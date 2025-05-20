@@ -1,7 +1,4 @@
 import React, { useEffect, useMemo, useState, lazy } from "react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { useSearchProjectEmployees } from "../../queries/projectemployee_query";
 import { useTranslation } from "react-i18next";
@@ -20,7 +17,7 @@ const truncateText = (text, maxLength) => {
 };
 const ProjectEmployeeList = () => {
   //meta title
-  document.title = " ProjectEmployee";
+  document.title = "Project Employees";
   const { t } = useTranslation();
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
