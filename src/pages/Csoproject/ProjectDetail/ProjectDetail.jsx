@@ -5,6 +5,8 @@ import { useFetchSectorInformations } from "../../../queries/sectorinformation_q
 
 const ProjectDetail = ({ data }) => {
   const { t } = useTranslation();
+  const { data: sectorInfo } = useFetchSectorInformations()
+
   if (!data) {
     return (
       <Spinner className="position-absolute top-50 start-50" size={"md"} />
@@ -36,6 +38,7 @@ const ProjectDetail = ({ data }) => {
   const filteredDataArray = Object.entries(data).filter(
     ([key]) => !key.endsWith("_id") && !excludedKeys.includes(key)
   );
+
   return (
     <Card>
       <CardBody>
@@ -76,7 +79,6 @@ const ProjectDetail = ({ data }) => {
                 </tr>
               ))}
               <tr>
-
               </tr>
             </tbody>
           </Table>

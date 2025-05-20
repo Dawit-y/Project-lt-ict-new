@@ -412,7 +412,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
                     onClick={() => setActiveTab(4)}
                     disabled={!passedSteps.includes(4)}
                   >
-                    <span className="number">4.</span> Proposal Request
+                    <span className="number">4.</span> Proposed Request
                   </NavLink>
                 </NavItem>
               </ul>

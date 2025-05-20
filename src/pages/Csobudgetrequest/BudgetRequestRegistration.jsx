@@ -66,7 +66,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
   const [budgetRequestMetaData, setBudgetRequestMetaData] = useState([]);
   const [showCanvas, setShowCanvas] = useState(false);
 
-  const { data, isLoading, isError, error, refetch } =
+  const { data, isLoading, isFetching, isError, error, refetch } =
     useSearchBudgetRequests(param, isActive);
   const { data: budgetYearData } = usePopulateBudgetYears();
   const { data: bgYearsOptionsData } = useFetchBudgetYears();
@@ -513,7 +513,8 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
           theadClass="table-light"
           pagination="pagination"
           paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-          infoIcon={true}
+          refetch={refetch}
+          isFetching={isFetching}
         />
       )}
       <Modal isOpen={modal} toggle={toggle} className="modal-xl">

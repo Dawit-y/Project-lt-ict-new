@@ -16,7 +16,12 @@ import {
   useSearchBudgetRequestforApproval,
 } from "../../queries/cso_budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
+import { useFetchRequestStatuss } from "../../queries/requeststatus_query";
 import { PAGE_ID } from "../../constants/constantFile";
+import {
+  createSelectOptions,
+  createMultiSelectOptions,
+} from "../../utils/commonMethods";
 
 // Lazy load components
 const Breadcrumbs = lazy(() => import("../../components/Common/Breadcrumb"));
@@ -39,8 +44,8 @@ const LazyLoader = ({ children }) => (
   <Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
 );
 const ApproverBudgetRequestList = () => {
-  document.title = "Budget Request List ";
-  const { t } = useTranslation();
+  document.title = "Proposed Request List ";
+  const { t, i18n } = useTranslation();
   const [modal1, setModal1] = useState(false);
 
   const [budgetRequestMetaData, setBudgetRequestMetaData] = useState({});
@@ -82,6 +87,17 @@ const ApproverBudgetRequestList = () => {
       })) || []
     );
   }, [budgetYearData]);
+
+  const { data: requestStatus } = useFetchRequestStatuss();
+  const {
+    rqs_name_en: requestStatusOptionsEn,
+    rqs_name_or: requestStatusOptionsOr,
+    rqs_name_am: requestStatusOptionsAm,
+  } = createMultiSelectOptions(requestStatus?.data || [], "rqs_id", [
+    "rqs_name_en",
+    "rqs_name_or",
+    "rqs_name_am",
+  ]);
 
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
@@ -372,6 +388,15 @@ const ApproverBudgetRequestList = () => {
                   {
                     key: "bdr_budget_year_id",
                     options: budgetYearOptions,
+                  },
+                  {
+                    key: "bdr_request_status",
+                    options:
+                      i18n.language === "en"
+                        ? requestStatusOptionsEn
+                        : i18n.language === "am"
+                          ? requestStatusOptionsAm
+                          : requestStatusOptionsOr,
                   },
                 ]}
                 additionalParams={projectParams}

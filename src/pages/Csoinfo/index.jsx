@@ -151,7 +151,7 @@ const CsoInfoModel = () => {
             (item) => item.cso_email === value && item.cso_id !== csoInfo?.cso_id
           );
         }),
-      cso_website: websiteUrlValidation(true),
+      cso_website: websiteUrlValidation(false),
       cso_description: alphanumericValidation(3, 450, false),
     }),
     validateOnBlur: true,

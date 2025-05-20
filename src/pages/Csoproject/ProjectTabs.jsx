@@ -41,7 +41,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
   const isValidParam = Object.keys(param).length > 0 &&
     Object.values(param).every((value) => value !== null && value !== undefined);
 
-  const { data, isLoading, isError, error, refetch } = useFindProjects(param, isValidParam, userId)
+  const { data, isLoading, isFetching, isError, error, refetch } = useFindProjects(param, isValidParam, userId)
 
   const toggleTab = useCallback((tab) => {
     if (activeTab !== tab) {
@@ -328,7 +328,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
                     onClick={() => setActiveTab(3)}
                     disabled={!passedSteps.includes(3)}
                   >
-                    <span className="number">3.</span> Proposal Request
+                    <span className="number">3.</span> Proposed Request
                   </NavLink>
                 </NavItem>
               </ul>
@@ -387,6 +387,8 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
                       tableName="Project Data"
                       isExcelExport
                       isPdfExport
+                      isFetching={isFetching}
+                      refetch={refetch}
                     />
                   </Suspense>
                 </TabPane>
