@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 const MAX_SIZE_MB = 75;
 const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
-const FileUploadField = ({ validation }) => {
+const FileUploadField = ({ validation, accept = { "application/pdf": [] } }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const { data: documentTypeData } = useFetchDocumentTypes();
   const documentTypeOptions = createSelectOptions(
@@ -149,12 +149,12 @@ const FileUploadField = ({ validation }) => {
         <Card>
           <>
             <CardSubtitle className="mb-3">
-              Attach or upload your PDF file here!
+              Attach or upload your file here!
             </CardSubtitle>
             <>
               <Dropzone
                 maxSize={MAX_SIZE_BYTES}
-                accept={{ "application/pdf": [] }}
+                accept={accept}
                 onDrop={(acceptedFiles, rejectedFiles) => {
                   const maxSize = MAX_SIZE_BYTES
                   const validFiles = acceptedFiles.filter(
@@ -193,7 +193,7 @@ const FileUploadField = ({ validation }) => {
                         <i className="display-4 text-muted bx bxs-cloud-upload" />
                       </div>
                       <h4>
-                        {` Drop PDF files here or click to upload (Max size: ${MAX_SIZE_MB} MB).`}
+                        {` Drop files here or click to upload (Max size: ${MAX_SIZE_MB} MB).`}
                       </h4>
                     </div>
                   </div>
@@ -210,7 +210,13 @@ const FileUploadField = ({ validation }) => {
                         <Row className="align-items-center">
                           <Col className="col-auto">
                             <i
-                              className="bx bxs-file-pdf text-danger"
+                              className={
+                                f.name.endsWith(".pdf")
+                                  ? "bx bxs-file-pdf text-danger"
+                                  : f.name.endsWith(".doc") || f.name.endsWith(".docx")
+                                    ? "bx bxs-file-doc text-primary"
+                                    : "bx bxs-file text-secondary"
+                              }
                               style={{ fontSize: "80px" }}
                             />
                           </Col>
