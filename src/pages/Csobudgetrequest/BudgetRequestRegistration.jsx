@@ -479,6 +479,12 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
           projectId={projectId}
           ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
           ownerId={transaction?.bdr_id}
+          accept={{
+            "application/pdf": [],
+            "application/msword": [],
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [],
+          }}
+          title={t("Proposed Request File")}
         />
       )}
       {convModal && (

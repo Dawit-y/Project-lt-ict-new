@@ -396,6 +396,12 @@ const ApproverBudgetRequestList = () => {
             projectId={transaction?.bdr_project_id}
             ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
             ownerId={transaction?.bdr_id}
+            accept={{
+              "application/pdf": [],
+              "application/msword": [],
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [],
+            }}
+            title={t("Proposed Request File")}
           />)}
         {convModal && (
           <ConvInfoModal
@@ -409,13 +415,15 @@ const ApproverBudgetRequestList = () => {
       <div className="page-content">
         <div className="">
           <Breadcrumbs />
-          <div className="w-100 d-flex gap-2">
-            <TreeForLists
-              onNodeSelect={handleNodeSelect}
-              setIsAddressLoading={setIsAddressLoading}
-              setInclude={setInclude}
-            />
-            <div className="w-100">
+          <div className="w-100 d-flex gap-2 flex-nowrap">
+            <div style={{ flex: "0 0 25%", minWidth: "250px" }}>
+              <TreeForLists
+                onNodeSelect={handleNodeSelect}
+                setIsAddressLoading={setIsAddressLoading}
+                setInclude={setInclude}
+              />
+            </div>
+            <div style={{ flex: "0 0 75%" }}>
               <AdvancedSearch
                 searchHook={useSearchBudgetRequestforApproval}
                 textSearchKeys={["prj_name", "prj_code"]}

@@ -136,7 +136,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
           if (row.original.footer) return "";
           const { prj_id } = row.original || {};
           return (
-            <Link to={`/projectdetail_cso/${prj_id}#proposal_request`} target="_blank">
+            <Link to={`/projectdetail_cso/${prj_id}#location`} target="_blank">
               <Button type="button" className="btn-sm mb-1 default" outline>
                 <i className="fa fa-eye"></i>
               </Button>
@@ -336,11 +336,10 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
             <div className="content clearfix">
               <TabContent activeTab={activeTab} className="body">
                 <TabPane tabId={1}>
-                  {programName && (
-                    <h5 className="mb-3 text-primary">
-                      {t("Selected program")}: {programName}
-                    </h5>
-                  )}
+                  <ProgramAlert
+                    label={t("Selected Project")}
+                    value={programName}
+                  />
                   <Suspense fallback={<div>Loading...</div>}>
                     <TableContainer
                       columns={programColumns}
@@ -363,11 +362,10 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
                   </Suspense>
                 </TabPane>
                 <TabPane tabId={2}>
-                  {programName && (
-                    <h5 className="mb-3 text-primary">
-                      {t("Activities for the program")}: {programName}
-                    </h5>
-                  )}
+                  <ProgramAlert
+                    label={t("Activities for the project")}
+                    value={programName}
+                  />
                   <Suspense fallback={<div>Loading...</div>}>
                     <TableContainer
                       columns={activitiesColumn}
@@ -393,11 +391,10 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
                   </Suspense>
                 </TabPane>
                 <TabPane tabId={3}>
-                  {programName && (
-                    <h5 className="mb-3 text-primary">
-                      {t("Proposal request for the program")}: {programName}
-                    </h5>
-                  )}
+                  <ProgramAlert
+                    label={t("Proposed request for the project")}
+                    value={programName}
+                  />
                   <Suspense fallback={<div>Loading...</div>}>
                     <BudgetRequestRegistration
                       projectStatus={selectedProgramStatus}
@@ -416,3 +413,20 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
 };
 
 export default ProjectTabs;
+
+export const ProgramAlert = ({ label, value, color = "info" }) => {
+  if (!value || !label) return null;
+
+  return (
+    <Row>
+      <Col md={4}>
+        <Alert color={color} className="mb-3 p-2 d-flex align-items-center gap-2">
+          <i className="bx bx-info-circle me-1" style={{ fontSize: "1.2rem" }}></i>
+          <h6 className="mb-0">
+            <strong>{label} {" -> "} </strong> {value}
+          </h6>
+        </Alert>
+      </Col>
+    </Row>
+  );
+};

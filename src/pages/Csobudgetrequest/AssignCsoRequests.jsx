@@ -154,7 +154,7 @@ const AssignCsoRequests = ({ request, isActive, budgetYearMap }) => {
                   )}
                 </Col>
               </Row>
-              <Button type="submit" color="primary" className="w-md" disabled={isPending}>
+              <Button type="submit" color="primary" className="w-md" disabled={isPending || !formik.dirty}>
                 {isPending ? (
                   <>
                     <Spinner size="sm" /> <span className="ms-2">Submit</span>

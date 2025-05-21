@@ -103,7 +103,18 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
   const tabs = useMemo(
     () => [
       // { id: "request_followup", label: t("request_follow_up"), content: <Suspense fallback={<Spinner />}><RequestFollowupModel request={transaction} /></Suspense> },
-      { id: "Assign", label: "Assign", content: <Suspense fallback={<Spinner />}><AssignCsoRequests request={transaction} isActive={isOpen} budgetYearMap={budgetYearMap} /></Suspense> },
+      {
+        id: "Assign",
+        label: "Assign",
+        content:
+          <Suspense fallback={<Spinner />}>
+            <AssignCsoRequests
+              request={transaction}
+              isActive={isOpen}
+              budgetYearMap={budgetYearMap}
+            />
+          </Suspense>
+      },
       {
         id: "take_action",
         label: t("Approve/Reject"),
@@ -177,7 +188,7 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
                         value={formik.values.bdr_action_remark}
                       />
                     </FormGroup>
-                    <Button type="submit" color="primary" className="w-md" disabled={isPending}>
+                    <Button type="submit" color="primary" className="w-md" disabled={isPending || !formik.dirty}>
                       {isPending ? <Spinner size="sm" className="me-2" /> : null} Submit
                     </Button>
                   </form>

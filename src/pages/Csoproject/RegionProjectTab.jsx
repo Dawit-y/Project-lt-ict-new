@@ -21,12 +21,14 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 const TableContainer = lazy(() => import("../../components/Common/TableContainer"));
 const BudgetRequestRegistration = lazy(() => import("../Csobudgetrequest/BudgetRequestRegistration"));
 import { useFetchCsoInfos } from "../../queries/csoinfo_query";
+import { ProgramAlert } from "./ProjectTabs"
 
 const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(1);
   const [passedSteps, setPassedSteps] = useState([1]);
   const [selectedCsoId, setSelectedCsoId] = useState(null)
+  const [selectedCsoName, setSelectedCsoName] = useState(null)
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [programName, setProgramName] = useState(null)
   const [selectedProgramStatus, setSelectedProgramStatus] = useState(null);
@@ -86,6 +88,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
               checked={selectedCsoId === row.original.cso_id}
               onChange={() => {
                 setSelectedCsoId(row.original.cso_id);
+                setSelectedCsoName(row.original.cso_name);
               }}
             />
           </span>
@@ -211,7 +214,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
           if (row.original.footer) return "";
           const { prj_id } = row.original || {};
           return (
-            <Link to={`/projectdetail_cso/${prj_id}#proposal_request`} target="_blank">
+            <Link to={`/projectdetail_cso/${prj_id}#location`} target="_blank">
               <Button type="button" className="btn-sm mb-1 default" outline>
                 <i className="fa fa-eye"></i>
               </Button>
@@ -421,6 +424,10 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
             <div className="content clearfix">
               <TabContent activeTab={activeTab} className="body">
                 <TabPane tabId={1}>
+                  <ProgramAlert
+                    label={t("Selected CSO")}
+                    value={selectedCsoName}
+                  />
                   <Suspense fallback={<div>Loading...</div>}>
                     <TableContainer
                       columns={csoColumnsDef}
@@ -443,11 +450,10 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
                   </Suspense>
                 </TabPane>
                 <TabPane tabId={2}>
-                  {programName && (
-                    <h5 className="mb-3 text-primary">
-                      {t("Selected project")}: {programName}
-                    </h5>
-                  )}
+                  <ProgramAlert
+                    label={t("Selected Project")}
+                    value={programName}
+                  />
                   <Suspense fallback={<div>Loading...</div>}>
                     <TableContainer
                       columns={programColumns}
@@ -471,11 +477,10 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
                   </Suspense>
                 </TabPane>
                 <TabPane tabId={3}>
-                  {programName && (
-                    <h5 className="mb-3 text-primary">
-                      {t("Activities for the project")}: {programName}
-                    </h5>
-                  )}
+                  <ProgramAlert
+                    label={t("Activities for the project")}
+                    value={programName}
+                  />
                   <Suspense fallback={<div>Loading...</div>}>
                     <TableContainer
                       columns={activitiesColumn}
@@ -499,11 +504,10 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
                   </Suspense>
                 </TabPane>
                 <TabPane tabId={4}>
-                  {programName && (
-                    <h5 className="mb-3 text-primary">
-                      {t("Proposal request for the project")}: {programName}
-                    </h5>
-                  )}
+                  <ProgramAlert
+                    label={t("Proposed request for the project")}
+                    value={programName}
+                  />
                   <Suspense fallback={<div>Loading...</div>}>
                     <BudgetRequestRegistration
                       projectStatus={selectedProgramStatus}
