@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-
 import TreeForLists from "../../components/Common/TreeForLists";
-
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { useSearchProjectMonitoringEvaluations } from "../../queries/projectmonitoringevaluation_query";
 import { useTranslation } from "react-i18next";
-
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import AgGridContainer from "../../components/Common/AgGridContainer";
+import MonitoringEvaluationAnalysis from "./MonitoringEvaluationAnalysis";
+import { useFetchMonitoringEvaluationTypes } from "../../queries/monitoringevaluationtype_query";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -18,9 +17,18 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
+const transactionTypes = [
+  { value: 1, label: "monitoring" },
+  { value: 2, label: "evaluation" },
+];
+
+const visitTypes = [
+  { value: 1, label: "Regular" },
+  { value: 2, label: "Surprise" },
+];
+
 const ProjectMonitoringEvaluationList = () => {
-  //meta title
-  document.title = " ProjectMonitoringEvaluation";
+  document.title = "Project Monitoring and Evaluation";
   const { t } = useTranslation();
 
   const [include, setInclude] = useState();
@@ -34,14 +42,20 @@ const ProjectMonitoringEvaluationList = () => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const { data, isLoading, error, isError, refetch } = useState("");
+  const [selectedEvaluation, setSelectedEvaluation] = useState(null);
 
-  //START FOREIGN CALLS
+  const { data: meTypes } = useFetchMonitoringEvaluationTypes();
+
+  const handleViewDetails = (rowData) => {
+    setSelectedEvaluation(rowData);
+  };
 
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
   };
+
   useEffect(() => {
     setProjectParams({
       ...(prjLocationRegionId && {
@@ -57,11 +71,11 @@ const ProjectMonitoringEvaluationList = () => {
   const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
-      setPrjLocationZoneId(null); // Clear dependent states
+      setPrjLocationZoneId(null);
       setPrjLocationWoredaId(null);
     } else if (node.level === "zone") {
       setPrjLocationZoneId(node.id);
-      setPrjLocationWoredaId(null); // Clear dependent state
+      setPrjLocationWoredaId(null);
     } else if (node.level === "woreda") {
       setPrjLocationWoredaId(node.id);
     }
@@ -82,20 +96,15 @@ const ProjectMonitoringEvaluationList = () => {
       width: 200,
       sortable: true,
       filter: true,
-      cellRenderer: (params) => {
-        return truncateText(params.data.prj_name, 30) || "-";
-      },
+      cellRenderer: (params) => truncateText(params.data.prj_name, 30) || "-",
     },
     {
       headerName: t("prj_code"),
       field: "prj_code",
       sortable: true,
       filter: true,
-      cellRenderer: (params) => {
-        return truncateText(params.data.prj_code, 30) || "-";
-      },
+      cellRenderer: (params) => truncateText(params.data.prj_code, 30) || "-",
     },
-
     {
       headerName: t("mne_physical"),
       field: "mne_physical",
@@ -105,7 +114,6 @@ const ProjectMonitoringEvaluationList = () => {
       valueFormatter: ({ value }) =>
         truncateText(Number(value).toLocaleString(), 30) || "-",
     },
-
     {
       headerName: t("mne_financial"),
       field: "mne_financial",
@@ -133,7 +141,6 @@ const ProjectMonitoringEvaluationList = () => {
       valueFormatter: ({ value }) =>
         truncateText(Number(value).toLocaleString(), 30) || "-",
     },
-
     {
       headerName: t("mne_start_date"),
       field: "mne_start_date",
@@ -148,18 +155,38 @@ const ProjectMonitoringEvaluationList = () => {
       filter: "agDateColumnFilter",
       valueFormatter: ({ value }) => truncateText(value, 30) || "-",
     },
+    {
+      headerName: "Actions",
+      field: "actions",
+      cellRenderer: (params) => (
+        <button
+          className="btn btn-sm btn-primary"
+          onClick={() => handleViewDetails(params.data)}
+        >
+          <i className="mdi mdi-chart-bar me-1"></i> Analyze
+        </button>
+      ),
+      width: 120,
+      sortable: false,
+      filter: false,
+    },
   ];
+
+  useEffect(() => {
+    setSelectedEvaluation(null);
+  }, [data]);
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
+
   return (
     <React.Fragment>
       <div className="page-content">
         <div>
           <Breadcrumbs
             title={t("project")}
-            breadcrumbItem={t("Project Payment List")}
+            breadcrumbItem={t("Project Monitoring and Evaluation List")}
           />
           <div className="w-100 d-flex gap-2">
             <TreeForLists
@@ -203,6 +230,18 @@ const ProjectMonitoringEvaluationList = () => {
                   excludeKey={["is_editable", "is_deletable"]}
                 />
               </AdvancedSearch>
+              {showSearchResult && (
+                <MonitoringEvaluationAnalysis
+                  selectedData={selectedEvaluation}
+                  allData={
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
+                  evaluationTypes={transactionTypes}
+                  visitTypes={visitTypes}
+                  periodTypes={meTypes?.data || []}
+                  onBackToOverview={() => setSelectedEvaluation(null)}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -210,4 +249,5 @@ const ProjectMonitoringEvaluationList = () => {
     </React.Fragment>
   );
 };
+
 export default ProjectMonitoringEvaluationList;

@@ -192,7 +192,7 @@ export const PDFPreview = ({ filePath, fileSize }) => {
   const [goToPage, setGoToPage] = useState("");
 
   const fullPath = useMemo(
-    () => `${API_URL}/uploads/projectfiles/${filePath}`,
+    () => `${API_URL}uploads/projectfiles/${filePath}`,
     [filePath]
   );
 
@@ -339,7 +339,7 @@ export const PDFPreview = ({ filePath, fileSize }) => {
                 className="btn btn-success"
                 target="_blank"
                 rel="noopener noreferrer"
-                href={`${API_URL}/public/uploads/projectfiles/${filePath}`}
+                href={`${API_URL}uploads/projectfiles/${filePath}`}
               >
                 <span className="d-flex align-items-center justify-content-center">
                   <IoMdDownload className="me-2" /> Download

@@ -51,6 +51,8 @@ const AttachFileModal = ({
   ownerTypeId,
   ownerId,
   projectId,
+  title,
+  accept
 }) => {
   const [projectDocument, setProjectDocument] = useState(null);
   const [modal, setModal] = useState(false);
@@ -335,38 +337,38 @@ const AttachFileModal = ({
             <div className="d-flex gap-3">
               {(cellProps.row.original?.is_editable ||
                 cellProps.row.original?.is_role_editable) && (
-                <Link
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleProjectDocumentClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+                  <Link
+                    className="text-success"
+                    onClick={() => {
+                      const data = cellProps.row.original;
+                      handleProjectDocumentClick(data);
+                    }}
+                  >
+                    <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                    <UncontrolledTooltip placement="top" target="edittooltip">
+                      Edit
+                    </UncontrolledTooltip>
+                  </Link>
+                )}
 
               {(cellProps.row.original?.is_deletable ||
                 cellProps.row.original?.is_role_deletable) && (
-                <Link
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+                  <Link
+                    className="text-danger"
+                    onClick={() => {
+                      const data = cellProps.row.original;
+                      onClickDelete(data);
+                    }}
+                  >
+                    <i
+                      className="mdi mdi-delete font-size-18"
+                      id="deletetooltip"
+                    />
+                    <UncontrolledTooltip placement="top" target="deletetooltip">
+                      Delete
+                    </UncontrolledTooltip>
+                  </Link>
+                )}
             </div>
           );
         },
@@ -428,9 +430,9 @@ const AttachFileModal = ({
             )}
             <Modal isOpen={modal} toggle={toggleForm} className="modal-xl">
               <ModalHeader toggle={toggleForm} tag="h4">
-                {!!isEdit
-                  ? t("edit") + " " + t("project_document")
-                  : t("add") + " " + t("project_document")}
+                {isEdit
+                  ? `${t("edit")} ${title || t("project_document")}`
+                  : `${t("add")} ${title || t("project_document")}`}
               </ModalHeader>
               <ModalBody>
                 <Form
@@ -442,12 +444,12 @@ const AttachFileModal = ({
                 >
                   <Row>
                     {/* PDF File Picker */}
-                    <FileUploadField validation={validation} />
+                    <FileUploadField validation={validation} accept={accept} />
                     <Row>
                       <Col>
                         <div className="text-end">
                           {addProjectDocument.isPending ||
-                          updateProjectDocument.isPending ? (
+                            updateProjectDocument.isPending ? (
                             <Button
                               color="success"
                               type="submit"
