@@ -18,6 +18,7 @@ import {
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useAuthUser } from "../../hooks/useAuthUser";
 import { useFetchRequestStatuss } from "../../queries/requeststatus_query";
+import { useFetchRequestFollowups } from "../../queries/requestfollowup_query"
 import { PAGE_ID } from "../../constants/constantFile";
 import {
   createSelectOptions,
