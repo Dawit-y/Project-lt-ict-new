@@ -31,7 +31,7 @@ import {
 } from "reactstrap";
 import { useFormik } from "formik";
 import * as Yup from "yup"
-import { createSelectOptions, createMultiSelectOptions, createMultiLangKeyValueMap } from "../../utils/commonMethods";
+import { createSelectOptions, createMultiSelectOptions, createMultiLangKeyValueMap, createKeyValueMap } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForLists from "../../components/Common/TreeForLists";
 import {
@@ -43,6 +43,7 @@ import {
 } from "../../utils/Validation/validation";
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
+import { useFetchSectorCategorys } from "../../queries/sectorcategory_query";
 import DatePicker from "../../components/Common/DatePicker"
 import AgGridContainer from "../../components/Common/AgGridContainer";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
@@ -123,6 +124,11 @@ const ProjectModel = () => {
       lang,
     );
   }, [projectStatusData, lang]);
+  const { data: sectorCategories, isLoading: isSectorCatLoading, isError: isSectorCatError } = useFetchSectorCategorys()
+  const sectorCategoryMap = useMemo(() => {
+    return createKeyValueMap(sectorCategories?.data || [], "psc_id", "psc_name");
+  }, [sectorCategories]);
+
   const addProject = useAddProject();
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
@@ -210,6 +216,7 @@ const ProjectModel = () => {
       prj_name_en: (project && project.prj_name_en) || "",
       prj_code: (project && project.prj_code) || "",
       prj_project_status_id: (project && project.prj_project_status_id) || "",
+      prj_cluster_id: (project && project.prj_cluster_id) || "",
       prj_project_category_id:
         (project && project.prj_project_category_id) || "",
       prj_project_budget_source_id:
@@ -276,6 +283,7 @@ const ProjectModel = () => {
       ),
       prj_code: alphanumericValidation(3, 20, false),
       prj_project_status_id: Yup.number().required(t('prj_project_status_id')),
+      prj_cluster_id: Yup.number().required(t('prj_cluster_id')),
       prj_project_category_id: numberValidation(1, 200, true),
       prj_total_estimate_budget: formattedAmountValidation(1000, 1000000000000, true),
       prj_total_actual_budget: formattedAmountValidation(1000, 1000000000000, true),
@@ -310,6 +318,7 @@ const ProjectModel = () => {
           prj_code: values.prj_code,
           prj_project_status_id: values.prj_project_status_id,
           prj_project_category_id: values.prj_project_category_id,
+          prj_cluster_id: values.prj_cluster_id,
           prj_project_budget_source_id: values.prj_project_budget_source_id,
           prj_total_estimate_budget: parseFloat(values.prj_total_estimate_budget),
           prj_total_actual_budget: parseFloat(values.prj_total_actual_budget),
@@ -359,6 +368,7 @@ const ProjectModel = () => {
           prj_code: values.prj_code,
           prj_project_status_id: values.prj_project_status_id,
           prj_project_category_id: values.prj_project_category_id,
+          prj_cluster_id: values.prj_cluster_id,
           prj_project_budget_source_id: values.prj_project_budget_source_id,
           prj_total_estimate_budget: parseFloat(values.prj_total_estimate_budget),
           prj_total_actual_budget: parseFloat(values.prj_total_actual_budget),
@@ -457,6 +467,7 @@ const ProjectModel = () => {
       prj_code: project.prj_code,
       prj_project_status_id: project.prj_project_status_id,
       prj_project_category_id: project.prj_project_category_id,
+      prj_cluster_id: project.prj_cluster_id,
       prj_project_budget_source_id: project.prj_project_budget_source_id,
       prj_total_estimate_budget: project.prj_total_estimate_budget,
       prj_total_actual_budget: project.prj_total_actual_budget,
@@ -762,6 +773,15 @@ const ProjectModel = () => {
                       optionMap={projectCategoryMap}
                       isLoading={prCategoryLoading}
                       isError={prCategoryIsError}
+                    />
+                    <AsyncSelectField
+                      fieldId="prj_cluster_id"
+                      validation={validation}
+                      isRequired
+                      className="col-md-4 mb-3"
+                      optionMap={sectorCategoryMap}
+                      isLoading={isSectorCatLoading}
+                      isError={isSectorCatError}
                     />
                     <Col className="col-md-4 mb-3">
                       <DatePicker
