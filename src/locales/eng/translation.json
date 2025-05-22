@@ -1644,5 +1644,14 @@
 	"in_percent": "(In Percent)",
 	"min_error": "{{field}} must be at least {{min}}.",
 	"max_error": "{{field}} must be at most {{max}}.",
-	"request_followup": "Request FollowUp"
+	"request_followup": "Request FollowUp",
+	"mne_transaction_type":"Transaction Type",
+	"regional_physical":"Region Physical",
+	"regional_financial":"Region Financial",
+	"zonal_physical":"Zone Physical",
+	"zonal_financial":"Zone Financial",
+	"woreda_physical":"Woreda Physical",
+	"woreda_financial":"Woreda Financial",
+	"record_date":"Record Date",
+	"end_date":"End Date"
 }

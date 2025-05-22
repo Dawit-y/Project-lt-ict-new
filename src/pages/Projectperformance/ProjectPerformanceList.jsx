@@ -76,11 +76,6 @@ const ProjectPerformanceList = (props) => {
     "bdy_id",
     "bdy_name"
   );
-  const budgetMonthOptions = createSelectOptions(
-    budgetMonthData?.data || [],
-    "bdm_id",
-    "bdm_month"
-  );
 
   const projectStatusMap = useMemo(() => {
     return (
@@ -129,7 +124,16 @@ const ProjectPerformanceList = (props) => {
     }
   };
   //START UNCHANGED
+
   const columnDefs = useMemo(() => {
+    // Define the month groupings for each quarter
+    const quarterDefinitions = [
+      [11, 12, 1], // Q1
+      [2, 3, 4], // Q2
+      [5, 6, 7], // Q3
+      [8, 9, 10], // Q4
+    ];
+
     const baseColumnDefs = [
       {
         headerName: t("S.N"),
@@ -140,23 +144,13 @@ const ProjectPerformanceList = (props) => {
         width: 60,
       },
       {
-        headerName: t("prp_budget_year_id"),
+        headerName: t("Year"),
         field: "prp_budget_year_id",
         sortable: true,
         filter: true,
-        width: "120px",
+        width: 120,
         cellRenderer: (params) => {
           return truncateText(params.data.year_name, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prp_budget_month_id"),
-        field: "prp_budget_month_id",
-        sortable: true,
-        filter: true,
-        width: "120px",
-        cellRenderer: (params) => {
-          return truncateText(params.data.month_name, 30) || "-";
         },
       },
       {
@@ -187,80 +181,103 @@ const ProjectPerformanceList = (props) => {
         },
       },
       {
-        headerName: t("prp_record_date_gc"),
+        headerName: t("Entry Date"),
         field: "prp_record_date_gc",
         sortable: true,
-        filter: "agDateColumnFilter", // Enable date filtering
+        filter: "agDateColumnFilter",
         cellRenderer: (params) => {
           return truncateText(params.data.prp_record_date_gc, 30) || "-";
         },
       },
-      {
-        headerName: t("prp_budget_planned"),
-        field: "prp_budget_planned",
-        sortable: true,
-        filter: true,
-        valueFormatter: (params) => {
-          if (params.value != null) {
-            return new Intl.NumberFormat("en-US", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(params.value);
-          }
-          return "0.00"; // Default value if null or undefined
-        },
-      },
-
-      {
-        headerName: t("prp_physical_planned"),
-        field: "prp_physical_planned",
-        sortable: true,
-        filter: true,
-        valueFormatter: (params) => {
-          if (params.value != null) {
-            return new Intl.NumberFormat("en-US", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(params.value);
-          }
-          return "0.00"; // Default value if null or undefined
-        },
-      },
-      {
-        headerName: t("baseline"), // Main header that spans both children
-        headerClass: "txt-center", // Custom class for centering
-        children: [
+      // Create quarter columns based on custom definitions
+      ...quarterDefinitions
+        .map((quarterMonths, quarterIndex) => [
           {
-            headerName: t("prp_budget_baseline"),
-            field: "prp_budget_baseline",
+            headerName: `Q${quarterIndex + 1} Physical Planned`,
+            field: `quarter_${quarterIndex + 1}_physical_planned`,
             sortable: true,
             filter: true,
-            valueFormatter: (params) => {
-              if (params.value != null) {
-                return new Intl.NumberFormat("en-US", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                }).format(params.value);
-              }
-              return "0.00";
+            cellRenderer: (params) => {
+              // Sum the 3 months for this quarter
+              const sum = quarterMonths.reduce((total, month) => {
+                const value =
+                  params.data[`prp_pyhsical_planned_month_${month}`] || 0;
+                return total + Number(value);
+              }, 0);
+              return sum ? truncateText(sum.toLocaleString(), 15) : "-";
             },
           },
           {
-            headerName: t("prp_physical_baseline"),
-            field: "prp_physical_baseline",
+            headerName: `Q${quarterIndex + 1} Financial Planned`,
+            field: `quarter_${quarterIndex + 1}_financial_planned`,
             sortable: true,
             filter: true,
-            valueFormatter: (params) => {
-              if (params.value != null) {
-                return new Intl.NumberFormat("en-US", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                }).format(params.value);
-              }
-              return "0.00";
+            cellRenderer: (params) => {
+              const sum = quarterMonths.reduce((total, month) => {
+                const value =
+                  params.data[`prp_finan_planned_month_${month}`] || 0;
+                return total + Number(value);
+              }, 0);
+              return sum ? truncateText(sum.toLocaleString(), 15) : "-";
             },
           },
-        ],
+          {
+            headerName: `Q${quarterIndex + 1} Physical Actual`,
+            field: `quarter_${quarterIndex + 1}_physical_actual`,
+            sortable: true,
+            filter: true,
+            cellRenderer: (params) => {
+              const sum = quarterMonths.reduce((total, month) => {
+                const value =
+                  params.data[`prp_pyhsical_actual_month_${month}`] || 0;
+                return total + Number(value);
+              }, 0);
+              return sum ? truncateText(sum.toLocaleString(), 15) : "-";
+            },
+          },
+          {
+            headerName: `Q${quarterIndex + 1} Financial Actual`,
+            field: `quarter_${quarterIndex + 1}_financial_actual`,
+            sortable: true,
+            filter: true,
+            cellRenderer: (params) => {
+              const sum = quarterMonths.reduce((total, month) => {
+                const value =
+                  params.data[`prp_finan_actual_month_${month}`] || 0;
+                return total + Number(value);
+              }, 0);
+              return sum ? truncateText(sum.toLocaleString(), 15) : "-";
+            },
+          },
+        ])
+        .flat(),
+      {
+        headerName: t("Baseline Budget"),
+        field: "prp_budget_baseline",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return params.data.prp_budget_baseline
+            ? truncateText(
+                Number(params.data.prp_budget_baseline).toLocaleString(),
+                15
+              )
+            : "-";
+        },
+      },
+      {
+        headerName: t("Baseline Physical"),
+        field: "prp_physical_baseline",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return params.data.prp_physical_baseline
+            ? truncateText(
+                Number(params.data.prp_physical_baseline).toLocaleString(),
+                15
+              )
+            : "-";
+        },
       },
       {
         headerName: t("prp_total_budget_used"),
@@ -287,14 +304,14 @@ const ProjectPerformanceList = (props) => {
         },
       },
       {
-        headerName: "Actions",
+        headerName: t("Analysis"),
         field: "actions",
         cellRenderer: (params) => (
           <button
             className="btn btn-sm btn-primary"
             onClick={() => handleViewDetails(params.data)}
           >
-            Analysis
+            {t("Analysis")}
           </button>
         ),
         width: 120,
@@ -302,8 +319,9 @@ const ProjectPerformanceList = (props) => {
         filter: false,
       },
     ];
+
     return baseColumnDefs;
-  });
+  }, [projectStatusMap, t]);
 
   // Automatically clear selection when data changes
   useEffect(() => {
@@ -346,10 +364,6 @@ const ProjectPerformanceList = (props) => {
                   {
                     key: "budget_year",
                     options: budgetYearOptions,
-                  },
-                  {
-                    key: "budget_month",
-                    options: budgetMonthOptions,
                   },
                 ]}
                 checkboxSearchKeys={[]}
