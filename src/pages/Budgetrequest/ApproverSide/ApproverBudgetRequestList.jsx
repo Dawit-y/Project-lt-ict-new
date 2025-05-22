@@ -319,9 +319,8 @@ const ApproverBudgetRequestList = () => {
           const isForwarded = params.data.forwarded;
           return (
             <Badge
-              className={`font-size-12 badge-soft-${
-                isForwarded ? "danger" : "secondary"
-              }`}
+              className={`font-size-12 badge-soft-${isForwarded ? "danger" : "secondary"
+                }`}
             >
               {isForwarded ? t("forwarded") : t("not_forwarded")}
             </Badge>
@@ -473,8 +472,8 @@ const ApproverBudgetRequestList = () => {
                         i18n.language === "en"
                           ? requestCategoryOptionsEn
                           : i18n.language === "am"
-                          ? requestCategoryOptionsAm
-                          : requestCategoryOptionsOr,
+                            ? requestCategoryOptionsAm
+                            : requestCategoryOptionsOr,
                     },
                     {
                       key: "bdr_request_type",
@@ -486,8 +485,8 @@ const ApproverBudgetRequestList = () => {
                         i18n.language === "en"
                           ? sectorInfoOptionsEn
                           : i18n.language === "am"
-                          ? sectorInfoOptionsAm
-                          : sectorInfoOptionsOr,
+                            ? sectorInfoOptionsAm
+                            : sectorInfoOptionsOr,
                     },
                     {
                       key: "bdr_request_status",
@@ -495,8 +494,8 @@ const ApproverBudgetRequestList = () => {
                         i18n.language === "en"
                           ? requestStatusOptionsEn
                           : i18n.language === "am"
-                          ? requestStatusOptionsAm
-                          : requestStatusOptionsOr,
+                            ? requestStatusOptionsAm
+                            : requestStatusOptionsOr,
                     },
                   ]}
                   additionalParams={projectParams}
@@ -538,29 +537,17 @@ const TableWrapper = ({
   chartType,
   setChartType,
 }) => {
-  const { user: storedUser } = useAuthUser();
-  const user = storedUser?.user;
-  const depId =
-    user?.usr_officer_id > 0
-      ? user.usr_officer_id
-      : user?.usr_team_id > 0
-      ? user.usr_team_id
-      : user?.usr_directorate_id > 0
-      ? user.usr_directorate_id
-      : user?.usr_department_id > 0
-      ? user.usr_department_id
-      : null;
-
+  const { departmentId } = useAuthUser();
   const { data: rqfData } = useFetchRequestFollowups();
 
   function markForwardedRequests(
     budgetRequests = [],
     forwardedRequests = [],
-    depId
+    departmentId
   ) {
     const forwardedSet = new Set(
       forwardedRequests
-        .filter((req) => req.rqf_forwarding_dep_id === depId)
+        .filter((req) => req.rqf_forwarding_dep_id === departmentId)
         .map((req) => req.rqf_request_id)
     );
 
@@ -572,7 +559,7 @@ const TableWrapper = ({
 
   let transformedData = data?.data || [];
   if (data?.data && rqfData?.data) {
-    transformedData = markForwardedRequests(data.data, rqfData.data, depId);
+    transformedData = markForwardedRequests(data.data, rqfData.data, departmentId);
   }
 
   return (

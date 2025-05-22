@@ -82,7 +82,7 @@ AsyncSelectField.propTypes = {
   }).isRequired,
   isRequired: PropTypes.bool,
   className: PropTypes.string,
-  optionMap: PropTypes.objectOf(PropTypes.string).isRequired,
+  optionMap: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])).isRequired,
   isLoading: PropTypes.bool,
   isError: PropTypes.bool,
 }
