@@ -12,7 +12,7 @@ import {
   alphanumericValidation,
   amountValidation,
   numberValidation,
-  phoneValidation
+  phoneValidation,
 } from "../../utils/Validation/validation";
 import {
   useFetchProjectEmployees,
@@ -39,7 +39,7 @@ import {
   Card,
   CardBody,
   InputGroup,
-InputGroupText
+  InputGroupText,
 } from "reactstrap";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -68,10 +68,8 @@ const ProjectEmployeeModel = (props) => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, isFetching, error, isError, refetch } = useFetchProjectEmployees(
-    param,
-    isActive
-  );
+  const { data, isLoading, isFetching, error, isError, refetch } =
+    useFetchProjectEmployees(param, isActive);
 
   const addProjectEmployee = useAddProjectEmployee();
   const updateProjectEmployee = useUpdateProjectEmployee();
@@ -132,6 +130,9 @@ const ProjectEmployeeModel = (props) => {
       emp_phone_num: (projectEmployee && projectEmployee.emp_phone_num) || "",
       emp_role: (projectEmployee && projectEmployee.emp_role) || "",
       emp_project_id: (projectEmployee && projectEmployee.emp_project_id) || "",
+      emp_nationality:
+        (projectEmployee && projectEmployee.emp_nationality) || "",
+      emp_sex: (projectEmployee && projectEmployee.emp_sex) || "",
       emp_start_date_ec:
         (projectEmployee && projectEmployee.emp_start_date_ec) || "",
       emp_start_date_gc:
@@ -163,18 +164,27 @@ const ProjectEmployeeModel = (props) => {
       emp_email: alphanumericValidation(5, 50, false).email(
         "ivalid email address"
       ),
+
       emp_phone_num: phoneValidation(true),
       emp_role: alphanumericValidation(3, 425, true),
+      emp_nationality: alphanumericValidation(3, 100, false),
+      emp_sex: Yup.string().required(t("Sex is required")),
       //emp_project_id: Yup.string().required(t("emp_project_id")),
       //emp_start_date_ec: Yup.string().required(t("emp_start_date_ec")),
-      emp_start_date_gc: Yup.string().required(t("emp_start_date_gc"))
+      emp_start_date_gc: Yup.string()
+        .required(t("emp_start_date_gc"))
         .test(
-          'is-before-end-date',
-          'start date must be earlier than or equal to end date',
+          "is-before-end-date",
+          "start date must be earlier than or equal to end date",
           function (value) {
             const { emp_end_date_gc } = this.parent; // Access other fields in the form
-            return !emp_end_date_gc || !value || new Date(value) <= new Date(emp_end_date_gc);
-          }),
+            return (
+              !emp_end_date_gc ||
+              !value ||
+              new Date(value) <= new Date(emp_end_date_gc)
+            );
+          }
+        ),
       // emp_end_date_ec: Yup.string().required(t("emp_end_date_ec")),
       //emp_end_date_gc: Yup.string().required(t("emp_end_date_gc")),
       emp_address: alphanumericValidation(3, 425, false),
@@ -192,6 +202,8 @@ const ProjectEmployeeModel = (props) => {
           emp_email: values.emp_email,
           emp_phone_num: values.emp_phone_num,
           emp_role: values.emp_role,
+          emp_nationality: values.emp_nationality,
+          emp_sex: values.emp_sex,
           //emp_project_id: values.emp_project_id,
           emp_start_date_ec: values.emp_start_date_ec,
           emp_start_date_gc: values.emp_start_date_gc,
@@ -213,6 +225,8 @@ const ProjectEmployeeModel = (props) => {
           emp_email: values.emp_email,
           emp_phone_num: values.emp_phone_num,
           emp_role: values.emp_role,
+          emp_nationality: values.emp_nationality,
+          emp_sex: values.emp_sex,
           emp_project_id: passedId,
           emp_start_date_ec: values.emp_start_date_ec,
           emp_start_date_gc: values.emp_start_date_gc,
@@ -260,6 +274,8 @@ const ProjectEmployeeModel = (props) => {
       emp_email: projectEmployee.emp_email,
       emp_phone_num: projectEmployee.emp_phone_num,
       emp_role: projectEmployee.emp_role,
+      emp_nationality: projectEmployee.emp_nationality,
+      emp_sex: projectEmployee.emp_sex,
       emp_project_id: projectEmployee.emp_project_id,
       emp_start_date_ec: projectEmployee.emp_start_date_ec,
       emp_start_date_gc: projectEmployee.emp_start_date_gc,
@@ -348,6 +364,32 @@ const ProjectEmployeeModel = (props) => {
         },
       },
       {
+        header: t("Nationality"),
+        accessorKey: "emp_nationality",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.emp_nationality, 30) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: t("Sex"),
+        accessorKey: "emp_sex",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.emp_sex, 30) || "-"}
+            </span>
+          );
+        },
+      },
+      {
         header: "",
         accessorKey: "emp_role",
         enableColumnFilter: false,
@@ -421,8 +463,9 @@ const ProjectEmployeeModel = (props) => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {(data?.previledge?.is_role_editable == 1 && cellProps.row.original?.is_editable == 1) && (
-                 <Button
+              {data?.previledge?.is_role_editable == 1 &&
+                cellProps.row.original?.is_editable == 1 && (
+                  <Button
                     size="sm"
                     color="none"
                     className="text-success"
@@ -440,7 +483,8 @@ const ProjectEmployeeModel = (props) => {
                     </UncontrolledTooltip>
                   </Button>
                 )}
-{(data?.previledge?.is_role_deletable == 9 && cellProps.row.original?.is_deletable == 9) && (
+              {data?.previledge?.is_role_deletable == 9 &&
+                cellProps.row.original?.is_deletable == 9 && (
                   <Link
                     to="#"
                     className="text-danger"
@@ -486,6 +530,8 @@ const ProjectEmployeeModel = (props) => {
           { label: t("emp_phone_num"), key: "emp_phone_num" },
 
           { label: t("emp_role"), key: "emp_role" },
+          { label: t("Nationality"), key: "emp_nationality" },
+          { label: t("Sex"), key: "emp_sex" },
           { label: t("emp_start_date_gc"), key: "emp_start_date_gc" },
           { label: t("emp_end_date_gc"), key: "emp_end_date_gc" },
           { label: t("emp_address"), key: "emp_address" },
@@ -550,7 +596,7 @@ const ProjectEmployeeModel = (props) => {
                 }}
               >
                 <Row>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-3 mb-3">
                     <Label>{t("emp_id_no")}</Label>
                     <span className="text-danger">*</span>
                     <Input
@@ -562,20 +608,20 @@ const ProjectEmployeeModel = (props) => {
                       value={validation.values.emp_id_no || ""}
                       invalid={
                         validation.touched.emp_id_no &&
-                          validation.errors.emp_id_no
+                        validation.errors.emp_id_no
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.emp_id_no &&
-                      validation.errors.emp_id_no ? (
+                    validation.errors.emp_id_no ? (
                       <FormFeedback type="invalid">
                         {validation.errors.emp_id_no}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-3 mb-3">
                     <Label>
                       {t("emp_full_name")}
                       <span className="text-danger">*</span>
@@ -589,20 +635,20 @@ const ProjectEmployeeModel = (props) => {
                       value={validation.values.emp_full_name || ""}
                       invalid={
                         validation.touched.emp_full_name &&
-                          validation.errors.emp_full_name
+                        validation.errors.emp_full_name
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.emp_full_name &&
-                      validation.errors.emp_full_name ? (
+                    validation.errors.emp_full_name ? (
                       <FormFeedback type="invalid">
                         {validation.errors.emp_full_name}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-3 mb-3">
                     <Label>{t("emp_email")}</Label>
                     <Input
                       name="emp_email"
@@ -613,21 +659,24 @@ const ProjectEmployeeModel = (props) => {
                       value={validation.values.emp_email || ""}
                       invalid={
                         validation.touched.emp_email &&
-                          validation.errors.emp_email
+                        validation.errors.emp_email
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.emp_email &&
-                      validation.errors.emp_email ? (
+                    validation.errors.emp_email ? (
                       <FormFeedback type="invalid">
                         {validation.errors.emp_email}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                  <InputGroup>
+                  <Col className="col-md-3 mb-3">
+                    <Label>
+                      {t("emp_phone")} <span className="text-danger">*</span>
+                    </Label>
+                    <InputGroup>
                       <InputGroupText>{"+251"}</InputGroupText>
                       <Input
                         name="emp_phone_num"
@@ -657,8 +706,56 @@ const ProjectEmployeeModel = (props) => {
                         </FormFeedback>
                       ) : null}
                     </InputGroup>
-                    </Col>
-                  <Col className="col-md-6 mb-3">
+                  </Col>
+                  <Col className="col-md-3 mb-3">
+                    <Label>{t("Nationality")}</Label>
+                    <Input
+                      name="emp_nationality"
+                      type="text"
+                      placeholder={t("Nationality")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.emp_nationality || ""}
+                      invalid={
+                        validation.touched.emp_nationality &&
+                        validation.errors.emp_nationality
+                      }
+                      maxLength={100}
+                    />
+                    {validation.touched.emp_nationality &&
+                      validation.errors.emp_nationality && (
+                        <FormFeedback type="invalid">
+                          {validation.errors.emp_nationality}
+                        </FormFeedback>
+                      )}
+                  </Col>
+
+                  <Col className="col-md-3 mb-3">
+                    <Label>
+                      {t("Sex")} <span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      name="emp_sex"
+                      type="select"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.emp_sex || ""}
+                      invalid={
+                        validation.touched.emp_sex && validation.errors.emp_sex
+                      }
+                    >
+                      <option value="">{t("Select Sex")}</option>
+                      <option value="Male">{t("Male")}</option>
+                      <option value="Female">{t("Female")}</option>
+                    </Input>
+                    {validation.touched.emp_sex &&
+                      validation.errors.emp_sex && (
+                        <FormFeedback type="invalid">
+                          {validation.errors.emp_sex}
+                        </FormFeedback>
+                      )}
+                  </Col>
+                  <Col className="col-md-3 mb-3">
                     <Label>
                       {t("emp_role")}
                       <span className="text-danger">*</span>
@@ -672,20 +769,20 @@ const ProjectEmployeeModel = (props) => {
                       value={validation.values.emp_role || ""}
                       invalid={
                         validation.touched.emp_role &&
-                          validation.errors.emp_role
+                        validation.errors.emp_role
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.emp_role &&
-                      validation.errors.emp_role ? (
+                    validation.errors.emp_role ? (
                       <FormFeedback type="invalid">
                         {validation.errors.emp_role}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-3 mb-3">
                     <DatePicker
                       isRequired={true}
                       componentId={"emp_start_date_gc"}
@@ -693,7 +790,7 @@ const ProjectEmployeeModel = (props) => {
                       minDate={startDate}
                     />
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-3 mb-3">
                     <DatePicker
                       isRequired={true}
                       componentId={"emp_end_date_gc"}
@@ -701,25 +798,25 @@ const ProjectEmployeeModel = (props) => {
                       minDate={startDate}
                     />
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-3 mb-3">
                     <Label>{t("emp_address")}</Label>
                     <Input
                       name="emp_address"
-                      type="textarea"
+                      type="text"
                       placeholder={t("emp_address")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.emp_address || ""}
                       invalid={
                         validation.touched.emp_address &&
-                          validation.errors.emp_address
+                        validation.errors.emp_address
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.emp_address &&
-                      validation.errors.emp_address ? (
+                    validation.errors.emp_address ? (
                       <FormFeedback type="invalid">
                         {validation.errors.emp_address}
                       </FormFeedback>
@@ -736,14 +833,14 @@ const ProjectEmployeeModel = (props) => {
                       value={validation.values.emp_description || ""}
                       invalid={
                         validation.touched.emp_description &&
-                          validation.errors.emp_description
+                        validation.errors.emp_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.emp_description &&
-                      validation.errors.emp_description ? (
+                    validation.errors.emp_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.emp_description}
                       </FormFeedback>
@@ -754,7 +851,7 @@ const ProjectEmployeeModel = (props) => {
                   <Col>
                     <div className="text-end">
                       {addProjectEmployee.isPending ||
-                        updateProjectEmployee.isPending ? (
+                      updateProjectEmployee.isPending ? (
                         <Button
                           color="success"
                           type="submit"

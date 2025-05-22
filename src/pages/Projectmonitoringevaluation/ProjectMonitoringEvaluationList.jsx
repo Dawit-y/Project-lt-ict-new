@@ -129,22 +129,7 @@ const ProjectMonitoringEvaluationList = () => {
         return <span>{t(labelKey)}</span>;
       },
     },
-    {
-      headerName: t("mne_physical"),
-      field: "mne_physical",
-      filter: false,
-      sortable: true,
-      valueFormatter: ({ value }) =>
-        truncateText(Number(value).toLocaleString(), 30) || "-",
-    },
-    {
-      headerName: t("mne_financial"),
-      field: "mne_financial",
-      filter: false,
-      sortable: true,
-      valueFormatter: ({ value }) =>
-        truncateText(Number(value).toLocaleString(), 30) || "-",
-    },
+
     {
       headerName: t("mne_physical_region"),
       field: "mne_physical_region",
@@ -172,6 +157,22 @@ const ProjectMonitoringEvaluationList = () => {
     {
       headerName: t("mne_financial_zone"),
       field: "mne_financial_zone",
+      filter: false,
+      sortable: true,
+      valueFormatter: ({ value }) =>
+        truncateText(Number(value).toLocaleString(), 30) || "-",
+    },
+    {
+      headerName: t("mne_physical"),
+      field: "mne_physical",
+      filter: false,
+      sortable: true,
+      valueFormatter: ({ value }) =>
+        truncateText(Number(value).toLocaleString(), 30) || "-",
+    },
+    {
+      headerName: t("mne_financial"),
+      field: "mne_financial",
       filter: false,
       sortable: true,
       valueFormatter: ({ value }) =>
