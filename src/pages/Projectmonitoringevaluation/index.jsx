@@ -111,7 +111,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
         am: "met_name_am",
         or: "met_name_or",
       },
-      i18n.language,
+      i18n.language
     );
   }, [meTypes, i18n.language]);
 
@@ -489,8 +489,8 @@ const ProjectMonitoringEvaluationModel = (props) => {
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: "",
-        accessorKey: "mne_transaction_type_id",
+        header: t("mne_transaction_type"),
+        accessorKey: "mne_transaction_type",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
@@ -500,7 +500,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
         },
       },
       {
-        header: "",
+        header: t("mne_visit_type"),
         accessorKey: "mne_visit_type",
         enableColumnFilter: false,
         enableSorting: true,
@@ -509,40 +509,9 @@ const ProjectMonitoringEvaluationModel = (props) => {
           return <span>{t(labelKey)}</span>;
         },
       },
+
       {
-        header: "",
-        accessorKey: "mne_physical",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                Number(cellProps.row.original.mne_physical).toLocaleString(),
-                30
-              ) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "mne_financial",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                Number(cellProps.row.original.mne_financial).toLocaleString(),
-                30
-              ) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
+        header: t("mne_physical_region"),
         accessorKey: "mne_physical_region",
         enableColumnFilter: false,
         enableSorting: true,
@@ -560,7 +529,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
         },
       },
       {
-        header: "",
+        header: t("mne_financial_region"),
         accessorKey: "mne_financial_region",
         enableColumnFilter: false,
         enableSorting: true,
@@ -578,7 +547,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
         },
       },
       {
-        header: "",
+        header: t("mne_physical_zone"),
         accessorKey: "mne_physical_zone",
         enableColumnFilter: false,
         enableSorting: true,
@@ -596,7 +565,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
         },
       },
       {
-        header: "",
+        header: t("mne_financial_zone"),
         accessorKey: "mne_financial_zone",
         enableColumnFilter: false,
         enableSorting: true,
@@ -613,8 +582,41 @@ const ProjectMonitoringEvaluationModel = (props) => {
           );
         },
       },
+
       {
-        header: "",
+        header: t("mne_physical"),
+        accessorKey: "mne_physical",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(
+                Number(cellProps.row.original.mne_physical).toLocaleString(),
+                30
+              ) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: t("mne_financial"),
+        accessorKey: "mne_financial",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(
+                Number(cellProps.row.original.mne_financial).toLocaleString(),
+                30
+              ) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: t("mne_record_date"),
         accessorKey: "mne_record_date",
         enableColumnFilter: false,
         enableSorting: true,
@@ -627,7 +629,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
         },
       },
       {
-        header: "",
+        header: t("mne_start_date"),
         accessorKey: "mne_start_date",
         enableColumnFilter: false,
         enableSorting: true,
@@ -640,7 +642,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
         },
       },
       {
-        header: "",
+        header: t("mne_end_date"),
         accessorKey: "mne_end_date",
         enableColumnFilter: false,
         enableSorting: true,
@@ -850,7 +852,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
               <div className="card-body">
                 <Row>
                   <Col className="col-md-4 mb-1">
-                    <Label>{t("mne_transaction_type_id")}</Label>
+                    <Label>{t("mne_transaction_type")}</Label>
                     <span className="text-danger ms-1">*</span>
                     <Input
                       name="mne_transaction_type_id"
@@ -861,12 +863,12 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_transaction_type_id || ""}
                       invalid={
                         validation.touched.mne_transaction_type_id &&
-                          validation.errors.mne_transaction_type_id
+                        validation.errors.mne_transaction_type_id
                           ? true
                           : false
                       }
                     >
-                      <option value="">Select Transaction Type</option>
+                      <option value="">{t("Select_Transaction_Type")}</option>
                       {transactionTypes.map((type) => (
                         <option key={type.value} value={type.value}>
                           {t(type.label)}
@@ -874,7 +876,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       ))}
                     </Input>
                     {validation.touched.mne_transaction_type_id &&
-                      validation.errors.mne_transaction_type_id ? (
+                    validation.errors.mne_transaction_type_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_transaction_type_id}
                       </FormFeedback>
@@ -892,13 +894,13 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_visit_type || ""}
                       invalid={
                         validation.touched.mne_visit_type &&
-                          validation.errors.mne_visit_type
+                        validation.errors.mne_visit_type
                           ? true
                           : false
                       }
                       maxLength={20}
                     >
-                      <option value="">Select Visit Type</option>
+                      <option value="">{t("Select_Visit_Type")}</option>
                       {visitTypes.map((type) => (
                         <option key={type.value} value={type.value}>
                           {t(type.label)}
@@ -906,7 +908,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       ))}
                     </Input>
                     {validation.touched.mne_visit_type &&
-                      validation.errors.mne_visit_type ? (
+                    validation.errors.mne_visit_type ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_visit_type}
                       </FormFeedback>
@@ -1107,14 +1109,14 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_team_members || ""}
                       invalid={
                         validation.touched.mne_team_members &&
-                          validation.errors.mne_team_members
+                        validation.errors.mne_team_members
                           ? true
                           : false
                       }
                       maxLength={420}
                     />
                     {validation.touched.mne_team_members &&
-                      validation.errors.mne_team_members ? (
+                    validation.errors.mne_team_members ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_team_members}
                       </FormFeedback>
@@ -1142,14 +1144,14 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_feedback || ""}
                       invalid={
                         validation.touched.mne_feedback &&
-                          validation.errors.mne_feedback
+                        validation.errors.mne_feedback
                           ? true
                           : false
                       }
                       maxLength={420}
                     />
                     {validation.touched.mne_feedback &&
-                      validation.errors.mne_feedback ? (
+                    validation.errors.mne_feedback ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_feedback}
                       </FormFeedback>
@@ -1166,14 +1168,14 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_weakness || ""}
                       invalid={
                         validation.touched.mne_weakness &&
-                          validation.errors.mne_weakness
+                        validation.errors.mne_weakness
                           ? true
                           : false
                       }
                       maxLength={420}
                     />
                     {validation.touched.mne_weakness &&
-                      validation.errors.mne_weakness ? (
+                    validation.errors.mne_weakness ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_weakness}
                       </FormFeedback>
@@ -1190,14 +1192,14 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_challenges || ""}
                       invalid={
                         validation.touched.mne_challenges &&
-                          validation.errors.mne_challenges
+                        validation.errors.mne_challenges
                           ? true
                           : false
                       }
                       maxLength={420}
                     />
                     {validation.touched.mne_challenges &&
-                      validation.errors.mne_challenges ? (
+                    validation.errors.mne_challenges ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_challenges}
                       </FormFeedback>
@@ -1214,14 +1216,14 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_recommendations || ""}
                       invalid={
                         validation.touched.mne_recommendations &&
-                          validation.errors.mne_recommendations
+                        validation.errors.mne_recommendations
                           ? true
                           : false
                       }
                       maxLength={420}
                     />
                     {validation.touched.mne_recommendations &&
-                      validation.errors.mne_recommendations ? (
+                    validation.errors.mne_recommendations ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_recommendations}
                       </FormFeedback>
@@ -1238,14 +1240,14 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_purpose || ""}
                       invalid={
                         validation.touched.mne_purpose &&
-                          validation.errors.mne_purpose
+                        validation.errors.mne_purpose
                           ? true
                           : false
                       }
                       maxLength={420}
                     />
                     {validation.touched.mne_purpose &&
-                      validation.errors.mne_purpose ? (
+                    validation.errors.mne_purpose ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_purpose}
                       </FormFeedback>
@@ -1262,14 +1264,14 @@ const ProjectMonitoringEvaluationModel = (props) => {
                       value={validation.values.mne_strength || ""}
                       invalid={
                         validation.touched.mne_strength &&
-                          validation.errors.mne_strength
+                        validation.errors.mne_strength
                           ? true
                           : false
                       }
                       maxLength={420}
                     />
                     {validation.touched.mne_strength &&
-                      validation.errors.mne_strength ? (
+                    validation.errors.mne_strength ? (
                       <FormFeedback type="invalid">
                         {validation.errors.mne_strength}
                       </FormFeedback>
@@ -1280,7 +1282,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
                     <div
                       className={
                         validation.touched.mne_description &&
-                          validation.errors.mne_description
+                        validation.errors.mne_description
                           ? "is-invalid"
                           : ""
                       }
@@ -1314,7 +1316,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
               <Col>
                 <div className="text-end">
                   {addProjectMonitoringEvaluation.isPending ||
-                    updateProjectMonitoringEvaluation.isPending ? (
+                  updateProjectMonitoringEvaluation.isPending ? (
                     <Button
                       color="primary"
                       type="submit"

@@ -171,7 +171,20 @@ const BudgetRequestModel = (props) => {
     validationSchema: Yup.object({
       bdr_budget_year_id: Yup.string().required(t("bdr_budget_year_id")),
       bdr_request_type: Yup.string().required(t("bdr_request_type")),
-      bdr_request_category_id: Yup.string().required(t("bdr_request_category_id")),
+      bdr_request_category_id: Yup.string()
+        .required(t("bdr_request_category_id"))
+        .test(
+          "unique-year-category-combination",
+          t("This category already exists for the selected budget year."),
+          function (value) {
+            const { bdr_budget_year_id } = this.parent;
+            return !data?.data.some(
+              (item) =>
+                parseInt(item.bdr_budget_year_id) == parseInt(bdr_budget_year_id) &&
+                parseInt(item.bdr_request_category_id) == parseInt(value)
+            );
+          }
+        ),
       bdr_requested_amount: formattedAmountValidation(1000, 10000000000, true),
       bdr_requested_date_gc: Yup.string().required(t("bdr_requested_date_gc")),
       bdr_physical_baseline: Yup.number()

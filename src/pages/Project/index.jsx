@@ -56,6 +56,7 @@ import TreeForProject from "./TreeForProject";
 import DatePicker from "../../components/Common/DatePicker";
 import AsyncSelectField from "../../components/Common/AsyncSelectField";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
+import InputField from "../../components/Common/InputField"
 
 const ProjectModel = () => {
   document.title = "Projects";
@@ -202,7 +203,7 @@ const ProjectModel = () => {
       is_deletable: (project && project.is_deletable) || 1,
       is_editable: (project && project.is_editable) || 1,
       prj_measurement_unit: (project && project.prj_measurement_unit) || "",
-      prj_measured_figure: (project && project.prj_measured_figure) || "0",
+      prj_measured_figure: (project && project.prj_measured_figure) || "",
 
     },
 
@@ -216,13 +217,7 @@ const ProjectModel = () => {
           );
         }
       ),
-      prj_name_am: onlyAmharicValidation(3, 200, true)
-        .test("unique-prj_name_am", t("Already exists"), (value) => {
-          return !data?.data.some(
-            (item) =>
-              item.prj_name_am == value && item.prj_id !== project?.prj_id
-          );
-        }),
+      prj_name_am: onlyAmharicValidation(3, 200, false),
       prj_name_en: alphanumericValidation(3, 200, true).test(
         "unique-prj_name_en",
         t("Already exists"),
@@ -246,14 +241,16 @@ const ProjectModel = () => {
       //prj_project_status_id: Yup.string().required(t('prj_project_status_id')),
       prj_project_category_id: numberValidation(1, 200, true),
       //prj_project_budget_source_id: Yup.string().required(t('prj_project_budget_source_id')),
-      prj_total_estimate_budget: formattedAmountValidation(1000, 1000000000000, false),
-      prj_total_actual_budget: formattedAmountValidation(1000, 1000000000000, false),
+      prj_total_estimate_budget: formattedAmountValidation(1000, 1000000000000, true),
+      prj_total_actual_budget: formattedAmountValidation(1000, 1000000000000, true),
       //prj_geo_location: Yup.string().required(t('prj_geo_location')),
       //prj_sector_id: Yup.string().required(t("prj_sector_id")),
       prj_location_region_id: Yup.string().required(
         t("prj_location_region_id")
       ),
       prj_location_zone_id: Yup.string().required(t("prj_location_zone_id")),
+      prj_start_date_plan_gc: Yup.string().required(t("prj_start_date_plan_gc")),
+      prj_end_date_plan_gc: Yup.string().required(t("prj_end_date_plan_gc")),
       prj_location_woreda_id: Yup.string().required(
         t("prj_location_woreda_id")
       ),
@@ -715,139 +712,46 @@ const ProjectModel = () => {
                   isEdit={isEdit}
                 />
               </Col>
-              <Col className="col-md-12 mb-3">
-                <Label>{t("prj_location_description")}</Label>
-                <Input
-                  name="prj_location_description"
-                  type="textarea"
-                  placeholder={t("prj_location_description")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={
-                    validation.values.prj_location_description || ""
-                  }
-                  invalid={
-                    validation.touched.prj_location_description &&
-                      validation.errors.prj_location_description
-                      ? true
-                      : false
-                  }
-                  maxLength={200}
-                />
-                {validation.touched.prj_location_description &&
-                  validation.errors.prj_location_description ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.prj_location_description}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-4 mb-3">
-                <Label>
-                  {t("prj_name")}
-                  <span className="text-danger">*</span>
-                </Label>
-                <Input
-                  name="prj_name"
-                  type="text"
-                  placeholder={t("prj_name")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.prj_name || ""}
-                  invalid={
-                    validation.touched.prj_name &&
-                      validation.errors.prj_name
-                      ? true
-                      : false
-                  }
-                  maxLength={200}
-                />
-                {validation.touched.prj_name &&
-                  validation.errors.prj_name ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.prj_name}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-4 mb-3">
-                <Label>
-                  {t("prj_name_am")}
-                  <span className="text-danger">*</span>
-                </Label>
-                <Input
-                  name="prj_name_am"
-                  type="text"
-                  placeholder={t("prj_name_am")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.prj_name_am || ""}
-                  invalid={
-                    validation.touched.prj_name_am &&
-                      validation.errors.prj_name_am
-                      ? true
-                      : false
-                  }
-                  maxLength={200}
-                />
-                {validation.touched.prj_name_am &&
-                  validation.errors.prj_name_am ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.prj_name_am}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-4 mb-3">
-                <Label>
-                  {t("prj_name_en")}
-                  <span className="text-danger">*</span>
-                </Label>
-                <Input
-                  name="prj_name_en"
-                  type="text"
-                  placeholder={t("prj_name_en")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.prj_name_en || ""}
-                  invalid={
-                    validation.touched.prj_name_en &&
-                      validation.errors.prj_name_en
-                      ? true
-                      : false
-                  }
-                  maxLength={200}
-                />
-                {validation.touched.prj_name_en &&
-                  validation.errors.prj_name_en ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.prj_name_en}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-4 mb-3">
-                <Label>
-                  {t("prj_code")}
-                </Label>
-                <Input
-                  name="prj_code"
-                  type="text"
-                  placeholder={t("prj_code")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.prj_code || ""}
-                  invalid={
-                    validation.touched.prj_code &&
-                      validation.errors.prj_code
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
-                />
-                {validation.touched.prj_code &&
-                  validation.errors.prj_code ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.prj_code}
-                  </FormFeedback>
-                ) : null}
-              </Col>
+              <InputField
+                type="textarea"
+                validation={validation}
+                fieldId={"prj_location_description"}
+                isRequired={false}
+                className="col-md-12 mb-3"
+                maxLength={400}
+              />
+              <InputField
+                type="text"
+                validation={validation}
+                fieldId={"prj_name"}
+                isRequired={true}
+                className="col-md-4 mb-3"
+                maxLength={200}
+              />
+              <InputField
+                type="text"
+                validation={validation}
+                fieldId={"prj_name_am"}
+                isRequired={false}
+                className="col-md-4 mb-3"
+                maxLength={200}
+              />
+              <InputField
+                type="text"
+                validation={validation}
+                fieldId={"prj_name_en"}
+                isRequired={true}
+                className="col-md-4 mb-3"
+                maxLength={200}
+              />
+              <InputField
+                type="text"
+                validation={validation}
+                fieldId={"prj_code"}
+                isRequired={false}
+                className="col-md-4 mb-3"
+                maxLength={200}
+              />
               <AsyncSelectField
                 fieldId="prj_project_category_id"
                 validation={validation}
@@ -857,22 +761,20 @@ const ProjectModel = () => {
                 isLoading={prCategoryLoading}
                 isError={prCategoryIsError}
               />
-              <Col className="col-md-4 mb-3">
-                <FormattedAmountField
-                  validation={validation}
-                  fieldId={"prj_total_estimate_budget"}
-                  isRequired={true}
-                  allowDecimal={true}
-                />
-              </Col>
-              <Col className="col-md-4 mb-3">
-                <FormattedAmountField
-                  validation={validation}
-                  fieldId={"prj_total_actual_budget"}
-                  isRequired={false}
-                  allowDecimal={true}
-                />
-              </Col>
+              <FormattedAmountField
+                validation={validation}
+                fieldId={"prj_total_estimate_budget"}
+                isRequired={true}
+                allowDecimal={true}
+                className={"col-md-4 mb-3"}
+              />
+              <FormattedAmountField
+                validation={validation}
+                fieldId={"prj_total_actual_budget"}
+                isRequired={true}
+                allowDecimal={true}
+                className={"col-md-4 mb-3"}
+              />
               <Col className="col-md-4 mb-3">
                 <DatePicker
                   isRequired={true}
@@ -887,54 +789,20 @@ const ProjectModel = () => {
                   validation={validation}
                   minDate={validation.values.prj_start_date_plan_gc} />
               </Col>
-              <Col className="col-md-2 mb-3">
-                <Label>{t("prj_urban_ben_number")}</Label>
-                <Input
-                  name="prj_urban_ben_number"
-                  type="number"
-                  placeholder={t("prj_urban_ben_number")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.prj_urban_ben_number ?? ""}
-                  invalid={
-                    validation.touched.prj_urban_ben_number &&
-                      validation.errors.prj_urban_ben_number
-                      ? true
-                      : false
-                  }
-                  min={0}
-                />
-                {validation.touched.prj_urban_ben_number &&
-                  validation.errors.prj_urban_ben_number ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.prj_urban_ben_number}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-2 mb-3">
-                <Label>{t("prj_rural_ben_number")}</Label>
-                <Input
-                  name="prj_rural_ben_number"
-                  type="number"
-                  placeholder={t("prj_rural_ben_number")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.prj_rural_ben_number ?? ""}
-                  invalid={
-                    validation.touched.prj_rural_ben_number &&
-                      validation.errors.prj_rural_ben_number
-                      ? true
-                      : false
-                  }
-                  min={0}
-                />
-                {validation.touched.prj_rural_ben_number &&
-                  validation.errors.prj_rural_ben_number ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.prj_rural_ben_number}
-                  </FormFeedback>
-                ) : null}
-              </Col>
+              <FormattedAmountField
+                validation={validation}
+                fieldId={"prj_urban_ben_number"}
+                isRequired={false}
+                className="col-md-2 mb-3"
+                allowDecimal={false}
+              />
+              <FormattedAmountField
+                validation={validation}
+                fieldId={"prj_rural_ben_number"}
+                isRequired={false}
+                className="col-md-2 mb-3"
+                allowDecimal={false}
+              />
               <Col className="col-md-2 mb-3">
                 <Label>{t("Total Beneficiaries")}</Label>
                 <Input
@@ -947,124 +815,57 @@ const ProjectModel = () => {
                   className="bg-light"
                 />
               </Col>
-              <Col className="col-md-3 mb-3">
-                <Label>{t("prj_measurement_unit")}</Label>
-                <Input
-                  name="prj_measurement_unit"
-                  type="text"
-                  placeholder={t("prj_measurement_unit")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.prj_measurement_unit || ""}
-                  invalid={
-                    validation.touched.prj_measurement_unit &&
-                      validation.errors.prj_measurement_unit
-                      ? true
-                      : false
-                  }
-                />
-                {validation.touched.prj_measurement_unit &&
-                  validation.errors.prj_measurement_unit ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.prj_measurement_unit}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-3 mb-3">
-                <FormattedAmountField
-                  validation={validation}
-                  fieldId={"prj_measured_figure"}
-                  isRequired={false}
-                  allowDecimal={true}
-                />
-              </Col>
-
-              <Col className="col-md-6 mb-3">
-                <Label>{t("prj_outcome")}</Label>
-                <Input
-                  name="prj_outcome"
-                  type="textarea"
-                  rows={3}
-                  placeholder={t("prj_outcome")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.prj_outcome || ""}
-                  invalid={
-                    validation.touched.prj_outcome &&
-                      validation.errors.prj_outcome
-                      ? true
-                      : false
-                  }
-                  maxLength={200}
-                />
-                {validation.touched.prj_outcome &&
-                  validation.errors.prj_outcome ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.prj_outcome}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>{t("prj_remark")}</Label>
-                <Input
-                  name="prj_remark"
-                  type="textarea"
-                  rows={3}
-                  placeholder={t("prj_remark")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.prj_remark || ""}
-                  invalid={
-                    validation.touched.prj_remark &&
-                      validation.errors.prj_remark
-                      ? true
-                      : false
-                  }
-                  maxLength={200}
-                />
-                {validation.touched.prj_remark &&
-                  validation.errors.prj_remark ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.prj_remark}
-                  </FormFeedback>
-                ) : null}
-              </Col>
+              <InputField
+                type="text"
+                validation={validation}
+                fieldId={"prj_measurement_unit"}
+                isRequired={false}
+                className="col-md-3 mb-3"
+                maxLength={200}
+              />
+              <FormattedAmountField
+                validation={validation}
+                fieldId={"prj_measured_figure"}
+                isRequired={false}
+                allowDecimal={true}
+              />
+              <InputField
+                type="textarea"
+                validation={validation}
+                fieldId={"prj_outcome"}
+                isRequired={false}
+                className="col-md-6 mb-3"
+                maxLength={400}
+                rows={3}
+              />
+              <InputField
+                type="textarea"
+                validation={validation}
+                fieldId={"prj_remark"}
+                isRequired={false}
+                className="col-md-6 mb-3"
+                maxLength={400}
+                rows={3}
+              />
             </Row>
             <Row>
               <Col>
                 <div className="text-end">
-                  {addProject.isPending || updateProject.isPending ? (
-                    <Button
-                      color="success"
-                      type="submit"
-                      className="save-user"
-                      disabled={
-                        addProject.isPending ||
-                        updateProject.isPending ||
-                        !validation.dirty
-                      }
-                    >
-                      <Spinner
-                        size={"sm"}
-                        color="light"
-                        className="me-2"
-                      />
-                      {t("Save")}
-                    </Button>
-                  ) : (
-                    <Button
-                      color="success"
-                      type="submit"
-                      className="save-user"
-                      disabled={
-                        addProject.isPending ||
-                        updateProject.isPending ||
-                        !validation.dirty
-                      }
-                    >
-                      {t("Save")}
-                    </Button>
-                  )}
+                  <Button
+                    color="success"
+                    type="submit"
+                    className="save-user"
+                    disabled={
+                      addProject.isPending ||
+                      updateProject.isPending ||
+                      !validation.dirty
+                    }
+                  >
+                    {(addProject.isPending || updateProject.isPending) && (
+                      <Spinner size="sm" color="light" className="me-2" />
+                    )}
+                    {t("Save")}
+                  </Button>
                 </div>
               </Col>
             </Row>

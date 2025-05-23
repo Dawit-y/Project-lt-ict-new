@@ -269,6 +269,9 @@ const RequestFollowupModel = ({ request }) => {
     if (departmentType === "officer") {
       return false
     }
+    if (parseInt(request?.bdr_request_status) === 3 || parseInt(request?.bdr_request_status) === 4) {
+      return false
+    }
     return true
   }
 

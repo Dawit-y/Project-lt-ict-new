@@ -106,53 +106,97 @@ const ProjectMonitoringEvaluationList = () => {
       cellRenderer: (params) => truncateText(params.data.prj_code, 30) || "-",
     },
     {
-      headerName: t("mne_physical"),
-      field: "mne_physical",
-      sortable: true,
+      headerName: t("mne_transaction_type"),
+      field: "mne_transaction_type_id",
       filter: false,
-      width: 120,
-      valueFormatter: ({ value }) =>
-        truncateText(Number(value).toLocaleString(), 30) || "-",
+      sortable: true,
+      cellRenderer: (params) => {
+        const labelKey = transactionTypes.find(
+          (type) => type.value === params.data.mne_transaction_type_id
+        )?.label;
+        return <span>{t(labelKey)}</span>;
+      },
     },
     {
-      headerName: t("mne_financial"),
-      field: "mne_financial",
-      sortable: true,
+      headerName: t("mne_visit_type"),
+      field: "mne_visit_type",
       filter: false,
-      width: 120,
-      valueFormatter: ({ value }) =>
-        truncateText(Number(value).toLocaleString(), 30) || "-",
+      sortable: true,
+      cellRenderer: (params) => {
+        const labelKey = visitTypes.find(
+          (type) => type.value === params.data.mne_visit_type
+        )?.label;
+        return <span>{t(labelKey)}</span>;
+      },
     },
+
     {
       headerName: t("mne_physical_region"),
       field: "mne_physical_region",
-      sortable: true,
       filter: false,
-      width: 120,
+      sortable: true,
       valueFormatter: ({ value }) =>
         truncateText(Number(value).toLocaleString(), 30) || "-",
     },
     {
       headerName: t("mne_financial_region"),
       field: "mne_financial_region",
-      sortable: true,
       filter: false,
-      width: 120,
+      sortable: true,
       valueFormatter: ({ value }) =>
         truncateText(Number(value).toLocaleString(), 30) || "-",
     },
     {
+      headerName: t("mne_physical_zone"),
+      field: "mne_physical_zone",
+      filter: false,
+      sortable: true,
+      valueFormatter: ({ value }) =>
+        truncateText(Number(value).toLocaleString(), 30) || "-",
+    },
+    {
+      headerName: t("mne_financial_zone"),
+      field: "mne_financial_zone",
+      filter: false,
+      sortable: true,
+      valueFormatter: ({ value }) =>
+        truncateText(Number(value).toLocaleString(), 30) || "-",
+    },
+    {
+      headerName: t("mne_physical"),
+      field: "mne_physical",
+      filter: false,
+      sortable: true,
+      valueFormatter: ({ value }) =>
+        truncateText(Number(value).toLocaleString(), 30) || "-",
+    },
+    {
+      headerName: t("mne_financial"),
+      field: "mne_financial",
+      filter: false,
+      sortable: true,
+      valueFormatter: ({ value }) =>
+        truncateText(Number(value).toLocaleString(), 30) || "-",
+    },
+    {
+      headerName: t("mne_record_date"),
+      field: "mne_record_date",
+      filter: "agDateColumnFilter",
+      sortable: true,
+      valueFormatter: ({ value }) => truncateText(value, 30) || "-",
+    },
+    {
       headerName: t("mne_start_date"),
       field: "mne_start_date",
-      sortable: true,
       filter: "agDateColumnFilter",
+      sortable: true,
       valueFormatter: ({ value }) => truncateText(value, 30) || "-",
     },
     {
       headerName: t("mne_end_date"),
       field: "mne_end_date",
-      sortable: true,
       filter: "agDateColumnFilter",
+      sortable: true,
       valueFormatter: ({ value }) => truncateText(value, 30) || "-",
     },
     {
@@ -198,6 +242,7 @@ const ProjectMonitoringEvaluationList = () => {
               <AdvancedSearch
                 searchHook={useSearchProjectMonitoringEvaluations}
                 textSearchKeys={[]}
+                dropdownSearchKeys={[]}
                 additionalParams={projectParams}
                 setAdditionalParams={setProjectParams}
                 onSearchResult={handleSearchResults}

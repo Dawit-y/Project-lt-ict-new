@@ -21,6 +21,9 @@ const ApproveDecline = ({ request, toggleParent }) => {
   const isDepartmentLevel = departmentType === "department" || departmentType === "directorate";
   const isOfficerLevel = departmentType === "officer" || departmentType === "team";
 
+  const isApproved = parseInt(request?.bdr_request_status) === 3
+  const isRejected = parseInt(request?.bdr_request_status) === 4
+
   const handleClick = (event) => {
     setAction(event.target.name)
     toggleApproveModal();
@@ -530,7 +533,7 @@ const ApproveDecline = ({ request, toggleParent }) => {
       )}
       <Card>
         <CardBody>
-          {isDepartmentLevel &&
+          {isDepartmentLevel && !isApproved && !isRejected &&
             <Row className='w-50 mx-auto p-2 mb-3'>
               {!isDepartment &&
                 <Col className='d-flex align-items-center justify-content-center'>
