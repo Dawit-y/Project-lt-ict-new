@@ -52,7 +52,10 @@ const AttachFileModal = ({
   ownerId,
   projectId,
   title,
-  accept
+  accept,
+  canAdd = true,
+  canEdit = true,
+  canDelete = true
 }) => {
   const [projectDocument, setProjectDocument] = useState(null);
   const [modal, setModal] = useState(false);
@@ -336,7 +339,7 @@ const AttachFileModal = ({
           return (
             <div className="d-flex gap-3">
               {(cellProps.row.original?.is_editable ||
-                cellProps.row.original?.is_role_editable) && (
+                cellProps.row.original?.is_role_editable) && canEdit && (
                   <Link
                     className="text-success"
                     onClick={() => {
@@ -352,7 +355,7 @@ const AttachFileModal = ({
                 )}
 
               {(cellProps.row.original?.is_deletable ||
-                cellProps.row.original?.is_role_deletable) && (
+                cellProps.row.original?.is_role_deletable) && canDelete && (
                   <Link
                     className="text-danger"
                     onClick={() => {
@@ -405,7 +408,7 @@ const AttachFileModal = ({
         toggle={toggle}
       >
         <div className="modal-xl">
-          <ModalHeader toggle={toggle}>{t("attach_files")}</ModalHeader>
+          <ModalHeader toggle={toggle}>{title ? title : t("attach_files")}</ModalHeader>
           <ModalBody>
             {isLoading ? (
               <Spinners />
@@ -414,7 +417,7 @@ const AttachFileModal = ({
                 columns={columns}
                 data={data?.data || []}
                 isGlobalFilter={true}
-                isAddButton={true}
+                isAddButton={canAdd}
                 isCustomPageSize={true}
                 handleUserClick={handleProjectDocumentClicks}
                 isPagination={true}
@@ -431,8 +434,8 @@ const AttachFileModal = ({
             <Modal isOpen={modal} toggle={toggleForm} className="modal-xl">
               <ModalHeader toggle={toggleForm} tag="h4">
                 {isEdit
-                  ? `${t("edit")} ${title || t("project_document")}`
-                  : `${t("add")} ${title || t("project_document")}`}
+                  ? `${t("edit")} ${title || t("attach_files")}`
+                  : `${t("add")} ${title || t("attach_files")}`}
               </ModalHeader>
               <ModalBody>
                 <Form

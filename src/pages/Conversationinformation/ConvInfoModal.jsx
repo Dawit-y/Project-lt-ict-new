@@ -6,6 +6,7 @@ import {
   Button,
   Card,
   CardBody,
+  CardTitle,
   FormFeedback,
   Col,
   Row,
@@ -26,8 +27,16 @@ import {
 import { useTranslation } from "react-i18next";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
-const Conversation = (props) => {
-  const { isOpen, toggle, ownerId, ownerTypeId } = props;
+const Conversation = ({
+  isOpen,
+  toggle,
+  ownerId,
+  ownerTypeId,
+  title,
+  canAdd = true,
+  canEdit = true,
+  canDelete = true
+}) => {
   const param = { cvi_object_type_id: ownerTypeId, cvi_object_id: ownerId };
   const [conversationInformation, setConversationInformation] = useState(null);
   const { data, isLoading, isError, error, refetch } =
@@ -125,81 +134,78 @@ const Conversation = (props) => {
         toggle={toggle}
       >
         <div className="modal-xl">
-          <ModalHeader toggle={toggle}>{t("view_messages")}</ModalHeader>
+          <ModalHeader toggle={toggle}>{title ? title : t("view_messages")}</ModalHeader>
           <ModalBody>
             <Row>
               <Col lg={12}>
                 <div className="row justify-content-center">
                   <div className="col-xl-8">
                     <>
-                      <div>
-                        <div className="">
-                          <h5 className="font-size-16 mb-3">
-                            {t("leave_a_message")}
-                          </h5>
-
-                          <Form
-                            onSubmit={(e) => {
-                              e.preventDefault();
-                              validation.handleSubmit();
-                              return false;
-                            }}
-                          >
-                            <div className="mb-3">
-                              <Label>{t("subject")}</Label>
-                              <Input
-                                name="cvi_title"
-                                type="text"
-                                placeholder={t("subject")}
-                                onChange={validation.handleChange}
-                                onBlur={validation.handleBlur}
-                                value={validation.values.cvi_title || ""}
-                                invalid={
-                                  validation.touched.cvi_title &&
-                                  validation.errors.cvi_title
-                                    ? true
-                                    : false
-                                }
-                              />
-                              {validation.touched.cvi_title &&
-                              validation.errors.cvi_title ? (
-                                <FormFeedback type="invalid">
-                                  {validation.errors.cvi_title}
-                                </FormFeedback>
-                              ) : null}
-                            </div>
-
-                            <div className="mb-3">
-                              <Label>{t("Message")}</Label>
-                              <textarea
-                                name="cvi_description"
-                                className="form-control"
-                                id="commentmessage-input"
-                                rows="3"
-                                type="text"
-                                placeholder={t("Message")}
-                                onChange={validation.handleChange}
-                                onBlur={validation.handleBlur}
-                                value={validation.values.cvi_description || ""}
-                                invalid={
-                                  validation.touched.cvi_description &&
-                                  validation.errors.cvi_description
-                                    ? true
-                                    : false
-                                }
-                              ></textarea>
-                              {validation.touched.cvi_description &&
-                              validation.errors.cvi_description ? (
-                                <FormFeedback type="invalid">
-                                  {validation.errors.cvi_description}
-                                </FormFeedback>
-                              ) : null}
-                            </div>
-
-                            <Row>
-                              <Col>
-                                <div className="text-end">
-                                  {addConversationInformation.isPending ? (
+                      {canAdd &&
+                        <Card className="">
+                          <CardBody>
+                            <CardTitle className="mb-3">
+                              {t("leave_a_message")}
+                            </CardTitle>
+                            <Form
+                              onSubmit={(e) => {
+                                e.preventDefault();
+                                validation.handleSubmit();
+                                return false;
+                              }}
+                            >
+                              <div className="mb-3">
+                                <Label>{t("subject")}</Label>
+                                <Input
+                                  name="cvi_title"
+                                  type="text"
+                                  placeholder={t("subject")}
+                                  onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
+                                  value={validation.values.cvi_title || ""}
+                                  invalid={
+                                    validation.touched.cvi_title &&
+                                      validation.errors.cvi_title
+                                      ? true
+                                      : false
+                                  }
+                                />
+                                {validation.touched.cvi_title &&
+                                  validation.errors.cvi_title ? (
+                                  <FormFeedback type="invalid">
+                                    {validation.errors.cvi_title}
+                                  </FormFeedback>
+                                ) : null}
+                              </div>
+                              <div className="mb-3">
+                                <Label>{t("Message")}</Label>
+                                <Input
+                                  name="cvi_description"
+                                  className="form-control"
+                                  id="commentmessage-input"
+                                  rows="3"
+                                  type="textarea"
+                                  placeholder={t("Message")}
+                                  onChange={validation.handleChange}
+                                  onBlur={validation.handleBlur}
+                                  value={validation.values.cvi_description || ""}
+                                  invalid={
+                                    validation.touched.cvi_description &&
+                                      validation.errors.cvi_description
+                                      ? true
+                                      : false
+                                  }
+                                />
+                                {validation.touched.cvi_description &&
+                                  validation.errors.cvi_description ? (
+                                  <FormFeedback type="invalid">
+                                    {validation.errors.cvi_description}
+                                  </FormFeedback>
+                                ) : null}
+                              </div>
+                              <Row>
+                                <Col>
+                                  <div className="text-end">
                                     <Button
                                       color="success"
                                       type="submit"
@@ -209,63 +215,53 @@ const Conversation = (props) => {
                                         !validation.dirty
                                       }
                                     >
-                                      <Spinner
-                                        size={"sm"}
-                                        color="light"
-                                        className="me-2"
-                                      />
+                                      {addConversationInformation.isPending &&
+                                        <Spinner
+                                          size={"sm"}
+                                          color="light"
+                                          className="me-2"
+                                        />}
                                       {"Submit"}
                                     </Button>
-                                  ) : (
-                                    <Button
-                                      color="success"
-                                      type="submit"
-                                      className="save-user"
-                                      disabled={
-                                        addConversationInformation.isPending ||
-                                        !validation.dirty
-                                      }
-                                    >
-                                      {t("submit")}
-                                    </Button>
-                                  )}
-                                </div>
-                              </Col>
-                            </Row>
-                          </Form>
-                        </div>
-                        <h5 className="font-size-15">
-                          <i className="bx bx-message-dots text-muted align-middle me-1"></i>{" "}
-                          {t("conversations")}
-                        </h5>
-                        <div>
-                          {comments.map((comment) => (
-                            <div
-                              key={comment.cvi_id}
-                              className="d-flex py-3 border-top"
-                            >
-                              <div className="flex-shrink-0 me-3">
-                                <div className="avatar-xs">
-                                  <div className="avatar-title rounded-circle bg-light text-primary">
-                                    <i className="bx bxs-user"></i>
+                                  </div>
+                                </Col>
+                              </Row>
+                            </Form>
+                          </CardBody>
+                        </Card>
+                      }
+                      <Card>
+                        <CardBody>
+                          <CardTitle>
+                            <i className="bx bx-message-dots text-muted align-middle me-1"></i>{" "}
+                            {t("conversations")}
+                          </CardTitle>
+                          {comments.length > 0 ? (
+                            comments.map((comment) => (
+                              <div key={comment.cvi_id} className="d-flex py-3 border-top">
+                                <div className="flex-shrink-0 me-3">
+                                  <div className="avatar-xs">
+                                    <div className="avatar-title rounded-circle bg-light text-primary">
+                                      <i className="bx bxs-user"></i>
+                                    </div>
                                   </div>
                                 </div>
+                                <div className="flex-grow-1">
+                                  <h5 className="font-size-14 mb-1">
+                                    {comment.cvi_title}{" "}
+                                    <small className="text-muted float-end">
+                                      {formatTimeAgo(comment.cvi_create_time)}
+                                    </small>
+                                  </h5>
+                                  <p className="text-muted">{comment.cvi_description}</p>
+                                </div>
                               </div>
-                              <div className="flex-grow-1">
-                                <h5 className="font-size-14 mb-1">
-                                  {comment.cvi_title}{" "}
-                                  <small className="text-muted float-end">
-                                    {formatTimeAgo(comment.cvi_create_time)}
-                                  </small>
-                                </h5>
-                                <p className="text-muted">
-                                  {comment.cvi_description}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                            ))
+                          ) : (
+                            <p className="text-muted py-3">No Messages available.</p>
+                          )}
+                        </CardBody>
+                      </Card>
                     </>
                   </div>
                 </div>

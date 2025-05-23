@@ -146,6 +146,8 @@ const ApproverBudgetRequestList = () => {
     );
   }, [projectStatusData]);
 
+  const isMutable = ![3, 4].includes(parseInt(transaction?.bdr_request_status));
+
   const handleSearch = useCallback(({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
@@ -438,12 +440,18 @@ const ApproverBudgetRequestList = () => {
           projectId={transaction?.bdr_project_id}
           ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
           ownerId={transaction?.bdr_id}
+          canAdd={isMutable}
+          canEdit={isMutable}
+          canDelete={isMutable}
         />
         <ConvInfoModal
           isOpen={convModal}
           toggle={toggleConvModal}
           ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
           ownerId={transaction?.bdr_id ?? null}
+          canAdd={isMutable}
+          canEdit={isMutable}
+          canDelete={isMutable}
         />
         <div className="page-content">
           <div className="">
