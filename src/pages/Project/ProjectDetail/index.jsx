@@ -25,6 +25,7 @@ const LazyComponents = {
   ProjectEmployeeModel: lazy(() => import("../../../pages/Projectemployee")),
   ProjectHandoverModel: lazy(() => import("../../Projecthandover")),
   ProjectPerformanceModel: lazy(() => import("../../Projectperformance")),
+  ProjectBudgetSourceModel: lazy(() => import("../../Projectbudgetsource")),
   ProjectSupplimentaryModel: lazy(() => import("../../Projectsupplimentary")),
   ProjectVariationModel: lazy(() => import("../../Projectvariation")),
   ProposalRequestModel: lazy(() => import("../../../pages/Proposalrequest")),
@@ -118,6 +119,11 @@ const ProjectsOverview = () => {
         component: LazyComponents.ProjectSupplimentaryModel,
         path: "supplimentary",
       },
+      42: {
+        label: t("project_budget_source"),
+        component: LazyComponents.ProjectBudgetSourceModel,
+        path: "project_budget_source",
+      },
       40: {
         label: t("project_variation"),
         component: LazyComponents.ProjectVariationModel,
@@ -206,7 +212,10 @@ const ProjectsOverview = () => {
       <Container fluid>
         <Breadcrumbs title="Projects" breadcrumbItem="Project Overview" />
         {isLoading ? (
-          <Spinner className="position-absolute top-50 start-50" color="primary" />
+          <Spinner
+            className="position-absolute top-50 start-50"
+            color="primary"
+          />
         ) : (
           <>
             <Row>

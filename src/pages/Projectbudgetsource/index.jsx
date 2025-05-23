@@ -9,6 +9,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
+import FormattedAmountField from "../../components/Common/FormattedAmountField";
 
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
@@ -61,7 +62,7 @@ const ProjectBudgetSourceModel = (props) => {
   //meta title
   document.title = " ProjectBudgetSource";
   const { passedId, isActive } = props;
-  const param = { bsr_project_id: passedId };
+  const param = { bsr_project_id: passedId, request_type: "single" };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -73,14 +74,24 @@ const ProjectBudgetSourceModel = (props) => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } =
+  const { data, isLoading, isFetching, error, isError, refetch } =
     useFetchProjectBudgetSources(param, isActive);
   const { data: budgetSourceData } = useFetchBudgetSources();
+
   const budgetSourceOptions = createSelectOptions(
     budgetSourceData?.data || [],
     "pbs_id",
     "pbs_name_or"
   );
+  // Mapping
+  const budgetSourceMap = useMemo(() => {
+    return (
+      budgetSourceData?.data?.reduce((acc, source) => {
+        acc[source.pbs_id] = source.pbs_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [budgetSourceData]);
 
   const addProjectBudgetSource = useAddProjectBudgetSource();
   const updateProjectBudgetSource = useUpdateProjectBudgetSource();
@@ -284,8 +295,10 @@ const ProjectBudgetSourceModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bsr_budget_source_id, 30) ||
-                "-"}
+              {truncateText(
+                budgetSourceMap[cellProps.row.original.bsr_budget_source_id],
+                30
+              ) || "-"}
             </span>
           );
         },
@@ -298,7 +311,10 @@ const ProjectBudgetSourceModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bsr_amount, 30) || "-"}
+              {truncateText(
+                Number(cellProps.row.original.bsr_amount).toLocaleString(),
+                30
+              ) || "-"}
             </span>
           );
         },
@@ -352,7 +368,6 @@ const ProjectBudgetSourceModel = (props) => {
             <div className="d-flex gap-3">
               {cellProps.row.original.is_editable && (
                 <Link
-                  to="#"
                   className="text-success"
                   onClick={() => {
                     const data = cellProps.row.original;
@@ -368,7 +383,6 @@ const ProjectBudgetSourceModel = (props) => {
 
               {cellProps.row.original.is_deletable && (
                 <Link
-                  to="#"
                   className="text-danger"
                   onClick={() => {
                     const data = cellProps.row.original;
@@ -431,6 +445,8 @@ const ProjectBudgetSourceModel = (props) => {
               theadClass="table-light"
               pagination="pagination"
               paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+              refetch={refetch}
+              isFetching={isFetching}
             />
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
@@ -507,28 +523,13 @@ const ProjectBudgetSourceModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("bsr_amount")}</Label>
-                    <Input
-                      name="bsr_amount"
-                      type="number"
-                      placeholder={t("bsr_amount")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bsr_amount || ""}
-                      invalid={
-                        validation.touched.bsr_amount &&
-                        validation.errors.bsr_amount
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
+                    <FormattedAmountField
+                      validation={validation}
+                      fieldId="bsr_amount"
+                      label={t("bsr_amount")}
+                      isRequired={true}
+                      max={100}
                     />
-                    {validation.touched.bsr_amount &&
-                    validation.errors.bsr_amount ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bsr_amount}
-                      </FormFeedback>
-                    ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("bsr_description")}</Label>
