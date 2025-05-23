@@ -1666,5 +1666,14 @@
 	"emp_sex":"Sex",
 	"emp_phone":"PhoneNumber",
 	"Select_Sex":"Select Sex",
-	"Select_Visit_Type":"Select Visit Type"
+	"Select_Visit_Type":"Select Visit Type",
+	"implementing_area":"Implementing Area",
+	"pia_description":"Description",
+	"pia_geo_location":"Geo Location",
+	"pia_site":"Site",
+	"pia_budget_amount":"Budget Amount",
+	"pia_woreda_id":"Woreda",
+	"pia_zone_id_id":"Zone",
+	"pia_region_id":"Region",
+	"pia_sector_id":"Sector"
 }

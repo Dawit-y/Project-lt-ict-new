@@ -8,14 +8,15 @@ import {
 
 const IMPLEMENTING_AREA_QUERY_KEY = ["implementingarea"];
 // Fetch implementing_area
-export const useFetchImplementingAreas = () => {
+export const useFetchImplementingAreas = (param = {}, isActive) => {
   return useQuery({
-    queryKey: IMPLEMENTING_AREA_QUERY_KEY,
-    queryFn: () => getImplementingArea(),
+    queryKey: [...IMPLEMENTING_AREA_QUERY_KEY, "fetch", param],
+    queryFn: () => getImplementingArea(param),
     staleTime: 1000 * 60 * 5,
-    meta: { persist: true },
+    gcTime: 1000 * 60 * 10,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
+    enabled: isActive,
   });
 };
 
@@ -100,7 +101,8 @@ export const useDeleteImplementingArea = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (deletedData) => deletedData.pia_id !== parseInt(deletedData.deleted_id)
+              (deletedData) =>
+                deletedData.pia_id !== parseInt(deletedData.deleted_id)
             ),
           };
         });

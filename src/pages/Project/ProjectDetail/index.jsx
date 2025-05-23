@@ -22,6 +22,7 @@ const LazyComponents = {
   ProjectBudgetExpenditureModel: lazy(() =>
     import("../../Projectbudgetexpenditure")
   ),
+  ImplementingAreaModel: lazy(() => import("../../Implementingarea")),
   ProjectEmployeeModel: lazy(() => import("../../../pages/Projectemployee")),
   ProjectHandoverModel: lazy(() => import("../../Projecthandover")),
   ProjectPerformanceModel: lazy(() => import("../../Projectperformance")),
@@ -163,6 +164,12 @@ const ProjectsOverview = () => {
         label: t("project_component"),
         component: LazyComponents.ProjectComponentModel,
         path: "project_component",
+      },
+
+      81: {
+        label: t("implementing_area"),
+        component: LazyComponents.ImplementingAreaModel,
+        path: "implementing_area",
       },
 
       //39: { label: t("request_information"), component: LazyComponents.RequestInformationModel, path: "information" },
