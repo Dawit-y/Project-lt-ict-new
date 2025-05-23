@@ -1675,5 +1675,8 @@
 	"pia_woreda_id":"Woreda",
 	"pia_zone_id_id":"Zone",
 	"pia_region_id":"Region",
-	"pia_sector_id":"Sector"
+	"pia_sector_id":"Sector",
+	"Allocated":"Allocated",
+	"Remaining":"Remaining",
+	"Total_Project_Budget":"Total Project Budget"
 }

@@ -61,8 +61,12 @@ const truncateText = (text, maxLength) => {
 const ProjectBudgetSourceModel = (props) => {
   //meta title
   document.title = " ProjectBudgetSource";
-  const { passedId, isActive } = props;
-  const param = { bsr_project_id: passedId, request_type: "single" };
+  const { passedId, isActive, totalActualBudget } = props;
+  const param = {
+    bsr_project_id: passedId,
+    request_type: "single",
+    prj_total_actual_budget: totalActualBudget,
+  };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -140,6 +144,22 @@ const ProjectBudgetSourceModel = (props) => {
       setDeleteModal(false);
     }
   };
+
+  const calculateCurrentTotal = (
+    currentData,
+    editingId = null,
+    newAmount = 0
+  ) => {
+    if (!currentData || !currentData.data) return 0;
+
+    return currentData.data.reduce((total, item) => {
+      // If editing, exclude the item being edited from the total
+      if (editingId && item.bsr_id === editingId) {
+        return total + Number(newAmount || 0);
+      }
+      return total + Number(item.bsr_amount || 0);
+    }, 0);
+  };
   //END CRUD
   //START FOREIGN CALLS
 
@@ -169,12 +189,32 @@ const ProjectBudgetSourceModel = (props) => {
 
     validationSchema: Yup.object({
       bsr_name: Yup.string().required(t("bsr_name")),
-      //bsr_project_id: Yup.string().required(t("bsr_project_id")),
       bsr_budget_source_id: Yup.string().required(t("bsr_budget_source_id")),
-      bsr_amount: Yup.string().required(t("bsr_amount")),
-      //bsr_status: Yup.string().required(t("bsr_status")),
-      //bsr_description: Yup.string().required(t("bsr_description")),
-      //bsr_created_date: Yup.string().required(t("bsr_created_date")),
+      bsr_amount: Yup.number()
+        .required(t("bsr_amount"))
+        .positive("Amount must be positive")
+        .test(
+          "total-budget",
+          "Amount exceeds remaining project budget",
+          function (value) {
+            if (!value || isNaN(value)) return true;
+
+            const currentData = showSearchResult ? searchResults : data;
+            const editingId = isEdit ? projectBudgetSource?.bsr_id : null;
+
+            // Calculate total without the current edited item
+            const currentTotalWithoutThis =
+              currentData?.data?.reduce((total, item) => {
+                if (editingId && item.bsr_id === editingId) return total;
+                return total + Number(item.bsr_amount || 0);
+              }, 0) || 0;
+
+            // Calculate new total if this amount is added/updated
+            const newTotal = currentTotalWithoutThis + Number(value);
+
+            return newTotal <= totalActualBudget;
+          }
+        ),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -464,8 +504,39 @@ const ProjectBudgetSourceModel = (props) => {
                 }}
               >
                 <Row>
+                  <Col className="col-12 mb-3">
+                    <Card>
+                      <CardBody>
+                        <div className="d-flex justify-content-between">
+                          <div>
+                            <strong>{t("Total_Project_Budget")} : </strong>{" "}
+                            {totalActualBudget.toLocaleString()}
+                          </div>
+                          <div>
+                            <strong>{t("Allocated")} : </strong>{" "}
+                            {calculateCurrentTotal(data).toLocaleString()}
+                          </div>
+                          <div
+                            className={
+                              calculateCurrentTotal(data) > totalActualBudget
+                                ? "text-danger"
+                                : "text-success"
+                            }
+                          >
+                            <strong>{t("Remaining")} : </strong>{" "}
+                            {(
+                              totalActualBudget - calculateCurrentTotal(data)
+                            ).toLocaleString()}
+                          </div>
+                        </div>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                </Row>
+                <Row>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("bsr_name")}</Label>
+                    <span className="text-danger">*</span>
                     <Input
                       name="bsr_name"
                       type="text"
@@ -528,8 +599,18 @@ const ProjectBudgetSourceModel = (props) => {
                       fieldId="bsr_amount"
                       label={t("bsr_amount")}
                       isRequired={true}
-                      max={100}
+                      max={totalActualBudget}
                     />
+                    <small className="text-muted">
+                      Available budget:{" "}
+                      {(
+                        totalActualBudget -
+                        calculateCurrentTotal(
+                          data,
+                          isEdit ? projectBudgetSource?.bsr_id : null
+                        )
+                      ).toLocaleString()}
+                    </small>
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("bsr_description")}</Label>
