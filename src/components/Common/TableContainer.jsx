@@ -323,11 +323,10 @@ const TableContainer = ({
                       <th
                         key={header.id}
                         colSpan={header.colSpan}
-                        className={`${
-                          header.column.columnDef.enableSorting
+                        className={`${header.column.columnDef.enableSorting
                             ? "sorting sorting_desc"
                             : ""
-                        }`}
+                          }`}
                       >
                         {header.isPlaceholder ? null : (
                           <Fragment>
@@ -340,7 +339,10 @@ const TableContainer = ({
                                   header.column.getToggleSortingHandler(),
                               }}
                             >
-                              {flexRender(t(header.id), header.getContext())}
+                              {flexRender(
+                                header.column.columnDef.header || t(header.id),
+                                header.getContext()
+                              )}
                               {{
                                 asc: "",
                                 desc: "",
@@ -392,9 +394,8 @@ const TableContainer = ({
                 <div className="dataTables_info">
                   {paginationState.pageSize > data.length
                     ? `${t("Showing")} ${data.length} of ${data.length}`
-                    : `${t("Showing")} ${paginationState.pageSize} of ${
-                        data.length
-                      }`}
+                    : `${t("Showing")} ${paginationState.pageSize} of ${data.length
+                    }`}
                 </div>
               </Col>
               <Col sm={12} md={7}>
@@ -402,9 +403,8 @@ const TableContainer = ({
                   <ul className={pagination}>
                     {/* Previous Button */}
                     <li
-                      className={`paginate_button page-item previous ${
-                        !getCanPreviousPage() ? "disabled" : ""
-                      }`}
+                      className={`paginate_button page-item previous ${!getCanPreviousPage() ? "disabled" : ""
+                        }`}
                     >
                       <Link className="page-link" onClick={handlePrevious}>
                         <i className="mdi mdi-chevron-left"></i>
@@ -415,9 +415,8 @@ const TableContainer = ({
                     {visiblePageNumbers.map((item) => (
                       <li
                         key={item}
-                        className={`paginate_button page-item ${
-                          currentPage === item ? "active" : ""
-                        }`}
+                        className={`paginate_button page-item ${currentPage === item ? "active" : ""
+                          }`}
                       >
                         <Link
                           className="page-link"
@@ -433,9 +432,8 @@ const TableContainer = ({
 
                     {/* Next Button */}
                     <li
-                      className={`paginate_button page-item next ${
-                        !getCanNextPage() ? "disabled" : ""
-                      }`}
+                      className={`paginate_button page-item next ${!getCanNextPage() ? "disabled" : ""
+                        }`}
                     >
                       <Link className="page-link" onClick={handleNext}>
                         <i className="mdi mdi-chevron-right"></i>

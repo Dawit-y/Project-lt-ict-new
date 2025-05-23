@@ -24,6 +24,7 @@ const AsyncSelectField = ({
   validation,
   isRequired = false,
   className,
+  label,
   optionMap = {},
   isLoading = false,
   isError = false,
@@ -33,7 +34,7 @@ const AsyncSelectField = ({
   return (
     <Col className={className}>
       <Label htmlFor={fieldId}>
-        {t(fieldId)} {isRequired && <span className="text-danger">*</span>}
+        {label ? label : t(fieldId)} {isRequired && <span className="text-danger">*</span>}
       </Label>
 
       <Input
@@ -54,7 +55,7 @@ const AsyncSelectField = ({
 
         {!isLoading && !isError && (
           <>
-            <option value="">{t("Select")} {t(fieldId)}</option>
+            <option value="">{t("Select")} {label ? label : t(fieldId)}</option>
             {Object.entries(optionMap).map(([value, label]) => (
               <option key={value} value={value}>
                 {t(label)}

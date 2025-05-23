@@ -22,6 +22,7 @@ const TableContainer = lazy(() => import("../../components/Common/TableContainer
 const BudgetRequestRegistration = lazy(() => import("../Csobudgetrequest/BudgetRequestRegistration"));
 import { useFetchCsoInfos } from "../../queries/csoinfo_query";
 import { ProgramAlert } from "./ProjectTabs"
+import Spinners from "../../components/Common/Spinner";
 
 const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
   const { t } = useTranslation();
@@ -34,7 +35,9 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
   const [selectedProgramStatus, setSelectedProgramStatus] = useState(null);
 
   useEffect(() => {
-    handleTabChange(activeTab, selectedProgram, selectedCsoId)
+    if (!selectedProgram || activeTab !== 2) {
+      handleTabChange(activeTab, selectedProgram, selectedCsoId)
+    }
   }, [activeTab, selectedProgram])
 
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
@@ -63,15 +66,9 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
     }
   }, [activeTab]);
 
-  // const isNextButtonDisabled = useCallback(() => {
-  //   return !selectedProgram || !selectedCsoId
-  // }, [selectedProgram, selectedCsoId]);
-
   const isNextDisabled = (activeTab === 1 && !selectedCsoId) ||
     (activeTab === 2 && !selectedProgram) ||
     activeTab >= 4;
-
-
 
   const csoColumnsDef = useMemo(() => {
     const baseColumns = [
@@ -254,7 +251,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
   const activitiesColumn = useMemo(() => {
     const baseColumns = [
       {
-        header: t("prj_name"),
+        header: "Activity Title",
         accessorKey: "prj_name",
         enableSorting: true,
         enableColumnFilter: false,
@@ -263,8 +260,8 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
         ),
       },
       {
-        header: t("prj_code"),
-        accessorKey: "prj_code",
+        header: t("prj_measurement_unit"),
+        accessorKey: "prj_measurement_unit",
         enableSorting: true,
         enableColumnFilter: false,
         cell: ({ row, getValue }) => (
@@ -272,19 +269,17 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
         ),
       },
       {
-        header: t("prj_project_status_id"),
-        accessorKey: "prj_project_status_id",
+        header: t("prj_measured_figure"),
+        accessorKey: "prj_measured_figure",
         enableSorting: true,
         enableColumnFilter: false,
-        cell: ({ row }) => (
-          <Badge className={`font-size-12 badge-soft-${row.original.color_code}`}>
-            {row.original.status_name}
-          </Badge>
+        cell: ({ row, getValue }) => (
+          <span>{row.original.footer ? t("Total") : getValue()}</span>
         ),
       },
       {
-        header: t("prj_total_estimate_budget"),
-        accessorKey: "prj_total_estimate_budget",
+        header: t("prj_total_actual_budget"),
+        accessorKey: "prj_total_actual_budget",
         enableSorting: true,
         enableColumnFilter: false,
         cell: ({ row, getValue }) => {
@@ -321,7 +316,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
       }
     ];
 
-    if (program?.previledge?.is_role_editable === 1 || program?.previledge?.is_role_deletable === 1) {
+    if (data?.previledge?.is_role_editable === 1 || data?.previledge?.is_role_deletable === 1) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: "Action",
@@ -329,7 +324,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
         enableSorting: true,
         cell: ({ row }) => (
           <div className="d-flex gap-3">
-            {(program?.previledge?.is_role_editable === 1 && row.original?.is_editable === 1 && row.original.prj_project_status_id === 1) && (
+            {(data?.previledge?.is_role_editable === 1 && row.original?.is_editable === 1 && row.original.prj_project_status_id === 1) && (
               <Link
                 to="#"
                 className="text-success"
@@ -346,7 +341,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
       });
     }
     return baseColumns;
-  }, [program, t, selectedProgram]);
+  }, [data, t]);
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />
@@ -428,7 +423,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
                     label={t("Selected CSO")}
                     value={selectedCsoName}
                   />
-                  <Suspense fallback={<div>Loading...</div>}>
+                  <Suspense fallback={<Spinners />}>
                     <TableContainer
                       columns={csoColumnsDef}
                       data={csoData?.data || []}
@@ -439,7 +434,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
                       SearchPlaceholder={t("filter_placeholder")}
                       buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
                       buttonName={`${t("add")} ${t("program")}`}
-                      tableClass="table-sm align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                      tableClass="table align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                       excludeKey={["is_editable", "is_deletable", "Select"]}
@@ -454,7 +449,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
                     label={t("Selected Project")}
                     value={programName}
                   />
-                  <Suspense fallback={<div>Loading...</div>}>
+                  <Suspense fallback={<Spinners />}>
                     <TableContainer
                       columns={programColumns}
                       data={program?.data || []}
@@ -481,7 +476,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
                     label={t("Activities for the project")}
                     value={programName}
                   />
-                  <Suspense fallback={<div>Loading...</div>}>
+                  <Suspense fallback={<Spinners />}>
                     <TableContainer
                       columns={activitiesColumn}
                       data={data?.data || []}
@@ -508,7 +503,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
                     label={t("Proposed request for the project")}
                     value={programName}
                   />
-                  <Suspense fallback={<div>Loading...</div>}>
+                  <Suspense fallback={<Spinners />}>
                     <BudgetRequestRegistration
                       projectStatus={selectedProgramStatus}
                       projectId={selectedProgram}

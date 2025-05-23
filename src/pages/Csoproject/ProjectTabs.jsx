@@ -176,7 +176,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
   const activitiesColumn = useMemo(() => {
     const baseColumns = [
       {
-        header: t("prj_name"),
+        header: "Activity Title",
         accessorKey: "prj_name",
         enableSorting: true,
         enableColumnFilter: false,
@@ -185,8 +185,8 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
         ),
       },
       {
-        header: t("prj_code"),
-        accessorKey: "prj_code",
+        header: t("prj_measurement_unit"),
+        accessorKey: "prj_measurement_unit",
         enableSorting: true,
         enableColumnFilter: false,
         cell: ({ row, getValue }) => (
@@ -194,19 +194,17 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
         ),
       },
       {
-        header: t("prj_project_status_id"),
-        accessorKey: "prj_project_status_id",
+        header: t("prj_measured_figure"),
+        accessorKey: "prj_measured_figure",
         enableSorting: true,
         enableColumnFilter: false,
-        cell: ({ row }) => (
-          <Badge className={`font-size-12 badge-soft-${row.original.color_code}`}>
-            {row.original.status_name}
-          </Badge>
+        cell: ({ row, getValue }) => (
+          <span>{row.original.footer ? t("Total") : getValue()}</span>
         ),
       },
       {
-        header: t("prj_total_estimate_budget"),
-        accessorKey: "prj_total_estimate_budget",
+        header: t("prj_total_actual_budget"),
+        accessorKey: "prj_total_actual_budget",
         enableSorting: true,
         enableColumnFilter: false,
         cell: ({ row, getValue }) => {
@@ -243,7 +241,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
       }
     ];
 
-    if (program?.previledge?.is_role_editable === 1 || program?.previledge?.is_role_deletable === 1) {
+    if (data?.previledge?.is_role_editable === 1 || data?.previledge?.is_role_deletable === 1) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: "Action",
@@ -251,7 +249,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
         enableSorting: true,
         cell: ({ row }) => (
           <div className="d-flex gap-3">
-            {(program?.previledge?.is_role_editable === 1 && row.original?.is_editable === 1 && row.original.prj_project_status_id === 1) && (
+            {(data?.previledge?.is_role_editable === 1 && row.original?.is_editable === 1 && row.original.prj_project_status_id === 1) && (
               <Link
                 to="#"
                 className="text-success"
@@ -268,7 +266,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
       });
     }
     return baseColumns;
-  }, [program, t, selectedProgram]);
+  }, [data, t]);
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />
