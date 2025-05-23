@@ -13,6 +13,7 @@ import {
   Spinner,
   Table,
   FormFeedback,
+  Badge
 } from "reactstrap";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -32,7 +33,7 @@ const AssignCsoRequests = ({ request, isActive, budgetYearMap }) => {
 
   const { data: project, isLoading: isProjectLoading } = useFetchProject(projectId, userId, isActive);
   const { data: sectorData } = useFetchSectorInformations();
-
+  const isDisabled = [3, 4].includes(parseInt(request?.bdr_request_status));
   const sectorOptions = createMultiSelectOptions(sectorData?.data || [], "sci_id", ["sci_name_en", "sci_name_or", "sci_name_am"]);
   const { mutateAsync, isPending } = useUpdateProject();
 
@@ -77,6 +78,13 @@ const AssignCsoRequests = ({ request, isActive, budgetYearMap }) => {
         <Card>
           <CardBody>
             <CardTitle>Overview</CardTitle>
+            <Row>
+              <Col>
+                <Badge color={request.color_code} pill className='py-1 px-2 mb-2'>
+                  {request?.status_name}
+                </Badge>
+              </Col>
+            </Row>
             <Table size="sm">
               <tbody>
                 {[
@@ -128,6 +136,7 @@ const AssignCsoRequests = ({ request, isActive, budgetYearMap }) => {
                     dropdown1name="prj_owner_region_id"
                     dropdown2name="prj_owner_zone_id"
                     dropdown3name="prj_owner_woreda_id"
+                    disabled={isDisabled}
                   />
                 </Col>
                 <Col xl={12} className="mb-3">
@@ -148,6 +157,7 @@ const AssignCsoRequests = ({ request, isActive, budgetYearMap }) => {
                       )
                     }
                     className="select2-selection"
+                    isDisabled={isDisabled}
                   />
                   {formik.touched.prj_assigned_sectors && formik.errors.prj_assigned_sectors && (
                     <div className="text-danger mt-1">{formik.errors.prj_assigned_sectors}</div>

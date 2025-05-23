@@ -15,7 +15,8 @@ const DatePicker = ({
   componentId,
   minDate,
   maxDate,
-  label
+  label,
+  disabled
 }) => {
   const { t } = useTranslation();
 
@@ -50,6 +51,7 @@ const DatePicker = ({
               validation.setFieldValue("" + componentId + "", formattedDate);
             }}
             onBlur={validation.handleBlur}
+            disabled={disabled}
           />
           <InputGroupText>
             <i className="fa fa-calendar" aria-hidden="true" />

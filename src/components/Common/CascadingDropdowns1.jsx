@@ -16,6 +16,7 @@ const CascadingDropdowns1 = ({
   dropdown3name,
   isEdit,
   required = false,
+  disabled
 }) => {
   const { t } = useTranslation();
   const OROMIA_ID = "1";
@@ -81,17 +82,18 @@ const CascadingDropdowns1 = ({
           onBlur={validation.handleBlur}
           invalid={
             validation.touched[dropdown1name] &&
-            validation.errors[dropdown1name]
+              validation.errors[dropdown1name]
               ? true
               : false
           }
+          disabled={disabled}
         >
           <option value="">{t("select_region")}</option>
           <option value="1">Oromia</option>
           {/* Add more regions as needed */}
         </Input>
         {validation.touched[dropdown1name] &&
-        validation.errors[dropdown1name] ? (
+          validation.errors[dropdown1name] ? (
           <FormFeedback>{validation.errors[dropdown1name]}</FormFeedback>
         ) : null}
       </FormGroup>
@@ -110,11 +112,11 @@ const CascadingDropdowns1 = ({
           onBlur={validation.handleBlur}
           invalid={
             validation.touched[dropdown2name] &&
-            validation.errors[dropdown2name]
+              validation.errors[dropdown2name]
               ? true
               : false
           }
-          disabled={loadingZones || zones.length === 0}
+          disabled={loadingZones || zones.length === 0 || disabled}
         >
           <option value="">{t("select_zone")}</option>
           {loadingZones ? (
@@ -130,7 +132,7 @@ const CascadingDropdowns1 = ({
           )}
         </Input>
         {validation.touched[dropdown2name] &&
-        validation.errors[dropdown2name] ? (
+          validation.errors[dropdown2name] ? (
           <FormFeedback>{validation.errors[dropdown2name]}</FormFeedback>
         ) : null}
       </FormGroup>
@@ -149,11 +151,11 @@ const CascadingDropdowns1 = ({
           onBlur={validation.handleBlur}
           invalid={
             validation.touched[dropdown3name] &&
-            validation.errors[dropdown3name]
+              validation.errors[dropdown3name]
               ? true
               : false
           }
-          disabled={loadingWoredas || woredas.length === 0}
+          disabled={loadingWoredas || woredas.length === 0 || disabled}
         >
           <option value="">{t("select_woreda")}</option>
           {loadingWoredas ? (
@@ -169,7 +171,7 @@ const CascadingDropdowns1 = ({
           )}
         </Input>
         {validation.touched[dropdown3name] &&
-        validation.errors[dropdown3name] ? (
+          validation.errors[dropdown3name] ? (
           <FormFeedback>{validation.errors[dropdown3name]}</FormFeedback>
         ) : null}
       </FormGroup>

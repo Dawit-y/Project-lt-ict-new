@@ -46,7 +46,7 @@ const LazyLoader = ({ children }) => (
   <Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
 );
 const ApproverBudgetRequestList = () => {
-  document.title = "Proposed Request List ";
+  document.title = "Proposed Request List";
   const { t, i18n } = useTranslation();
   const [modal1, setModal1] = useState(false);
 
@@ -72,38 +72,7 @@ const ApproverBudgetRequestList = () => {
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
 
-  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
-  const user = storedUser?.user;
-  const depId = user?.usr_officer_id > 0
-    ? user.usr_officer_id
-    : user?.usr_team_id > 0
-      ? user.usr_team_id
-      : user?.usr_directorate_id > 0
-        ? user.usr_directorate_id
-        : user?.usr_department_id > 0
-          ? user.usr_department_id
-          : null;
-
-  //const depId = 1
-  const { data: rqfData, isLoading: rqfLoading } = useFetchRequestFollowups()
-
-  function markForwardedRequests(budgetRequests, forwardedRequests, depId) {
-    const forwardedSet = new Set(
-      forwardedRequests
-        .filter(req => req.rqf_forwarding_dep_id === depId)
-        .map(req => req.rqf_request_id)
-    );
-
-    return budgetRequests.map(request => ({
-      ...request,
-      forwarded: forwardedSet.has(request.bdr_id),
-    }));
-  }
-
-  const transformedData = useMemo(() => {
-    if (!searchResults?.data || !rqfData?.data) return [];
-    return markForwardedRequests(searchResults.data, rqfData.data, depId);
-  }, [searchResults, rqfData, depId])
+  const isMutable = ![3, 4].includes(parseInt(transaction?.bdr_request_status));
 
   const budgetYearMap = useMemo(() => {
     return (
@@ -376,7 +345,7 @@ const ApproverBudgetRequestList = () => {
   return (
     <React.Fragment>
       <LazyLoader>
-        {toggleDetailModal && (
+        {detailModal && (
           <BudgetRequestModal
             isOpen={detailModal}
             toggle={toggleDetailModal}
@@ -402,6 +371,9 @@ const ApproverBudgetRequestList = () => {
               "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [],
             }}
             title={t("Proposed Request File")}
+            canAdd={isMutable}
+            canEdit={isMutable}
+            canDelete={isMutable}
           />)}
         {convModal && (
           <ConvInfoModal
@@ -409,6 +381,9 @@ const ApproverBudgetRequestList = () => {
             toggle={toggleConvModal}
             ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
             ownerId={transaction?.bdr_id ?? null}
+            canAdd={isMutable}
+            canEdit={isMutable}
+            canDelete={isMutable}
           />
         )}
       </LazyLoader>

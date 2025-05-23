@@ -17,6 +17,7 @@ import {
   Input,
   Spinner,
   CardTitle,
+  Badge
 } from "reactstrap";
 import Select from "react-select";
 import * as Yup from "yup";
@@ -30,7 +31,6 @@ import { TabWrapper } from "../../components/Common/DetailViewWrapper";
 import { useFetchProject } from "../../queries/cso_project_query";
 import DatePicker from "../../components/Common/DatePicker";
 
-const RequestFollowupModel = lazy(() => import("../Requestfollowup"));
 const AssignCsoRequests = lazy(() => import("./AssignCsoRequests"));
 
 const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYearMap = {} }) => {
@@ -51,6 +51,7 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
   const projectId = transaction?.bdr_project_id;
   const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const { data: project } = useFetchProject(projectId, userId, isOpen);
+  const isDisabled = [3, 4].includes(parseInt(transaction?.bdr_request_status));
 
   const handleUpdateBudgetRequest = async (data) => {
     try {
@@ -124,6 +125,13 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
               <Card>
                 <CardBody>
                   <CardTitle>Overview</CardTitle>
+                  <Row>
+                    <Col>
+                      <Badge color={transaction.color_code} pill className='py-1 px-2 mb-2'>
+                        {transaction?.status_name}
+                      </Badge>
+                    </Col>
+                  </Row>
                   <Table size="sm" className="mb-3">
                     <tbody>
                       {[[t("Year"), budgetYearMap[transaction.bdr_budget_year_id]],
@@ -173,10 +181,15 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
                         options={statusOptions}
                         value={getStatusOption(formik.values.bdr_request_status)}
                         onChange={handleStatusChange}
+                        isDisabled={isDisabled}
                       />
                     </FormGroup>
                     <FormGroup>
-                      <DatePicker isRequired componentId="bdr_released_date_gc" validation={formik} />
+                      <DatePicker
+                        isRequired
+                        componentId="bdr_released_date_gc"
+                        validation={formik}
+                        disabled={isDisabled} />
                     </FormGroup>
                     <FormGroup>
                       <Label>Action Remark</Label>
@@ -186,9 +199,10 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
                         rows={4}
                         onChange={formik.handleChange}
                         value={formik.values.bdr_action_remark}
+                        disabled={isDisabled}
                       />
                     </FormGroup>
-                    <Button type="submit" color="primary" className="w-md" disabled={isPending || !formik.dirty}>
+                    <Button type="submit" color="primary" className="w-md" disabled={(isPending || !formik.dirty) && isDisabled}>
                       {isPending ? <Spinner size="sm" className="me-2" /> : null} Submit
                     </Button>
                   </form>
