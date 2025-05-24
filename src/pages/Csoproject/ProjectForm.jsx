@@ -177,18 +177,17 @@ const ProjectForm = ({ isOpen, toggle, isEdit, activeTabName, validation, isPend
               <FormattedAmountField
                 validation={validation}
                 fieldId={"prj_urban_ben_number"}
-                isRequired={true}
+                isRequired={false}
                 className="col-md-3 mb-3"
                 allowDecimal={false}
               />
               <FormattedAmountField
                 validation={validation}
                 fieldId={"prj_rural_ben_number"}
-                isRequired={true}
+                isRequired={false}
                 className="col-md-3 mb-3"
                 allowDecimal={false}
               />
-
               <FormattedAmountField
                 validation={validation}
                 fieldId={"prj_male_participant"}

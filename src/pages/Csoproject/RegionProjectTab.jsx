@@ -24,38 +24,47 @@ import { useFetchCsoInfos } from "../../queries/csoinfo_query";
 import { ProgramAlert } from "./ProjectTabs"
 import Spinners from "../../components/Common/Spinner";
 
-const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
+const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange, setLeftBudget }) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(1);
   const [passedSteps, setPassedSteps] = useState([1]);
   const [selectedCsoId, setSelectedCsoId] = useState(null)
   const [selectedCsoName, setSelectedCsoName] = useState(null)
-  const [selectedProgram, setSelectedProgram] = useState(null);
-  const [programName, setProgramName] = useState(null)
-  const [selectedProgramStatus, setSelectedProgramStatus] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null)
+  const programName = selectedProject?.prj_name
 
   useEffect(() => {
-    if (!selectedProgram || activeTab !== 2) {
-      handleTabChange(activeTab, selectedProgram, selectedCsoId)
+    if (!selectedProject?.prj_id || activeTab !== 2) {
+      handleTabChange(activeTab, selectedProject?.prj_id, selectedCsoId)
     }
-  }, [activeTab, selectedProgram])
+  }, [activeTab, selectedProject?.prj_id])
 
   const storedUser = JSON.parse(localStorage.getItem("authUser"));
   const userId = storedUser?.user.usr_id;
 
   const { data: csoData, isLoading: isCsoLoading, error: csoError } = useFetchCsoInfos();
 
+  //fetch projects
   const programParam = { object_type_id: 1, prj_owner_id: selectedCsoId }
   const isValidProgramParam = Object.keys(programParam).length > 0 &&
     Object.values(programParam).every((value) => value !== null && value !== undefined);
   const { data: program, isLoading: isProgramLoading } =
     useFindProjects(programParam, isValidProgramParam, userId);
 
-  const param = { object_type_id: 5, parent_id: selectedProgram }
+  // fetch activities
+  const param = { object_type_id: 5, parent_id: selectedProject?.prj_id }
   const isValidParam = Object.keys(param).length > 0 &&
     Object.values(param).every((value) => value !== null && value !== undefined);
-
   const { data, isLoading, isError, error, refetch } = useFindProjects(param, isValidParam, userId)
+
+  useEffect(() => {
+    const totalActivitiesBudget = data?.data.reduce((sum, activity) => {
+      return sum + (parseFloat(activity?.prj_total_actual_budget) || 0);
+    }, 0);
+
+    const leftBudget = selectedProject?.prj_total_actual_budget - totalActivitiesBudget
+    setLeftBudget(leftBudget)
+  }, [data, selectedProject])
 
   const toggleTab = useCallback((tab) => {
     if (activeTab !== tab) {
@@ -67,7 +76,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
   }, [activeTab]);
 
   const isNextDisabled = (activeTab === 1 && !selectedCsoId) ||
-    (activeTab === 2 && !selectedProgram) ||
+    (activeTab === 2 && !selectedProject?.prj_id) ||
     activeTab >= 4;
 
   const csoColumnsDef = useMemo(() => {
@@ -86,6 +95,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
               onChange={() => {
                 setSelectedCsoId(row.original.cso_id);
                 setSelectedCsoName(row.original.cso_name);
+                setSelectedProject(null)
               }}
             />
           </span>
@@ -143,11 +153,9 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
             <input
               type="radio"
               name="selectedRow"
-              checked={selectedProgram === row.original.prj_id}
+              checked={selectedProject?.prj_id === row.original.prj_id}
               onChange={() => {
-                setSelectedProgram(row.original.prj_id);
-                setSelectedProgramStatus(row.original.prj_project_status_id); // Set selected project status
-                setProgramName(row.original.prj_name);
+                setSelectedProject(row.original);
               }}
             />
           </span>
@@ -246,7 +254,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
       });
     }
     return baseColumns;
-  }, [program, t, selectedProgram]);
+  }, [program, t, selectedProject]);
 
   const activitiesColumn = useMemo(() => {
     const baseColumns = [
@@ -505,8 +513,8 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange }) => {
                   />
                   <Suspense fallback={<Spinners />}>
                     <BudgetRequestRegistration
-                      projectStatus={selectedProgramStatus}
-                      projectId={selectedProgram}
+                      projectStatus={selectedProject?.prj_project_status_id}
+                      projectId={selectedProject?.prj_id}
                       isActive={activeTab === 3}
                     />
                   </Suspense>

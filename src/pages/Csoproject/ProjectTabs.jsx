@@ -19,29 +19,36 @@ import {
 import classnames from "classnames";
 import { useSearchProjects, useFindProjects } from "../../queries/cso_project_query";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import Spinners from "../../components/Common/Spinner";
 const TableContainer = lazy(() => import("../../components/Common/TableContainer"));
 const BudgetRequestRegistration = lazy(() => import("../Csobudgetrequest/BudgetRequestRegistration"));
 
-const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange }) => {
+const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange, setLeftBudget }) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(1);
   const [passedSteps, setPassedSteps] = useState([1]);
-  const [selectedProgram, setSelectedProgram] = useState(null);
-  const [programName, setProgramName] = useState(null)
-  const [selectedProgramStatus, setSelectedProgramStatus] = useState(null);
-  const [selectedActivity, setSelectedActivity] = useState(null)
+  const [selectedProject, setSelectedProject] = useState(null)
+  const programName = selectedProject?.prj_name
 
+  const { userId } = useAuthUser();
   useEffect(() => {
-    handleTabChange(activeTab, selectedProgram)
-  }, [activeTab, selectedProgram])
+    handleTabChange(activeTab, selectedProject?.prj_id)
+  }, [activeTab, selectedProject?.prj_id])
 
-  const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
-
-  const param = { object_type_id: 5, parent_id: selectedProgram }
+  // fetch activities
+  const param = { object_type_id: 5, parent_id: selectedProject?.prj_id }
   const isValidParam = Object.keys(param).length > 0 &&
     Object.values(param).every((value) => value !== null && value !== undefined);
-
   const { data, isLoading, isFetching, isError, error, refetch } = useFindProjects(param, isValidParam, userId)
+
+  useEffect(() => {
+    const totalActivitiesBudget = data?.data.reduce((sum, activity) => {
+      return sum + (parseFloat(activity?.prj_total_actual_budget) || 0);
+    }, 0);
+
+    const leftBudget = selectedProject?.prj_total_actual_budget - totalActivitiesBudget
+    setLeftBudget(leftBudget)
+  }, [data, selectedProject])
 
   const toggleTab = useCallback((tab) => {
     if (activeTab !== tab) {
@@ -53,8 +60,8 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
   }, [activeTab]);
 
   const isNextButtonDisabled = useCallback(() => {
-    return !selectedProgram;
-  }, [selectedProgram]);
+    return !selectedProject?.prj_id;
+  }, [selectedProject?.prj_id]);
 
   const programColumns = useMemo(() => {
     const baseColumns = [
@@ -68,11 +75,9 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
             <input
               type="radio"
               name="selectedRow"
-              checked={selectedProgram === row.original.prj_id}
+              checked={selectedProject?.prj_id === row.original.prj_id}
               onChange={() => {
-                setSelectedProgram(row.original.prj_id);
-                setSelectedProgramStatus(row.original.prj_project_status_id); // Set selected project status
-                setProgramName(row.original.prj_name);
+                setSelectedProject(row.original);
               }}
             />
           </span>
@@ -171,7 +176,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
       });
     }
     return baseColumns;
-  }, [program, t, selectedProgram]);
+  }, [program, t, selectedProject?.prj_id]);
 
   const activitiesColumn = useMemo(() => {
     const baseColumns = [
@@ -338,7 +343,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
                     label={t("Selected Project")}
                     value={programName}
                   />
-                  <Suspense fallback={<div>Loading...</div>}>
+                  <Suspense fallback={<Spinners />}>
                     <TableContainer
                       columns={programColumns}
                       data={program?.data || []}
@@ -364,7 +369,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
                     label={t("Activities for the project")}
                     value={programName}
                   />
-                  <Suspense fallback={<div>Loading...</div>}>
+                  <Suspense fallback={<Spinners />}>
                     <TableContainer
                       columns={activitiesColumn}
                       data={data?.data || []}
@@ -393,10 +398,10 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
                     label={t("Proposed request for the project")}
                     value={programName}
                   />
-                  <Suspense fallback={<div>Loading...</div>}>
+                  <Suspense fallback={<Spinners />}>
                     <BudgetRequestRegistration
-                      projectStatus={selectedProgramStatus}
-                      projectId={selectedProgram}
+                      projectStatus={selectedProject?.prj_project_status_id}
+                      projectId={selectedProject?.prj_id}
                       isActive={activeTab === 3}
                     />
                   </Suspense>

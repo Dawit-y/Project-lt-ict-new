@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import { createMultiLangKeyValueMap, addMonths, addYears } from "../../utils/commonMethods";
 
-const ActivityForm = ({ isOpen, toggle, isEdit, activeTabName, validation, isPending }) => {
+const ActivityForm = ({ isOpen, toggle, isEdit, activeTabName, validation, isPending, leftBudget }) => {
   const { t, i18n } = useTranslation()
   const lang = i18n.language
   const { data: projectCategoryData, isLoading: isPctLoading, isError: isPctError } = useFetchProjectCategorys();
@@ -75,6 +75,7 @@ const ActivityForm = ({ isOpen, toggle, isEdit, activeTabName, validation, isPen
             <FormattedAmountField
               validation={validation}
               fieldId={"prj_total_actual_budget"}
+              sideLabel={`Left Budget: ${parseFloat(leftBudget).toLocaleString()}`}
               isRequired={true}
               className="col-md-4 mb-3"
               allowDecimal={true}

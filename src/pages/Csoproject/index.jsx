@@ -34,6 +34,7 @@ const ProjectModel = () => {
   const [modalActivity, setModalActivity] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [project, setProject] = useState(null);
+  const [leftBudget, setLeftBudget] = useState(null)
   const [currentActiveTab, setCurrentActiveTab] = useState({
     tab: 1,
     selectedId: null,
@@ -117,6 +118,9 @@ const ProjectModel = () => {
     prj_code: alphanumericValidation(3, 20, false),
     prj_project_category_id: numberValidation(1, 200, true),
     prj_total_actual_budget: formattedAmountValidation(1000, 1000000000000, true),
+    prj_total_estimate_budget: formattedAmountValidation(1000, 1000000000000, true),
+    prj_start_date_plan_gc: Yup.string().required(t("prj_start_date_plan_gc")),
+    prj_end_date_plan_gc: Yup.string().required(t("prj_end_date_plan_gc")),
     prj_location_region_id: Yup.string().required(
       t("prj_location_region_id")
     ),
@@ -136,10 +140,10 @@ const ProjectModel = () => {
 
   const activitySchema = Yup.object({
     prj_name: alphanumericValidation(3, 300, true),
-    prj_total_actual_budget: formattedAmountValidation(1000, 1000000000000, true),
+    prj_total_actual_budget: formattedAmountValidation(1000, leftBudget, true),
     prj_project_category_id: numberValidation(1, 200, true),
-    prj_measurement_unit: alphanumericValidation(3, 200, true),
-    prj_measured_figure: formattedAmountValidation(0, 10000000000, true)
+    prj_measurement_unit: alphanumericValidation(2, 200, false),
+    prj_measured_figure: formattedAmountValidation(0, 10000000000, false)
   })
 
   // validation
@@ -431,6 +435,7 @@ const ProjectModel = () => {
         activeTabName={activeTabName}
         validation={validation}
         isPending={addProject.isPending || updateProject.isPending}
+        leftBudget={leftBudget}
       />
       <div className="page-content">
         <div>
@@ -445,12 +450,14 @@ const ProjectModel = () => {
                       handleAddClick={handleProjectsClicks}
                       handleEditClick={handleProjectClick}
                       handleTabChange={handleTabChange}
+                      setLeftBudget={setLeftBudget}
                     /> :
                     <ProjectTabs
                       program={data}
                       handleAddClick={handleProjectsClicks}
                       handleEditClick={handleProjectClick}
                       handleTabChange={handleTabChange}
+                      setLeftBudget={setLeftBudget}
                     />
                 }
               </div>

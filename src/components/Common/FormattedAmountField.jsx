@@ -7,6 +7,7 @@ const FormattedAmountField = ({
   validation,
   fieldId,
   label,
+  sideLabel,
   isRequired = false,
   allowDecimal = false,
   className
@@ -83,9 +84,16 @@ const FormattedAmountField = ({
 
   return (
     <Col className={className}>
-      <Label htmlFor={fieldId}>
-        {label ? label : t(fieldId)} {isRequired && <span className="text-danger">*</span>}
-      </Label>
+      {sideLabel ?
+        <Label className="d-flex align-items-center justify-content-between" htmlFor={fieldId}>
+          <span> {label ? label : t(fieldId)} {isRequired && <span className="text-danger">*</span>}</span>
+          <span>{sideLabel}</span>
+        </Label>
+        :
+        <Label htmlFor={fieldId}>
+          {label ? label : t(fieldId)} {isRequired && <span className="text-danger">*</span>}
+        </Label>
+      }
       <Input
         id={fieldId}
         name={fieldId}
