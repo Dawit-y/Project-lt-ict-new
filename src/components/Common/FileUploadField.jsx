@@ -136,7 +136,7 @@ const FileUploadField = ({ validation, accept = { "application/pdf": [] } }) => 
               ? true
               : false
           }
-          maxLength={20}
+          maxLength={50}
         />
         {validation.touched.prd_name && validation.errors.prd_name ? (
           <FormFeedback type="invalid">

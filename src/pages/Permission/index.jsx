@@ -33,11 +33,16 @@ import {
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { toast } from "react-toastify";
 import { alphanumericValidation } from "../../utils/Validation/validation";
-const truncateText = (text, maxLength) => {
-  if (typeof text !== "string") {
-    return text;
-  }
-  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+import Filter from "./Filter";
+
+export const pageTypeLabels = {
+  1: "Governmental Pages",
+  2: "CSO Pages",
+  3: "Citizenship Pages",
+  4: "Admin Pages",
+  5: "Lookups",
+  6: "Common Pages",
+  7: "Setting Pages"
 };
 
 const PermissionModel = (props) => {
@@ -48,12 +53,13 @@ const PermissionModel = (props) => {
 
   const { t } = useTranslation();
   const [selectedItem, setSelectedItem] = useState(null);
+  const [filterState, setFilterState] = useState({ page_category: '' });
 
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [permission, setPermission] = useState(null);
-  const { data, isLoading, isFetching, error, isError, refetch} = useFetchPermissions(
+  const { data, isLoading, isFetching, error, isError, refetch } = useFetchPermissions(
     param,
     isActive
   );
@@ -285,6 +291,13 @@ const PermissionModel = (props) => {
         },
       },
       {
+        header: "Page Category",
+        accessorKey: "page_category",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: info => pageTypeLabels[info.getValue()] || 'Unknown',
+      },
+      {
         header: "",
         accessorKey: "pem_enabled",
         enableColumnFilter: false,
@@ -428,6 +441,26 @@ const PermissionModel = (props) => {
     return baseColumns;
   }, [handlePermissionClick, toggleViewModal, onClickDelete]);
 
+  // Filter the data based on filter state
+  const filteredData = useMemo(() => {
+    if (!data) return [];
+
+    return data?.data.filter(item => {
+      if (filterState.page_category && item.page_category !== parseInt(filterState.page_category)) {
+        return false;
+      }
+      return true;
+    });
+  }, [data, filterState]);
+
+  const handleFilterChange = (newFilters) => {
+    setFilterState(prev => ({ ...prev, ...newFilters }));
+  };
+
+  const handleClearFilters = () => {
+    setFilterState({ page_category: '' });
+  };
+
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
@@ -445,30 +478,30 @@ const PermissionModel = (props) => {
         isLoading={deletePermission.isPending}
       />
       <div>
-        <div className="container-fluid1">
-          {isLoading ? (
-            <Spinners />
-          ) : (
-            <TableContainer
-              columns={columns}
-              data={data?.data || []}
-              isGlobalFilter={true}
-              isAddButton={false}
-              isCustomPageSize={true}
-              handleUserClick={handlePermissionClicks}
-              isPagination={true}
-              // SearchPlaceholder="26 records..."
-              SearchPlaceholder={t("filter_placeholder")}
-              buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-              buttonName={t("add") + " " + t("permission")}
-              tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-              theadClass="table-light"
-              pagination="pagination"
-              paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-              refetch={refetch}
-              isFetching={isFetching}
-            />
-          )}
+        <div className="">
+          <Filter
+            onFilterChange={handleFilterChange}
+            onClear={handleClearFilters}
+          />
+          <TableContainer
+            columns={columns}
+            data={filteredData}
+            isLoading={isLoading}
+            isGlobalFilter={true}
+            isAddButton={false}
+            isCustomPageSize={true}
+            handleUserClick={handlePermissionClicks}
+            isPagination={true}
+            SearchPlaceholder={t("filter_placeholder")}
+            buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+            buttonName={t("add") + " " + t("permission")}
+            tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+            theadClass="table-light"
+            pagination="pagination"
+            paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+            refetch={refetch}
+            isFetching={isFetching}
+          />
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
               {!!isEdit

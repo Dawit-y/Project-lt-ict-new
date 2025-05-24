@@ -197,7 +197,10 @@ const ProjectBudgetSourceList = () => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.bsr_amount, 30) || "-";
+          return (
+            truncateText(Number(params.data.bsr_amount).toLocaleString(), 30) ||
+            "-"
+          );
         },
       },
     ];

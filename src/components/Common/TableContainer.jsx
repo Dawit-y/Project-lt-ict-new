@@ -324,8 +324,8 @@ const TableContainer = ({
                         key={header.id}
                         colSpan={header.colSpan}
                         className={`${header.column.columnDef.enableSorting
-                            ? "sorting sorting_desc"
-                            : ""
+                          ? "sorting sorting_desc"
+                          : ""
                           }`}
                       >
                         {header.isPlaceholder ? null : (

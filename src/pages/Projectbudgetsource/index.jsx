@@ -9,6 +9,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
+import FormattedAmountField from "../../components/Common/FormattedAmountField";
 
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
@@ -60,8 +61,12 @@ const truncateText = (text, maxLength) => {
 const ProjectBudgetSourceModel = (props) => {
   //meta title
   document.title = " ProjectBudgetSource";
-  const { passedId, isActive } = props;
-  const param = { bsr_project_id: passedId };
+  const { passedId, isActive, totalActualBudget } = props;
+  const param = {
+    project_id: passedId,
+    request_type: "single",
+    prj_total_actual_budget: totalActualBudget,
+  };
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -73,14 +78,24 @@ const ProjectBudgetSourceModel = (props) => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } =
+  const { data, isLoading, isFetching, error, isError, refetch } =
     useFetchProjectBudgetSources(param, isActive);
   const { data: budgetSourceData } = useFetchBudgetSources();
+
   const budgetSourceOptions = createSelectOptions(
     budgetSourceData?.data || [],
     "pbs_id",
     "pbs_name_or"
   );
+  // Mapping
+  const budgetSourceMap = useMemo(() => {
+    return (
+      budgetSourceData?.data?.reduce((acc, source) => {
+        acc[source.pbs_id] = source.pbs_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [budgetSourceData]);
 
   const addProjectBudgetSource = useAddProjectBudgetSource();
   const updateProjectBudgetSource = useUpdateProjectBudgetSource();
@@ -129,6 +144,22 @@ const ProjectBudgetSourceModel = (props) => {
       setDeleteModal(false);
     }
   };
+
+  const calculateCurrentTotal = (
+    currentData,
+    editingId = null,
+    newAmount = 0
+  ) => {
+    if (!currentData || !currentData.data) return 0;
+
+    return currentData.data.reduce((total, item) => {
+      // If editing, exclude the item being edited from the total
+      if (editingId && item.bsr_id === editingId) {
+        return total + Number(newAmount || 0);
+      }
+      return total + Number(item.bsr_amount || 0);
+    }, 0);
+  };
   //END CRUD
   //START FOREIGN CALLS
 
@@ -158,12 +189,32 @@ const ProjectBudgetSourceModel = (props) => {
 
     validationSchema: Yup.object({
       bsr_name: Yup.string().required(t("bsr_name")),
-      //bsr_project_id: Yup.string().required(t("bsr_project_id")),
       bsr_budget_source_id: Yup.string().required(t("bsr_budget_source_id")),
-      bsr_amount: Yup.string().required(t("bsr_amount")),
-      //bsr_status: Yup.string().required(t("bsr_status")),
-      //bsr_description: Yup.string().required(t("bsr_description")),
-      //bsr_created_date: Yup.string().required(t("bsr_created_date")),
+      bsr_amount: Yup.number()
+        .required(t("bsr_amount"))
+        .positive("Amount must be positive")
+        .test(
+          "total-budget",
+          "Amount exceeds remaining project budget",
+          function (value) {
+            if (!value || isNaN(value)) return true;
+
+            const currentData = showSearchResult ? searchResults : data;
+            const editingId = isEdit ? projectBudgetSource?.bsr_id : null;
+
+            // Calculate total without the current edited item
+            const currentTotalWithoutThis =
+              currentData?.data?.reduce((total, item) => {
+                if (editingId && item.bsr_id === editingId) return total;
+                return total + Number(item.bsr_amount || 0);
+              }, 0) || 0;
+
+            // Calculate new total if this amount is added/updated
+            const newTotal = currentTotalWithoutThis + Number(value);
+
+            return newTotal <= totalActualBudget;
+          }
+        ),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -284,8 +335,10 @@ const ProjectBudgetSourceModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bsr_budget_source_id, 30) ||
-                "-"}
+              {truncateText(
+                budgetSourceMap[cellProps.row.original.bsr_budget_source_id],
+                30
+              ) || "-"}
             </span>
           );
         },
@@ -298,7 +351,10 @@ const ProjectBudgetSourceModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.bsr_amount, 30) || "-"}
+              {truncateText(
+                Number(cellProps.row.original.bsr_amount).toLocaleString(),
+                30
+              ) || "-"}
             </span>
           );
         },
@@ -352,7 +408,6 @@ const ProjectBudgetSourceModel = (props) => {
             <div className="d-flex gap-3">
               {cellProps.row.original.is_editable && (
                 <Link
-                  to="#"
                   className="text-success"
                   onClick={() => {
                     const data = cellProps.row.original;
@@ -368,7 +423,6 @@ const ProjectBudgetSourceModel = (props) => {
 
               {cellProps.row.original.is_deletable && (
                 <Link
-                  to="#"
                   className="text-danger"
                   onClick={() => {
                     const data = cellProps.row.original;
@@ -431,6 +485,8 @@ const ProjectBudgetSourceModel = (props) => {
               theadClass="table-light"
               pagination="pagination"
               paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+              refetch={refetch}
+              isFetching={isFetching}
             />
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
@@ -448,8 +504,45 @@ const ProjectBudgetSourceModel = (props) => {
                 }}
               >
                 <Row>
+                  <Col className="col-12 mb-3">
+                    <Card>
+                      <CardBody>
+                        <div className="d-flex justify-content-between">
+                          <div>
+                            <strong>{t("Total_Project_Budget")} : </strong>{" "}
+                            {totalActualBudget
+                              ? totalActualBudget.toLocaleString()
+                              : "0"}
+                          </div>
+                          <div>
+                            <strong>{t("Allocated")} : </strong>{" "}
+                            {calculateCurrentTotal(data)
+                              ? calculateCurrentTotal(data).toLocaleString()
+                              : "0"}
+                          </div>
+                          <div
+                            className={
+                              calculateCurrentTotal(data) >
+                              (totalActualBudget || 0)
+                                ? "text-danger"
+                                : "text-success"
+                            }
+                          >
+                            <strong>{t("Remaining")} : </strong>{" "}
+                            {(
+                              (totalActualBudget || 0) -
+                              (calculateCurrentTotal(data) || 0)
+                            ).toLocaleString()}
+                          </div>
+                        </div>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                </Row>
+                <Row>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("bsr_name")}</Label>
+                    <span className="text-danger">*</span>
                     <Input
                       name="bsr_name"
                       type="text"
@@ -507,28 +600,23 @@ const ProjectBudgetSourceModel = (props) => {
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("bsr_amount")}</Label>
-                    <Input
-                      name="bsr_amount"
-                      type="number"
-                      placeholder={t("bsr_amount")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bsr_amount || ""}
-                      invalid={
-                        validation.touched.bsr_amount &&
-                        validation.errors.bsr_amount
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
+                    <FormattedAmountField
+                      validation={validation}
+                      fieldId="bsr_amount"
+                      label={t("bsr_amount")}
+                      isRequired={true}
+                      max={totalActualBudget}
                     />
-                    {validation.touched.bsr_amount &&
-                    validation.errors.bsr_amount ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bsr_amount}
-                      </FormFeedback>
-                    ) : null}
+                    <small className="text-muted">
+                      Available budget:{" "}
+                      {(
+                        (totalActualBudget || 0) -
+                        (calculateCurrentTotal(
+                          data,
+                          isEdit ? projectBudgetSource?.bsr_id : null
+                        ) || 0)
+                      ).toLocaleString()}
+                    </small>
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("bsr_description")}</Label>
