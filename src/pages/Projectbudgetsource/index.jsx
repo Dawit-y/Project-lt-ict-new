@@ -63,7 +63,7 @@ const ProjectBudgetSourceModel = (props) => {
   document.title = " ProjectBudgetSource";
   const { passedId, isActive, totalActualBudget } = props;
   const param = {
-    bsr_project_id: passedId,
+    project_id: passedId,
     request_type: "single",
     prj_total_actual_budget: totalActualBudget,
   };
@@ -510,22 +510,28 @@ const ProjectBudgetSourceModel = (props) => {
                         <div className="d-flex justify-content-between">
                           <div>
                             <strong>{t("Total_Project_Budget")} : </strong>{" "}
-                            {totalActualBudget.toLocaleString()}
+                            {totalActualBudget
+                              ? totalActualBudget.toLocaleString()
+                              : "0"}
                           </div>
                           <div>
                             <strong>{t("Allocated")} : </strong>{" "}
-                            {calculateCurrentTotal(data).toLocaleString()}
+                            {calculateCurrentTotal(data)
+                              ? calculateCurrentTotal(data).toLocaleString()
+                              : "0"}
                           </div>
                           <div
                             className={
-                              calculateCurrentTotal(data) > totalActualBudget
+                              calculateCurrentTotal(data) >
+                              (totalActualBudget || 0)
                                 ? "text-danger"
                                 : "text-success"
                             }
                           >
                             <strong>{t("Remaining")} : </strong>{" "}
                             {(
-                              totalActualBudget - calculateCurrentTotal(data)
+                              (totalActualBudget || 0) -
+                              (calculateCurrentTotal(data) || 0)
                             ).toLocaleString()}
                           </div>
                         </div>
@@ -604,11 +610,11 @@ const ProjectBudgetSourceModel = (props) => {
                     <small className="text-muted">
                       Available budget:{" "}
                       {(
-                        totalActualBudget -
-                        calculateCurrentTotal(
+                        (totalActualBudget || 0) -
+                        (calculateCurrentTotal(
                           data,
                           isEdit ? projectBudgetSource?.bsr_id : null
-                        )
+                        ) || 0)
                       ).toLocaleString()}
                     </small>
                   </Col>
