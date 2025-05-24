@@ -253,6 +253,19 @@ const AttachFileModal = ({
         },
       },
       {
+        header: "Created By",
+        accessorKey: "created_by",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.created_by, 30) || "-"}
+            </span>
+          );
+        },
+      },
+      {
         header: "",
         accessorKey: "prd_file_path",
         enableColumnFilter: false,

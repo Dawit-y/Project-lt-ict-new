@@ -40,9 +40,9 @@ export const getUserSectorList = (searchParams = {}) => {
     queryFn: () => getUserSectorTree(searchParams),
     cacheTime: 0,          // Don't keep it in memory
     staleTime: 0,          // Always stale
-    refetchOnMount: 'always',
-    refetchOnWindowFocus: 'always',
-    refetchOnReconnect: 'always',
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     keepPreviousData: false, // Don't keep any previous results
   });
 };

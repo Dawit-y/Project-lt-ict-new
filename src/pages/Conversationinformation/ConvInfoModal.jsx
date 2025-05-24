@@ -248,11 +248,12 @@ const Conversation = ({
                                 </div>
                                 <div className="flex-grow-1">
                                   <h5 className="font-size-14 mb-1">
-                                    {comment.cvi_title}{" "}
+                                    {comment?.created_by}{" "}
                                     <small className="text-muted float-end">
                                       {formatTimeAgo(comment.cvi_create_time)}
                                     </small>
                                   </h5>
+                                  <h6 className="my-2"><strong>Subject: </strong> {comment?.cvi_title}</h6>
                                   <p className="text-muted">{comment.cvi_description}</p>
                                 </div>
                               </div>

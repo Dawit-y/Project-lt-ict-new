@@ -326,9 +326,10 @@ export const PDFPreview = ({ filePath, fileSize }) => {
                   onChange={(e) => setGoToPage(e.target.value)}
                   min={1}
                   max={numPages || 1}
+                  disabled={!numPages}
                 />
 
-                <Button type="submit" color="secondary">
+                <Button type="submit" color="secondary" disabled={!numPages}>
                   Go
                 </Button>
               </Form>
