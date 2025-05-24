@@ -37,6 +37,7 @@ const DateSetting = lazy(() => import("../pages/Datesetting/index"));
 const CSOInformation = lazy(() => import("../pages/Csoinfo/index"));
 const CSOProject = lazy(() => import("../pages/Csoproject/index.jsx"));
 const CSOProjectList = lazy(() => import("../pages/Csoproject/ProjectList"));
+const CSOActivityList = lazy(() => import("../pages/Csoproject/ActivityList.jsx"));
 const CSOProjectDetail = lazy(() => import("../pages/Csoproject/ProjectDetail/index.jsx"));
 const CSOBudgetRequestListModel = lazy(() =>
   import("../pages/Csobudgetrequest/BudgetRequestList.jsx")
@@ -208,6 +209,7 @@ const authProtectedRoutes = [
   { path: "/cso_information", component: <CSOInformation /> },
   { path: "/project_cso", component: <CSOProject /> },
   { path: "/project_cso_list", component: <CSOProjectList /> },
+  { path: "/activity_cso_list", component: <CSOProjectList /> },
   { path: "/projectdetail_cso/:id", component: <CSOProjectDetail /> },
   { path: "/cso_proposal_request", component: <CSOBudgetRequestListModel /> },
   { path: "/cso_proposal_request_list", component: <CsoProposalRequestList /> },

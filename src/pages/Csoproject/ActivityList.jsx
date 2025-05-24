@@ -23,8 +23,8 @@ import TreeForLists from "../../components/Common/TreeForLists";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import AgGridContainer from "../../components/Common/AgGridContainer"
 
-const ProjectList = () => {
-  document.title = "CSO Projects List";
+const ActivityList = () => {
+  document.title = "CSO Activity List";
   const [projectMetaData, setProjectMetaData] = useState([]);
   const { t, i18n } = useTranslation();
   const lang = i18n.language
@@ -55,7 +55,7 @@ const ProjectList = () => {
         prj_location_woreda_id: prjLocationWoredaId,
       }),
       ...(include === 1 && { include: include }),
-      prj_object_type_id: 1
+      prj_object_type_id: 5
     });
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
 
@@ -306,7 +306,7 @@ const ProjectList = () => {
     </React.Fragment>
   );
 };
-ProjectList.propTypes = {
+ActivityList.propTypes = {
   preGlobalFilteredRows: PropTypes.any,
 };
-export default ProjectList;
+export default ActivityList;

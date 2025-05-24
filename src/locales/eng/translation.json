@@ -850,7 +850,6 @@
 	"prj_project_amount_range": "Amount should be greater than 1000 and less than 100,000,000,000",
 	"prj_name_en": "Project Title in English",
 	"prj_name_am": "Project Title in Amharic",
-
 	"budget_year_range": "Budget year should be between 2017 and 2040",
 	"budget_month_range": "Budget month should be between 1 and 12",
 	"integer_only": "It should be number only",
@@ -1676,5 +1675,6 @@
 	"emp_sex": "Sex",
 	"emp_phone": "PhoneNumber",
 	"Select_Sex": "Select Sex",
-	"Select_Visit_Type": "Select Visit Type"
+	"Select_Visit_Type": "Select Visit Type",
+	"activity_cso_list": "CSO Activity List"
 }
