@@ -52,8 +52,12 @@ const BudgetExSource = lazy(() => import("../Budgetexsource/index"));
 
 const BudgetRequestModal = lazy(() => import("./BudgetRequestModal"));
 const ActionModal = lazy(() => import("./ActionModal"));
-const AttachFileModal = lazy(() => import("../../components/Common/AttachFileModal"));
-const ConvInfoModal = lazy(() => import("../../pages/Conversationinformation/ConvInfoModal"));
+const AttachFileModal = lazy(() =>
+  import("../../components/Common/AttachFileModal")
+);
+const ConvInfoModal = lazy(() =>
+  import("../../pages/Conversationinformation/ConvInfoModal")
+);
 import {
   alphanumericValidation,
   formattedAmountValidation,
@@ -61,7 +65,10 @@ import {
 import DatePicker from "../../components/Common/DatePicker";
 import { PAGE_ID } from "../../constants/constantFile";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
-import { createKeyValueMap, createMultiLangKeyValueMap } from "../../utils/commonMethods";
+import {
+  createKeyValueMap,
+  createMultiLangKeyValueMap,
+} from "../../utils/commonMethods";
 import EthiopianDatePicker from "../../components/Common/EthiopianDatePicker";
 import AsyncSelectField from "../../components/Common/AsyncSelectField";
 import InputField from "../../components/Common/InputField";
@@ -77,10 +84,14 @@ const LazyLoader = ({ children }) => (
   <Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
 );
 const BudgetRequestModel = (props) => {
-  const { isActive, status, startDate } = props;
+  const { isActive, status, startDate, totalActualBudget } = props;
   const location = useLocation();
   const id = Number(location.pathname.split("/")[2]);
-  const param = { project_id: id, request_type: "single" };
+  const param = {
+    project_id: id,
+    request_type: "single",
+    prj_total_actual_budget: totalActualBudget,
+  };
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
   const [modal, setModal] = useState(false);
@@ -94,14 +105,26 @@ const BudgetRequestModel = (props) => {
   const [budgetRequestMetaData, setBudgetRequestMetaData] = useState([]);
   const [showCanvas, setShowCanvas] = useState(false);
 
-  const { data: projectStatusData, isLoading: isPrsLoading, isError: isPrsError } = useFetchProjectStatuss();
+  const {
+    data: projectStatusData,
+    isLoading: isPrsLoading,
+    isError: isPrsError,
+  } = useFetchProjectStatuss();
 
   const { data, isLoading, isFetching, isError, error, refetch } =
     useFetchBudgetRequests(param);
-  const { data: budgetYearData, isLoading: bdyLoading, isError: bdyIsError } = usePopulateBudgetYears();
+  const {
+    data: budgetYearData,
+    isLoading: bdyLoading,
+    isError: bdyIsError,
+  } = usePopulateBudgetYears();
 
   const categoryParam = { rqc_gov_active: 1 };
-  const { data: bgCategoryOptionsData, isLoading: isBcLoading, isBcError } = useSearchRequestCategorys(categoryParam);
+  const {
+    data: bgCategoryOptionsData,
+    isLoading: isBcLoading,
+    isBcError,
+  } = useSearchRequestCategorys(categoryParam);
   const addBudgetRequest = useAddBudgetRequest();
   const updateBudgetRequest = useUpdateBudgetRequest();
   const deleteBudgetRequest = useDeleteBudgetRequest();
@@ -154,9 +177,12 @@ const BudgetRequestModel = (props) => {
         (budgetRequest && budgetRequest.bdr_requested_date_gc) || "",
 
       bdr_request_type: (budgetRequest && budgetRequest.bdr_request_type) || "",
-      bdr_physical_baseline: (budgetRequest && budgetRequest.bdr_physical_baseline) || 0,
-      bdr_physical_planned: (budgetRequest && budgetRequest.bdr_physical_planned) || "",
-      bdr_financial_baseline: (budgetRequest && budgetRequest.bdr_financial_baseline) || 0,
+      bdr_physical_baseline:
+        (budgetRequest && budgetRequest.bdr_physical_baseline) || 0,
+      bdr_physical_planned:
+        (budgetRequest && budgetRequest.bdr_physical_planned) || "",
+      bdr_financial_baseline:
+        (budgetRequest && budgetRequest.bdr_financial_baseline) || 0,
       bdr_description: (budgetRequest && budgetRequest.bdr_description) || "",
       bdr_status: (budgetRequest && budgetRequest.bdr_status) || "",
       bdr_request_status:
@@ -171,6 +197,21 @@ const BudgetRequestModel = (props) => {
     validationSchema: Yup.object({
       bdr_budget_year_id: Yup.string().required(t("bdr_budget_year_id")),
       bdr_request_type: Yup.string().required(t("bdr_request_type")),
+      // bdr_request_category_id: Yup.string()
+      //   .required(t("bdr_request_category_id"))
+      //   .test(
+      //     "unique-year-category-combination",
+      //     t("This category already exists for the selected budget year."),
+      //     function (value) {
+      //       const { bdr_budget_year_id } = this.parent;
+      //       return !data?.data.some(
+      //         (item) =>
+      //           parseInt(item.bdr_budget_year_id) ==
+      //             parseInt(bdr_budget_year_id) &&
+      //           parseInt(item.bdr_request_category_id) == parseInt(value)
+      //       );
+      //     }
+      //   ),
       bdr_request_category_id: Yup.string()
         .required(t("bdr_request_category_id"))
         .test(
@@ -178,22 +219,70 @@ const BudgetRequestModel = (props) => {
           t("This category already exists for the selected budget year."),
           function (value) {
             const { bdr_budget_year_id } = this.parent;
+            const currentId = isEdit ? budgetRequest?.bdr_id : null;
+
+            // Skip if no value selected yet
+            if (!value || !bdr_budget_year_id) return true;
+
             return !data?.data.some(
               (item) =>
-                parseInt(item.bdr_budget_year_id) == parseInt(bdr_budget_year_id) &&
-                parseInt(item.bdr_request_category_id) == parseInt(value)
+                item.bdr_id !== currentId && // Exclude current record when editing
+                parseInt(item.bdr_budget_year_id) ===
+                  parseInt(bdr_budget_year_id) &&
+                parseInt(item.bdr_request_category_id) === parseInt(value)
             );
           }
         ),
-      bdr_requested_amount: formattedAmountValidation(1000, 10000000000, true),
+
+      bdr_requested_amount: formattedAmountValidation(
+        1000,
+        10000000000,
+        true
+      ).test(
+        "total-budget-check",
+        t("Requested amount exceeds remaining project budget"),
+        function (value) {
+          // Assuming budget category has ID 1 (confirm this from your data)
+          const isBudgetCategory =
+            parseInt(this.parent.bdr_request_category_id) === 1;
+          if (!isBudgetCategory) return true;
+
+          const requestedAmount = parseFloat(value) || 0;
+          if (isNaN(requestedAmount)) return true;
+
+          const currentData = data?.data || [];
+          const editingId = isEdit ? budgetRequest?.bdr_id : null;
+
+          // Calculate total without the current edited item
+          const currentTotalWithoutThis = currentData.reduce((total, item) => {
+            if (editingId && item.bdr_id === editingId) return total;
+            if (parseInt(item.bdr_request_category_id) === 1) {
+              // Only sum budget category items
+              return total + Number(item.bdr_requested_amount || 0);
+            }
+            return total;
+          }, 0);
+
+          // Calculate new total if this amount is added/updated
+          const newTotal = currentTotalWithoutThis + requestedAmount;
+
+          return newTotal <= totalActualBudget;
+        }
+      ),
       bdr_requested_date_gc: Yup.string().required(t("bdr_requested_date_gc")),
       bdr_physical_baseline: Yup.number()
         .min(0, t("min_error", { field: t("bdr_physical_baseline"), min: 0 }))
-        .max(100, t("max_error", { field: t("bdr_physical_baseline"), max: 100 }))
+        .max(
+          100,
+          t("max_error", { field: t("bdr_physical_baseline"), max: 100 })
+        )
         .required(t("bdr_physical_baseline")),
       bdr_physical_planned: Yup.number()
         .min(1, t("min_error", { field: t("bdr_physical_planned"), min: 1 }))
-        .max(100, t("max_error", { field: t("bdr_physical_planned"), max: 100 }))
+        .max(
+          100,
+          t("max_error", { field: t("bdr_physical_planned"), max: 100 })
+        )
         .required(t("bdr_physical_planned")),
       bdr_financial_baseline: formattedAmountValidation(0, 10000000000, true),
       bdr_description: alphanumericValidation(3, 425, false),
@@ -353,6 +442,20 @@ const BudgetRequestModel = (props) => {
   const handleClick = (data) => {
     setShowCanvas(!showCanvas);
     setBudgetRequestMetaData(data);
+  };
+
+  const calculateBudgetAllocated = (currentData, editingId = null) => {
+    if (!currentData || !currentData.data) return 0;
+
+    return currentData.data.reduce((total, item) => {
+      // Only count budget category items (assuming ID 1)
+      if (parseInt(item.bdr_request_category_id) !== 1) return total;
+
+      // If editing, exclude the item being edited from the total
+      if (editingId && item.bdr_id === editingId) return total;
+
+      return total + Number(item.bdr_requested_amount || 0);
+    }, 0);
   };
 
   const columns = useMemo(() => {
@@ -654,13 +757,15 @@ const BudgetRequestModel = (props) => {
             isOpen={modal1}
             toggle={toggleViewModal}
             transaction={transaction}
-          />)}
+          />
+        )}
         {actionModal && (
           <ActionModal
             isOpen={actionModal}
             toggle={toggleActionModal}
             data={transaction}
-          />)}
+          />
+        )}
         {fileModal && (
           <AttachFileModal
             isOpen={fileModal}
@@ -668,14 +773,16 @@ const BudgetRequestModel = (props) => {
             projectId={id}
             ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
             ownerId={transaction?.bdr_id}
-          />)}
+          />
+        )}
         {convModal && (
           <ConvInfoModal
             isOpen={convModal}
             toggle={toggleConvModal}
             ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
             ownerId={transaction?.bdr_id ?? null}
-          />)}
+          />
+        )}
       </LazyLoader>
       <DeleteModal
         show={deleteModal}
@@ -720,6 +827,38 @@ const BudgetRequestModel = (props) => {
               return false;
             }}
           >
+            <Row>
+              <Col className="col-12 mb-3">
+                <Card>
+                  <CardBody>
+                    <div className="d-flex justify-content-between">
+                      <div>
+                        <strong>{t("Total_Project_Budget")} : </strong>{" "}
+                        {totalActualBudget
+                          ? totalActualBudget.toLocaleString()
+                          : "0"}
+                      </div>
+                      <div>
+                        <strong>{t("Allocated")} : </strong>{" "}
+                        {calculateBudgetAllocated(data).toLocaleString()}
+                      </div>
+                      <div
+                        className={
+                          calculateBudgetAllocated(data) > totalActualBudget
+                            ? "text-danger"
+                            : "text-success"
+                        }
+                      >
+                        <strong>{t("Remaining")} : </strong>{" "}
+                        {(
+                          totalActualBudget - calculateBudgetAllocated(data)
+                        ).toLocaleString()}
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
             <Row>
               <AsyncSelectField
                 fieldId="bdr_budget_year_id"
@@ -798,7 +937,7 @@ const BudgetRequestModel = (props) => {
               <Col>
                 <div className="text-end">
                   {addBudgetRequest.isPending ||
-                    updateBudgetRequest.isPending ? (
+                  updateBudgetRequest.isPending ? (
                     <Button
                       color="success"
                       type="submit"

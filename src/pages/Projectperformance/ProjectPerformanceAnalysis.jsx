@@ -76,9 +76,9 @@ const ProjectPerformanceAnalysis = ({
 
     return {
       physical: {
-        planned: totalPlannedPhysical,
-        actual: totalActualPhysical,
-        variance: totalActualPhysical - totalPlannedPhysical,
+        planned: totalPlannedPhysical / 12, // Average planned physical progress
+        actual: totalActualPhysical / 12, // Average actual physical progress
+        variance: (totalActualPhysical - totalPlannedPhysical) / 12,
         variancePercentage: calculatePercentage(
           totalActualPhysical,
           totalPlannedPhysical
@@ -115,24 +115,27 @@ const ProjectPerformanceAnalysis = ({
     };
 
     data.forEach((project) => {
-      // Physical totals
-      const projectPhysicalPlanned = months.reduce(
-        (sum, month) =>
-          sum + (project[`prp_pyhsical_planned_month_${month}`] || 0),
-        0
-      );
-      const projectPhysicalActual = months.reduce(
-        (sum, month) =>
-          sum + (project[`prp_pyhsical_actual_month_${month}`] || 0),
-        0
-      );
+      // Physical totals - calculate averages per project
+      const projectPhysicalPlanned =
+        months.reduce(
+          (sum, month) =>
+            sum + (project[`prp_pyhsical_planned_month_${month}`] || 0),
+          0
+        ) / 12;
+
+      const projectPhysicalActual =
+        months.reduce(
+          (sum, month) =>
+            sum + (project[`prp_pyhsical_actual_month_${month}`] || 0),
+          0
+        ) / 12;
 
       totals.physical.planned += projectPhysicalPlanned;
       totals.physical.actual += projectPhysicalActual;
       totals.physical.variance +=
         projectPhysicalActual - projectPhysicalPlanned;
 
-      // Financial totals
+      // Financial totals - sum absolute values
       const projectFinancialPlanned = months.reduce(
         (sum, month) =>
           sum + (project[`prp_finan_planned_month_${month}`] || 0),
@@ -148,17 +151,36 @@ const ProjectPerformanceAnalysis = ({
       totals.financial.variance +=
         projectFinancialActual - projectFinancialPlanned;
 
+      const projectBaseline = Math.min(
+        project?.prp_physical_baseline || 0,
+        100
+      );
+      const projectPerformance = Math.min(
+        project?.prp_physical_performance || 0,
+        100
+      );
+
+      totals.baseline.physical += projectBaseline;
+      totals.performance.physical += projectPerformance;
       // Baseline and performance (averages)
-      totals.baseline.physical += project?.prp_physical_baseline || 0;
+      // totals.baseline.physical += project?.prp_physical_baseline || 0;
       totals.baseline.financial += project?.prp_budget_baseline || 0;
-      totals.performance.physical += project?.prp_physical_performance || 0;
+      // totals.performance.physical += project?.prp_physical_performance || 0;
       totals.performance.financial += project?.prp_total_budget_used || 0;
     });
+
+    // Calculate averages for physical metrics
+    totals.physical.planned = totals.physical.planned / data.length;
+    totals.physical.actual = totals.physical.actual / data.length;
+    totals.physical.variance = totals.physical.variance / data.length;
 
     // Calculate averages for baseline and performance
     totals.baseline.physical = totals.baseline.physical / data.length;
     totals.baseline.financial = totals.baseline.financial / data.length;
     totals.performance.physical = totals.performance.physical / data.length;
+
+    totals.baseline.physical = Math.min(totals.baseline.physical, 100);
+    totals.performance.physical = Math.min(totals.performance.physical, 100);
 
     // Calculate percentages
     totals.physical.variancePercentage = calculatePercentage(
@@ -175,7 +197,7 @@ const ProjectPerformanceAnalysis = ({
 
   // Prepare chart data and options
   const { chartOptions, chartSeries, totals } = useMemo(() => {
-    const categories = ETHIOPIAN_MONTHS; // Using Ethiopian months instead of "Month X"
+    const categories = ETHIOPIAN_MONTHS;
     let series = [];
     let options = {
       chart: {
@@ -240,6 +262,13 @@ const ProjectPerformanceAnalysis = ({
               (month) =>
                 performanceData?.[`prp_pyhsical_actual_month_${month}`] || 0
             );
+
+        // For overall view, calculate average physical progress per month
+        if (isOverallView) {
+          months.forEach((month) => {
+            data[month - 1] = data[month - 1] / allData.length;
+          });
+        }
 
         series = data;
       } else {
@@ -345,13 +374,23 @@ const ProjectPerformanceAnalysis = ({
                 performanceData?.[`prp_pyhsical_actual_month_${month}`] || 0
             );
 
+        // For overall view, calculate average physical progress per month
+        if (isOverallView) {
+          months.forEach((month) => {
+            planned[month - 1] = planned[month - 1] / allData.length;
+            actual[month - 1] = actual[month - 1] / allData.length;
+          });
+        }
+
         series = [
           {
-            name: isOverallView ? "Total Planned Physical" : "Planned Physical",
+            name: isOverallView
+              ? "Average Planned Physical"
+              : "Planned Physical",
             data: planned,
           },
           {
-            name: isOverallView ? "Total Actual Physical" : "Actual Physical",
+            name: isOverallView ? "Average Actual Physical" : "Actual Physical",
             data: actual,
           },
         ];
@@ -666,7 +705,7 @@ const ProjectPerformanceAnalysis = ({
                                       `prp_pyhsical_planned_month_${month}`
                                     ] || 0),
                                   0
-                                )
+                                ) / allData.length
                               : performanceData?.[
                                   `prp_pyhsical_planned_month_${month}`
                                 ] || 0
@@ -693,7 +732,7 @@ const ProjectPerformanceAnalysis = ({
                                       `prp_pyhsical_actual_month_${month}`
                                     ] || 0),
                                   0
-                                )
+                                ) / allData.length
                               : performanceData?.[
                                   `prp_pyhsical_actual_month_${month}`
                                 ] || 0
@@ -713,16 +752,15 @@ const ProjectPerformanceAnalysis = ({
 
                         return (
                           <tr key={month}>
-                            <td>{ETHIOPIAN_MONTHS[month - 1]}</td>{" "}
-                            {/* Changed to Ethiopian month name */}
+                            <td>{ETHIOPIAN_MONTHS[month - 1]}</td>
                             <td>
                               {selectedView === "physical"
-                                ? `${planned}%`
+                                ? `${formatNumber(planned)}%`
                                 : `${formatNumber(planned)}M Birr`}
                             </td>
                             <td>
                               {selectedView === "physical"
-                                ? `${actual}%`
+                                ? `${formatNumber(actual)}%`
                                 : `${formatNumber(actual)}M Birr`}
                             </td>
                             <td
