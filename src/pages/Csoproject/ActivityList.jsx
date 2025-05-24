@@ -55,7 +55,7 @@ const ActivityList = () => {
         prj_location_woreda_id: prjLocationWoredaId,
       }),
       ...(include === 1 && { include: include }),
-      prj_object_type_id: 5
+      object_type_id: 5
     });
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
 
@@ -98,7 +98,7 @@ const ActivityList = () => {
       setProject(searchResults?.data);
       setIsEdit(false);
     }
-  }, [searchResults?.data]);;
+  }, [searchResults?.data]);
 
   const handleNodeSelect = useCallback(
     (node) => {
@@ -151,14 +151,7 @@ const ActivityList = () => {
       },
       {
         field: "prj_name",
-        headerName: t("prj_name"),
-        sortable: true,
-        filter: "agTextColumnFilter",
-
-      },
-      {
-        field: "cso_name",
-        headerName: "CSO Name",
+        headerName: t("Activity Title"),
         sortable: true,
         filter: "agTextColumnFilter",
 
@@ -166,6 +159,13 @@ const ActivityList = () => {
       {
         field: "prj_code",
         headerName: t("prj_code"),
+        sortable: true,
+        filter: "agTextColumnFilter",
+
+      },
+      {
+        field: "cso_name",
+        headerName: "CSO Name",
         sortable: true,
         filter: "agTextColumnFilter",
 
@@ -184,21 +184,21 @@ const ActivityList = () => {
         filter: "agTextColumnFilter",
         cellStyle: { 'textOverflow': 'ellipsis', 'whiteSpace': 'nowrap', 'overflow': 'hidden', 'padding': 0 }
       },
-      {
-        headerName: t("prs_status"),
-        field: "bdr_request_status",
-        sortable: true,
-        filter: true,
-        width: 150,
-        cellRenderer: (params) => {
-          const badgeClass = params.data.color_code;
-          return (
-            <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
-              {params.data.status_name}
-            </Badge>
-          );
-        },
-      },
+      // {
+      //   headerName: t("prs_status"),
+      //   field: "bdr_request_status",
+      //   sortable: true,
+      //   filter: true,
+      //   width: 150,
+      //   cellRenderer: (params) => {
+      //     const badgeClass = params.data.color_code;
+      //     return (
+      //       <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
+      //         {params.data.status_name}
+      //       </Badge>
+      //     );
+      //   },
+      // },
       {
         field: "prj_total_estimate_budget",
         headerName: t("prj_total_estimate_budget"),

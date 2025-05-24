@@ -55,7 +55,7 @@ const ProjectList = () => {
         prj_location_woreda_id: prjLocationWoredaId,
       }),
       ...(include === 1 && { include: include }),
-      prj_object_type_id: 1
+      object_type_id: 1
     });
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
 

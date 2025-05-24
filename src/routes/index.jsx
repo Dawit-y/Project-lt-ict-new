@@ -209,7 +209,7 @@ const authProtectedRoutes = [
   { path: "/cso_information", component: <CSOInformation /> },
   { path: "/project_cso", component: <CSOProject /> },
   { path: "/project_cso_list", component: <CSOProjectList /> },
-  { path: "/activity_cso_list", component: <CSOProjectList /> },
+  { path: "/activity_cso_list", component: <CSOActivityList /> },
   { path: "/projectdetail_cso/:id", component: <CSOProjectDetail /> },
   { path: "/cso_proposal_request", component: <CSOBudgetRequestListModel /> },
   { path: "/cso_proposal_request_list", component: <CsoProposalRequestList /> },
