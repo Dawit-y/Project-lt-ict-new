@@ -210,17 +210,34 @@ const FileList = ({
                           </div>
 
                           <div className="">
-                            <div className="overflow-hidden me-auto">
-                              <h5 className="font-size-14 text-truncate mb-1">
-                                <Link to="#" className="text-body">
-                                  {file?.prd_name}
-                                </Link>
-                              </h5>
-                            </div>
-                            <div className="align-self-end">
-                              <p className="text-muted mb-0">
-                                {formatFileSize(file?.prd_size)}
-                              </p>
+                            <>
+                              <div className="overflow-hidden me-auto">
+                                <h5 className="font-size-14 text-truncate mb-1">
+                                  <Link to="#" className="text-body">
+                                    {file?.prd_name}
+                                  </Link>
+                                </h5>
+                              </div>
+
+                            </>
+                            <div className="d-flex py-2 align-items-center">
+                              <div className="flex-shrink-0 me-3">
+                                <div className="avatar-xs">
+                                  <div className="avatar-title rounded-circle bg-light text-primary">
+                                    <i className="bx bxs-user"></i>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex-grow-1">
+                                <h5 className="font-size-14">
+                                  {file?.created_by}
+                                  <div className="float-end">
+                                    <p className="text-muted mb-0">
+                                      {formatFileSize(file?.prd_size)}
+                                    </p>
+                                  </div>
+                                </h5>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -245,6 +262,7 @@ const FileList = ({
                     <th scope="col">{t("name")}</th>
                     <th scope="col">{t("date_modified")}</th>
                     <th scope="col">{t("size")}</th>
+                    <th scope="col">{t("Uploaded By")}</th>
                     <th scope="col">{t("actions")}</th>
                   </tr>
                 </thead>
@@ -298,6 +316,15 @@ const FileList = ({
                           }}
                         >
                           {formatFileSize(file?.prd_size)}
+                        </td>
+                        <td
+                          style={{
+                            height: "30px",
+                            verticalAlign: "middle",
+                            padding: "0.5rem",
+                          }}
+                        >
+                          {file?.created_by}
                         </td>
                         <td
                           style={{

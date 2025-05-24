@@ -9,8 +9,10 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import Breadcrumbs from "../../components/Common/Breadcrumb";
+import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import DeleteModal from "../../components/Common/DeleteModal";
+import { useQuery } from "@tanstack/react-query";
+import { post } from "../../helpers/api_Lists";
 import {
   useFetchImplementingAreas,
   useSearchImplementingAreas,
@@ -46,6 +48,7 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns1";
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import { createMultiSelectOptions } from "../../utils/commonMethods";
+import InputField from "../../components/Common/InputField";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -59,7 +62,7 @@ const ImplementingAreaModel = (props) => {
   document.title = " ImplementingArea";
   const { passedId, isActive, totalActualBudget } = props;
   const param = {
-    project_id: passedId,
+    pia_project_id: passedId,
     request_type: "single",
     prj_total_actual_budget: totalActualBudget,
   };
@@ -73,6 +76,10 @@ const ImplementingAreaModel = (props) => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
+  const [addressMaps, setAddressMaps] = useState({
+    zones: {},
+    woredas: {},
+  });
 
   const { data, isLoading, isFetching, error, isError, refetch } =
     useFetchImplementingAreas(param, isActive);
@@ -145,6 +152,22 @@ const ImplementingAreaModel = (props) => {
   };
   // END CRUD operations
 
+  const calculateCurrentTotal = (
+    currentData,
+    editingId = null,
+    newAmount = 0
+  ) => {
+    if (!currentData || !currentData.data) return 0;
+
+    return currentData.data.reduce((total, item) => {
+      // If editing, exclude the item being edited from the total
+      if (editingId && item.pia_id === editingId) {
+        return total + Number(newAmount || 0);
+      }
+      return total + Number(item.pia_budget_amount || 0);
+    }, 0);
+  };
+
   // Form validation
   const validation = useFormik({
     enableReinitialize: true,
@@ -171,16 +194,41 @@ const ImplementingAreaModel = (props) => {
       pia_zone_id_id: Yup.string().required(t("pia_zone_id_id")),
       pia_woreda_id: Yup.string().required(t("pia_woreda_id")),
       pia_sector_id: Yup.string().required(t("pia_sector_id")),
-      pia_budget_amount: Yup.string().required(t("pia_budget_amount")),
       pia_site: Yup.string().required(t("pia_site")),
       pia_geo_location: Yup.string().required(t("pia_geo_location")),
+
+      pia_budget_amount: Yup.number()
+        .required(t("pia_budget_amount"))
+        .positive("Amount must be positive")
+        .test(
+          "total-budget",
+          "Amount exceeds remaining project budget",
+          function (value) {
+            if (!value || isNaN(value)) return true;
+
+            const currentData = showSearchResult ? searchResults : data;
+            const editingId = isEdit ? implementingArea?.pia_id : null;
+
+            // Calculate total without the current edited item
+            const currentTotalWithoutThis =
+              currentData?.data?.reduce((total, item) => {
+                if (editingId && item.pia_id === editingId) return total;
+                return total + Number(item.pia_budget_amount || 0);
+              }, 0) || 0;
+
+            // Calculate new total if this amount is added/updated
+            const newTotal = currentTotalWithoutThis + Number(value);
+
+            return newTotal <= totalActualBudget;
+          }
+        ),
     }),
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (isEdit) {
         const updateImplementingArea = {
-          pia_id: implementingArea.pia_id,
+          pia_id: implementingArea?.pia_id,
           pia_project_id: passedId,
           pia_region_id: values.pia_region_id,
           pia_zone_id_id: values.pia_zone_id_id,
@@ -275,6 +323,48 @@ const ImplementingAreaModel = (props) => {
     setShowSearchResult(true);
   };
 
+  // 2. Fetch all zones and woredas when component mounts
+  const { data: allZones = [] } = useQuery({
+    queryKey: ["allZones"],
+    queryFn: async () => {
+      const response = await post("addressbyparent?parent_id=1"); // Oromia's ID
+      return response?.data || [];
+    },
+  });
+
+  // 3. Fetch all woredas when zones are loaded
+  const { data: allWoredas = [] } = useQuery({
+    queryKey: ["allWoredas"],
+    queryFn: async () => {
+      if (!allZones.length) return [];
+
+      const woredaPromises = allZones.map((zone) =>
+        post(`addressbyparent?parent_id=${zone.id}`)
+      );
+
+      const woredaResponses = await Promise.all(woredaPromises);
+      return woredaResponses.flatMap((res) => res?.data || []);
+    },
+    enabled: !!allZones.length,
+  });
+
+  // 4. Update address maps when data loads
+  useEffect(() => {
+    const newMaps = { zones: {}, woredas: {} };
+
+    // Build zones map
+    allZones.forEach((zone) => {
+      newMaps.zones[zone.id] = zone.name;
+    });
+
+    // Build woredas map
+    allWoredas.forEach((woreda) => {
+      newMaps.woredas[woreda.id] = woreda.name;
+    });
+
+    setAddressMaps(newMaps);
+  }, [allZones, allWoredas]);
+
   const columns = useMemo(() => {
     const baseColumns = [
       {
@@ -301,7 +391,10 @@ const ImplementingAreaModel = (props) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pia_zone_id_id, 30) || "-"}
+              {truncateText(
+                addressMaps.zones[cellProps.row.original.pia_zone_id_id],
+                30
+              ) || `Zone ID: ${cellProps.row.original.pia_zone_id_id}`}
             </span>
           );
         },
@@ -312,9 +405,13 @@ const ImplementingAreaModel = (props) => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
+          const woredaId = cellProps.row.original.pia_woreda_id;
           return (
             <span>
-              {truncateText(cellProps.row.original.pia_woreda_id, 30) || "-"}
+              {truncateText(
+                addressMaps.woredas[woredaId] || `Woreda ID: ${woredaId}`,
+                30
+              )}{" "}
             </span>
           );
         },
@@ -336,15 +433,17 @@ const ImplementingAreaModel = (props) => {
         },
       },
       {
-        header: t("budget_amount"),
+        header: t("pia_budget_amount"),
         accessorKey: "pia_budget_amount",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.pia_budget_amount, 30) ||
-                "-"}
+              {truncateText(
+                cellProps.row.original.pia_budget_amount.toLocaleString(),
+                30
+              ) || "-"}
             </span>
           );
         },
@@ -363,7 +462,7 @@ const ImplementingAreaModel = (props) => {
         },
       },
       {
-        header: t("geo_location"),
+        header: t("pia_geo_location"),
         accessorKey: "pia_geo_location",
         enableColumnFilter: false,
         enableSorting: true,
@@ -517,15 +616,53 @@ const ImplementingAreaModel = (props) => {
             }}
           >
             <Row>
+              <Col className="col-12 mb-3">
+                <Card>
+                  <CardBody>
+                    <div className="d-flex justify-content-between">
+                      <div>
+                        <strong>{t("Total_Project_Budget")} : </strong>{" "}
+                        {totalActualBudget
+                          ? totalActualBudget.toLocaleString()
+                          : "0"}
+                      </div>
+                      <div>
+                        <strong>{t("Allocated")} : </strong>{" "}
+                        {calculateCurrentTotal(data)
+                          ? calculateCurrentTotal(data).toLocaleString()
+                          : "0"}
+                      </div>
+                      <div
+                        className={
+                          calculateCurrentTotal(data) > (totalActualBudget || 0)
+                            ? "text-danger"
+                            : "text-success"
+                        }
+                      >
+                        <strong>{t("Remaining")} : </strong>{" "}
+                        {(
+                          (totalActualBudget || 0) -
+                          (calculateCurrentTotal(data) || 0)
+                        ).toLocaleString()}
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+            <Row>
               <Col xl={12} className="mb-3">
                 <CascadingDropdowns
                   validation={validation}
                   dropdown1name="pia_region_id"
                   dropdown2name="pia_zone_id_id"
                   dropdown3name="pia_woreda_id"
+                  required={true}
+                  layout="horizontal"
+                  colSizes={{ md: 6, sm: 12, lg: 4 }}
                 />
               </Col>
-              <Col xl={12} className="mb-3">
+              <Col xl={4} className="mb-3">
                 <Label>
                   {t("pia_sector_id")} <span className="text-danger">*</span>
                 </Label>
@@ -553,103 +690,50 @@ const ImplementingAreaModel = (props) => {
                     </FormFeedback>
                   )}
               </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>{t("pia_budget_amount")}</Label>
-                <span className="text-danger">*</span>
-                <Input
-                  name="pia_budget_amount"
-                  type="text"
-                  placeholder={t("pia_budget_amount")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.pia_budget_amount || ""}
-                  invalid={
-                    validation.touched.pia_budget_amount &&
-                    validation.errors.pia_budget_amount
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
+              <Col className="col-md-4 mb-3">
+                <FormattedAmountField
+                  validation={validation}
+                  fieldId="pia_budget_amount"
+                  label={t("pia_budget_amount")}
+                  isRequired={true}
+                  max={totalActualBudget}
                 />
-                {validation.touched.pia_budget_amount &&
-                validation.errors.pia_budget_amount ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.pia_budget_amount}
-                  </FormFeedback>
-                ) : null}
+
+                <small className="text-muted">
+                  Available budget:{" "}
+                  {(
+                    (totalActualBudget || 0) -
+                    (calculateCurrentTotal(
+                      data,
+                      isEdit ? implementingArea?.pia_id : null
+                    ) || 0)
+                  ).toLocaleString()}
+                </small>
               </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>{t("pia_site")}</Label>
-                <span className="text-danger">*</span>
-                <Input
-                  name="pia_site"
-                  type="text"
-                  placeholder={t("pia_site")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.pia_site || ""}
-                  invalid={
-                    validation.touched.pia_site && validation.errors.pia_site
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
-                />
-                {validation.touched.pia_site && validation.errors.pia_site ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.pia_site}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>{t("pia_geo_location")}</Label>
-                <span className="text-danger">*</span>
-                <Input
-                  name="pia_geo_location"
-                  type="text"
-                  placeholder={t("pia_geo_location")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.pia_geo_location || ""}
-                  invalid={
-                    validation.touched.pia_geo_location &&
-                    validation.errors.pia_geo_location
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
-                />
-                {validation.touched.pia_geo_location &&
-                validation.errors.pia_geo_location ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.pia_geo_location}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>{t("pia_description")}</Label>
-                <Input
-                  name="pia_description"
-                  type="text"
-                  placeholder={t("pia_description")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.pia_description || ""}
-                  invalid={
-                    validation.touched.pia_description &&
-                    validation.errors.pia_description
-                      ? true
-                      : false
-                  }
-                  maxLength={20}
-                />
-                {validation.touched.pia_description &&
-                validation.errors.pia_description ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.pia_description}
-                  </FormFeedback>
-                ) : null}
-              </Col>
+
+              <InputField
+                validation={validation}
+                fieldId={"pia_site"}
+                isRequired={true}
+                className="col-md-4 mb-3"
+                maxLength={400}
+              />
+
+              <InputField
+                validation={validation}
+                fieldId={"pia_geo_location"}
+                isRequired={true}
+                className="col-md-4 mb-3"
+                maxLength={400}
+              />
+              <InputField
+                type="textarea"
+                validation={validation}
+                fieldId={"pia_description"}
+                isRequired={true}
+                className="col-md-8 mb-3"
+                maxLength={1000}
+              />
             </Row>
             <Row>
               <Col>

@@ -1,11 +1,7 @@
 import React, { useEffect, lazy, useMemo, useState, useRef } from "react";
-import Spinners from "../../components/Common/Spinner";
 const AgGridContainer = lazy(() =>
   import("../../components/Common/AgGridContainer")
 );
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { useSearchProjectDocuments } from "../../queries/projectdocument_query";
 import { useTranslation } from "react-i18next";
@@ -101,12 +97,12 @@ const ProjectDocumentList = () => {
         filter: false,
         width: 70
       },
-            {
+      {
         headerName: t("prj_name"),
         field: "prj_name",
         sortable: true,
         filter: true,
-        flex: 4,
+        // flex: 4,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_name, 30) || "-";
         },
@@ -116,7 +112,7 @@ const ProjectDocumentList = () => {
         field: "prj_code",
         sortable: true,
         filter: true,
-        width: 100,
+        minWidth: 130,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_code, 30) || "-";
         },
@@ -138,6 +134,15 @@ const ProjectDocumentList = () => {
         filter: true,
         cellRenderer: (params) => {
           return formatFileSize(params.data.prd_size);
+        },
+      },
+      {
+        headerName: t("Uploaded By"),
+        field: "created_by",
+        sortable: true,
+        filter: true,
+        cellRenderer: (params) => {
+          return params.data?.created_by
         },
       },
       {
