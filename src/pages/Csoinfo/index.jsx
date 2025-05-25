@@ -39,7 +39,7 @@ import {
 } from "reactstrap";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import { phoneValidation, alphanumericValidation, websiteUrlValidation } from "../../utils/Validation/validation";
+import { numberValidation,phoneValidation, alphanumericValidation, websiteUrlValidation } from "../../utils/Validation/validation";
 import FileModal from "./FileModal";
 import Conversation from "../Conversationinformation/ConvInfoModal";
 import { PAGE_ID } from "../../constants/constantFile";
@@ -51,7 +51,13 @@ const truncateText = (text, maxLength) => {
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-
+const csoTypes = [
+  { value: 1, label: "Local" },
+  { value: 2, label: "International" },
+];
+const csoTypesMap = Object.fromEntries(
+  csoTypes.map(({ value, label }) => [value, label])
+);
 const CsoInfoModel = () => {
   document.title = " CSO Lists";
 
@@ -127,6 +133,8 @@ const CsoInfoModel = () => {
       cso_email: (csoInfo && csoInfo.cso_email) || "",
       cso_website: (csoInfo && csoInfo.cso_website) || "",
       cso_description: (csoInfo && csoInfo.cso_description) || "",
+      cso_contact_person: (csoInfo && csoInfo.cso_contact_person) || "",
+      cso_type: (csoInfo && csoInfo.cso_type) || "",
       is_deletable: (csoInfo && csoInfo.is_deletable) || 1,
       is_editable: (csoInfo && csoInfo.is_editable) || 1
     },
@@ -153,6 +161,7 @@ const CsoInfoModel = () => {
         }),
       cso_website: websiteUrlValidation(false),
       cso_description: alphanumericValidation(3, 450, false),
+      cso_type:numberValidation(1, 2, true),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -166,6 +175,8 @@ const CsoInfoModel = () => {
           cso_phone: values.cso_phone,
           cso_email: values.cso_email,
           cso_website: values.cso_website,
+          cso_contact_person: values.cso_contact_person,
+          cso_type: values.cso_type,          
           cso_description: values.cso_description,
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -180,6 +191,8 @@ const CsoInfoModel = () => {
           cso_phone: `+251${values.cso_phone}`,
           cso_email: values.cso_email,
           cso_website: values.cso_website,
+          cso_contact_person: values.cso_contact_person,
+          cso_type: values.cso_type,
           cso_description: values.cso_description,
         };
         // save new CsoInfo
@@ -220,6 +233,8 @@ const CsoInfoModel = () => {
       cso_email: csoInfo.cso_email,
       cso_website: csoInfo.cso_website,
       cso_description: csoInfo.cso_description,
+      cso_contact_person: csoInfo.cso_contact_person,
+      cso_type: csoInfo.cso_type,
       is_deletable: csoInfo.is_deletable,
       is_editable: csoInfo.is_editable,
     });
@@ -272,6 +287,23 @@ const CsoInfoModel = () => {
     };
 
     const baseColumnDefs = [
+       {
+        headerName: t("S.N"),
+        field: "sn",
+        valueGetter: (params) => params.node.rowIndex + 1,
+        sortable: false,
+        filter: false,
+        width: 60,
+      },
+      {
+        headerName: t("cso_type"),
+        field: 'cso_type',
+        filter: false,
+        sortable: true,
+        minWidth: 100,
+        flex: 1,
+        cellRenderer: ({ data }) => csoTypesMap[data.cso_type],
+      },  
       {
         headerName: t("Name"),
         field: 'cso_name',
@@ -280,6 +312,15 @@ const CsoInfoModel = () => {
         minWidth: 200,
         flex: 1,
         cellRenderer: ({ data }) => truncateText(data.cso_name, 30) || '-',
+      },
+      {
+        headerName: t("cso_contact_person"),
+        field: 'cso_contact_person',
+        filter: false,
+        sortable: true,
+        minWidth: 150,
+        flex: 1,
+        cellRenderer: ({ data }) => truncateText(data.cso_contact_person, 30) || '-',
       },
       {
         headerName: t("Code"),
@@ -308,13 +349,6 @@ const CsoInfoModel = () => {
         filter: false,
         sortable: true,
         cellRenderer: ({ data }) => truncateText(data.cso_email, 30) || '-',
-      },
-      {
-        headerName: t("Website"),
-        field: 'cso_website',
-        filter: false,
-        sortable: true,
-        cellRenderer: ({ data }) => truncateText(data.cso_website, 30) || '-',
       },
       {
         headerName: t("Status"),
@@ -476,6 +510,38 @@ const CsoInfoModel = () => {
                 }}
               >
                 <Row>
+                <Col className='col-md-6 mb-3'>
+                    <Label>{t("cso_type")}</Label>
+                    <span className="text-danger ms-1">*</span>
+                    <Input
+                      name="cso_type"
+                      type="select"
+                      placeholder={t("cso_type")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.cso_type || ""}
+                      invalid={
+                        validation.touched.cso_type &&
+                        validation.errors.cso_type
+                          ? true
+                          : false
+                      }
+                    >
+                      <option value="">{t("cso_type")}</option>
+                      {csoTypes.map((type) => (
+                        <option key={type.value} value={type.value}>
+                          {t(type.label)}
+                        </option>
+                      ))}
+                    </Input>
+                    {validation.touched.cso_type &&
+                    validation.errors.cso_type ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.cso_type}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+
                   <Col className='col-md-6 mb-3'>
                     <Label>{t('cso_name')}<span className="text-danger">*</span></Label>
                     <Input
@@ -500,7 +566,31 @@ const CsoInfoModel = () => {
                     ) : null}
                   </Col>
                   <Col className='col-md-6 mb-3'>
-                    <Label>{t('cso_code')}<span className="text-danger">*</span></Label>
+                    <Label>{t('cso_contact_person')}</Label>
+                    <Input
+                      name='cso_contact_person'
+                      type='text'
+                      placeholder={t('cso_contact_person')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.cso_contact_person || ''}
+                      invalid={
+                        validation.touched.cso_contact_person &&
+                          validation.errors.cso_contact_person
+                          ? true
+                          : false
+                      }
+                    />
+                    {validation.touched.cso_contact_person &&
+                      validation.errors.cso_contact_person ? (
+                      <FormFeedback type='invalid'>
+                        {validation.errors.cso_contact_person}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  
+                  <Col className='col-md-6 mb-3'>
+                    <Label>{t('cso_code')}</Label>
                     <Input
                       name='cso_code'
                       type='text'
@@ -604,7 +694,7 @@ const CsoInfoModel = () => {
                     ) : null}
                   </Col>
                   <Col className='col-md-6 mb-3'>
-                    <Label>{t('cso_website')}<span className="text-danger">*</span></Label>
+                    <Label>{t('cso_website')}</Label>
                     <Input
                       name='cso_website'
                       type='text'
