@@ -1688,5 +1688,7 @@
 	"prj_consortium_members": "Consortium Members",
 	"prj_admin_cost": "Admin Cost",
 	"prj_program_cost": "Program Cost",
-	"activity_cso_list": "CSO Activity List"
+	"activity_cso_list": "CSO Activity List",
+	"cso_contact_person":"Contact Person",
+	"cso_type":"CSO Type"
 }

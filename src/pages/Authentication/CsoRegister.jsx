@@ -25,6 +25,7 @@ import {
   BUREAU_NAME,
 } from "../../constants/constantFile";
 import {
+  numberValidation,
   alphanumericValidation,
   phoneValidation,
   websiteUrlValidation,
@@ -41,7 +42,10 @@ const registerUser = async (data) => {
   return await post(`/user/signup?${params}`);
 };
 
-
+const csoTypes = [
+  { value: 1, label: "Local" },
+  { value: 2, label: "International" },
+];
 const CsoRegister = () => {
   document.title = "Register";
   const [showPassword, setShowPassword] = useState(false);
@@ -82,15 +86,19 @@ const CsoRegister = () => {
       cso_website: csoInfo?.cso_website || "",
       usr_password: "",
       usr_confirm_password: "",
+      cso_type: csoInfo?.cso_type || "",
+      cso_contact_person: csoInfo?.cso_contact_person || ""
     },
     validationSchema: Yup.object({
+      cso_contact_person: alphanumericValidation(3, 150, true),
       cso_name: alphanumericValidation(3, 150, true),
       cso_address: alphanumericValidation(3, 150, true),
       usr_phone: phoneValidation(true),
+      cso_type:numberValidation(1, 2, true),
       usr_email: Yup.string()
         .required(t("usr_email"))
         .email(t("Invalid email format")),
-      cso_website: websiteUrlValidation(true),
+      cso_website: websiteUrlValidation(false),
       usr_password: Yup.string()
         .required(t("usr_password"))
         .min(8, t("Password must be at least 8 characters"))
@@ -121,6 +129,8 @@ const CsoRegister = () => {
         usr_email: values.usr_email,
         cso_website: values.cso_website,
         usr_password: values.usr_password,
+        cso_type: values.cso_type,
+        cso_contact_person: values.cso_contact_person
       };
       handleAddCsoInfo(newCsoInfo);
     },
@@ -148,6 +158,38 @@ const CsoRegister = () => {
               <CardBody className="pt-0 mt-2">
                 <Form onSubmit={validation.handleSubmit}>
                   <Row>
+                   <Col md={6} sm={12} className='mb-3'>
+                    <Label>{t("cso_type")}</Label>
+                    <span className="text-danger ms-1">*</span>
+                    <Input
+                      name="cso_type"
+                      type="select"
+                      placeholder={t("cso_type")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.cso_type || ""}
+                      invalid={
+                        validation.touched.cso_type &&
+                        validation.errors.cso_type
+                          ? true
+                          : false
+                      }
+                    >
+                      <option value="">{t("cso_type")}</option>
+                      {csoTypes.map((type) => (
+                        <option key={type.value} value={type.value}>
+                          {t(type.label)}
+                        </option>
+                      ))}
+                    </Input>
+                    {validation.touched.cso_type &&
+                    validation.errors.cso_type ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.cso_type}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+
                     <Col md={6} sm={12} className='mb-3'>
                       <Label>{t('cso_name')}</Label>
                       <span className="text-danger">*</span>
@@ -172,6 +214,30 @@ const CsoRegister = () => {
                         </FormFeedback>
                       ) : null}
                     </Col>
+                    <Col md={6} sm={12} className='mb-3'>
+                    <Label>{t('cso_contact_person')}</Label>
+                    <span className="text-danger">*</span>
+                    <Input
+                      name='cso_contact_person'
+                      type='text'
+                      placeholder={t('cso_contact_person')}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.cso_contact_person || ''}
+                      invalid={
+                        validation.touched.cso_contact_person &&
+                          validation.errors.cso_contact_person
+                          ? true
+                          : false
+                      }
+                    />
+                    {validation.touched.cso_contact_person &&
+                      validation.errors.cso_contact_person ? (
+                      <FormFeedback type='invalid'>
+                        {validation.errors.cso_contact_person}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
                     <Col md={6} sm={12} className='col-md-6 mb-3'>
                       <Label>{t('usr_email')}</Label>
                       <span className="text-danger">*</span>
@@ -261,7 +327,6 @@ const CsoRegister = () => {
 
                   <Col className='col-md-12 mb-3'>
                     <Label>{t('cso_website')}</Label>
-                    <span className="text-danger">*</span>
                     <Input
                       name='cso_website'
                       type='text'
