@@ -113,8 +113,8 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
         ),
       },
       {
-        header: t("prj_total_estimate_budget"),
-        accessorKey: "prj_total_estimate_budget",
+        header: t("prj_total_actual_budget"),
+        accessorKey: "prj_total_actual_budget",
         enableSorting: true,
         enableColumnFilter: false,
         cell: ({ row, getValue }) => {

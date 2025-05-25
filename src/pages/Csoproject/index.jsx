@@ -117,21 +117,51 @@ const ProjectModel = () => {
     prj_name_en: alphanumericValidation(3, 200, true),
     prj_code: alphanumericValidation(3, 20, false),
     prj_project_category_id: numberValidation(1, 200, true),
-    prj_total_actual_budget: formattedAmountValidation(1000, 1000000000000, true),
+    prj_total_actual_budget: formattedAmountValidation(1000, 1000000000000, true).test(
+      "admin-program-budget-check-budget",
+      t("Sum of admin cost and program cost should not exceed total actual budget"),
+      function (budget) {
+        const { prj_admin_cost, prj_program_cost } = this.parent;
+        const adminCost = prj_admin_cost || 0;
+        const programCost = prj_program_cost || 0;
+        const total = adminCost + programCost;
+
+        return total <= (budget || 0);
+      }
+    ),
     prj_total_estimate_budget: formattedAmountValidation(1000, 1000000000000, true),
     prj_start_date_plan_gc: Yup.string().required(t("prj_start_date_plan_gc")),
     prj_end_date_plan_gc: Yup.string().required(t("prj_end_date_plan_gc")),
-    prj_location_region_id: Yup.string().required(
-      t("prj_location_region_id")
-    ),
+    prj_location_region_id: Yup.string().required(t("prj_location_region_id")),
     prj_location_zone_id: Yup.string().required(t("prj_location_zone_id")),
-    prj_location_woreda_id: Yup.string().required(
-      t("prj_location_woreda_id")
-    ),
+    prj_location_woreda_id: Yup.string().required(t("prj_location_woreda_id")),
     prj_urban_ben_number: numberValidation(0, 1000000000000, false),
     prj_rural_ben_number: numberValidation(0, 1000000000000, false),
-    prj_admin_cost: numberValidation(0, 1000000000000, true),
-    prj_program_cost: numberValidation(0, 1000000000000, true),
+    prj_admin_cost: numberValidation(0, 1000000000000, true).test(
+      "admin-program-budget-check-admin",
+      t("Sum of admin cost and program cost should not exceed total actual budget"),
+      function (adminCost) {
+        const { prj_program_cost, prj_total_actual_budget } = this.parent;
+        const programCost = prj_program_cost || 0;
+        const total = (adminCost || 0) + programCost;
+        const budget = prj_total_actual_budget || 0;
+
+        return total <= budget;
+      }
+    ),
+
+    prj_program_cost: numberValidation(0, 1000000000000, true).test(
+      "admin-program-budget-check-program",
+      t("Sum of admin cost and program cost should not exceed total actual budget"),
+      function (programCost) {
+        const { prj_admin_cost, prj_total_actual_budget } = this.parent;
+        const adminCost = prj_admin_cost || 0;
+        const total = adminCost + (programCost || 0);
+        const budget = prj_total_actual_budget || 0;
+
+        return total <= budget;
+      }
+    ),
     prj_male_participant: numberValidation(0, 1000000000000, true),
     prj_female_participant: numberValidation(0, 1000000000000, true),
     prj_location_description: alphanumericValidation(3, 425, false),
@@ -336,8 +366,10 @@ const ProjectModel = () => {
   };
 
   const getFormType = () => {
-    const formType = (isUserType4 && isTab2) || (!isUserType4 && isTab1) ? 'project' : 'activity';
-    return formType;
+    if (userType === 4) {
+      return currentActiveTab.tab === 2 ? 'project' : 'activity';
+    }
+    return currentActiveTab.tab === 1 ? 'project' : 'activity';
   };
 
   const handleProjectClick = (arg) => {
@@ -400,7 +432,7 @@ const ProjectModel = () => {
 
   const handleProjectsClicks = () => {
     const formType = getFormType();
-    validation.resetForm()
+    validation.resetForm();
     setIsEdit(false);
     setProject("");
     formType === 'project' ? toggle() : toggleActivity();

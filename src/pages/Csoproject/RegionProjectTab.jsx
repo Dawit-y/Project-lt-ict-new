@@ -71,9 +71,10 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange, setLeft
       setPassedSteps((prevSteps) => [...prevSteps, tab]);
       if (tab >= 1 && tab <= 4) {
         setActiveTab(tab);
+        handleTabChange(tab, selectedProject?.prj_id, selectedCsoId);
       }
     }
-  }, [activeTab]);
+  }, [activeTab, selectedProject?.prj_id, selectedCsoId, handleTabChange]);
 
   const isNextDisabled = (activeTab === 1 && !selectedCsoId) ||
     (activeTab === 2 && !selectedProject?.prj_id) ||
@@ -191,8 +192,8 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange, setLeft
         ),
       },
       {
-        header: t("prj_total_estimate_budget"),
-        accessorKey: "prj_total_estimate_budget",
+        header: t("prj_total_actual_budget"),
+        accessorKey: "prj_total_actual_budget",
         enableSorting: true,
         enableColumnFilter: false,
         cell: ({ row, getValue }) => {
@@ -388,7 +389,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange, setLeft
                 <NavItem className={classnames({ current: activeTab === 1 })}>
                   <NavLink
                     className={classnames({ current: activeTab === 1 })}
-                    onClick={() => setActiveTab(1)}
+                    onClick={() => toggleTab(1)}
                     disabled={!passedSteps.includes(1)}
                   >
                     <span className="number">1.</span> CSO List
@@ -397,7 +398,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange, setLeft
                 <NavItem className={classnames({ current: activeTab === 2 })}>
                   <NavLink
                     className={classnames({ current: activeTab === 2 })}
-                    onClick={() => setActiveTab(2)}
+                    onClick={() => toggleTab(2)}
                     disabled={!passedSteps.includes(2)}
                   >
                     <span className="number">2.</span> Projects
@@ -406,7 +407,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange, setLeft
                 <NavItem className={classnames({ current: activeTab === 3 })}>
                   <NavLink
                     className={classnames({ active: activeTab === 3 })}
-                    onClick={() => setActiveTab(3)}
+                    onClick={() => toggleTab(3)}
                     disabled={!passedSteps.includes(3)}
                   >
                     <span className="number">3.</span> Activities
@@ -415,7 +416,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange, setLeft
                 <NavItem className={classnames({ current: activeTab === 4 })}>
                   <NavLink
                     className={classnames({ active: activeTab === 4 })}
-                    onClick={() => setActiveTab(4)}
+                    onClick={() => toggleTab(4)}
                     disabled={!passedSteps.includes(4)}
                   >
                     <span className="number">4.</span> Proposed Request
