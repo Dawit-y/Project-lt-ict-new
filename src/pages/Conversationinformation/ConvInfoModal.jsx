@@ -15,6 +15,7 @@ import {
   ModalBody,
   ModalHeader,
   ModalFooter,
+  UncontrolledTooltip
 } from "reactstrap";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { toast } from "react-toastify";
@@ -26,6 +27,7 @@ import {
 } from "../../queries/conversationinformation_query";
 import { useTranslation } from "react-i18next";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { FaRotate } from "react-icons/fa6";
 
 const Conversation = ({
   isOpen,
@@ -39,7 +41,7 @@ const Conversation = ({
 }) => {
   const param = { cvi_object_type_id: ownerTypeId, cvi_object_id: ownerId };
   const [conversationInformation, setConversationInformation] = useState(null);
-  const { data, isLoading, isError, error, refetch } =
+  const { data, isLoading, isFetching, isError, error, refetch } =
     useFetchConversationInformations(param, isOpen);
   const { t } = useTranslation();
 
@@ -232,10 +234,26 @@ const Conversation = ({
                       }
                       <Card>
                         <CardBody>
-                          <CardTitle>
-                            <i className="bx bx-message-dots text-muted align-middle me-1"></i>{" "}
-                            {t("conversations")}
+                          <CardTitle className="d-flex align-items-center justify-content-between">
+                            <div className="d-flex align-items-center">
+                              <span><i className="bx bx-message-dots text-muted align-middle me-1"></i></span>
+                              <span className="fw-bold fs-5">{t("conversations")}</span>
+                            </div>
+                            <Button
+                              id="refresh_btn_message"
+                              color="primary"
+                              onClick={refetch}
+                              outline
+                              className="rounded-circle p-0 d-flex align-items-center justify-content-center"
+                              style={{ width: "25px", height: "25px", fontSize: "10px" }}
+                            >
+                              {isFetching ? <Spinner color="light" size="sm" /> : <FaRotate />}
+                            </Button>
+                            <UncontrolledTooltip placement="top" target="refresh_btn_message">
+                              Refresh
+                            </UncontrolledTooltip>
                           </CardTitle>
+                          <hr />
                           {comments.length > 0 ? (
                             comments.map((comment) => (
                               <div key={comment.cvi_id} className="d-flex py-3 border-top">
