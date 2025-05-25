@@ -3,6 +3,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { authProtectedRoutes } from ".";
 import { Spinner } from "reactstrap";
 import { useFetchSideData } from "../queries/side_data_query";
+import { useSearchCsoInfos } from "../queries/csoinfo_query";
 import { useAuthUser } from "../hooks/useAuthUser";
 import { useIsRestoring } from "@tanstack/react-query";
 
@@ -41,6 +42,12 @@ const AuthMiddleware = ({ children }) => {
   const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
   const { data: sidedata = [], isLoading } = useFetchSideData(userId);
 
+  const ownerId = storedUser?.user?.usr_owner_id
+  const userType = storedUser?.user?.usr_user_type
+  const param = ownerId ? { cso_id: ownerId } : null;
+  const { data } = useSearchCsoInfos(param)
+  const csoStatus = data?.data?.length > 0 ? data.data[0].cso_status : null;
+
   const authPaths = extractAuthPaths(authProtectedRoutes);
   const allowedPaths = sidedata.length > 0 ? extractPaths(sidedata) : [];
 
@@ -73,6 +80,10 @@ const AuthMiddleware = ({ children }) => {
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} />;
+  }
+
+  if ((csoStatus === null || csoStatus === 0) && userType !== 4) {
+    return <Navigate to="/not_approved" />;
   }
 
   if (!authPaths.includes(currentPath) && !isCSOProjectPath(currentPath)) {
