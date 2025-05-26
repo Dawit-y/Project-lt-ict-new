@@ -10,7 +10,7 @@ const Logout = () => {
   useEffect(() => {
     localStorage.removeItem("authUser");
     navigate("/login");
-    queryClient.removeQueries({ queryKey: ["sideData"], exact: false });
+    queryClient.clear();
   }, []);
 
   return <></>;

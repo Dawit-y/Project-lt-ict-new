@@ -10,7 +10,8 @@ import {
   Table,
   Row,
   Col,
-  Container
+  Container,
+  Spinner
 } from "reactstrap"
 import { PAGE_ID } from "../../constants/constantFile";
 import { useFetchProjectDocuments } from "../../queries/projectdocument_query";
@@ -29,28 +30,31 @@ const FileModal = (props) => {
   const { data, isLoading, isError, error, refetch } = useFetchProjectDocuments(param, isQueryEnabled);
 
   const updateCsoInfo = useUpdateCsoInfo();
+  const [clickedButton, setClickedButton] = useState(null);
+
   const handleUpdateCsoInfo = async (data) => {
     try {
       await updateCsoInfo.mutateAsync(data);
-      toast.success(t('update_success'), {
-        autoClose: 2000,
-      });
+      toast.success(t('update_success'), { autoClose: 2000 });
     } catch (error) {
-      toast.error(t('update_failure'), {
-        autoClose: 2000,
-      });
+      toast.error(t('update_failure'), { autoClose: 2000 });
+    } finally {
+      setClickedButton(null);
+      toggle();
     }
   };
 
   const handleClick = (event) => {
-    if (event.target.name === "approve") {
-      const data = { cso_id: transaction?.cso_id, cso_status: 1 }
-      handleUpdateCsoInfo(data)
-    } else {
-      const data = { cso_id: transaction?.cso_id, cso_status: 0 }
-      handleUpdateCsoInfo(data)
-    }
-  }
+    const name = event.target.name;
+    setClickedButton(name);
+
+    const data = {
+      cso_id: transaction?.cso_id,
+      cso_status: name === "approve" ? 1 : 0
+    };
+
+    handleUpdateCsoInfo(data);
+  };
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -76,9 +80,13 @@ const FileModal = (props) => {
                 className='w-100'
                 name='approve'
                 onClick={handleClick}
-                disabled={data?.data?.length === 0}
+                disabled={data?.data?.length === 0 || updateCsoInfo.isPending}
               >
-                Approve
+                {updateCsoInfo.isPending && clickedButton === "approve" ?
+                  <>
+                    <Spinner size={"sm"} color="light" className="me-2" /> {"Approve"}
+                  </> : "Approve"
+                }
               </Button>
             </Col>
             <Col className='d-flex align-items-center justify-content-center'>
@@ -87,12 +95,17 @@ const FileModal = (props) => {
                 className='w-100'
                 name='reject'
                 onClick={handleClick}
-                disabled={data?.data?.length === 0}
+                disabled={data?.data?.length === 0 || updateCsoInfo.isPending}
               >
-                Reject
+                {updateCsoInfo.isPending && clickedButton === "reject" ?
+                  <>
+                    <Spinner size={"sm"} color="light" className="me-2" /> {"Reject"}
+                  </> : "Reject"
+                }
               </Button>
             </Col>
           </Row>
+          <hr />
           <Container>
             {isLoading ? <Spinners /> :
               <FileList

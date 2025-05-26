@@ -68,11 +68,11 @@ const CsoRegister = () => {
   const handleAddCsoInfo = async (data) => {
     try {
       await addCsoInfo.mutateAsync(data);
-      toast.success(t("add_success"), { autoClose: 2000 });
+      toast.success(t("Successfully Registerd"), { autoClose: 2000 });
       validation.resetForm();
       navigate("/login")
     } catch {
-      toast.error(t("add_failure"), { autoClose: 2000 });
+      toast.error(t("Registration Failed"), { autoClose: 2000 });
     }
   };
 

@@ -117,6 +117,11 @@ const Conversation = ({
     return formatDistanceToNow(parseISO(timestamp), { addSuffix: true });
   };
 
+  const formatUtcDate = (timestamp) => {
+    const date = new Date(timestamp).toUTCString();
+    return date.split(" ").slice(1, 4).join(" ");
+  };
+
   const comments = data?.data || [];
 
   if (isError) {
@@ -251,7 +256,7 @@ const Conversation = ({
                                   <h5 className="font-size-14 mb-1">
                                     {comment?.created_by}{" "}
                                     <small className="text-muted float-end">
-                                      {formatTimeAgo(comment.cvi_create_time)}
+                                      {formatUtcDate(comment.cvi_create_time)}
                                     </small>
                                   </h5>
                                   <h6 className="my-2"><strong>Subject: </strong> {comment?.cvi_title}</h6>

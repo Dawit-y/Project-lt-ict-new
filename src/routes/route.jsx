@@ -40,7 +40,7 @@ const AuthMiddleware = ({ children }) => {
   const currentPath = location.pathname;
 
   const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
-  const { data: sidedata = [], isLoading } = useFetchSideData(userId);
+  const { data: sidedata = [], isLoading: sideDataLoading } = useFetchSideData(userId);
 
   const ownerId = storedUser?.user?.usr_owner_id
   const userType = storedUser?.user?.usr_user_type
@@ -55,7 +55,7 @@ const AuthMiddleware = ({ children }) => {
 
     return { param, isValidParam };
   }, [ownerId]);
-  const { data } = useSearchCsoInfos(param, isValidParam)
+  const { data, isLoading: csoInfoLoading } = useSearchCsoInfos(param, isValidParam)
   const csoStatus = data?.data?.length > 0 ? data.data[0].cso_status : null;
 
   const authPaths = extractAuthPaths(authProtectedRoutes);
@@ -72,7 +72,7 @@ const AuthMiddleware = ({ children }) => {
 
   const isAuthenticated = localStorage.getItem("authUser");
 
-  if (isRestoring || isLoading || authLoading) {
+  if (isRestoring || sideDataLoading || authLoading || csoInfoLoading) {
     return (
       <div
         style={{
@@ -96,11 +96,13 @@ const AuthMiddleware = ({ children }) => {
     return <Navigate to="/not_approved" />;
   }
 
-  if (!authPaths.includes(currentPath) && !isCSOProjectPath(currentPath)) {
+  const isAuthorizedPath = authPaths.includes(currentPath) || isCSOProjectPath(currentPath);
+  if (!isAuthorizedPath) {
     return <Navigate to="/not_found" />;
   }
 
-  if (!allowedPaths.includes(currentPath) && !isCSOProjectPath(currentPath)) {
+  const isAllowedPath = allowedPaths.includes(currentPath) || isCSOProjectPath(currentPath);
+  if (!isAllowedPath) {
     return <Navigate to="/unauthorized" />;
   }
 

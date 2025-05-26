@@ -316,7 +316,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
         },
       },
       {
-        headerName: t("bdr_request_status"),
+        header: "Request Status",
         accessorKey: "bdr_request_status",
         enableSorting: false,
         enableColumnFilter: false,
@@ -508,7 +508,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
           columns={columns}
           data={data?.data || []}
           isGlobalFilter={true}
-          isAddButton={data?.previledge?.is_role_can_add == 1}
+          isAddButton={true}
           isCustomPageSize={true}
           handleUserClick={handleBudgetRequestClicks}
           isPagination={true}

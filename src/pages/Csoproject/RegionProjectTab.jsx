@@ -220,7 +220,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange, setLeft
           if (row.original.footer) return "";
           const { prj_id } = row.original || {};
           return (
-            <Link to={`/projectdetail_cso/${prj_id}#location`} target="_blank">
+            <Link to={`/projectdetail_cso/${prj_id}`} target="_blank">
               <Button type="button" className="btn-sm mb-1 default" outline>
                 <i className="fa fa-eye"></i>
               </Button>
@@ -315,7 +315,7 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange, setLeft
           if (row.original.footer) return "";
           const { prj_id } = row.original || {};
           return (
-            <Link to={`/projectdetail_cso/${prj_id}#proposal_request`} target="_blank">
+            <Link to={`/projectdetail_cso/${prj_id}`} target="_blank">
               <Button type="button" className="btn-sm mb-1 default" outline>
                 <i className="fa fa-eye"></i>
               </Button>

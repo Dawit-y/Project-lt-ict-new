@@ -84,7 +84,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
         ),
       },
       {
-        header: "Program Name",
+        header: "Project Title",
         accessorKey: "prj_name",
         enableSorting: true,
         enableColumnFilter: false,
@@ -141,7 +141,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
           if (row.original.footer) return "";
           const { prj_id } = row.original || {};
           return (
-            <Link to={`/projectdetail_cso/${prj_id}#location`} target="_blank">
+            <Link to={`/projectdetail_cso/${prj_id}`} target="_blank">
               <Button type="button" className="btn-sm mb-1 default" outline>
                 <i className="fa fa-eye"></i>
               </Button>
@@ -236,7 +236,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
           if (row.original.footer) return "";
           const { prj_id } = row.original || {};
           return (
-            <Link to={`/projectdetail_cso/${prj_id}#proposal_request`} target="_blank">
+            <Link to={`/projectdetail_cso/${prj_id}`} target="_blank">
               <Button type="button" className="btn-sm mb-1 default" outline>
                 <i className="fa fa-eye"></i>
               </Button>
@@ -347,7 +347,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
                     <TableContainer
                       columns={programColumns}
                       data={program?.data || []}
-                      isAddButton={program?.previledge?.is_role_can_add === 1}
+                      isAddButton={true}
                       isCustomPageSize
                       handleUserClick={handleAddClick}
                       isPagination
@@ -374,7 +374,7 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
                       columns={activitiesColumn}
                       data={data?.data || []}
                       isLoading={isLoading}
-                      isAddButton={data?.previledge?.is_role_can_add === 1}
+                      isAddButton={true}
                       isCustomPageSize
                       handleUserClick={handleAddClick}
                       isPagination

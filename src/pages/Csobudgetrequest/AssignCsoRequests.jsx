@@ -53,6 +53,7 @@ const AssignCsoRequests = ({ request, isActive, budgetYearMap }) => {
       prj_assigned_sectors: project?.data?.prj_assigned_sectors
         ? project.data.prj_assigned_sectors.replace(/[{}]/g, "").split(",").map(Number)
         : [],
+      object_type_id: 1,
     },
     validationSchema,
     enableReinitialize: true,

@@ -119,7 +119,7 @@ const ProjectModel = () => {
     prj_project_category_id: numberValidation(1, 200, true),
     prj_total_actual_budget: formattedAmountValidation(1000, 1000000000000, true).test(
       "admin-program-budget-check-budget",
-      t("Sum of admin cost and program cost should not exceed total actual budget"),
+      t("Sum of admin cost and program cost should be equal with total actual budget"),
       function (budget) {
         const { prj_admin_cost, prj_program_cost } = this.parent;
         const adminCost = prj_admin_cost || 0;
@@ -139,27 +139,27 @@ const ProjectModel = () => {
     prj_rural_ben_number: numberValidation(0, 1000000000000, false),
     prj_admin_cost: numberValidation(0, 1000000000000, true).test(
       "admin-program-budget-check-admin",
-      t("Sum of admin cost and program cost should not exceed total actual budget"),
+      t("Sum of admin cost and program cost should be equal with total actual budget"),
       function (adminCost) {
         const { prj_program_cost, prj_total_actual_budget } = this.parent;
         const programCost = prj_program_cost || 0;
         const total = (adminCost || 0) + programCost;
         const budget = prj_total_actual_budget || 0;
 
-        return total <= budget;
+        return total == budget;
       }
     ),
 
     prj_program_cost: numberValidation(0, 1000000000000, true).test(
       "admin-program-budget-check-program",
-      t("Sum of admin cost and program cost should not exceed total actual budget"),
+      t("Sum of admin cost and program cost should be equal with total actual budget"),
       function (programCost) {
         const { prj_admin_cost, prj_total_actual_budget } = this.parent;
         const adminCost = prj_admin_cost || 0;
         const total = adminCost + (programCost || 0);
         const budget = prj_total_actual_budget || 0;
 
-        return total <= budget;
+        return total == budget;
       }
     ),
     prj_male_participant: numberValidation(0, 1000000000000, true),
@@ -317,7 +317,7 @@ const ProjectModel = () => {
           prj_deleted: values.prj_deleted,
           prj_remark: values.prj_remark,
           prj_created_date: values.prj_created_date,
-          prj_owner_id: userType === 4 ? currentActiveTab.selectedCsoId : csoId,
+          prj_owner_id: userType === 2 ? currentActiveTab.selectedCsoId : csoId,
           prj_urban_ben_number: values.prj_urban_ben_number,
           prj_rural_ben_number: values.prj_rural_ben_number,
           prj_admin_cost: values.prj_admin_cost,

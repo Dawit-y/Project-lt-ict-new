@@ -39,7 +39,7 @@ import {
 } from "reactstrap";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import { numberValidation,phoneValidation, alphanumericValidation, websiteUrlValidation } from "../../utils/Validation/validation";
+import { numberValidation, phoneValidation, alphanumericValidation, websiteUrlValidation } from "../../utils/Validation/validation";
 import FileModal from "./FileModal";
 import Conversation from "../Conversationinformation/ConvInfoModal";
 import { PAGE_ID } from "../../constants/constantFile";
@@ -140,7 +140,7 @@ const CsoInfoModel = () => {
     },
     validationSchema: Yup.object({
       cso_name: alphanumericValidation(3, 150, true),
-      cso_code: alphanumericValidation(3, 20, true).test(
+      cso_code: alphanumericValidation(2, 20, true).test(
         "unique-cso_code",
         t("Already exists"),
         (value) => {
@@ -161,7 +161,7 @@ const CsoInfoModel = () => {
         }),
       cso_website: websiteUrlValidation(false),
       cso_description: alphanumericValidation(3, 450, false),
-      cso_type:numberValidation(1, 2, true),
+      cso_type: numberValidation(1, 2, true),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -176,7 +176,7 @@ const CsoInfoModel = () => {
           cso_email: values.cso_email,
           cso_website: values.cso_website,
           cso_contact_person: values.cso_contact_person,
-          cso_type: values.cso_type,          
+          cso_type: values.cso_type,
           cso_description: values.cso_description,
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -287,7 +287,7 @@ const CsoInfoModel = () => {
     };
 
     const baseColumnDefs = [
-       {
+      {
         headerName: t("S.N"),
         field: "sn",
         valueGetter: (params) => params.node.rowIndex + 1,
@@ -303,7 +303,7 @@ const CsoInfoModel = () => {
         minWidth: 100,
         flex: 1,
         cellRenderer: ({ data }) => csoTypesMap[data.cso_type],
-      },  
+      },
       {
         headerName: t("Name"),
         field: 'cso_name',
@@ -510,7 +510,7 @@ const CsoInfoModel = () => {
                 }}
               >
                 <Row>
-                <Col className='col-md-6 mb-3'>
+                  <Col className='col-md-6 mb-3'>
                     <Label>{t("cso_type")}</Label>
                     <span className="text-danger ms-1">*</span>
                     <Input
@@ -522,7 +522,7 @@ const CsoInfoModel = () => {
                       value={validation.values.cso_type || ""}
                       invalid={
                         validation.touched.cso_type &&
-                        validation.errors.cso_type
+                          validation.errors.cso_type
                           ? true
                           : false
                       }
@@ -535,7 +535,7 @@ const CsoInfoModel = () => {
                       ))}
                     </Input>
                     {validation.touched.cso_type &&
-                    validation.errors.cso_type ? (
+                      validation.errors.cso_type ? (
                       <FormFeedback type="invalid">
                         {validation.errors.cso_type}
                       </FormFeedback>
@@ -588,7 +588,7 @@ const CsoInfoModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  
+
                   <Col className='col-md-6 mb-3'>
                     <Label>{t('cso_code')}</Label>
                     <Input

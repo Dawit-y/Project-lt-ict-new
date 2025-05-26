@@ -41,17 +41,7 @@ export const useAddCsoInfo = () => {
   return useMutation({
     mutationFn: addCsoInfo,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData(CSO_INFO_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
-      });
+      queryClient.invalidateQueries({ queryKey: CSO_INFO_QUERY_KEY, exact: false, refetchType: "all" })
     },
   });
 };
@@ -61,18 +51,7 @@ export const useUpdateCsoInfo = () => {
   return useMutation({
     mutationFn: updateCsoInfo,
     onSuccess: (updatedCsoInfo) => {
-      queryClient.setQueryData(CSO_INFO_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-
-        return {
-          ...oldData,
-          data: oldData.data.map((CsoInfoData) =>
-            CsoInfoData.cso_id === updatedCsoInfo.data.cso_id
-              ? { ...CsoInfoData, ...updatedCsoInfo.data }
-              : CsoInfoData
-          ),
-        };
-      });
+      queryClient.invalidateQueries({ queryKey: CSO_INFO_QUERY_KEY, exact: false, refetchType: "all" })
     },
   });
 };
@@ -82,15 +61,7 @@ export const useDeleteCsoInfo = () => {
   return useMutation({
     mutationFn: deleteCsoInfo,
     onSuccess: (deletedData) => {
-      queryClient.setQueryData(CSO_INFO_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (CsoInfoData) => CsoInfoData.cso_id !== parseInt(deletedData.deleted_id)
-          ),
-        };
-      });
+      queryClient.invalidateQueries({ queryKey: CSO_INFO_QUERY_KEY, exact: false, refetchType: "all" })
     },
   });
 };
