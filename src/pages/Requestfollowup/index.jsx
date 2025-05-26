@@ -375,7 +375,8 @@ const RequestFollowupModel = ({ request }) => {
 
           if (
             isOfficerLevel &&
-            row.rqf_forwarding_dep_id !== departmentId
+            row.rqf_forwarding_dep_id !== departmentId &&
+            parseInt(row.rqf_forwarded_to_dep_id) === parseInt(departmentId)
           ) {
             return (
               <Button

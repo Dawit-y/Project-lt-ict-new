@@ -290,7 +290,10 @@ Conversation.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
   ownerId: PropTypes.number.isRequired,
-  ownerTypeId: PropTypes.number.isRequired
+  ownerTypeId: PropTypes.number.isRequired,
+  canAdd: PropTypes.bool,
+  canEdit: PropTypes.bool,
+  canDelete: PropTypes.bool,
 }
 
 export default Conversation;

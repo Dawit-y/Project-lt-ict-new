@@ -7,7 +7,11 @@ import { useTranslation } from "react-i18next";
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = {
+      hasError: false,
+      error: null,
+      resetAttempts: 0
+    };
   }
 
   static getDerivedStateFromError(error) {
@@ -20,12 +24,25 @@ class ErrorBoundary extends React.Component {
   }
 
   resetErrorBoundary = () => {
-    this.setState({ hasError: false, error: null });
+    const { resetAttempts } = this.state;
+    const MAX_RESET_ATTEMPTS = 1;
+
+    if (resetAttempts >= MAX_RESET_ATTEMPTS) {
+      // If we've exceeded max attempts, reload the page
+      window.location.reload();
+      return;
+    }
+
+    this.setState(prevState => ({
+      hasError: false,
+      error: null,
+      resetAttempts: prevState.resetAttempts + 1
+    }));
   };
 
   componentDidUpdate(prevProps) {
     if (prevProps.location !== this.props.location) {
-      this.resetErrorBoundary();
+      this.setState({ hasError: false, error: null, resetAttempts: 0 });
     }
   }
 
@@ -46,11 +63,17 @@ class ErrorBoundary extends React.Component {
             <CardBody className="text-center">
               <FaExclamationCircle size={60} className="text-danger mb-3" />
               <>
-                <h2 className="h4 text-danger mb-3">{t("Something went wrong")}</h2>
+                <h4 className="mb-3">
+                  {"Looks like there was an issue with your request."}
+                </h4>
+                <h5 className="text-muted">
+                  {"Please review your input and try again."}
+                </h5>
               </>
+
               <button
                 onClick={this.resetErrorBoundary}
-                className="btn btn-primary btn-lg"
+                className="btn btn-primary btn-md"
               >
                 <>
                   <FaRedo />
