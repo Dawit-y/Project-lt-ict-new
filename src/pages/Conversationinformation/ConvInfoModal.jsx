@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import {
   Form,
   Label,
@@ -15,7 +16,6 @@ import {
   ModalBody,
   ModalHeader,
   ModalFooter,
-  UncontrolledTooltip
 } from "reactstrap";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { toast } from "react-toastify";
@@ -27,7 +27,6 @@ import {
 } from "../../queries/conversationinformation_query";
 import { useTranslation } from "react-i18next";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import { FaRotate } from "react-icons/fa6";
 
 const Conversation = ({
   isOpen,
@@ -41,7 +40,7 @@ const Conversation = ({
 }) => {
   const param = { cvi_object_type_id: ownerTypeId, cvi_object_id: ownerId };
   const [conversationInformation, setConversationInformation] = useState(null);
-  const { data, isLoading, isFetching, isError, error, refetch } =
+  const { data, isLoading, isError, error, refetch } =
     useFetchConversationInformations(param, isOpen);
   const { t } = useTranslation();
 
@@ -116,6 +115,11 @@ const Conversation = ({
 
   const formatTimeAgo = (timestamp) => {
     return formatDistanceToNow(parseISO(timestamp), { addSuffix: true });
+  };
+
+  const formatUtcDate = (timestamp) => {
+    const date = new Date(timestamp).toUTCString();
+    return date.split(" ").slice(1, 4).join(" ");
   };
 
   const comments = data?.data || [];
@@ -234,26 +238,10 @@ const Conversation = ({
                       }
                       <Card>
                         <CardBody>
-                          <CardTitle className="d-flex align-items-center justify-content-between">
-                            <div className="d-flex align-items-center">
-                              <span><i className="bx bx-message-dots text-muted align-middle me-1"></i></span>
-                              <span className="fw-bold fs-5">{t("conversations")}</span>
-                            </div>
-                            <Button
-                              id="refresh_btn_message"
-                              color="primary"
-                              onClick={refetch}
-                              outline
-                              className="rounded-circle p-0 d-flex align-items-center justify-content-center"
-                              style={{ width: "25px", height: "25px", fontSize: "10px" }}
-                            >
-                              {isFetching ? <Spinner color="light" size="sm" /> : <FaRotate />}
-                            </Button>
-                            <UncontrolledTooltip placement="top" target="refresh_btn_message">
-                              Refresh
-                            </UncontrolledTooltip>
+                          <CardTitle>
+                            <i className="bx bx-message-dots text-muted align-middle me-1"></i>{" "}
+                            {t("conversations")}
                           </CardTitle>
-                          <hr />
                           {comments.length > 0 ? (
                             comments.map((comment) => (
                               <div key={comment.cvi_id} className="d-flex py-3 border-top">
@@ -268,7 +256,7 @@ const Conversation = ({
                                   <h5 className="font-size-14 mb-1">
                                     {comment?.created_by}{" "}
                                     <small className="text-muted float-end">
-                                      {formatTimeAgo(comment.cvi_create_time)}
+                                      {formatUtcDate(comment.cvi_create_time)}
                                     </small>
                                   </h5>
                                   <h6 className="my-2"><strong>Subject: </strong> {comment?.cvi_title}</h6>
@@ -297,5 +285,15 @@ const Conversation = ({
     </React.Fragment>
   );
 };
+
+Conversation.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  toggle: PropTypes.func.isRequired,
+  ownerId: PropTypes.number.isRequired,
+  ownerTypeId: PropTypes.number.isRequired,
+  canAdd: PropTypes.bool,
+  canEdit: PropTypes.bool,
+  canDelete: PropTypes.bool,
+}
 
 export default Conversation;
