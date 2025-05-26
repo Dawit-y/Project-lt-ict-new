@@ -215,7 +215,7 @@ const AccountVerification = () => {
     toggleForm();
   };
 
-  if ((csoStatus !== null && csoStatus !== 0) || userType === 4) {
+  if ((csoStatus !== null && csoStatus !== 0) || userType === 2) {
     return <Navigate to="/dashboard" replace />;
   }
 

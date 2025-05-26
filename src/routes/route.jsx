@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo } from "react"
 import { Navigate, useLocation } from "react-router-dom";
 import { authProtectedRoutes } from ".";
 import { Spinner } from "reactstrap";
@@ -44,8 +44,18 @@ const AuthMiddleware = ({ children }) => {
 
   const ownerId = storedUser?.user?.usr_owner_id
   const userType = storedUser?.user?.usr_user_type
-  const param = ownerId ? { cso_id: ownerId } : null;
-  const { data } = useSearchCsoInfos(param)
+
+  const { param, isValidParam } = useMemo(() => {
+    const param = {
+      cso_id: ownerId
+    };
+
+    const isValidParam = Object.keys(param).length > 0 &&
+      Object.values(param).every((value) => value !== null && value !== undefined)
+
+    return { param, isValidParam };
+  }, [ownerId]);
+  const { data } = useSearchCsoInfos(param, isValidParam)
   const csoStatus = data?.data?.length > 0 ? data.data[0].cso_status : null;
 
   const authPaths = extractAuthPaths(authProtectedRoutes);
@@ -82,7 +92,7 @@ const AuthMiddleware = ({ children }) => {
     return <Navigate to="/login" state={{ from: location }} />;
   }
 
-  if ((csoStatus === null || csoStatus === 0) && userType !== 4) {
+  if ((csoStatus === null || csoStatus === 0) && userType !== 2) {
     return <Navigate to="/not_approved" />;
   }
 

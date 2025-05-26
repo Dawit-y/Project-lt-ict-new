@@ -94,7 +94,7 @@ const CsoRegister = () => {
       cso_name: alphanumericValidation(3, 150, true),
       cso_address: alphanumericValidation(3, 150, true),
       usr_phone: phoneValidation(true),
-      cso_type:numberValidation(1, 2, true),
+      cso_type: numberValidation(1, 2, true),
       usr_email: Yup.string()
         .required(t("usr_email"))
         .email(t("Invalid email format")),
@@ -145,7 +145,9 @@ const CsoRegister = () => {
               <div className="bg-primary-subtle">
                 <Row>
                   <Col xs={12} className="text-center mt-2">
-                    <img src={lightlogo} alt="logo" className="img-fluid" />
+                    <Link to="/">
+                      <img src={lightlogo} alt="logo" className="img-fluid" />
+                    </Link>
                   </Col>
                   <Col xs={12}>
                     <div className="text-primary p-4 text-center">
@@ -158,37 +160,37 @@ const CsoRegister = () => {
               <CardBody className="pt-0 mt-2">
                 <Form onSubmit={validation.handleSubmit}>
                   <Row>
-                   <Col md={6} sm={12} className='mb-3'>
-                    <Label>{t("cso_type")}</Label>
-                    <span className="text-danger ms-1">*</span>
-                    <Input
-                      name="cso_type"
-                      type="select"
-                      placeholder={t("cso_type")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.cso_type || ""}
-                      invalid={
-                        validation.touched.cso_type &&
-                        validation.errors.cso_type
-                          ? true
-                          : false
-                      }
-                    >
-                      <option value="">{t("cso_type")}</option>
-                      {csoTypes.map((type) => (
-                        <option key={type.value} value={type.value}>
-                          {t(type.label)}
-                        </option>
-                      ))}
-                    </Input>
-                    {validation.touched.cso_type &&
-                    validation.errors.cso_type ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.cso_type}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                    <Col md={6} sm={12} className='mb-3'>
+                      <Label>{t("cso_type")}</Label>
+                      <span className="text-danger ms-1">*</span>
+                      <Input
+                        name="cso_type"
+                        type="select"
+                        placeholder={t("cso_type")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.cso_type || ""}
+                        invalid={
+                          validation.touched.cso_type &&
+                            validation.errors.cso_type
+                            ? true
+                            : false
+                        }
+                      >
+                        <option value="">{t("cso_type")}</option>
+                        {csoTypes.map((type) => (
+                          <option key={type.value} value={type.value}>
+                            {t(type.label)}
+                          </option>
+                        ))}
+                      </Input>
+                      {validation.touched.cso_type &&
+                        validation.errors.cso_type ? (
+                        <FormFeedback type="invalid">
+                          {validation.errors.cso_type}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
 
                     <Col md={6} sm={12} className='mb-3'>
                       <Label>{t('cso_name')}</Label>
@@ -215,29 +217,29 @@ const CsoRegister = () => {
                       ) : null}
                     </Col>
                     <Col md={6} sm={12} className='mb-3'>
-                    <Label>{t('cso_contact_person')}</Label>
-                    <span className="text-danger">*</span>
-                    <Input
-                      name='cso_contact_person'
-                      type='text'
-                      placeholder={t('cso_contact_person')}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.cso_contact_person || ''}
-                      invalid={
-                        validation.touched.cso_contact_person &&
-                          validation.errors.cso_contact_person
-                          ? true
-                          : false
-                      }
-                    />
-                    {validation.touched.cso_contact_person &&
-                      validation.errors.cso_contact_person ? (
-                      <FormFeedback type='invalid'>
-                        {validation.errors.cso_contact_person}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+                      <Label>{t('cso_contact_person')}</Label>
+                      <span className="text-danger">*</span>
+                      <Input
+                        name='cso_contact_person'
+                        type='text'
+                        placeholder={t('cso_contact_person')}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.cso_contact_person || ''}
+                        invalid={
+                          validation.touched.cso_contact_person &&
+                            validation.errors.cso_contact_person
+                            ? true
+                            : false
+                        }
+                      />
+                      {validation.touched.cso_contact_person &&
+                        validation.errors.cso_contact_person ? (
+                        <FormFeedback type='invalid'>
+                          {validation.errors.cso_contact_person}
+                        </FormFeedback>
+                      ) : null}
+                    </Col>
                     <Col md={6} sm={12} className='col-md-6 mb-3'>
                       <Label>{t('usr_email')}</Label>
                       <span className="text-danger">*</span>

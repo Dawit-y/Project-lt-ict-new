@@ -83,7 +83,9 @@ const Login = () => {
               <div className="bg-primary-subtle">
                 <Row>
                   <Col xs={12} className="text-center mt-2">
-                    <img src={lightlogo} alt="logo" className="img-fluid" />
+                    <Link to={"/"}>
+                      <img src={lightlogo} alt="logo" className="img-fluid" />
+                    </Link>
                   </Col>
                   <Col xs={12}>
                     <div className="text-primary p-4 text-center">

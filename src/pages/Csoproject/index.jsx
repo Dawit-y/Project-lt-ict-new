@@ -72,7 +72,7 @@ const ProjectModel = () => {
         autoClose: 2000,
       });
     }
-    (isUserType4 && isTab2) || (!isUserType4 && isTab1) ? toggle() : toggleActivity()
+    (isUserType2 && isTab2) || (!isUserType2 && isTab1) ? toggle() : toggleActivity()
   };
 
   const handleUpdateProject = async (data) => {
@@ -87,7 +87,7 @@ const ProjectModel = () => {
         autoClose: 2000,
       });
     }
-    (isUserType4 && isTab2) || (!isUserType4 && isTab1) ? toggle() : toggleActivity()
+    (isUserType2 && isTab2) || (!isUserType2 && isTab1) ? toggle() : toggleActivity()
   };
   const handleDeleteProject = async () => {
     if (project && project.prj_id) {
@@ -106,7 +106,7 @@ const ProjectModel = () => {
     }
   };
 
-  const isUserType4 = userType === 4;
+  const isUserType2 = userType === 2;
 
   const isTab1 = useMemo(() => currentActiveTab?.tab === 1, [currentActiveTab?.tab]);
   const isTab2 = useMemo(() => currentActiveTab?.tab === 2, [currentActiveTab?.tab]);
@@ -229,7 +229,7 @@ const ProjectModel = () => {
       prj_measured_figure: (project && project.prj_measured_figure) || "",
     },
 
-    validationSchema: (isUserType4 && isTab2) || (!isUserType4 && isTab1) ? projectSchema : activitySchema,
+    validationSchema: (isUserType2 && isTab2) || (!isUserType2 && isTab1) ? projectSchema : activitySchema,
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
@@ -268,7 +268,7 @@ const ProjectModel = () => {
           prj_deleted: values.prj_deleted,
           prj_remark: values.prj_remark,
           prj_created_date: values.prj_created_date,
-          prj_owner_id: userType === 4 ? currentActiveTab.selectedCsoId : csoId,
+          prj_owner_id: userType === 2 ? currentActiveTab.selectedCsoId : csoId,
           prj_urban_ben_number: values.prj_urban_ben_number,
           prj_rural_ben_number: values.prj_rural_ben_number,
           prj_admin_cost: values.prj_admin_cost,
@@ -276,8 +276,8 @@ const ProjectModel = () => {
           prj_male_participant: values.prj_male_participant,
           prj_female_participant: values.prj_female_participant,
           prj_program_id: 1,
-          parent_id: (isUserType4 && isTab2) || (!isUserType4 && isTab1) ? 1 : currentActiveTab?.selectedId,
-          object_type_id: (isUserType4 && isTab2) || (!isUserType4 && isTab1) ? 1 : 5,
+          parent_id: (isUserType2 && isTab2) || (!isUserType2 && isTab1) ? 1 : currentActiveTab?.selectedId,
+          object_type_id: (isUserType2 && isTab2) || (!isUserType2 && isTab1) ? 1 : 5,
           prj_measurement_unit: values.prj_measurement_unit,
           prj_measured_figure: values.prj_measured_figure
         };
@@ -326,8 +326,8 @@ const ProjectModel = () => {
           prj_female_participant: values.prj_female_participant,
           //prj_department_id: Number(values.prj_department_id),
           prj_program_id: 1,
-          parent_id: (isUserType4 && isTab2) || (!isUserType4 && isTab1) ? 1 : currentActiveTab?.selectedId,
-          object_type_id: (isUserType4 && isTab2) || (!isUserType4 && isTab1) ? 1 : 5,
+          parent_id: (isUserType2 && isTab2) || (!isUserType2 && isTab1) ? 1 : currentActiveTab?.selectedId,
+          object_type_id: (isUserType2 && isTab2) || (!isUserType2 && isTab1) ? 1 : 5,
           prj_measurement_unit: values.prj_measurement_unit,
           prj_measured_figure: values.prj_measured_figure
         };
@@ -366,7 +366,7 @@ const ProjectModel = () => {
   };
 
   const getFormType = () => {
-    if (userType === 4) {
+    if (userType === 2) {
       return currentActiveTab.tab === 2 ? 'project' : 'activity';
     }
     return currentActiveTab.tab === 1 ? 'project' : 'activity';
@@ -445,7 +445,7 @@ const ProjectModel = () => {
     setDeleteModal(true);
   };
 
-  const activeTabName = (isUserType4 && isTab2) || (!isUserType4 && isTab1) ? "Project" : "Activity"
+  const activeTabName = (isUserType2 && isTab2) || (!isUserType2 && isTab1) ? "Project" : "Activity"
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
@@ -477,7 +477,7 @@ const ProjectModel = () => {
               <div className="w-100">
                 {isLoading ?
                   <Spinners /> :
-                  userType === 4 ?
+                  userType === 2 ?
                     <RegionProjectTab
                       handleAddClick={handleProjectsClicks}
                       handleEditClick={handleProjectClick}
