@@ -46,13 +46,17 @@ const ProfileMenu = (props) => {
           <i className="mdi mdi-chevron-down d-none d-xl-inline-block ms-1" />
         </DropdownToggle>
         <DropdownMenu className="dropdown-menu-end">
+          <DropdownItem tag={Link} to="/dashboard">
+            <i className="bx bx-columns font-size-16 align-middle me-2" />
+            {props.t("Dashboard")}
+          </DropdownItem>
           <DropdownItem tag={Link} to="/profile">
-            <i className="bx bx-user font-size-16 align-middle me-1" />
+            <i className="bx bx-user font-size-16 align-middle me-2" />
             {props.t("Profile")}
           </DropdownItem>
           <div className="dropdown-divider" />
           <DropdownItem tag={Link} to="/logout">
-            <i className="bx bx-power-off font-size-16 align-middle me-1 text-danger" />
+            <i className="bx bx-power-off font-size-16 align-middle me-2 text-danger" />
             <span>{props.t("Logout")}</span>
           </DropdownItem>
         </DropdownMenu>
