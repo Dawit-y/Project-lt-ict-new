@@ -3,14 +3,14 @@ import React, { useEffect, useState } from "react";
 import { NavbarToggler, NavLink, Container, Collapse } from "reactstrap";
 import Scrollspy from "react-scrollspy";
 import { Link } from "react-router-dom";
-
-//Import Images
+import ProfileMenu from "../../../components/CommonForBoth/TopbarDropdown/ProfileMenu";
+import { useAuthUser } from "../../../hooks/useAuthUser";
 import logoDark from "../../../assets/images/logo-dark.png";
 
 const Navbar_Page = () => {
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const [navClass, setNavClass] = useState("");
-
+  const { user } = useAuthUser()
   const toggle = () => setIsOpenMenu(!isOpenMenu);
 
   useEffect(() => {
@@ -108,9 +108,12 @@ const Navbar_Page = () => {
             </Scrollspy>
 
             <div className="my-2 ms-lg-2">
-              <Link to="/login" className="btn btn-outline-primary w-xs">
-                Sign in
-              </Link>
+              {user ?
+                <ProfileMenu /> :
+                <Link to="/login" className="btn btn-outline-primary w-xs">
+                  Sign in
+                </Link>
+              }
             </div>
           </Collapse>
         </Container>
