@@ -7,7 +7,7 @@ import {
   RouterProvider,
   Route,
 } from "react-router-dom";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 
 import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
@@ -21,6 +21,7 @@ import NotFound from "./components/Common/NotFound";
 import Spinners from "./components/Common/Spinner";
 import VerticalLayout from "./components/VerticalLayout/";
 import HorizontalLayout from "./components/HorizontalLayout/";
+import Header from "./components/HorizontalLayout/Header";
 import NonAuthLayout from "./components/NonAuthLayout";
 import ErrorBoundary from "./components/Common/ErrorBoundary";
 import Unauthorized from "./components/Common/Unauthorized";
@@ -30,6 +31,7 @@ import "react-toastify/dist/ReactToastify.css";
 import NetworkAlert from "./components/Common/NetworkAlert";
 import { scheduleTokenRefresh } from "./helpers/api_Lists";
 import "./App.css"
+import { changeLayout } from "./store/layout/actions";
 
 function getLayout(layoutType) {
   let layoutCls = VerticalLayout;
@@ -43,6 +45,27 @@ function getLayout(layoutType) {
   }
   return layoutCls;
 }
+
+const ApprovalPage = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(changeLayout("horizontal"));
+  }, [dispatch]);
+
+  return (
+    <div id="layout-wrapper">
+      <Header />
+      <div className="main-content">
+        <ErrorBoundary>
+          <Suspense fallback={<Spinners />}>
+            <AccountVerification />
+          </Suspense>
+        </ErrorBoundary>
+      </div>
+    </div>
+  );
+};
 
 const App = (props) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -131,13 +154,7 @@ const App = (props) => {
           path="/not_approved"
           element={
             <>
-              <Layout>
-                <ErrorBoundary>
-                  <Suspense fallback={<Spinners />}>
-                    <AccountVerification />
-                  </Suspense>
-                </ErrorBoundary>
-              </Layout>
+              <ApprovalPage />
             </>
           }
         />
