@@ -1678,5 +1678,8 @@
 	"pia_sector_id":"Sector",
 	"Allocated":"Allocated",
 	"Remaining":"Remaining",
-	"Total_Project_Budget":"Total Project Budget"
+	"Total_Project_Budget":"Total Project Budget",
+	"psc_gov_active":"Government Active",
+	"psc_cso_active":"CSO Active",
+	"psc_citizenship_active":"Citizenship Active"
 }
