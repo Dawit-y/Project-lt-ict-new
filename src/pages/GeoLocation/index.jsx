@@ -224,7 +224,7 @@ const GeoLocation = ({ passedId, isActive }) => {
             center={ETHIOPIA_CENTER}
             zoom={DEFAULT_ZOOM}
             scrollWheelZoom={true}
-            style={{ height: "400px", width: "100%" }}
+            style={{ height: "400px", width: "100%", zIndex: 1 }}
           >
             <MapResizer isActive={isActive} />
             <MapFocuser position={markerPos} />

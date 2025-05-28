@@ -18,13 +18,16 @@ import {
 } from "reactstrap";
 import classnames from "classnames";
 import { useSearchProjects, useFindProjects } from "../../queries/cso_project_query";
+import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import Spinners from "../../components/Common/Spinner";
+import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
 const TableContainer = lazy(() => import("../../components/Common/TableContainer"));
 const BudgetRequestRegistration = lazy(() => import("../Csobudgetrequest/BudgetRequestRegistration"));
 
 const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange, setLeftBudget }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language
   const [activeTab, setActiveTab] = useState(1);
   const [passedSteps, setPassedSteps] = useState([1]);
   const [selectedProject, setSelectedProject] = useState(null)
@@ -63,6 +66,20 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
     return !selectedProject?.prj_id;
   }, [selectedProject?.prj_id]);
 
+  const { data: projectCategoryData, isLoading: isPctLoading, isError: isPctError } = useFetchProjectCategorys();
+  const projectCategoryMap = useMemo(() => {
+    return createMultiLangKeyValueMap(
+      projectCategoryData?.data || [],
+      "pct_id",
+      {
+        en: "pct_name_en",
+        am: "pct_name_am",
+        or: "pct_name_or",
+      },
+      lang,
+    );
+  }, [projectCategoryData, lang]);
+
   const programColumns = useMemo(() => {
     const baseColumns = [
       {
@@ -99,6 +116,15 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
         enableColumnFilter: false,
         cell: ({ row, getValue }) => (
           <span>{row.original.footer ? t("Total") : getValue()}</span>
+        ),
+      },
+      {
+        header: t("prj_project_category_id"),
+        accessorKey: "prj_project_category_id",
+        enableSorting: true,
+        enableColumnFilter: false,
+        cell: ({ row, getValue }) => (
+          <span>{projectCategoryMap[getValue()]}</span>
         ),
       },
       {
@@ -187,6 +213,15 @@ const ProjectTabs = ({ program, handleAddClick, handleEditClick, handleTabChange
         enableColumnFilter: false,
         cell: ({ row, getValue }) => (
           <span>{row.original.footer ? t("Total") : getValue()}</span>
+        ),
+      },
+      {
+        header: "Activity Category",
+        accessorKey: "prj_project_category_id",
+        enableSorting: true,
+        enableColumnFilter: false,
+        cell: ({ row, getValue }) => (
+          <span>{projectCategoryMap[getValue()]}</span>
         ),
       },
       {

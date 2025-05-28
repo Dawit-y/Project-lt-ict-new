@@ -17,7 +17,9 @@ import {
 } from "reactstrap";
 import classnames from "classnames";
 import { useSearchProjects, useFindProjects } from "../../queries/cso_project_query";
+import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
 const TableContainer = lazy(() => import("../../components/Common/TableContainer"));
 const BudgetRequestRegistration = lazy(() => import("../Csobudgetrequest/BudgetRequestRegistration"));
 import { useFetchCsoInfos } from "../../queries/csoinfo_query";
@@ -25,7 +27,8 @@ import { ProgramAlert } from "./ProjectTabs"
 import Spinners from "../../components/Common/Spinner";
 
 const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange, setLeftBudget }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language
   const [activeTab, setActiveTab] = useState(1);
   const [passedSteps, setPassedSteps] = useState([1]);
   const [selectedCsoId, setSelectedCsoId] = useState(null)
@@ -79,6 +82,20 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange, setLeft
   const isNextDisabled = (activeTab === 1 && !selectedCsoId) ||
     (activeTab === 2 && !selectedProject?.prj_id) ||
     activeTab >= 4;
+
+  const { data: projectCategoryData, isLoading: isPctLoading, isError: isPctError } = useFetchProjectCategorys();
+  const projectCategoryMap = useMemo(() => {
+    return createMultiLangKeyValueMap(
+      projectCategoryData?.data || [],
+      "pct_id",
+      {
+        en: "pct_name_en",
+        am: "pct_name_am",
+        or: "pct_name_or",
+      },
+      lang,
+    );
+  }, [projectCategoryData, lang]);
 
   const csoColumnsDef = useMemo(() => {
     const baseColumns = [
@@ -181,6 +198,15 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange, setLeft
         ),
       },
       {
+        header: t("prj_project_category_id"),
+        accessorKey: "prj_project_category_id",
+        enableSorting: true,
+        enableColumnFilter: false,
+        cell: ({ row, getValue }) => (
+          <span>{projectCategoryMap[getValue()]}</span>
+        ),
+      },
+      {
         header: t("prj_project_status_id"),
         accessorKey: "prj_project_status_id",
         enableSorting: true,
@@ -266,6 +292,15 @@ const ProjectTabs = ({ handleAddClick, handleEditClick, handleTabChange, setLeft
         enableColumnFilter: false,
         cell: ({ row, getValue }) => (
           <span>{row.original.footer ? t("Total") : getValue()}</span>
+        ),
+      },
+      {
+        header: "Activity Category",
+        accessorKey: "prj_project_category_id",
+        enableSorting: true,
+        enableColumnFilter: false,
+        cell: ({ row, getValue }) => (
+          <span>{projectCategoryMap[getValue()]}</span>
         ),
       },
       {

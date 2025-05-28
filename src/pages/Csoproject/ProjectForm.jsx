@@ -20,7 +20,8 @@ import DatePicker from "../../components/Common/DatePicker";
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 import { useTranslation } from 'react-i18next';
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
-import { createMultiLangKeyValueMap, addMonths, addYears } from "../../utils/commonMethods";
+import { useFetchSectorCategorys } from "../../queries/sectorcategory_query";
+import { createMultiLangKeyValueMap, addMonths, addYears, createKeyValueMap } from "../../utils/commonMethods";
 
 const ProjectForm = ({ isOpen, toggle, isEdit, activeTabName, validation, isPending }) => {
   const { t, i18n } = useTranslation()
@@ -38,6 +39,11 @@ const ProjectForm = ({ isOpen, toggle, isEdit, activeTabName, validation, isPend
       lang,
     );
   }, [projectCategoryData, lang]);
+
+  const { data: sectorCategories, isLoading: isSectorCatLoading, isError: isSectorCatError } = useFetchSectorCategorys()
+  const sectorCategoryMap = useMemo(() => {
+    return createKeyValueMap(sectorCategories?.data || [], "psc_id", "psc_name");
+  }, [sectorCategories]);
 
   const rawStartDate = validation.values.prj_start_date_plan_gc;
   const startDate = rawStartDate
@@ -141,6 +147,15 @@ const ProjectForm = ({ isOpen, toggle, isEdit, activeTabName, validation, isPend
               optionMap={projectCategoryMap}
               isLoading={isPctLoading}
               isError={isPctError}
+            />
+            <AsyncSelectField
+              fieldId="prj_cluster_id"
+              validation={validation}
+              isRequired
+              className="col-md-4 mb-3"
+              optionMap={sectorCategoryMap}
+              isLoading={isSectorCatLoading}
+              isError={isSectorCatError}
             />
             <FormattedAmountField
               validation={validation}

@@ -117,6 +117,7 @@ const ProjectModel = () => {
     prj_name_en: alphanumericValidation(3, 200, true),
     prj_code: alphanumericValidation(3, 20, false),
     prj_project_category_id: numberValidation(1, 200, true),
+    prj_cluster_id: Yup.number().required(t('prj_cluster_id')),
     prj_total_actual_budget: formattedAmountValidation(1000, 1000000000000, true).test(
       "admin-program-budget-check-budget",
       t("Sum of admin cost and program cost should be equal with total actual budget"),
@@ -187,6 +188,7 @@ const ProjectModel = () => {
       prj_project_status_id: (project && project.prj_project_status_id) || "",
       prj_project_category_id:
         (project && project.prj_project_category_id) || "",
+      prj_cluster_id: (project && project.prj_cluster_id) || "",
       prj_project_budget_source_id:
         (project && project.prj_project_budget_source_id) || "",
       prj_total_estimate_budget:
@@ -242,6 +244,7 @@ const ProjectModel = () => {
           prj_code: values.prj_code,
           prj_project_status_id: values.prj_project_status_id,
           prj_project_category_id: values.prj_project_category_id,
+          prj_cluster_id: values.prj_cluster_id,
           prj_project_budget_source_id: values.prj_project_budget_source_id,
           prj_total_estimate_budget: values.prj_total_estimate_budget,
           prj_total_actual_budget: values.prj_total_actual_budget,
@@ -291,6 +294,7 @@ const ProjectModel = () => {
           prj_code: values.prj_code,
           prj_project_status_id: values.prj_project_status_id,
           prj_project_category_id: values.prj_project_category_id,
+          prj_cluster_id: values.prj_cluster_id,
           prj_project_budget_source_id: values.prj_project_budget_source_id,
           prj_total_estimate_budget: values.prj_total_estimate_budget,
           prj_total_actual_budget: values.prj_total_actual_budget,
@@ -382,6 +386,7 @@ const ProjectModel = () => {
       prj_code: project.prj_code,
       prj_project_status_id: project.prj_project_status_id,
       prj_project_category_id: project.prj_project_category_id,
+      prj_cluster_id: project.prj_cluster_id,
       prj_project_budget_source_id: project.prj_project_budget_source_id,
       prj_total_estimate_budget: project.prj_total_estimate_budget,
       prj_total_actual_budget: project.prj_total_actual_budget,
