@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -18,8 +17,6 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import {
   phoneValidation,
   alphanumericValidation,
-  amountValidation,
-  numberValidation,
   dropdownValidation,
 } from "../../utils/Validation/validation";
 import {
@@ -270,9 +267,8 @@ const UsersModel = () => {
         };
         handleUpdateUsers(updateUsers);
       } else if (isDuplicateModalOpen) {
-        alert(users?.usr_id);
         const duplcateuser = {
-          usr_copied_from_id: users?.usr_id,
+          usr_copied_from_id: users?.usr_copied_from_id,
           usr_email: values.usr_email,
           usr_password: values.usr_password,
           usr_full_name: values.usr_full_name,
@@ -396,7 +392,6 @@ const UsersModel = () => {
   const handleUsersDuplicateClick = (arg) => {
     const user = arg;
     setUsers({
-      //usr_id: user.usr_id,
       usr_copied_from_id: user.usr_id,
       usr_email: "",
       usr_password: "User@123",
@@ -525,7 +520,6 @@ const UsersModel = () => {
         headerName: t("Action"),
         sortable: true,
         filter: false,
-        flex: 1,
         minWidth: 120,
         cellRenderer: (params) => (
           <div className="d-flex gap-2">
@@ -545,43 +539,44 @@ const UsersModel = () => {
             )}
             {/* add view project  */}
             {params.data?.is_editable || params.data?.is_role_editable ? (
-              <Link
-                to="#"
-                className="text-secondary ms-2"
+              <Button
+                size="sm"
+                color="none"
+                className="text-secondary"
                 onClick={() => handleClick(params.data)}
+                type="button"
               >
                 <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
                 <UncontrolledTooltip placement="top" target="viewtooltip">
                   View
                 </UncontrolledTooltip>
-              </Link>
+              </Button>
             ) : (
               ""
             )}
             {/* added duplicat  */}
             {/* Add duplicate project icon */}
+            <Button
+              size="sm"
+              color="none"
+              className="text-primary"
+              onClick={() => {
+                handleUsersDuplicateClick(params.data);
+              }}
+              type="button"
+            >
+              <i
+                className="mdi mdi-content-duplicate font-size-18"
+                id="duplicateTooltip"
+              />
+              <UncontrolledTooltip
+                placement="top"
+                target="duplicateTooltip"
+              >
+                Duplicate
+              </UncontrolledTooltip>
+            </Button>
 
-            
-                {/*<Link
-                  to="#"
-                  className="text-primary"
-                  onClick={() => {
-                    handleUsersDuplicateClick(params.data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-content-duplicate font-size-18"
-                    id="duplicateTooltip"
-                  />
-                  <UncontrolledTooltip
-                    placement="top"
-                    target="duplicateTooltip"
-                  >
-                    Duplicate
-                  </UncontrolledTooltip>
-                </Link>*/}
-             
-            {/* End of duplicate project icon */}
           </div>
         ),
       });
