@@ -869,10 +869,13 @@ const ProjectSummary = ({ data }) => {
                       <div className="d-flex justify-content-between mb-1">
                         <span>Project Timeline</span>
                         <span>
-                          {Math.round(
-                            (projectMetrics.daysElapsed /
-                              projectMetrics.durationDays) *
-                              100
+                          {Math.min(
+                            100,
+                            Math.round(
+                              (projectMetrics.daysElapsed /
+                                projectMetrics.durationDays) *
+                                100
+                            )
                           )}
                           %
                         </span>
