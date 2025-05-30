@@ -1681,5 +1681,6 @@
 	"Total_Project_Budget": "Total Project Budget",
 	"psc_gov_active": "Government Active",
 	"psc_cso_active": "CSO Active",
-	"psc_citizenship_active": "Citizenship Active"
+	"psc_citizenship_active": "Citizenship Active",
+	"pct_owner_type_id": "Owner Type"
 }

@@ -39,11 +39,18 @@ import {
 } from "reactstrap";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import Filter from "./Filter";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+};
+
+export const OwnerTypeLabels = {
+  1: "Gov",
+  2: "CSO",
+  3: "Citizenship",
 };
 
 const ProjectCategoryModel = () => {
@@ -59,6 +66,8 @@ const ProjectCategoryModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
+
+  const [filterState, setFilterState] = useState({ owner_type: "" });
 
   const { data: sectorCategoryData } = useFetchSectorCategorys();
 
@@ -131,6 +140,9 @@ const ProjectCategoryModel = () => {
 
     initialValues: {
       pct_parent_id: (projectCategory && projectCategory.pct_parent_id) || "",
+      pct_owner_type_id:
+        (projectCategory && projectCategory.pct_owner_type_id) || "",
+
       pct_name_or: (projectCategory && projectCategory.pct_name_or) || "",
       pct_name_am: (projectCategory && projectCategory.pct_name_am) || "",
       pct_name_en: (projectCategory && projectCategory.pct_name_en) || "",
@@ -154,6 +166,9 @@ const ProjectCategoryModel = () => {
           );
         }
       ),
+      pct_owner_type_id: Yup.number()
+        .required(t("Owner type is required"))
+        .oneOf([1, 2, 3], t("Invalid owner type")),
       pct_name_am: Yup.string().required(t("pct_name_am")),
       pct_name_en: alphanumericValidation(2, 100, true),
       pct_description: alphanumericValidation(3, 425, false),
@@ -165,6 +180,8 @@ const ProjectCategoryModel = () => {
         const updateProjectCategory = {
           pct_id: projectCategory?.pct_id,
           pct_parent_id: parseInt(values.pct_parent_id),
+          pct_owner_type_id: parseInt(values.pct_owner_type_id),
+
           pct_name_or: values.pct_name_or,
           pct_name_am: values.pct_name_am,
           pct_name_en: values.pct_name_en,
@@ -180,6 +197,8 @@ const ProjectCategoryModel = () => {
       } else {
         const newProjectCategory = {
           pct_parent_id: parseInt(values.pct_parent_id),
+          pct_owner_type_id: parseInt(values.pct_owner_type_id),
+
           pct_name_or: values.pct_name_or,
           pct_name_am: values.pct_name_am,
           pct_name_en: values.pct_name_en,
@@ -220,6 +239,8 @@ const ProjectCategoryModel = () => {
     setProjectCategory({
       pct_id: projectCategory.pct_id,
       pct_parent_id: projectCategory.pct_parent_id,
+      pct_owner_type_id: projectCategory.pct_owner_type_id,
+
       pct_name_or: projectCategory.pct_name_or,
       pct_name_am: projectCategory.pct_name_am,
       pct_name_en: projectCategory.pct_name_en,
@@ -329,6 +350,21 @@ const ProjectCategoryModel = () => {
         },
       },
       {
+        header: "",
+        accessorKey: "pct_owner_type_id",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          const ownerType = cellProps.row.original.pct_owner_type_id;
+          let ownerTypeText = "-";
+          if (ownerType === 1) ownerTypeText = "Gov";
+          else if (ownerType === 2) ownerTypeText = "CSO";
+          else if (ownerType === 3) ownerTypeText = "Citizenship";
+
+          return <span>{ownerTypeText}</span>;
+        },
+      },
+      {
         header: t("is_deleted"),
         enableColumnFilter: false,
         enableSorting: true,
@@ -396,7 +432,7 @@ const ProjectCategoryModel = () => {
                 </Link>
               )}
 
-              {cellProps.row.original.is_deletable === 9 && (
+              {cellProps.row.original.is_deletable === 1 && (
                 <Link
                   to="#"
                   className="text-danger"
@@ -422,6 +458,31 @@ const ProjectCategoryModel = () => {
 
     return baseColumns;
   }, [handleProjectCategoryClick, toggleViewModal, onClickDelete]);
+
+  // Filter the data based on filter state
+
+  const filteredData = useMemo(() => {
+    if (!data) return [];
+
+    return data?.data.filter((item) => {
+      if (
+        filterState.owner_type &&
+        item.pct_owner_type_id !== parseInt(filterState.owner_type)
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [data, filterState]);
+
+  const handleFilterChange = (newFilters) => {
+    setFilterState((prev) => ({ ...prev, ...newFilters }));
+  };
+
+  const handleClearFilters = () => {
+    setFilterState({ owner_type: "" });
+  };
+
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
@@ -451,13 +512,13 @@ const ProjectCategoryModel = () => {
               <Col xs="12">
                 <Card>
                   <CardBody>
+                    <Filter
+                      onFilterChange={handleFilterChange}
+                      onClear={handleClearFilters}
+                    />
                     <TableContainer
                       columns={columns}
-                      data={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
+                      data={filteredData}
                       isGlobalFilter={true}
                       isAddButton={data?.previledge?.is_role_can_add == 1}
                       isCustomPageSize={true}
@@ -470,7 +531,7 @@ const ProjectCategoryModel = () => {
                       theadClass="table-light"
                       pagination="pagination"
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                      divClassName="-"
+                      divClassName="table-responsive"
                       refetch={refetch}
                       isFetching={isFetching}
                     />
@@ -522,6 +583,34 @@ const ProjectCategoryModel = () => {
                     validation.errors.pct_parent_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pct_parent_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("pct_owner_type_id")}</Label>
+                    <Input
+                      name="pct_owner_type_id"
+                      type="select"
+                      placeholder={t("pct_owner_type_id")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pct_owner_type_id || ""}
+                      invalid={
+                        validation.touched.pct_owner_type_id &&
+                        validation.errors.pct_owner_type_id
+                          ? true
+                          : false
+                      }
+                    >
+                      <option value="">Select Owner Type</option>
+                      <option value={1}>Gov</option>
+                      <option value={2}>CSO</option>
+                      <option value={3}>Citizenship</option>
+                    </Input>
+                    {validation.touched.pct_owner_type_id &&
+                    validation.errors.pct_owner_type_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pct_owner_type_id}
                       </FormFeedback>
                     ) : null}
                   </Col>
