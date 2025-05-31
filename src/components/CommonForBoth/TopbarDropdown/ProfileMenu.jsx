@@ -9,7 +9,7 @@ import {
 import { withTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import withRouter from "../../Common/withRouter";
-import user1 from "../../../assets/images/users/avatar-1.jpg";
+import defaultAvatar from "../../../assets/images/default-avatar.jpg";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -43,11 +43,11 @@ const ProfileMenu = (props) => {
           id="page-header-user-dropdown"
           tag="button"
         >
-          {/* <img
+          <img
             className="rounded-circle header-profile-user"
-            src={user1}
+            src={defaultAvatar}
             alt="Header Avatar"
-          /> */}
+          />
           <span className="d-none d-xl-inline-block ms-2">
             {userProfile.user.usr_full_name ||
               userProfile.user.usr_email}

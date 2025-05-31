@@ -9,6 +9,13 @@ import TableContainer from '../../../components/Common/TableContainer'
 import ApproveModal from './ApproveModal'
 import { useAuthUser } from "../../../hooks/useAuthUser"
 
+const truncateText = (text, maxLength) => {
+  if (typeof text !== "string") {
+    return text;
+  }
+  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+};
+
 const ApproveDecline = ({ request, toggleParent }) => {
   const { t } = useTranslation()
   const [approveModal, setApproveModal] = useState(false)

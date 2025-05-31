@@ -284,7 +284,7 @@ const Conversation = ({
                           </div>
                         ))
                       ) : (
-                        <p className="text-muted py-3">No Messages available.</p>
+                        <p className="text-muted py-3 text-center">No notes available.</p>
                       )}
                     </CardBody>
                   </Card>
