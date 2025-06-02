@@ -302,20 +302,6 @@ const ApproveDecline = ({ request, toggleParent }) => {
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "bra_requested_date",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bra_requested_date, 30) ||
-                "-"}
-            </span>
-          );
-        },
       }
     ];
     if (true) {
@@ -379,10 +365,7 @@ const ApproveDecline = ({ request, toggleParent }) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
-                cellProps.row.original.brt_previous_year_physical,
-                30
-              ) || "-"}
+              {`${cellProps.getValue()}%`}
             </span>
           );
         },
@@ -395,10 +378,7 @@ const ApproveDecline = ({ request, toggleParent }) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
-                cellProps.row.original.brt_previous_year_financial,
-                30
-              ) || "-"}
+              {parseFloat(cellProps.getValue()).toLocaleString()}
             </span>
           );
         },
@@ -411,10 +391,7 @@ const ApproveDecline = ({ request, toggleParent }) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
-                cellProps.row.original.brt_current_year_physical,
-                30
-              ) || "-"}
+              {`${cellProps.getValue()}%`}
             </span>
           );
         },
@@ -427,10 +404,7 @@ const ApproveDecline = ({ request, toggleParent }) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
-                cellProps.row.original.brt_current_year_financial,
-                30
-              ) || "-"}
+              {parseFloat(cellProps.getValue()).toLocaleString()}
             </span>
           );
         },
@@ -443,10 +417,7 @@ const ApproveDecline = ({ request, toggleParent }) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
-                cellProps.row.original.brt_next_year_physical,
-                30
-              ) || "-"}
+              {`${cellProps.getValue()}%`}
             </span>
           );
         },
@@ -459,10 +430,7 @@ const ApproveDecline = ({ request, toggleParent }) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
-                cellProps.row.original.brt_next_year_financial,
-                30
-              ) || "-"}
+              {parseFloat(cellProps.getValue()).toLocaleString()}
             </span>
           );
         },
@@ -471,79 +439,6 @@ const ApproveDecline = ({ request, toggleParent }) => {
     return baseColumns;
   }, []);
 
-  const brExSourceColumns = useMemo(() => {
-    const baseColumns = [
-      {
-        header: "",
-        accessorKey: "bes_organ_code",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bes_organ_code, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "bes_org_name",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bes_org_name, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "bes_support_amount",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bes_support_amount, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "bes_credit_amount",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bes_credit_amount, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "bes_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bes_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-    ];
-
-    return baseColumns;
-  }, []);
 
   return (
     <>
@@ -662,11 +557,6 @@ const ApproveDecline = ({ request, toggleParent }) => {
                         Budget Request Tasks
                       </NavLink>
                     </NavItem>
-                    <NavItem>
-                      <NavLink style={{ cursor: "pointer" }} className={classnames({ "mb-2": true, active: verticalActiveTab === "3", })} onClick={() => { toggleVertical("3"); }}>
-                        Budget Request External Sources
-                      </NavLink>
-                    </NavItem>
                   </Nav>
                 </Col>
                 <Col md="9">
@@ -705,27 +595,6 @@ const ApproveDecline = ({ request, toggleParent }) => {
                         <TableContainer
                           columns={brTasksColumns}
                           data={brTasks?.data?.data || []}
-                          isGlobalFilter={true}
-                          isCustomPageSize={true}
-                          isPagination={true}
-                          SearchPlaceholder={t("filter_placeholder")}
-                          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                          theadClass="table-light"
-                          pagination="pagination"
-                          paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                        />
-                      )}
-                    </TabPane>
-                    <TabPane tabId="3">
-                      {brExSources?.isLoading ? (
-                        <div className="w-100 d-flex align-items-center justify-content-center">
-                          <Spinner color="primary" />
-                        </div>
-                      ) : (
-                        <TableContainer
-                          columns={brExSourceColumns}
-                          data={brExSources?.data?.data || []}
                           isGlobalFilter={true}
                           isCustomPageSize={true}
                           isPagination={true}

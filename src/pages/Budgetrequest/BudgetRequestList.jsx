@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import Spinners from "../../components/Common/Spinner";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import BudgetRequestAmount from "../Budgetrequestamount/index";
@@ -17,10 +16,7 @@ import {
   Input,
   Badge,
 } from "reactstrap";
-import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-//import BudgetRequestAnalysis from "./BudgetRequestAnalysis";
+import AgGridContainer from "../../components/Common/AgGridContainer";
 import {
   useSearchBudgetRequests,
 } from "../../queries/budget_request_query";
@@ -32,23 +28,15 @@ import AttachFileModal from "../../components/Common/AttachFileModal";
 import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal";
 import { PAGE_ID } from "../../constants/constantFile";
 import BudgetRequestModal from "./BudgetRequestModal";
-import ExportToExcel from "../../components/Common/ExportToExcel";
-import ExportToPDF from "../../components/Common/ExportToPdf";
-import PrintPage from "../../components/Common/PrintPage";
-import { budget_request } from "../../settings/printablecolumns";
 import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
-import { createSelectOptions } from "../../utils/commonMethods";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-const statusClasses = new Map([
-  ["Approved", "success"],
-  ["Rejected", "danger"],
-  ["Requested", "secondary"],
-]);
+
 const BudgetRequestListModel = () => {
   document.title = "Budget Request List";
   const { t } = useTranslation();
@@ -108,12 +96,6 @@ const BudgetRequestListModel = () => {
     );
   }, [bgCategoryOptionsData]);
 
-  // const projectStatusOptions = createSelectOptions(
-  //   projectStatusData?.data || [],
-  //   "prs_id",
-  //   "prs_status_name_or"
-  // );
-
   const projectStatusOptions = useMemo(() => {
     return (
       projectStatusData?.data?.map((type) => ({
@@ -138,13 +120,6 @@ const BudgetRequestListModel = () => {
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
 
-  // When selection changes, update selectedRows
-  const onSelectionChanged = () => {
-    const selectedNodes = gridRef.current.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
-    setSelectedRows(selectedData);
-  };
-
   useEffect(() => {
     setProjectParams({
       ...(prjLocationRegionId && {
@@ -157,6 +132,7 @@ const BudgetRequestListModel = () => {
       ...(include === 1 && { include }),
     });
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
+
   const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
@@ -397,6 +373,7 @@ const BudgetRequestListModel = () => {
     }
     return baseColumnDefs;
   }, []);
+
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
@@ -423,10 +400,7 @@ const BudgetRequestListModel = () => {
       />
       <div className="page-content">
         <div className="">
-          <Breadcrumbs
-            title={t("budget_request")}
-            breadcrumbItem={t("budget_request")}
-          />
+          <Breadcrumbs />
           <div className="w-100 d-flex gap-2">
             <TreeForLists
               onNodeSelect={handleNodeSelect}
@@ -458,93 +432,27 @@ const BudgetRequestListModel = () => {
                 setIsSearchLoading={setIsSearchLoading}
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
-              />
+              >
 
-              {isLoading || isSearchLoading ? (
-                <Spinners />
-              ) : (
-                <>
-                  <div
-                    className="ag-theme-alpine"
-                    style={{ height: "100%", width: "100%" }}
-                  >
-                    {/* Row for search input and buttons */}
-                    <Row className="mb-3">
-                      <Col sm="12" md="6">
-                        <Input
-                          type="text"
-                          placeholder="Search..."
-                          onChange={(e) => setQuickFilterText(e.target.value)}
-                          className="mb-2"
-                        />
-                      </Col>
-                      <Col
-                        sm="12"
-                        md="6"
-                        className="text-md-end d-flex align-items-center justify-content-end gap-2"
-                      >
-                        <ExportToExcel
-                          tableData={
-                            showSearchResult
-                              ? searchResults?.data
-                              : data?.data || []
-                          }
-                          tablename={"projects"}
-                          excludeKey={["is_editable", "is_deletable"]}
-                        />
-                        <ExportToPDF
-                          tableData={
-                            showSearchResult
-                              ? searchResults?.data
-                              : data?.data || []
-                          }
-                          tablename={"projects"}
-                          includeKey={budget_request}
-                        />
-                        <PrintPage
-                          tableData={
-                            showSearchResult
-                              ? searchResults?.data
-                              : data?.data || []
-                          }
-                          tablename={t("Projects")}
-                          excludeKey={["is_editable", "is_deletable"]}
-                          gridRef={gridRef}
-                          columnDefs={columnDefs}
-                          columnsToIgnore="3"
-                        />
-                      </Col>
-                    </Row>
-                    {/* AG Grid */}
-                    <div style={{}}>
-                      <AgGridReact
-                        ref={gridRef}
-                        rowData={
-                          showSearchResult
-                            ? searchResults?.data
-                            : data?.data || []
-                        }
-                        columnDefs={columnDefs}
-                        pagination={true}
-                        paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                        paginationPageSize={20}
-                        quickFilterText={quickFilterText}
-                        onSelectionChanged={onSelectionChanged}
-                        rowHeight={30}
-                        animateRows={true}
-                        domLayout="autoHeight"
-                      />
-                    </div>
-                    {/*<BudgetRequestAnalysis
-                      data={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                    />*/}
-                  </div>
-                </>
-              )}
+                <AgGridContainer
+                  rowData={
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
+                  columnDefs={columnDefs}
+                  isLoading={isSearchLoading}
+                  isPagination={true}
+                  paginationPageSize={20}
+                  isGlobalFilter={true}
+                  isAddButton={false}
+                  addButtonText="Add"
+                  isExcelExport={true}
+                  isPdfExport={true}
+                  isPrint={true}
+                  tableName="Projects"
+                  includeKey={["prj_name", "prj_code"]}
+                  excludeKey={["is_editable", "is_deletable"]}
+                />
+              </AdvancedSearch>
             </div>
           </div>
         </div>
@@ -559,7 +467,6 @@ const BudgetRequestListModel = () => {
           components={{
             [t("budget_request_amount")]: BudgetRequestAmount,
             [t("budget_request_task")]: BudgetRequestTask,
-            [t("budget_ex_source")]: BudgetExSource,
           }}
         />
       )}

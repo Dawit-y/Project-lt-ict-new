@@ -390,7 +390,7 @@ const TableContainer = ({
           </div>
 
         </div>
-        {isPagination && (
+        {isPagination && data.length > 0 && (
           <Row className="my-2">
             <Col sm={12} md={5}>
               <div className="dataTables_info">
