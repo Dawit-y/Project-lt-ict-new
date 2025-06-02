@@ -2,12 +2,15 @@ import React, { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Card, CardBody, Table, Row, Col, Button, TabContent, TabPane, Nav, NavItem, CardTitle, NavLink, Spinner, Badge } from 'reactstrap'
 import classnames from "classnames"
+import { useFetchExpenditureCodes } from "../../../queries/expenditurecode_query"
 import { useFetchBudgetExSources } from '../../../queries/budgetexsource_query'
 import { useFetchBudgetRequestAmounts } from '../../../queries/budgetrequestamount_query'
 import { useFetchBudgetRequestTasks } from '../../../queries/budgetrequesttask_query'
 import TableContainer from '../../../components/Common/TableContainer'
 import ApproveModal from './ApproveModal'
 import { useAuthUser } from "../../../hooks/useAuthUser"
+import BrAmountApproverModal from './BrAmountApproverModal'
+import { createKeyValueMap } from '../../../utils/commonMethods'
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -19,9 +22,19 @@ const truncateText = (text, maxLength) => {
 const ApproveDecline = ({ request, toggleParent }) => {
   const { t } = useTranslation()
   const [approveModal, setApproveModal] = useState(false)
+  const [brAmountModal, setBrAmountModal] = useState(false)
+  const [braAmount, setBraAmount] = useState({})
   const toggleApproveModal = () => setApproveModal(!approveModal)
+  const toggleBrAmountModal = () => setBrAmountModal(!brAmountModal)
   const [action, setAction] = useState("")
   const { departmentType } = useAuthUser()
+
+  const { data: exCodesData, isLoading: exCodesLoading, isError: exCodesError } =
+    useFetchExpenditureCodes();
+
+  const expendCodeMap = useMemo(() => {
+    return createKeyValueMap(exCodesData?.data || [], "pec_id", "pec_code");
+  }, [exCodesData]);
 
   const isDirector = departmentType === "directorate"
   const isDepartment = departmentType === "department"
@@ -81,10 +94,7 @@ const ApproveDecline = ({ request, toggleParent }) => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(
-                cellProps.row.original.bra_expenditure_code_id,
-                30
-              ) || "-"}
+              {expendCodeMap[cellProps.row.original.bra_expenditure_code_id]}
             </span>
           );
         },
@@ -306,22 +316,30 @@ const ApproveDecline = ({ request, toggleParent }) => {
             </span>
           );
         },
-      },
-      {
-        header: "",
-        accessorKey: "bra_approved_date",
+      }
+    ];
+    if (true) {
+      baseColumns.push({
+        header: t("Approve"),
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
-            <span>
-              {truncateText(cellProps.row.original.bra_approved_date, 30) ||
-                "-"}
-            </span>
+            <Button
+              type="button"
+              color="success"
+              className="btn-sm"
+              onClick={() => {
+                setBraAmount(cellProps.row.original)
+                toggleBrAmountModal()
+              }}
+            >
+              {t("Approve")}
+            </Button>
           );
-        },
-      },
-    ];
+        }
+      })
+    }
     return baseColumns;
   }, []);
 
@@ -529,6 +547,13 @@ const ApproveDecline = ({ request, toggleParent }) => {
 
   return (
     <>
+      {brAmountModal && (
+        <BrAmountApproverModal
+          isOpen={brAmountModal}
+          toggle={toggleBrAmountModal}
+          budgetRequestAmount={braAmount}
+        />
+      )}
       {isDepartmentLevel && (
         <ApproveModal
           isOpen={approveModal}

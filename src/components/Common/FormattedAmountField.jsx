@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { Label, Input, FormFeedback, Col } from "reactstrap";
+import { Label, Input, FormFeedback, Col, FormText } from "reactstrap";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 
@@ -9,7 +9,8 @@ const FormattedAmountField = ({
   label,
   isRequired = false,
   allowDecimal = false,
-  className
+  className,
+  infoText
 }) => {
   const { t } = useTranslation();
   const rawValue = validation.values[fieldId];
@@ -17,7 +18,6 @@ const FormattedAmountField = ({
   const [displayValue, setDisplayValue] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
-  // Sync displayValue with rawValue only when not editing
   useEffect(() => {
     if (!isEditing) {
       if (rawValue !== undefined && rawValue !== null && rawValue !== "") {
@@ -38,7 +38,7 @@ const FormattedAmountField = ({
   }, [rawValue, allowDecimal, isEditing]);
 
   const handleChange = (e) => {
-    setIsEditing(true); // User started editing
+    setIsEditing(true);
 
     let input = e.target.value.replace(/,/g, "");
     const regex = allowDecimal ? /^\d*\.?\d*$/ : /^\d*$/;
@@ -65,8 +65,6 @@ const FormattedAmountField = ({
 
   const handleBlur = (e) => {
     setIsEditing(false);
-
-    // On blur, format the displayValue properly
     const numeric = parseFloat(rawValue);
     if (!isNaN(numeric)) {
       setDisplayValue(
@@ -99,6 +97,7 @@ const FormattedAmountField = ({
       {validation.touched[fieldId] && validation.errors[fieldId] && (
         <FormFeedback type="invalid">{validation.errors[fieldId]}</FormFeedback>
       )}
+      {infoText && <FormText className="text-muted">{infoText}</FormText>}
     </Col>
   );
 };
@@ -109,6 +108,7 @@ FormattedAmountField.propTypes = {
   fieldId: PropTypes.string.isRequired,
   allowDecimal: PropTypes.bool,
   className: PropTypes.string,
+  infoText: PropTypes.string
 };
 
 export default FormattedAmountField;

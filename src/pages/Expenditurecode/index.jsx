@@ -58,8 +58,7 @@ const truncateText = (text, maxLength) => {
 };
 
 const ExpenditureCodeModel = () => {
-  //meta title
-  document.title = " ExpenditureCode";
+  document.title = "Expenditure Code";
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -239,6 +238,7 @@ const ExpenditureCodeModel = () => {
     setExpenditureCode("");
     toggle();
   };
+
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
@@ -349,6 +349,10 @@ const ExpenditureCodeModel = () => {
 
     return baseColumns;
   }, [handleExpenditureCodeClick, toggleViewModal, onClickDelete]);
+
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />
+  }
 
   return (
     <React.Fragment>

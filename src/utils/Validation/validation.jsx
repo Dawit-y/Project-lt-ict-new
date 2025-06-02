@@ -124,12 +124,12 @@ export const formattedAmountValidation = (
       const val = cleanValue(value);
       return /^\d+(\.\d{1,2})?$/.test(val);
     })
-    .test("min-value", `${t("val_min_amount")}: ${minLength}`, (value) => {
+    .test("min-value", `${t("val_min_amount")}: ${parseFloat(minLength).toLocaleString()}`, (value) => {
       if (value === undefined || value === "") return true;
       const val = cleanValue(value);
       return parseFloat(val) >= minLength;
     })
-    .test("max-value", `${t("val_max_amount")}: ${maxLength}`, (value) => {
+    .test("max-value", `${t("val_max_amount")}: ${parseFloat(maxLength).toLocaleString()}`, (value) => {
       if (value === undefined || value === "") return true;
       const val = cleanValue(value);
       return parseFloat(val) <= maxLength;

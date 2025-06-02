@@ -434,25 +434,29 @@ const ApproverBudgetRequestList = () => {
           transaction={transaction}
           budgetYearMap={budgetYearMap}
         />
-        <AttachFileModal
-          isOpen={fileModal}
-          toggle={toggleFileModal}
-          projectId={transaction?.bdr_project_id}
-          ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-          ownerId={transaction?.bdr_id}
-          canAdd={isMutable}
-          canEdit={isMutable}
-          canDelete={isMutable}
-        />
-        <ConvInfoModal
-          isOpen={convModal}
-          toggle={toggleConvModal}
-          ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-          ownerId={transaction?.bdr_id ?? null}
-          canAdd={isMutable}
-          canEdit={isMutable}
-          canDelete={isMutable}
-        />
+        {fileModal &&
+          <AttachFileModal
+            isOpen={fileModal}
+            toggle={toggleFileModal}
+            projectId={transaction?.bdr_project_id}
+            ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+            ownerId={transaction?.bdr_id}
+            canAdd={isMutable}
+            canEdit={isMutable}
+            canDelete={isMutable}
+          />
+        }
+        {convModal &&
+          <ConvInfoModal
+            isOpen={convModal}
+            toggle={toggleConvModal}
+            ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+            ownerId={transaction?.bdr_id ?? null}
+            canAdd={isMutable}
+            canEdit={isMutable}
+            canDelete={isMutable}
+          />
+        }
         <div className="page-content">
           <div className="">
             <Breadcrumbs />
