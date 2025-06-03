@@ -13,8 +13,10 @@ import {
   NavLink,
 } from "reactstrap";
 import Chart from "react-apexcharts";
+import { useTranslation } from "react-i18next";
 
 const ProjectSummary = ({ data }) => {
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState("overview");
 
   // Null-safe data extraction
@@ -497,7 +499,8 @@ const ProjectSummary = ({ data }) => {
               </Badge>
               <Badge color="light" className="text-dark">
                 <i className="mdi mdi-account-group me-1"></i>
-                {formatNumber(projectMetrics.totalBeneficiaries)} Beneficiaries
+                {formatNumber(projectMetrics.totalBeneficiaries)}{" "}
+                {t("beneficiaries")}
               </Badge>
             </div>
           </div>
@@ -508,7 +511,7 @@ const ProjectSummary = ({ data }) => {
               {project.prj_end_date_plan_gc}
               {projectMetrics.daysRemaining > 0 && (
                 <span className="ms-2">
-                  {projectMetrics.daysRemaining} days remaining
+                  {projectMetrics.daysRemaining} {t("days_remaining")}
                 </span>
               )}
             </Badge>
@@ -522,7 +525,8 @@ const ProjectSummary = ({ data }) => {
               active={activeTab === "overview"}
               onClick={() => setActiveTab("overview")}
             >
-              <i className="mdi mdi-view-dashboard-outline me-1"></i> Overview
+              <i className="mdi mdi-view-dashboard-outline me-1"></i>{" "}
+              {t("overview")}
             </NavLink>
           </NavItem>
           <NavItem>
@@ -530,7 +534,7 @@ const ProjectSummary = ({ data }) => {
               active={activeTab === "performance"}
               onClick={() => setActiveTab("performance")}
             >
-              <i className="mdi mdi-chart-line me-1"></i> Performance
+              <i className="mdi mdi-chart-line me-1"></i> {t("performance")}
             </NavLink>
           </NavItem>
           <NavItem>
@@ -538,7 +542,7 @@ const ProjectSummary = ({ data }) => {
               active={activeTab === "budget"}
               onClick={() => setActiveTab("budget")}
             >
-              <i className="mdi mdi-cash-multiple me-1"></i> Budget
+              <i className="mdi mdi-cash-multiple me-1"></i> {t("budget")}
             </NavLink>
           </NavItem>
           <NavItem>
@@ -546,7 +550,8 @@ const ProjectSummary = ({ data }) => {
               active={activeTab === "details"}
               onClick={() => setActiveTab("details")}
             >
-              <i className="mdi mdi-information-outline me-1"></i> Details
+              <i className="mdi mdi-information-outline me-1"></i>{" "}
+              {t("details")}
             </NavLink>
           </NavItem>
         </Nav>
@@ -559,7 +564,7 @@ const ProjectSummary = ({ data }) => {
               <Col lg={4} md={6}>
                 <Card className="shadow-none border">
                   <CardBody>
-                    <h5 className="card-title">Financial Progress</h5>
+                    <h5 className="card-title">{t("financial_progress")}</h5>
                     <Chart
                       options={financialChart.options}
                       series={financialChart.series}
@@ -568,7 +573,7 @@ const ProjectSummary = ({ data }) => {
                     />
                     <div className="mt-3">
                       <div className="d-flex justify-content-between mb-1">
-                        <span>Actual</span>
+                        <span>{t("actual")}</span>
                         <span>
                           {formatCurrency(projectMetrics.actualFinancial)}
                         </span>
@@ -579,7 +584,7 @@ const ProjectSummary = ({ data }) => {
                         style={{ height: "6px" }}
                       />
                       <div className="d-flex justify-content-between mt-1">
-                        <span>Planned</span>
+                        <span>{t("planned")}</span>
                         <span>
                           {formatCurrency(projectMetrics.plannedFinancial)}
                         </span>
@@ -593,7 +598,7 @@ const ProjectSummary = ({ data }) => {
               <Col lg={4} md={6}>
                 <Card className="shadow-none border">
                   <CardBody>
-                    <h5 className="card-title">Physical Progress</h5>
+                    <h5 className="card-title">{t("physical_progress")}</h5>
                     <Chart
                       options={physicalChart.options}
                       series={physicalChart.series}
@@ -602,7 +607,7 @@ const ProjectSummary = ({ data }) => {
                     />
                     <div className="mt-3">
                       <div className="d-flex justify-content-between mb-1">
-                        <span>Actual</span>
+                        <span>{t("actual")}</span>
                         <span>{projectMetrics.actualPhysical}%</span>
                       </div>
                       <Progress
@@ -611,7 +616,7 @@ const ProjectSummary = ({ data }) => {
                         style={{ height: "6px" }}
                       />
                       <div className="d-flex justify-content-between mt-1">
-                        <span>Planned</span>
+                        <span>{t("planned")}</span>
                         <span>{projectMetrics.plannedPhysical}%</span>
                       </div>
                     </div>
@@ -623,7 +628,7 @@ const ProjectSummary = ({ data }) => {
               <Col lg={4} md={6}>
                 <Card className="shadow-none border">
                   <CardBody>
-                    <h5 className="card-title">Time Progress</h5>
+                    <h5 className="card-title">{t("time_progress")}</h5>
                     <Chart
                       options={timeProgressChart.options}
                       series={timeProgressChart.series}
@@ -632,7 +637,7 @@ const ProjectSummary = ({ data }) => {
                     />
                     <div className="mt-3">
                       <div className="d-flex justify-content-between mb-1">
-                        <span>Elapsed</span>
+                        <span>{t("elapsed")}</span>
                         <span>
                           {formatDuration(projectMetrics.daysElapsed)}
                         </span>
@@ -651,7 +656,7 @@ const ProjectSummary = ({ data }) => {
                         style={{ height: "6px" }}
                       />
                       <div className="d-flex justify-content-between mt-1">
-                        <span>Remaining</span>
+                        <span>{t("remaining")}</span>
                         <span>
                           {formatDuration(projectMetrics.daysRemaining)}
                         </span>
@@ -665,7 +670,7 @@ const ProjectSummary = ({ data }) => {
               <Col lg={6}>
                 <Card className="shadow-none border">
                   <CardBody>
-                    <h5 className="card-title">Beneficiaries</h5>
+                    <h5 className="card-title">{t("beneficiaries")}</h5>
                     <Chart
                       options={beneficiariesChart.options}
                       series={beneficiariesChart.series}
@@ -680,7 +685,7 @@ const ProjectSummary = ({ data }) => {
               <Col lg={6}>
                 <Card className="shadow-none border">
                   <CardBody>
-                    <h5 className="card-title">Budget Distribution</h5>
+                    <h5 className="card-title">{t("budget_distribution")}</h5>
                     {projectMetrics.budgetTypes.length > 0 ? (
                       <Chart
                         options={budgetDistributionChart.options}
@@ -691,7 +696,9 @@ const ProjectSummary = ({ data }) => {
                     ) : (
                       <div className="text-center py-4">
                         <i className="mdi mdi-information-outline display-4 text-muted"></i>
-                        <p className="mt-2 mb-0">No budget data available</p>
+                        <p className="mt-2 mb-0">
+                          {t("no_budget_data_available")}
+                        </p>
                       </div>
                     )}
                   </CardBody>
@@ -706,15 +713,15 @@ const ProjectSummary = ({ data }) => {
               <Col lg={6}>
                 <Card className="shadow-none border">
                   <CardBody>
-                    <h5 className="card-title">Physical Performance</h5>
+                    <h5 className="card-title">{t("physical_performance")}</h5>
                     <div className="text-center mb-4">
                       <h1>{Math.round(projectMetrics.physicalProgress)}%</h1>
-                      <p className="text-muted">Completion Rate</p>
+                      <p className="text-muted">{t("completion_rate")}</p>
                     </div>
 
                     <div className="mb-3">
                       <div className="d-flex justify-content-between mb-1">
-                        <span>Actual Progress</span>
+                        <span>{t("actual_progress")}</span>
                         <span>{projectMetrics.actualPhysical}%</span>
                       </div>
                       <Progress
@@ -726,7 +733,7 @@ const ProjectSummary = ({ data }) => {
 
                     <div className="mb-3">
                       <div className="d-flex justify-content-between mb-1">
-                        <span>Planned Progress</span>
+                        <span>{t("planned_progress")}</span>
                         <span>{projectMetrics.plannedPhysical}%</span>
                       </div>
                       <Progress
@@ -737,7 +744,7 @@ const ProjectSummary = ({ data }) => {
                     </div>
 
                     <div className="mt-4">
-                      <h6 className="mb-2">Performance Gap</h6>
+                      <h6 className="mb-2">{t("performance_gap")}</h6>
                       <Badge
                         color={
                           projectMetrics.actualPhysical >=
@@ -765,15 +772,17 @@ const ProjectSummary = ({ data }) => {
               <Col lg={6}>
                 <Card className="shadow-none border">
                   <CardBody>
-                    <h5 className="card-title">Financial Performance</h5>
+                    <h5 className="card-title">{t("financial_performance")}</h5>
                     <div className="text-center mb-4">
                       <h1>{Math.round(projectMetrics.financialProgress)}%</h1>
-                      <p className="text-muted">Budget Utilization Rate</p>
+                      <p className="text-muted">
+                        {t("budget_utilization_rate")}
+                      </p>
                     </div>
 
                     <div className="mb-3">
                       <div className="d-flex justify-content-between mb-1">
-                        <span>Actual Expenditure</span>
+                        <span>{t("actual_expenditure")}</span>
                         <span>
                           {formatCurrency(projectMetrics.actualFinancial)}
                         </span>
@@ -791,7 +800,7 @@ const ProjectSummary = ({ data }) => {
 
                     <div className="mb-3">
                       <div className="d-flex justify-content-between mb-1">
-                        <span>Planned Expenditure</span>
+                        <span>{t("planned_expenditure")}</span>
                         <span>
                           {formatCurrency(projectMetrics.plannedFinancial)}
                         </span>
@@ -804,7 +813,7 @@ const ProjectSummary = ({ data }) => {
                     </div>
 
                     <div className="mt-4">
-                      <h6 className="mb-2">Financial Status</h6>
+                      <h6 className="mb-2">{t("financial_status")}</h6>
                       <Badge
                         color={
                           projectMetrics.actualFinancial >
@@ -841,12 +850,12 @@ const ProjectSummary = ({ data }) => {
               <Col lg={12}>
                 <Card className="shadow-none border">
                   <CardBody>
-                    <h5 className="card-title">Time Performance</h5>
+                    <h5 className="card-title">{t("time_performance")}</h5>
                     <Row>
                       <Col md={4}>
                         <div className="text-center p-3">
                           <h3>{formatDuration(projectMetrics.daysElapsed)}</h3>
-                          <p className="text-muted mb-0">Days Elapsed</p>
+                          <p className="text-muted mb-0">{t("days_elapsed")}</p>
                         </div>
                       </Col>
                       <Col md={4}>
@@ -854,20 +863,24 @@ const ProjectSummary = ({ data }) => {
                           <h3>
                             {formatDuration(projectMetrics.daysRemaining)}
                           </h3>
-                          <p className="text-muted mb-0">Days Remaining</p>
+                          <p className="text-muted mb-0">
+                            {t("days_remaining")}
+                          </p>
                         </div>
                       </Col>
                       <Col md={4}>
                         <div className="text-center p-3">
                           <h3>{formatDuration(projectMetrics.durationDays)}</h3>
-                          <p className="text-muted mb-0">Total Duration</p>
+                          <p className="text-muted mb-0">
+                            {t("total_duration")}
+                          </p>
                         </div>
                       </Col>
                     </Row>
 
                     <div className="mt-3">
                       <div className="d-flex justify-content-between mb-1">
-                        <span>Project Timeline</span>
+                        <span>{t("project_timeline")}</span>
                         <span>
                           {Math.min(
                             100,
@@ -926,12 +939,12 @@ const ProjectSummary = ({ data }) => {
               <Col lg={6}>
                 <Card className="shadow-none border">
                   <CardBody>
-                    <h5 className="card-title">Budget Overview</h5>
+                    <h5 className="card-title">{t("budget_overview")}</h5>
                     <div className="table-responsive">
                       <table className="table mb-0">
                         <tbody>
                           <tr>
-                            <th>Total Estimated Budget</th>
+                            <th>{t("total_estimated_budget")}</th>
                             <td className="text-end">
                               {formatCurrency(projectMetrics.totalBudget)}
                             </td>
@@ -944,7 +957,7 @@ const ProjectSummary = ({ data }) => {
                                 : "fw-bold"
                             }
                           >
-                            <th>Total Released Budget</th>
+                            <th>{t("total_released_budget")}</th>
                             <td className="text-end">
                               {formatCurrency(projectMetrics.releasedBudget)}
                               {projectMetrics.totalBudget > 0 && (
@@ -971,7 +984,7 @@ const ProjectSummary = ({ data }) => {
                           </tr>
 
                           <tr>
-                            <th>Actual Expenditure</th>
+                            <th>{t("actual_expenditure")}</th>
                             <td className="text-end">
                               {formatCurrency(projectMetrics.actualFinancial)}
                               {projectMetrics.releasedBudget > 0 && (
@@ -1007,7 +1020,7 @@ const ProjectSummary = ({ data }) => {
                                 : "fw-bold"
                             }
                           >
-                            <th>Remaining Budget From Released</th>
+                            <th>{t("remaining_budget_from_released")}</th>
                             <td className="text-end">
                               {formatCurrency(
                                 projectMetrics.releasedBudget -
@@ -1022,7 +1035,7 @@ const ProjectSummary = ({ data }) => {
                                       projectMetrics.releasedBudget) *
                                     100
                                   ).toFixed(2)}
-                                  % remaining)
+                                  % {t("remaining")})
                                 </small>
                               )}
                             </td>
@@ -1037,7 +1050,7 @@ const ProjectSummary = ({ data }) => {
                                 : "fw-bold"
                             }
                           >
-                            <th>Unreleased Portion of Total Budget</th>
+                            <th>{t("unreleased_portion_of_total_budget")}</th>
                             <td className="text-end">
                               {formatCurrency(
                                 projectMetrics.totalBudget -
@@ -1078,7 +1091,9 @@ const ProjectSummary = ({ data }) => {
                             }
                           >
                             <th>
-                              Remaining Budget From Total Estimated (Not Used)
+                              {t(
+                                "remaining_budget_from_total_estimated_(not_used)"
+                              )}
                             </th>
                             <td className="text-end">
                               {formatCurrency(
@@ -1094,7 +1109,7 @@ const ProjectSummary = ({ data }) => {
                                       projectMetrics.totalBudget) *
                                     100
                                   ).toFixed(2)}
-                                  % remaining)
+                                  % {t("remaining")})
                                 </small>
                               )}
                             </td>
@@ -1109,7 +1124,7 @@ const ProjectSummary = ({ data }) => {
               <Col lg={6}>
                 <Card className="shadow-none border">
                   <CardBody>
-                    <h5 className="card-title">Budget Utilization</h5>
+                    <h5 className="card-title">{t("budget_utilization")}</h5>
                     {projectMetrics.plannedFinancial ||
                     projectMetrics.actualFinancial > 0 ? (
                       <Chart
@@ -1122,7 +1137,7 @@ const ProjectSummary = ({ data }) => {
                       <div className="text-center py-4">
                         <i className="mdi mdi-chart-line display-4 text-muted"></i>
                         <p className="mt-2 mb-0">
-                          No budget data to display utilization
+                          {t("no_budget_data_to_display_utilization")}
                         </p>
                       </div>
                     )}
@@ -1133,7 +1148,7 @@ const ProjectSummary = ({ data }) => {
               <Col lg={12}>
                 <Card className="shadow-none border">
                   <CardBody>
-                    <h5 className="card-title">Budget Breakdown</h5>
+                    <h5 className="card-title">{t("budget_breakdown")}</h5>
                     {projectMetrics.budgetTypes.length > 0 ? (
                       <>
                         <Chart
@@ -1146,9 +1161,9 @@ const ProjectSummary = ({ data }) => {
                           <table className="table table-sm">
                             <thead>
                               <tr>
-                                <th>Budget Type</th>
-                                <th className="text-end">Amount</th>
-                                <th className="text-end">Percentage</th>
+                                <th>{t("budget_type")}</th>
+                                <th className="text-end">{t("amount")}</th>
+                                <th className="text-end">{t("percentage")}</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -1187,11 +1202,12 @@ const ProjectSummary = ({ data }) => {
                       <div className="text-center py-5">
                         <i className="mdi mdi-cash-remove display-4 text-muted"></i>
                         <h5 className="mt-3">
-                          No Budget Information Available
+                          {t("no_budget_information_available")}
                         </h5>
                         <p className="text-muted">
-                          Budget breakdown data has not been provided for this
-                          project
+                          {t(
+                            "budget_breakdown_data_has_not_been_provided_for_this_project"
+                          )}
                         </p>
                       </div>
                     )}
@@ -1207,28 +1223,28 @@ const ProjectSummary = ({ data }) => {
               <Col lg={6}>
                 <Card className="shadow-none border">
                   <CardBody>
-                    <h5 className="card-title">Project Information</h5>
+                    <h5 className="card-title">{t("project_information")}</h5>
                     <div className="table-responsive">
                       <table className="table mb-0">
                         <tbody>
                           <tr>
-                            <th width="40%">Project Name</th>
+                            <th width="40%">{t("project_name")}</th>
                             <td>{project?.prj_name || "-"}</td>
                           </tr>
                           <tr>
-                            <th>Project Code</th>
+                            <th>{t("project_code")}</th>
                             <td>{project?.prj_code || "-"}</td>
                           </tr>
                           <tr>
-                            <th>Sector</th>
+                            <th>{t("sector")}</th>
                             <td>{project?.sector_name || "-"}</td>
                           </tr>
                           <tr>
-                            <th>Category</th>
+                            <th>{t("category")}</th>
                             <td>{project?.project_category || "-"}</td>
                           </tr>
                           <tr>
-                            <th>Status</th>
+                            <th>{t("status")}</th>
                             <td>
                               <Badge color={project?.color_code || "light"}>
                                 {project?.status_name || "-"}
@@ -1243,28 +1259,28 @@ const ProjectSummary = ({ data }) => {
 
                 <Card className="shadow-none border mt-4">
                   <CardBody>
-                    <h5 className="card-title">Location Information</h5>
+                    <h5 className="card-title">{t("location_information")}</h5>
                     <div className="table-responsive">
                       <table className="table mb-0">
                         <tbody>
                           <tr>
-                            <th width="40%">Zone (Owner)</th>
+                            <th width="40%">{t("zone_(owner)")}</th>
                             <td>{project?.zone_owner || "-"}</td>
                           </tr>
                           <tr>
-                            <th>Woreda (Owner)</th>
+                            <th>{t("woreda_(owner)")}</th>
                             <td>{project?.woreda_owner || "-"}</td>
                           </tr>
                           <tr>
-                            <th>Zone (Location)</th>
+                            <th>{t("zone_(location)")}</th>
                             <td>{project?.zone_location || "-"}</td>
                           </tr>
                           <tr>
-                            <th>Woreda (Location)</th>
+                            <th>{t("woreda_(location)")}</th>
                             <td>{project?.woreda_location || "-"}</td>
                           </tr>
                           <tr>
-                            <th>Location Description</th>
+                            <th>{t("location_description")}</th>
                             <td>{project?.prj_location_description || "-"}</td>
                           </tr>
                         </tbody>
@@ -1277,24 +1293,24 @@ const ProjectSummary = ({ data }) => {
               <Col lg={6}>
                 <Card className="shadow-none border">
                   <CardBody>
-                    <h5 className="card-title">Timeline</h5>
+                    <h5 className="card-title">{t("timeline")}</h5>
                     <div className="table-responsive">
                       <table className="table mb-0">
                         <tbody>
                           <tr>
-                            <th width="40%">Planned Start Date</th>
+                            <th width="40%">{t("planned_start_date")}</th>
                             <td>{project?.prj_start_date_plan_gc || "-"}</td>
                           </tr>
                           <tr>
-                            <th>Actual Start Date</th>
+                            <th>{t("actual_start_date")}</th>
                             <td>{project?.prj_start_date_gc || "-"}</td>
                           </tr>
                           <tr>
-                            <th>Planned End Date</th>
+                            <th>{t("planned_end_date")}</th>
                             <td>{project?.prj_end_date_plan_gc || "-"}</td>
                           </tr>
                           <tr>
-                            <th>Duration</th>
+                            <th>{t("duration")}</th>
                             <td>
                               {projectMetrics.durationDays > 0
                                 ? `${projectMetrics.durationDays} days`
@@ -1309,24 +1325,24 @@ const ProjectSummary = ({ data }) => {
 
                 <Card className="shadow-none border mt-4">
                   <CardBody>
-                    <h5 className="card-title">Beneficiaries</h5>
+                    <h5 className="card-title">{t("beneficiaries")}</h5>
                     <div className="table-responsive">
                       <table className="table mb-0">
                         <tbody>
                           <tr>
-                            <th width="40%">Urban Beneficiaries</th>
+                            <th width="40%">{t("urban_beneficiaries")}</th>
                             <td>
                               {formatNumber(projectMetrics.urbanBeneficiaries)}
                             </td>
                           </tr>
                           <tr>
-                            <th>Rural Beneficiaries</th>
+                            <th>{t("rural_beneficiaries")}</th>
                             <td>
                               {formatNumber(projectMetrics.ruralBeneficiaries)}
                             </td>
                           </tr>
                           <tr>
-                            <th>Total Beneficiaries</th>
+                            <th>{t("total_beneficiaries")}</th>
                             <td>
                               {formatNumber(projectMetrics.totalBeneficiaries)}
                             </td>
@@ -1339,24 +1355,26 @@ const ProjectSummary = ({ data }) => {
 
                 <Card className="shadow-none border mt-4">
                   <CardBody>
-                    <h5 className="card-title">Additional Information</h5>
+                    <h5 className="card-title">
+                      {t("additional_information")}
+                    </h5>
                     <div className="table-responsive">
                       <table className="table mb-0">
                         <tbody>
                           <tr>
-                            <th width="40%">Expected Outcome</th>
+                            <th width="40%">{t("expected_outcome")}</th>
                             <td>{project?.prj_outcome || "-"}</td>
                           </tr>
                           <tr>
-                            <th>Remarks</th>
+                            <th>{t("remarks")}</th>
                             <td>{project?.prj_remark || "-"}</td>
                           </tr>
                           <tr>
-                            <th>Created On</th>
+                            <th>{t("created_on")}</th>
                             <td>{project?.prj_create_time || "-"}</td>
                           </tr>
                           <tr>
-                            <th>Last Updated</th>
+                            <th>{t("last_updated")}</th>
                             <td>{project?.prj_update_time || "-"}</td>
                           </tr>
                         </tbody>
