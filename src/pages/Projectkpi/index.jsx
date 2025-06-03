@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
@@ -21,8 +20,7 @@ import {
 } from "../../queries/projectkpi_query";
 import ProjectKpiModal from "./ProjectKpiModal";
 import { useTranslation } from "react-i18next";
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
+
 import {
   Button,
   Col,
@@ -32,17 +30,11 @@ import {
   ModalHeader,
   ModalBody,
   Form,
-  Input,
-  FormFeedback,
-  Label,
   Card,
   CardBody,
-  FormGroup,
-  Badge,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import InputField from "../../components/Common/InputField";
 const truncateText = (text, maxLength) => {
@@ -391,34 +383,7 @@ const ProjectKpiModel = () => {
             title={t("project_kpi")}
             breadcrumbItem={t("project_kpi")}
           />
-          <AdvancedSearch
-            searchHook={useSearchProjectKpis}
-            textSearchKeys={["dep_name_am", "dep_name_en", "dep_name_or"]}
-            dropdownSearchKeys={[
-              {
-                key: "example",
-                options: [
-                  { value: "Freelance", label: "Example1" },
-                  { value: "Full Time", label: "Example2" },
-                  { value: "Part Time", label: "Example3" },
-                  { value: "Internship", label: "Example4" },
-                ],
-              },
-            ]}
-            checkboxSearchKeys={[
-              {
-                key: "example1",
-                options: [
-                  { value: "Engineering", label: "Example1" },
-                  { value: "Science", label: "Example2" },
-                ],
-              },
-            ]}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          />
+
           {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
