@@ -11,6 +11,9 @@ export const formatDate = (date) => {
 // Converts "yyyy/mm/dd" → JS Date
 export function parseDateString(dateStr) {
 	if (!dateStr) return null;
+	if (typeof dateStr === "object" && dateStr instanceof Date) {
+		return dateStr;
+	}
 	const clean = dateStr.replace(/\//g, "-");
 	const parsed = new Date(clean);
 	if (isNaN(parsed)) {

@@ -40,10 +40,6 @@ const truncateText = (text, maxLength) => {
 const BudgetRequestListModel = () => {
   document.title = "Budget Request List";
   const { t } = useTranslation();
-  const [quickFilterText, setQuickFilterText] = useState("");
-  const [selectedRows, setSelectedRows] = useState([]);
-  const gridRef = useRef(null);
-
   const [budgetRequestMetaData, setBudgetRequestMetaData] = useState({});
   const [showCanvas, setShowCanvas] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -68,15 +64,6 @@ const BudgetRequestListModel = () => {
   const [include, setInclude] = useState(0);
 
   const [transaction, setTransaction] = useState({});
-
-  const budgetYearMap = useMemo(() => {
-    return (
-      budgetYearData?.data?.reduce((acc, year) => {
-        acc[year.bdy_id] = year.bdy_name;
-        return acc;
-      }, {}) || {}
-    );
-  }, [budgetYearData]);
 
   const budgetYearOptions = useMemo(() => {
     return (
@@ -177,7 +164,7 @@ const BudgetRequestListModel = () => {
         // flex: 1,
         cellRenderer: (params) => {
           const category = requestCategoryOptions.find(
-            (option) => option.value === params.data.bdr_request_category_id
+            (option) => option.value == params.data.bdr_request_category_id
           );
           return category ? truncateText(category.label, 30) : "-";
         },
@@ -190,7 +177,7 @@ const BudgetRequestListModel = () => {
 
         cellRenderer: (params) => {
           const requestType = projectStatusOptions.find(
-            (option) => option.value === params.data.bdr_request_type
+            (option) => option.value == params.data.bdr_request_type
           );
           return requestType ? truncateText(requestType.label, 30) : "-";
         },
@@ -263,8 +250,9 @@ const BudgetRequestListModel = () => {
         sortable: true,
         // flex: 1,
         filter: "agDateColumnFilter",
+        width: 300,
         cellRenderer: (params) => {
-          return truncateText(params.data.sector_name, 30) || "-";
+          return truncateText(params.data.sector_name, 60) || "-";
         },
       },
       {
@@ -273,6 +261,7 @@ const BudgetRequestListModel = () => {
         sortable: true,
         filter: true,
         // flex: 1,
+        width: 150,
         cellRenderer: (params) => {
           const badgeClass = params.data.color_code;
           return (
@@ -402,12 +391,14 @@ const BudgetRequestListModel = () => {
         <div className="">
           <Breadcrumbs />
           <div className="w-100 d-flex gap-2">
-            <TreeForLists
-              onNodeSelect={handleNodeSelect}
-              setIsAddressLoading={setIsAddressLoading}
-              setInclude={setInclude}
-            />
-            <div className="w-100">
+            <div style={{ flex: "0 0 25%", minWidth: "250px", height: "100%" }}>
+              <TreeForLists
+                onNodeSelect={handleNodeSelect}
+                setIsAddressLoading={setIsAddressLoading}
+                setInclude={setInclude}
+              />
+            </div>
+            <div style={{ flex: "0 0 75%", minWidth: "600px" }}>
               <AdvancedSearch
                 searchHook={useSearchBudgetRequests}
                 dateSearchKeys={["budget_request_date"]}
