@@ -1226,7 +1226,7 @@
 	"Used Budget": "Used Budget",
 	"Remaining Budget": "Remaining Budget",
 	"Remaining Amount": "Remaining Amount",
-	"birr": "birr",
+	"birr": "Birr",
 	"Physical Performance": "Physical Performance",
 	"Time Overview": "Time Overview",
 	"Total Project Duration": "Total Project Duration",
@@ -1757,7 +1757,46 @@
 	"expected_outcome":"Expected Outcome",
 	"remarks":"Remarks",
 	"created_on":"Created On",
-	"last_updated":"Last Updated"
+	"last_updated":"Last Updated",
+	"overall_projects_performance":"Overall Projects Performance",
+	"projects":"Projects",
+	"physical_view":"Physical View",
+	"financial_view":"Financial View",
+	"bar":"Bar",
+	"line":"Line",
+	"pie":"Pie",
+	"summary":"Summary",
+	"monthly_progress":"Monthly Progress",
+	"yearly_progress":"Yearly Progress",
+	"total_planned":"Total Planned",
+	"total_actual":"Total Actual",
+	"variance":"Variance",
+	"month":"Month",
+	"year":"Year",
+	"baseline_comparison":"Baseline Comparison",
+	"physical_baseline":"Physical Baseline",
+	"budget_baseline":"Budget Baseline",
+	"performance_summary":"Performance Summary",
+	"budget_used":"Budget Used",
+	"description":"Description",
+	"no_description_available":"No Description Available",
+	"quarter":"Quarter",
+	"total_planned_budget_(M)":"Total Planned Budget (M)",
+	"total_actual_budget_(M)":"Total Actual Budget (M)",
+	"planned_budget_(M)":"Planned Budget (M)",
+	"actual_budget_(M)":"Actual Budget (M)",
+	"physical":"Physical",
+	"budget_(Millions)":"Budget (Millions)",
+	"physical_progress_(%)":"Physical Progress (%)",
+	"average_planned_physical":"Average Planned Physical",
+	"average_actual_physical":"Average Actual Physical"
+
+
+	
+
+	
+
+	
 
 
 	
@@ -1766,8 +1805,4 @@
 
 
 
-
-
-	
-	
 }
