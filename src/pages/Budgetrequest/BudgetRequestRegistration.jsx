@@ -51,7 +51,6 @@ const BudgetRequestTask = lazy(() => import("../Budgetrequesttask/index"));
 const BudgetExSource = lazy(() => import("../Budgetexsource/index"));
 
 const BudgetRequestModal = lazy(() => import("./BudgetRequestModal"));
-const ActionModal = lazy(() => import("./ActionModal"));
 const AttachFileModal = lazy(() =>
   import("../../components/Common/AttachFileModal")
 );
@@ -756,13 +755,6 @@ const BudgetRequestModel = (props) => {
             isOpen={modal1}
             toggle={toggleViewModal}
             transaction={transaction}
-          />
-        )}
-        {actionModal && (
-          <ActionModal
-            isOpen={actionModal}
-            toggle={toggleActionModal}
-            data={transaction}
           />
         )}
         {fileModal && (

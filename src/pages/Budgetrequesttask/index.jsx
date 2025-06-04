@@ -291,82 +291,97 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
         },
       },
       {
-        header: "",
-        accessorKey: "brt_previous_year_physical",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {`${cellProps.getValue()}%`}
-            </span>
-          );
-        },
+        header: "Performance to Last Year",
+        columns: [
+          {
+            header: "",
+            accessorKey: "brt_previous_year_physical",
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              return (
+                <span>
+                  {`${cellProps.getValue()}%`}
+                </span>
+              );
+            },
+          },
+          {
+            header: "",
+            accessorKey: "brt_previous_year_financial",
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              return (
+                <span>
+                  {parseFloat(cellProps.getValue()).toLocaleString()}
+                </span>
+              );
+            },
+          },
+        ]
       },
       {
-        header: "",
-        accessorKey: "brt_previous_year_financial",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {parseFloat(cellProps.getValue()).toLocaleString()}
-            </span>
-          );
-        },
+        header: "Performance Estimates for this Year",
+        columns: [
+          {
+            header: "",
+            accessorKey: "brt_current_year_physical",
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              return (
+                <span>
+                  {`${cellProps.getValue()}%`}
+                </span>
+              );
+            },
+          },
+          {
+            header: "",
+            accessorKey: "brt_current_year_financial",
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              return (
+                <span>
+                  {parseFloat(cellProps.getValue()).toLocaleString()}
+                </span>
+              );
+            },
+          },
+        ]
       },
       {
-        header: "",
-        accessorKey: "brt_current_year_physical",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {`${cellProps.getValue()}%`}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "brt_current_year_financial",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {parseFloat(cellProps.getValue()).toLocaleString()}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "brt_next_year_physical",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {`${cellProps.getValue()}%`}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "brt_next_year_financial",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {parseFloat(cellProps.getValue()).toLocaleString()}
-            </span>
-          );
-        },
+        header: "Plans for the Coming Year",
+        columns: [
+          {
+            header: "",
+            accessorKey: "brt_next_year_physical",
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              return (
+                <span>
+                  {`${cellProps.getValue()}%`}
+                </span>
+              );
+            },
+          },
+          {
+            header: "",
+            accessorKey: "brt_next_year_financial",
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              return (
+                <span>
+                  {parseFloat(cellProps.getValue()).toLocaleString()}
+                </span>
+              );
+            },
+          },
+        ]
       },
       {
         header: t("view_detail"),

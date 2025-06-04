@@ -316,9 +316,9 @@ const TableContainer = ({
               bordered={isBordered}
             >
               <thead className={theadClass}>
-                {getHeaderGroups().map((headerGroup) => (
+                {getHeaderGroups().map((headerGroup, idx, arr) => (
                   <tr key={headerGroup.id}>
-                    <th>{t("S.N")}</th>
+                    {idx === arr.length - 1 && <th>{t("S.N")}</th>}
                     {headerGroup.headers.map((header) => (
                       <th
                         key={header.id}

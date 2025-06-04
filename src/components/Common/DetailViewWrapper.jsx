@@ -80,17 +80,28 @@ const bytesToReadableSize = (bytes) => {
 
 export const DetailsView = ({ details, keysToRemove = [], status }) => {
   const { t } = useTranslation();
+
   const removeKeys = (obj, keys) => {
     const newObj = { ...obj };
     keys.forEach((key) => delete newObj[key]);
     return newObj;
   };
 
+  // Manually chunk array into groups of n
+  const splitIntoChunks = (array, chunkSize) => {
+    const chunks = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      chunks.push(array.slice(i, i + chunkSize));
+    }
+    return chunks;
+  };
+
   // Remove unwanted keys
   let filteredDetails = removeKeys(details, keysToRemove);
+
   // Detect special keys
   const descriptionKey = Object.keys(filteredDetails).find((key) =>
-    key.includes("description")
+    key.toLowerCase().includes("description")
   );
   const descriptionValue = descriptionKey
     ? filteredDetails[descriptionKey]
@@ -102,6 +113,7 @@ export const DetailsView = ({ details, keysToRemove = [], status }) => {
   const timeKey = Object.keys(filteredDetails).find((key) =>
     key.toLowerCase().endsWith("_create_time")
   );
+
   // Status processing
   const statusKey = status?.key;
   const statusValue = filteredDetails[statusKey];
@@ -109,13 +121,56 @@ export const DetailsView = ({ details, keysToRemove = [], status }) => {
     Object.hasOwn(obj, statusValue)
   )?.[statusValue];
 
+  // Build all rows
+  const allRows = Object.entries(filteredDetails)
+    .filter(
+      ([key]) =>
+        key !== descriptionKey &&
+        key !== sizeKey &&
+        key !== timeKey &&
+        key !== statusKey
+    )
+    .map(([key, value]) => (
+      <tr key={key}>
+        <th>{t(key)}:</th>
+        <td>{value}</td>
+      </tr>
+    ));
+
+  if (sizeKey) {
+    allRows.push(
+      <tr key="size">
+        <th>{t(sizeKey)}:</th>
+        <td>{bytesToReadableSize(filteredDetails[sizeKey])}</td>
+      </tr>
+    );
+  }
+
+  if (timeKey) {
+    allRows.push(
+      <tr key="time">
+        <td colSpan={2}>
+          <div className="mt-4 text-center">
+            <h5 className="font-size-14">
+              <i className="bx bx-calendar-check me-1 text-primary" />
+              {t(timeKey)}
+            </h5>
+            <p className="text-muted mb-0">{filteredDetails[timeKey]}</p>
+          </div>
+        </td>
+      </tr>
+    );
+  }
+
+  // Split into chunks of 7 rows max
+  const columns = splitIntoChunks(allRows, 7);
+
   return (
     <div>
       <div className="mt-2">
         <h5 className="text-truncate font-size-15">
           {t(descriptionKey || "description")}
         </h5>
-        {/* <p className="text-muted">{descriptionValue}</p> */}
         <p className="text-muted">
           <div
             className="border p-3"
@@ -124,53 +179,25 @@ export const DetailsView = ({ details, keysToRemove = [], status }) => {
           />
         </p>
       </div>
+
       {statusKey && statusValue !== undefined && statusItem && (
         <div className="my-3">
           <Badge color={statusItem.color}>{statusItem.name}</Badge>
         </div>
       )}
+
       <div className="text-muted mt-4">
-        <Table className="table-sm">
-          <tbody>
-            {Object.entries(filteredDetails)
-              .filter(
-                ([key]) =>
-                  key !== descriptionKey &&
-                  key !== sizeKey &&
-                  key !== timeKey &&
-                  key !== statusKey
-              )
-              .map(([key, value]) => (
-                <tr key={key}>
-                  <th>{t(key)}:</th>
-                  <td>{value}</td>
-                </tr>
-              ))}
-
-            {sizeKey && (
-              <tr key="size">
-                <th>{t(sizeKey)}:</th>
-                <td>{bytesToReadableSize(filteredDetails[sizeKey])}</td>
-              </tr>
-            )}
-
-            {timeKey && (
-              <tr key="time">
-                <td colSpan={2}>
-                  <div className="mt-4 text-center">
-                    <h5 className="font-size-14">
-                      <i className="bx bx-calendar-check me-1 text-primary" />
-                      {t(timeKey)}
-                    </h5>
-                    <p className="text-muted mb-0">
-                      {filteredDetails[timeKey]}
-                    </p>
-                  </div>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </Table>
+        <div className="d-flex gap-3 flex-wrap">
+          {columns.map((rows, index) => (
+            <Table
+              key={index}
+              className="table-sm"
+              style={{ flex: 1, minWidth: "250px" }}
+            >
+              <tbody>{rows}</tbody>
+            </Table>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -184,6 +211,7 @@ DetailsView.propTypes = {
     values: PropTypes.arrayOf(PropTypes.object).isRequired,
   }),
 };
+
 
 export const PDFPreview = ({ filePath, fileSize }) => {
   const [numPages, setNumPages] = useState(null);
