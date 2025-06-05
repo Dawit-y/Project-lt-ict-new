@@ -11428,10 +11428,10 @@ react-error-overlay@6.0.11, react-error-overlay@^6.0.11:
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.11.tgz#92835de5841c5cf08ba00ddd2d677b6d17ff9adb"
   integrity sha512-/6UZ2qgEyH2aqzYZgQPxEnz33NJ2gNsnHA2o5+o4wW9bLM/JYQitNP9xPhsXwC08hMMovfGe/8retsdDsczPRg==
 
-react-ethiopian-calendar@^1.0.12:
-  version "1.0.12"
-  resolved "https://registry.yarnpkg.com/react-ethiopian-calendar/-/react-ethiopian-calendar-1.0.12.tgz#d6c4a6f3e5f3d1459e634b59fd0333f3fb7f08b7"
-  integrity sha512-PRv/mvQVe7MQ1FJRkZBynrlrdh4CfLBTqrxnZlmeZTo3UABjrvxa2tBN4uB/7Gqfr5q330fs+TQK72gJlmPTFA==
+react-ethiopian-calendar@^1.0.13:
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/react-ethiopian-calendar/-/react-ethiopian-calendar-1.0.13.tgz#b8655b5158436d91ea3c9db061da8f749a216248"
+  integrity sha512-JA4AdUIjs1Lb5Bg3DtN1VSxHpS6yWQGYgPten06SqxmifhSfiEEuv/yjBmRntmzkW1BhKKNe5hmAaSBlxOqvlQ==
   dependencies:
     dayjs "^1.11.10"
     ethiopian-date "^0.0.6"

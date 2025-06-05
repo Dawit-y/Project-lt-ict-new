@@ -97,12 +97,7 @@ const ProjectModel = () => {
 
   const [params, setParams] = useState({});
   const [searchParams, setSearchParams] = useState({});
-  const {
-    data: searchData,
-    error: srError,
-    isError: isSrError,
-    refetch: search,
-  } = useSearchProjects(searchParams);
+
 
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const { data, isLoading, error, isError, refetch } = useState(false);
@@ -278,10 +273,10 @@ const ProjectModel = () => {
         : prjLocationWoredaId,
       prj_location_description:
         (project && project.prj_location_description) || "",
-      //prj_owner_region_id: (project && project.prj_owner_region_id) || "",
-      /*prj_owner_zone_id: (project && project.prj_owner_zone_id) || "",
-      prj_owner_woreda_id: (project && project.prj_owner_woreda_id) || "",
-      prj_owner_kebele_id: (project && project.prj_owner_kebele_id) || "",*/
+      prj_owner_region_id: (project && project.prj_owner_region_id) || Number(prjLocationRegionId),
+      prj_owner_zone_id: (project && project.prj_owner_zone_id) || Number(prjLocationZoneId),
+      prj_owner_woreda_id: (project && project.prj_owner_woreda_id) || Number(prjLocationWoredaId),
+      prj_owner_kebele_id: (project && project.prj_owner_kebele_id) || "",
       prj_owner_description: (project && project.prj_owner_description) || "",
       prj_start_date_et: (project && project.prj_start_date_et) || "",
       prj_start_date_gc: (project && project.prj_start_date_gc) || "",
@@ -311,7 +306,7 @@ const ProjectModel = () => {
         "unique-prj_name",
         t("Already exists"),
         (value) => {
-          return !data?.data.some(
+          return !searchResults?.data.some(
             (item) => item.prj_name == value && item.prj_id !== project?.prj_id
           );
         }
@@ -321,7 +316,7 @@ const ProjectModel = () => {
         "unique-prj_name_en",
         t("Already exists"),
         (value) => {
-          return !data?.data.some(
+          return !searchResults?.data.some(
             (item) =>
               item.prj_name_en == value && item.prj_id !== project?.prj_id
           );
@@ -387,9 +382,9 @@ const ProjectModel = () => {
           prj_location_woreda_id: Number(values.prj_location_woreda_id),
           prj_location_kebele_id: values.prj_location_kebele_id,
           prj_location_description: values.prj_location_description,
-          prj_owner_region_id: Number(prjLocationRegionId),
-          prj_owner_zone_id: Number(prjLocationZoneId),
-          prj_owner_woreda_id: Number(prjLocationWoredaId),
+          prj_owner_region_id: Number(values.prj_owner_region_id),
+          prj_owner_zone_id: Number(values.prj_owner_zone_id),
+          prj_owner_woreda_id: Number(values.prj_owner_woreda_id),
           prj_owner_kebele_id: values.prj_owner_kebele_id,
           prj_owner_description: values.prj_owner_description,
           prj_start_date_et: values.prj_start_date_et,
@@ -438,9 +433,9 @@ const ProjectModel = () => {
           prj_location_woreda_id: Number(values.prj_location_woreda_id),
           prj_location_kebele_id: values.prj_location_kebele_id,
           prj_location_description: values.prj_location_description,
-          prj_owner_region_id: Number(prjLocationRegionId),
-          prj_owner_zone_id: Number(prjLocationZoneId),
-          prj_owner_woreda_id: Number(prjLocationWoredaId),
+          prj_owner_region_id: Number(values.prj_owner_region_id),
+          prj_owner_zone_id: Number(values.prj_owner_zone_id),
+          prj_owner_woreda_id: Number(values.prj_owner_woreda_id),
           prj_owner_kebele_id: values.prj_owner_kebele_id,
           prj_owner_description: values.prj_owner_description,
           prj_start_date_et: values.prj_start_date_et,
@@ -470,17 +465,6 @@ const ProjectModel = () => {
       }
     },
   });
-
-  useEffect(() => {
-    setProject(data);
-  }, [data]);
-
-  useEffect(() => {
-    if (!isEmpty(data) && !!isEdit) {
-      setProject(data);
-      setIsEdit(false);
-    }
-  }, [data]);
 
   const toggle = () => {
     if (modal) {
@@ -602,6 +586,8 @@ const ProjectModel = () => {
         headerName: t("prj_name"),
         sortable: true,
         filter: "agTextColumnFilter",
+        flex: 1,
+        minWidth: 200,
       },
       {
         field: "prj_code",
@@ -663,17 +649,19 @@ const ProjectModel = () => {
       },
     ];
     if (
-      searchData?.previledge?.is_role_editable == 1 ||
-      searchData?.previledge?.is_role_deletable == 1
+      searchResults?.previledge?.is_role_editable == 1 ||
+      searchResults?.previledge?.is_role_deletable == 1
     ) {
       baseColumnDefs.push({
         headerName: t("Action"),
         filter: false,
         sortable: true,
+        width: 100,
         cellRenderer: (params) => {
+
           return (
             <div className="d-flex gap-3">
-              {searchData?.previledge?.is_role_editable == 1 &&
+              {searchResults?.previledge?.is_role_editable == 1 &&
                 params.data?.is_editable == 1 && (
                   <Link
                     className="text-success"
@@ -697,11 +685,7 @@ const ProjectModel = () => {
       });
     }
     return baseColumnDefs;
-  }, [data, onClickDelete, t, searchData]);
-
-  if (isSrError) {
-    return <FetchErrorHandler error={srError} refetch={search} />;
-  }
+  }, [onClickDelete, handleProjectClick, t, searchResults]);
 
   // Add this useEffect to update tab errors only when validation changes
   useEffect(() => {
@@ -743,11 +727,13 @@ const ProjectModel = () => {
         <div>
           <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
           <div className="w-100 d-flex gap-2">
-            <TreeForLists
-              onNodeSelect={handleNodeSelect}
-              setIsAddressLoading={setIsAddressLoading}
-              setInclude={setInclude}
-            />
+            <div style={{ flex: "0 0 25%", minWidth: "250px" }}>
+              <TreeForLists
+                onNodeSelect={handleNodeSelect}
+                setIsAddressLoading={setIsAddressLoading}
+                setInclude={setInclude}
+              />
+            </div>
             {/* Main Content */}
             <div style={{ flex: "0 0 75%" }}>
               <AdvancedSearch
@@ -760,8 +746,8 @@ const ProjectModel = () => {
                       lang === "en"
                         ? projectCategoryOptionsEn
                         : lang === "am"
-                        ? projectCategoryOptionsAm
-                        : projectCategoryOptionsOr,
+                          ? projectCategoryOptionsAm
+                          : projectCategoryOptionsOr,
                   },
                 ]}
                 checkboxSearchKeys={[]}
@@ -774,7 +760,7 @@ const ProjectModel = () => {
               >
                 <AgGridContainer
                   rowData={
-                    showSearchResult ? searchResults?.data : data?.data || []
+                    showSearchResult ? searchResults?.data : []
                   }
                   columnDefs={columnDefs}
                   isLoading={isSearchLoading}
@@ -1072,7 +1058,7 @@ const ProjectModel = () => {
                         {t("cancel")}
                       </Button>
                       <Button
-                        color="primary"
+                        color="success"
                         type="submit"
                         disabled={
                           addProject.isPending ||

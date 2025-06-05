@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, lazy } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getProjectDashboard } from "../../helpers/dashboard_backend_helper";
 import { withTranslation } from "react-i18next";
-import SupersetDashboard from "../../pages/Dashboard/SupersetDashboard";
+const SupersetDashboard = lazy(() => import('./SupersetDashboard'));
 import Spinners from "../../components/Common/Spinner";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import ChangePasswordModal from "../../components/Common/ChangePasswordModal";

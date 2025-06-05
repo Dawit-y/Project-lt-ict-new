@@ -7,6 +7,7 @@ const InputField = ({
   fieldId,
   validation,
   label,
+  onChange,
   placeholder,
   maxLength = 200,
   className,
@@ -31,7 +32,7 @@ const InputField = ({
         type={type === "textarea" ? undefined : type}
         tag={type === "textarea" ? "textarea" : undefined}
         placeholder={placeholder ?? label ?? t(fieldId)}
-        onChange={validation.handleChange}
+        onChange={onChange ? onChange : validation.handleChange}
         onBlur={validation.handleBlur}
         value={value}
         invalid={touched && !!error}

@@ -173,9 +173,9 @@ const ProjectModel = () => {
         (project && project.prj_total_actual_budget) || "",
       prj_geo_location: (project && project.prj_geo_location) || "",
       prj_sector_id: (project && project.prj_sector_id) || "",
-      prj_location_region_id: (project && project.prj_location_region_id) || "",
-      prj_location_zone_id: (project && project.prj_location_zone_id) || "",
-      prj_location_woreda_id: (project && project.prj_location_woreda_id) || "",
+      prj_location_region_id: (project && project.prj_location_region_id) || selectedNode?.data?.region_id,
+      prj_location_zone_id: (project && project.prj_location_zone_id) || selectedNode?.data?.zone_id,
+      prj_location_woreda_id: (project && project.prj_location_woreda_id) || selectedNode?.data?.woreda_id,
       prj_location_kebele_id: (project && project.prj_location_kebele_id) || "",
       prj_location_description:
         (project && project.prj_location_description) || "",
@@ -639,12 +639,10 @@ const ProjectModel = () => {
         <div className="w-100 h-100">
           <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
           <div className="d-flex gap-2" style={{ display: "flex", flexWrap: "nowrap", height: "100%" }}>
-            {/* Tree Section (30%) */}
             <div style={{ flex: "0 0 25%", minWidth: "250px", height: "100%" }}>
               <TreeForProject onNodeSelect={handleNodeSelect} />
             </div>
 
-            {/* Main Content (70%) */}
             <div style={{ flex: "0 0 75%", minWidth: "600px" }}>
               {breadcrumb.length > 0 && (
                 <Card className="w-100 d-flex">
@@ -723,7 +721,11 @@ const ProjectModel = () => {
               <InputField
                 type="text"
                 validation={validation}
-                fieldId={"prj_name"}
+                fieldId="prj_name"
+                onChange={(e) => {
+                  validation.handleChange(e);
+                  validation.setFieldValue("prj_name_en", e.target.value);
+                }}
                 isRequired={true}
                 className="col-md-4 mb-3"
                 maxLength={200}

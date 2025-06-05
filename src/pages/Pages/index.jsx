@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -23,10 +21,6 @@ import {
 } from "../../queries/pages_query";
 import PagesModal from "./PagesModal";
 import { useTranslation } from "react-i18next";
-
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
 import {
   Button,
   Col,
@@ -44,8 +38,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import {  toast } from "react-toastify";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
@@ -162,8 +155,7 @@ const PagesModel = () => {
     onSubmit: (values) => {
       if (isEdit) {
         const updatePages = {
-          pag_id: pages ? pages.pag_id : 0,
-          pag_id: pages.pag_id,
+          pag_id: pages?.pag_id,
           pag_name: values.pag_name,
           pag_controller: values.pag_controller,
           pag_modifying_days: values.pag_modifying_days,
@@ -599,14 +591,14 @@ const PagesModel = () => {
                       value={validation.values.pag_name || ""}
                       invalid={
                         validation.touched.pag_name &&
-                        validation.errors.pag_name
+                          validation.errors.pag_name
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pag_name &&
-                    validation.errors.pag_name ? (
+                      validation.errors.pag_name ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pag_name}
                       </FormFeedback>
@@ -623,14 +615,14 @@ const PagesModel = () => {
                       value={validation.values.pag_controller || ""}
                       invalid={
                         validation.touched.pag_controller &&
-                        validation.errors.pag_controller
+                          validation.errors.pag_controller
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pag_controller &&
-                    validation.errors.pag_controller ? (
+                      validation.errors.pag_controller ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pag_controller}
                       </FormFeedback>
@@ -647,14 +639,14 @@ const PagesModel = () => {
                       value={validation.values.pag_modifying_days || ""}
                       invalid={
                         validation.touched.pag_modifying_days &&
-                        validation.errors.pag_modifying_days
+                          validation.errors.pag_modifying_days
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pag_modifying_days &&
-                    validation.errors.pag_modifying_days ? (
+                      validation.errors.pag_modifying_days ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pag_modifying_days}
                       </FormFeedback>
@@ -671,14 +663,14 @@ const PagesModel = () => {
                       value={validation.values.pag_is_deletable || ""}
                       invalid={
                         validation.touched.pag_is_deletable &&
-                        validation.errors.pag_is_deletable
+                          validation.errors.pag_is_deletable
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pag_is_deletable &&
-                    validation.errors.pag_is_deletable ? (
+                      validation.errors.pag_is_deletable ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pag_is_deletable}
                       </FormFeedback>
@@ -695,14 +687,14 @@ const PagesModel = () => {
                       value={validation.values.pag_display_record_no || ""}
                       invalid={
                         validation.touched.pag_display_record_no &&
-                        validation.errors.pag_display_record_no
+                          validation.errors.pag_display_record_no
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pag_display_record_no &&
-                    validation.errors.pag_display_record_no ? (
+                      validation.errors.pag_display_record_no ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pag_display_record_no}
                       </FormFeedback>
@@ -719,14 +711,14 @@ const PagesModel = () => {
                       value={validation.values.pag_system_module || ""}
                       invalid={
                         validation.touched.pag_system_module &&
-                        validation.errors.pag_system_module
+                          validation.errors.pag_system_module
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pag_system_module &&
-                    validation.errors.pag_system_module ? (
+                      validation.errors.pag_system_module ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pag_system_module}
                       </FormFeedback>
@@ -743,14 +735,14 @@ const PagesModel = () => {
                       value={validation.values.pag_header || ""}
                       invalid={
                         validation.touched.pag_header &&
-                        validation.errors.pag_header
+                          validation.errors.pag_header
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pag_header &&
-                    validation.errors.pag_header ? (
+                      validation.errors.pag_header ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pag_header}
                       </FormFeedback>
@@ -767,14 +759,14 @@ const PagesModel = () => {
                       value={validation.values.pag_footer || ""}
                       invalid={
                         validation.touched.pag_footer &&
-                        validation.errors.pag_footer
+                          validation.errors.pag_footer
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pag_footer &&
-                    validation.errors.pag_footer ? (
+                      validation.errors.pag_footer ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pag_footer}
                       </FormFeedback>
@@ -791,14 +783,14 @@ const PagesModel = () => {
                       value={validation.values.pag_rule || ""}
                       invalid={
                         validation.touched.pag_rule &&
-                        validation.errors.pag_rule
+                          validation.errors.pag_rule
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pag_rule &&
-                    validation.errors.pag_rule ? (
+                      validation.errors.pag_rule ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pag_rule}
                       </FormFeedback>
@@ -815,14 +807,14 @@ const PagesModel = () => {
                       value={validation.values.pag_description || ""}
                       invalid={
                         validation.touched.pag_description &&
-                        validation.errors.pag_description
+                          validation.errors.pag_description
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pag_description &&
-                    validation.errors.pag_description ? (
+                      validation.errors.pag_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pag_description}
                       </FormFeedback>
@@ -839,14 +831,14 @@ const PagesModel = () => {
                       value={validation.values.pag_status || ""}
                       invalid={
                         validation.touched.pag_status &&
-                        validation.errors.pag_status
+                          validation.errors.pag_status
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pag_status &&
-                    validation.errors.pag_status ? (
+                      validation.errors.pag_status ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pag_status}
                       </FormFeedback>
