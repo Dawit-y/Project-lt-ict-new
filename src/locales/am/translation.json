@@ -1511,6 +1511,43 @@
   "expected_outcome":"የሚጠበቅ ውጤት",
   "remarks":"ማጠቃለያ",
   "created_on":"በተፈጠረበት ቀን",
-  "last_updated":"በመጨረሻ የተዘመነ"
+  "last_updated":"በመጨረሻ የተዘመነ",
+
+	"overall_projects_performance": "አጠቃላይ የፕሮጀክቶች አፈጻጸም",  
+	"projects": "ፕሮጀክቶች",  
+	"physical_view": "አካላዊ አተያይ",  
+	"financial_view": "የገንዘብ አተያይ",  
+	"bar": "ባር",  
+	"line": "መስመር",  
+	"pie": "ፓይ",  
+	"summary": "ጥቅል መግለጫ",  
+	"monthly_progress": "ወርሃዊ እድገት",  
+	"yearly_progress": "ዓመታዊ እድገት",  
+	"total_planned": "ጠቅላላ የታቀደ",  
+	"total_actual": "ጠቅላላ ትክክለኛ",  
+	"variance": "ልዩነት",  
+	"month": "ወር",  
+	"year": "ዓመት",  
+	"birr":"ብር",
+	"baseline_comparison":"መሰረት ማነፃፀሪያ",  
+	"physical_baseline": "አካላዊ መሰረት",  
+	"budget_baseline": "በጀት መሰረት",  
+	"performance_summary": "የአፈፃፀም ማጠቃለያ",  
+	"budget_used": "የተጠቀመው በጀት",  
+	"description": "መግለጫ",  
+	"no_description_available": "መግለጫ የለም",  
+	"quarter": "ሩብ ዓመት",
+	"total_planned_budget_(M)": "ጠቅላላ የታቀደ በጀት (ሚሊዮን)",  
+	"total_actual_budget_(M)": "ጠቅላላ ትክክለኛ በጀት (ሚሊዮን)",  
+	"planned_budget_(M)": "የታቀደ በጀት (ሚሊዮን)",  
+	"actual_budget_(M)": "ትክክለኛ በጀት (ሚሊዮን)",  
+	"physical": "አካላዊ",
+	"physical_progress_(%)": "አካላዊ እድገት (%)",
+	"budget_(Millions)": "በጀት (ሚሊዮን)",
+	"average_planned_physical": "ጠቅላላ የታቀደ አካላዊ መቶኛ",
+	"average_actual_physical": "ጠቅላላ ትክክለኛ አካላዊ መቶኛ"
+	
+
+
 
 }
