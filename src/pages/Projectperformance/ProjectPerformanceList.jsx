@@ -144,7 +144,7 @@ const ProjectPerformanceList = (props) => {
         width: 60,
       },
       {
-        headerName: t("Year"),
+        headerName: t("prp_budget_year"),
         field: "prp_budget_year_id",
         sortable: true,
         filter: true,
@@ -181,7 +181,7 @@ const ProjectPerformanceList = (props) => {
         },
       },
       {
-        headerName: t("Entry Date"),
+        headerName: t("prp_record_date_gc"),
         field: "prp_record_date_gc",
         sortable: true,
         filter: "agDateColumnFilter",
@@ -193,7 +193,7 @@ const ProjectPerformanceList = (props) => {
       ...quarterDefinitions
         .map((quarterMonths, quarterIndex) => [
           {
-            headerName: `Q${quarterIndex + 1} Physical Planned`,
+            headerName: `${t("q")}${quarterIndex + 1} ${t("physical_planned")}`,
             field: `quarter_${quarterIndex + 1}_physical_planned`,
             sortable: true,
             filter: true,
@@ -208,7 +208,9 @@ const ProjectPerformanceList = (props) => {
             },
           },
           {
-            headerName: `Q${quarterIndex + 1} Financial Planned`,
+            headerName: `${t("q")}${quarterIndex + 1} ${t(
+              "financial_planned"
+            )}`,
             field: `quarter_${quarterIndex + 1}_financial_planned`,
             sortable: true,
             filter: true,
@@ -222,7 +224,7 @@ const ProjectPerformanceList = (props) => {
             },
           },
           {
-            headerName: `Q${quarterIndex + 1} Physical Actual`,
+            headerName: `${t("q")}${quarterIndex + 1} ${t("physical_actual")}`,
             field: `quarter_${quarterIndex + 1}_physical_actual`,
             sortable: true,
             filter: true,
@@ -236,7 +238,7 @@ const ProjectPerformanceList = (props) => {
             },
           },
           {
-            headerName: `Q${quarterIndex + 1} Financial Actual`,
+            headerName: `${t("q")}${quarterIndex + 1} ${t("financial_actual")}`,
             field: `quarter_${quarterIndex + 1}_financial_actual`,
             sortable: true,
             filter: true,
@@ -252,7 +254,7 @@ const ProjectPerformanceList = (props) => {
         ])
         .flat(),
       {
-        headerName: t("Baseline Budget"),
+        headerName: t("prp_budget_baseline"),
         field: "prp_budget_baseline",
         sortable: true,
         filter: true,
@@ -266,7 +268,7 @@ const ProjectPerformanceList = (props) => {
         },
       },
       {
-        headerName: t("Baseline Physical"),
+        headerName: t("prp_physical_baseline"),
         field: "prp_physical_baseline",
         sortable: true,
         filter: true,
@@ -304,14 +306,14 @@ const ProjectPerformanceList = (props) => {
         },
       },
       {
-        headerName: t("Analysis"),
+        headerName: t("analysis"),
         field: "actions",
         cellRenderer: (params) => (
           <button
             className="btn btn-sm btn-primary"
             onClick={() => handleViewDetails(params.data)}
           >
-            {t("Analysis")}
+            {t("analysis")}
           </button>
         ),
         width: 120,

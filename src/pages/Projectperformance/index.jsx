@@ -633,7 +633,7 @@ const ProjectPerformanceModel = (props) => {
 
     const baseColumns = [
       {
-        header: "Year",
+        header: t("prp_budget_year"),
         accessorKey: "prp_budget_year_id",
         enableColumnFilter: false,
         enableSorting: true,
@@ -641,7 +641,7 @@ const ProjectPerformanceModel = (props) => {
           budgetYearMap[cellProps.row.original.prp_budget_year_id] || "-",
       },
       {
-        header: "Entry Date",
+        header: t("prp_record_date_gc"),
         accessorKey: "prp_record_date_gc",
         enableColumnFilter: false,
         enableSorting: true,
@@ -652,7 +652,7 @@ const ProjectPerformanceModel = (props) => {
       ...quarterDefinitions
         .map((quarterMonths, quarterIndex) => [
           {
-            header: `Q${quarterIndex + 1} Physical Planned`,
+            header: `${t("q")}${quarterIndex + 1} ${t("physical_planned")}`,
             accessorKey: `quarter_${quarterIndex + 1}_physical_planned`,
             enableColumnFilter: false,
             enableSorting: true,
@@ -669,7 +669,7 @@ const ProjectPerformanceModel = (props) => {
             },
           },
           {
-            header: `Q${quarterIndex + 1} Financial Planned`,
+            header: `${t("q")}${quarterIndex + 1} ${t("financial_planned")}`,
             accessorKey: `quarter_${quarterIndex + 1}_financial_planned`,
             enableColumnFilter: false,
             enableSorting: true,
@@ -684,7 +684,7 @@ const ProjectPerformanceModel = (props) => {
             },
           },
           {
-            header: `Q${quarterIndex + 1} Physical Actual`,
+            header: `${t("q")}${quarterIndex + 1} ${t("physical_actual")}`,
             accessorKey: `quarter_${quarterIndex + 1}_physical_actual`,
             enableColumnFilter: false,
             enableSorting: true,
@@ -700,7 +700,7 @@ const ProjectPerformanceModel = (props) => {
             },
           },
           {
-            header: `Q${quarterIndex + 1} Financial Actual`,
+            header: `${t("q")}${quarterIndex + 1} ${t("financial_actual")}`,
             accessorKey: `quarter_${quarterIndex + 1}_financial_actual`,
             enableColumnFilter: false,
             enableSorting: true,
@@ -717,7 +717,7 @@ const ProjectPerformanceModel = (props) => {
         ])
         .flat(),
       {
-        header: "Baseline Budget",
+        header: t("prp_budget_baseline"),
         accessorKey: "prp_budget_baseline",
         enableColumnFilter: false,
         enableSorting: true,
@@ -728,7 +728,7 @@ const ProjectPerformanceModel = (props) => {
           ) || "-",
       },
       {
-        header: "Baseline Physical",
+        header: t("prp_physical_baseline"),
         accessorKey: "prp_physical_baseline",
         enableColumnFilter: false,
         enableSorting: true,
@@ -925,7 +925,9 @@ const ProjectPerformanceModel = (props) => {
           <h4 className="mb-0">
             {isEdit
               ? `${t(
-                  entryMode === "planned" ? "edit_planned" : "enter_actuals"
+                  entryMode === "planned"
+                    ? `${t("edit_planned")}`
+                    : `${t("enter_actuals")}`
                 )}`
               : `${t("add_planned")}`}
             <Badge
@@ -942,16 +944,16 @@ const ProjectPerformanceModel = (props) => {
             {/* Summary Section - Only show baseline fields */}
             <Card className="mt-3 border-light shadow-sm">
               <CardHeader className="bg-light">
-                <h5 className="mb-0">{t("Baseline Values")}</h5>
+                <h5 className="mb-0">{t("baseline_values")}</h5>
                 <small className="text-muted">
-                  {t("Total Project Budget")}:{" "}
+                  {t("total_project_budget")}:{" "}
                   {Number(totalActualBudget).toLocaleString()}
                 </small>
               </CardHeader>
               <CardBody>
                 <Row>
                   <Col md={4}>
-                    <Label className="fw-medium">{t("Year")}</Label>
+                    <Label className="fw-medium">{t("year")}</Label>
                     <Input
                       name="prp_budget_year_id"
                       type="select"
@@ -979,7 +981,7 @@ const ProjectPerformanceModel = (props) => {
                     <FormattedAmountField
                       validation={validation}
                       fieldId="prp_physical_baseline"
-                      label={t("Physical Baseline %")}
+                      label={t("prp_physical_baseline")}
                       isRequired={true}
                       max={100}
                     />
@@ -988,7 +990,7 @@ const ProjectPerformanceModel = (props) => {
                     <FormattedAmountField
                       validation={validation}
                       fieldId="prp_budget_baseline"
-                      label={t("Budget Baseline")}
+                      label={t("prp_budget_baseline")}
                       isRequired={true}
                     />
                   </Col>
@@ -1022,13 +1024,13 @@ const ProjectPerformanceModel = (props) => {
                           htmlFor="is_new_actual_entry"
                           className="form-check-label fw-medium"
                         >
-                          {t("New actual entry")}
+                          {t("new_actual_entry")}
                         </Label>
                       </div>
                     </Col>
                     {validation.values.is_new_actual_entry && (
                       <Col md={4}>
-                        <Label className="fw-medium">{t("Entry Date")}</Label>
+                        <Label className="fw-medium">{t("entry_date")}</Label>
                         <Input
                           name="prp_record_date_gc"
                           type="date"
@@ -1063,7 +1065,7 @@ const ProjectPerformanceModel = (props) => {
                       }`}
                       onClick={() => setActiveTab(quarter)}
                     >
-                      {quarter}
+                      {t(quarter)}
                     </NavLink>
                   </NavItem>
                 )
@@ -1072,14 +1074,14 @@ const ProjectPerformanceModel = (props) => {
 
             <Card className="mt-3 border-light shadow-sm">
               <CardHeader className="bg-light">
-                <h6 className="mb-0">{t("Budget Summary")}</h6>
+                <h6 className="mb-0">{t("budget_summary")}</h6>
               </CardHeader>
               <CardBody>
                 <Row>
                   <Col md={4}>
                     <div className="d-flex justify-content-between">
                       <span className="fw-medium">
-                        {t("Total Physical Planned You Entered")}:
+                        {t("total_physical_planned_you_entered")}:
                       </span>
                       <span>
                         {Array.from({ length: 12 }, (_, i) =>
@@ -1102,7 +1104,7 @@ const ProjectPerformanceModel = (props) => {
                   <Col md={4}>
                     <div className="d-flex justify-content-between">
                       <span className="fw-medium">
-                        {t("Total Financial Planned You Entered")}:
+                        {t("total_financial_planned_you_entered")}:
                       </span>
                       <span>
                         {Array.from({ length: 12 }, (_, i) =>
@@ -1114,7 +1116,7 @@ const ProjectPerformanceModel = (props) => {
                         )
                           .reduce((a, b) => a + b, 0)
                           .toLocaleString()}{" "}
-                        Birr
+                        {t("birr")}
                       </span>
                     </div>
                     {validation.errors._sumFinancialPlanned && (
@@ -1127,7 +1129,7 @@ const ProjectPerformanceModel = (props) => {
                   <Col md={4}>
                     <div className="d-flex justify-content-between">
                       <span className="fw-medium">
-                        {t("Total Physical Actual You Entered")}:
+                        {t("total_physical_actual_you_entered")}:
                       </span>
                       <span>
                         {Array.from({ length: 12 }, (_, i) =>
@@ -1170,7 +1172,9 @@ const ProjectPerformanceModel = (props) => {
                               <Col md={4} key={month} className="mb-3">
                                 <Card className="h-100">
                                   <CardHeader className="bg-light py-2">
-                                    <h6 className="mb-0">Month {month}</h6>
+                                    <h6 className="mb-0">
+                                      {t("month")} {month}
+                                    </h6>
                                   </CardHeader>
                                   <CardBody>
                                     {entryMode === "planned" ? (
@@ -1178,14 +1182,14 @@ const ProjectPerformanceModel = (props) => {
                                         <FormattedAmountField
                                           validation={validation}
                                           fieldId={`prp_pyhsical_planned_month_${month}`}
-                                          label={t("Physical Planned %")}
+                                          label={t("physical_planned_%")}
                                           isRequired={true}
                                           max={100}
                                         />
                                         <FormattedAmountField
                                           validation={validation}
                                           fieldId={`prp_finan_planned_month_${month}`}
-                                          label={t("Financial Planned")}
+                                          label={t("financial_planned")}
                                           isRequired={true}
                                         />
                                       </>
@@ -1194,14 +1198,14 @@ const ProjectPerformanceModel = (props) => {
                                         <FormattedAmountField
                                           validation={validation}
                                           fieldId={`prp_pyhsical_actual_month_${month}`}
-                                          label={t("Physical Actual %")}
+                                          label={t("physical_actual_%")}
                                           isRequired={true}
                                           max={100}
                                         />
                                         <FormattedAmountField
                                           validation={validation}
                                           fieldId={`prp_finan_actual_month_${month}`}
-                                          label={t("Financial Actual")}
+                                          label={t("financial_actual")}
                                           isRequired={true}
                                         />
 
@@ -1211,7 +1215,7 @@ const ProjectPerformanceModel = (props) => {
                                             htmlFor={`prp_status_month_${month}`}
                                             className="form-label mb-1 fw-medium"
                                           >
-                                            {t("Status")}
+                                            {t("status")}
 
                                             {/* Conditional red asterisk */}
                                             {(convertToNumericValue(
@@ -1278,7 +1282,7 @@ const ProjectPerformanceModel = (props) => {
                                             )}
                                           >
                                             <option value="">
-                                              {t("No Status")}
+                                              {t("no_status")}
                                             </option>
                                             {projectStatusData?.data
                                               ?.filter(
@@ -1343,7 +1347,7 @@ const ProjectPerformanceModel = (props) => {
             <Card className="mt-3 border-light shadow-sm">
               <CardBody>
                 <Label className="fw-medium">
-                  {t("Description")}
+                  {t("description")}
                   <small className="text-muted ms-1">({t("optional")})</small>
                 </Label>
                 <Input
@@ -1360,7 +1364,7 @@ const ProjectPerformanceModel = (props) => {
             {/* Submit Button */}
             <div className="text-end mt-4">
               <Button
-                color="primary"
+                color="success"
                 type="submit"
                 disabled={
                   addProjectPerformance.isPending ||

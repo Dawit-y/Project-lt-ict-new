@@ -226,9 +226,9 @@ const ProjectPerformanceAnalysis = ({
             const formattedValue = Number(val).toFixed(2);
             return selectedView === "physical"
               ? `${formattedValue}%`
-              : `${formattedValue}${chartType === "pie" ? "M" : "M"} ${t(
-                  "birr"
-                )}`;
+              : `${formattedValue}${
+                  chartType === "pie" ? ` ${t("m")}` : ` ${t("m")}`
+                } ${t("birr")}`;
           },
         },
       },
@@ -338,9 +338,9 @@ const ProjectPerformanceAnalysis = ({
               const formattedValue = Number(val).toFixed(2);
               return selectedView === "physical"
                 ? `${formattedValue}%`
-                : `${formattedValue}${chartType === "pie" ? "M" : "M"} ${t(
-                    "birr"
-                  )}`;
+                : `${formattedValue}${
+                    chartType === "pie" ? ` ${t("m")}` : ` ${t("m")}`
+                  } ${t("birr")}`;
             },
           },
         },
@@ -770,12 +770,16 @@ const ProjectPerformanceAnalysis = ({
                             <td>
                               {selectedView === "physical"
                                 ? `${formatNumber(planned)}%`
-                                : `${formatNumber(planned)}M ${t("birr")}`}
+                                : `${formatNumber(planned)} ${t("m")} ${t(
+                                    "birr"
+                                  )}`}
                             </td>
                             <td>
                               {selectedView === "physical"
                                 ? `${formatNumber(actual)}%`
-                                : `${formatNumber(actual)}M ${t("birr")}`}
+                                : `${formatNumber(actual)} ${t("m")} ${t(
+                                    "birr"
+                                  )}`}
                             </td>
                             <td
                               className={
@@ -784,9 +788,9 @@ const ProjectPerformanceAnalysis = ({
                             >
                               {selectedView === "physical"
                                 ? `${formatNumber(Math.abs(variance))}%`
-                                : `${formatNumber(Math.abs(variance))}M ${t(
-                                    "birr"
-                                  )}`}
+                                : `${formatNumber(Math.abs(variance))} ${t(
+                                    "m"
+                                  )} ${t("birr")}`}
                               {getStatusIndicator(variance)}
                             </td>
                           </tr>

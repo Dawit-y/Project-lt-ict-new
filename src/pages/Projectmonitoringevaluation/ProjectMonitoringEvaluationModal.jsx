@@ -74,7 +74,9 @@ const ProjectMonitoringEvaluationModal = ({ isOpen, toggle, transaction }) => {
         <div>
           <div className="d-flex justify-content-between mb-1">
             <span className="text-muted small">{t("financial_progress")}</span>
-            <span className="fw-medium">{formatNumber(financial)} Birr</span>
+            <span className="fw-medium">
+              {formatNumber(financial)} {t("birr")}
+            </span>
           </div>
         </div>
       </CardBody>
@@ -277,7 +279,7 @@ const ProjectMonitoringEvaluationModal = ({ isOpen, toggle, transaction }) => {
                     className="fw-semibold mb-2"
                     style={{ color: "#495057", fontSize: "0.9rem" }}
                   >
-                    {t("key_feedback")}
+                    {t("feedback")}
                   </h6>
                   <div
                     className="p-3 rounded"
@@ -300,7 +302,7 @@ const ProjectMonitoringEvaluationModal = ({ isOpen, toggle, transaction }) => {
                     className="fw-semibold mb-2"
                     style={{ color: "#495057", fontSize: "0.9rem" }}
                   >
-                    {t("identified_challenges")}
+                    {t("challenges")}
                   </h6>
                   <div
                     className="p-3 rounded"

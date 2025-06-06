@@ -200,14 +200,14 @@ const ProjectMonitoringEvaluationList = () => {
       valueFormatter: ({ value }) => truncateText(value, 30) || "-",
     },
     {
-      headerName: "Actions",
+      headerName: t("actions"),
       field: "actions",
       cellRenderer: (params) => (
         <button
           className="btn btn-sm btn-primary"
           onClick={() => handleViewDetails(params.data)}
         >
-          <i className="mdi mdi-chart-bar me-1"></i> Analyze
+          <i className="mdi mdi-chart-bar me-1"></i> {t("analysis")}
         </button>
       ),
       width: 120,
@@ -230,7 +230,7 @@ const ProjectMonitoringEvaluationList = () => {
         <div>
           <Breadcrumbs
             title={t("project")}
-            breadcrumbItem={t("Project Monitoring and Evaluation List")}
+            breadcrumbItem={t("monitoring_and_evaluation_list")}
           />
           <div className="w-100 d-flex gap-2">
             <TreeForLists

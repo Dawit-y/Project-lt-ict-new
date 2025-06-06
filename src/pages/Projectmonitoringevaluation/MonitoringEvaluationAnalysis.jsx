@@ -14,6 +14,7 @@ import {
   Progress,
 } from "reactstrap";
 import Chart from "react-apexcharts";
+import { useTranslation } from "react-i18next";
 
 const MonitoringEvaluationAnalysis = ({
   selectedData,
@@ -24,6 +25,7 @@ const MonitoringEvaluationAnalysis = ({
   onBackToOverview,
 }) => {
   const [activeTab, setActiveTab] = useState("progress");
+  const { t } = useTranslation();
 
   // Calculate duration in days between dates (YYYY/MM/DD format)
   const getDurationDays = (startDate, endDate) => {
@@ -46,7 +48,7 @@ const MonitoringEvaluationAnalysis = ({
 
   // Format currency in Ethiopian Birr
   const formatCurrency = (amount) => {
-    return `ETB ${formatNumber(amount)}`;
+    return `${t("etb")} ${formatNumber(amount)}`;
   };
 
   // Process data for display
@@ -56,13 +58,13 @@ const MonitoringEvaluationAnalysis = ({
         evaluationType:
           evaluationTypes.find(
             (et) => et.value === selectedData.mne_transaction_type_id
-          )?.label || "Unknown",
+          )?.label || t("unknown"),
         visitType:
           visitTypes.find((vt) => vt.value === selectedData.mne_visit_type)
-            ?.label || "Unknown",
+            ?.label || t("unknown"),
         periodType:
           periodTypes.find((pt) => pt.met_id === selectedData.mne_type_id)
-            ?.met_name_en || "Unknown",
+            ?.met_name_en || t("unknown"),
         durationDays: getDurationDays(
           selectedData.mne_start_date,
           selectedData.mne_end_date
@@ -285,7 +287,11 @@ const MonitoringEvaluationAnalysis = ({
         curve: "smooth",
       },
       xaxis: {
-        categories: ["Region Level", "Zone Level", "Woreda Level"],
+        categories: [
+          `${t("region_level")}`,
+          `${t("zone_level")}`,
+          `${t("woreda_level")}`,
+        ],
         labels: {
           style: {
             fontSize: "13px",
@@ -297,7 +303,7 @@ const MonitoringEvaluationAnalysis = ({
       yaxis: [
         {
           title: {
-            text: "Financial (ETB)",
+            text: `${t("financial_(etb)")}`,
             style: {
               fontSize: "13px",
               color: colors.primary,
@@ -314,7 +320,7 @@ const MonitoringEvaluationAnalysis = ({
         {
           opposite: true,
           title: {
-            text: "Physical (%)",
+            text: `${t("physical_(%)")}`,
             style: {
               fontSize: "13px",
               color: colors.success,
@@ -342,15 +348,19 @@ const MonitoringEvaluationAnalysis = ({
       tooltip: {
         y: [
           {
-            formatter: (val) => `ETB ${formatNumber(val)}`,
+            formatter: (val) => `${t("etb")} ${formatNumber(val)}`,
             title: {
-              formatter: () => "Financial",
+              formatter: () => {
+                t("financial");
+              },
             },
           },
           {
             formatter: (val) => `${val}%`,
             title: {
-              formatter: () => "Physical",
+              formatter: () => {
+                t("physical");
+              },
             },
           },
         ],
@@ -370,7 +380,7 @@ const MonitoringEvaluationAnalysis = ({
     },
     series: [
       {
-        name: "Financial (ETB)",
+        name: `${t("financial_(etb)")}`,
         data: [
           processedData?.mne_financial_region || 0,
           processedData?.mne_financial_zone || 0,
@@ -378,7 +388,7 @@ const MonitoringEvaluationAnalysis = ({
         ],
       },
       {
-        name: "Physical (%)",
+        name: `${t("physical_(%)")}`,
         data: [
           processedData?.mne_physical_region || 0,
           processedData?.mne_physical_zone || 0,
@@ -395,7 +405,7 @@ const MonitoringEvaluationAnalysis = ({
         height: 350,
         fontFamily: "inherit",
       },
-      labels: overallStats.evaluationTypes.map((type) => type.label),
+      labels: overallStats.evaluationTypes.map((type) => t(type.label)),
       colors: [colors.primary, colors.info],
       responsive: [
         {
@@ -423,7 +433,7 @@ const MonitoringEvaluationAnalysis = ({
               },
               total: {
                 show: true,
-                label: "Total Evaluations",
+                label: `${t("total_evaluations")}`,
                 color: colors.dark,
                 fontFamily: "inherit",
                 formatter: () => overallStats.totalProjects,
@@ -459,7 +469,7 @@ const MonitoringEvaluationAnalysis = ({
         height: 350,
         fontFamily: "inherit",
       },
-      labels: overallStats.visitTypes.map((type) => type.label),
+      labels: overallStats.visitTypes.map((type) => t(type.label)),
       colors: [colors.warning, colors.danger],
       responsive: [
         {
@@ -478,7 +488,7 @@ const MonitoringEvaluationAnalysis = ({
               show: true,
               total: {
                 show: true,
-                label: "Total Visits",
+                label: `${t("total_visits")}`,
                 color: colors.dark,
                 fontFamily: "inherit",
               },
@@ -489,9 +499,9 @@ const MonitoringEvaluationAnalysis = ({
       dataLabels: {
         enabled: true,
         formatter: (val, { seriesIndex }) => {
-          return `${overallStats.visitTypes[seriesIndex].label}\n${val.toFixed(
-            2
-          )}%)`;
+          return `${t(
+            overallStats.visitTypes[seriesIndex].label
+          )}\n${val.toFixed(2)}%)`;
         },
         style: {
           fontSize: "12px",
@@ -557,7 +567,7 @@ const MonitoringEvaluationAnalysis = ({
             },
             total: {
               show: true,
-              label: "TOTAL",
+              label: `${t("total")}`,
               color: "#1E293B",
               fontSize: "13px",
               fontWeight: 600,
@@ -584,7 +594,7 @@ const MonitoringEvaluationAnalysis = ({
         lineCap: "round",
         width: 3,
       },
-      labels: overallStats.periodTypes.map((type) => type.met_name_en),
+      labels: overallStats.periodTypes.map((type) => t(type.met_name_en)),
       legend: {
         show: false,
       },
@@ -617,7 +627,8 @@ const MonitoringEvaluationAnalysis = ({
               className="d-flex align-items-center"
               style={{ fontFamily: "inherit" }}
             >
-              <i className="mdi mdi-arrow-left me-2"></i> Back to Overview
+              <i className="mdi mdi-arrow-left me-2"></i>{" "}
+              {t("back_to_overview")}
             </Button>
 
             <div>
@@ -627,7 +638,7 @@ const MonitoringEvaluationAnalysis = ({
                 pill
                 style={{ fontSize: "0.9rem", padding: "0.4em 0.8em" }}
               >
-                {processedData.evaluationType}
+                {t(processedData.evaluationType)}
               </Badge>
               <Badge
                 color="warning"
@@ -635,14 +646,14 @@ const MonitoringEvaluationAnalysis = ({
                 pill
                 style={{ fontSize: "0.9rem", padding: "0.4em 0.8em" }}
               >
-                {processedData.visitType}
+                {t(processedData.visitType)}
               </Badge>
               <Badge
                 color="success"
                 pill
                 style={{ fontSize: "0.9rem", padding: "0.4em 0.8em" }}
               >
-                {processedData.periodType}
+                {t(processedData.periodType)}
               </Badge>
             </div>
           </div>
@@ -651,9 +662,9 @@ const MonitoringEvaluationAnalysis = ({
         <h4 className="mb-4" style={{ fontFamily: "inherit", fontWeight: 600 }}>
           {isOverallView ? (
             <>
-              Overall Monitoring & Evaluation Analysis{" "}
+              {t("overall_monitoring_&_evaluation_analysis")}{" "}
               <Badge color="light" className="text-primary">
-                {allData.length} Projects
+                {allData.length} {t("projects")}
               </Badge>
               <div>
                 <Badge color="light" className="text-primary me-2">
@@ -694,7 +705,7 @@ const MonitoringEvaluationAnalysis = ({
               onClick={() => setActiveTab("progress")}
               style={{ fontFamily: "inherit" }}
             >
-              <i className="mdi mdi-chart-bar me-1"></i> Progress Metrics
+              <i className="mdi mdi-chart-bar me-1"></i> {t("progress_metrics")}
             </NavLink>
           </NavItem>
           <NavItem>
@@ -703,8 +714,8 @@ const MonitoringEvaluationAnalysis = ({
               onClick={() => setActiveTab("details")}
               style={{ fontFamily: "inherit" }}
             >
-              <i className="mdi mdi-information-outline me-1"></i> Project
-              Details
+              <i className="mdi mdi-information-outline me-1"></i>{" "}
+              {t("project_details")}
             </NavLink>
           </NavItem>
           {!isOverallView && (
@@ -715,7 +726,7 @@ const MonitoringEvaluationAnalysis = ({
                 style={{ fontFamily: "inherit" }}
               >
                 <i className="mdi mdi-text-box-check-outline me-1"></i>{" "}
-                Evaluation Insights
+                {t("evaluation_insights")}
               </NavLink>
             </NavItem>
           )}
@@ -733,12 +744,12 @@ const MonitoringEvaluationAnalysis = ({
                   <Col lg={4}>
                     <Card className="shadow-none border-0 bg-gradient-primary">
                       <CardBody className="text-center">
-                        <h5 className="mb-3">Total Projects</h5>
+                        <h5 className="mb-3">{t("total_projects")}</h5>
                         <h1 className="mb-0">{overallStats.totalProjects}</h1>
                         <div className="mt-2">
                           <Badge color="light" pill className="text-primary">
-                            <i className="mdi mdi-database me-1"></i> All
-                            Records
+                            <i className="mdi mdi-database me-1"></i>{" "}
+                            {t("all_records")}
                           </Badge>
                         </div>
                       </CardBody>
@@ -747,13 +758,14 @@ const MonitoringEvaluationAnalysis = ({
                   <Col lg={4}>
                     <Card className="shadow-none border-0 bg-gradient-success ">
                       <CardBody className="text-center">
-                        <h5 className=" mb-3">Total Financial</h5>
+                        <h5 className=" mb-3">{t("total_financial")}</h5>
                         <h1 className="mb-0">
                           {formatCurrency(overallStats.totalFinancial)}
                         </h1>
                         <div className="mt-2">
                           <Badge color="light" pill className="text-success">
-                            <i className="mdi mdi-cash-multiple me-1"></i> ETB
+                            <i className="mdi mdi-cash-multiple me-1"></i>{" "}
+                            {t("etb")}
                           </Badge>
                         </div>
                       </CardBody>
@@ -762,7 +774,7 @@ const MonitoringEvaluationAnalysis = ({
                   <Col lg={4}>
                     <Card className="shadow-none border-0 bg-gradient-info ">
                       <CardBody className="text-center">
-                        <h5 className="mb-3">Avg Physical Progress</h5>
+                        <h5 className="mb-3">{t("avg_physical_progress")}</h5>
                         <h1 className="mb-0">
                           {Math.round(overallStats.avgPhysical)}%
                         </h1>
@@ -781,7 +793,7 @@ const MonitoringEvaluationAnalysis = ({
                   <Col md={4}>
                     <div className="p-2 bg-white rounded border text-center">
                       <h6 className="mb-1 text-muted">
-                        Total Financial Region
+                        {t("total_financial_region")}
                       </h6>
                       <h4 className="mb-0 text-primary">
                         {formatCurrency(overallStats.totalFinancialRegion)}
@@ -790,7 +802,9 @@ const MonitoringEvaluationAnalysis = ({
                   </Col>
                   <Col md={4}>
                     <div className="p-2 bg-white rounded border text-center">
-                      <h6 className="mb-1 text-muted">Total Financial Zone</h6>
+                      <h6 className="mb-1 text-muted">
+                        {t("total_financial_zone")}
+                      </h6>
                       <h4 className="mb-0 text-success">
                         {formatCurrency(overallStats.totalFinancialZone)}
                       </h4>
@@ -799,7 +813,7 @@ const MonitoringEvaluationAnalysis = ({
                   <Col md={4}>
                     <div className="p-2 bg-white rounded border text-center">
                       <h6 className="mb-1 text-muted">
-                        Total Financial Woreda
+                        {t("total_financial_woreda")}
                       </h6>
                       <h4 className="mb-0 text-info">
                         {formatCurrency(overallStats.totalFinancialWoreda)}
@@ -814,7 +828,7 @@ const MonitoringEvaluationAnalysis = ({
                       <CardBody>
                         <h5 className="card-title d-flex align-items-center">
                           <i className="mdi mdi-chart-pie me-2 text-primary"></i>
-                          Evaluation Type Distribution
+                          {t("evaluation_type_distribution")}
                         </h5>
                         <Chart
                           options={evaluationTypeChart.options}
@@ -830,7 +844,7 @@ const MonitoringEvaluationAnalysis = ({
                       <CardBody>
                         <h5 className="card-title d-flex align-items-center">
                           <i className="mdi mdi-chart-arc me-2 text-warning"></i>
-                          Visit Type Analysis
+                          {t("visit_type_analysis")}
                         </h5>
                         <Chart
                           options={visitTypeChart.options}
@@ -855,16 +869,16 @@ const MonitoringEvaluationAnalysis = ({
                                 style={{ color: "#6366F1", fontSize: "1.5rem" }}
                               ></i>
                               <span style={{ fontWeight: 600 }}>
-                                Project Evaluation Metrics
+                                {t("project_evaluation_metrics")}
                               </span>
                             </h5>
                             <p className="text-muted mb-0">
-                              Performance analysis by evaluation period
+                              {t("performance_analysis_by_evaluation_period")}
                             </p>
                           </div>
                           <Badge pill bg="light" className="fw-medium">
                             <i className="mdi mdi-calendar-range me-1"></i>
-                            Period Analysis
+                            {t("period_analysis")}
                           </Badge>
                         </div>
 
@@ -885,8 +899,10 @@ const MonitoringEvaluationAnalysis = ({
                               <table className="table table-hover table-sm align-middle">
                                 <thead className="bg-light">
                                   <tr>
-                                    <th className="ps-3">Period Type</th>
-                                    <th className="text-end">Projects</th>
+                                    <th className="ps-3">{t("period_type")}</th>
+                                    <th className="text-end">
+                                      {t("projects")}
+                                    </th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -903,7 +919,7 @@ const MonitoringEvaluationAnalysis = ({
                                           }}
                                         >
                                           <i className="mdi mdi-circle-small me-1"></i>
-                                          {type.met_name_en}
+                                          {t(type.met_name_en)}
                                         </td>
                                         <td className="text-end">
                                           {type.count.toLocaleString()}
@@ -912,7 +928,9 @@ const MonitoringEvaluationAnalysis = ({
                                     )
                                   )}
                                   <tr className="bg-light fw-semibold">
-                                    <td className="ps-3">Total/Average</td>
+                                    <td className="ps-3">
+                                      {t("total_average")}
+                                    </td>
                                     <td className="text-end">
                                       {overallStats.totalProjects.toLocaleString()}
                                     </td>
@@ -925,8 +943,9 @@ const MonitoringEvaluationAnalysis = ({
                               <div className="d-flex align-items-center text-muted">
                                 <i className="mdi mdi-information-outline me-2"></i>
                                 <small>
-                                  Financial values represent average expenditure
-                                  per project
+                                  {t(
+                                    "financial_values_represent_average_expenditure"
+                                  )}
                                 </small>
                               </div>
                             </div>
@@ -944,7 +963,7 @@ const MonitoringEvaluationAnalysis = ({
                     <CardBody>
                       <h5 className="card-title d-flex align-items-center">
                         <i className="mdi mdi-chart-bar me-2 text-primary"></i>
-                        Hierarchical Progress Comparison
+                        {t("hierarchical_progress_comparison")}
                       </h5>
                       <Chart
                         options={hierarchyChart.options}
@@ -961,31 +980,31 @@ const MonitoringEvaluationAnalysis = ({
                     <CardBody>
                       <h5 className="card-title d-flex align-items-center">
                         <i className="mdi mdi-cash-multiple me-2 text-primary"></i>
-                        Financial Progress
+                        {t("financial_progress")}
                       </h5>
                       <div className="text-center mb-3">
                         <h3>{processedData.formattedTotalFinancial}</h3>
                         <small className="text-muted">
-                          Total Budget Utilization
+                          {t("total_budget_utilization")}
                         </small>
                       </div>
                       <div className="mt-3">
                         <div className="d-flex justify-content-between mb-1">
-                          <span>Region Level</span>
+                          <span>{t("region_level")}</span>
                           <span>
                             {formatCurrency(processedData.mne_financial_region)}
                           </span>
                         </div>
 
                         <div className="d-flex justify-content-between mb-1 mt-3">
-                          <span>Zone Level</span>
+                          <span>{t("zone_level")}</span>
                           <span>
                             {formatCurrency(processedData.mne_financial_zone)}
                           </span>
                         </div>
 
                         <div className="d-flex justify-content-between mb-1 mt-3">
-                          <span>Woreda Level</span>
+                          <span>{t("woreda_level")}</span>
                           <span>
                             {formatCurrency(processedData.mne_financial)}
                           </span>
@@ -1000,17 +1019,17 @@ const MonitoringEvaluationAnalysis = ({
                     <CardBody>
                       <h5 className="card-title d-flex align-items-center">
                         <i className="mdi mdi-progress-check me-2 text-success"></i>
-                        Physical Progress
+                        {t("physical_progress")}
                       </h5>
                       <div className="text-center mb-3">
                         <h3>{processedData.averagePhysical}%</h3>
                         <small className="text-muted">
-                          Average Completion Percentage (Region, Zone, Woreda)
+                          {t("average_completion_percentage")}
                         </small>
                       </div>
                       <div className="mt-3">
                         <div className="d-flex justify-content-between mb-1">
-                          <span>Region Level</span>
+                          <span>{t("region_level")}</span>
                           <span>{processedData.mne_physical_region}%</span>
                         </div>
                         <Progress
@@ -1020,7 +1039,7 @@ const MonitoringEvaluationAnalysis = ({
                         />
 
                         <div className="d-flex justify-content-between mb-1 mt-3">
-                          <span>Zone Level</span>
+                          <span>{t("zone_level")}</span>
                           <span>{processedData.mne_physical_zone}%</span>
                         </div>
                         <Progress
@@ -1030,7 +1049,7 @@ const MonitoringEvaluationAnalysis = ({
                         />
 
                         <div className="d-flex justify-content-between mb-1 mt-3">
-                          <span>Woreda Level</span>
+                          <span>{t("woreda_level")}</span>
                           <span>{processedData.mne_physical}%</span>
                         </div>
                         <Progress
@@ -1055,19 +1074,19 @@ const MonitoringEvaluationAnalysis = ({
                     <CardBody>
                       <h5 className="card-title d-flex align-items-center">
                         <i className="mdi mdi-information-outline me-2 text-primary"></i>
-                        Projects Summary
+                        {t("projects_summary")}
                       </h5>
                       <div className="table-responsive">
                         <table className="table mb-0">
                           <tbody>
                             <tr>
-                              <th width="40%">Total Projects</th>
+                              <th width="40%">{t("total_projects")}</th>
                               <td className="text-end">
                                 {overallStats.totalProjects}
                               </td>
                             </tr>
                             <tr>
-                              <th>Average Duration</th>
+                              <th>{t("average_duration")}</th>
                               <td className="text-end">
                                 {Math.round(
                                   allData.reduce(
@@ -1080,11 +1099,11 @@ const MonitoringEvaluationAnalysis = ({
                                     0
                                   ) / allData.length
                                 )}{" "}
-                                days
+                                {t("days")}
                               </td>
                             </tr>
                             <tr>
-                              <th>Monitoring Visits</th>
+                              <th>{t("monitoring_visits")}</th>
                               <td className="text-end">
                                 {
                                   overallStats.evaluationTypes.find(
@@ -1101,7 +1120,7 @@ const MonitoringEvaluationAnalysis = ({
                               </td>
                             </tr>
                             <tr>
-                              <th>Evaluation Visits</th>
+                              <th>{t("evaluation_visits")}</th>
                               <td className="text-end">
                                 {
                                   overallStats.evaluationTypes.find(
@@ -1128,20 +1147,22 @@ const MonitoringEvaluationAnalysis = ({
                     <CardBody>
                       <h5 className="card-title d-flex align-items-center">
                         <i className="mdi mdi-progress-check me-2 text-primary"></i>
-                        Physical Progress Summary
+                        {t("physical_progress_summary")}
                       </h5>
                       <div className="table-responsive">
                         <table className="table mb-0">
                           <tbody>
                             <tr>
-                              <th width="40%">Average Progress</th>
+                              <th width="40%">{t("average_progress")}</th>
                               <td className="text-end">
                                 {Math.round(overallStats.avgPhysical)}%
                               </td>
                             </tr>
                             {overallStats.periodTypes.map((period) => (
                               <tr key={period.met_id}>
-                                <th>Avg {period.met_name_en}</th>
+                                <th>
+                                  {t("avg")} {t(period.met_name_en)}
+                                </th>
                                 <td className="text-end">
                                   {Math.round(period.totalAvgPhysical)}%
                                 </td>
@@ -1158,20 +1179,22 @@ const MonitoringEvaluationAnalysis = ({
                     <CardBody>
                       <h5 className="card-title d-flex align-items-center">
                         <i className="mdi mdi-cash-multiple me-2 text-primary"></i>
-                        Financial Summary
+                        {t("financial_summary")}
                       </h5>
                       <div className="table-responsive">
                         <table className="table mb-0">
                           <tbody>
                             <tr>
-                              <th width="40%">Total Budget</th>
+                              <th width="40%">{t("total_budget")}</th>
                               <td className="text-end">
                                 {formatCurrency(overallStats.totalFinancial)}
                               </td>
                             </tr>
                             {overallStats.periodTypes.map((period) => (
                               <tr key={period.met_id}>
-                                <th>Avg {period.met_name_en}</th>
+                                <th>
+                                  {t("avg")} {t(period.met_name_en)}
+                                </th>
                                 <td className="text-end">
                                   {formatCurrency(
                                     Math.round(period.totalAvgFinancial)
@@ -1195,21 +1218,21 @@ const MonitoringEvaluationAnalysis = ({
                     <CardBody>
                       <h5 className="card-title d-flex align-items-center">
                         <i className="mdi mdi-information-outline me-2 text-primary"></i>
-                        Project Information
+                        {t("project_information")}
                       </h5>
                       <div className="table-responsive">
                         <table className="table mb-0">
                           <tbody>
                             <tr>
-                              <th width="40%">Project Name</th>
+                              <th width="40%">{t("project_name")}</th>
                               <td>{processedData?.prj_name || "-"}</td>
                             </tr>
                             <tr>
-                              <th>Project Code</th>
+                              <th>{t("project_code")}</th>
                               <td>{processedData?.prj_code || "-"}</td>
                             </tr>
                             <tr>
-                              <th>Duration</th>
+                              <th>{t("duration")}</th>
                               <td>
                                 {processedData?.mne_start_date || "-"} to{" "}
                                 {processedData?.mne_end_date || "-"}
@@ -1221,7 +1244,7 @@ const MonitoringEvaluationAnalysis = ({
                               </td>
                             </tr>
                             <tr>
-                              <th>Team Members</th>
+                              <th>{t("team_members")}</th>
                               <td>
                                 {processedData?.mne_team_members
                                   ? processedData.mne_team_members
@@ -1249,25 +1272,25 @@ const MonitoringEvaluationAnalysis = ({
                     <CardBody>
                       <h5 className="card-title d-flex align-items-center">
                         <i className="mdi mdi-cash-multiple me-2 text-primary"></i>
-                        Financial Metrics
+                        {t("financial_metrics")}
                       </h5>
                       <div className="table-responsive">
                         <table className="table mb-0">
                           <tbody>
                             <tr>
-                              <th width="40%">Region Level</th>
+                              <th width="40%">{t("zone_level")}</th>
                               <td className="text-end">
                                 {processedData?.formattedFinancialRegion || "-"}
                               </td>
                             </tr>
                             <tr>
-                              <th>Zone Level</th>
+                              <th>{t("zone_level")}</th>
                               <td className="text-end">
                                 {processedData?.formattedFinancialZone || "-"}
                               </td>
                             </tr>
                             <tr>
-                              <th>Woreda Level</th>
+                              <th>{t("woreda_level")}</th>
                               <td className="text-end">
                                 {processedData?.formattedFinancial || "-"}
                               </td>
@@ -1283,25 +1306,25 @@ const MonitoringEvaluationAnalysis = ({
                     <CardBody>
                       <h5 className="card-title d-flex align-items-center">
                         <i className="mdi mdi-progress-check me-2 text-primary"></i>
-                        Physical Metrics
+                        {t("physical_metrics")}
                       </h5>
                       <div className="table-responsive">
                         <table className="table mb-0">
                           <tbody>
                             <tr>
-                              <th width="40%">Region Level</th>
+                              <th width="40%">{t("region_level")}</th>
                               <td className="text-end">
                                 {processedData?.mne_physical_region || "-"}%
                               </td>
                             </tr>
                             <tr>
-                              <th>Zone Level</th>
+                              <th>{t("zone_level")}</th>
                               <td className="text-end">
                                 {processedData?.mne_physical_zone || "-"}%
                               </td>
                             </tr>
                             <tr>
-                              <th>Woreda Level</th>
+                              <th>{t("woreda_level")}</th>
                               <td className="text-end">
                                 {processedData?.mne_physical || "-"}%
                               </td>
@@ -1325,7 +1348,7 @@ const MonitoringEvaluationAnalysis = ({
                     <CardBody>
                       <h5 className="card-title d-flex align-items-center">
                         <i className="mdi mdi-thumb-up-outline me-2 text-success"></i>
-                        Strengths
+                        {t("strengths")}
                       </h5>
                       <div className="p-3 bg-light rounded">
                         {processedData?.mne_strength ? (
@@ -1335,7 +1358,7 @@ const MonitoringEvaluationAnalysis = ({
                           </div>
                         ) : (
                           <div className="text-muted">
-                            No strengths recorded
+                            {t("no_strengths_recorded")}
                           </div>
                         )}
                       </div>
@@ -1345,7 +1368,7 @@ const MonitoringEvaluationAnalysis = ({
                     <CardBody>
                       <h5 className="card-title d-flex align-items-center">
                         <i className="mdi mdi-alert-circle-outline me-2 text-warning"></i>
-                        Challenges
+                        {t("challenges")}
                       </h5>
                       <div className="p-3 bg-light rounded">
                         {processedData?.mne_challenges ? (
@@ -1355,7 +1378,7 @@ const MonitoringEvaluationAnalysis = ({
                           </div>
                         ) : (
                           <div className="text-muted">
-                            No challenges recorded
+                            {t("no_challenges_recorded")}
                           </div>
                         )}
                       </div>
@@ -1367,7 +1390,7 @@ const MonitoringEvaluationAnalysis = ({
                     <CardBody>
                       <h5 className="card-title d-flex align-items-center">
                         <i className="mdi mdi-thumb-down-outline me-2 text-danger"></i>
-                        Weaknesses
+                        {t("weaknesses")}
                       </h5>
                       <div className="p-3 bg-light rounded">
                         {processedData?.mne_weakness ? (
@@ -1377,7 +1400,7 @@ const MonitoringEvaluationAnalysis = ({
                           </div>
                         ) : (
                           <div className="text-muted">
-                            No weaknesses recorded
+                            {t("no_weaknesses_recorded")}
                           </div>
                         )}
                       </div>
@@ -1387,7 +1410,7 @@ const MonitoringEvaluationAnalysis = ({
                     <CardBody>
                       <h5 className="card-title d-flex align-items-center">
                         <i className="mdi mdi-lightbulb-on-outline me-2 text-info"></i>
-                        Recommendations
+                        {t("recommendations")}
                       </h5>
                       <div className="p-3 bg-light rounded">
                         {processedData?.mne_recommendations ? (
@@ -1397,7 +1420,7 @@ const MonitoringEvaluationAnalysis = ({
                           </div>
                         ) : (
                           <div className="text-muted">
-                            No recommendations provided
+                            {t("no_recommendations_provided")}
                           </div>
                         )}
                       </div>
@@ -1409,10 +1432,11 @@ const MonitoringEvaluationAnalysis = ({
                     <CardBody>
                       <h5 className="card-title d-flex align-items-center">
                         <i className="mdi mdi-message-text-outline text-primary me-2"></i>
-                        Feedback
+                        {t("feedback")}
                       </h5>
                       <div className="p-3 bg-light rounded">
-                        {processedData?.mne_feedback || "No feedback provided"}
+                        {processedData?.mne_feedback ||
+                          t("no_feedback_provided")}
                       </div>
                     </CardBody>
                   </Card>
