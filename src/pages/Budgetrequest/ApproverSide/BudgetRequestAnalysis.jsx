@@ -19,6 +19,7 @@ import {
 import classnames from "classnames";
 import ReactApexChart from "react-apexcharts";
 import { formatNumber, formatLargeNumber } from "../../../utils/commonMethods";
+import { useTranslation } from "react-i18next";
 
 const BudgetRequestAnalysis = ({
   budgetRequestData,
@@ -29,6 +30,8 @@ const BudgetRequestAnalysis = ({
 }) => {
   const [activeTab, setActiveTab] = useState("1");
   const [chartExportOpen, setChartExportOpen] = useState(false);
+
+  const { t } = useTranslation();
 
   // Memoized utility functions
   const memoizedFormatNumber = useCallback(formatNumber, []);
@@ -245,7 +248,7 @@ const BudgetRequestAnalysis = ({
       tooltip: {
         y: {
           formatter: function (val) {
-            return `${memoizedFormatNumber(val)} Birr`;
+            return `${memoizedFormatNumber(val)} ${t("birr")}`;
           },
         },
       },
@@ -254,7 +257,7 @@ const BudgetRequestAnalysis = ({
     if (chartType === "pie") {
       options = {
         ...options,
-        labels: ["Requested", "Released"],
+        labels: [`${t("requested")}`, `${t("released")}`],
         plotOptions: {
           pie: {
             donut: {
@@ -305,7 +308,7 @@ const BudgetRequestAnalysis = ({
           colors: ["transparent"],
         },
         xaxis: {
-          categories: ["Budget"],
+          categories: [`${t("budget")}`],
           labels: {
             rotate: -45,
             style: {
@@ -315,15 +318,15 @@ const BudgetRequestAnalysis = ({
         },
         yaxis: {
           title: {
-            text: "Amount (Birr)",
+            text: `${t("amount_(Birr)")}`,
           },
           labels: {
             formatter: function (val) {
               if (val >= 1000000000) {
-                return (val / 1000000000).toFixed(1) + "B";
+                return (val / 1000000000).toFixed(1) + `${t("b")}`;
               }
               if (val >= 1000000) {
-                return (val / 1000000).toFixed(1) + "M";
+                return (val / 1000000).toFixed(1) + `${t("m")}`;
               }
               return val;
             },
@@ -349,17 +352,17 @@ const BudgetRequestAnalysis = ({
 
         options.xaxis.categories = years;
         series = [
-          { name: "Total Requested", data: requestedData },
-          { name: "Total Released", data: releasedData },
+          { name: `${t("total_requested")}`, data: requestedData },
+          { name: `${t("total_released")}`, data: releasedData },
         ];
       } else {
         series = [
           {
-            name: "Requested",
+            name: `${t("requested")}`,
             data: [budgetRequestData?.bdr_requested_amount || 0],
           },
           {
-            name: "Released",
+            name: `${t("released")}`,
             data: [budgetRequestData?.bdr_released_amount || 0],
           },
         ];
@@ -427,7 +430,7 @@ const BudgetRequestAnalysis = ({
       const canvas = chartElement.querySelector("canvas");
       if (canvas) {
         const link = document.createElement("a");
-        link.download = `budget-analysis-${new Date()
+        link.download = `${t("budget_analysis")}-${new Date()
           .toISOString()
           .slice(0, 10)}.${type}`;
         link.href =
@@ -447,13 +450,13 @@ const BudgetRequestAnalysis = ({
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h4 className="card-title mb-0">
                 {isOverallView
-                  ? "Overall Budget Requests"
-                  : `${
-                      budgetRequestData?.prj_name || "Budget Request"
-                    } Analysis`}
+                  ? t("overall_budget_requests")
+                  : `${budgetRequestData?.prj_name || t("budget_request")} ${t(
+                      "analysis"
+                    )}`}
                 {isOverallView && (
                   <Badge color="primary" className="ms-2">
-                    {totals?.requestCount || 0} Requests
+                    {totals?.requestCount || 0} {t("requests")}
                   </Badge>
                 )}
               </h4>
@@ -465,7 +468,7 @@ const BudgetRequestAnalysis = ({
                     }`}
                     onClick={handleBarChartClick}
                   >
-                    <i className="mdi mdi-chart-bar"></i> Bar
+                    <i className="mdi mdi-chart-bar"></i> {t("bar")}
                   </button>
                   <button
                     className={`btn btn-light ${
@@ -473,7 +476,7 @@ const BudgetRequestAnalysis = ({
                     }`}
                     onClick={handlePieChartClick}
                   >
-                    <i className="mdi mdi-chart-pie"></i> Pie
+                    <i className="mdi mdi-chart-pie"></i> {t("pie")}
                   </button>
                 </div>
 
@@ -487,10 +490,10 @@ const BudgetRequestAnalysis = ({
                   </DropdownToggle>
                   <DropdownMenu>
                     <DropdownItem onClick={() => exportChart("png")}>
-                      Export as PNG
+                      {t("export_as_PNG")}
                     </DropdownItem>
                     <DropdownItem onClick={() => exportChart("jpg")}>
-                      Export as JPG
+                      {t("export_as_JPG")}
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
@@ -503,7 +506,8 @@ const BudgetRequestAnalysis = ({
                   className={classnames({ active: activeTab === "1" })}
                   onClick={() => toggleTab("1")}
                 >
-                  <i className="mdi mdi-chart-areaspline me-1"></i> Summary
+                  <i className="mdi mdi-chart-areaspline me-1"></i>{" "}
+                  {t("summary")}
                 </NavLink>
               </NavItem>
 
@@ -512,8 +516,8 @@ const BudgetRequestAnalysis = ({
                   className={classnames({ active: activeTab === "2" })}
                   onClick={() => toggleTab("2")}
                 >
-                  <i className="mdi mdi-calendar-clock me-1"></i> Yearly
-                  Progress
+                  <i className="mdi mdi-calendar-clock me-1"></i>{" "}
+                  {t("yearly_progress")}
                 </NavLink>
               </NavItem>
 
@@ -522,7 +526,8 @@ const BudgetRequestAnalysis = ({
                   className={classnames({ active: activeTab === "3" })}
                   onClick={() => toggleTab("3")}
                 >
-                  <i className="mdi mdi-file-document-outline me-1"></i> Details
+                  <i className="mdi mdi-file-document-outline me-1"></i>{" "}
+                  {t("details")}
                 </NavLink>
               </NavItem>
             </Nav>
@@ -537,12 +542,12 @@ const BudgetRequestAnalysis = ({
                     <div className="mt-4">
                       {!isOverallView && (
                         <>
-                          <p className="text-muted mb-1">Project Code</p>
+                          <p className="text-muted mb-1">{t("project_code")}</p>
                           <h4 className="mb-3">
                             {budgetRequestData?.prj_code || "-"}
                           </h4>
 
-                          <p className="text-muted mb-1">Status</p>
+                          <p className="text-muted mb-1">{t("status")}</p>
                           <h5 className="mb-4">
                             <Badge
                               color={
@@ -566,30 +571,34 @@ const BudgetRequestAnalysis = ({
                       <Row>
                         <Col xs="6">
                           <div className="border-end pe-3">
-                            <p className="text-muted mb-2">Total Requested</p>
+                            <p className="text-muted mb-2">
+                              {t("total_requested")}
+                            </p>
                             <h5 className="text-primary">
                               {memoizedFormatNumber(
                                 totals?.financial?.requested || 0
                               )}{" "}
-                              Birr
+                              {t("birr")}
                             </h5>
                           </div>
                         </Col>
                         <Col xs="6">
                           <div className="ps-3">
-                            <p className="text-muted mb-2">Total Released</p>
+                            <p className="text-muted mb-2">
+                              {t("total_released")}
+                            </p>
                             <h5 className="text-success">
                               {memoizedFormatNumber(
                                 totals?.financial?.released || 0
                               )}{" "}
-                              Birr
+                              {t("birr")}
                             </h5>
                           </div>
                         </Col>
                       </Row>
 
                       <div className="mt-4">
-                        <p className="text-muted mb-2">Variance</p>
+                        <p className="text-muted mb-2">{t("variance")}</p>
                         <h4
                           className={
                             totals?.financial?.variance >= 0
@@ -600,7 +609,7 @@ const BudgetRequestAnalysis = ({
                           {memoizedFormatLargeNumber(
                             Math.abs(totals?.financial?.variance || 0)
                           )}{" "}
-                          Birr
+                          {t("birr")}
                           {getStatusIndicator(totals?.financial?.variance || 0)}
                           <span className="text-muted font-size-14 ms-2">
                             (
@@ -613,7 +622,9 @@ const BudgetRequestAnalysis = ({
                       </div>
 
                       <div className="mt-4">
-                        <p className="text-muted mb-2">Budget Utilization</p>
+                        <p className="text-muted mb-2">
+                          {t("budget_utilization")}
+                        </p>
                         <div className="d-flex align-items-center">
                           <Progress
                             className="flex-grow-1"
@@ -628,11 +639,11 @@ const BudgetRequestAnalysis = ({
                           {memoizedFormatNumber(
                             totals?.financial?.released || 0
                           )}{" "}
-                          of{" "}
+                          {t("of")}{" "}
                           {memoizedFormatNumber(
                             totals?.financial?.requested || 0
                           )}{" "}
-                          Birr
+                          {t("birr")}
                         </small>
                       </div>
                       {isOverallView && (
@@ -640,7 +651,7 @@ const BudgetRequestAnalysis = ({
                           <Col xs="6">
                             <div className="border-end pe-3">
                               <p className="text-muted mb-2">
-                                Avg. Physical Planned
+                                {t("avg._physical_planned")}
                               </p>
                               <h4 className="text-primary">
                                 {memoizedFormatNumber(
@@ -654,7 +665,7 @@ const BudgetRequestAnalysis = ({
                           <Col xs="6">
                             <div className="pe-3">
                               <p className="text-muted mb-2">
-                                Avg. Physical Approved
+                                {t("avg._physical_approved")}
                               </p>
                               <h4 className="text-primary">
                                 {memoizedFormatNumber(
@@ -712,12 +723,12 @@ const BudgetRequestAnalysis = ({
                   <table className="table table-bordered table-hover table-striped">
                     <thead className="table-light">
                       <tr>
-                        <th>Year</th>
-                        <th>Total Requested (Birr)</th>
-                        <th>Total Released (Birr)</th>
-                        <th>Variance</th>
-                        <th>Avg. Physical Planned (%)</th>
-                        <th>Avg. Physical Approved (%)</th>
+                        <th>{t("year")}</th>
+                        <th>{t("total_requested_(Birr)")}</th>
+                        <th>{t("total_released_(Birr)")}</th>
+                        <th>{t("variance")}</th>
+                        <th>{t("avg._physical_planned")}(%)</th>
+                        <th>{t("avg._physical_approved")} (%)</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -759,22 +770,24 @@ const BudgetRequestAnalysis = ({
                       <CardBody>
                         <h5 className="card-title">
                           <i className="mdi mdi-scale-balance me-1"></i>{" "}
-                          Baseline Comparison
+                          {t("baseline_comparison")}
                         </h5>
                         <div className="d-flex justify-content-between mt-3">
                           <div>
                             <p className="text-muted mb-1">
-                              Financial Baseline
+                              {t("financial_baseline")}
                             </p>
                             <h4>
                               {memoizedFormatNumber(
                                 totals?.baseline?.financial || 0
                               )}{" "}
-                              Birr
+                              {t("birr")}
                             </h4>
                           </div>
                           <div>
-                            <p className="text-muted mb-1">Physical Baseline</p>
+                            <p className="text-muted mb-1">
+                              {t("physical_baseline")}
+                            </p>
                             <h4>
                               {memoizedFormatNumber(
                                 totals?.baseline?.physical || 0
@@ -792,10 +805,12 @@ const BudgetRequestAnalysis = ({
                       <CardBody>
                         <h5 className="card-title">
                           <i className="mdi mdi-chart-box-outline me-1"></i>{" "}
-                          Performance Metrics
+                          {t("performance_metrics")}
                         </h5>
                         <div className="mt-3">
-                          <p className="text-muted mb-1">Efficiency Ratio</p>
+                          <p className="text-muted mb-1">
+                            {t("efficiency_ratio")}
+                          </p>
                           <div className="d-flex align-items-center">
                             <Progress
                               className="flex-grow-1"
@@ -809,7 +824,7 @@ const BudgetRequestAnalysis = ({
                         </div>
                         <div className="mt-3">
                           <p className="text-muted mb-1">
-                            Budget Absorption Rate
+                            {t("budget_absorption_rate")}
                           </p>
                           <div className="d-flex align-items-center">
                             <Progress
@@ -837,21 +852,21 @@ const BudgetRequestAnalysis = ({
                         <CardBody>
                           <h4 className="card-title mb-4">
                             <i className="mdi mdi-file-document-outline me-1"></i>{" "}
-                            Request Details
+                            {t("request_details")}
                           </h4>
                           <Row>
                             <Col md="4" className="mb-3">
                               <p className="text-muted fw-bold mb-1">
-                                Description
+                                {t("description")}
                               </p>
                               <p className="text-dark">
                                 {budgetRequestData?.bdr_description ||
-                                  "No description available"}
+                                  t("no_description_available")}
                               </p>
                             </Col>
                             <Col md="4" className="mb-3">
                               <p className="text-muted fw-bold mb-1">
-                                Requested Date
+                                {t("requested_date")}
                               </p>
                               <p className="text-dark">
                                 {budgetRequestData?.bdr_requested_date_gc ||
@@ -860,7 +875,7 @@ const BudgetRequestAnalysis = ({
                             </Col>
                             <Col md="4" className="mb-3">
                               <p className="text-muted fw-bold mb-1">
-                                Released Date
+                                {t("released_date")}
                               </p>
                               <p className="text-dark">
                                 {budgetRequestData?.bdr_released_date_gc || "-"}
@@ -868,7 +883,7 @@ const BudgetRequestAnalysis = ({
                             </Col>
                             <Col md="4" className="mb-3">
                               <p className="text-muted fw-bold mb-1">
-                                Action Remark
+                                {t("action_remark")}
                               </p>
                               <p className="text-dark">
                                 {budgetRequestData?.bdr_action_remark || "-"}
@@ -876,7 +891,7 @@ const BudgetRequestAnalysis = ({
                             </Col>
                             <Col md="4" className="mb-3">
                               <p className="text-muted fw-bold mb-1">
-                                Request Type
+                                {t("request_type")}
                               </p>
                               <p className="text-dark">
                                 {budgetRequestData?.bdr_request_type === 6
@@ -886,7 +901,7 @@ const BudgetRequestAnalysis = ({
                             </Col>
                             <Col md="4" className="mb-3">
                               <p className="text-muted fw-bold mb-1">
-                                Priority Level
+                                {t("priority_level")}
                               </p>
                               <p className="text-dark">
                                 {budgetRequestData?.bdr_priority_level === 1
