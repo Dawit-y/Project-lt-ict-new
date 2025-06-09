@@ -1108,7 +1108,6 @@
 	"srch_search": "bu`aa ilaaluf asitti cuqaasaa",
 	"srch_clear": "bu`aa duraa ilaaluf asitti cuqaasaa",
 	"srch_more": "dabalata barbaaduuf asitti cuqaasaa",
-
 	"task_name": "Maqaan Galaafata",
 	"priority": "Danda'amummaa",
 	"description": "Ibsa",
@@ -1348,43 +1347,46 @@
 	"in_percent": "(Dhibbeentaadhaan)",
 	"min_error": "{{field}} yoo xiqqaate ta’uu qaba {{min}}.",
 	"max_error": "{{field}} yoo baay’ate ta’uu qaba {{max}}.",
-
-
-	"mne_transaction_type" : "Gosa Geessumaa",
-
-"regional_physical" : "Naannoo Jireenyaa",
-
-"regional_financial" : "Naannoo Qabeenyaa",
-
-"zonal_physical" : "Zoonii Jireenyaa",
-
-"zonal_financial" : "Zoonii Qabeenyaa",
-
-"woreda_physical" : "Aanaa Jireenyaa",
-
-"woreda_financial" : "Aanaa Qabeenyaa",
-
-"record_date" : "Guyyaa Galmeeffannaa",
-
-"end_date" : "Guyyaa Dhumaa",
-
-"mne_financial" : "Aanaa Qabeenyaa",
-
-"mne_physical" : "Aanaa Jireenyaa",
-
-"Select_Transaction_Type" : "Gosa Geessumaa Filadhu",
-
-"monitoring" : "Ijaarsa",
-
-"evaluation" : "Qorannoo",
-
-"Regular" : "Yeroo Hunda",
-
-"Surprise" : "Kan Hin Eegne",
-
-"Quarterly" : "Kurmaan Waggaa",
-
-"Monthly" : "Ji’a Ji’aa",
-
-"Yearly" : "Waggaa Waggaa"
+	"mne_transaction_type": "Gosa Geessumaa",
+	"regional_physical": "Naannoo Jireenyaa",
+	"regional_financial": "Naannoo Qabeenyaa",
+	"zonal_physical": "Zoonii Jireenyaa",
+	"zonal_financial": "Zoonii Qabeenyaa",
+	"woreda_physical": "Aanaa Jireenyaa",
+	"woreda_financial": "Aanaa Qabeenyaa",
+	"record_date": "Guyyaa Galmeeffannaa",
+	"end_date": "Guyyaa Dhumaa",
+	"mne_financial": "Aanaa Qabeenyaa",
+	"mne_physical": "Aanaa Jireenyaa",
+	"Select_Transaction_Type": "Gosa Geessumaa Filadhu",
+	"monitoring": "Ijaarsa",
+	"evaluation": "Qorannoo",
+	"Regular": "Yeroo Hunda",
+	"Surprise": "Kan Hin Eegne",
+	"Quarterly": "Kurmaan Waggaa",
+	"Monthly": "Ji’a Ji’aa",
+	"Yearly": "Waggaa Waggaa",
+	"failed_to_load": "Daataan fe’amu hin dandeenye. Mee irra deebi’ii yaali.",
+	"budget_request_amounts": "Baajata Gaafatame",
+	"source_of_finance": "Madda Maallaqaa",
+	"government": "Mootummaa",
+	"internal": "Keessa",
+	"external_assistance": "Gargaarsa Alaa",
+	"foreign_debt": "Liqaa Alaa",
+	"current_year_expense": "Baasi Waggaa Kana",
+	"requested_amount": "Gatii Gaafatame",
+	"gov_requested": "Gaafata Mootummaa",
+	"internal_requested": "Gaafata Keessaa",
+	"support_requested": "Gargaarsa Gaafatame",
+	"support_code": "Koodii Gargaarsaa",
+	"credit_requested": "Liqaa Gaafatame",
+	"credit_code": "Koodii Liqaa",
+	"measurement": "Safartuu",
+	"performance_last_year": "Hojii Bara Darbe",
+	"performance_this_year": "Qorannoo Hojii Bara Kana",
+	"plans_coming_year": "Karoora Bara Itti Aanuu",
+	"physical": "Sadarkaa Hojii (%)",
+	"financial": "Maallaqaa",
+	"loading": "Fe’aa jira...",
+	"budget_request_tasks": "Gaaffii Bajataa Hojii"
 }

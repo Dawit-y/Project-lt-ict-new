@@ -17,9 +17,7 @@ import {
   Badge,
 } from "reactstrap";
 import AgGridContainer from "../../components/Common/AgGridContainer";
-import {
-  useSearchBudgetRequests,
-} from "../../queries/budget_request_query";
+import { useSearchBudgetRequests } from "../../queries/budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -29,440 +27,456 @@ import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal";
 import { PAGE_ID } from "../../constants/constantFile";
 import BudgetRequestModal from "./BudgetRequestModal";
 import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
+import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
 
 const truncateText = (text, maxLength) => {
-  if (typeof text !== "string") {
-    return text;
-  }
-  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+	if (typeof text !== "string") {
+		return text;
+	}
+	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
 const BudgetRequestListModel = () => {
-  document.title = "Budget Request List";
-  const { t } = useTranslation();
-  const [budgetRequestMetaData, setBudgetRequestMetaData] = useState({});
-  const [showCanvas, setShowCanvas] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [fileModal, setFileModal] = useState(false);
-  const [convModal, setConvModal] = useState(false);
+	document.title = "Budget Request List";
+	const { t, i18n } = useTranslation();
+	const [budgetRequestMetaData, setBudgetRequestMetaData] = useState({});
+	const [showCanvas, setShowCanvas] = useState(false);
+	const [modal1, setModal1] = useState(false);
+	const [fileModal, setFileModal] = useState(false);
+	const [convModal, setConvModal] = useState(false);
 
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
+	const [searchResults, setSearchResults] = useState(null);
+	const [isSearchLoading, setIsSearchLoading] = useState(false);
+	const [searcherror, setSearchError] = useState(null);
+	const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, error, isError, refetch } = useState(null);
-  const { data: budgetYearData } = useFetchBudgetYears();
-  const { data: bgCategoryOptionsData } = useFetchRequestCategorys();
-  const { data: projectStatusData } = useFetchProjectStatuss();
+	const { data, isLoading, error, isError, refetch } = useState(null);
+	const { data: budgetYearData } = useFetchBudgetYears();
+	const { data: bgCategoryOptionsData } = useFetchRequestCategorys();
+	const { data: projectStatusData } = useFetchProjectStatuss();
 
-  const [projectParams, setProjectParams] = useState({});
-  const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
-  const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
-  const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
-  const [isAddressLoading, setIsAddressLoading] = useState(false);
-  const [include, setInclude] = useState(0);
+	const [projectParams, setProjectParams] = useState({});
+	const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
+	const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
+	const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
+	const [isAddressLoading, setIsAddressLoading] = useState(false);
+	const [include, setInclude] = useState(0);
 
-  const [transaction, setTransaction] = useState({});
+	const [transaction, setTransaction] = useState({});
 
-  const budgetYearOptions = useMemo(() => {
-    return (
-      budgetYearData?.data?.map((year) => ({
-        label: year.bdy_name,
-        value: year.bdy_id,
-      })) || []
-    );
-  }, [budgetYearData]);
+	const budgetYearOptions = useMemo(() => {
+		return (
+			budgetYearData?.data?.map((year) => ({
+				label: year.bdy_name,
+				value: year.bdy_id,
+			})) || []
+		);
+	}, [budgetYearData]);
 
-  const requestCategoryOptions = useMemo(() => {
-    return (
-      bgCategoryOptionsData?.data?.map((category) => ({
-        label: category.rqc_name_en,
-        value: category.rqc_id,
-      })) || []
-    );
-  }, [bgCategoryOptionsData]);
+	const requestCategoryOptions = useMemo(() => {
+		return (
+			bgCategoryOptionsData?.data?.map((category) => ({
+				label: category.rqc_name_en,
+				value: category.rqc_id,
+			})) || []
+		);
+	}, [bgCategoryOptionsData]);
 
-  const projectStatusOptions = useMemo(() => {
-    return (
-      projectStatusData?.data?.map((type) => ({
-        label: type.prs_status_name_or,
-        value: type.prs_id,
-      })) || []
-    );
-  }, [projectStatusData]);
+	const bgCategoryMap = useMemo(() => {
+		return createMultiLangKeyValueMap(
+			bgCategoryOptionsData?.data || [],
+			"rqc_id",
+			{
+				en: "rqc_name_en",
+				am: "rqc_name_am",
+				or: "rqc_name_or",
+			},
+			i18n.language
+		);
+	}, [bgCategoryOptionsData, i18n.language]);
 
-  const handleSearchResults = ({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
-  };
+	const projectStatusOptions = useMemo(() => {
+		return (
+			projectStatusData?.data?.map((type) => ({
+				label: type.prs_status_name_or,
+				value: type.prs_id,
+			})) || []
+		);
+	}, [projectStatusData]);
 
-  const handleClick = (data) => {
-    setShowCanvas(!showCanvas);
-    setBudgetRequestMetaData(data);
-  };
+	const projectStatusMap = useMemo(() => {
+		return createMultiLangKeyValueMap(
+			projectStatusData?.data || [],
+			"prs_id",
+			{
+				en: "prs_status_name_en",
+				am: "prs_status_name_am",
+				or: "prs_status_name_or",
+			},
+			i18n.language
+		);
+	}, [projectStatusData, i18n.language]);
 
-  const toggleViewModal = () => setModal1(!modal1);
-  const toggleFileModal = () => setFileModal(!fileModal);
-  const toggleConvModal = () => setConvModal(!convModal);
+	const handleSearchResults = ({ data, error }) => {
+		setSearchResults(data);
+		setSearchError(error);
+		setShowSearchResult(true);
+	};
 
-  useEffect(() => {
-    setProjectParams({
-      ...(prjLocationRegionId && {
-        prj_location_region_id: prjLocationRegionId,
-      }),
-      ...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
-      ...(prjLocationWoredaId && {
-        prj_location_woreda_id: prjLocationWoredaId,
-      }),
-      ...(include === 1 && { include }),
-    });
-  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
+	const handleClick = (data) => {
+		setShowCanvas(!showCanvas);
+		setBudgetRequestMetaData(data);
+	};
 
-  const handleNodeSelect = (node) => {
-    if (node.level === "region") {
-      setPrjLocationRegionId(node.id);
-      setPrjLocationZoneId(null); // Clear dependent states
-      setPrjLocationWoredaId(null);
-    } else if (node.level === "zone") {
-      setPrjLocationZoneId(node.id);
-      setPrjLocationWoredaId(null); // Clear dependent state
-    } else if (node.level === "woreda") {
-      setPrjLocationWoredaId(node.id);
-    }
-    if (showSearchResult) {
-      setShowSearchResult(false);
-    }
-  };
+	const toggleViewModal = () => setModal1(!modal1);
+	const toggleFileModal = () => setFileModal(!fileModal);
+	const toggleConvModal = () => setConvModal(!convModal);
 
-  const columnDefs = useMemo(() => {
-    const baseColumnDefs = [
-      {
-        headerName: t("S.N"),
-        field: "sn",
-        valueGetter: (params) => params.node.rowIndex + 1,
-        sortable: false,
-        filter: false,
-        width: 70,
-      },
-      {
-        headerName: t("bdr_budget_year_id"),
-        field: "bdy_name",
-        sortable: true,
-        filter: true,
-        width: 120,
-        cellRenderer: (params) => {
-          return truncateText(params.data.bdy_name, 30) || "-";
-        },
-      },
-      {
-        headerName: t("bdr_request_category_id"),
-        field: "bdr_request_category_id",
-        sortable: true,
-        filter: true,
-        // flex: 1,
-        cellRenderer: (params) => {
-          const category = requestCategoryOptions.find(
-            (option) => option.value == params.data.bdr_request_category_id
-          );
-          return category ? truncateText(category.label, 30) : "-";
-        },
-      },
-      {
-        headerName: t("bdr_request_type"),
-        field: "bdr_request_type",
-        sortable: true,
-        filter: true,
+	useEffect(() => {
+		setProjectParams({
+			...(prjLocationRegionId && {
+				prj_location_region_id: prjLocationRegionId,
+			}),
+			...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
+			...(prjLocationWoredaId && {
+				prj_location_woreda_id: prjLocationWoredaId,
+			}),
+			...(include === 1 && { include }),
+		});
+	}, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
 
-        cellRenderer: (params) => {
-          const requestType = projectStatusOptions.find(
-            (option) => option.value == params.data.bdr_request_type
-          );
-          return requestType ? truncateText(requestType.label, 30) : "-";
-        },
-      },
-      {
-        headerName: t("prj_name"),
-        field: "prj_name",
-        sortable: true,
-        filter: true,
-        // flex: 2,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_name, 30) || "-";
-        },
-      },
-      {
-        headerName: t("prj_code"),
-        field: "prj_code",
-        sortable: true,
-        filter: true,
-        // flex: 1.5,
-        cellRenderer: (params) => {
-          return truncateText(params.data.prj_code, 30) || "-";
-        },
-      },
-      {
-        headerName: t("bdr_requested_amount"),
-        field: "bdr_requested_amount",
-        sortable: true,
-        filter: true,
-        // flex: 1.2,
-        valueFormatter: (params) => {
-          if (params.value != null) {
-            return new Intl.NumberFormat("en-US", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(params.value);
-          }
-          return "0.00"; // Default value if null or undefined
-        },
-      },
-      {
-        headerName: t("bdr_released_amount"),
-        field: "bdr_released_amount",
-        sortable: true,
-        filter: true,
-        // flex: 1.2,
-        valueFormatter: (params) => {
-          if (params.value != null) {
-            return new Intl.NumberFormat("en-US", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(params.value);
-          }
-          return "0.00"; // Default value if null or undefined
-        },
-      },
-      {
-        headerName: t("bdr_requested_date_gc"),
-        field: "bdr_requested_date_gc",
-        sortable: true,
-        // flex: 1,
-        filter: "agDateColumnFilter",
-        cellRenderer: (params) => {
-          return truncateText(params.data.bdr_requested_date_gc, 30) || "-";
-        },
-      },
-      {
-        headerName: t("psc_sector_id"),
-        field: "sector_name",
-        sortable: true,
-        // flex: 1,
-        filter: "agDateColumnFilter",
-        width: 300,
-        cellRenderer: (params) => {
-          return truncateText(params.data.sector_name, 60) || "-";
-        },
-      },
-      {
-        headerName: t("bdr_request_status"),
-        field: "bdr_request_status",
-        sortable: true,
-        filter: true,
-        // flex: 1,
-        width: 150,
-        cellRenderer: (params) => {
-          const badgeClass = params.data.color_code;
-          return (
-            <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
-              {params.data.status_name}
-            </Badge>
-          );
-        },
-      },
-      {
-        headerName: t("view_detail"),
-        field: "view_detail",
-        // flex: 1,
-        width: 120,
-        cellRenderer: (params) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                toggleViewModal();
-                setTransaction(params.data);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
-      {
-        headerName: t("attach_files"),
-        field: "attach_files",
-        width: 80,
-        cellRenderer: (params) => {
-          return (
-            <Button
-              outline
-              type="button"
-              color="success"
-              className="btn-sm"
-              onClick={() => {
-                toggleFileModal();
-                setTransaction(params.data);
-              }}
-            >
-              {t("attach_files")}
-            </Button>
-          );
-        },
-      },
-      {
-        headerName: t("Message"),
-        field: "Message",
-        width: 100,
-        cellRenderer: (params) => {
-          return (
-            <Button
-              outline
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                toggleConvModal();
-                setTransaction(params.data);
-              }}
-            >
-              {t("Message")}
-            </Button>
-          );
-        },
-      },
-    ];
-    if (1 == 1) {
-      baseColumnDefs.push({
-        headerName: t("view_detail"),
-        field: "view_detail",
-        width: 120,
-        cellRenderer: (params) => (
-          <div className="d-flex gap-3">
-            {params.data.is_editable ? (
-              <Link
-                to="#"
-                className="text-secondary"
-                onClick={() => handleClick(params.data)}
-              >
-                <i className="mdi mdi-cog font-size-18 ms-2" id="viewtooltip" />
-                <UncontrolledTooltip placement="top" target="viewtooltip">
-                  View
-                </UncontrolledTooltip>
-              </Link>
-            ) : (
-              ""
-            )}
-          </div>
-        ),
-      });
-    }
-    return baseColumnDefs;
-  }, []);
+	const handleNodeSelect = (node) => {
+		if (node.level === "region") {
+			setPrjLocationRegionId(node.id);
+			setPrjLocationZoneId(null); // Clear dependent states
+			setPrjLocationWoredaId(null);
+		} else if (node.level === "zone") {
+			setPrjLocationZoneId(node.id);
+			setPrjLocationWoredaId(null); // Clear dependent state
+		} else if (node.level === "woreda") {
+			setPrjLocationWoredaId(node.id);
+		}
+		if (showSearchResult) {
+			setShowSearchResult(false);
+		}
+	};
 
-  if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
-  }
+	const columnDefs = useMemo(() => {
+		const baseColumnDefs = [
+			{
+				headerName: t("S.N"),
+				field: "sn",
+				valueGetter: (params) => params.node.rowIndex + 1,
+				sortable: false,
+				filter: false,
+				width: 70,
+			},
+			{
+				headerName: t("bdr_budget_year_id"),
+				field: "bdy_name",
+				sortable: true,
+				filter: true,
+				width: 120,
+				cellRenderer: (params) => {
+					return truncateText(params.data.bdy_name, 30) || "-";
+				},
+			},
+			{
+				headerName: t("bdr_request_category_id"),
+				field: "bdr_request_category_id",
+				sortable: true,
+				filter: true,
+				cellRenderer: (params) =>
+					bgCategoryMap[params.data.bdr_request_category_id] || "-",
+			},
+			{
+				headerName: t("bdr_request_type"),
+				field: "bdr_request_type",
+				sortable: true,
+				filter: true,
+				cellRenderer: (params) =>
+					projectStatusMap[params.data.bdr_request_type] || "-",
+			},
+			{
+				headerName: t("prj_name"),
+				field: "prj_name",
+				sortable: true,
+				filter: true,
+				// flex: 2,
+				cellRenderer: (params) => {
+					return truncateText(params.data.prj_name, 30) || "-";
+				},
+			},
+			{
+				headerName: t("prj_code"),
+				field: "prj_code",
+				sortable: true,
+				filter: true,
+				// flex: 1.5,
+				cellRenderer: (params) => {
+					return truncateText(params.data.prj_code, 30) || "-";
+				},
+			},
+			{
+				headerName: t("bdr_requested_amount"),
+				field: "bdr_requested_amount",
+				sortable: true,
+				filter: true,
+				// flex: 1.2,
+				valueFormatter: (params) => {
+					if (params.value != null) {
+						return new Intl.NumberFormat("en-US", {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2,
+						}).format(params.value);
+					}
+					return "0.00"; // Default value if null or undefined
+				},
+			},
+			{
+				headerName: t("bdr_released_amount"),
+				field: "bdr_released_amount",
+				sortable: true,
+				filter: true,
+				// flex: 1.2,
+				valueFormatter: (params) => {
+					if (params.value != null) {
+						return new Intl.NumberFormat("en-US", {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2,
+						}).format(params.value);
+					}
+					return "0.00"; // Default value if null or undefined
+				},
+			},
+			{
+				headerName: t("bdr_requested_date_gc"),
+				field: "bdr_requested_date_gc",
+				sortable: true,
+				// flex: 1,
+				filter: "agDateColumnFilter",
+				cellRenderer: (params) => {
+					return truncateText(params.data.bdr_requested_date_gc, 30) || "-";
+				},
+			},
+			{
+				headerName: t("psc_sector_id"),
+				field: "sector_name",
+				sortable: true,
+				// flex: 1,
+				filter: "agDateColumnFilter",
+				width: 300,
+				cellRenderer: (params) => {
+					return truncateText(params.data.sector_name, 60) || "-";
+				},
+			},
+			{
+				headerName: t("bdr_request_status"),
+				field: "bdr_request_status",
+				sortable: true,
+				filter: true,
+				// flex: 1,
+				width: 150,
+				cellRenderer: (params) => {
+					const badgeClass = params.data.color_code;
+					return (
+						<Badge className={`font-size-12 badge-soft-${badgeClass}`}>
+							{params.data.status_name}
+						</Badge>
+					);
+				},
+			},
+			{
+				headerName: t("view_detail"),
+				field: "view_detail",
+				// flex: 1,
+				width: 120,
+				cellRenderer: (params) => {
+					return (
+						<Button
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								toggleViewModal();
+								setTransaction(params.data);
+							}}
+						>
+							{t("view_detail")}
+						</Button>
+					);
+				},
+			},
+			{
+				headerName: t("attach_files"),
+				field: "attach_files",
+				width: 80,
+				cellRenderer: (params) => {
+					return (
+						<Button
+							outline
+							type="button"
+							color="success"
+							className="btn-sm"
+							onClick={() => {
+								toggleFileModal();
+								setTransaction(params.data);
+							}}
+						>
+							{t("attach_files")}
+						</Button>
+					);
+				},
+			},
+			{
+				headerName: t("Message"),
+				field: "Message",
+				width: 100,
+				cellRenderer: (params) => {
+					return (
+						<Button
+							outline
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								toggleConvModal();
+								setTransaction(params.data);
+							}}
+						>
+							{t("Message")}
+						</Button>
+					);
+				},
+			},
+		];
+		if (1 == 1) {
+			baseColumnDefs.push({
+				headerName: t("view_detail"),
+				field: "view_detail",
+				width: 120,
+				cellRenderer: (params) => (
+					<div className="d-flex gap-3">
+						{params.data.is_editable ? (
+							<Link
+								to="#"
+								className="text-secondary"
+								onClick={() => handleClick(params.data)}
+							>
+								<i className="mdi mdi-cog font-size-18 ms-2" id="viewtooltip" />
+								<UncontrolledTooltip placement="top" target="viewtooltip">
+									View
+								</UncontrolledTooltip>
+							</Link>
+						) : (
+							""
+						)}
+					</div>
+				),
+			});
+		}
+		return baseColumnDefs;
+	}, []);
 
-  return (
-    <React.Fragment>
-      <BudgetRequestModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      />
-      <AttachFileModal
-        isOpen={fileModal}
-        toggle={toggleFileModal}
-        projectId={transaction?.bdr_project_id}
-        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-        ownerId={transaction?.bdr_id}
-      />
-      <ConvInfoModal
-        isOpen={convModal}
-        toggle={toggleConvModal}
-        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-        ownerId={transaction?.bdr_id ?? null}
-      />
-      <div className="page-content">
-        <div className="">
-          <Breadcrumbs />
-          <div className="w-100 d-flex gap-2">
-            <div style={{ flex: "0 0 25%", minWidth: "250px", height: "100%" }}>
-              <TreeForLists
-                onNodeSelect={handleNodeSelect}
-                setIsAddressLoading={setIsAddressLoading}
-                setInclude={setInclude}
-              />
-            </div>
-            <div style={{ flex: "0 0 75%", minWidth: "600px" }}>
-              <AdvancedSearch
-                searchHook={useSearchBudgetRequests}
-                dateSearchKeys={["budget_request_date"]}
-                textSearchKeys={["prj_name"]}
-                dropdownSearchKeys={[
-                  {
-                    key: "bdr_budget_year_id",
-                    options: budgetYearOptions,
-                  },
-                  {
-                    key: "bdr_request_category_id",
-                    options: requestCategoryOptions,
-                  },
-                  {
-                    key: "bdr_request_type",
-                    options: projectStatusOptions,
-                  },
-                ]}
-                additionalParams={projectParams}
-                setAdditionalParams={setProjectParams}
-                onSearchResult={handleSearchResults}
-                setIsSearchLoading={setIsSearchLoading}
-                setSearchResults={setSearchResults}
-                setShowSearchResult={setShowSearchResult}
-              >
+	if (isError) {
+		return <FetchErrorHandler error={error} refetch={refetch} />;
+	}
 
-                <AgGridContainer
-                  rowData={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
-                  columnDefs={columnDefs}
-                  isLoading={isSearchLoading}
-                  isPagination={true}
-                  paginationPageSize={20}
-                  isGlobalFilter={true}
-                  isAddButton={false}
-                  addButtonText="Add"
-                  isExcelExport={true}
-                  isPdfExport={true}
-                  isPrint={true}
-                  tableName="Projects"
-                  includeKey={["prj_name", "prj_code"]}
-                  excludeKey={["is_editable", "is_deletable"]}
-                />
-              </AdvancedSearch>
-            </div>
-          </div>
-        </div>
-      </div>
-      {showCanvas && (
-        <RightOffCanvas
-          handleClick={handleClick}
-          showCanvas={showCanvas}
-          canvasWidth={84}
-          name={t("budget_request")}
-          id={budgetRequestMetaData.bdr_id}
-          components={{
-            [t("budget_request_amount")]: BudgetRequestAmount,
-            [t("budget_request_task")]: BudgetRequestTask,
-          }}
-        />
-      )}
-    </React.Fragment>
-  );
+	return (
+		<React.Fragment>
+			<BudgetRequestModal
+				isOpen={modal1}
+				toggle={toggleViewModal}
+				transaction={transaction}
+			/>
+			<AttachFileModal
+				isOpen={fileModal}
+				toggle={toggleFileModal}
+				projectId={transaction?.bdr_project_id}
+				ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+				ownerId={transaction?.bdr_id}
+			/>
+			<ConvInfoModal
+				isOpen={convModal}
+				toggle={toggleConvModal}
+				ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+				ownerId={transaction?.bdr_id ?? null}
+			/>
+			<div className="page-content">
+				<div className="">
+					<Breadcrumbs />
+					<div className="w-100 d-flex gap-2">
+						<div style={{ flex: "0 0 25%", minWidth: "250px", height: "100%" }}>
+							<TreeForLists
+								onNodeSelect={handleNodeSelect}
+								setIsAddressLoading={setIsAddressLoading}
+								setInclude={setInclude}
+							/>
+						</div>
+						<div style={{ flex: "0 0 75%", minWidth: "600px" }}>
+							<AdvancedSearch
+								searchHook={useSearchBudgetRequests}
+								dateSearchKeys={["budget_request_date"]}
+								textSearchKeys={["prj_name"]}
+								dropdownSearchKeys={[
+									{
+										key: "bdr_budget_year_id",
+										options: budgetYearOptions,
+									},
+									{
+										key: "bdr_request_category_id",
+										options: requestCategoryOptions,
+									},
+									{
+										key: "bdr_request_type",
+										options: projectStatusOptions,
+									},
+								]}
+								additionalParams={projectParams}
+								setAdditionalParams={setProjectParams}
+								onSearchResult={handleSearchResults}
+								setIsSearchLoading={setIsSearchLoading}
+								setSearchResults={setSearchResults}
+								setShowSearchResult={setShowSearchResult}
+							>
+								<AgGridContainer
+									rowData={
+										showSearchResult ? searchResults?.data : data?.data || []
+									}
+									columnDefs={columnDefs}
+									isLoading={isSearchLoading}
+									isPagination={true}
+									paginationPageSize={20}
+									isGlobalFilter={true}
+									isAddButton={false}
+									addButtonText="Add"
+									isExcelExport={true}
+									isPdfExport={true}
+									isPrint={true}
+									tableName="Projects"
+									includeKey={["prj_name", "prj_code"]}
+									excludeKey={["is_editable", "is_deletable"]}
+								/>
+							</AdvancedSearch>
+						</div>
+					</div>
+				</div>
+			</div>
+			{showCanvas && (
+				<RightOffCanvas
+					handleClick={handleClick}
+					showCanvas={showCanvas}
+					canvasWidth={84}
+					name={t("budget_request")}
+					id={budgetRequestMetaData.bdr_id}
+					components={{
+						[t("budget_request_amount")]: BudgetRequestAmount,
+						[t("budget_request_task")]: BudgetRequestTask,
+					}}
+				/>
+			)}
+		</React.Fragment>
+	);
 };
 BudgetRequestListModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

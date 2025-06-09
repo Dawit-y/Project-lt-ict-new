@@ -264,147 +264,129 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
 
   const columns = useMemo(() => {
     const baseColumns = [
-      {
-        header: "",
-        accessorKey: "brt_task_name",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.brt_task_name, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "brt_measurement",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.brt_measurement, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "Performance to Last Year",
-        columns: [
-          {
-            header: "",
-            accessorKey: "brt_previous_year_physical",
-            enableColumnFilter: false,
-            enableSorting: true,
-            cell: (cellProps) => {
-              return (
-                <span>
-                  {`${cellProps.getValue()}%`}
-                </span>
-              );
-            },
-          },
-          {
-            header: "",
-            accessorKey: "brt_previous_year_financial",
-            enableColumnFilter: false,
-            enableSorting: true,
-            cell: (cellProps) => {
-              return (
-                <span>
-                  {parseFloat(cellProps.getValue()).toLocaleString()}
-                </span>
-              );
-            },
-          },
-        ]
-      },
-      {
-        header: "Performance Estimates for this Year",
-        columns: [
-          {
-            header: "",
-            accessorKey: "brt_current_year_physical",
-            enableColumnFilter: false,
-            enableSorting: true,
-            cell: (cellProps) => {
-              return (
-                <span>
-                  {`${cellProps.getValue()}%`}
-                </span>
-              );
-            },
-          },
-          {
-            header: "",
-            accessorKey: "brt_current_year_financial",
-            enableColumnFilter: false,
-            enableSorting: true,
-            cell: (cellProps) => {
-              return (
-                <span>
-                  {parseFloat(cellProps.getValue()).toLocaleString()}
-                </span>
-              );
-            },
-          },
-        ]
-      },
-      {
-        header: "Plans for the Coming Year",
-        columns: [
-          {
-            header: "",
-            accessorKey: "brt_next_year_physical",
-            enableColumnFilter: false,
-            enableSorting: true,
-            cell: (cellProps) => {
-              return (
-                <span>
-                  {`${cellProps.getValue()}%`}
-                </span>
-              );
-            },
-          },
-          {
-            header: "",
-            accessorKey: "brt_next_year_financial",
-            enableColumnFilter: false,
-            enableSorting: true,
-            cell: (cellProps) => {
-              return (
-                <span>
-                  {parseFloat(cellProps.getValue()).toLocaleString()}
-                </span>
-              );
-            },
-          },
-        ]
-      },
-      {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
-    ];
+			{
+				header: "",
+				accessorKey: "brt_task_name",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.brt_task_name, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "brt_measurement",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.brt_measurement, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: t("performance_last_year"),
+				columns: [
+					{
+						header: t("physical"),
+						accessorKey: "brt_previous_year_physical",
+						enableColumnFilter: false,
+						enableSorting: true,
+						cell: (cellProps) => {
+							return <span>{`${cellProps.getValue()}%`}</span>;
+						},
+					},
+					{
+						header: t("financial"),
+						accessorKey: "brt_previous_year_financial",
+						enableColumnFilter: false,
+						enableSorting: true,
+						cell: (cellProps) => {
+							return (
+								<span>{parseFloat(cellProps.getValue()).toLocaleString()}</span>
+							);
+						},
+					},
+				],
+			},
+			{
+				header: t("performance_this_year"),
+				columns: [
+					{
+						header: t("physical"),
+						accessorKey: "brt_current_year_physical",
+						enableColumnFilter: false,
+						enableSorting: true,
+						cell: (cellProps) => {
+							return <span>{`${cellProps.getValue()}%`}</span>;
+						},
+					},
+					{
+						header: t("financial"),
+						accessorKey: "brt_current_year_financial",
+						enableColumnFilter: false,
+						enableSorting: true,
+						cell: (cellProps) => {
+							return (
+								<span>{parseFloat(cellProps.getValue()).toLocaleString()}</span>
+							);
+						},
+					},
+				],
+			},
+			{
+				header: t("plans_coming_year"),
+				columns: [
+					{
+						header: t("physical"),
+						accessorKey: "brt_next_year_physical",
+						enableColumnFilter: false,
+						enableSorting: true,
+						cell: (cellProps) => {
+							return <span>{`${cellProps.getValue()}%`}</span>;
+						},
+					},
+					{
+						header: t("financial"),
+						accessorKey: "brt_next_year_financial",
+						enableColumnFilter: false,
+						enableSorting: true,
+						cell: (cellProps) => {
+							return (
+								<span>{parseFloat(cellProps.getValue()).toLocaleString()}</span>
+							);
+						},
+					},
+				],
+			},
+			{
+				header: t("view_detail"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								const data = cellProps.row.original;
+								toggleViewModal(data);
+								setTransaction(cellProps.row.original);
+							}}
+						>
+							{t("view_detail")}
+						</Button>
+					);
+				},
+			},
+		];
     if (
       data?.previledge?.is_role_editable == 1 ||
       data?.previledge?.is_role_deletable == 1

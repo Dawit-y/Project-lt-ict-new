@@ -259,7 +259,7 @@ const TableContainer = ({
                   </DropdownMenu>
                 </UncontrolledDropdown>
                 <UncontrolledTooltip placement="top" target="export_toggle">
-                  Export
+                  {t('export')}
                 </UncontrolledTooltip>
               </>
             )}

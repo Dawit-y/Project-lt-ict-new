@@ -291,183 +291,186 @@ const BudgetRequestAmountModel = ({ passedId, isActive }) => {
   };
 
   const columns = useMemo(() => {
-    const baseColumns = [
-      {
-        header: "",
-        accessorKey: "bra_expenditure_code_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => (
-          <span>
-            {expendCodeMap[cellProps.row.original.bra_expenditure_code_id]}
-          </span>
-        ),
-      },
-      {
-        header: "",
-        accessorKey: "bra_current_year_expense",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => (
-          <span>
-            {parseFloat(cellProps.getValue()).toLocaleString()}
-          </span>
-        ),
-      },
-      {
-        header: "",
-        accessorKey: "bra_requested_amount",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => (
-          <span>
-            {parseFloat(cellProps.getValue()).toLocaleString()}
-          </span>
-        ),
-      },
-      {
-        id: "bra_source",
-        header: () => <div style={{ textAlign: "center" }}>Source of Finance</div>,
-        columns: [
-          {
-            header: t("Government"),
-            accessorKey: "bra_source_government_requested",
-            enableColumnFilter: false,
-            enableSorting: true,
-            cell: (cellProps) => (
-              <span>
-                {parseFloat(cellProps.getValue()).toLocaleString()}
-              </span>
-            ),
-          },
-          {
-            header: t("Internal"),
-            accessorKey: "bra_source_internal_requested",
-            enableColumnFilter: false,
-            enableSorting: true,
-            cell: (cellProps) => (
-              <span>
-                {parseFloat(cellProps.getValue()).toLocaleString()}
-              </span>
-            ),
-          },
-          {
-            header: t("External Assistance"),
-            columns: [
-              {
-                header: t("Requested"),
-                accessorKey: "bra_source_support_requested",
-                enableColumnFilter: false,
-                enableSorting: true,
-                cell: (cellProps) => (
-                  <span>
-                    {parseFloat(cellProps.getValue()).toLocaleString()}
-                  </span>
-                ),
-              },
-              {
-                header: t("Code"),
-                accessorKey: "bra_source_support_code",
-                enableColumnFilter: false,
-                enableSorting: true,
-                cell: (cellProps) => (
-                  <span>
-                    {truncateText(cellProps.row.original.bra_source_support_code, 30) || "-"}
-                  </span>
-                ),
-              },
-            ],
-          },
-          {
-            header: t("Foreign Debt"),
-            columns: [
-              {
-                header: t("Requested"),
-                accessorKey: "bra_source_credit_requested",
-                enableColumnFilter: false,
-                enableSorting: true,
-                cell: (cellProps) => (
-                  <span>
-                    {parseFloat(cellProps.getValue()).toLocaleString()}
-                  </span>
-                ),
-              },
-              {
-                header: t("Code"),
-                accessorKey: "bra_source_credit_code",
-                enableColumnFilter: false,
-                enableSorting: true,
-                cell: (cellProps) => (
-                  <span>
-                    {truncateText(cellProps.row.original.bra_source_credit_code, 30) || "-"}
-                  </span>
-                ),
-              },
-            ],
-          },
-        ],
-      },
-      {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => (
-          <Button
-            type="button"
-            color="primary"
-            className="btn-sm"
-            onClick={() => {
-              const data = cellProps.row.original;
-              toggleViewModal(data);
-              setTransaction(data);
-            }}
-          >
-            {t("view_detail")}
-          </Button>
-        ),
-      },
-    ];
+		const baseColumns = [
+			{
+				header: "",
+				accessorKey: "bra_expenditure_code_id",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => (
+					<span>
+						{expendCodeMap[cellProps.row.original.bra_expenditure_code_id]}
+					</span>
+				),
+			},
+			{
+				header: "",
+				accessorKey: "bra_current_year_expense",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => (
+					<span>{parseFloat(cellProps.getValue()).toLocaleString()}</span>
+				),
+			},
+			{
+				header: "",
+				accessorKey: "bra_requested_amount",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => (
+					<span>{parseFloat(cellProps.getValue()).toLocaleString()}</span>
+				),
+			},
+			{
+				id: "bra_source",
+				header: () => (
+					<div style={{ textAlign: "center" }}>{t("source_of_finance")}</div>
+				),
+				columns: [
+					{
+						header: t("government"),
+						accessorKey: "bra_source_government_requested",
+						enableColumnFilter: false,
+						enableSorting: true,
+						cell: (cellProps) => (
+							<span>{parseFloat(cellProps.getValue()).toLocaleString()}</span>
+						),
+					},
+					{
+						header: t("internal"),
+						accessorKey: "bra_source_internal_requested",
+						enableColumnFilter: false,
+						enableSorting: true,
+						cell: (cellProps) => (
+							<span>{parseFloat(cellProps.getValue()).toLocaleString()}</span>
+						),
+					},
+					{
+						header: t("external_assistance"),
+						columns: [
+							{
+								header: t("support_requested"),
+								accessorKey: "bra_source_support_requested",
+								enableColumnFilter: false,
+								enableSorting: true,
+								cell: (cellProps) => (
+									<span>
+										{parseFloat(cellProps.getValue()).toLocaleString()}
+									</span>
+								),
+							},
+							{
+								header: t("support_code"),
+								accessorKey: "bra_source_support_code",
+								enableColumnFilter: false,
+								enableSorting: true,
+								cell: (cellProps) => (
+									<span>
+										{truncateText(
+											cellProps.row.original.bra_source_support_code,
+											30
+										) || "-"}
+									</span>
+								),
+							},
+						],
+					},
+					{
+						header: t("foreign_debt"),
+						columns: [
+							{
+								header: t("credit_requested"),
+								accessorKey: "bra_source_credit_requested",
+								enableColumnFilter: false,
+								enableSorting: true,
+								cell: (cellProps) => (
+									<span>
+										{parseFloat(cellProps.getValue()).toLocaleString()}
+									</span>
+								),
+							},
+							{
+								header: t("credit_code"),
+								accessorKey: "bra_source_credit_code",
+								enableColumnFilter: false,
+								enableSorting: true,
+								cell: (cellProps) => (
+									<span>
+										{truncateText(
+											cellProps.row.original.bra_source_credit_code,
+											30
+										) || "-"}
+									</span>
+								),
+							},
+						],
+					},
+				],
+			},
+			{
+				header: t("view_detail"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => (
+					<Button
+						type="button"
+						color="primary"
+						className="btn-sm"
+						onClick={() => {
+							const data = cellProps.row.original;
+							toggleViewModal(data);
+							setTransaction(data);
+						}}
+					>
+						{t("view_detail")}
+					</Button>
+				),
+			},
+		];
 
-    // Add Action column if needed
-    if (1 == 1) {
-      baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => (
-          <div className="d-flex gap-3">
-            {1 == 1 && (
-              <Link
-                to="#"
-                className="text-success"
-                onClick={() => handleBudgetRequestAmountClick(cellProps.row.original)}
-              >
-                <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                <UncontrolledTooltip placement="top" target="edittooltip">
-                  Edit
-                </UncontrolledTooltip>
-              </Link>
-            )}
-            {cellProps.row.original.is_deletable == 1 && (
-              <Link
-                to="#"
-                className="text-danger"
-                onClick={() => onClickDelete(cellProps.row.original)}
-              >
-                <i className="mdi mdi-delete font-size-18" id="deletetooltip" />
-                <UncontrolledTooltip placement="top" target="deletetooltip">
-                  Delete
-                </UncontrolledTooltip>
-              </Link>
-            )}
-          </div>
-        ),
-      });
-    }
+		// Add Action column if needed
+		if (1 == 1) {
+			baseColumns.push({
+				header: t("Action"),
+				accessorKey: t("Action"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => (
+					<div className="d-flex gap-3">
+						{1 == 1 && (
+							<Link
+								to="#"
+								className="text-success"
+								onClick={() =>
+									handleBudgetRequestAmountClick(cellProps.row.original)
+								}
+							>
+								<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+								<UncontrolledTooltip placement="top" target="edittooltip">
+									Edit
+								</UncontrolledTooltip>
+							</Link>
+						)}
+						{cellProps.row.original.is_deletable == 1 && (
+							<Link
+								to="#"
+								className="text-danger"
+								onClick={() => onClickDelete(cellProps.row.original)}
+							>
+								<i className="mdi mdi-delete font-size-18" id="deletetooltip" />
+								<UncontrolledTooltip placement="top" target="deletetooltip">
+									Delete
+								</UncontrolledTooltip>
+							</Link>
+						)}
+					</div>
+				),
+			});
+		}
 
-    return baseColumns;
-  }, [handleBudgetRequestAmountClick, toggleViewModal, onClickDelete, t]);
+		return baseColumns;
+	}, [handleBudgetRequestAmountClick, toggleViewModal, onClickDelete]);
+	console.log("columns", columns);
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;

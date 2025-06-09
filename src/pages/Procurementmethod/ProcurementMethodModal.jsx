@@ -20,53 +20,62 @@ const ProcurementMethodModal = (props) => {
   const { isOpen, toggle, transaction } = props;
 
   return (
-    <Modal
-      isOpen={isOpen}
-      role="dialog"
-      autoFocus={true}
-      centered={true}
-      className="modal-xl"
-      tabIndex="-1"
-      toggle={toggle}
-      style={modalStyle}
-    >
-      <div className="modal-xl">
-        <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
-        <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('prm_name_or')}: <span className="text-primary">{transaction.prm_name_or}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prm_name_en')}: <span className="text-primary">{transaction.prm_name_en}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prm_name_am')}: <span className="text-primary">{transaction.prm_name_am}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prm_description')}: <span className="text-primary">{transaction.prm_description}</span>
-          </p>
-          </tr>
+		<Modal
+			isOpen={isOpen}
+			role="dialog"
+			autoFocus={true}
+			centered={true}
+			className="modal-xl"
+			tabIndex="-1"
+			toggle={toggle}
+			style={modalStyle}
+		>
+			<div className="modal-xl">
+				<ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
+				<ModalBody>
+					<tr>
+						<p className="mb-2">
+							{t("prm_name_or")}:{" "}
+							<span className="text-primary">{transaction.prm_name_or}</span>
+						</p>
+					</tr>
+					<tr>
+						<p className="mb-2">
+							{t("prm_name_en")}:{" "}
+							<span className="text-primary">{transaction.prm_name_en}</span>
+						</p>
+					</tr>
+					<tr>
+						<p className="mb-2">
+							{t("prm_name_am")}:{" "}
+							<span className="text-primary">{transaction.prm_name_am}</span>
+						</p>
+					</tr>
+					<tr>
+						<p className="mb-2">
+							{t("prm_description")}:{" "}
+							<span className="text-primary">
+								{transaction.prm_description}
+							</span>
+						</p>
+					</tr>
 
-          {transaction.is_deletable === 1 && (
-            <p className="text-danger">data is deletable</p>
-          )}
-          
-          {transaction.is_editable === 1 && (
-            <p className="text-success">Editable</p>
-          )}
-        </ModalBody>
-        <ModalFooter>
-          <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
-          </Button>
-        </ModalFooter>
-      </div>
-    </Modal>
-  );
+					{transaction.is_deletable === 1 && (
+						<p className="text-danger">{t("is_deletable")}</p>
+					)}
+
+					{transaction.is_editable === 1 && (
+						<p className="text-success">{t("is_editable")}</p>
+					)}
+				</ModalBody>
+				<ModalFooter>
+					<Button type="button" color="secondary" onClick={toggle}>
+						{t("Close")}
+					</Button>
+				</ModalFooter>
+			</div>
+		</Modal>
+	);
 };
 ProcurementMethodModal.propTypes = {
   toggle: PropTypes.func,
