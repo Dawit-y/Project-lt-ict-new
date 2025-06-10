@@ -321,8 +321,9 @@ const ApproverBudgetRequestList = () => {
           const isForwarded = params.data.forwarded;
           return (
             <Badge
-              className={`font-size-12 badge-soft-${isForwarded ? "danger" : "secondary"
-                }`}
+              className={`font-size-12 badge-soft-${
+                isForwarded ? "danger" : "secondary"
+              }`}
             >
               {isForwarded ? t("forwarded") : t("not_forwarded")}
             </Badge>
@@ -330,7 +331,7 @@ const ApproverBudgetRequestList = () => {
         },
       },
       {
-        headerName: t("Status"),
+        headerName: t("status"),
         field: "status_name",
         sortable: true,
         filter: true,
@@ -364,7 +365,7 @@ const ApproverBudgetRequestList = () => {
         },
       },
       {
-        headerName: t("View"),
+        headerName: t("view"),
         field: "view",
         width: 120,
         cellRenderer: (params) => (
@@ -373,7 +374,7 @@ const ApproverBudgetRequestList = () => {
             size="sm"
             onClick={() => setSelectedRequest(params.data)}
           >
-            {t("Analysis")}
+            {t("analysis")}
           </Button>
         ),
       },
@@ -434,7 +435,7 @@ const ApproverBudgetRequestList = () => {
           transaction={transaction}
           budgetYearMap={budgetYearMap}
         />
-        {fileModal &&
+        {fileModal && (
           <AttachFileModal
             isOpen={fileModal}
             toggle={toggleFileModal}
@@ -445,8 +446,8 @@ const ApproverBudgetRequestList = () => {
             canEdit={isMutable}
             canDelete={isMutable}
           />
-        }
-        {convModal &&
+        )}
+        {convModal && (
           <ConvInfoModal
             isOpen={convModal}
             toggle={toggleConvModal}
@@ -456,7 +457,7 @@ const ApproverBudgetRequestList = () => {
             canEdit={isMutable}
             canDelete={isMutable}
           />
-        }
+        )}
         <div className="page-content">
           <div className="">
             <Breadcrumbs />
@@ -484,8 +485,8 @@ const ApproverBudgetRequestList = () => {
                         i18n.language === "en"
                           ? requestCategoryOptionsEn
                           : i18n.language === "am"
-                            ? requestCategoryOptionsAm
-                            : requestCategoryOptionsOr,
+                          ? requestCategoryOptionsAm
+                          : requestCategoryOptionsOr,
                     },
                     {
                       key: "bdr_request_type",
@@ -497,8 +498,8 @@ const ApproverBudgetRequestList = () => {
                         i18n.language === "en"
                           ? sectorInfoOptionsEn
                           : i18n.language === "am"
-                            ? sectorInfoOptionsAm
-                            : sectorInfoOptionsOr,
+                          ? sectorInfoOptionsAm
+                          : sectorInfoOptionsOr,
                     },
                     {
                       key: "bdr_request_status",
@@ -506,8 +507,8 @@ const ApproverBudgetRequestList = () => {
                         i18n.language === "en"
                           ? requestStatusOptionsEn
                           : i18n.language === "am"
-                            ? requestStatusOptionsAm
-                            : requestStatusOptionsOr,
+                          ? requestStatusOptionsAm
+                          : requestStatusOptionsOr,
                     },
                   ]}
                   additionalParams={projectParams}
@@ -551,6 +552,7 @@ const TableWrapper = ({
 }) => {
   const { departmentId } = useAuthUser();
   const { data: rqfData } = useFetchRequestFollowups();
+  const { t } = useTranslation();
 
   function markForwardedRequests(
     budgetRequests = [],
@@ -571,7 +573,11 @@ const TableWrapper = ({
 
   let transformedData = data?.data || [];
   if (data?.data && rqfData?.data) {
-    transformedData = markForwardedRequests(data.data, rqfData.data, departmentId);
+    transformedData = markForwardedRequests(
+      data.data,
+      rqfData.data,
+      departmentId
+    );
   }
 
   return (
@@ -610,13 +616,13 @@ const TableWrapper = ({
           <CardBody>
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h4 className="card-title mb-0">
-                Single Analysis
+                {t("single_analysis")}
                 <Button
                   color="link"
                   size="sm"
                   onClick={() => setSelectedRequest(null)}
                 >
-                  <i className="mdi mdi-arrow-left"></i> Back to Overview
+                  <i className="mdi mdi-arrow-left"></i> {t("back_to_overview")}
                 </Button>
               </h4>
             </div>
@@ -635,7 +641,7 @@ const TableWrapper = ({
           <Card>
             <CardBody>
               <h4 className="card-title mb-4">
-                Overall Budget Requests Analysis
+                {t("overall_budget_requests_analysis")}
               </h4>
               <BudgetRequestAnalysis
                 allData={transformedData}
