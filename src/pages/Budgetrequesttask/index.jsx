@@ -386,7 +386,8 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
 					);
 				},
 			},
-		];
+    ];
+    
     if (
       data?.previledge?.is_role_editable == 1 ||
       data?.previledge?.is_role_deletable == 1
@@ -445,188 +446,199 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
   }
 
   return (
-    <React.Fragment>
-      <BudgetRequestTaskModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      />
-      <DeleteModal
-        show={deleteModal}
-        onDeleteClick={handleDeleteBudgetRequestTask}
-        onCloseClick={() => setDeleteModal(false)}
-        isLoading={deleteBudgetRequestTask.isPending}
-      />
-      {isLoading || isSearchLoading ? (
-        <Spinners />
-      ) : (
-        <Row>
-          <Col xs="12">
-            <Card>
-              <CardBody>
-                <TableContainer
-                  columns={columns}
-                  data={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
-                  isGlobalFilter={true}
-                  isAddButton={true}
-                  isCustomPageSize={true}
-                  handleUserClick={handleBudgetRequestTaskClicks}
-                  isPagination={true}
-                  SearchPlaceholder={t("filter_placeholder")}
-                  buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                  buttonName={t("add")}
-                  tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                  theadClass="table-light"
-                  pagination="pagination"
-                  paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                />
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      )}
-      <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-        <ModalHeader toggle={toggle} tag="h4">
-          {!!isEdit
-            ? t("edit") + " " + t("budget_request_task")
-            : t("add") + " " + t("budget_request_task")}
-        </ModalHeader>
-        <ModalBody>
-          <Form
-            onSubmit={(e) => {
-              e.preventDefault();
-              validation.handleSubmit();
-              return false;
-            }}
-          >
-            <Row>
-              <InputField
-                type="text"
-                validation={validation}
-                fieldId={"brt_task_name"}
-                isRequired={false}
-                className="col-md-6 mb-3"
-                maxLength={200}
-              />
-              <InputField
-                type="text"
-                validation={validation}
-                fieldId={"brt_measurement"}
-                isRequired={false}
-                className="col-md-6 mb-3"
-                maxLength={200}
-              />
-              <Col sm={12} md={4} lg={4}>
-                <Card body className="shadow-sm border">
-                  <CardTitle className="bg-light p-2 mb-2">Performance of Last Year</CardTitle>
-                  <FormattedAmountField
-                    validation={validation}
-                    fieldId={"brt_previous_year_physical"}
-                    label={t("brt_previous_year_physical") + " " + t("in_percent")}
-                    isRequired={true}
-                    className="col-md-12 mb-3"
-                    allowDecimal={true}
-                  />
-                  <FormattedAmountField
-                    validation={validation}
-                    fieldId={"brt_previous_year_financial"}
-                    isRequired={true}
-                    className="col-md-12 mb-3"
-                    allowDecimal={true}
-                  />
-                </Card>
-              </Col>
-              <Col sm={12} md={4} lg={4}>
-                <Card body className="shadow-sm border">
-                  <CardTitle className="bg-light p-2 mb-2">Performance Estimates for this Year</CardTitle>
-                  <FormattedAmountField
-                    validation={validation}
-                    fieldId={"brt_current_year_physical"}
-                    label={t("brt_current_year_physical") + " " + t("in_percent")}
-                    isRequired={true}
-                    className="col-md-12 mb-3"
-                    allowDecimal={true}
-                  />
-                  <FormattedAmountField
-                    validation={validation}
-                    fieldId={"brt_current_year_financial"}
-                    isRequired={true}
-                    className="col-md-12 mb-3"
-                    allowDecimal={true}
-                  />
-                </Card>
-              </Col>
-              <Col sm={12} md={4} lg={4}>
-                <Card body className="shadow-sm border">
-                  <CardTitle className="bg-light p-2 mb-2">Plans for the Coming Year</CardTitle>
-                  <FormattedAmountField
-                    validation={validation}
-                    fieldId={"brt_next_year_physical"}
-                    label={t("brt_next_year_physical") + " " + t("in_percent")}
-                    isRequired={true}
-                    className="col-md-12 mb-3"
-                    allowDecimal={true}
-                  />
-                  <FormattedAmountField
-                    validation={validation}
-                    fieldId={"brt_next_year_financial"}
-                    isRequired={true}
-                    className="col-md-12 mb-3"
-                    allowDecimal={true}
-                  />
-                </Card>
-              </Col>
-              <InputField
-                type="textarea"
-                validation={validation}
-                fieldId={"brt_description"}
-                isRequired={false}
-                className="col-md-12 mb-3"
-                maxLength={400}
-              />
-            </Row>
-            <Row>
-              <Col>
-                <div className="text-end">
-                  {addBudgetRequestTask.isPending ||
-                    updateBudgetRequestTask.isPending ? (
-                    <Button
-                      color="success"
-                      type="submit"
-                      className="save-user"
-                      disabled={
-                        addBudgetRequestTask.isPending ||
-                        updateBudgetRequestTask.isPending ||
-                        !validation.dirty
-                      }
-                    >
-                      <Spinner size={"sm"} color="light" className="me-2" />
-                      {t("Save")}
-                    </Button>
-                  ) : (
-                    <Button
-                      color="success"
-                      type="submit"
-                      className="save-user"
-                      disabled={
-                        addBudgetRequestTask.isPending ||
-                        updateBudgetRequestTask.isPending ||
-                        !validation.dirty
-                      }
-                    >
-                      {t("Save")}
-                    </Button>
-                  )}
-                </div>
-              </Col>
-            </Row>
-          </Form>
-        </ModalBody>
-      </Modal>
-    </React.Fragment>
-  );
+		<React.Fragment>
+			<BudgetRequestTaskModal
+				isOpen={modal1}
+				toggle={toggleViewModal}
+				transaction={transaction}
+			/>
+			<DeleteModal
+				show={deleteModal}
+				onDeleteClick={handleDeleteBudgetRequestTask}
+				onCloseClick={() => setDeleteModal(false)}
+				isLoading={deleteBudgetRequestTask.isPending}
+			/>
+			{isLoading || isSearchLoading ? (
+				<Spinners />
+			) : (
+				<Row>
+					<Col xs="12">
+						<Card>
+							<CardBody>
+								<TableContainer
+									columns={columns}
+									data={
+										showSearchResult ? searchResults?.data : data?.data || []
+									}
+									isLoading={isLoading || isSearchLoading}
+									isGlobalFilter={true}
+									isAddButton={true}
+									isCustomPageSize={true}
+									handleUserClick={handleBudgetRequestTaskClicks}
+									isPagination={true}
+									SearchPlaceholder={t("filter_placeholder")}
+									buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+									buttonName={t("add")}
+									tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+									theadClass="table-light"
+									pagination="pagination"
+									paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+								/>
+							</CardBody>
+						</Card>
+					</Col>
+				</Row>
+			)}
+			<Modal isOpen={modal} toggle={toggle} className="modal-xl">
+				<ModalHeader toggle={toggle} tag="h4">
+					{!!isEdit
+						? t("edit") + " " + t("budget_request_task")
+						: t("add") + " " + t("budget_request_task")}
+				</ModalHeader>
+				<ModalBody>
+					<Form
+						onSubmit={(e) => {
+							e.preventDefault();
+							validation.handleSubmit();
+							return false;
+						}}
+					>
+						<Row>
+							<InputField
+								type="text"
+								validation={validation}
+								fieldId={"brt_task_name"}
+								isRequired={false}
+								className="col-md-6 mb-3"
+								maxLength={200}
+							/>
+							<InputField
+								type="text"
+								validation={validation}
+								fieldId={"brt_measurement"}
+								isRequired={false}
+								className="col-md-6 mb-3"
+								maxLength={200}
+							/>
+							<Col sm={12} md={4} lg={4}>
+								<Card body className="shadow-sm border">
+									<CardTitle className="bg-light p-2 mb-2">
+										Performance of Last Year
+									</CardTitle>
+									<FormattedAmountField
+										validation={validation}
+										fieldId={"brt_previous_year_physical"}
+										label={
+											t("brt_previous_year_physical") + " " + t("in_percent")
+										}
+										isRequired={true}
+										className="col-md-12 mb-3"
+										allowDecimal={true}
+									/>
+									<FormattedAmountField
+										validation={validation}
+										fieldId={"brt_previous_year_financial"}
+										isRequired={true}
+										className="col-md-12 mb-3"
+										allowDecimal={true}
+									/>
+								</Card>
+							</Col>
+							<Col sm={12} md={4} lg={4}>
+								<Card body className="shadow-sm border">
+									<CardTitle className="bg-light p-2 mb-2">
+										Performance Estimates for this Year
+									</CardTitle>
+									<FormattedAmountField
+										validation={validation}
+										fieldId={"brt_current_year_physical"}
+										label={
+											t("brt_current_year_physical") + " " + t("in_percent")
+										}
+										isRequired={true}
+										className="col-md-12 mb-3"
+										allowDecimal={true}
+									/>
+									<FormattedAmountField
+										validation={validation}
+										fieldId={"brt_current_year_financial"}
+										isRequired={true}
+										className="col-md-12 mb-3"
+										allowDecimal={true}
+									/>
+								</Card>
+							</Col>
+							<Col sm={12} md={4} lg={4}>
+								<Card body className="shadow-sm border">
+									<CardTitle className="bg-light p-2 mb-2">
+										Plans for the Coming Year
+									</CardTitle>
+									<FormattedAmountField
+										validation={validation}
+										fieldId={"brt_next_year_physical"}
+										label={t("brt_next_year_physical") + " " + t("in_percent")}
+										isRequired={true}
+										className="col-md-12 mb-3"
+										allowDecimal={true}
+									/>
+									<FormattedAmountField
+										validation={validation}
+										fieldId={"brt_next_year_financial"}
+										isRequired={true}
+										className="col-md-12 mb-3"
+										allowDecimal={true}
+									/>
+								</Card>
+							</Col>
+							<InputField
+								type="textarea"
+								validation={validation}
+								fieldId={"brt_description"}
+								isRequired={false}
+								className="col-md-12 mb-3"
+								maxLength={400}
+							/>
+						</Row>
+						<Row>
+							<Col>
+								<div className="text-end">
+									{addBudgetRequestTask.isPending ||
+									updateBudgetRequestTask.isPending ? (
+										<Button
+											color="success"
+											type="submit"
+											className="save-user"
+											disabled={
+												addBudgetRequestTask.isPending ||
+												updateBudgetRequestTask.isPending ||
+												!validation.dirty
+											}
+										>
+											<Spinner size={"sm"} color="light" className="me-2" />
+											{t("Save")}
+										</Button>
+									) : (
+										<Button
+											color="success"
+											type="submit"
+											className="save-user"
+											disabled={
+												addBudgetRequestTask.isPending ||
+												updateBudgetRequestTask.isPending ||
+												!validation.dirty
+											}
+										>
+											{t("Save")}
+										</Button>
+									)}
+								</div>
+							</Col>
+						</Row>
+					</Form>
+				</ModalBody>
+			</Modal>
+		</React.Fragment>
+	);
 };
 BudgetRequestTaskModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

@@ -9,12 +9,12 @@ import BudgetExSource from "../Budgetexsource/index";
 import { useTranslation } from "react-i18next";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Input,
-  Badge,
+	Button,
+	Col,
+	Row,
+	UncontrolledTooltip,
+	Input,
+	Badge,
 } from "reactstrap";
 import AgGridContainer from "../../components/Common/AgGridContainer";
 import { useSearchBudgetRequests } from "../../queries/budget_request_query";
@@ -186,16 +186,21 @@ const BudgetRequestListModel = () => {
 				field: "bdr_request_category_id",
 				sortable: true,
 				filter: true,
-				cellRenderer: (params) =>
-					bgCategoryMap[params.data.bdr_request_category_id] || "-",
+				cellRenderer: (params) => {
+					if (!params.value || !bgCategoryMap) return "-";
+					const cat = bgCategoryMap[params.value];
+					return cat || "-";
+				},
 			},
 			{
 				headerName: t("bdr_request_type"),
 				field: "bdr_request_type",
 				sortable: true,
 				filter: true,
-				cellRenderer: (params) =>
-					projectStatusMap[params.data.bdr_request_type] || "-",
+				cellRenderer: (params) => {
+					if (!params.data?.bdr_request_type || !projectStatusMap) return "-";
+					return projectStatusMap[params.data.bdr_request_type] || "-";
+				},
 			},
 			{
 				headerName: t("prj_name"),
@@ -376,7 +381,7 @@ const BudgetRequestListModel = () => {
 			});
 		}
 		return baseColumnDefs;
-	}, []);
+	}, [bgCategoryMap, projectStatusMap]);
 
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -479,7 +484,7 @@ const BudgetRequestListModel = () => {
 	);
 };
 BudgetRequestListModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+	preGlobalFilteredRows: PropTypes.any,
 };
 
 export default BudgetRequestListModel;
