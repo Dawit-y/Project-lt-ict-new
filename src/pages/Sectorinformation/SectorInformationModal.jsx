@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useMemo } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,16 +8,35 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+  Badge,
+} from "reactstrap";
+import { useFetchSectorCategorys } from "../../queries/sectorcategory_query";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+  width: "100%",
+  maxWidth: "1200px",
 };
 
 const SectorInformationModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction } = props;
+
+  const renderBooleanBadge = (value) => {
+    return value === 1 ? (
+      <Badge color="success">{t("Yes")}</Badge>
+    ) : (
+      <Badge color="danger">{t("No")}</Badge>
+    );
+  };
+  const { data: sectorCategoryData } = useFetchSectorCategorys();
+  const sectorCategoryMap = useMemo(() => {
+    return (
+      sectorCategoryData?.data?.reduce((acc, category) => {
+        acc[category.psc_id] = category.psc_name;
+        return acc;
+      }, {}) || {}
+    );
+  }, [sectorCategoryData]);
 
   return (
     <Modal
@@ -30,59 +49,74 @@ const SectorInformationModal = (props) => {
       toggle={toggle}
       style={modalStyle}
     >
-      <div className="modal-xl">
-        <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
-        <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('sci_name_or')}: <span className="text-primary">{transaction.sci_name_or}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('sci_name_am')}: <span className="text-primary">{transaction.sci_name_am}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('sci_name_en')}: <span className="text-primary">{transaction.sci_name_en}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('sci_code')}: <span className="text-primary">{transaction.sci_code}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('sci_sector_category_id')}: <span className="text-primary">{transaction.sci_sector_category_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('sci_available_at_region')}: <span className="text-primary">{transaction.sci_available_at_region}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('sci_available_at_zone')}: <span className="text-primary">{transaction.sci_available_at_zone}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('sci_available_at_woreda')}: <span className="text-primary">{transaction.sci_available_at_woreda}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('sci_description')}: <span className="text-primary">{transaction.sci_description}</span>
-          </p>
-          </tr>
-        </ModalBody>
-        <ModalFooter>
-          <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
-          </Button>
-        </ModalFooter>
-      </div>
+      <ModalHeader toggle={toggle} className="">
+        <h4 className="modal-title">{t("view_details")}</h4>
+      </ModalHeader>
+      <ModalBody>
+        <Table bordered size="sm" responsive className="table-details">
+          <tbody>
+            <tr>
+              <th width="30%">{t("Name (OR)")}</th>
+              <td>{transaction.sci_name_or || "-"}</td>
+            </tr>
+            <tr>
+              <th>{t("Name (AM)")}</th>
+              <td>{transaction.sci_name_am || "-"}</td>
+            </tr>
+            <tr>
+              <th>{t("Name (EN)")}</th>
+              <td>{transaction.sci_name_en || "-"}</td>
+            </tr>
+            <tr>
+              <th>{t("Code")}</th>
+              <td>
+                <span className="text-primary font-weight-bold">
+                  {transaction.sci_code || "-"}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <th>{t("Sector Category")}</th>
+              <td>
+                {sectorCategoryMap[transaction.sci_sector_category_id] || "-"}
+              </td>
+            </tr>
+            <tr>
+              <th>{t("Available at Region")}</th>
+              <td>{renderBooleanBadge(transaction.sci_available_at_region)}</td>
+            </tr>
+            <tr>
+              <th>{t("Available at Zone")}</th>
+              <td>{renderBooleanBadge(transaction.sci_available_at_zone)}</td>
+            </tr>
+            <tr>
+              <th>{t("Available at Woreda")}</th>
+              <td>{renderBooleanBadge(transaction.sci_available_at_woreda)}</td>
+            </tr>
+            <tr>
+              <th>{t("is_inactive")}</th>
+              <td>{renderBooleanBadge(transaction.sci_status)}</td>
+            </tr>
+            <tr>
+              <th>{t("Description")}</th>
+              <td>{transaction.sci_description || "-"}</td>
+            </tr>
+          </tbody>
+        </Table>
+      </ModalBody>
+      <ModalFooter className="border-top-0">
+        <Button color="secondary" onClick={toggle} className="px-4">
+          {t("Close")}
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 };
+
 SectorInformationModal.propTypes = {
   toggle: PropTypes.func,
   isOpen: PropTypes.bool,
   transaction: PropTypes.object,
 };
+
 export default SectorInformationModal;

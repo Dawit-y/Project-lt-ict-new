@@ -35,7 +35,7 @@ import {
   Badge,
 } from "reactstrap";
 import { toast } from "react-toastify";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler"
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -50,12 +50,14 @@ const MonitoringEvaluationTypeModel = () => {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [monitoringEvaluationType, setMonitoringEvaluationType] = useState(null);
+  const [monitoringEvaluationType, setMonitoringEvaluationType] =
+    useState(null);
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, isFetching, error, isError, refetch } = useFetchMonitoringEvaluationTypes();
+  const { data, isLoading, isFetching, error, isError, refetch } =
+    useFetchMonitoringEvaluationTypes();
   const addMonitoringEvaluationType = useAddMonitoringEvaluationType();
   const updateMonitoringEvaluationType = useUpdateMonitoringEvaluationType();
   const deleteMonitoringEvaluationType = useDeleteMonitoringEvaluationType();
@@ -63,12 +65,12 @@ const MonitoringEvaluationTypeModel = () => {
   const handleAddMonitoringEvaluationType = async (data) => {
     try {
       await addMonitoringEvaluationType.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('add_failure'), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -77,12 +79,12 @@ const MonitoringEvaluationTypeModel = () => {
   const handleUpdateMonitoringEvaluationType = async (data) => {
     try {
       await updateMonitoringEvaluationType.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('update_failure'), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -93,11 +95,11 @@ const MonitoringEvaluationTypeModel = () => {
       try {
         const id = monitoringEvaluationType.met_id;
         await deleteMonitoringEvaluationType.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(t('delete_failure'), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -108,32 +110,55 @@ const MonitoringEvaluationTypeModel = () => {
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
-      met_name_or: (monitoringEvaluationType && monitoringEvaluationType.met_name_or) || "",
-      met_name_am: (monitoringEvaluationType && monitoringEvaluationType.met_name_am) || "",
-      met_name_en: (monitoringEvaluationType && monitoringEvaluationType.met_name_en) || "",
-      met_code: (monitoringEvaluationType && monitoringEvaluationType.met_code) || "",
-      met_description: (monitoringEvaluationType && monitoringEvaluationType.met_description) || "",
-      met_status: (monitoringEvaluationType && monitoringEvaluationType.met_status) || false,
-      met_gov_active: (monitoringEvaluationType && monitoringEvaluationType.met_gov_active) || false,
-      met_cso_active: (monitoringEvaluationType && monitoringEvaluationType.met_cso_active) || false,
-      met_monitoring_active: (monitoringEvaluationType && monitoringEvaluationType.met_monitoring_active) || false,
-      met_evaluation_active: (monitoringEvaluationType && monitoringEvaluationType.met_evaluation_active) || false,
+      met_name_or:
+        (monitoringEvaluationType && monitoringEvaluationType.met_name_or) ||
+        "",
+      met_name_am:
+        (monitoringEvaluationType && monitoringEvaluationType.met_name_am) ||
+        "",
+      met_name_en:
+        (monitoringEvaluationType && monitoringEvaluationType.met_name_en) ||
+        "",
+      met_code:
+        (monitoringEvaluationType && monitoringEvaluationType.met_code) || "",
+      met_description:
+        (monitoringEvaluationType &&
+          monitoringEvaluationType.met_description) ||
+        "",
+      met_status:
+        (monitoringEvaluationType && monitoringEvaluationType.met_status) ||
+        false,
+      met_gov_active:
+        (monitoringEvaluationType && monitoringEvaluationType.met_gov_active) ||
+        false,
+      met_cso_active:
+        (monitoringEvaluationType && monitoringEvaluationType.met_cso_active) ||
+        false,
+      met_monitoring_active:
+        (monitoringEvaluationType &&
+          monitoringEvaluationType.met_monitoring_active) ||
+        false,
+      met_evaluation_active:
+        (monitoringEvaluationType &&
+          monitoringEvaluationType.met_evaluation_active) ||
+        false,
 
-      is_deletable: (monitoringEvaluationType && monitoringEvaluationType.is_deletable) || 1,
-      is_editable: (monitoringEvaluationType && monitoringEvaluationType.is_editable) || 1
+      is_deletable:
+        (monitoringEvaluationType && monitoringEvaluationType.is_deletable) ||
+        1,
+      is_editable:
+        (monitoringEvaluationType && monitoringEvaluationType.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      met_name_or: Yup.string().required(t('met_name_or')),
-      met_name_am: Yup.string().required(t('met_name_am')),
-      met_name_en: Yup.string().required(t('met_name_en')),
-      met_code: Yup.string().required(t('met_code')),
-      met_description: Yup.string().required(t('met_description')),
-      met_status: Yup.string().required(t('met_status')),
-      met_gov_active: Yup.string().required(t('met_gov_active')),
-      met_cso_active: Yup.string().required(t('met_cso_active')),
-      met_monitoring_active: Yup.string().required(t('met_monitoring_active')),
-      met_evaluation_active: Yup.string().required(t('met_evaluation_active')),
-
+      met_name_or: Yup.string().required(t("met_name_or")),
+      met_name_am: Yup.string().required(t("met_name_am")),
+      met_name_en: Yup.string().required(t("met_name_en")),
+      met_code: Yup.string().required(t("met_code")),
+      met_description: Yup.string().required(t("met_description")),
+      met_gov_active: Yup.string().required(t("met_gov_active")),
+      met_cso_active: Yup.string().required(t("met_cso_active")),
+      met_monitoring_active: Yup.string().required(t("met_monitoring_active")),
+      met_evaluation_active: Yup.string().required(t("met_evaluation_active")),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -169,7 +194,6 @@ const MonitoringEvaluationTypeModel = () => {
           met_cso_active: values.met_cso_active ? 1 : 0,
           met_monitoring_active: values.met_monitoring_active ? 1 : 0,
           met_evaluation_active: values.met_evaluation_active ? 1 : 0,
-
         };
         // save new MonitoringEvaluationType
         handleAddMonitoringEvaluationType(newMonitoringEvaluationType);
@@ -209,8 +233,10 @@ const MonitoringEvaluationTypeModel = () => {
       met_status: monitoringEvaluationType.met_status === 1,
       met_gov_active: monitoringEvaluationType.met_gov_active === 1,
       met_cso_active: monitoringEvaluationType.met_cso_active === 1,
-      met_monitoring_active: monitoringEvaluationType.met_monitoring_active === 1,
-      met_evaluation_active: monitoringEvaluationType.met_evaluation_active === 1,
+      met_monitoring_active:
+        monitoringEvaluationType.met_monitoring_active === 1,
+      met_evaluation_active:
+        monitoringEvaluationType.met_evaluation_active === 1,
 
       is_deletable: monitoringEvaluationType.is_deletable,
       is_editable: monitoringEvaluationType.is_editable,
@@ -228,7 +254,7 @@ const MonitoringEvaluationTypeModel = () => {
     setIsEdit(false);
     setMonitoringEvaluationType("");
     toggle();
-  }
+  };
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
@@ -238,122 +264,152 @@ const MonitoringEvaluationTypeModel = () => {
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'met_name_or',
+        header: "",
+        accessorKey: "met_name_or",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.met_name_or, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.met_name_or, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'met_name_am',
+        header: "",
+        accessorKey: "met_name_am",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.met_name_am, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.met_name_am, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'met_name_en',
+        header: "",
+        accessorKey: "met_name_en",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.met_name_en, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.met_name_en, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'met_code',
+        header: "",
+        accessorKey: "met_code",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.met_code, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.met_code, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'met_status',
+        header: "",
+        accessorKey: "met_status",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
-            <span className={cellProps.row.original.met_status === 1 ? "btn btn-sm btn-soft-danger" : ""}>
+            <span
+              className={
+                cellProps.row.original.met_status === 1
+                  ? "btn btn-sm btn-soft-danger"
+                  : ""
+              }
+            >
               {cellProps.row.original.met_status === 1 ? t("yes") : t("no")}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'met_gov_active',
+        header: "",
+        accessorKey: "met_gov_active",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
-            <span className={cellProps.row.original.met_gov_active === 1 ? "btn btn-sm btn-soft-success" : ""}>
+            <span
+              className={
+                cellProps.row.original.met_gov_active === 1
+                  ? "btn btn-sm btn-soft-success"
+                  : ""
+              }
+            >
               {cellProps.row.original.met_gov_active === 1 ? t("yes") : t("no")}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'met_cso_active',
+        header: "",
+        accessorKey: "met_cso_active",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
-            <span className={cellProps.row.original.met_cso_active === 1 ? "btn btn-sm btn-soft-success" : ""}>
+            <span
+              className={
+                cellProps.row.original.met_cso_active === 1
+                  ? "btn btn-sm btn-soft-success"
+                  : ""
+              }
+            >
               {cellProps.row.original.met_cso_active === 1 ? t("yes") : t("no")}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'met_monitoring_active',
+        header: "",
+        accessorKey: "met_monitoring_active",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
-            <span className={cellProps.row.original.met_monitoring_active === 1 ? "btn btn-sm btn-soft-success" : ""}>
-              {cellProps.row.original.met_monitoring_active === 1 ? t("yes") : t("no")}
+            <span
+              className={
+                cellProps.row.original.met_monitoring_active === 1
+                  ? "btn btn-sm btn-soft-success"
+                  : ""
+              }
+            >
+              {cellProps.row.original.met_monitoring_active === 1
+                ? t("yes")
+                : t("no")}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'met_evaluation_active',
+        header: "",
+        accessorKey: "met_evaluation_active",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
-            <span className={cellProps.row.original.met_evaluation_active === 1 ? "btn btn-sm btn-soft-success" : ""}>
-              {cellProps.row.original.met_evaluation_active === 1 ? t("yes") : t("no")}
+            <span
+              className={
+                cellProps.row.original.met_evaluation_active === 1
+                  ? "btn btn-sm btn-soft-success"
+                  : ""
+              }
+            >
+              {cellProps.row.original.met_evaluation_active === 1
+                ? t("yes")
+                : t("no")}
             </span>
           );
         },
@@ -488,7 +544,9 @@ const MonitoringEvaluationTypeModel = () => {
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " " + t("monitoring_evaluation_type")) : (t("add") + " " + t("monitoring_evaluation_type"))}
+              {!!isEdit
+                ? t("edit") + " " + t("monitoring_evaluation_type")
+                : t("add") + " " + t("monitoring_evaluation_type")}
             </ModalHeader>
             <ModalBody>
               <Form
@@ -499,98 +557,98 @@ const MonitoringEvaluationTypeModel = () => {
                 }}
               >
                 <Row>
-                  <Col className='col-md-4 mb-3'>
-                    <Label>{t('met_name_or')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("met_name_or")}</Label>
                     <Input
-                      name='met_name_or'
-                      type='text'
-                      placeholder={t('met_name_or')}
+                      name="met_name_or"
+                      type="text"
+                      placeholder={t("met_name_or")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.met_name_or || ''}
+                      value={validation.values.met_name_or || ""}
                       invalid={
                         validation.touched.met_name_or &&
-                          validation.errors.met_name_or
+                        validation.errors.met_name_or
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.met_name_or &&
-                      validation.errors.met_name_or ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.met_name_or ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.met_name_or}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-4 mb-3'>
-                    <Label>{t('met_name_am')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("met_name_am")}</Label>
                     <Input
-                      name='met_name_am'
-                      type='text'
-                      placeholder={t('met_name_am')}
+                      name="met_name_am"
+                      type="text"
+                      placeholder={t("met_name_am")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.met_name_am || ''}
+                      value={validation.values.met_name_am || ""}
                       invalid={
                         validation.touched.met_name_am &&
-                          validation.errors.met_name_am
+                        validation.errors.met_name_am
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.met_name_am &&
-                      validation.errors.met_name_am ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.met_name_am ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.met_name_am}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-4 mb-3'>
-                    <Label>{t('met_name_en')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("met_name_en")}</Label>
                     <Input
-                      name='met_name_en'
-                      type='text'
-                      placeholder={t('met_name_en')}
+                      name="met_name_en"
+                      type="text"
+                      placeholder={t("met_name_en")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.met_name_en || ''}
+                      value={validation.values.met_name_en || ""}
                       invalid={
                         validation.touched.met_name_en &&
-                          validation.errors.met_name_en
+                        validation.errors.met_name_en
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.met_name_en &&
-                      validation.errors.met_name_en ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.met_name_en ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.met_name_en}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className='col-md-4 mb-3'>
-                    <Label>{t('met_code')}</Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>{t("met_code")}</Label>
                     <Input
-                      name='met_code'
-                      type='text'
-                      placeholder={t('met_code')}
+                      name="met_code"
+                      type="text"
+                      placeholder={t("met_code")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.met_code || ''}
+                      value={validation.values.met_code || ""}
                       invalid={
                         validation.touched.met_code &&
-                          validation.errors.met_code
+                        validation.errors.met_code
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.met_code &&
-                      validation.errors.met_code ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.met_code ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.met_code}
                       </FormFeedback>
                     ) : null}
@@ -609,11 +667,17 @@ const MonitoringEvaluationTypeModel = () => {
                           onChange={validation.handleChange}
                           onBlur={validation.handleBlur}
                           checked={validation.values.met_status}
-                          invalid={validation.touched.met_status && validation.errors.met_status}
+                          invalid={
+                            validation.touched.met_status &&
+                            validation.errors.met_status
+                          }
                         />
-                        {validation.touched.met_status && validation.errors.met_status && (
-                          <FormFeedback type="invalid">{validation.errors.met_status}</FormFeedback>
-                        )}
+                        {validation.touched.met_status &&
+                          validation.errors.met_status && (
+                            <FormFeedback type="invalid">
+                              {validation.errors.met_status}
+                            </FormFeedback>
+                          )}
                       </div>
                     </Col>
                     <Col className="col-md-4 mb-3">
@@ -629,11 +693,17 @@ const MonitoringEvaluationTypeModel = () => {
                           onChange={validation.handleChange}
                           onBlur={validation.handleBlur}
                           checked={validation.values.met_gov_active}
-                          invalid={validation.touched.met_gov_active && validation.errors.met_gov_active}
+                          invalid={
+                            validation.touched.met_gov_active &&
+                            validation.errors.met_gov_active
+                          }
                         />
-                        {validation.touched.met_gov_active && validation.errors.met_gov_active && (
-                          <FormFeedback type="invalid">{validation.errors.met_gov_active}</FormFeedback>
-                        )}
+                        {validation.touched.met_gov_active &&
+                          validation.errors.met_gov_active && (
+                            <FormFeedback type="invalid">
+                              {validation.errors.met_gov_active}
+                            </FormFeedback>
+                          )}
                       </div>
                     </Col>
                     <Col className="col-md-4 mb-3">
@@ -649,11 +719,17 @@ const MonitoringEvaluationTypeModel = () => {
                           onChange={validation.handleChange}
                           onBlur={validation.handleBlur}
                           checked={validation.values.met_cso_active}
-                          invalid={validation.touched.met_cso_active && validation.errors.met_cso_active}
+                          invalid={
+                            validation.touched.met_cso_active &&
+                            validation.errors.met_cso_active
+                          }
                         />
-                        {validation.touched.met_cso_active && validation.errors.met_cso_active && (
-                          <FormFeedback type="invalid">{validation.errors.met_cso_active}</FormFeedback>
-                        )}
+                        {validation.touched.met_cso_active &&
+                          validation.errors.met_cso_active && (
+                            <FormFeedback type="invalid">
+                              {validation.errors.met_cso_active}
+                            </FormFeedback>
+                          )}
                       </div>
                     </Col>
                     <Col className="col-md-4 mb-3">
@@ -669,11 +745,17 @@ const MonitoringEvaluationTypeModel = () => {
                           onChange={validation.handleChange}
                           onBlur={validation.handleBlur}
                           checked={validation.values.met_monitoring_active}
-                          invalid={validation.touched.met_monitoring_active && validation.errors.met_monitoring_active}
+                          invalid={
+                            validation.touched.met_monitoring_active &&
+                            validation.errors.met_monitoring_active
+                          }
                         />
-                        {validation.touched.met_monitoring_active && validation.errors.met_monitoring_active && (
-                          <FormFeedback type="invalid">{validation.errors.met_monitoring_active}</FormFeedback>
-                        )}
+                        {validation.touched.met_monitoring_active &&
+                          validation.errors.met_monitoring_active && (
+                            <FormFeedback type="invalid">
+                              {validation.errors.met_monitoring_active}
+                            </FormFeedback>
+                          )}
                       </div>
                     </Col>
                     <Col className="col-md-4 mb-3">
@@ -689,34 +771,40 @@ const MonitoringEvaluationTypeModel = () => {
                           onChange={validation.handleChange}
                           onBlur={validation.handleBlur}
                           checked={validation.values.met_evaluation_active}
-                          invalid={validation.touched.met_evaluation_active && validation.errors.met_evaluation_active}
+                          invalid={
+                            validation.touched.met_evaluation_active &&
+                            validation.errors.met_evaluation_active
+                          }
                         />
-                        {validation.touched.met_evaluation_active && validation.errors.met_evaluation_active && (
-                          <FormFeedback type="invalid">{validation.errors.met_evaluation_active}</FormFeedback>
-                        )}
+                        {validation.touched.met_evaluation_active &&
+                          validation.errors.met_evaluation_active && (
+                            <FormFeedback type="invalid">
+                              {validation.errors.met_evaluation_active}
+                            </FormFeedback>
+                          )}
                       </div>
                     </Col>
                   </Row>
-                  <Col className='col-md-12 mb-3'>
-                    <Label>{t('met_description')}</Label>
+                  <Col className="col-md-12 mb-3">
+                    <Label>{t("met_description")}</Label>
                     <Input
-                      name='met_description'
-                      type='textarea'
-                      placeholder={t('met_description')}
+                      name="met_description"
+                      type="textarea"
+                      placeholder={t("met_description")}
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.met_description || ''}
+                      value={validation.values.met_description || ""}
                       invalid={
                         validation.touched.met_description &&
-                          validation.errors.met_description
+                        validation.errors.met_description
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.met_description &&
-                      validation.errors.met_description ? (
-                      <FormFeedback type='invalid'>
+                    validation.errors.met_description ? (
+                      <FormFeedback type="invalid">
                         {validation.errors.met_description}
                       </FormFeedback>
                     ) : null}
@@ -725,7 +813,8 @@ const MonitoringEvaluationTypeModel = () => {
                 <Row>
                   <Col>
                     <div className="text-end">
-                      {addMonitoringEvaluationType.isPending || updateMonitoringEvaluationType.isPending ? (
+                      {addMonitoringEvaluationType.isPending ||
+                      updateMonitoringEvaluationType.isPending ? (
                         <Button
                           color="success"
                           type="submit"

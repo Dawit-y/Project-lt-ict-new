@@ -13,7 +13,11 @@ import Spinners from "../../components/Common/Spinner";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-import { alphanumericValidation, amountValidation, numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 
 import {
   useFetchExpenditureCodes,
@@ -47,7 +51,6 @@ import {
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const truncateText = (text, maxLength) => {
@@ -80,12 +83,12 @@ const ExpenditureCodeModel = () => {
   const handleAddExpenditureCode = async (data) => {
     try {
       await addExpenditureCode.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('add_failure'), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -95,12 +98,12 @@ const ExpenditureCodeModel = () => {
   const handleUpdateExpenditureCode = async (data) => {
     try {
       await updateExpenditureCode.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('update_failure'), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -112,11 +115,11 @@ const ExpenditureCodeModel = () => {
       try {
         const id = expenditureCode.pec_id;
         await deleteExpenditureCode.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(t('delete_failure'), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -134,7 +137,7 @@ const ExpenditureCodeModel = () => {
     initialValues: {
       pec_name: (expenditureCode && expenditureCode.pec_name) || "",
       pec_code: (expenditureCode && expenditureCode.pec_code) || "",
-      pec_status: (expenditureCode && expenditureCode.pec_status) || "",
+      pec_status: (expenditureCode && expenditureCode.pec_status) || false,
       pec_description:
         (expenditureCode && expenditureCode.pec_description) || "",
       is_deletable: (expenditureCode && expenditureCode.is_deletable) || 1,
@@ -142,22 +145,27 @@ const ExpenditureCodeModel = () => {
     },
 
     validationSchema: Yup.object({
-      pec_name: alphanumericValidation(2, 100, true)
-        .test("unique-pec_name", t("Already exists"), (value) => {
+      pec_name: alphanumericValidation(2, 100, true).test(
+        "unique-pec_name",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) =>
               item.pec_name == value && item.pec_id !== expenditureCode?.pec_id
           );
-        }),
-      pec_code: alphanumericValidation(2, 100, true)
-        .test("unique-pec_code", t("Already exists"), (value) => {
+        }
+      ),
+      pec_code: alphanumericValidation(2, 100, true).test(
+        "unique-pec_code",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) =>
               item.pec_code == value && item.pec_id !== expenditureCode?.pec_id
           );
-        }),
-      pec_description: alphanumericValidation(3, 425, false)
-
+        }
+      ),
+      pec_description: alphanumericValidation(3, 425, false),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -167,7 +175,7 @@ const ExpenditureCodeModel = () => {
           pec_id: expenditureCode?.pec_id,
           pec_name: values.pec_name,
           pec_code: values.pec_code,
-          pec_status: values.pec_status,
+          pec_status: values.pec_status ? 1 : 0,
           pec_description: values.pec_description,
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -178,7 +186,7 @@ const ExpenditureCodeModel = () => {
         const newExpenditureCode = {
           pec_name: values.pec_name,
           pec_code: values.pec_code,
-          pec_status: values.pec_status,
+          pec_status: values.pec_status ? 1 : 0,
           pec_description: values.pec_description,
         };
         // save new ExpenditureCode
@@ -215,7 +223,7 @@ const ExpenditureCodeModel = () => {
       pec_id: expenditureCode.pec_id,
       pec_name: expenditureCode.pec_name,
       pec_code: expenditureCode.pec_code,
-      pec_status: expenditureCode.pec_status,
+      pec_status: expenditureCode.pec_status === 1,
       pec_description: expenditureCode.pec_description,
       pec_created_date: expenditureCode.pec_created_date,
 
@@ -269,6 +277,25 @@ const ExpenditureCodeModel = () => {
           return (
             <span>
               {truncateText(cellProps.row.original.pec_code, 30) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: t("is_inactive"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span
+              className={
+                cellProps.row.original.pec_status === 1
+                  ? "btn btn-sm btn-soft-danger"
+                  : ""
+              }
+            >
+              {cellProps.row.original.pec_status === 1 ? t("yes") : t("no")}
             </span>
           );
         },
@@ -351,7 +378,7 @@ const ExpenditureCodeModel = () => {
   }, [handleExpenditureCodeClick, toggleViewModal, onClickDelete]);
 
   if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />
+    return <FetchErrorHandler error={error} refetch={refetch} />;
   }
 
   return (
@@ -373,16 +400,7 @@ const ExpenditureCodeModel = () => {
             title={t("expenditure_code")}
             breadcrumbItem={t("expenditure_code")}
           />
-          <AdvancedSearch
-            searchHook={useSearchExpenditureCodes}
-            textSearchKeys={["pec_name", "pec_code"]}
-            dropdownSearchKeys={[]}
-            checkboxSearchKeys={[]}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          />
+
           {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
@@ -433,7 +451,10 @@ const ExpenditureCodeModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pec_name")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pec_name")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pec_name"
                       type="text"
@@ -443,14 +464,14 @@ const ExpenditureCodeModel = () => {
                       value={validation.values.pec_name || ""}
                       invalid={
                         validation.touched.pec_name &&
-                          validation.errors.pec_name
+                        validation.errors.pec_name
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.pec_name &&
-                      validation.errors.pec_name ? (
+                    validation.errors.pec_name ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pec_name}
                       </FormFeedback>
@@ -467,20 +488,20 @@ const ExpenditureCodeModel = () => {
                       value={validation.values.pec_code || ""}
                       invalid={
                         validation.touched.pec_code &&
-                          validation.errors.pec_code
+                        validation.errors.pec_code
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pec_code &&
-                      validation.errors.pec_code ? (
+                    validation.errors.pec_code ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pec_code}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-8 mb-3">
                     <Label>{t("pec_description")}</Label>
                     <Input
                       name="pec_description"
@@ -491,25 +512,51 @@ const ExpenditureCodeModel = () => {
                       value={validation.values.pec_description || ""}
                       invalid={
                         validation.touched.pec_description &&
-                          validation.errors.pec_description
+                        validation.errors.pec_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.pec_description &&
-                      validation.errors.pec_description ? (
+                    validation.errors.pec_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pec_description}
                       </FormFeedback>
                     ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <div className="form-check mb-4">
+                      <Label className="me-1" for="pec_status">
+                        {t("is_inactive")}
+                      </Label>
+                      <Input
+                        id="pec_status"
+                        name="pec_status"
+                        type="checkbox"
+                        placeholder={t("pec_status")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.pec_status}
+                        invalid={
+                          validation.touched.pec_status &&
+                          validation.errors.pec_status
+                        }
+                      />
+                      {validation.touched.pec_status &&
+                        validation.errors.pec_status && (
+                          <FormFeedback type="invalid">
+                            {validation.errors.pec_status}
+                          </FormFeedback>
+                        )}
+                    </div>
                   </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
                       {addExpenditureCode.isPending ||
-                        updateExpenditureCode.isPending ? (
+                      updateExpenditureCode.isPending ? (
                         <Button
                           color="success"
                           type="submit"

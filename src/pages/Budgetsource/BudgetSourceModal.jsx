@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,16 +8,26 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+  Badge,
+} from "reactstrap";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+  width: "100%",
+  maxWidth: "1200px",
 };
 
 const BudgetSourceModal = (props) => {
   const { t } = useTranslation();
-  const { isOpen, toggle, transaction,pageTitle } = props;
+  const { isOpen, toggle, transaction, pageTitle } = props;
+
+  const renderBooleanBadge = (value) => {
+    return value === 1 ? (
+      <Badge color="success">{t("Yes")}</Badge>
+    ) : (
+      <Badge color="danger">{t("No")}</Badge>
+    );
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -29,33 +39,57 @@ const BudgetSourceModal = (props) => {
       toggle={toggle}
       style={modalStyle}
     >
-      <div className="modal-xl">
-        <ModalHeader toggle={toggle}>{t("View Details")} : {pageTitle}</ModalHeader>
-        <ModalBody>
-        <tr><td><p className="mb-2">
-            {t('pbs_name_or')}: </p></td><td><span className="text-primary">{transaction.pbs_name_or}</span></td>
-          </tr><tr><td><p className="mb-2">
-            {t('pbs_name_am')}: </p></td><td><span className="text-primary">{transaction.pbs_name_am}</span></td>        
-          </tr><tr><td><p className="mb-2">
-            {t('pbs_name_en')}: </p></td><td><span className="text-primary">{transaction.pbs_name_en}</span></td>         
-          </tr><tr><td><p className="mb-2">
-            {t('pbs_code')}: </p></td><td><span className="text-primary">{transaction.pbs_code}</span></td>        
-          </tr><tr><td><p className="mb-2">
-            {t('pbs_description')}: </p></td><td><span className="text-primary">{transaction.pbs_description}</span></td>        
-          </tr>
-        </ModalBody>
-        <ModalFooter>
-          <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
-          </Button>
-        </ModalFooter>
-      </div>
+      <ModalHeader toggle={toggle} className="">
+        <h4 className="modal-title">{t("view_details")}</h4>
+      </ModalHeader>
+      <ModalBody>
+        <Table bordered size="sm" responsive className="table-details">
+          <tbody>
+            <tr>
+              <th width="30%">{t("pbs_name_or")}</th>
+              <td>{transaction.pbs_name_or || "-"}</td>
+            </tr>
+            <tr>
+              <th>{t("pbs_name_am")}</th>
+              <td>{transaction.pbs_name_am || "-"}</td>
+            </tr>
+            <tr>
+              <th>{t("pbs_name_en")}</th>
+              <td>{transaction.pbs_name_en || "-"}</td>
+            </tr>
+            <tr>
+              <th>{t("pbs_code")}</th>
+              <td>
+                <span className="text-primary font-weight-bold">
+                  {transaction.pbs_code || "-"}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <th>{t("pbs_description")}</th>
+              <td>{transaction.pbs_description || "-"}</td>
+            </tr>
+            <tr>
+              <th>{t("is_inactive")}</th>
+              <td>{renderBooleanBadge(transaction.pbs_status)}</td>
+            </tr>
+          </tbody>
+        </Table>
+      </ModalBody>
+      <ModalFooter className="border-top-0">
+        <Button color="secondary" onClick={toggle} className="px-4">
+          {t("Close")}
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 };
+
 BudgetSourceModal.propTypes = {
   toggle: PropTypes.func,
   isOpen: PropTypes.bool,
   transaction: PropTypes.object,
+  pageTitle: PropTypes.string,
 };
+
 export default BudgetSourceModal;

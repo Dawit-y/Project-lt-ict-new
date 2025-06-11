@@ -1945,5 +1945,6 @@
 	"amount_(Birr)": "Amount (Birr)",
 	"budget_analysis": "Budget Analysis",
 	"view": "View",
-	"state_of_oromia": "Government of the State of Oromia"
+	"state_of_oromia": "Government of the State of Oromia",
+	"is_inactive":"Is Inactive"
 }

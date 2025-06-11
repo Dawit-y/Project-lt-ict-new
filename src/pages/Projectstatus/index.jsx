@@ -26,7 +26,11 @@ import { useTranslation } from "react-i18next";
 
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
-import { alphanumericValidation, amountValidation, numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 import {
   Button,
   Col,
@@ -69,7 +73,8 @@ const ProjectStatusModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, isFetching, error, isError, refetch } = useFetchProjectStatuss();
+  const { data, isLoading, isFetching, error, isError, refetch } =
+    useFetchProjectStatuss();
 
   const addProjectStatus = useAddProjectStatus();
   const updateProjectStatus = useUpdateProjectStatus();
@@ -78,12 +83,12 @@ const ProjectStatusModel = () => {
   const handleAddProjectStatus = async (data) => {
     try {
       await addProjectStatus.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('add_failure'), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -93,12 +98,12 @@ const ProjectStatusModel = () => {
   const handleUpdateProjectStatus = async (data) => {
     try {
       await updateProjectStatus.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('update_failure'), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -109,11 +114,11 @@ const ProjectStatusModel = () => {
       try {
         const id = projectStatus.prs_id;
         await deleteProjectStatus.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(t('delete_failure'), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -138,26 +143,29 @@ const ProjectStatusModel = () => {
       prs_color_code: (projectStatus && projectStatus.prs_color_code) || "",
       prs_order_number: (projectStatus && projectStatus.prs_order_number) || "",
       prs_description: (projectStatus && projectStatus.prs_description) || "",
-      prs_status: (projectStatus && projectStatus.prs_status) || "",
+      prs_status: (projectStatus && projectStatus.prs_status) || false,
       prs_spare_column: (projectStatus && projectStatus.prs_spare_column) || "",
 
       is_deletable: (projectStatus && projectStatus.is_deletable) || 1,
       is_editable: (projectStatus && projectStatus.is_editable) || 1,
     },
     validationSchema: Yup.object({
-      prs_status_name_or: alphanumericValidation(4, 100, true)
-        .test("unique-prs_status_name_or", t("Already exists"), (value) => {
+      prs_status_name_or: alphanumericValidation(4, 100, true).test(
+        "unique-prs_status_name_or",
+        t("Already exists"),
+        (value) => {
           return !data?.data.some(
             (item) =>
               item.prs_status_name_or == value &&
               item.prs_id !== projectStatus?.prs_id
           );
-        }),
+        }
+      ),
       prs_status_name_am: Yup.string().required(t("prs_status_name_am")),
       prs_status_name_en: alphanumericValidation(2, 100, true),
       prs_color_code: alphanumericValidation(6, 20, false),
       prs_order_number: numberValidation(1, 10, true),
-      prs_description: alphanumericValidation(2, 425, false)
+      prs_description: alphanumericValidation(2, 425, false),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -171,7 +179,7 @@ const ProjectStatusModel = () => {
           prs_color_code: values.prs_color_code,
           prs_order_number: values.prs_order_number,
           prs_description: values.prs_description,
-          prs_status: values.prs_status,
+          prs_status: values.prs_status ? 1 : 0,
           //prs_spare_column: values.prs_spare_column,
 
           is_deletable: values.is_deletable,
@@ -187,7 +195,7 @@ const ProjectStatusModel = () => {
           prs_color_code: values.prs_color_code,
           prs_order_number: values.prs_order_number,
           prs_description: values.prs_description,
-          prs_status: values.prs_status,
+          prs_status: values.prs_status ? 1 : 0,
           //prs_spare_column: values.prs_spare_column,
         };
         // save new ProjectStatus
@@ -228,7 +236,7 @@ const ProjectStatusModel = () => {
       prs_color_code: projectStatus.prs_color_code,
       prs_order_number: projectStatus.prs_order_number,
       prs_description: projectStatus.prs_description,
-      prs_status: projectStatus.prs_status,
+      prs_status: projectStatus.prs_status === 1,
       prs_spare_column: projectStatus.prs_spare_column,
 
       is_deletable: projectStatus.is_deletable,
@@ -322,6 +330,26 @@ const ProjectStatusModel = () => {
           return (
             <span>
               {truncateText(cellProps.row.original.prs_order_number, 30) || "-"}
+            </span>
+          );
+        },
+      },
+
+      {
+        header: "",
+        accessorKey: t("is_inactive"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span
+              className={
+                cellProps.row.original.prs_status === 1
+                  ? "btn btn-sm btn-soft-danger"
+                  : ""
+              }
+            >
+              {cellProps.row.original.prs_status === 1 ? t("yes") : t("no")}
             </span>
           );
         },
@@ -452,7 +480,7 @@ const ProjectStatusModel = () => {
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                       divClassName="-"
                       refetch={refetch}
-                      isFetching={isFetching} 
+                      isFetching={isFetching}
                     />
                   </CardBody>
                 </Card>
@@ -474,8 +502,11 @@ const ProjectStatusModel = () => {
                 }}
               >
                 <Row>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prs_status_name_or")}<span className="text-danger">*</span></Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>
+                      {t("prs_status_name_or")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prs_status_name_or"
                       type="text"
@@ -485,21 +516,24 @@ const ProjectStatusModel = () => {
                       value={validation.values.prs_status_name_or || ""}
                       invalid={
                         validation.touched.prs_status_name_or &&
-                          validation.errors.prs_status_name_or
+                        validation.errors.prs_status_name_or
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.prs_status_name_or &&
-                      validation.errors.prs_status_name_or ? (
+                    validation.errors.prs_status_name_or ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_status_name_or}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prs_status_name_am")}<span className="text-danger">*</span></Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>
+                      {t("prs_status_name_am")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prs_status_name_am"
                       type="text"
@@ -509,21 +543,24 @@ const ProjectStatusModel = () => {
                       value={validation.values.prs_status_name_am || ""}
                       invalid={
                         validation.touched.prs_status_name_am &&
-                          validation.errors.prs_status_name_am
+                        validation.errors.prs_status_name_am
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.prs_status_name_am &&
-                      validation.errors.prs_status_name_am ? (
+                    validation.errors.prs_status_name_am ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_status_name_am}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("prs_status_name_en")}<span className="text-danger">*</span></Label>
+                  <Col className="col-md-4 mb-3">
+                    <Label>
+                      {t("prs_status_name_en")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prs_status_name_en"
                       type="text"
@@ -533,14 +570,14 @@ const ProjectStatusModel = () => {
                       value={validation.values.prs_status_name_en || ""}
                       invalid={
                         validation.touched.prs_status_name_en &&
-                          validation.errors.prs_status_name_en
+                        validation.errors.prs_status_name_en
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.prs_status_name_en &&
-                      validation.errors.prs_status_name_en ? (
+                    validation.errors.prs_status_name_en ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_status_name_en}
                       </FormFeedback>
@@ -557,14 +594,14 @@ const ProjectStatusModel = () => {
                       value={validation.values.prs_color_code || ""}
                       invalid={
                         validation.touched.prs_color_code &&
-                          validation.errors.prs_color_code
+                        validation.errors.prs_color_code
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prs_color_code &&
-                      validation.errors.prs_color_code ? (
+                    validation.errors.prs_color_code ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_color_code}
                       </FormFeedback>
@@ -587,14 +624,14 @@ const ProjectStatusModel = () => {
                       value={validation.values.prs_order_number || ""}
                       invalid={
                         validation.touched.prs_order_number &&
-                          validation.errors.prs_order_number
+                        validation.errors.prs_order_number
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prs_order_number &&
-                      validation.errors.prs_order_number ? (
+                    validation.errors.prs_order_number ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_order_number}
                       </FormFeedback>
@@ -611,25 +648,51 @@ const ProjectStatusModel = () => {
                       value={validation.values.prs_description || ""}
                       invalid={
                         validation.touched.prs_description &&
-                          validation.errors.prs_description
+                        validation.errors.prs_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.prs_description &&
-                      validation.errors.prs_description ? (
+                    validation.errors.prs_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_description}
                       </FormFeedback>
                     ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <div className="form-check mb-4">
+                      <Label className="me-1" for="prs_status">
+                        {t("is_inactive")}
+                      </Label>
+                      <Input
+                        id="prs_status"
+                        name="prs_status"
+                        type="checkbox"
+                        placeholder={t("prs_status")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.prs_status}
+                        invalid={
+                          validation.touched.prs_status &&
+                          validation.errors.prs_status
+                        }
+                      />
+                      {validation.touched.prs_status &&
+                        validation.errors.prs_status && (
+                          <FormFeedback type="invalid">
+                            {validation.errors.prs_status}
+                          </FormFeedback>
+                        )}
+                    </div>
                   </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
                       {addProjectStatus.isPending ||
-                        updateProjectStatus.isPending ? (
+                      updateProjectStatus.isPending ? (
                         <Button
                           color="success"
                           type="submit"
