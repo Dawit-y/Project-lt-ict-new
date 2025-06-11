@@ -11,7 +11,6 @@ import {
 	Table,
 } from "reactstrap";
 import { DetailsView } from "../../components/Common/DetailViewWrapper";
-import { useFetchBudgetExSources } from "../../queries/budgetexsource_query";
 import { useFetchBudgetRequestAmounts } from "../../queries/budgetrequestamount_query";
 import { useFetchBudgetRequestTasks } from "../../queries/budgetrequesttask_query";
 import { useFetchExpenditureCodes } from "../../queries/expenditurecode_query";
@@ -20,6 +19,7 @@ import {
 	PrintBudgetRequestTables,
 	ExportBudgetRequestTablesToExcel,
 } from "./Export";
+import { FaX } from "react-icons/fa6";
 
 const modalStyle = {
 	width: "100%",
@@ -37,10 +37,6 @@ const BudgetRequestModal = ({ isOpen, toggle, transaction }) => {
 		{ budget_request_id: id },
 		isOpen
 	);
-	const brExSourcesQuery = useFetchBudgetExSources(
-		{ budget_request_id: id },
-		isOpen
-	);
 
 	const {
 		data: exCodesData,
@@ -52,12 +48,8 @@ const BudgetRequestModal = ({ isOpen, toggle, transaction }) => {
 		return createKeyValueMap(exCodesData?.data || [], "pec_id", "pec_code");
 	}, [exCodesData]);
 
-	const isLoading =
-		brAmountsQuery.isLoading ||
-		brTasksQuery.isLoading ||
-		brExSourcesQuery.isLoading;
-	const isError =
-		brAmountsQuery.error || brTasksQuery.error || brExSourcesQuery.error;
+	const isLoading = brAmountsQuery.isLoading || brTasksQuery.isLoading;
+	const isError = brAmountsQuery.error || brTasksQuery.error;
 
 	return (
 		<Modal
@@ -73,13 +65,13 @@ const BudgetRequestModal = ({ isOpen, toggle, transaction }) => {
 					{!isLoading && !isError && <PrintBudgetRequestTables />}
 					{!isLoading && !isError && (
 						<ExportBudgetRequestTablesToExcel
-							amountsData={brAmountsQuery?.data?.data || []}
-							tasksData={brTasksQuery?.data?.data || []}
+							brAmountsData={brAmountsQuery.data?.data || []}
+							brTasksData={brTasksQuery.data?.data || []}
 							expendCodeMap={expendCodeMap}
 						/>
 					)}
 					<Button color="secondary" onClick={toggle}>
-						{t("close")}
+						<FaX />
 					</Button>
 				</Col>
 			</div>
@@ -124,12 +116,12 @@ const BudgetRequestModal = ({ isOpen, toggle, transaction }) => {
 										<th rowSpan={2}></th>
 										<th rowSpan={2}></th>
 										<th colSpan={6} className="text-center">
-									  
+											{t("source_of_finance")}
 										</th>
 									</tr>
 									<tr>
-										<th>{t("government")}</th>
-										<th>{t("internal")}</th>
+										<th>{""}</th>
+										<th>{""}</th>
 										<th colSpan={2} className="text-center">
 											{t("external_assistance")}
 										</th>
