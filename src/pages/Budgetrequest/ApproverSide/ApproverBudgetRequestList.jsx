@@ -1,29 +1,25 @@
 import React, {
-  useEffect,
-  useMemo,
-  useState,
-  useRef,
-  lazy,
-  Suspense,
-  useCallback,
+	useEffect,
+	useMemo,
+	useState,
+	useRef,
+	lazy,
+	Suspense,
+	useCallback,
 } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuthUser } from "../../../hooks/useAuthUser";
-import { Button, Badge, Card, CardBody } from "reactstrap";
+import { Button, Badge, UncontrolledTooltip } from "reactstrap";
 import Spinners from "../../../components/Common/Spinner";
+import { FaGavel, FaChartLine, FaPaperclip, FaFilePen} from "react-icons/fa6";
 const Breadcrumbs = lazy(() => import("../../../components/Common/Breadcrumb"));
 const ApproverBudgetRequestListModal = lazy(() =>
-  import("./ApproverBudgetRequestModal")
+	import("./ApproverBudgetRequestModal")
 );
-
-const BudgetRequestAnalysis = lazy(() => import("./BudgetRequestAnalysis"));
 const AdvancedSearch = lazy(() =>
-  import("../../../components/Common/AdvancedSearch")
-);
-const FetchErrorHandler = lazy(() =>
-  import("../../../components/Common/FetchErrorHandler")
+	import("../../../components/Common/AdvancedSearch")
 );
 const TreeForLists = lazy(() =>
 	import("../../../components/Common/TreeForLists2")
@@ -34,19 +30,18 @@ const AttachFileModal = lazy(() =>
 const ConvInfoModal = lazy(() =>
 	import("../../Conversationinformation/ConvInfoModal")
 );
-const BudgetRequestModal = lazy(() => import("../BudgetRequestModal"));
+const SingleAnalysisModal = lazy(() =>
+	import("../Analysis/SingleAnalysisModal")
+);
+const TotalAnalysisModal = lazy(() => import("../Analysis/TotalAnalysisModal"));
 const AgGridContainer = lazy(() =>
 	import("../../../components/Common/AgGridContainer")
 );
-
 import { budget_request } from "../../../settings/printablecolumns";
 import { useSearchBudgetRequestforApproval } from "../../../queries/budget_request_query";
 import { useFetchBudgetYears } from "../../../queries/budgetyear_query";
 import { useSearchRequestCategorys } from "../../../queries/requestcategory_query";
-import {
-	useSearchRequestFollowups,
-	useFetchRequestFollowups,
-} from "../../../queries/requestfollowup_query";
+import { useFetchRequestFollowups } from "../../../queries/requestfollowup_query";
 import { useFetchRequestStatuss } from "../../../queries/requeststatus_query";
 import { PAGE_ID } from "../../../constants/constantFile";
 import { useFetchProjectStatuss } from "../../../queries/projectstatus_query";
@@ -69,6 +64,8 @@ const ApproverBudgetRequestList = () => {
 	const [modal1, setModal1] = useState(false);
 	const [fileModal, setFileModal] = useState(false);
 	const [convModal, setConvModal] = useState(false);
+	const [singleAnalysisModal, setSingleAnalysisModal] = useState(false);
+	const [totalAnalysisModal, setTotalAnalysisModal] = useState(false);
 
 	const [searchResults, setSearchResults] = useState(null);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -158,6 +155,10 @@ const ApproverBudgetRequestList = () => {
 	const toggleViewModal = () => setModal1(!modal1);
 	const toggleFileModal = () => setFileModal(!fileModal);
 	const toggleConvModal = () => setConvModal(!convModal);
+	const toggleSingleAnalysisModal = () =>
+		setSingleAnalysisModal(!singleAnalysisModal);
+	const toggleTotalAnalysisModal = () =>
+		setTotalAnalysisModal(!totalAnalysisModal);
 
 	useEffect(() => {
 		setProjectParams({
@@ -243,7 +244,8 @@ const ApproverBudgetRequestList = () => {
 				field: "prj_name",
 				sortable: true,
 				filter: true,
-				//flex: 2,
+				flex: 1,
+				minWidth: 200,
 				cellRenderer: (params) => {
 					return truncateText(params.data.prj_name, 30) || "-";
 				},
@@ -253,7 +255,8 @@ const ApproverBudgetRequestList = () => {
 				field: "prj_code",
 				sortable: true,
 				filter: true,
-				//flex: 1.5,
+				flex: 1,
+				minWidth: 150,
 				cellRenderer: (params) => {
 					return truncateText(params.data.prj_code, 30) || "-";
 				},
@@ -344,82 +347,73 @@ const ApproverBudgetRequestList = () => {
 				},
 			},
 			{
-				headerName: t("take_action"),
-				field: "take_action",
-				//flex: 1,
-				width: 120,
+				headerName: t("actions"),
+				field: "actions",
+				width: 170,
 				cellRenderer: (params) => {
+					const data = params.data;
+
 					return (
-						<Button
-							type="button"
-							color="primary"
-							className="btn-sm my-auto"
-							onClick={() => {
-								const data = params.data;
-								toggleViewModal();
-								setTransaction(data);
-							}}
-						>
-							{t("take_action")}
-						</Button>
-					);
-				},
-			},
-			{
-				headerName: t("view"),
-				field: "view",
-				width: 120,
-				cellRenderer: (params) => (
-					<Button
-						color="primary"
-						size="sm"
-						onClick={() => setSelectedRequest(params.data)}
-					>
-						{t("analysis")}
-					</Button>
-				),
-			},
-			{
-				headerName: t("attach_files"),
-				field: "attach_files",
-				//flex: 1,
-				width: 80,
-				cellRenderer: (params) => {
-					return (
-						<Button
-							outline
-							type="button"
-							color="success"
-							className="btn-sm"
-							onClick={() => {
-								toggleFileModal();
-								setTransaction(params.data);
-							}}
-						>
-							{t("attach_files")}
-						</Button>
-					);
-				},
-			},
-			{
-				headerName: t("Message"),
-				field: "Message",
-				//flex: 1,
-				width: 100,
-				cellRenderer: (params) => {
-					return (
-						<Button
-							outline
-							type="button"
-							color="primary"
-							className="btn-sm"
-							onClick={() => {
-								toggleConvModal();
-								setTransaction(params.data);
-							}}
-						>
-							{t("Message")}
-						</Button>
+						<div className="d-flex gap-1">
+							<Button
+								id={`takeAction-${data.bdr_id}`}
+								color="light"
+								size="sm"
+								onClick={() => {
+									toggleViewModal();
+									setTransaction(data);
+								}}
+							>
+								<FaGavel />
+							</Button>
+							<UncontrolledTooltip target={`takeAction-${data.bdr_id}`}>
+								{t("take_action")}
+							</UncontrolledTooltip>
+							<Button
+								id={`view-${data.bdr_id}`}
+								color="light"
+								size="sm"
+								onClick={() => {
+									toggleSingleAnalysisModal();
+									setSelectedRequest(data);
+								}}
+							>
+								<FaChartLine />
+							</Button>
+							<UncontrolledTooltip target={`view-${data.bdr_id}`}>
+								{t("analysis")}
+							</UncontrolledTooltip>
+
+							<Button
+								id={`attachFiles-${data.bdr_id}`}
+								color="light"
+								size="sm"
+								onClick={() => {
+									toggleFileModal();
+									setTransaction(data);
+								}}
+							>
+								<FaPaperclip />
+							</Button>
+							<UncontrolledTooltip target={`attachFiles-${data.bdr_id}`}>
+								{t("attach_files")}
+							</UncontrolledTooltip>
+
+							<Button
+								id={`notes-${data.bdr_id}`}
+								color="light"
+								size="sm"
+								onClick={() => {
+									toggleConvModal();
+									setTransaction(data);
+								}}
+							>
+								<FaFilePen />
+							</Button>
+							<UncontrolledTooltip target={`notes-${data.bdr_id}`}>
+								{t("Notes")}
+							</UncontrolledTooltip>
+						</div>
 					);
 				},
 			},
@@ -436,29 +430,25 @@ const ApproverBudgetRequestList = () => {
 					transaction={transaction}
 					budgetYearMap={budgetYearMap}
 				/>
-				{fileModal && (
-					<AttachFileModal
-						isOpen={fileModal}
-						toggle={toggleFileModal}
-						projectId={transaction?.bdr_project_id}
-						ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-						ownerId={transaction?.bdr_id}
-						canAdd={isMutable}
-						canEdit={isMutable}
-						canDelete={isMutable}
-					/>
-				)}
-				{convModal && (
-					<ConvInfoModal
-						isOpen={convModal}
-						toggle={toggleConvModal}
-						ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-						ownerId={transaction?.bdr_id ?? null}
-						canAdd={isMutable}
-						canEdit={isMutable}
-						canDelete={isMutable}
-					/>
-				)}
+				<AttachFileModal
+					isOpen={fileModal}
+					toggle={toggleFileModal}
+					projectId={transaction?.bdr_project_id}
+					ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+					ownerId={transaction?.bdr_id}
+					canAdd={isMutable}
+					canEdit={isMutable}
+					canDelete={isMutable}
+				/>
+				<ConvInfoModal
+					isOpen={convModal}
+					toggle={toggleConvModal}
+					ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+					ownerId={transaction?.bdr_id ?? null}
+					canAdd={isMutable}
+					canEdit={isMutable}
+					canDelete={isMutable}
+				/>
 				<div className="page-content">
 					<div className="">
 						<Breadcrumbs />
@@ -535,10 +525,11 @@ const ApproverBudgetRequestList = () => {
 									<TableWrapper
 										columnDefs={columnDefs}
 										showSearchResult={showSearchResult}
-										setSelectedRequest={setSelectedRequest} // Pass the setter function
-										selectedRequest={selectedRequest} // Pass the selected request
-										chartType={chartType}
-										setChartType={setChartType}
+										selectedRequest={selectedRequest}
+										singleAnalysisModal={singleAnalysisModal}
+										totalAnalysisModal={totalAnalysisModal}
+										toggleSingleAnalysisModal={toggleSingleAnalysisModal}
+										toggleTotalAnalysisModal={toggleTotalAnalysisModal}
 									/>
 								</AdvancedSearch>
 							</div>
@@ -559,10 +550,11 @@ const TableWrapper = ({
 	isLoading,
 	columnDefs,
 	showSearchResult,
-	setSelectedRequest,
 	selectedRequest,
-	chartType,
-	setChartType,
+	singleAnalysisModal,
+	totalAnalysisModal,
+	toggleSingleAnalysisModal,
+	toggleTotalAnalysisModal,
 }) => {
 	const { departmentId } = useAuthUser();
 	const { data: rqfData } = useFetchRequestFollowups();
@@ -595,78 +587,52 @@ const TableWrapper = ({
 	}
 
 	return (
-		<div className="d-flex flex-column" style={{ gap: "20px" }}>
-			<AgGridContainer
-				rowData={showSearchResult ? transformedData : []}
-				columnDefs={columnDefs}
-				isLoading={isLoading}
-				isPagination={true}
-				paginationPageSize={10}
-				isGlobalFilter={true}
-				isAddButton={false}
-				rowHeight={35}
-				addButtonText="Add"
-				isExcelExport={true}
-				isPdfExport={true}
-				isPrint={true}
-				tableName="budget_request"
-				includeKey={[
-					"bdy_name",
-					"prj_name",
-					"prj_code",
-					"bdr_request_status",
-					"bdr_requested_amount",
-					"bdr_released_amount",
-					"bdr_requested_date_gc",
-					"bdr_released_date_gc",
-					"bdr_description",
-				]}
-				excludeKey={["is_editable", "is_deletable"]}
+		<>
+			<SingleAnalysisModal
+				isOpen={singleAnalysisModal}
+				toggle={toggleSingleAnalysisModal}
+				selectedRequest={selectedRequest}
+				data={transformedData}
 			/>
+			<TotalAnalysisModal
+				isOpen={totalAnalysisModal}
+				toggle={toggleTotalAnalysisModal}
+				data={transformedData}
+			/>
+			<div className="d-flex flex-column" style={{ gap: "20px" }}>
+				<AgGridContainer
+					rowData={showSearchResult ? transformedData : []}
+					columnDefs={columnDefs}
+					isLoading={isLoading}
+					isPagination={true}
+					paginationPageSize={10}
+					isGlobalFilter={true}
+					isAddButton={false}
+					rowHeight={36}
+					addButtonText="Add"
+					isExcelExport={true}
+					isPdfExport={true}
+					isPrint={true}
+					tableName="budget_request"
+					includeKey={[
+						"bdy_name",
+						"prj_name",
+						"prj_code",
+						"bdr_request_status",
+						"bdr_requested_amount",
+						"bdr_released_amount",
+						"bdr_requested_date_gc",
+						"bdr_released_date_gc",
+						"bdr_description",
+					]}
+					excludeKey={["is_editable", "is_deletable"]}
 
-			{/* Analysis View */}
-			{selectedRequest ? (
-				<Card>
-					<CardBody>
-						<div className="d-flex justify-content-between align-items-center mb-3">
-							<h4 className="card-title mb-0">
-								{t("single_analysis")}
-								<Button
-									color="link"
-									size="sm"
-									onClick={() => setSelectedRequest(null)}
-								>
-									<i className="mdi mdi-arrow-left"></i> {t("back_to_overview")}
-								</Button>
-							</h4>
-						</div>
-						<BudgetRequestAnalysis
-							budgetRequestData={selectedRequest}
-							allData={transformedData}
-							isOverallView={false}
-							chartType={chartType}
-							onChartTypeChange={setChartType}
-						/>
-					</CardBody>
-				</Card>
-			) : (
-				showSearchResult &&
-				transformedData.length > 0 && (
-					<Card>
-						<CardBody>
-							<h4 className="card-title mb-4">
-								{t("overall_budget_requests_analysis")}
-							</h4>
-							<BudgetRequestAnalysis
-								allData={transformedData}
-								isOverallView={true}
-								chartType={chartType}
-								onChartTypeChange={setChartType}
-							/>
-						</CardBody>
-					</Card>
-				)
-			)}
-		</div>
+					// todo: refactor this to use a more generic button component
+					buttonChildren={<FaChartLine />}
+					onButtonClick={toggleTotalAnalysisModal}
+					disabled={!showSearchResult || isLoading}
+				/>
+			</div>
+		</>
 	);
 };

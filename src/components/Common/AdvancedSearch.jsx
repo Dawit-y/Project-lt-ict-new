@@ -262,7 +262,7 @@ const AdvancedSearch = ({
 													}
 													sm={12}
 													key={key}
-													className="mb-2"
+													className="mb-1"
 												>
 													<div className="">
 														<InputGroup style={inputStyles} className="rounded">
@@ -323,7 +323,7 @@ const AdvancedSearch = ({
 													md={6}
 													sm={12}
 													key={key}
-													className="mb-2"
+													className="mb-1"
 												>
 													<div className="">
 														<Input
@@ -350,7 +350,7 @@ const AdvancedSearch = ({
 													md={6}
 													sm={12}
 													key={key}
-													className="mb-2"
+													className="mb-1"
 												>
 													<div className="">
 														<Input
