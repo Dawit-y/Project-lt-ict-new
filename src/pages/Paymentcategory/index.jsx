@@ -129,8 +129,7 @@ const PaymentCategoryModel = () => {
       pyc_description:
         (paymentCategory && paymentCategory.pyc_description) || "",
       //pyc_status: (paymentCategory && paymentCategory.pyc_status) || "",
-      pyc_status:
-        (paymentCategory && paymentCategory.pyc_status) || false,
+      pyc_status: (paymentCategory && paymentCategory.pyc_status) || false,
 
       is_deletable: (paymentCategory && paymentCategory.is_deletable) || 1,
       is_editable: (paymentCategory && paymentCategory.is_editable) || 1,
@@ -270,16 +269,19 @@ const PaymentCategoryModel = () => {
         },
       },
       {
-        header: t('is_deleted'),
+        header: t("is_inactive"),
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
-            <span className={cellProps.row.original.pyc_status === 1 ? "btn btn-sm btn-soft-danger" : ""}>
-              {cellProps.row.original.pyc_status == 1
-                ? t("yes")
-                : t("no")
+            <span
+              className={
+                cellProps.row.original.pyc_status === 1
+                  ? "btn btn-sm btn-soft-danger"
+                  : ""
               }
+            >
+              {cellProps.row.original.pyc_status == 1 ? t("yes") : t("no")}
             </span>
           );
         },
@@ -362,7 +364,7 @@ const PaymentCategoryModel = () => {
   }, [handlePaymentCategoryClick, toggleViewModal, onClickDelete]);
 
   if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />
+    return <FetchErrorHandler error={error} refetch={refetch} />;
   }
 
   return (
@@ -446,14 +448,14 @@ const PaymentCategoryModel = () => {
                       value={validation.values.pyc_name_or || ""}
                       invalid={
                         validation.touched.pyc_name_or &&
-                          validation.errors.pyc_name_or
+                        validation.errors.pyc_name_or
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pyc_name_or &&
-                      validation.errors.pyc_name_or ? (
+                    validation.errors.pyc_name_or ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pyc_name_or}
                       </FormFeedback>
@@ -470,14 +472,14 @@ const PaymentCategoryModel = () => {
                       value={validation.values.pyc_name_am || ""}
                       invalid={
                         validation.touched.pyc_name_am &&
-                          validation.errors.pyc_name_am
+                        validation.errors.pyc_name_am
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pyc_name_am &&
-                      validation.errors.pyc_name_am ? (
+                    validation.errors.pyc_name_am ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pyc_name_am}
                       </FormFeedback>
@@ -494,14 +496,14 @@ const PaymentCategoryModel = () => {
                       value={validation.values.pyc_name_en || ""}
                       invalid={
                         validation.touched.pyc_name_en &&
-                          validation.errors.pyc_name_en
+                        validation.errors.pyc_name_en
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pyc_name_en &&
-                      validation.errors.pyc_name_en ? (
+                    validation.errors.pyc_name_en ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pyc_name_en}
                       </FormFeedback>
@@ -510,7 +512,7 @@ const PaymentCategoryModel = () => {
                   <Col className="col-md-6 col-xl-4 mb-3">
                     <div className="form-check mb-4">
                       <Label className="me-1" for="pyc_status">
-                        {t("is_deleted")}
+                        {t("is_inactive")}
                       </Label>
                       <Input
                         id="pyc_status"
@@ -522,13 +524,13 @@ const PaymentCategoryModel = () => {
                         checked={validation.values.pyc_status}
                         invalid={
                           validation.touched.pyc_status &&
-                            validation.errors.pyc_status
+                          validation.errors.pyc_status
                             ? true
                             : false
                         }
                       />
                       {validation.touched.pyc_status &&
-                        validation.errors.pyc_status ? (
+                      validation.errors.pyc_status ? (
                         <FormFeedback type="invalid">
                           {validation.errors.pyc_status}
                         </FormFeedback>
@@ -547,14 +549,14 @@ const PaymentCategoryModel = () => {
                       value={validation.values.pyc_description || ""}
                       invalid={
                         validation.touched.pyc_description &&
-                          validation.errors.pyc_description
+                        validation.errors.pyc_description
                           ? true
                           : false
                       }
                       maxLength={200}
                     />
                     {validation.touched.pyc_description &&
-                      validation.errors.pyc_description ? (
+                    validation.errors.pyc_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pyc_description}
                       </FormFeedback>
@@ -565,7 +567,7 @@ const PaymentCategoryModel = () => {
                   <Col>
                     <div className="text-end">
                       {addPaymentCategory.isPending ||
-                        updatePaymentCategory.isPending ? (
+                      updatePaymentCategory.isPending ? (
                         <Button
                           color="success"
                           type="submit"

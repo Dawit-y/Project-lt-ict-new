@@ -140,7 +140,7 @@ const SectorCategoryModel = () => {
       psc_code: (sectorCategory && sectorCategory.psc_code) || "",
       psc_sector_id: (sectorCategory && sectorCategory.psc_sector_id) || "",
       psc_description: (sectorCategory && sectorCategory.psc_description) || "",
-      psc_status: (sectorCategory && sectorCategory.psc_status) || "",
+      psc_status: (sectorCategory && sectorCategory.psc_status) || false,
       psc_gov_active:
         (sectorCategory && sectorCategory.psc_gov_active) || false,
       psc_cso_active:
@@ -181,7 +181,7 @@ const SectorCategoryModel = () => {
           psc_code: values.psc_code,
           psc_sector_id: values.psc_sector_id,
           psc_description: values.psc_description,
-          psc_status: values.psc_status,
+          psc_status: values.psc_status ? 1 : 0,
 
           psc_gov_active: values.psc_gov_active ? 1 : 0,
           psc_cso_active: values.psc_cso_active ? 1 : 0,
@@ -198,7 +198,7 @@ const SectorCategoryModel = () => {
           psc_code: values.psc_code,
           psc_sector_id: values.psc_sector_id,
           psc_description: values.psc_description,
-          psc_status: values.psc_status,
+          psc_status: values.psc_status ? 1 : 0,
 
           psc_gov_active: values.psc_gov_active ? 1 : 0,
           psc_cso_active: values.psc_cso_active ? 1 : 0,
@@ -240,7 +240,7 @@ const SectorCategoryModel = () => {
       psc_code: sectorCategory.psc_code,
       psc_sector_id: sectorCategory.psc_sector_id,
       psc_description: sectorCategory.psc_description,
-      psc_status: sectorCategory.psc_status,
+      psc_status: sectorCategory.psc_status === 1,
 
       psc_gov_active: sectorCategory.psc_gov_active === 1,
       psc_cso_active: sectorCategory.psc_cso_active === 1,
@@ -354,6 +354,26 @@ const SectorCategoryModel = () => {
               {cellProps.row.original.psc_citizenship_active === 1
                 ? t("yes")
                 : t("no")}
+            </span>
+          );
+        },
+      },
+
+      {
+        header: "",
+        accessorKey: t("is_inactive"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span
+              className={
+                cellProps.row.original.psc_status === 1
+                  ? "btn btn-sm btn-soft-danger"
+                  : ""
+              }
+            >
+              {cellProps.row.original.psc_status === 1 ? t("yes") : t("no")}
             </span>
           );
         },
@@ -558,7 +578,7 @@ const SectorCategoryModel = () => {
                     ) : null}
                   </Col>
 
-                  <Col className="col-md-4 mb-3">
+                  <Col className="col-md-3 mb-3">
                     <div className="form-check mb-4">
                       <Label className="me-1" for="psc_gov_active">
                         {t("psc_gov_active")}
@@ -585,7 +605,7 @@ const SectorCategoryModel = () => {
                     </div>
                   </Col>
 
-                  <Col className="col-md-4 mb-3">
+                  <Col className="col-md-3 mb-3">
                     <div className="form-check mb-4">
                       <Label className="me-1" for="psc_cso_active">
                         {t("psc_cso_active")}
@@ -612,7 +632,7 @@ const SectorCategoryModel = () => {
                     </div>
                   </Col>
 
-                  <Col className="col-md-4 mb-3">
+                  <Col className="col-md-3 mb-3">
                     <div className="form-check mb-4">
                       <Label className="me-1" for="psc_citizenship_active">
                         {t("psc_citizenship_active")}
@@ -639,7 +659,34 @@ const SectorCategoryModel = () => {
                     </div>
                   </Col>
 
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-3 mb-3">
+                    <div className="form-check mb-4">
+                      <Label className="me-1" for="psc_status">
+                        {t("is_inactive")}
+                      </Label>
+                      <Input
+                        id="psc_status"
+                        name="psc_status"
+                        type="checkbox"
+                        placeholder={t("psc_status")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.psc_status}
+                        invalid={
+                          validation.touched.psc_status &&
+                          validation.errors.psc_status
+                        }
+                      />
+                      {validation.touched.psc_status &&
+                        validation.errors.psc_status && (
+                          <FormFeedback type="invalid">
+                            {validation.errors.psc_status}
+                          </FormFeedback>
+                        )}
+                    </div>
+                  </Col>
+
+                  <Col className="col-md-12 mb-3">
                     <Label>{t("psc_description")}</Label>
                     <Input
                       name="psc_description"

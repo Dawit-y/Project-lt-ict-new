@@ -1738,5 +1738,6 @@
 	"amount_(Birr)": "መጠን (ብር)",
 	"budget_analysis": "የበጀት ትንተና",
 	"view": "እይታ",
-	"state_of_oromia": "የኦሮሚያ ክልል መንግስት"
+	"state_of_oromia": "የኦሮሚያ ክልል መንግስት",
+	"is_inactive": "ንቁ አይደለም"
 }

@@ -63,7 +63,8 @@ const RequestStatusModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, isFetching, error, isError, refetch } = useFetchRequestStatuss();
+  const { data, isLoading, isFetching, error, isError, refetch } =
+    useFetchRequestStatuss();
   const addRequestStatus = useAddRequestStatus();
   const updateRequestStatus = useUpdateRequestStatus();
   const deleteRequestStatus = useDeleteRequestStatus();
@@ -124,7 +125,7 @@ const RequestStatusModel = () => {
       rqs_name_am: (requestStatus && requestStatus.rqs_name_am) || "",
       rqs_name_en: (requestStatus && requestStatus.rqs_name_en) || "",
       rqs_description: (requestStatus && requestStatus.rqs_description) || "",
-      rqs_status: (requestStatus && requestStatus.rqs_status) || "",
+      rqs_status: (requestStatus && requestStatus.rqs_status) || false,
       is_deletable: (requestStatus && requestStatus.is_deletable) || 1,
       is_editable: (requestStatus && requestStatus.is_editable) || 1,
     },
@@ -143,7 +144,7 @@ const RequestStatusModel = () => {
           rqs_name_am: values.rqs_name_am,
           rqs_name_en: values.rqs_name_en,
           rqs_description: values.rqs_description,
-          rqs_status: values.rqs_status,
+          rqs_status: values.rqs_status ? 1 : 0,
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -155,7 +156,7 @@ const RequestStatusModel = () => {
           rqs_name_am: values.rqs_name_am,
           rqs_name_en: values.rqs_name_en,
           rqs_description: values.rqs_description,
-          rqs_status: values.rqs_status,
+          rqs_status: values.rqs_status ? 1 : 0,
         };
         // save new RequestStatus
         handleAddRequestStatus(newRequestStatus);
@@ -190,7 +191,7 @@ const RequestStatusModel = () => {
       rqs_name_am: requestStatus.rqs_name_am,
       rqs_name_en: requestStatus.rqs_name_en,
       rqs_description: requestStatus.rqs_description,
-      rqs_status: requestStatus.rqs_status,
+      rqs_status: requestStatus.rqs_status === 1,
 
       is_deletable: requestStatus.is_deletable,
       is_editable: requestStatus.is_editable,
@@ -252,6 +253,26 @@ const RequestStatusModel = () => {
           return (
             <span>
               {truncateText(cellProps.row.original.rqs_name_en, 30) || "-"}
+            </span>
+          );
+        },
+      },
+
+      {
+        header: "",
+        accessorKey: t("is_inactive"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span
+              className={
+                cellProps.row.original.rqs_status === 1
+                  ? "btn btn-sm btn-soft-danger"
+                  : ""
+              }
+            >
+              {cellProps.row.original.rqs_status === 1 ? t("yes") : t("no")}
             </span>
           );
         },
@@ -406,7 +427,7 @@ const RequestStatusModel = () => {
                 }}
               >
                 <Row>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>
                       {t("rqs_name_or")}
                       <span className="text-danger">*</span>
@@ -433,7 +454,7 @@ const RequestStatusModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>
                       {t("rqs_name_am")}
                       <span className="text-danger">*</span>
@@ -460,7 +481,7 @@ const RequestStatusModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>
                       {t("rqs_name_en")}
                       <span className="text-danger">*</span>
@@ -487,7 +508,7 @@ const RequestStatusModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-8 mb-3">
                     <Label>{t("rqs_description")}</Label>
                     <Input
                       name="rqs_description"
@@ -510,6 +531,32 @@ const RequestStatusModel = () => {
                         {validation.errors.rqs_description}
                       </FormFeedback>
                     ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <div className="form-check mb-4">
+                      <Label className="me-1" for="rqs_status">
+                        {t("is_inactive")}
+                      </Label>
+                      <Input
+                        id="rqs_status"
+                        name="rqs_status"
+                        type="checkbox"
+                        placeholder={t("rqs_status")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.rqs_status}
+                        invalid={
+                          validation.touched.rqs_status &&
+                          validation.errors.rqs_status
+                        }
+                      />
+                      {validation.touched.rqs_status &&
+                        validation.errors.rqs_status && (
+                          <FormFeedback type="invalid">
+                            {validation.errors.rqs_status}
+                          </FormFeedback>
+                        )}
+                    </div>
                   </Col>
                 </Row>
                 <Row>

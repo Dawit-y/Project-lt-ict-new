@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,16 +8,25 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+  Badge,
+} from "reactstrap";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+  width: "100%",
+  maxWidth: "1200px",
 };
 
 const ExpenditureCodeModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction } = props;
+
+  const renderBooleanBadge = (value) => {
+    return value === 1 ? (
+      <Badge color="success">{t("Yes")}</Badge>
+    ) : (
+      <Badge color="danger">{t("No")}</Badge>
+    );
+  };
 
   return (
     <Modal
@@ -30,36 +39,44 @@ const ExpenditureCodeModal = (props) => {
       toggle={toggle}
       style={modalStyle}
     >
-      <div className="modal-xl">
-        <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
-        <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('pec_name')}: <span className="text-primary">{transaction.pec_name}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pec_code')}: <span className="text-primary">{transaction.pec_code}</span>
-          </p>
-          </tr>
-          <tr>
-                    <p className="mb-2">
-            {t('pec_description')}: <span className="text-primary">{transaction.pec_description}</span>
-          </p>
-          </tr>
-        </ModalBody>
-        <ModalFooter>
-          <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
-          </Button>
-        </ModalFooter>
-      </div>
+      <ModalHeader toggle={toggle}>
+        <h4 className="modal-title">{t("view_details")}</h4>
+      </ModalHeader>
+      <ModalBody>
+        <Table bordered size="sm" responsive className="table-details">
+          <tbody>
+            <tr>
+              <th width="30%">{t("pec_name")}</th>
+              <td>{transaction.pec_name || "-"}</td>
+            </tr>
+            <tr>
+              <th>{t("pec_code")}</th>
+              <td>{transaction.pec_code || "-"}</td>
+            </tr>
+            <tr>
+              <th>{t("pec_description")}</th>
+              <td>{transaction.pec_description || "-"}</td>
+            </tr>
+            <tr>
+              <th>{t("is_inactive")}</th>
+              <td>{renderBooleanBadge(transaction.pec_status)}</td>
+            </tr>
+          </tbody>
+        </Table>
+      </ModalBody>
+      <ModalFooter className="border-top-0">
+        <Button color="secondary" onClick={toggle} className="px-4">
+          {t("Close")}
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 };
+
 ExpenditureCodeModal.propTypes = {
   toggle: PropTypes.func,
   isOpen: PropTypes.bool,
   transaction: PropTypes.object,
 };
+
 export default ExpenditureCodeModal;

@@ -365,7 +365,7 @@ const ProjectCategoryModel = () => {
         },
       },
       {
-        header: t("is_deleted"),
+        header: t("is_inactive"),
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
@@ -722,13 +722,13 @@ const ProjectCategoryModel = () => {
                   <Col className="col-md-4 mb-3">
                     <div className="form-check mb-4">
                       <Label className="me-1" for="pct_status">
-                        {t("is_deleted")}
+                        {t("is_inactive")}
                       </Label>
                       <Input
                         id="pct_status"
                         name="pct_status"
                         type="checkbox"
-                        placeholder={t("is_deleted")}
+                        placeholder={t("is_inactive")}
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
                         checked={validation.values.pct_status}

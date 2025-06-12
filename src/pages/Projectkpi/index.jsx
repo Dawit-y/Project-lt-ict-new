@@ -32,6 +32,8 @@ import {
   Form,
   Card,
   CardBody,
+  Label,
+  Input,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -122,6 +124,7 @@ const ProjectKpiModel = () => {
       kpi_unit_measurement:
         (projectKpi && projectKpi.kpi_unit_measurement) || "",
       kpi_description: (projectKpi && projectKpi.kpi_description) || "",
+      kpi_status: (projectKpi && projectKpi.kpi_status) || false,
 
       is_deletable: (projectKpi && projectKpi.is_deletable) || 1,
       is_editable: (projectKpi && projectKpi.is_editable) || 1,
@@ -144,6 +147,7 @@ const ProjectKpiModel = () => {
           kpi_name_en: values.kpi_name_en,
           kpi_unit_measurement: values.kpi_unit_measurement,
           kpi_description: values.kpi_description,
+          kpi_status: values.kpi_status ? 1 : 0,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -157,6 +161,7 @@ const ProjectKpiModel = () => {
           kpi_name_en: values.kpi_name_en,
           kpi_unit_measurement: values.kpi_unit_measurement,
           kpi_description: values.kpi_description,
+          kpi_status: values.kpi_status ? 1 : 0,
         };
         // save new ProjectKpi
         handleAddProjectKpi(newProjectKpi);
@@ -193,6 +198,7 @@ const ProjectKpiModel = () => {
       kpi_name_en: projectKpi.kpi_name_en,
       kpi_unit_measurement: projectKpi.kpi_unit_measurement,
       kpi_description: projectKpi.kpi_description,
+      kpi_status: projectKpi.kpi_status === 1,
 
       is_deletable: projectKpi.is_deletable,
       is_editable: projectKpi.is_editable,
@@ -281,6 +287,26 @@ const ProjectKpiModel = () => {
           return (
             <span>
               {truncateText(cellProps.row.original.kpi_description, 30) || "-"}
+            </span>
+          );
+        },
+      },
+
+      {
+        header: "",
+        accessorKey: t("is_inactive"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span
+              className={
+                cellProps.row.original.kpi_status === 1
+                  ? "btn btn-sm btn-soft-danger"
+                  : ""
+              }
+            >
+              {cellProps.row.original.kpi_status === 1 ? t("yes") : t("no")}
             </span>
           );
         },
@@ -475,6 +501,36 @@ const ProjectKpiModel = () => {
                     className="col-md-6 mb-3"
                     maxLength={400}
                   />
+
+                  <Col className="col-md-4 mb-3">
+                    <div className="form-check mb-4">
+                      <Label className="me-1" for="kpi_status">
+                        {t("is_inactive")}
+                      </Label>
+
+                      <Input
+                        id="kpi_status"
+                        name="kpi_status"
+                        type="checkbox"
+                        placeholder={t("kpi_status")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.kpi_status}
+                        invalid={
+                          validation.touched.kpi_status &&
+                          validation.errors.kpi_status
+                            ? true
+                            : false
+                        }
+                      />
+                      {validation.touched.kpi_status &&
+                        validation.errors.kpi_status && (
+                          <FormFeedback type="invalid">
+                            {validation.errors.kpi_status}
+                          </FormFeedback>
+                        )}
+                    </div>
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
