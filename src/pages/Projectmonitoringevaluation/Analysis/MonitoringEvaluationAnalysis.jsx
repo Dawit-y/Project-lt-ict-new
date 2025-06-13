@@ -4,7 +4,6 @@ import {
   CardBody,
   Row,
   Col,
-  Button,
   Badge,
   TabContent,
   TabPane,
@@ -17,12 +16,12 @@ import Chart from "react-apexcharts";
 import { useTranslation } from "react-i18next";
 
 const MonitoringEvaluationAnalysis = ({
-  selectedData,
-  allData = [],
+  monitoringEvaluationData,
+  allData,
+  isOverallView,
   evaluationTypes = [],
   visitTypes = [],
   periodTypes = [],
-  onBackToOverview,
 }) => {
   const [activeTab, setActiveTab] = useState("progress");
   const { t } = useTranslation();
@@ -52,49 +51,55 @@ const MonitoringEvaluationAnalysis = ({
   };
 
   // Process data for display
-  const processedData = selectedData
+  const processedData = monitoringEvaluationData
     ? {
-        ...selectedData,
+        ...monitoringEvaluationData,
         evaluationType:
           evaluationTypes.find(
-            (et) => et.value === selectedData.mne_transaction_type_id
+            (et) =>
+              et.value === monitoringEvaluationData.mne_transaction_type_id
           )?.label || t("unknown"),
         visitType:
-          visitTypes.find((vt) => vt.value === selectedData.mne_visit_type)
-            ?.label || t("unknown"),
+          visitTypes.find(
+            (vt) => vt.value === monitoringEvaluationData.mne_visit_type
+          )?.label || t("unknown"),
         periodType:
-          periodTypes.find((pt) => pt.met_id === selectedData.mne_type_id)
-            ?.met_name_en || t("unknown"),
+          periodTypes.find(
+            (pt) => pt.met_id === monitoringEvaluationData.mne_type_id
+          )?.met_name_en || t("unknown"),
         durationDays: getDurationDays(
-          selectedData.mne_start_date,
-          selectedData.mne_end_date
+          monitoringEvaluationData.mne_start_date,
+          monitoringEvaluationData.mne_end_date
         ),
-        formattedFinancial: formatCurrency(selectedData.mne_financial || 0),
+        formattedFinancial: formatCurrency(
+          monitoringEvaluationData.mne_financial || 0
+        ),
         formattedFinancialZone: formatCurrency(
-          selectedData.mne_financial_zone || 0
+          monitoringEvaluationData.mne_financial_zone || 0
         ),
         formattedFinancialRegion: formatCurrency(
-          selectedData.mne_financial_region || 0
+          monitoringEvaluationData.mne_financial_region || 0
         ),
         // Fixed total financial calculation
         totalFinancial:
-          (selectedData.mne_financial || 0) +
-          (selectedData.mne_financial_zone || 0) +
-          (selectedData.mne_financial_region || 0),
+          (monitoringEvaluationData.mne_financial || 0) +
+          (monitoringEvaluationData.mne_financial_zone || 0) +
+          (monitoringEvaluationData.mne_financial_region || 0),
         formattedTotalFinancial: formatCurrency(
-          (selectedData.mne_financial || 0) +
-            (selectedData.mne_financial_zone || 0) +
-            (selectedData.mne_financial_region || 0)
+          (monitoringEvaluationData.mne_financial || 0) +
+            (monitoringEvaluationData.mne_financial_zone || 0) +
+            (monitoringEvaluationData.mne_financial_region || 0)
         ),
-        physicalPercentage: selectedData.mne_physical || 0,
-        physicalZonePercentage: selectedData.mne_physical_zone || 0,
-        physicalRegionPercentage: selectedData.mne_physical_region || 0,
+        physicalPercentage: monitoringEvaluationData.mne_physical || 0,
+        physicalZonePercentage: monitoringEvaluationData.mne_physical_zone || 0,
+        physicalRegionPercentage:
+          monitoringEvaluationData.mne_physical_region || 0,
         // Fixed average physical calculation - only average levels that have values
         averagePhysical: (() => {
           const levels = [
-            selectedData.mne_physical,
-            selectedData.mne_physical_zone,
-            selectedData.mne_physical_region,
+            monitoringEvaluationData.mne_physical,
+            monitoringEvaluationData.mne_physical_zone,
+            monitoringEvaluationData.mne_physical_region,
           ].filter((val) => val !== undefined && val !== null);
           return levels.length > 0
             ? (
@@ -104,8 +109,6 @@ const MonitoringEvaluationAnalysis = ({
         })(),
       }
     : null;
-
-  const isOverallView = !selectedData;
 
   // Prepare data for overall analysis
   const overallStats = {
@@ -621,16 +624,6 @@ const MonitoringEvaluationAnalysis = ({
         {/* Header */}
         {!isOverallView && (
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <Button
-              color="light"
-              onClick={onBackToOverview}
-              className="d-flex align-items-center"
-              style={{ fontFamily: "inherit" }}
-            >
-              <i className="mdi mdi-arrow-left me-2"></i>{" "}
-              {t("back_to_overview")}
-            </Button>
-
             <div>
               <Badge
                 color="info"
@@ -775,9 +768,13 @@ const MonitoringEvaluationAnalysis = ({
                     <Card className="shadow-none border-0 bg-gradient-info ">
                       <CardBody className="text-center">
                         <h5 className="mb-3">{t("avg_physical_progress")}</h5>
-                        <h1 className="mb-0">
+                        {/* <h1 className="mb-0">
                           {Math.round(overallStats.avgPhysical)}%
+                        </h1> */}
+                        <h1 className="mb-0">
+                          {Math.min(100, Math.round(overallStats.avgPhysical))}%
                         </h1>
+
                         <div className="mt-3">
                           <Progress
                             value={Math.round(overallStats.avgPhysical)}
