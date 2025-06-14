@@ -18,13 +18,12 @@ export const getPages = async (params = {}) => {
 };
 
 // add pages
-export const addPages = async (objectName) =>
-  post(`${apiUrl}` + ADD_PAGES, objectName);
+export const addPages = async (objectName) => post(ADD_PAGES, objectName);
 
 // update pages
 export const updatePages = (objectName) =>
-post(`${apiUrl}`+UPDATE_PAGES +`?pag_id=${objectName?.pag_id}`, objectName);
+	post(UPDATE_PAGES + `?pag_id=${objectName?.pag_id}`, objectName);
 
 // delete  pages
 export const deletePages = (objectName) =>
-  post(`${apiUrl}`+DELETE_PAGES+`?pag_id=${objectName}`);
+	post(DELETE_PAGES + `?pag_id=${objectName}`);

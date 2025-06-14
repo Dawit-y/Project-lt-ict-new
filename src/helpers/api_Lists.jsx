@@ -1,138 +1,126 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { store } from "../store";
+import { setAuthData, clearAuthData } from "../store/auth/actions";
 
-const API_URL = import.meta.env.VITE_BASE_API_URL;
-const axiosApi = axios.create({ baseURL: API_URL });
+// const API_URL = import.meta.env.VITE_BASE_API_URL;
+const API_URL = "/api";
+const axiosApi = axios.create({ baseURL: API_URL, withCredentials: true });
 
 const redirectToLogin = () => {
-  window.location.href = "/login";
-};
-
-let refreshTimeout;
-const getStoredUser = () => JSON.parse(localStorage.getItem("authUser"));
-
-// Function to update stored user data
-const updateStoredUser = (newAuthData) => {
-  localStorage.setItem("authUser", JSON.stringify(newAuthData));
-  scheduleTokenRefresh(newAuthData.authorization.token);
+	window.location.href = "/login";
 };
 
 // Function to schedule token refresh before expiry
 export const scheduleTokenRefresh = (token) => {
-  if (!token) return;
+	if (!token) return;
 
-  try {
-    const decoded = jwtDecode(token); // Decode JWT payload
-    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-    const expiresIn = decoded.exp - currentTime; // Remaining time until expiration
+	try {
+		const decoded = jwtDecode(token);
+		const currentTime = Math.floor(Date.now() / 1000);
+		const expiresIn = decoded.exp - currentTime;
 
-    if (expiresIn > 0) {
-      const refreshTime = Math.max((expiresIn - 300) * 1000, 1000); // Refresh 5 mins before expiration
-      //const refreshTime = 60 * 1000; // 1 minute
-
-      clearTimeout(refreshTimeout); // Clear previous timeout
-      refreshTimeout = setTimeout(refreshAccessToken, refreshTime);
-      // console.log(`Token will refresh in ${refreshTime / 1000} seconds`);
-    }
-  } catch (error) {
-    console.error("Error decoding token:", error);
-  }
+		if (expiresIn > 0) {
+			const refreshTime = Math.max((expiresIn - 300) * 1000, 1000); // Refresh 5 mins before expiration
+			setTimeout(refreshAccessToken, refreshTime);
+		}
+	} catch (error) {
+		console.error("Error decoding token:", error);
+	}
 };
 
 // Function to refresh access token
-const refreshAccessToken = async () => {
-  const storedUser = getStoredUser();
-  if (!storedUser?.authorization?.refresh_token) {
-    //console.warn("No refresh token available.");
-    redirectToLogin();
-    return;
-  }
+export const refreshAccessToken = async () => {
+	try {
+		const response = await post(`refreshtoken`, null, {
+			withCredentials: true, 
+		});
 
-  try {
-    const { data } = await axios.post(`${API_URL}refreshtoken`, null, {
-      headers: {
-        Authorization: `Bearer ${storedUser?.authorization?.refresh_token}`,
-      },
-    });
-    updateStoredUser(data);
-    // console.log("Access token refreshed successfully!");
-  } catch (error) {
-    //console.error("Failed to refresh token:", error);
-    localStorage.removeItem("authUser");
-    redirectToLogin();
-  }
+		const state = store.getState();
+		if (!state) {
+			console.error("Store is not ready yet");
+			throw new Error("Store not initialized");
+		}
+		store.dispatch(setAuthData(response.authorization.token, response.user));
+		scheduleTokenRefresh(response.authorization.token);
+	} catch (error) {
+		store.dispatch(clearAuthData());
+		if (window.location.pathname !== "/login") {
+			redirectToLogin();
+		}
+	}
 };
 
 // Attach Authorization Header in Requests
 axiosApi.interceptors.request.use(
-  (config) => {
-    const storedUser = getStoredUser();
-    if (storedUser?.authorization?.token) {
-      config.headers["Authorization"] =
-        `${storedUser.authorization.type} ${storedUser.authorization.token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
+	(config) => {
+		const state = store.getState();
+		const accessToken = state.Auth.accessToken;
+
+		if (accessToken) {
+			config.headers["Authorization"] = `Bearer ${accessToken}`;
+		}
+		return config;
+	},
+	(error) => Promise.reject(error)
 );
 
 // Response Interceptor: Handle 401 Unauthorized
 axiosApi.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+	(response) => response,
+	async (error) => {
+		const originalRequest = error.config;
 
-    const isLoginRequest = originalRequest.url.includes("/login");
+		// Prevent infinite loop by NOT retrying refresh request
+		const isRefreshRequest = originalRequest.url.includes("refreshtoken");
+		if (isRefreshRequest) {
+			// Only clear auth and redirect if the refresh request failed
+			if (error.response?.status === 401) {
+				store.dispatch(clearAuthData());
+				if (window.location.pathname !== "/login") redirectToLogin();
+			}
+			return Promise.reject(error);
+		}
 
-    if (error.response?.status === 401 && isLoginRequest && !originalRequest._retry) {
-      originalRequest._retry = true;
-      return Promise.reject(error);
-    }
+		// Retry logic for other 401s (not refresh and not already retried)
+		if (error.response?.status === 401 && !originalRequest._retry) {
+			originalRequest._retry = true;
+			try {
+				await refreshAccessToken();
+				const state = store.getState();
+				originalRequest.headers[
+					"Authorization"
+				] = `Bearer ${state.Auth.accessToken}`;
 
-    if (error.response?.status === 401 && error?.response.statusText === "Unauthorized" && !originalRequest._retry) {
-      originalRequest._retry = true;
-      try {
-        await refreshAccessToken();
-
-        const storedUser = getStoredUser();
-        originalRequest.headers["Authorization"] =
-          `${storedUser.authorization.type} ${storedUser.authorization.token}`;
-
-        return axiosApi(originalRequest);
-      } catch (refreshError) {
-        localStorage.removeItem("authUser");
-        redirectToLogin();
-        return Promise.reject(refreshError);
-      }
-    }
-    return Promise.reject(error);
-  }
+				return axiosApi(originalRequest);
+			} catch (refreshError) {
+				store.dispatch(clearAuthData());
+				if (window.location.pathname !== "/login") redirectToLogin();
+				return Promise.reject(refreshError);
+			}
+		}
+		return Promise.reject(error);
+	}
 );
 
-// Schedule token refresh when the app starts
-const storedUser = getStoredUser();
-if (storedUser?.authorization?.token) {
-  scheduleTokenRefresh(storedUser.authorization.token);
-}
-
 export async function get(url, config = {}) {
-  return axiosApi.get(url, { ...config }).then((response) => response?.data);
+	return axiosApi.get(url, { ...config }).then((response) => response?.data);
 }
 
 export async function post(url, data, config = {}) {
-  return axiosApi
-    .post(url, { ...data }, { ...config })
-    .then((response) => response?.data);
+	return axiosApi
+		.post(url, { ...data }, { ...config, withCredentials: true })
+		.then((response) => response?.data);
 }
 
 export async function put(url, data, config = {}) {
-  return axiosApi
-    .put(url, { ...data }, { ...config })
-    .then((response) => response?.data);
+	return axiosApi
+		.put(url, { ...data }, { ...config, withCredentials: true })
+		.then((response) => response?.data);
 }
 
 export async function del(url, config = {}) {
-  return axiosApi
-    .delete(url, { ...config })
-    .then((response) => response?.data);
+	return axiosApi
+		.delete(url, { ...config, withCredentials: true })
+		.then((response) => response?.data);
 }

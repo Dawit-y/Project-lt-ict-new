@@ -30,12 +30,12 @@ export const getProgramTree = async (params = {}) => {
 
 // add program_info
 export const addProgramInfo = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROGRAM_INFO, objectName);
+	post(ADD_PROGRAM_INFO, objectName);
 
 // update program_info
 export const updateProgramInfo = (objectName) =>
-  post(`${apiUrl}` + UPDATE_PROGRAM_INFO + `?pri_id=${objectName?.pri_id}`, objectName);
+	post(UPDATE_PROGRAM_INFO + `?pri_id=${objectName?.pri_id}`, objectName);
 
 // delete  program_info
 export const deleteProgramInfo = (objectName) =>
-  post(`${apiUrl}` + DELETE_PROGRAM_INFO + `?pri_id=${objectName}`);
+	post(DELETE_PROGRAM_INFO + `?pri_id=${objectName}`);

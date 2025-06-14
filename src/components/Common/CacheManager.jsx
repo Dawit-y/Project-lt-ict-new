@@ -14,13 +14,13 @@ const CacheManager = () => {
     const fetchCacheFiles = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`${apiUrl}`+'cache-files', {
-                params: {
-                    search: searchTerm,
-                    page: currentPage,
-                    perPage: perPage,
-                },
-            });
+            const response = await axios.get("cache-files", {
+							params: {
+								search: searchTerm,
+								page: currentPage,
+								perPage: perPage,
+							},
+						});
             console.log('API Response:', response.data); // Debugging
 
             // Ensure the response data is in the expected format

@@ -19,12 +19,12 @@ export const getImplementingArea = async (params = {}) => {
 
 // add implementing_area
 export const addImplementingArea = async (objectName) =>
-  post(`${apiUrl}` + ADD_IMPLEMENTING_AREA, objectName);
+	post(ADD_IMPLEMENTING_AREA, objectName);
 
 // update implementing_area
 export const updateImplementingArea = (objectName) =>
-post(`${apiUrl}`+UPDATE_IMPLEMENTING_AREA +`?pia_id=${objectName?.pia_id}`, objectName);
+	post(UPDATE_IMPLEMENTING_AREA + `?pia_id=${objectName?.pia_id}`, objectName);
 
 // delete  implementing_area
 export const deleteImplementingArea = (objectName) =>
-  post(`${apiUrl}`+DELETE_IMPLEMENTING_AREA+`?pia_id=${objectName}`);
+	post(DELETE_IMPLEMENTING_AREA + `?pia_id=${objectName}`);

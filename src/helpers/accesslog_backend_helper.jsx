@@ -19,12 +19,12 @@ export const getAccessLog = async (params = {}) => {
 
 // add access_log
 export const addAccessLog = async (objectName) =>
-  post(`${apiUrl}` + ADD_ACCESS_LOG, objectName);
+	post(ADD_ACCESS_LOG, objectName);
 
 // update access_log
 export const updateAccessLog = (objectName) =>
-post(`${apiUrl}`+UPDATE_ACCESS_LOG +`?acl_id=${objectName?.acl_id}`, objectName);
+	post(UPDATE_ACCESS_LOG + `?acl_id=${objectName?.acl_id}`, objectName);
 
 // delete  access_log
 export const deleteAccessLog = (objectName) =>
-  post(`${apiUrl}`+DELETE_ACCESS_LOG+`?acl_id=${objectName}`);
+	post(DELETE_ACCESS_LOG + `?acl_id=${objectName}`);

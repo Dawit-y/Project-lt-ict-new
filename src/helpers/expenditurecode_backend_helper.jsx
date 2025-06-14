@@ -19,12 +19,12 @@ export const getExpenditureCode = async (params = {}) => {
 
 // add expenditure_code
 export const addExpenditureCode = async (objectName) =>
-  post(`${apiUrl}` + ADD_EXPENDITURE_CODE, objectName);
+	post(ADD_EXPENDITURE_CODE, objectName);
 
 // update expenditure_code
 export const updateExpenditureCode = (objectName) =>
-post(`${apiUrl}`+UPDATE_EXPENDITURE_CODE +`?pec_id=${objectName?.pec_id}`, objectName);
+	post(UPDATE_EXPENDITURE_CODE + `?pec_id=${objectName?.pec_id}`, objectName);
 
 // delete  expenditure_code
 export const deleteExpenditureCode = (objectName) =>
-  post(`${apiUrl}`+DELETE_EXPENDITURE_CODE+`?pec_id=${objectName}`);
+	post(DELETE_EXPENDITURE_CODE + `?pec_id=${objectName}`);

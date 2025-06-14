@@ -19,12 +19,12 @@ export const getBudgetMonth = async (params = {}) => {
 
 // add budget_month
 export const addBudgetMonth = async (objectName) =>
-  post(`${apiUrl}` + ADD_BUDGET_MONTH, objectName);
+	post(ADD_BUDGET_MONTH, objectName);
 
 // update budget_month
 export const updateBudgetMonth = (objectName) =>
-post(`${apiUrl}`+UPDATE_BUDGET_MONTH +`?bdm_id=${objectName?.bdm_id}`, objectName);
+	post(UPDATE_BUDGET_MONTH + `?bdm_id=${objectName?.bdm_id}`, objectName);
 
 // delete  budget_month
 export const deleteBudgetMonth = (objectName) =>
-  post(`${apiUrl}`+DELETE_BUDGET_MONTH+`?bdm_id=${objectName}`);
+	post(DELETE_BUDGET_MONTH + `?bdm_id=${objectName}`);

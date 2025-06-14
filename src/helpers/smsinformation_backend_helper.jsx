@@ -19,12 +19,12 @@ export const getSmsInformation = async (params = {}) => {
 
 // add sms_information
 export const addSmsInformation = async (objectName) =>
-  post(`${apiUrl}` + ADD_SMS_INFORMATION, objectName);
+	post(ADD_SMS_INFORMATION, objectName);
 
 // update sms_information
 export const updateSmsInformation = (objectName) =>
-post(`${apiUrl}`+UPDATE_SMS_INFORMATION +`?smi_id=${objectName?.smi_id}`, objectName);
+	post(UPDATE_SMS_INFORMATION + `?smi_id=${objectName?.smi_id}`, objectName);
 
 // delete  sms_information
 export const deleteSmsInformation = (objectName) =>
-  post(`${apiUrl}`+DELETE_SMS_INFORMATION+`?smi_id=${objectName}`);
+	post(DELETE_SMS_INFORMATION + `?smi_id=${objectName}`);

@@ -19,12 +19,12 @@ export const getRequestFollowup = async (params = {}) => {
 
 // add request_followup
 export const addRequestFollowup = async (objectName) =>
-  post(`${apiUrl}` + ADD_REQUEST_FOLLOWUP, objectName);
+	post(ADD_REQUEST_FOLLOWUP, objectName);
 
 // update request_followup
 export const updateRequestFollowup = (objectName) =>
-post(`${apiUrl}`+UPDATE_REQUEST_FOLLOWUP +`?rqf_id=${objectName?.rqf_id}`, objectName);
+	post(UPDATE_REQUEST_FOLLOWUP + `?rqf_id=${objectName?.rqf_id}`, objectName);
 
 // delete  request_followup
 export const deleteRequestFollowup = (objectName) =>
-  post(`${apiUrl}`+DELETE_REQUEST_FOLLOWUP+`?rqf_id=${objectName}`);
+	post(DELETE_REQUEST_FOLLOWUP + `?rqf_id=${objectName}`);

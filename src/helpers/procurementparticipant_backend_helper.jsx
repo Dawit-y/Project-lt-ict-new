@@ -19,12 +19,15 @@ export const getProcurementParticipant = async (params = {}) => {
 
 // add procurement_participant
 export const addProcurementParticipant = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROCUREMENT_PARTICIPANT, objectName);
+	post(ADD_PROCUREMENT_PARTICIPANT, objectName);
 
 // update procurement_participant
 export const updateProcurementParticipant = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROCUREMENT_PARTICIPANT +`?ppp_id=${objectName?.ppp_id}`, objectName);
+	post(
+		UPDATE_PROCUREMENT_PARTICIPANT + `?ppp_id=${objectName?.ppp_id}`,
+		objectName
+	);
 
 // delete  procurement_participant
 export const deleteProcurementParticipant = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROCUREMENT_PARTICIPANT+`?ppp_id=${objectName}`);
+	post(DELETE_PROCUREMENT_PARTICIPANT + `?ppp_id=${objectName}`);

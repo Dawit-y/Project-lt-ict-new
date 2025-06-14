@@ -19,12 +19,12 @@ export const getRequestCategory = async (params = {}) => {
 
 // add request_category
 export const addRequestCategory = async (objectName) =>
-  post(`${apiUrl}` + ADD_REQUEST_CATEGORY, objectName);
+	post(ADD_REQUEST_CATEGORY, objectName);
 
 // update request_category
 export const updateRequestCategory = (objectName) =>
-post(`${apiUrl}`+UPDATE_REQUEST_CATEGORY +`?rqc_id=${objectName?.rqc_id}`, objectName);
+	post(UPDATE_REQUEST_CATEGORY + `?rqc_id=${objectName?.rqc_id}`, objectName);
 
 // delete  request_category
 export const deleteRequestCategory = (objectName) =>
-  post(`${apiUrl}`+DELETE_REQUEST_CATEGORY+`?rqc_id=${objectName}`);
+	post(DELETE_REQUEST_CATEGORY + `?rqc_id=${objectName}`);

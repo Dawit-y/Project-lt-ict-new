@@ -31,16 +31,12 @@ export const getDepartment = async (params = {}) => {
 };
 
 //add department
-export const addDepartment = (objectName) =>
-  post(`${apiUrl}` + ADD_DEPARTMENT, objectName);
+export const addDepartment = (objectName) => post(ADD_DEPARTMENT, objectName);
 
 // update department
 export const updateDepartment = (objectName) =>
-  post(
-    `${apiUrl}` + UPDATE_DEPARTMENT + `?dep_id=${objectName?.dep_id}`,
-    objectName
-  );
+	post(UPDATE_DEPARTMENT + `?dep_id=${objectName?.dep_id}`, objectName);
 
 // delete delete department
 export const deleteDepartment = (objectName) =>
-  post(`${apiUrl}` + DELETE_DEPARTMENT + `?dep_id=${objectName}`);
+	post(DELETE_DEPARTMENT + `?dep_id=${objectName}`);

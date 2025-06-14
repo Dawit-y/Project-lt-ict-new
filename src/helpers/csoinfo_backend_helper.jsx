@@ -18,13 +18,12 @@ export const getCsoInfo = async (params = {}) => {
 };
 
 // add cso_info
-export const addCsoInfo = async (objectName) =>
-  post(`${apiUrl}` + ADD_CSO_INFO, objectName);
+export const addCsoInfo = async (objectName) => post(ADD_CSO_INFO, objectName);
 
 // update cso_info
 export const updateCsoInfo = (objectName) =>
-post(`${apiUrl}`+UPDATE_CSO_INFO +`?cso_id=${objectName?.cso_id}`, objectName);
+	post(UPDATE_CSO_INFO + `?cso_id=${objectName?.cso_id}`, objectName);
 
 // delete  cso_info
 export const deleteCsoInfo = (objectName) =>
-  post(`${apiUrl}`+DELETE_CSO_INFO+`?cso_id=${objectName}`);
+	post(DELETE_CSO_INFO + `?cso_id=${objectName}`);

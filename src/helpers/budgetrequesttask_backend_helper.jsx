@@ -19,12 +19,15 @@ export const getBudgetRequestTask = async (params = {}) => {
 
 // add budget_request_task
 export const addBudgetRequestTask = async (objectName) =>
-  post(`${apiUrl}` + ADD_BUDGET_REQUEST_TASK, objectName);
+	post(ADD_BUDGET_REQUEST_TASK, objectName);
 
 // update budget_request_task
 export const updateBudgetRequestTask = (objectName) =>
-post(`${apiUrl}`+UPDATE_BUDGET_REQUEST_TASK +`?brt_id=${objectName?.brt_id}`, objectName);
+	post(
+		UPDATE_BUDGET_REQUEST_TASK + `?brt_id=${objectName?.brt_id}`,
+		objectName
+	);
 
 // delete  budget_request_task
 export const deleteBudgetRequestTask = (objectName) =>
-  post(`${apiUrl}`+DELETE_BUDGET_REQUEST_TASK+`?brt_id=${objectName}`);
+	post(DELETE_BUDGET_REQUEST_TASK + `?brt_id=${objectName}`);

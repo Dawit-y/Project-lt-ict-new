@@ -19,12 +19,15 @@ export const getProjectMonitoringEvaluation = async (params = {}) => {
 
 // add project_monitoring_evaluation
 export const addProjectMonitoringEvaluation = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROJECT_MONITORING_EVALUATION, objectName);
+	post(ADD_PROJECT_MONITORING_EVALUATION, objectName);
 
 // update project_monitoring_evaluation
 export const updateProjectMonitoringEvaluation = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROJECT_MONITORING_EVALUATION +`?mne_id=${objectName?.mne_id}`, objectName);
+	post(
+		UPDATE_PROJECT_MONITORING_EVALUATION + `?mne_id=${objectName?.mne_id}`,
+		objectName
+	);
 
 // delete  project_monitoring_evaluation
 export const deleteProjectMonitoringEvaluation = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROJECT_MONITORING_EVALUATION+`?mne_id=${objectName}`);
+	post(DELETE_PROJECT_MONITORING_EVALUATION + `?mne_id=${objectName}`);

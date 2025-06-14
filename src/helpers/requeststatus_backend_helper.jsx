@@ -19,12 +19,12 @@ export const getRequestStatus = async (params = {}) => {
 
 // add request_status
 export const addRequestStatus = async (objectName) =>
-  post(`${apiUrl}` + ADD_REQUEST_STATUS, objectName);
+	post(ADD_REQUEST_STATUS, objectName);
 
 // update request_status
 export const updateRequestStatus = (objectName) =>
-post(`${apiUrl}`+UPDATE_REQUEST_STATUS +`?rqs_id=${objectName?.rqs_id}`, objectName);
+	post(UPDATE_REQUEST_STATUS + `?rqs_id=${objectName?.rqs_id}`, objectName);
 
 // delete  request_status
 export const deleteRequestStatus = (objectName) =>
-  post(`${apiUrl}`+DELETE_REQUEST_STATUS+`?rqs_id=${objectName}`);
+	post(DELETE_REQUEST_STATUS + `?rqs_id=${objectName}`);

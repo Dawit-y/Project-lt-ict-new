@@ -19,12 +19,15 @@ export const getMonitoringEvaluationType = async (params = {}) => {
 
 // add monitoring_evaluation_type
 export const addMonitoringEvaluationType = async (objectName) =>
-  post(`${apiUrl}` + ADD_MONITORING_EVALUATION_TYPE, objectName);
+	post(ADD_MONITORING_EVALUATION_TYPE, objectName);
 
 // update monitoring_evaluation_type
 export const updateMonitoringEvaluationType = (objectName) =>
-post(`${apiUrl}`+UPDATE_MONITORING_EVALUATION_TYPE +`?met_id=${objectName?.met_id}`, objectName);
+	post(
+		UPDATE_MONITORING_EVALUATION_TYPE + `?met_id=${objectName?.met_id}`,
+		objectName
+	);
 
 // delete  monitoring_evaluation_type
 export const deleteMonitoringEvaluationType = (objectName) =>
-  post(`${apiUrl}`+DELETE_MONITORING_EVALUATION_TYPE+`?met_id=${objectName}`);
+	post(DELETE_MONITORING_EVALUATION_TYPE + `?met_id=${objectName}`);

@@ -55,7 +55,7 @@ const AuthMiddleware = ({ children }) => {
     allowedPaths.push("/citizenship_project_detail/:id");
   }
 
-  const isAuthenticated = localStorage.getItem("authUser");
+  const isAuthenticated = storedUser && Object.keys(storedUser).length > 0;
 
   if (isRestoring || isLoading || authLoading) {
     return (

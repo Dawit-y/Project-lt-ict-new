@@ -8,6 +8,7 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import ChangePasswordModal from "../../components/Common/ChangePasswordModal";
 import { Col, Row, UncontrolledAlert } from "reactstrap";
 import { useTranslation } from "react-i18next";
+import { useAuthUser } from "../../hooks/useAuthUser";
 
 const Dashboard = () => {
   document.title = "Project Management System";
@@ -16,7 +17,7 @@ const Dashboard = () => {
   const { t } = useTranslation();
 
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-  const authUser = JSON.parse(localStorage.getItem("authUser"));
+  const { user: authUser } = useAuthUser();
 
   // Fetch data using TanStack Query
   const { data, isLoading, isError, error, refetch } = useQuery({
@@ -31,7 +32,7 @@ const Dashboard = () => {
     <div className="page-content">
       <div className="container-fluid1">
         <div className="row">
-          {authUser?.user?.usr_password_changed === 0 && (
+          {authUser?.usr_password_changed === 0 && (
             <Row className="justify-content-center">
               <Col lg={12}>
                 <UncontrolledAlert

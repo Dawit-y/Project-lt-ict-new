@@ -233,7 +233,7 @@ const AdvancedSearch = ({
 							<Row xxl={12} lg={12}>
 								<Col xxl={10} lg={10}>
 									<div
-										className="d-grid gap-2"
+										className="d-grid gap-2 mb-1"
 										style={{
 											display: "grid",
 											gridTemplateColumns:
@@ -262,7 +262,7 @@ const AdvancedSearch = ({
 													}
 													sm={12}
 													key={key}
-													className="mb-1"
+													className=""
 												>
 													<div className="">
 														<InputGroup style={inputStyles} className="rounded">
@@ -323,7 +323,7 @@ const AdvancedSearch = ({
 													md={6}
 													sm={12}
 													key={key}
-													className="mb-1"
+													className=""
 												>
 													<div className="">
 														<Input
@@ -350,7 +350,7 @@ const AdvancedSearch = ({
 													md={6}
 													sm={12}
 													key={key}
-													className="mb-1"
+													className=""
 												>
 													<div className="">
 														<Input

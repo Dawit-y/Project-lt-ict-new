@@ -19,12 +19,12 @@ export const getBudgetSource = async (params = {}) => {
 
 // add budget_source
 export const addBudgetSource = async (objectName) =>
-  post(`${apiUrl}` + ADD_BUDGET_SOURCE, objectName);
+	post(ADD_BUDGET_SOURCE, objectName);
 
 // update budget_source
 export const updateBudgetSource = (objectName) =>
-post(`${apiUrl}`+UPDATE_BUDGET_SOURCE +`?pbs_id=${objectName?.pbs_id}`, objectName);
+	post(UPDATE_BUDGET_SOURCE + `?pbs_id=${objectName?.pbs_id}`, objectName);
 
 // delete  budget_source
 export const deleteBudgetSource = (objectName) =>
-  post(`${apiUrl}`+DELETE_BUDGET_SOURCE+`?pbs_id=${objectName}`);
+	post(DELETE_BUDGET_SOURCE + `?pbs_id=${objectName}`);

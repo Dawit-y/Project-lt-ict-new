@@ -19,12 +19,12 @@ export const getPaymentCategory = async (params = {}) => {
 
 // add payment_category
 export const addPaymentCategory = async (objectName) =>
-  post(`${apiUrl}` + ADD_PAYMENT_CATEGORY, objectName);
+	post(ADD_PAYMENT_CATEGORY, objectName);
 
 // update payment_category
 export const updatePaymentCategory = (objectName) =>
-post(`${apiUrl}`+UPDATE_PAYMENT_CATEGORY +`?pyc_id=${objectName?.pyc_id}`, objectName);
+	post(UPDATE_PAYMENT_CATEGORY + `?pyc_id=${objectName?.pyc_id}`, objectName);
 
 // delete  payment_category
 export const deletePaymentCategory = (objectName) =>
-  post(`${apiUrl}`+DELETE_PAYMENT_CATEGORY+`?pyc_id=${objectName}`);
+	post(DELETE_PAYMENT_CATEGORY + `?pyc_id=${objectName}`);

@@ -19,12 +19,12 @@ export const getProjectPayment = async (params = {}) => {
 
 // add project_payment
 export const addProjectPayment = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROJECT_PAYMENT, objectName);
+	post(ADD_PROJECT_PAYMENT, objectName);
 
 // update project_payment
 export const updateProjectPayment = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROJECT_PAYMENT +`?prp_id=${objectName?.prp_id}`, objectName);
+	post(UPDATE_PROJECT_PAYMENT + `?prp_id=${objectName?.prp_id}`, objectName);
 
 // delete  project_payment
 export const deleteProjectPayment = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROJECT_PAYMENT+`?prp_id=${objectName}`);
+	post(DELETE_PROJECT_PAYMENT + `?prp_id=${objectName}`);

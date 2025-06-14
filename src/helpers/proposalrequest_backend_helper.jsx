@@ -19,12 +19,12 @@ export const getProposalRequest = async (params = {}) => {
 
 // add proposal_request
 export const addProposalRequest = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROPOSAL_REQUEST, objectName);
+	post(ADD_PROPOSAL_REQUEST, objectName);
 
 // update proposal_request
 export const updateProposalRequest = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROPOSAL_REQUEST +`?prr_id=${objectName?.prr_id}`, objectName);
+	post(UPDATE_PROPOSAL_REQUEST + `?prr_id=${objectName?.prr_id}`, objectName);
 
 // delete  proposal_request
 export const deleteProposalRequest = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROPOSAL_REQUEST+`?prr_id=${objectName}`);
+	post(DELETE_PROPOSAL_REQUEST + `?prr_id=${objectName}`);

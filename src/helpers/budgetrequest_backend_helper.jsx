@@ -23,47 +23,46 @@ export const getBudgetRequest = async (params) => {
 };
 
 // add project_budget_request
-export const addBudgetRequest = async (data) =>
-  post(`${apiUrl}` + ADD_BUDGET_REQUEST, data);
+export const addBudgetRequest = async (data) => post(ADD_BUDGET_REQUEST, data);
 
 // update project_budget_request
 export const updateBudgetRequest = (data) =>
-  post(`${apiUrl}` + UPDATE_BUDGET_REQUEST + `?bdr_id=${data?.bdr_id}`, data);
+	post(UPDATE_BUDGET_REQUEST + `?bdr_id=${data?.bdr_id}`, data);
 
 // delete  project_budget_request
 export const deleteBudgetRequest = (data) =>
-  post(`${apiUrl}` + DELETE_BUDGET_REQUEST + `?bdr_id=${data}`);
+	post(DELETE_BUDGET_REQUEST + `?bdr_id=${data}`);
 
 export const getBudgetRequestList = async (params) => {
-  const queryString = new URLSearchParams(params).toString();
-  const url = queryString
-    ? `${GET_BUDGET_REQUEST}?${queryString}`
-    : GET_BUDGET_REQUEST;
-  try {
-    const response = await post(url);
-    return response;
-  } catch (error) {
-    throw error
-  }
+	const queryString = new URLSearchParams(params).toString();
+	const url = queryString
+		? `${GET_BUDGET_REQUEST}?${queryString}`
+		: GET_BUDGET_REQUEST;
+	try {
+		const response = await post(url);
+		return response;
+	} catch (error) {
+		throw error;
+	}
 };
 
 //START APPROVAL
 export const getBudgetRequestforApproval = async (params) => {
-  const queryString = new URLSearchParams(params).toString();
-  const url = queryString
-    ? `${GET_BUDGET_REQUEST_APPROVAL}?${queryString}`
-    : GET_BUDGET_REQUEST_APPROVAL;
-  try {
-    const response = await post(url);
-    return response;
-  } catch (error) {
-    console.log(error);
-  }
+	const queryString = new URLSearchParams(params).toString();
+	const url = queryString
+		? `${GET_BUDGET_REQUEST_APPROVAL}?${queryString}`
+		: GET_BUDGET_REQUEST_APPROVAL;
+	try {
+		const response = await post(url);
+		return response;
+	} catch (error) {
+		console.log(error);
+	}
 };
 
 // update project_budget_request
 export const updateBudgetRequestApproval = (data) =>
-  post(`${apiUrl}` + UPDATE_BUDGET_REQUEST_APPROVAL + `?bdr_id=${data?.bdr_id}`, data);
+	post(UPDATE_BUDGET_REQUEST_APPROVAL + `?bdr_id=${data?.bdr_id}`, data);
 
 export const bulkUpdateBudgetRequestApproval = async (data) => {
   const queryString = `request_status=${data.request_status}&request_list=${data.request_list.join(",")}`;
