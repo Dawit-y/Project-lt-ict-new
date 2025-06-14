@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, lazy } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TreeForLists from "../../components/Common/TreeForLists";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
@@ -6,9 +6,16 @@ import { useSearchProjectMonitoringEvaluations } from "../../queries/projectmoni
 import { useTranslation } from "react-i18next";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import AgGridContainer from "../../components/Common/AgGridContainer";
-import MonitoringEvaluationAnalysis from "./MonitoringEvaluationAnalysis";
+const AgGridContainer = lazy(() =>
+  import("../../components/Common/AgGridContainer")
+);
+import { FaChartLine } from "react-icons/fa6";
+import { Button } from "reactstrap";
 import { useFetchMonitoringEvaluationTypes } from "../../queries/monitoringevaluationtype_query";
+const SingleAnalysisModal = lazy(() =>
+  import("./Analysis/SingleAnalysisModal")
+);
+const TotalAnalysisModal = lazy(() => import("./Analysis/TotalAnalysisModal"));
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -43,11 +50,13 @@ const ProjectMonitoringEvaluationList = () => {
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const { data, isLoading, error, isError, refetch } = useState("");
   const [selectedEvaluation, setSelectedEvaluation] = useState(null);
+  const [singleAnalysisModal, setSingleAnalysisModal] = useState(false);
+  const [totalAnalysisModal, setTotalAnalysisModal] = useState(false);
 
-  const { data: meTypes } = useFetchMonitoringEvaluationTypes();
+  const [selectedRequest, setSelectedRequest] = useState(null);
 
-  const handleViewDetails = (rowData) => {
-    setSelectedEvaluation(rowData);
+  const handleSelectedData = (rowData) => {
+    setSelectedRequest(rowData);
   };
 
   const handleSearchResults = ({ data, error }) => {
@@ -80,6 +89,11 @@ const ProjectMonitoringEvaluationList = () => {
       setPrjLocationWoredaId(node.id);
     }
   };
+
+  const toggleSingleAnalysisModal = () =>
+    setSingleAnalysisModal(!singleAnalysisModal);
+  const toggleTotalAnalysisModal = () =>
+    setTotalAnalysisModal(!totalAnalysisModal);
 
   const columnDefs = [
     {
@@ -202,14 +216,23 @@ const ProjectMonitoringEvaluationList = () => {
     {
       headerName: t("actions"),
       field: "actions",
-      cellRenderer: (params) => (
-        <button
-          className="btn btn-sm btn-primary"
-          onClick={() => handleViewDetails(params.data)}
-        >
-          <i className="mdi mdi-chart-bar me-1"></i> {t("analysis")}
-        </button>
-      ),
+      cellRenderer: (params) => {
+        const data = params.data;
+
+        return (
+          <Button
+            id={`view-${data.mne_id}`}
+            color="light"
+            size="sm"
+            onClick={() => {
+              toggleSingleAnalysisModal();
+              handleSelectedData(data);
+            }}
+          >
+            <FaChartLine />
+          </Button>
+        );
+      },
       width: 120,
       sortable: false,
       filter: false,
@@ -250,43 +273,18 @@ const ProjectMonitoringEvaluationList = () => {
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
               >
-                <AgGridContainer
-                  rowData={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
+                <TableWrapper
+                  data={showSearchResult ? searchResults : data}
                   columnDefs={columnDefs}
-                  isLoading={isSearchLoading}
-                  isPagination={true}
-                  rowHeight={35}
-                  paginationPageSize={10}
-                  isGlobalFilter={true}
-                  isExcelExport={true}
-                  isPdfExport={true}
-                  isPrint={true}
-                  tableName="Project Monitoring and Evaluation"
-                  includeKey={[
-                    "prj_name",
-                    "prj_code",
-                    "mne_physical",
-                    "mne_financial",
-                    "mne_start_date",
-                    "mne_end_date",
-                  ]}
-                  excludeKey={["is_editable", "is_deletable"]}
+                  showSearchResult={showSearchResult}
+                  selectedRequest={selectedRequest}
+                  singleAnalysisModal={singleAnalysisModal}
+                  totalAnalysisModal={totalAnalysisModal}
+                  toggleSingleAnalysisModal={toggleSingleAnalysisModal}
+                  toggleTotalAnalysisModal={toggleTotalAnalysisModal}
+                  handleSelectedData={handleSelectedData}
                 />
               </AdvancedSearch>
-              {showSearchResult && (
-                <MonitoringEvaluationAnalysis
-                  selectedData={selectedEvaluation}
-                  allData={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
-                  evaluationTypes={transactionTypes}
-                  visitTypes={visitTypes}
-                  periodTypes={meTypes?.data || []}
-                  onBackToOverview={() => setSelectedEvaluation(null)}
-                />
-              )}
             </div>
           </div>
         </div>
@@ -296,3 +294,75 @@ const ProjectMonitoringEvaluationList = () => {
 };
 
 export default ProjectMonitoringEvaluationList;
+
+const TableWrapper = ({
+  data,
+  isLoading,
+  columnDefs,
+  showSearchResult,
+  selectedRequest,
+  singleAnalysisModal,
+  totalAnalysisModal,
+  toggleSingleAnalysisModal,
+  toggleTotalAnalysisModal,
+}) => {
+  const { data: meTypes } = useFetchMonitoringEvaluationTypes();
+
+  let transformedData = [];
+  if (data) {
+    transformedData = Array.isArray(data.data) ? data.data : [];
+  }
+
+  return (
+    <>
+      <SingleAnalysisModal
+        isOpen={singleAnalysisModal}
+        toggle={toggleSingleAnalysisModal}
+        selectedRequest={selectedRequest}
+        data={transformedData}
+        evaluationTypes={transactionTypes}
+        visitTypes={visitTypes}
+        periodTypes={meTypes?.data || []}
+      />
+
+      <TotalAnalysisModal
+        isOpen={totalAnalysisModal}
+        toggle={toggleTotalAnalysisModal}
+        data={transformedData}
+        evaluationTypes={transactionTypes}
+        visitTypes={visitTypes}
+        periodTypes={meTypes?.data || []}
+      />
+      <div className="d-flex flex-column" style={{ gap: "20px" }}>
+        <AgGridContainer
+          rowData={showSearchResult ? transformedData : []}
+          columnDefs={columnDefs}
+          isLoading={isLoading}
+          isPagination={true}
+          paginationPageSize={10}
+          isGlobalFilter={true}
+          isAddButton={false}
+          rowHeight={36}
+          addButtonText="Add"
+          isExcelExport={true}
+          isPdfExport={true}
+          isPrint={true}
+          tableName="Project Monitoring and Evaluation"
+          includeKey={[
+            "prj_name",
+            "prj_code",
+            "mne_physical",
+            "mne_financial",
+            "mne_start_date",
+            "mne_end_date",
+          ]}
+          excludeKey={["is_editable", "is_deletable"]}
+          // todo: refactor this to use a more generic button component
+          buttonChildren={<FaChartLine />}
+          onButtonClick={toggleTotalAnalysisModal}
+          disabled={!showSearchResult || isLoading}
+        />
+      </div>
+    </>
+  );
+};

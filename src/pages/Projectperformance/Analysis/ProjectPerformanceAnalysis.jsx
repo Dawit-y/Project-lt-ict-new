@@ -17,7 +17,10 @@ import {
 } from "reactstrap";
 import classnames from "classnames";
 import ReactApexChart from "react-apexcharts";
-import { formatNumber, calculatePercentage } from "../../utils/commonMethods";
+import {
+  formatNumber,
+  calculatePercentage,
+} from "../../../utils/commonMethods";
 import { useTranslation } from "react-i18next";
 
 const ProjectPerformanceAnalysis = ({

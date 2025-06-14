@@ -7,8 +7,10 @@ import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
 import { useTranslation } from "react-i18next";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import { Card, CardBody, Button } from "reactstrap";
+import { Button } from "reactstrap";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { FaChartLine } from "react-icons/fa6";
+
 import {
   createMultiSelectOptions,
   createSelectOptions,
@@ -16,7 +18,12 @@ import {
 const AgGridContainer = lazy(() =>
   import("../../components/Common/AgGridContainer")
 );
-import ProjectPerformanceAnalysis from "./ProjectPerformanceAnalysis";
+const SinglePerformanceAnalysisModal = lazy(() =>
+  import("./Analysis/SinglePerformanceAnalysisModal")
+);
+const TotalPerformanceAnalysisModal = lazy(() =>
+  import("./Analysis/TotalPerformanceAnalysisModal")
+);
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -52,6 +59,10 @@ const ProjectPerformanceList = (props) => {
   const { data: budgetMonthData } = useFetchBudgetMonths();
   const { data: projectStatusData } = useFetchProjectStatuss();
 
+  const [singleAnalysisModal, setSingleAnalysisModal] = useState(false);
+  const [totalAnalysisModal, setTotalAnalysisModal] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [chartType, setChartType] = useState("bar"); // Track chart type globally
 
@@ -59,6 +70,15 @@ const ProjectPerformanceList = (props) => {
   const handleViewDetails = (rowData) => {
     setSelectedRowData(rowData);
   };
+
+  const handleSelectedData = (rowData) => {
+    setSelectedRequest(rowData);
+  };
+
+  const toggleSingleAnalysisModal = () =>
+    setSingleAnalysisModal(!singleAnalysisModal);
+  const toggleTotalAnalysisModal = () =>
+    setTotalAnalysisModal(!totalAnalysisModal);
 
   const {
     prs_status_name_en: projectStatusOptionsEn,
@@ -308,14 +328,33 @@ const ProjectPerformanceList = (props) => {
       {
         headerName: t("analysis"),
         field: "actions",
-        cellRenderer: (params) => (
-          <button
-            className="btn btn-sm btn-primary"
-            onClick={() => handleViewDetails(params.data)}
-          >
-            {t("analysis")}
-          </button>
-        ),
+        // cellRenderer: (params) => (
+        //   <button
+        //     className="btn btn-sm btn-primary"
+        //     onClick={() => handleViewDetails(params.data)}
+        //   >
+        //     {t("analysis")}
+        //   </button>
+        // ),
+        cellRenderer: (params) => {
+          const data = params.data;
+
+          return (
+            <div className="d-flex gap-1">
+              <Button
+                id={`view-${data.prp_id}`}
+                color="light"
+                size="sm"
+                onClick={() => {
+                  toggleSingleAnalysisModal();
+                  setSelectedRequest(data);
+                }}
+              >
+                <FaChartLine />
+              </Button>
+            </div>
+          );
+        },
         width: 120,
         sortable: false,
         filter: false,
@@ -376,35 +415,21 @@ const ProjectPerformanceList = (props) => {
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
               >
-                <AgGridContainer
-                  rowData={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
+                <TableWrapper
+                  // data={showSearchResult ? searchResults : data}
                   columnDefs={columnDefs}
-                  isLoading={isSearchLoading}
-                  isPagination={true}
-                  rowHeight={35}
-                  paginationPageSize={10}
-                  isGlobalFilter={true}
-                  isExcelExport={true}
-                  isPdfExport={true}
-                  isPrint={true}
-                  tableName="Project Performance"
-                  includeKey={[
-                    "prj_name",
-                    "prp_record_date_gc",
-                    "prp_total_budget_used",
-                    "prp_physical_performance",
-                    "status_name",
-                    "year_name",
-                    "month_name",
-                  ]}
-                  excludeKey={["is_editable", "is_deletable"]}
+                  showSearchResult={showSearchResult}
+                  selectedRequest={selectedRequest}
+                  singleAnalysisModal={singleAnalysisModal}
+                  totalAnalysisModal={totalAnalysisModal}
+                  toggleSingleAnalysisModal={toggleSingleAnalysisModal}
+                  toggleTotalAnalysisModal={toggleTotalAnalysisModal}
+                  // handleSelectedData={handleSelectedData}
                 />
               </AdvancedSearch>
               {/* Performance Analysis Section */}
 
-              {selectedRowData ? (
+              {/* {selectedRowData ? (
                 <Card>
                   <CardBody>
                     <div className="d-flex justify-content-between align-items-center mb-3">
@@ -443,7 +468,7 @@ const ProjectPerformanceList = (props) => {
                     onChartTypeChange={setChartType}
                   />
                 )
-              )}
+              )} */}
             </div>
           </div>
         </div>
@@ -453,3 +478,65 @@ const ProjectPerformanceList = (props) => {
 };
 
 export default ProjectPerformanceList;
+
+const TableWrapper = ({
+  data,
+  isLoading,
+  columnDefs,
+  showSearchResult,
+  selectedRequest,
+  singleAnalysisModal,
+  totalAnalysisModal,
+  toggleSingleAnalysisModal,
+  toggleTotalAnalysisModal,
+}) => {
+  let transformedData = [];
+  if (data) {
+    transformedData = Array.isArray(data.data) ? data.data : [];
+  }
+
+  return (
+    <>
+      <SinglePerformanceAnalysisModal
+        isOpen={singleAnalysisModal}
+        toggle={toggleSingleAnalysisModal}
+        selectedRequest={selectedRequest}
+        data={transformedData}
+      />
+
+      <TotalPerformanceAnalysisModal
+        isOpen={totalAnalysisModal}
+        toggle={toggleTotalAnalysisModal}
+        data={transformedData}
+      />
+      <div className="d-flex flex-column" style={{ gap: "20px" }}>
+        <AgGridContainer
+          rowData={showSearchResult ? transformedData : []}
+          columnDefs={columnDefs}
+          isLoading={isLoading}
+          isPagination={true}
+          rowHeight={35}
+          paginationPageSize={10}
+          isGlobalFilter={true}
+          isExcelExport={true}
+          isPdfExport={true}
+          isPrint={true}
+          tableName="Project Performance"
+          includeKey={[
+            "prj_name",
+            "prp_record_date_gc",
+            "prp_total_budget_used",
+            "prp_physical_performance",
+            "status_name",
+            "year_name",
+            "month_name",
+          ]}
+          excludeKey={["is_editable", "is_deletable"]}
+          buttonChildren={<FaChartLine />}
+          onButtonClick={toggleTotalAnalysisModal}
+          disabled={!showSearchResult || isLoading}
+        />
+      </div>
+    </>
+  );
+};
