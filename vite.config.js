@@ -1,33 +1,30 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
-const API_URL = "http://196.188.182.83:1213";
+export default defineConfig(({ mode }) => {
+	const env = loadEnv(mode, process.cwd());
 
-// https://vitejs.dev/config/
-export default defineConfig({
-	plugins: [react()],
-	server: {
-		proxy: {
-			"/api": {
-				target: API_URL,
-				changeOrigin: true,
-				secure: false,
-				configure: (proxy) => {
-					proxy.on("proxyReq", (proxyReq) => {
-						proxyReq.setHeader("origin", API_URL);
-					});
+	return {
+		plugins: [react()],
+		server: {
+			proxy: {
+				"/api": {
+					target: env.VITE_BASE_API_FILE,
+					changeOrigin: true,
+					secure: false,
+					configure: (proxy) => {
+						proxy.on("proxyReq", (proxyReq) => {
+							proxyReq.setHeader("origin", env.VITE_BASE_API_FILE);
+						});
+					},
 				},
 			},
 		},
-	},
-	esbuild: {
-		jsxFactory: "h",
-		jsxFragment: "Fragment",
-	},
-	resolve: {
-		alias: {
-			"@": path.resolve(__dirname, "./src"),
+		resolve: {
+			alias: {
+				"@": path.resolve(__dirname, "./src"),
+			},
 		},
-	},
+	};
 });

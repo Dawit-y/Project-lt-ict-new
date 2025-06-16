@@ -3,8 +3,9 @@ import { jwtDecode } from "jwt-decode";
 import { store } from "../store";
 import { setAuthData, clearAuthData } from "../store/auth/actions";
 
-// const API_URL = import.meta.env.VITE_BASE_API_URL;
-const API_URL = "/api";
+const NODE_ENV = import.meta.env.VITE_NODE_ENV;
+const API_URL =
+	NODE_ENV === "development" ? "/api" : import.meta.env.VITE_BASE_API_URL;
 const axiosApi = axios.create({ baseURL: API_URL, withCredentials: true });
 
 const redirectToLogin = () => {
