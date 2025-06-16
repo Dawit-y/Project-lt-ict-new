@@ -16,12 +16,20 @@ import {
 	Input,
 	Badge,
 } from "reactstrap";
+import {
+	FaGavel,
+	FaChartLine,
+	FaPaperclip,
+	FaFilePen,
+	FaEye,
+	FaGear,
+} from "react-icons/fa6";
 import AgGridContainer from "../../components/Common/AgGridContainer";
 import { useSearchBudgetRequests } from "../../queries/budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import TreeForLists from "../../components/Common/TreeForLists";
+import SearchTableContainer from "../../components/Common/SearchTableContainer";
+import TreeForLists from "../../components/Common/TreeForLists2";
 import AttachFileModal from "../../components/Common/AttachFileModal";
 import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal";
 import { PAGE_ID } from "../../constants/constantFile";
@@ -49,6 +57,7 @@ const BudgetRequestListModel = () => {
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
 	const [searcherror, setSearchError] = useState(null);
 	const [showSearchResult, setShowSearchResult] = useState(false);
+	const [isCollapsed, setIsCollapsed] = useState(false);
 
 	const { data, isLoading, error, isError, refetch } = useState(null);
 	const { data: budgetYearData } = useFetchBudgetYears();
@@ -186,6 +195,7 @@ const BudgetRequestListModel = () => {
 				field: "bdr_request_category_id",
 				sortable: true,
 				filter: true,
+				width: 150,
 				cellRenderer: (params) => {
 					if (!params.value || !bgCategoryMap) return "-";
 					const cat = bgCategoryMap[params.value];
@@ -197,6 +207,7 @@ const BudgetRequestListModel = () => {
 				field: "bdr_request_type",
 				sortable: true,
 				filter: true,
+				width: 150,
 				cellRenderer: (params) => {
 					if (!params.data?.bdr_request_type || !projectStatusMap) return "-";
 					return projectStatusMap[params.data.bdr_request_type] || "-";
@@ -207,7 +218,8 @@ const BudgetRequestListModel = () => {
 				field: "prj_name",
 				sortable: true,
 				filter: true,
-				// flex: 2,
+				flex: 1,
+				minWidth: 200,
 				cellRenderer: (params) => {
 					return truncateText(params.data.prj_name, 30) || "-";
 				},
@@ -217,7 +229,7 @@ const BudgetRequestListModel = () => {
 				field: "prj_code",
 				sortable: true,
 				filter: true,
-				// flex: 1.5,
+				width: 150,
 				cellRenderer: (params) => {
 					return truncateText(params.data.prj_code, 30) || "-";
 				},
@@ -227,7 +239,7 @@ const BudgetRequestListModel = () => {
 				field: "bdr_requested_amount",
 				sortable: true,
 				filter: true,
-				// flex: 1.2,
+				width: 200,
 				valueFormatter: (params) => {
 					if (params.value != null) {
 						return new Intl.NumberFormat("en-US", {
@@ -243,7 +255,7 @@ const BudgetRequestListModel = () => {
 				field: "bdr_released_amount",
 				sortable: true,
 				filter: true,
-				// flex: 1.2,
+				width: 200,
 				valueFormatter: (params) => {
 					if (params.value != null) {
 						return new Intl.NumberFormat("en-US", {
@@ -258,7 +270,7 @@ const BudgetRequestListModel = () => {
 				headerName: t("bdr_requested_date_gc"),
 				field: "bdr_requested_date_gc",
 				sortable: true,
-				// flex: 1,
+				width: 200,
 				filter: "agDateColumnFilter",
 				cellRenderer: (params) => {
 					return truncateText(params.data.bdr_requested_date_gc, 30) || "-";
@@ -268,9 +280,9 @@ const BudgetRequestListModel = () => {
 				headerName: t("psc_sector_id"),
 				field: "sector_name",
 				sortable: true,
-				// flex: 1,
+				flex: 1,
 				filter: "agDateColumnFilter",
-				width: 300,
+				minWidth: 300,
 				cellRenderer: (params) => {
 					return truncateText(params.data.sector_name, 60) || "-";
 				},
@@ -292,100 +304,78 @@ const BudgetRequestListModel = () => {
 				},
 			},
 			{
-				headerName: t("view_detail"),
-				field: "view_detail",
-				// flex: 1,
-				width: 120,
+				headerName: t("actions"),
+				field: "actions",
+				width: 170,
 				cellRenderer: (params) => {
+					const data = params.data;
+
 					return (
-						<Button
-							type="button"
-							color="primary"
-							className="btn-sm"
-							onClick={() => {
-								toggleViewModal();
-								setTransaction(params.data);
-							}}
-						>
-							{t("view_detail")}
-						</Button>
-					);
-				},
-			},
-			{
-				headerName: t("attach_files"),
-				field: "attach_files",
-				width: 80,
-				cellRenderer: (params) => {
-					return (
-						<Button
-							outline
-							type="button"
-							color="success"
-							className="btn-sm"
-							onClick={() => {
-								toggleFileModal();
-								setTransaction(params.data);
-							}}
-						>
-							{t("attach_files")}
-						</Button>
-					);
-				},
-			},
-			{
-				headerName: t("Message"),
-				field: "Message",
-				width: 100,
-				cellRenderer: (params) => {
-					return (
-						<Button
-							outline
-							type="button"
-							color="primary"
-							className="btn-sm"
-							onClick={() => {
-								toggleConvModal();
-								setTransaction(params.data);
-							}}
-						>
-							{t("Message")}
-						</Button>
+						<div className="d-flex gap-1">
+							<Button
+								id={`takeAction-${data.bdr_id}`}
+								color="light"
+								size="sm"
+								onClick={() => {
+									toggleViewModal();
+									setTransaction(data);
+								}}
+							>
+								<FaEye />
+							</Button>
+							<UncontrolledTooltip target={`takeAction-${data.bdr_id}`}>
+								{t("view_detail")}
+							</UncontrolledTooltip>
+							<Button
+								id={`view-${data.bdr_id}`}
+								color="light"
+								size="sm"
+								onClick={() => {
+									handleClick(data);
+								}}
+							>
+								<FaGear />
+							</Button>
+							<UncontrolledTooltip target={`view-${data.bdr_id}`}>
+								{t("Add Detail")}
+							</UncontrolledTooltip>
+
+							<Button
+								id={`attachFiles-${data.bdr_id}`}
+								color="light"
+								size="sm"
+								onClick={() => {
+									toggleFileModal();
+									setTransaction(data);
+								}}
+							>
+								<FaPaperclip />
+							</Button>
+							<UncontrolledTooltip target={`attachFiles-${data.bdr_id}`}>
+								{t("attach_files")}
+							</UncontrolledTooltip>
+
+							<Button
+								id={`notes-${data.bdr_id}`}
+								color="light"
+								size="sm"
+								onClick={() => {
+									toggleConvModal();
+									setTransaction(data);
+								}}
+							>
+								<FaFilePen />
+							</Button>
+							<UncontrolledTooltip target={`notes-${data.bdr_id}`}>
+								{t("Notes")}
+							</UncontrolledTooltip>
+						</div>
 					);
 				},
 			},
 		];
-		if (1 == 1) {
-			baseColumnDefs.push({
-				headerName: t("view_detail"),
-				field: "view_detail",
-				width: 120,
-				cellRenderer: (params) => (
-					<div className="d-flex gap-3">
-						{params.data.is_editable ? (
-							<Link
-								to="#"
-								className="text-secondary"
-								onClick={() => handleClick(params.data)}
-							>
-								<i className="mdi mdi-cog font-size-18 ms-2" id="viewtooltip" />
-								<UncontrolledTooltip placement="top" target="viewtooltip">
-									View
-								</UncontrolledTooltip>
-							</Link>
-						) : (
-							""
-						)}
-					</div>
-				),
-			});
-		}
 		return baseColumnDefs;
 	}, [bgCategoryMap, projectStatusMap]);
-
-	if (isError) {
-		return <FetchErrorHandler error={error} refetch={refetch} />;
-	}
 
 	return (
 		<React.Fragment>
@@ -411,14 +401,14 @@ const BudgetRequestListModel = () => {
 				<div className="">
 					<Breadcrumbs />
 					<div className="w-100 d-flex gap-2">
-						<div style={{ flex: "0 0 25%", minWidth: "250px", height: "100%" }}>
-							<TreeForLists
-								onNodeSelect={handleNodeSelect}
-								setIsAddressLoading={setIsAddressLoading}
-								setInclude={setInclude}
-							/>
-						</div>
-						<div style={{ flex: "0 0 75%", minWidth: "600px" }}>
+						<TreeForLists
+							onNodeSelect={handleNodeSelect}
+							setIsAddressLoading={setIsAddressLoading}
+							setInclude={setInclude}
+							isCollapsed={isCollapsed}
+							setIsCollapsed={setIsCollapsed}
+						/>
+						<SearchTableContainer isCollapsed={isCollapsed}>
 							<AdvancedSearch
 								searchHook={useSearchBudgetRequests}
 								dateSearchKeys={["budget_request_date"]}
@@ -463,7 +453,7 @@ const BudgetRequestListModel = () => {
 									excludeKey={["is_editable", "is_deletable"]}
 								/>
 							</AdvancedSearch>
-						</div>
+						</SearchTableContainer>
 					</div>
 				</div>
 			</div>
