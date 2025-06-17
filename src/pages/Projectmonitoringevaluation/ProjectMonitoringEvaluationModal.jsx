@@ -19,8 +19,8 @@ import {
   NavLink,
 } from "reactstrap";
 import {
-	FiCalendar,
-	FiAward,
+	FaCalendar,
+	FaAward,
 	FaExclamationTriangle,
 	FaLayerGroup,
 } from "react-icons/fa";
@@ -113,7 +113,7 @@ const ProjectMonitoringEvaluationModal = ({ isOpen, toggle, transaction }) => {
 						</h4>
 						<div className="d-flex align-items-center">
 							<small className="text-muted d-flex align-items-center">
-								<FiCalendar className="me-1" size={14} />
+								<FaCalendar className="me-1" size={14} />
 								{formatDate(transaction?.mne_record_date)}
 							</small>
 						</div>
@@ -142,7 +142,7 @@ const ProjectMonitoringEvaluationModal = ({ isOpen, toggle, transaction }) => {
 											className={classnames({ active: activeTab === "zone" })}
 											onClick={() => setActiveTab("zone")}
 										>
-											<FiLayers className="me-1" />
+											<FaLayerGroup className="me-1" />
 											{t("zone_level")}
 										</NavLink>
 									</NavItem>
@@ -151,7 +151,7 @@ const ProjectMonitoringEvaluationModal = ({ isOpen, toggle, transaction }) => {
 											className={classnames({ active: activeTab === "region" })}
 											onClick={() => setActiveTab("region")}
 										>
-											<FiLayers className="me-1" />
+											<FaLayerGroup className="me-1" />
 											{t("region_level")}
 										</NavLink>
 									</NavItem>
@@ -335,7 +335,7 @@ const ProjectMonitoringEvaluationModal = ({ isOpen, toggle, transaction }) => {
 									className="d-flex align-items-center mb-3 fw-bold"
 									style={{ color: "#212529" }}
 								>
-									<FiAward className="me-2" />
+									<FaAward className="me-2" />
 									{t("recommendations")}
 								</h5>
 
