@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import { Button } from "reactstrap";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import { FaChartLine } from "react-icons/fa6";
+import { FaChartLine } from "react-icons/fa";
 
 import {
   createMultiSelectOptions,

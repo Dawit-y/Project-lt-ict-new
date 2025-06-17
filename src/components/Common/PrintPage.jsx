@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { UncontrolledTooltip, DropdownItem } from "reactstrap";
-import { FaPrint } from "react-icons/fa6";
+import { FaPrint } from "react-icons/fa";
 
 const PrintPage = ({ tableData, tablename, excludeKey = [], gridRef, columnDefs, columnsToIgnore = 0, dropdownItem = false }) => {
   const { t } = useTranslation();

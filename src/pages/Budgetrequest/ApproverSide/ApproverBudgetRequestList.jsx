@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import { useAuthUser } from "../../../hooks/useAuthUser";
 import { Button, Badge, UncontrolledTooltip } from "reactstrap";
 import Spinners from "../../../components/Common/Spinner";
-import { FaGavel, FaChartLine, FaPaperclip, FaFilePen} from "react-icons/fa6";
+import { FaGavel, FaChartLine, FaPaperclip, FaPenSquare } from "react-icons/fa";
 const Breadcrumbs = lazy(() => import("../../../components/Common/Breadcrumb"));
 const ApproverBudgetRequestListModal = lazy(() =>
 	import("./ApproverBudgetRequestModal")
@@ -57,6 +57,7 @@ import {
 	createSelectOptions,
 	createMultiSelectOptions,
 } from "../../../utils/commonMethods";
+import SearchTableContainer from "../../../components/Common/SearchTableContainer";
 
 const ApproverBudgetRequestList = () => {
 	document.title = "Budget Request List";
@@ -87,8 +88,6 @@ const ApproverBudgetRequestList = () => {
 	const [isAddressLoading, setIsAddressLoading] = useState(false);
 	const [include, setInclude] = useState(0);
 	const [isCollapsed, setIsCollapsed] = useState(false);
-
-	const [chartType, setChartType] = useState("bar");
 	const [selectedRequest, setSelectedRequest] = useState(null);
 
 	const {
@@ -408,7 +407,7 @@ const ApproverBudgetRequestList = () => {
 									setTransaction(data);
 								}}
 							>
-								<FaFilePen />
+								<FaPenSquare />
 							</Button>
 							<UncontrolledTooltip target={`notes-${data.bdr_id}`}>
 								{t("Notes")}
@@ -453,27 +452,14 @@ const ApproverBudgetRequestList = () => {
 					<div className="">
 						<Breadcrumbs />
 						<div className="w-100 d-flex gap-2 flex-nowrap">
-							<div
-								style={{
-									flex: isCollapsed ? "0 0 60px" : "0 0 25%",
-									minWidth: isCollapsed ? "60px" : "250px",
-									transition: "all 0.3s ease",
-								}}
-							>
-								<TreeForLists
-									onNodeSelect={handleNodeSelect}
-									setIsAddressLoading={setIsAddressLoading}
-									setInclude={setInclude}
-									isCollapsed={isCollapsed}
-									setIsCollapsed={setIsCollapsed}
-								/>
-							</div>
-							<div
-								style={{
-									flex: isCollapsed ? "1 1 auto" : "0 0 75%",
-									transition: "all 0.3s ease",
-								}}
-							>
+							<TreeForLists
+								onNodeSelect={handleNodeSelect}
+								setIsAddressLoading={setIsAddressLoading}
+								setInclude={setInclude}
+								isCollapsed={isCollapsed}
+								setIsCollapsed={setIsCollapsed}
+							/>
+							<SearchTableContainer isCollapsed={isCollapsed}>
 								<AdvancedSearch
 									searchHook={useSearchBudgetRequestforApproval}
 									// dateSearchKeys={["budget_request_date"]}
@@ -532,7 +518,7 @@ const ApproverBudgetRequestList = () => {
 										toggleTotalAnalysisModal={toggleTotalAnalysisModal}
 									/>
 								</AdvancedSearch>
-							</div>
+							</SearchTableContainer>
 						</div>
 					</div>
 				</div>
@@ -626,7 +612,6 @@ const TableWrapper = ({
 						"bdr_description",
 					]}
 					excludeKey={["is_editable", "is_deletable"]}
-
 					// todo: refactor this to use a more generic button component
 					buttonChildren={<FaChartLine />}
 					onButtonClick={toggleTotalAnalysisModal}
