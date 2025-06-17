@@ -23,119 +23,121 @@ import {
 import useResizeObserver from "use-resize-observer";
 import { v4 as uuidv4 } from "uuid";
 import { useAuthUser } from "../../hooks/useAuthUser";
+import { useDragDropManager } from "react-dnd";
 
 const TreeForLists = ({
-  onNodeSelect,
-  setIsAddressLoading,
-  setInclude,
-  isCollapsed,
-  setIsCollapsed,
+	onNodeSelect,
+	setIsAddressLoading,
+	setInclude,
+	isCollapsed,
+	setIsCollapsed,
 }) => {
-  const { t, i18n } = useTranslation();
-  const treeRef = useRef();
-  const searchInputRef = useRef();
-  const { userId } = useAuthUser();
-  const { data, isLoading, isError } = useFetchAddressStructures(userId);
-  const [treeData, setTreeData] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedNode, setSelectedNode] = useState({});
-  const [includeChecked, setIncludeChecked] = useState(false);
-  const { ref, width, height } = useResizeObserver();
+	const { t, i18n } = useTranslation();
+	const dndManager = useDragDropManager();
+	const treeRef = useRef();
+	const searchInputRef = useRef();
+	const { userId } = useAuthUser();
+	const { data, isLoading, isError } = useFetchAddressStructures(userId);
+	const [treeData, setTreeData] = useState([]);
+	const [searchTerm, setSearchTerm] = useState("");
+	const [selectedNode, setSelectedNode] = useState({});
+	const [includeChecked, setIncludeChecked] = useState(false);
+	const { ref, width, height } = useResizeObserver();
 
-  useEffect(() => {
-    setIsAddressLoading(isLoading);
-  }, [isLoading]);
+	useEffect(() => {
+		setIsAddressLoading(isLoading);
+	}, [isLoading]);
 
-  useEffect(() => {
-    if (data) {
-      const transformData = (regions) =>
-        regions.map((region) => ({
-          ...region,
-          id: region.id?.toString() || uuidv4(),
-          children:
-            region.children?.map((zone) => ({
-              ...zone,
-              id: zone.id?.toString() || uuidv4(),
-              children:
-                zone.children?.map((woreda) => ({
-                  ...woreda,
-                  id: woreda.id?.toString() || uuidv4(),
-                })) || [],
-            })) || [],
-        }));
-      setTreeData(transformData(data));
-    }
-  }, [data]);
+	useEffect(() => {
+		if (data) {
+			const transformData = (regions) =>
+				regions.map((region) => ({
+					...region,
+					id: region.id?.toString() || uuidv4(),
+					children:
+						region.children?.map((zone) => ({
+							...zone,
+							id: zone.id?.toString() || uuidv4(),
+							children:
+								zone.children?.map((woreda) => ({
+									...woreda,
+									id: woreda.id?.toString() || uuidv4(),
+								})) || [],
+						})) || [],
+				}));
+			setTreeData(transformData(data));
+		}
+	}, [data]);
 
-  const handleCheckboxChange = (e) => {
-    const checked = e.target.checked;
-    setIncludeChecked(checked);
-    if (setInclude) {
-      setInclude(checked ? 1 : 0);
-    }
-  };
+	const handleCheckboxChange = (e) => {
+		const checked = e.target.checked;
+		setIncludeChecked(checked);
+		if (setInclude) {
+			setInclude(checked ? 1 : 0);
+		}
+	};
 
-  const handleSearchTerm = (e) => {
-    setSearchTerm(e.target.value);
-  };
+	const handleSearchTerm = (e) => {
+		setSearchTerm(e.target.value);
+	};
 
-  const handleNodeSelect = (nodeData) => {
-    onNodeSelect(nodeData);
-    setSelectedNode((prev) => {
-      if (Object.keys(nodeData).length === 0) return {};
-      return {
-        ...nodeData,
-        level: nodeData.level || "unknown",
-      };
-    });
-  };
+	const handleNodeSelect = (nodeData) => {
+		onNodeSelect(nodeData);
+		setSelectedNode((prev) => {
+			if (Object.keys(nodeData).length === 0) return {};
+			return {
+				...nodeData,
+				level: nodeData.level || "unknown",
+			};
+		});
+	};
 
-  const handleExpandAndFocusSearch = () => {
-    setIsCollapsed(false);
-    setTimeout(() => {
-      if (selectedNode?.id) {
-        treeRef.current?.select(selectedNode.id);
-        treeRef.current?.scrollTo(selectedNode.id);
-      }
-      searchInputRef.current?.focus();
-    }, 200);
-  };
+	const handleExpandAndFocusSearch = () => {
+		setIsCollapsed(false);
+		setTimeout(() => {
+			if (selectedNode?.id) {
+				treeRef.current?.select(selectedNode.id);
+				treeRef.current?.scrollTo(selectedNode.id);
+			}
+			searchInputRef.current?.focus();
+		}, 200);
+	};
 
-  const searchMatch = useCallback((node, term, lang) => {
-    if (!term) return true;
-    const searchTerm = term.toLowerCase();
-    const getNodeName = (node) => {
-      if (!node?.data) return "";
-      if (lang === "en" && node.data.add_name_en)
-        return node.data.add_name_en.toLowerCase();
-      if (lang === "am" && node.data.add_name_am)
-        return node.data.add_name_am.toLowerCase();
-      return node.data.name?.toLowerCase() || "";
-    };
-    const nameExists = (currentNode) => {
-      if (getNodeName(currentNode).includes(searchTerm)) return true;
-      if (currentNode.parent) return nameExists(currentNode.parent);
-      return false;
-    };
-    return nameExists(node);
-  }, []);
+	const searchMatch = useCallback((node, term, lang) => {
+		if (!term) return true;
+		const searchTerm = term.toLowerCase();
+		const getNodeName = (node) => {
+			if (!node?.data) return "";
+			if (lang === "en" && node.data.add_name_en)
+				return node.data.add_name_en.toLowerCase();
+			if (lang === "am" && node.data.add_name_am)
+				return node.data.add_name_am.toLowerCase();
+			return node.data.name?.toLowerCase() || "";
+		};
+		const nameExists = (currentNode) => {
+			if (getNodeName(currentNode).includes(searchTerm)) return true;
+			if (currentNode.parent) return nameExists(currentNode.parent);
+			return false;
+		};
+		return nameExists(node);
+	}, []);
 
-  const lang = i18n.language;
+	const lang = i18n.language;
 
-  if (isLoading || isError) {
-    return (
-      <div
-        style={{ minHeight: "100vh", minWidth: "250px" }}
-        className="w-20 flex-shrink-0 p-3 border-end overflow-auto shadow-sm"
-      >
-        <h5>{t("address_tree_Search")}</h5>
-        <hr />
-        <p className="text-center">
-          {isLoading ? "Loading..." : "Error fetching address structure"}
-        </p>
-      </div>
-    );
-  }
+	if (isLoading || isError) {
+		return (
+			<div
+				style={{ minHeight: "100vh", minWidth: "250px" }}
+				className="w-20 flex-shrink-0 p-3 border-end overflow-auto shadow-sm"
+			>
+				<h5>{t("address_tree_Search")}</h5>
+				<hr />
+				<p className="text-center">
+					{isLoading ? "Loading..." : "Error fetching address structure"}
+				</p>
+			</div>
+		);
+	}
 
 	return (
 		<div
@@ -334,6 +336,9 @@ const TreeForLists = ({
 											indent={24}
 											rowHeight={36}
 											overscanCount={1}
+											disableDrag
+											disableDrop
+											dndManager={dndManager}
 										>
 											{({ node, style, dragHandle }) => (
 												<Node

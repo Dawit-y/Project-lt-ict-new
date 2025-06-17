@@ -459,7 +459,7 @@ const ApproverBudgetRequestList = () => {
 								isCollapsed={isCollapsed}
 								setIsCollapsed={setIsCollapsed}
 							/>
-							<SearchTableContainer>
+							<SearchTableContainer isCollapsed={isCollapsed}>
 								<AdvancedSearch
 									searchHook={useSearchBudgetRequestforApproval}
 									// dateSearchKeys={["budget_request_date"]}
