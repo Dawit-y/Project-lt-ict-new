@@ -7,7 +7,7 @@ import PrintPage from "./PrintPage";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { Spinner, UncontrolledTooltip, UncontrolledDropdown, DropdownMenu, DropdownToggle } from "reactstrap";
-import { FaFileExport } from "react-icons/fa6";
+import { FaFileExport } from "react-icons/fa";
 
 import { useSelector } from "react-redux";
 import { createSelector } from "reselect";

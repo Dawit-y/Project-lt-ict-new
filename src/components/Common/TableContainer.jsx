@@ -19,7 +19,7 @@ import {
 import { rankItem } from "@tanstack/match-sorter-utils";
 import ExportToExcel from "../../components/Common/ExportToExcel";
 import PrintHtmlPage from "../../components/Common/PrintHtmlPage";
-import { FaFileExport, FaCircleInfo, FaRotate } from "react-icons/fa6";
+import { FaFileExport, FaInfoCircle , FaRedoAlt  } from "react-icons/fa";
 import ExportToPDF from "./ExportToPdf";
 
 // Column Filter
@@ -275,7 +275,7 @@ const TableContainer = ({
 									{isFetching ? (
 										<Spinner color="light" size="sm" />
 									) : (
-										<FaRotate />
+										<FaRedoAlt  />
 									)}
 								</Button>
 								<UncontrolledTooltip placement="top" target="refresh_btn">
@@ -304,7 +304,7 @@ const TableContainer = ({
 							zIndex: 1,
 						}}
 					>
-						<FaCircleInfo size={18} id="info" className="" />
+						<FaInfoCircle  size={18} id="info" className="" />
 						<UncontrolledTooltip placement="left" target="info">
 							Sample Info
 						</UncontrolledTooltip>

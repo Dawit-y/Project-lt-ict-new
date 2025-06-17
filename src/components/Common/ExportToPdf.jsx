@@ -3,7 +3,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { useTranslation } from "react-i18next";
 import { DropdownItem } from "reactstrap";
-import { FaFilePdf } from "react-icons/fa6";
+import { FaFilePdf } from "react-icons/fa";
 
 const ExportToPDF = ({ tableData, tablename, includeKey = [], dropdownItem = false }) => {
   const { t } = useTranslation();

@@ -2,7 +2,7 @@ import React from "react";
 import * as XLSX from "xlsx";
 import { useTranslation } from "react-i18next";
 import { DropdownItem } from "reactstrap";
-import { FaFileExcel } from "react-icons/fa6";
+import { FaFileExcel } from "react-icons/fa";
 
 const ExportToExcel = ({ tableData, tablename, includeKey = [], dropdownItem = false }) => {
   const { t } = useTranslation();

@@ -16,14 +16,7 @@ import {
 	Input,
 	Badge,
 } from "reactstrap";
-import {
-	FaGavel,
-	FaChartLine,
-	FaPaperclip,
-	FaFilePen,
-	FaEye,
-	FaGear,
-} from "react-icons/fa6";
+import { FaPaperclip, FaPenSquare, FaEye, FaCog } from "react-icons/fa";
 import AgGridContainer from "../../components/Common/AgGridContainer";
 import { useSearchBudgetRequests } from "../../queries/budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
@@ -334,7 +327,7 @@ const BudgetRequestListModel = () => {
 									handleClick(data);
 								}}
 							>
-								<FaGear />
+								<FaCog />
 							</Button>
 							<UncontrolledTooltip target={`view-${data.bdr_id}`}>
 								{t("Add Detail")}
@@ -364,7 +357,7 @@ const BudgetRequestListModel = () => {
 									setTransaction(data);
 								}}
 							>
-								<FaFilePen />
+								<FaPenSquare />
 							</Button>
 							<UncontrolledTooltip target={`notes-${data.bdr_id}`}>
 								{t("Notes")}

@@ -12,7 +12,7 @@ import {
 import { saveAs } from "file-saver";
 import { useTranslation } from "react-i18next";
 import { DropdownItem } from "reactstrap";
-import { FaFileWord } from "react-icons/fa6";
+import { FaFileWord } from "react-icons/fa";
 
 const ExportToDOCX = ({
   tableData,

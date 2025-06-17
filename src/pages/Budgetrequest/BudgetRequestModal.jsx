@@ -19,7 +19,7 @@ import {
 	PrintBudgetRequestTables,
 	ExportBudgetRequestTablesToExcel,
 } from "./Export";
-import { FaX } from "react-icons/fa6";
+import { FaWindowClose } from "react-icons/fa";
 
 const modalStyle = {
 	width: "100%",
@@ -71,7 +71,7 @@ const BudgetRequestModal = ({ isOpen, toggle, transaction }) => {
 						/>
 					)}
 					<Button color="secondary" onClick={toggle}>
-						<FaX />
+						<FaWindowClose />
 					</Button>
 				</Col>
 			</div>

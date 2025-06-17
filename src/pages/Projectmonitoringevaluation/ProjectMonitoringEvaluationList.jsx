@@ -8,7 +8,7 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 const AgGridContainer = lazy(() =>
 	import("../../components/Common/AgGridContainer")
 );
-import { FaChartLine } from "react-icons/fa6";
+import { FaChartLine } from "react-icons/fa";
 import { Button } from "reactstrap";
 import { useFetchMonitoringEvaluationTypes } from "../../queries/monitoringevaluationtype_query";
 const SingleAnalysisModal = lazy(() =>

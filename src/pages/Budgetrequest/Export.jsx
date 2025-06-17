@@ -1,5 +1,5 @@
 import { Button } from "reactstrap";
-import { FaFileExcel, FaPrint } from "react-icons/fa6";
+import { FaFileExcel, FaPrint } from "react-icons/fa";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { useTranslation } from "react-i18next";

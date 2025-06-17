@@ -127,7 +127,11 @@ const TreeForLists = ({
 	if (isLoading || isError) {
 		return (
 			<div
-				style={{ minHeight: "100vh", minWidth: "250px" }}
+				style={{
+					flex: isCollapsed ? "0 0 60px" : "0 0 25%",
+					minWidth: isCollapsed ? "60px" : "250px",
+					transition: "all 0.3s ease",
+				}}
 				className="w-20 flex-shrink-0 p-3 border-end overflow-auto shadow-sm"
 			>
 				<h5>{t("address_tree_Search")}</h5>

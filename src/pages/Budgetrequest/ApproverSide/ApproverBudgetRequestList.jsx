@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import { useAuthUser } from "../../../hooks/useAuthUser";
 import { Button, Badge, UncontrolledTooltip } from "reactstrap";
 import Spinners from "../../../components/Common/Spinner";
-import { FaGavel, FaChartLine, FaPaperclip, FaFilePen } from "react-icons/fa6";
+import { FaGavel, FaChartLine, FaPaperclip, FaPenSquare } from "react-icons/fa";
 const Breadcrumbs = lazy(() => import("../../../components/Common/Breadcrumb"));
 const ApproverBudgetRequestListModal = lazy(() =>
 	import("./ApproverBudgetRequestModal")
@@ -407,7 +407,7 @@ const ApproverBudgetRequestList = () => {
 									setTransaction(data);
 								}}
 							>
-								<FaFilePen />
+								<FaPenSquare />
 							</Button>
 							<UncontrolledTooltip target={`notes-${data.bdr_id}`}>
 								{t("Notes")}
