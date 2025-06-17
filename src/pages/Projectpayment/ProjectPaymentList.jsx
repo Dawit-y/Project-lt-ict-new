@@ -1,37 +1,58 @@
 import React, { useEffect, lazy, useMemo, useState } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { useTranslation } from "react-i18next";
-import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import {
-  useSearchProjectPayments,
-} from "../../queries/projectpayment_query";
+import { useSearchProjectPayments } from "../../queries/projectpayment_query";
 import TreeForLists from "../../components/Common/TreeForLists";
 import { useFetchPaymentCategorys } from "../../queries/paymentcategory_query";
+import { useTranslation } from "react-i18next";
+import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import { Button } from "reactstrap";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { FaChartLine } from "react-icons/fa6";
 import {
   createMultiSelectOptions,
+  createSelectOptions,
 } from "../../utils/commonMethods";
+
 const AgGridContainer = lazy(() =>
   import("../../components/Common/AgGridContainer")
 );
+const SinglePaymentAnalysisModal = lazy(() =>
+  import("./Analysis/SinglePaymentAnalysisModal")
+);
+const TotalPaymentAnalysisModal = lazy(() =>
+  import("./Analysis/TotalPaymentAnalysisModal")
+);
+
+const truncateText = (text, maxLength) => {
+  if (typeof text !== "string") {
+    return text;
+  }
+  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+};
+
 const ProjectPaymentList = () => {
   document.title = "Project Payment List";
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
-  const [projectPayment, setProjectPayment] = useState(null);
+
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-
   const [projectParams, setProjectParams] = useState({});
   const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
-  const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
-  const { data } = useState("");
+  const [isAddressLoading, setIsAddressLoading] = useState(false);
+  const { data, error, isError, refetch } = useState({});
+
+  const [singleAnalysisModal, setSingleAnalysisModal] = useState(false);
+  const [totalAnalysisModal, setTotalAnalysisModal] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(null);
+
   const { data: paymentCategoryData } = useFetchPaymentCategorys();
+
   const {
     pyc_name_en: paymentCategoryOptionsEn,
     pyc_name_or: paymentCategoryOptionsOr,
@@ -41,7 +62,8 @@ const ProjectPaymentList = () => {
     "pyc_name_or",
     "pyc_name_am",
   ]);
-  const paymentCategoryTypeMap = useMemo(() => {
+
+  const paymentCategoryMap = useMemo(() => {
     return (
       paymentCategoryData?.data?.reduce((acc, payment_type) => {
         acc[payment_type.pyc_id] =
@@ -55,23 +77,12 @@ const ProjectPaymentList = () => {
     );
   }, [paymentCategoryData, lang]);
 
-  useEffect(() => {
-    setProjectPayment(data);
-  }, [data]);
-
-  const truncateText = (text, maxLength) => {
-    if (typeof text !== "string") {
-      return text;
-    }
-    return text.length <= maxLength
-      ? text
-      : `${text.substring(0, maxLength)}...`;
-  };
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
   };
+
   useEffect(() => {
     setProjectParams({
       ...(prjLocationRegionId && {
@@ -84,20 +95,29 @@ const ProjectPaymentList = () => {
       ...(include === 1 && { include }),
     });
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
+
   const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
-      setPrjLocationZoneId(null); // Clear dependent states
+      setPrjLocationZoneId(null);
       setPrjLocationWoredaId(null);
     } else if (node.level === "zone") {
       setPrjLocationZoneId(node.id);
-      setPrjLocationWoredaId(null); // Clear dependent state
+      setPrjLocationWoredaId(null);
     } else if (node.level === "woreda") {
       setPrjLocationWoredaId(node.id);
     }
     if (showSearchResult) {
       setShowSearchResult(false);
     }
+  };
+
+  const toggleSingleAnalysisModal = () => {
+    setSingleAnalysisModal(!singleAnalysisModal);
+  };
+
+  const toggleTotalAnalysisModal = () => {
+    setTotalAnalysisModal(!totalAnalysisModal);
   };
 
   const columnDefs = useMemo(() => {
@@ -130,12 +150,12 @@ const ProjectPaymentList = () => {
         },
       },
       {
-        headerName: t("prp_type"),
+        headerName: t("payment_category"),
         field: "payment_category",
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return paymentCategoryTypeMap[params.data.prp_type] || "";
+          return paymentCategoryMap[params.data.prp_type] || "-";
         },
       },
       {
@@ -152,7 +172,6 @@ const ProjectPaymentList = () => {
         field: "prp_payment_amount",
         sortable: true,
         filter: true,
-
         valueFormatter: (params) => {
           if (params.value != null) {
             return new Intl.NumberFormat("en-US", {
@@ -160,7 +179,7 @@ const ProjectPaymentList = () => {
               maximumFractionDigits: 2,
             }).format(params.value);
           }
-          return "0.00"; // Default value if null or undefined
+          return "0.00";
         },
       },
       {
@@ -169,12 +188,44 @@ const ProjectPaymentList = () => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.prp_payment_percentage, 30) || "-";
+          return params.data.prp_payment_percentage
+            ? `${params.data.prp_payment_percentage}%`
+            : "-";
         },
       },
+      {
+        headerName: t("analysis"),
+        field: "actions",
+        cellRenderer: (params) => {
+          const data = params.data;
+          return (
+            <div className="d-flex gap-1">
+              <Button
+                id={`view-${data.prp_id}`}
+                color="light"
+                size="sm"
+                onClick={() => {
+                  toggleSingleAnalysisModal();
+                  setSelectedPayment(data);
+                }}
+              >
+                <FaChartLine />
+              </Button>
+            </div>
+          );
+        },
+        width: 120,
+        sortable: false,
+        filter: false,
+      },
     ];
+
     return baseColumnDefs;
-  });
+  }, [paymentCategoryMap, t]);
+
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
 
   return (
     <React.Fragment>
@@ -190,12 +241,11 @@ const ProjectPaymentList = () => {
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}
             />
-            {/* Main Content */}
             <div style={{ flex: "0 0 75%" }}>
               <AdvancedSearch
                 searchHook={useSearchProjectPayments}
                 textSearchKeys={["prj_name", "prj_code"]}
-                dateSearchKeys={["payment_date"]}
+                dateSearchKeys={["prp_payment_date_gc"]}
                 dropdownSearchKeys={[
                   {
                     key: "prp_type",
@@ -215,27 +265,18 @@ const ProjectPaymentList = () => {
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
               >
-                <AgGridContainer
-                  rowData={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
+                <TableWrapper
                   columnDefs={columnDefs}
-                  isLoading={isSearchLoading}
-                  isPagination={true}
-                  rowHeight={35}
-                  paginationPageSize={10}
-                  isGlobalFilter={true}
-                  isExcelExport={true}
-                  isPdfExport={true}
-                  isPrint={true}
-                  tableName="Project Payment"
-                  includeKey={[
-                    "prj_name",
-                    "prp_payment_amount",
-                    "prp_payment_percentage",
-                    "prp_payment_date_gc",
-                  ]}
-                  excludeKey={["is_editable", "is_deletable"]}
+                  showSearchResult={showSearchResult}
+                  selectedPayment={selectedPayment}
+                  singleAnalysisModal={singleAnalysisModal}
+                  totalAnalysisModal={totalAnalysisModal}
+                  toggleSingleAnalysisModal={toggleSingleAnalysisModal}
+                  toggleTotalAnalysisModal={toggleTotalAnalysisModal}
+                  data={data}
+                  isSearchLoading={isSearchLoading}
+                  searchResults={searchResults}
+                  paymentCategoryMap={paymentCategoryMap}
                 />
               </AdvancedSearch>
             </div>
@@ -245,4 +286,82 @@ const ProjectPaymentList = () => {
     </React.Fragment>
   );
 };
+
+const TableWrapper = ({
+  data,
+  isLoading,
+  columnDefs,
+  showSearchResult,
+  selectedPayment,
+  singleAnalysisModal,
+  totalAnalysisModal,
+  toggleSingleAnalysisModal,
+  toggleTotalAnalysisModal,
+  isSearchLoading,
+  searchResults,
+  paymentCategoryMap, // Add this prop
+}) => {
+  let transformedData = [];
+  if (showSearchResult && searchResults) {
+    transformedData = Array.isArray(searchResults.data)
+      ? searchResults.data.map((item) => ({
+          ...item,
+          payment_category: paymentCategoryMap[item.prp_type] || "Unknown",
+        }))
+      : [];
+  } else if (data) {
+    transformedData = Array.isArray(data.data)
+      ? data.data.map((item) => ({
+          ...item,
+          payment_category: paymentCategoryMap[item.prp_type] || "Unknown",
+        }))
+      : [];
+  }
+
+  return (
+    <>
+      <SinglePaymentAnalysisModal
+        isOpen={singleAnalysisModal}
+        toggle={toggleSingleAnalysisModal}
+        selectedPayment={selectedPayment}
+        data={transformedData}
+        paymentCategoryMap={paymentCategoryMap}
+      />
+
+      <TotalPaymentAnalysisModal
+        isOpen={totalAnalysisModal}
+        toggle={toggleTotalAnalysisModal}
+        data={transformedData}
+        paymentCategoryMap={paymentCategoryMap}
+      />
+      <div className="d-flex flex-column" style={{ gap: "20px" }}>
+        <AgGridContainer
+          rowData={transformedData}
+          columnDefs={columnDefs}
+          isLoading={isLoading || isSearchLoading}
+          isPagination={true}
+          rowHeight={35}
+          paginationPageSize={10}
+          isGlobalFilter={true}
+          isExcelExport={true}
+          isPdfExport={true}
+          isPrint={true}
+          tableName="Project Payments"
+          includeKey={[
+            "prj_name",
+            "prp_payment_amount",
+            "prp_payment_percentage",
+            "prp_payment_date_gc",
+            "payment_category",
+          ]}
+          excludeKey={["is_editable", "is_deletable"]}
+          buttonChildren={<FaChartLine />}
+          onButtonClick={toggleTotalAnalysisModal}
+          disabled={!showSearchResult || isLoading}
+        />
+      </div>
+    </>
+  );
+};
+
 export default ProjectPaymentList;
