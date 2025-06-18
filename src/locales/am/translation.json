@@ -1756,5 +1756,8 @@
 "total_amount" : "ጠቅላላ መጠን",  
 "payments" : "ክፍያዎች",  
 "donut" : "ዶናት",  
-"payments_analysis" : "የክፍያ ትንተና"  
+"payments_analysis" : "የክፍያ ትንተና",
+"payment_date": "የክፍያ ቀን",
+"payment_summary": "የክፍያ ማጠቃለያ",
+"all_years": "ሁሉም ዓመት"
 }

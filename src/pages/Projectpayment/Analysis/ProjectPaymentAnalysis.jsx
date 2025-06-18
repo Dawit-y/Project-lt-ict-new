@@ -10,6 +10,11 @@ import {
   NavItem,
   NavLink,
   Badge,
+  Progress,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from "reactstrap";
 import classnames from "classnames";
 import ReactApexChart from "react-apexcharts";
@@ -29,9 +34,39 @@ const ProjectPaymentAnalysis = ({
   paymentCategoryMap = {},
 }) => {
   const [activeTab, setActiveTab] = useState("1");
+  const [selectedYear, setSelectedYear] = useState("All");
+  const [yearDropdownOpen, setYearDropdownOpen] = useState(false);
+  const toggleYearDropdown = () =>
+    setYearDropdownOpen((prevState) => !prevState);
+
   const toggleTab = (tab) => activeTab !== tab && setActiveTab(tab);
 
   const { t } = useTranslation();
+
+  // Extract available years from allData
+  const availableYears = useMemo(() => {
+    if (!isOverallView || !Array.isArray(allData)) return [];
+
+    const years = new Set();
+    allData.forEach((payment) => {
+      if (payment?.prp_payment_date_gc) {
+        const year = new Date(payment.prp_payment_date_gc).getFullYear();
+        years.add(year);
+      }
+    });
+    return Array.from(years).sort((a, b) => b - a); // Sort descending
+  }, [allData, isOverallView]);
+
+  // Filter data based on selected year
+  const filteredData = useMemo(() => {
+    if (!isOverallView || selectedYear === "All") return allData;
+
+    return allData.filter((payment) => {
+      if (!payment?.prp_payment_date_gc) return false;
+      const paymentYear = new Date(payment.prp_payment_date_gc).getFullYear();
+      return paymentYear.toString() === selectedYear;
+    });
+  }, [allData, isOverallView, selectedYear]);
 
   // Safe calculation for single payment
   const calculateSinglePaymentTotals = (data) => {
@@ -62,7 +97,7 @@ const ProjectPaymentAnalysis = ({
     };
   };
 
-  // Safe calculation for all payments
+  // Safe calculation for all payments (now uses filteredData)
   const calculateOverallTotals = (data) => {
     const totals = {
       totalAmount: 0,
@@ -119,19 +154,19 @@ const ProjectPaymentAnalysis = ({
     return totals;
   };
 
-  // Prepare chart data with error handling
+  // Prepare chart data with error handling (now uses filteredData)
   const { chartOptions, chartSeries, totals } = useMemo(() => {
     const defaultReturn = {
       chartOptions: {},
       chartSeries: [],
       totals: isOverallView
-        ? calculateOverallTotals(allData)
+        ? calculateOverallTotals(filteredData)
         : calculateSinglePaymentTotals(paymentData),
     };
 
     try {
       const calculatedTotals = isOverallView
-        ? calculateOverallTotals(allData)
+        ? calculateOverallTotals(filteredData)
         : paymentData
         ? calculateSinglePaymentTotals(paymentData)
         : {
@@ -342,7 +377,14 @@ const ProjectPaymentAnalysis = ({
       console.error("Error generating chart data:", error);
       return defaultReturn;
     }
-  }, [paymentData, allData, isOverallView, chartType, t, paymentCategoryMap]);
+  }, [
+    paymentData,
+    filteredData,
+    isOverallView,
+    chartType,
+    t,
+    paymentCategoryMap,
+  ]);
 
   return (
     <React.Fragment>
@@ -363,41 +405,72 @@ const ProjectPaymentAnalysis = ({
                 )}
               </h4>
               <div className="d-flex gap-2">
-                <div className="btn-group" role="group">
-                  <button
-                    className={`btn btn-sm ${
-                      chartType === "bar"
-                        ? "btn-primary"
-                        : "btn-outline-primary"
-                    }`}
-                    onClick={() => onChartTypeChange("bar")}
+                {/* Year filter dropdown - only shown in overall view */}
+                {isOverallView && availableYears.length > 0 && (
+                  <Dropdown
+                    isOpen={yearDropdownOpen}
+                    toggle={toggleYearDropdown}
                   >
-                    <i className="mdi mdi-chart-bar"></i> {t("bar")}
-                  </button>
-                  <button
-                    className={`btn btn-sm ${
-                      chartType === "pie"
-                        ? "btn-primary"
-                        : "btn-outline-primary"
-                    }`}
-                    onClick={() => onChartTypeChange("pie")}
-                  >
-                    <i className="mdi mdi-chart-pie"></i> {t("pie")}
-                  </button>
-                  <button
-                    className={`btn btn-sm ${
-                      chartType === "donut"
-                        ? "btn-primary"
-                        : "btn-outline-primary"
-                    }`}
-                    onClick={() => onChartTypeChange("donut")}
-                  >
-                    <i className="mdi mdi-chart-donut"></i> {t("donut")}
-                  </button>
-                </div>
+                    <DropdownToggle caret color="light" className="btn-sm">
+                      <i className="mdi mdi-calendar me-1"></i>
+                      {selectedYear === "All" ? t("all_years") : selectedYear}
+                    </DropdownToggle>
+                    <DropdownMenu>
+                      <DropdownItem onClick={() => setSelectedYear("All")}>
+                        {t("all_years")}
+                      </DropdownItem>
+                      <DropdownItem divider />
+                      {availableYears.map((year) => (
+                        <DropdownItem
+                          key={year}
+                          onClick={() => setSelectedYear(year.toString())}
+                          active={selectedYear === year.toString()}
+                        >
+                          {year}
+                        </DropdownItem>
+                      ))}
+                    </DropdownMenu>
+                  </Dropdown>
+                )}
+
+                {isOverallView && (
+                  <div className="btn-group" role="group">
+                    <button
+                      className={`btn btn-sm ${
+                        chartType === "bar"
+                          ? "btn-primary"
+                          : "btn-outline-primary"
+                      }`}
+                      onClick={() => onChartTypeChange("bar")}
+                    >
+                      <i className="mdi mdi-chart-bar"></i> {t("bar")}
+                    </button>
+                    <button
+                      className={`btn btn-sm ${
+                        chartType === "pie"
+                          ? "btn-primary"
+                          : "btn-outline-primary"
+                      }`}
+                      onClick={() => onChartTypeChange("pie")}
+                    >
+                      <i className="mdi mdi-chart-pie"></i> {t("pie")}
+                    </button>
+                    <button
+                      className={`btn btn-sm ${
+                        chartType === "donut"
+                          ? "btn-primary"
+                          : "btn-outline-primary"
+                      }`}
+                      onClick={() => onChartTypeChange("donut")}
+                    >
+                      <i className="mdi mdi-chart-donut"></i> {t("donut")}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
+            {/* Rest of the component remains the same */}
             <Nav tabs className="px-4 pt-2">
               <NavItem>
                 <NavLink
@@ -423,19 +496,6 @@ const ProjectPaymentAnalysis = ({
                   </NavLink>
                 </NavItem>
               )}
-              {!isOverallView && (
-                <NavItem>
-                  <NavLink
-                    className={classnames({ active: activeTab === "3" })}
-                    onClick={() => {
-                      toggleTab("3");
-                    }}
-                  >
-                    <i className="mdi mdi-information-outline me-1"></i>{" "}
-                    {t("details")}
-                  </NavLink>
-                </NavItem>
-              )}
             </Nav>
 
             <TabContent activeTab={activeTab} className="p-4 border-top-0">
@@ -446,13 +506,22 @@ const ProjectPaymentAnalysis = ({
                       {!isOverallView && (
                         <Card className="mb-3 border">
                           <CardBody>
-                            <p className="text-muted mb-1">
-                              <i className="mdi mdi-barcode me-1"></i>{" "}
-                              {t("project_code")}
-                            </p>
-                            <h4 className="text-primary">
-                              {paymentData?.prj_code || "-"}
-                            </h4>
+                            <Row>
+                              <Col md="6">
+                                <p className="text-muted mb-1">
+                                  <i className="mdi mdi-home-modern me-1"></i>{" "}
+                                  {t("project_name")}
+                                </p>
+                                <h4>{paymentData?.prj_name || "-"}</h4>
+                              </Col>
+                              <Col md="6">
+                                <p className="text-muted mb-1">
+                                  <i className="mdi mdi-barcode me-1"></i>{" "}
+                                  {t("project_code")}
+                                </p>
+                                <h4>{paymentData?.prj_code || "-"}</h4>
+                              </Col>
+                            </Row>
                           </CardBody>
                         </Card>
                       )}
@@ -572,19 +641,77 @@ const ProjectPaymentAnalysis = ({
                   </Col>
 
                   <Col lg="8">
-                    <Card className="border-0 shadow-none">
-                      <CardBody className="p-0">
-                        <div id="payment-analysis-chart">
-                          <ReactApexChart
-                            options={chartOptions}
-                            series={chartSeries}
-                            type={chartType}
-                            height={350}
-                            className="apex-charts"
-                          />
-                        </div>
-                      </CardBody>
-                    </Card>
+                    {isOverallView ? (
+                      <Card className="border-0 shadow-none">
+                        <CardBody className="p-0">
+                          <div id="payment-analysis-chart">
+                            <ReactApexChart
+                              options={chartOptions}
+                              series={chartSeries}
+                              type={chartType}
+                              height={350}
+                              className="apex-charts"
+                            />
+                          </div>
+                        </CardBody>
+                      </Card>
+                    ) : (
+                      <Card className="border">
+                        <CardBody>
+                          <h5 className="card-title mb-4">
+                            <i className="mdi mdi-finance me-1"></i>{" "}
+                            {t("payment_summary")}
+                          </h5>
+
+                          <div className="mb-4">
+                            <div className="d-flex justify-content-between mb-2">
+                              <span className="text-muted">
+                                {t("payment_percentage")}
+                              </span>
+                              <span className="fw-bold text-info">
+                                {formatNumber(totals?.payment?.percentage || 0)}
+                                %
+                              </span>
+                            </div>
+                            <Progress
+                              value={Math.min(
+                                totals?.payment?.percentage || 0,
+                                100
+                              )}
+                              color="info"
+                              style={{ height: "6px" }}
+                            />
+                          </div>
+
+                          <div className="mt-4 pt-3 border-top">
+                            <Row>
+                              <Col md="6">
+                                <div className="text-center p-3 bg-light rounded">
+                                  <p className="text-muted mb-1">
+                                    <i className="mdi mdi-calendar me-1"></i>{" "}
+                                    {t("payment_date")}
+                                  </p>
+                                  <h4 className="text-primary">
+                                    {totals?.details?.date || "-"}
+                                  </h4>
+                                </div>
+                              </Col>
+                              <Col md="6">
+                                <div className="text-center p-3 bg-light rounded">
+                                  <p className="text-muted mb-1">
+                                    <i className="mdi mdi-tag-outline me-1"></i>{" "}
+                                    {t("payment_type")}
+                                  </p>
+                                  <h4 className="text-primary">
+                                    {totals?.details?.type || "-"}
+                                  </h4>
+                                </div>
+                              </Col>
+                            </Row>
+                          </div>
+                        </CardBody>
+                      </Card>
+                    )}
                   </Col>
                 </Row>
               </TabPane>
@@ -638,84 +765,6 @@ const ProjectPaymentAnalysis = ({
                   </div>
                 </TabPane>
               )}
-
-              <TabPane tabId="3">
-                <Row>
-                  <Col md={isOverallView ? "12" : "6"}>
-                    <Card className="border">
-                      <CardBody>
-                        <h5 className="card-title">
-                          <i className="mdi mdi-credit-card-outline me-1"></i>{" "}
-                          {t("payment_details")}
-                        </h5>
-                        <div className="mt-3">
-                          <Row>
-                            <Col md="6">
-                              <p className="text-muted mb-1">
-                                <i className="mdi mdi-calendar me-1"></i>{" "}
-                                {t("payment_date")}
-                              </p>
-                              <h4>{totals?.details?.date || "-"}</h4>
-                            </Col>
-                            <Col md="6">
-                              <p className="text-muted mb-1">
-                                <i className="mdi mdi-tag-outline me-1"></i>{" "}
-                                {t("payment_type")}
-                              </p>
-                              <h4>{totals?.details?.type || "-"}</h4>
-                            </Col>
-                          </Row>
-                          {!isOverallView && (
-                            <Row className="mt-3">
-                              <Col md="12">
-                                <p className="text-muted mb-1">
-                                  <i className="mdi mdi-text-box-outline me-1"></i>{" "}
-                                  {t("description")}
-                                </p>
-                                <p className="text-dark">
-                                  {totals?.details?.description ||
-                                    t("no_description_available")}
-                                </p>
-                              </Col>
-                            </Row>
-                          )}
-                        </div>
-                      </CardBody>
-                    </Card>
-                  </Col>
-
-                  {!isOverallView && (
-                    <Col md="6">
-                      <Card className="border">
-                        <CardBody>
-                          <h5 className="card-title">
-                            <i className="mdi mdi-information-outline me-1"></i>{" "}
-                            {t("project_info")}
-                          </h5>
-                          <div className="mt-3">
-                            <Row>
-                              <Col md="6">
-                                <p className="text-muted mb-1">
-                                  <i className="mdi mdi-home-modern me-1"></i>{" "}
-                                  {t("project_name")}
-                                </p>
-                                <h4>{paymentData?.prj_name || "-"}</h4>
-                              </Col>
-                              <Col md="6">
-                                <p className="text-muted mb-1">
-                                  <i className="mdi mdi-barcode me-1"></i>{" "}
-                                  {t("project_code")}
-                                </p>
-                                <h4>{paymentData?.prj_code || "-"}</h4>
-                              </Col>
-                            </Row>
-                          </div>
-                        </CardBody>
-                      </Card>
-                    </Col>
-                  )}
-                </Row>
-              </TabPane>
             </TabContent>
           </CardBody>
         </Card>

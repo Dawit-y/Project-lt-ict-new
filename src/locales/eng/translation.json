@@ -1963,6 +1963,9 @@
 "total_amount" : "Total Amount",  
 "payments" : "Payments",  
 "donut" : "Donut",  
-"payments_analysis" : "Payments Analysis"  
+"payments_analysis" : "Payments Analysis",
+"payment_date": "Payment Date",
+"payment_summary": "Payment Summary",
+"all_years": "All Years"
 	
 }
