@@ -1946,5 +1946,23 @@
 	"budget_analysis": "Budget Analysis",
 	"view": "View",
 	"state_of_oromia": "Government of the State of Oromia",
-	"is_inactive":"Is Inactive"
+	"is_inactive":"Is Inactive",
+	"overall_payments_analysis" : "Overall Payments Analysis",  
+"by_payment_type" : "By Payment Type",  
+"payment_type" : "Payment Type",  
+"number_of_payments" : "Number of Payments",  
+"total_amount_(Birr)" : "Total Amount (Birr)",  
+"average_percentage" : "Average Percentage",  
+"total_payment_amount" : "Total Payment Amount",  
+"average_payment_percentage" : "Average Payment Percentage",  
+"payment_type_distribution" : "Payment Type Distribution",  
+"payment_amount_(Birr)" : "Payment Amount (Birr)",  
+"payment_analysis" : "Payment Analysis",  
+"payment_amount" : "Payment Amount",  
+"payment_percentage" : "Payment Percentage",
+"total_amount" : "Total Amount",  
+"payments" : "Payments",  
+"donut" : "Donut",  
+"payments_analysis" : "Payments Analysis"  
+	
 }
