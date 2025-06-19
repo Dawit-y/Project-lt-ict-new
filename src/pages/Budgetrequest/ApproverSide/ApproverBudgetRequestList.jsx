@@ -45,6 +45,13 @@ import { useFetchRequestFollowups } from "../../../queries/requestfollowup_query
 import { useFetchRequestStatuss } from "../../../queries/requeststatus_query";
 import { PAGE_ID } from "../../../constants/constantFile";
 import { useFetchProjectStatuss } from "../../../queries/projectstatus_query";
+import { getUserSectorList } from "../../../queries/usersector_query";
+import {
+	createSelectOptions,
+	createMultiSelectOptions,
+} from "../../../utils/commonMethods";
+import SearchTableContainer from "../../../components/Common/SearchTableContainer";
+import { approverBdrExportColumns } from "../../../utils/exportColumnsForLists";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -52,12 +59,6 @@ const truncateText = (text, maxLength) => {
 	}
 	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-import { getUserSectorList } from "../../../queries/usersector_query";
-import {
-	createSelectOptions,
-	createMultiSelectOptions,
-} from "../../../utils/commonMethods";
-import SearchTableContainer from "../../../components/Common/SearchTableContainer";
 
 const ApproverBudgetRequestList = () => {
 	document.title = "Budget Request List";
@@ -599,19 +600,8 @@ const TableWrapper = ({
 					isExcelExport={true}
 					isPdfExport={true}
 					isPrint={true}
-					tableName="budget_request"
-					includeKey={[
-						"bdy_name",
-						"prj_name",
-						"prj_code",
-						"bdr_request_status",
-						"bdr_requested_amount",
-						"bdr_released_amount",
-						"bdr_requested_date_gc",
-						"bdr_released_date_gc",
-						"bdr_description",
-					]}
-					excludeKey={["is_editable", "is_deletable"]}
+					tableName="Budget Request"
+					exportColumns={approverBdrExportColumns}
 					// todo: refactor this to use a more generic button component
 					buttonChildren={<FaChartLine />}
 					onButtonClick={toggleTotalAnalysisModal}

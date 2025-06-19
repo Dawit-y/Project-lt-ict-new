@@ -17,6 +17,7 @@ import { createMultiSelectOptions } from "../../utils/commonMethods";
 import SearchTableContainer from "../../components/Common/SearchTableContainer";
 import TreeForLists from "../../components/Common/TreeForLists2";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import { citizenshipProjectExportColumns } from "../../utils/exportColumnsForLists";
 
 const ProjectModel = () => {
 	document.title = "Citizenship Projects List ";
@@ -241,8 +242,7 @@ const ProjectModel = () => {
 									isPdfExport={true}
 									isPrint={true}
 									tableName="Projects"
-									includeKey={["prj_name", "prj_code"]}
-									excludeKey={["is_editable", "is_deletable"]}
+									exportColumns={citizenshipProjectExportColumns}
 								/>
 							</AdvancedSearch>
 						</SearchTableContainer>

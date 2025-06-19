@@ -24,6 +24,7 @@ import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import AgGridContainer from "../../components/Common/AgGridContainer";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 import { getUserSectorList } from "../../queries/usersector_query";
+import { projectExportColumns } from "../../utils/exportColumnsForLists";
 
 const ProjectModel = () => {
 	document.title = "Projects List";
@@ -200,7 +201,7 @@ const ProjectModel = () => {
 			},
 			{
 				headerName: t("prs_status"),
-				field: "bdr_request_status",
+				field: "status_name",
 				sortable: true,
 				filter: true,
 				width: 150,
@@ -308,8 +309,7 @@ const ProjectModel = () => {
 									isPdfExport={true}
 									isPrint={true}
 									tableName="Projects"
-									includeKey={["prj_name", "prj_code"]}
-									excludeKey={["is_editable", "is_deletable"]}
+									exportColumns={projectExportColumns}
 								/>
 							</AdvancedSearch>
 						</SearchTableContainer>

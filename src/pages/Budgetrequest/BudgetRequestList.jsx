@@ -29,6 +29,7 @@ import { PAGE_ID } from "../../constants/constantFile";
 import BudgetRequestModal from "./BudgetRequestModal";
 import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
 import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
+import { budgetRequestExportColumns } from "../../utils/exportColumnsForLists";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -441,9 +442,8 @@ const BudgetRequestListModel = () => {
 									isExcelExport={true}
 									isPdfExport={true}
 									isPrint={true}
-									tableName="Projects"
-									includeKey={["prj_name", "prj_code"]}
-									excludeKey={["is_editable", "is_deletable"]}
+									tableName="Budget Request"
+									exportColumns={budgetRequestExportColumns}
 								/>
 							</AdvancedSearch>
 						</SearchTableContainer>

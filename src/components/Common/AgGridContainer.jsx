@@ -3,10 +3,16 @@ import { AgGridReact } from "ag-grid-react";
 import { Row, Col, Input, Button } from "reactstrap";
 import ExportToExcel from "./ExportToExcel";
 import ExportToPDF from "./ExportToPdf";
-import PrintPage from "./PrintPage";
+import PrintTable from "./PrintTable";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import { Spinner, UncontrolledTooltip, UncontrolledDropdown, DropdownMenu, DropdownToggle } from "reactstrap";
+import {
+	Spinner,
+	UncontrolledTooltip,
+	UncontrolledDropdown,
+	DropdownMenu,
+	DropdownToggle,
+} from "reactstrap";
 import { FaFileExport } from "react-icons/fa";
 
 import { useSelector } from "react-redux";
@@ -14,8 +20,8 @@ import { createSelector } from "reselect";
 import { useTranslation } from "react-i18next";
 
 const LoadingOverlay = () => {
-  return <Spinner color="primary" />
-}
+	return <Spinner color="primary" />;
+};
 
 const AgGridContainer = ({
 	rowData,
@@ -38,6 +44,7 @@ const AgGridContainer = ({
 	excludeKey = [],
 	tableName = "",
 	includeKey = [],
+	exportColumns = [],
 	buttonChildren = null,
 	onButtonClick = () => {},
 	disabled,
@@ -98,30 +105,25 @@ const AgGridContainer = ({
 									{isExcelExport && (
 										<ExportToExcel
 											tableData={rowData}
-											tablename={tableName}
-											excludeKey={excludeKey}
+											tableName={tableName}
 											dropdownItem={true}
-											includeKey={includeKey}
+											exportColumns={exportColumns}
 										/>
 									)}
 									{isPdfExport && (
 										<ExportToPDF
 											tableData={rowData}
-											tablename={tableName}
-											excludeKey={excludeKey}
+											tableName={tableName}
 											dropdownItem={true}
-											includeKey={includeKey}
+											exportColumns={exportColumns}
 										/>
 									)}
 									{isPrint && (
-										<PrintPage
-											gridRef={gridRef}
-											columnDefs={columnDefs}
+										<PrintTable
 											tableData={rowData}
-											tablename={tableName}
-											excludeKey={excludeKey}
+											tableName={tableName}
 											dropdownItem={true}
-											includeKey={includeKey}
+											exportColumns={exportColumns}
 										/>
 									)}
 								</DropdownMenu>

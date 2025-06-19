@@ -17,9 +17,9 @@ import {
 	DropdownToggle,
 } from "reactstrap";
 import { rankItem } from "@tanstack/match-sorter-utils";
-import ExportToExcel from "../../components/Common/ExportToExcel";
-import PrintHtmlPage from "../../components/Common/PrintHtmlPage";
-import { FaFileExport, FaInfoCircle , FaRedoAlt  } from "react-icons/fa";
+import ExportToExcel from "./ExportToExcel";
+import PrintTable from "./PrintTable";
+import { FaFileExport, FaInfoCircle, FaRedoAlt } from "react-icons/fa";
 import ExportToPDF from "./ExportToPdf";
 
 // Column Filter
@@ -100,6 +100,7 @@ const TableContainer = ({
 	isPdfExport = false,
 	isPrint = true,
 	excludeKey = [],
+	exportColumns = [],
 	tableName = "",
 	infoIcon = false,
 	refetch,
@@ -234,25 +235,25 @@ const TableContainer = ({
 										{isExcelExport && (
 											<ExportToExcel
 												tableData={data}
-												tablename={tableName}
-												excludeKey={excludeKey}
+												tableName={tableName}
 												dropdownItem={true}
+												exportColumns={exportColumns}
 											/>
 										)}
 										{isPdfExport && (
 											<ExportToPDF
 												tableData={data}
-												tablename={tableName}
-												excludeKey={excludeKey}
+												tableName={tableName}
 												dropdownItem={true}
+												exportColumns={exportColumns}
 											/>
 										)}
 										{isPrint && (
-											<PrintHtmlPage
+											<PrintTable
 												tableData={data}
-												tablename={tableName}
-												excludeKey={excludeKey}
+												tableName={tableName}
 												dropdownItem={true}
+												exportColumns={exportColumns}
 											/>
 										)}
 									</DropdownMenu>
@@ -275,7 +276,7 @@ const TableContainer = ({
 									{isFetching ? (
 										<Spinner color="light" size="sm" />
 									) : (
-										<FaRedoAlt  />
+										<FaRedoAlt />
 									)}
 								</Button>
 								<UncontrolledTooltip placement="top" target="refresh_btn">
@@ -304,7 +305,7 @@ const TableContainer = ({
 							zIndex: 1,
 						}}
 					>
-						<FaInfoCircle  size={18} id="info" className="" />
+						<FaInfoCircle size={18} id="info" className="" />
 						<UncontrolledTooltip placement="left" target="info">
 							Sample Info
 						</UncontrolledTooltip>

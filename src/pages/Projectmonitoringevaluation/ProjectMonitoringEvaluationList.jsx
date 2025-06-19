@@ -16,6 +16,7 @@ const SingleAnalysisModal = lazy(() =>
 );
 const TotalAnalysisModal = lazy(() => import("./Analysis/TotalAnalysisModal"));
 import SearchTableContainer from "../../components/Common/SearchTableContainer";
+import { monitoringExportColumns } from "../../utils/exportColumnsForLists";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -295,6 +296,7 @@ const TableWrapper = ({
 	toggleSingleAnalysisModal,
 	toggleTotalAnalysisModal,
 }) => {
+	const { t } = useTranslation();
 	const { data: meTypes } = useFetchMonitoringEvaluationTypes();
 
 	return (
@@ -332,15 +334,29 @@ const TableWrapper = ({
 					isPdfExport={true}
 					isPrint={true}
 					tableName="Project Monitoring and Evaluation"
-					includeKey={[
-						"prj_name",
-						"prj_code",
-						"mne_physical",
-						"mne_financial",
-						"mne_start_date",
-						"mne_end_date",
+					exportColumns={[
+						...monitoringExportColumns,
+						{
+							key: "mne_transaction_type_id",
+							label: "mne_transaction_type",
+							format: (val) => {
+								const labelKey = transactionTypes.find(
+									(type) => type.value === val
+								)?.label;
+								return labelKey ? t(labelKey) : "-";
+							},
+						},
+						{
+							key: "mne_visit_type",
+							label: "mne_visit_type",
+							format: (val) => {
+								const labelKey = visitTypes.find(
+									(type) => type.value === val
+								)?.label;
+								return labelKey ? t(labelKey) : "-";
+							},
+						},
 					]}
-					excludeKey={["is_editable", "is_deletable"]}
 					// todo: refactor this to use a more generic button component
 					buttonChildren={<FaChartLine />}
 					onButtonClick={toggleTotalAnalysisModal}
