@@ -16,7 +16,8 @@ import { useTranslation } from "react-i18next";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import TreeForLists from "../../components/Common/TreeForLists";
+import TreeForLists from "../../components/Common/TreeForLists2";
+import SearchTableContainer from "../../components/Common/SearchTableContainer";
 const AgGridContainer = lazy(() =>
   import("../../components/Common/AgGridContainer")
 );
@@ -27,6 +28,7 @@ const truncateText = (text, maxLength) => {
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 import { createSelectOptions } from "../../utils/commonMethods";
+import { projectBudgetExpenditureExportColumns } from "../../utils/exportColumnsForLists";
 const ProjectBudgetExpenditureList = () => {
   //meta title
   document.title = " ProjectBudgetExpenditure";
@@ -41,6 +43,7 @@ const ProjectBudgetExpenditureList = () => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { data, error, isError, refetch } = useState("");
   const { data: budgetYearData } = useFetchBudgetYears();
   const { data: budgetMonthData } = useFetchBudgetMonths();
@@ -104,6 +107,8 @@ const ProjectBudgetExpenditureList = () => {
         headerName: t("prj_name"),
         field: "prj_name",
         flex: 1,
+        minWidth: 200,
+        width: 150,
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
@@ -115,6 +120,7 @@ const ProjectBudgetExpenditureList = () => {
         field: "prj_code",
         sortable: true,
         filter: true,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_code, 30) || "-";
         },
@@ -124,6 +130,9 @@ const ProjectBudgetExpenditureList = () => {
         field: "pbe_budget_code",
         sortable: true,
         filter: true,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.pbe_budget_code, 30) || "-";
         },
@@ -133,6 +142,7 @@ const ProjectBudgetExpenditureList = () => {
         field: "pbe_budget_year",
         sortable: true,
         filter: true,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.pbe_budget_year, 30) || "-";
         },
@@ -142,6 +152,7 @@ const ProjectBudgetExpenditureList = () => {
         field: "pbe_budget_month",
         sortable: true,
         filter: true,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.pbe_budget_month, 30) || "-";
         },
@@ -151,6 +162,7 @@ const ProjectBudgetExpenditureList = () => {
         field: "ppe_amount",
         sortable: true,
         filter: true,
+        width: 150,
         valueFormatter: (params) => {
           if (params.value != null) {
             return new Intl.NumberFormat("en-US", {
@@ -177,10 +189,12 @@ const ProjectBudgetExpenditureList = () => {
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}
+              setIsCollapsed={setIsCollapsed}
+              isCollapsed={isCollapsed}
             />
 
             {/* Main Content */}
-            <div style={{ flex: "0 0 75%" }}>
+            <SearchTableContainer isCollapsed={isCollapsed}>
               <AdvancedSearch
                 searchHook={useSearchProjectBudgetExpenditures}
                 textSearchKeys={["prj_name", "prj_code"]}
@@ -216,19 +230,10 @@ const ProjectBudgetExpenditureList = () => {
                   isPdfExport={true}
                   isPrint={true}
                   tableName="Project Budget Expenditure"
-                  includeKey={[
-                    "prj_name",
-                    "pbe_reason",
-                    "pbe_project_id",
-                    "pbe_budget_code",
-                    "pbe_budget_year",
-                    "pbe_budget_month",
-                    "ppe_amount",
-                  ]}
-                  excludeKey={["is_editable", "is_deletable"]}
+                  exportColumns={projectBudgetExpenditureExportColumns}
                 />
               </AdvancedSearch>
-            </div>
+            </SearchTableContainer>
           </div>
         </div>
       </div>

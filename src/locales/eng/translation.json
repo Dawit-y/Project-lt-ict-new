@@ -317,6 +317,7 @@
 	"cni_delete_time": "Delete Time",
 	"cni_created_by": "Created By",
 	"cni_status": "Status",
+	"cni_contractor_type":"Contractor Type",
 
 	"project_payment": "Project Payment",
 	"prp_id": "Id",
@@ -825,6 +826,8 @@
 	"bpl_created_date": "Created Date",
 	"bpl_create_time": "Create Time",
 	"bpl_update_time": "Update Time",
+	"bpl_budget_code":"Budget Code",
+	"bpl_budget_year":"Budget Year",
 	"address_tree_Search": "Regional Structure",
 
 	"project_stat": "Project Information",

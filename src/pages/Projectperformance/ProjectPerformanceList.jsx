@@ -1,7 +1,8 @@
 import React, { useEffect, lazy, useMemo, useState } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { useSearchProjectPerformances } from "../../queries/projectperformance_query";
-import TreeForLists from "../../components/Common/TreeForLists";
+import TreeForLists from "../../components/Common/TreeForLists2";
+import SearchTableContainer from "../../components/Common/SearchTableContainer";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
@@ -15,6 +16,7 @@ import {
   createMultiSelectOptions,
   createSelectOptions,
 } from "../../utils/commonMethods";
+import { projectPerformanceExportColumns } from "../../utils/exportColumnsForLists";
 const AgGridContainer = lazy(() =>
   import("../../components/Common/AgGridContainer")
 );
@@ -53,6 +55,7 @@ const ProjectPerformanceList = (props) => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [include, setInclude] = useState(0);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { data, error, isError, refetch } = useState({});
   const toggleViewModal = () => setModal1(!modal1);
   const { data: budgetYearData } = useFetchBudgetYears();
@@ -328,14 +331,6 @@ const ProjectPerformanceList = (props) => {
       {
         headerName: t("analysis"),
         field: "actions",
-        // cellRenderer: (params) => (
-        //   <button
-        //     className="btn btn-sm btn-primary"
-        //     onClick={() => handleViewDetails(params.data)}
-        //   >
-        //     {t("analysis")}
-        //   </button>
-        // ),
         cellRenderer: (params) => {
           const data = params.data;
 
@@ -386,9 +381,11 @@ const ProjectPerformanceList = (props) => {
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}
+              setIsCollapsed={setIsCollapsed}
+              isCollapsed={isCollapsed}
             />
             {/* Main Content */}
-            <div style={{ flex: "0 0 75%" }}>
+            <SearchTableContainer isCollapsed={isCollapsed}>
               <AdvancedSearch
                 searchHook={useSearchProjectPerformances}
                 textSearchKeys={["prj_name", "prj_code"]}
@@ -427,49 +424,7 @@ const ProjectPerformanceList = (props) => {
                   // handleSelectedData={handleSelectedData}
                 />
               </AdvancedSearch>
-              {/* Performance Analysis Section */}
-
-              {/* {selectedRowData ? (
-                <Card>
-                  <CardBody>
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                      <h4 className="card-title mb-0">
-                        <Button
-                          color="link"
-                          size="sm"
-                          onClick={() => setSelectedRowData(null)}
-                        >
-                          <i className="mdi mdi-arrow-left"></i> Back to
-                          Overview
-                        </Button>
-                      </h4>
-                    </div>
-                    <ProjectPerformanceAnalysis
-                      performanceData={selectedRowData}
-                      allData={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      isOverallView={false}
-                      chartType={chartType}
-                      onChartTypeChange={setChartType}
-                    />
-                  </CardBody>
-                </Card>
-              ) : (
-                showSearchResult && (
-                  <ProjectPerformanceAnalysis
-                    allData={
-                      showSearchResult ? searchResults?.data : data?.data || []
-                    }
-                    isOverallView={true}
-                    chartType={chartType}
-                    onChartTypeChange={setChartType}
-                  />
-                )
-              )} */}
-            </div>
+            </SearchTableContainer>
           </div>
         </div>
       </div>
@@ -494,7 +449,22 @@ const TableWrapper = ({
   if (data) {
     transformedData = Array.isArray(data.data) ? data.data : [];
   }
-
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
+  const { data: projectStatusData } = useFetchProjectStatuss();
+  const projectStatusMap = useMemo(() => {
+    return (
+      projectStatusData?.data?.reduce((acc, project_status) => {
+        acc[project_status.prs_id] =
+          lang === "en"
+            ? project_status.prs_status_name_en
+            : lang === "am"
+            ? project_status.prs_status_name_am
+            : project_status.prs_status_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [projectStatusData, lang]);
   return (
     <>
       <SinglePerformanceAnalysisModal
@@ -522,16 +492,16 @@ const TableWrapper = ({
           isPdfExport={true}
           isPrint={true}
           tableName="Project Performance"
-          includeKey={[
-            "prj_name",
-            "prp_record_date_gc",
-            "prp_total_budget_used",
-            "prp_physical_performance",
-            "status_name",
-            "year_name",
-            "month_name",
+          exportColumns={[
+            ...projectPerformanceExportColumns,
+            {
+              key: "prp_project_status_id",
+              label: t("prp_project_status_id"),
+              format: (val) => {
+                return projectStatusMap[val] || "-";
+              },
+            },
           ]}
-          excludeKey={["is_editable", "is_deletable"]}
           buttonChildren={<FaChartLine />}
           onButtonClick={toggleTotalAnalysisModal}
           disabled={!showSearchResult || isLoading}

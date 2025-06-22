@@ -1,16 +1,16 @@
 import React, { useEffect, useMemo, useState, lazy } from "react";
-import Spinners from "../../components/Common/Spinner";
-import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { useSearchProjectHandovers } from "../../queries/projecthandover_query";
 import { useTranslation } from "react-i18next";
-import { Button, Col, Row, Input } from "reactstrap";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import TreeForLists from "../../components/Common/TreeForLists";
+import TreeForLists from "../../components/Common/TreeForLists2";
+import SearchTableContainer from "../../components/Common/SearchTableContainer";
+import { projectHandoverExportColumns } from "../../utils/exportColumnsForLists";
+
 const AgGridContainer = lazy(() =>
   import("../../components/Common/AgGridContainer")
 );
@@ -36,26 +36,9 @@ const ProjectHandoverList = (props) => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { data, isLoading, error, isError, refetch } = useState("");
-  const [quickFilterText, setQuickFilterText] = useState("");
-  const [selectedRows, setSelectedRows] = useState([]);
 
-  // When selection changes, update selectedRows
-  const onSelectionChanged = () => {
-    const selectedNodes = gridRef.current.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
-    setSelectedRows(selectedData);
-  };
-  // Filter by marked rows
-  const filterMarked = () => {
-    if (gridRef.current) {
-      gridRef.current.api.setRowData(selectedRows);
-    }
-  };
-  // Clear the filter and show all rows again
-  const clearFilter = () => {
-    gridRef.current.api.setRowData(showSearchResults ? results : data);
-  };
   //START FOREIGN CALLS
 
   const handleSearchResults = ({ data, error }) => {
@@ -104,6 +87,8 @@ const ProjectHandoverList = (props) => {
         headerName: t("prj_name"),
         field: "prj_name",
         flex: 1,
+        minWidth: 200,
+        width: 150,
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
@@ -115,6 +100,9 @@ const ProjectHandoverList = (props) => {
         field: "prj_code",
         sortable: true,
         filter: true,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_code, 30) || "-";
         },
@@ -124,6 +112,9 @@ const ProjectHandoverList = (props) => {
         field: "prh_handover_date_gc",
         sortable: true,
         filter: "agDateColumnFilter",
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.prh_handover_date_gc, 30) || "-";
         },
@@ -132,6 +123,8 @@ const ProjectHandoverList = (props) => {
         headerName: t("prh_description"),
         field: "prh_description",
         flex: 1,
+        minWidth: 300,
+        width: 300,
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
@@ -159,10 +152,12 @@ const ProjectHandoverList = (props) => {
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}
+              setIsCollapsed={setIsCollapsed}
+              isCollapsed={isCollapsed}
             />
 
             {/* Main Content */}
-            <div style={{ flex: "0 0 75%" }}>
+            <SearchTableContainer isCollapsed={isCollapsed}>
               <AdvancedSearch
                 searchHook={useSearchProjectHandovers}
                 textSearchKeys={["prj_name", "prj_code"]}
@@ -190,16 +185,10 @@ const ProjectHandoverList = (props) => {
                   isPdfExport={true}
                   isPrint={true}
                   tableName="Project Handover"
-                  includeKey={[
-                    "prj_name",
-                    "prj_code",
-                    "prh_handover_date_gc",
-                    "prh_description",
-                  ]}
-                  excludeKey={["is_editable", "is_deletable"]}
+                  exportColumns={projectHandoverExportColumns}
                 />
               </AdvancedSearch>
-            </div>
+            </SearchTableContainer>
           </div>
         </div>
       </div>

@@ -1,13 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import axios from "axios";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
 import "bootstrap/dist/css/bootstrap.min.css";
-import TableContainer from "../../components/Common/TableContainer";
-import * as Yup from "yup";
-import { useFormik } from "formik";
-import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 
 //import components
@@ -15,46 +7,20 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import DeleteModal from "../../components/Common/DeleteModal";
-
-import {
-  useFetchProjectBudgetPlans,
-  useSearchProjectBudgetPlans,
-  useAddProjectBudgetPlan,
-  useDeleteProjectBudgetPlan,
-  useUpdateProjectBudgetPlan,
-} from "../../queries/projectbudgetplan_query";
-import ProjectBudgetPlanModal from "./ProjectBudgetPlanModal";
+import { useSearchProjectBudgetPlans } from "../../queries/projectbudgetplan_query";
 import { useTranslation } from "react-i18next";
 
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
+import { Col, Row, Input } from "reactstrap";
 
-import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
-} from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import TreeForLists from "../../components/Common/TreeForLists";
+import TreeForLists from "../../components/Common/TreeForLists2";
+import SearchTableContainer from "../../components/Common/SearchTableContainer";
+import { projectBudgetPlanExportColumns } from "../../utils/exportColumnsForLists";
+import AgGridContainer from "../../components/Common/AgGridContainer";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -66,10 +32,6 @@ const ProjectBudgetPlanList = () => {
   //meta title
   document.title = " ProjectBudgetPlan";
   const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [projectBudgetPlan, setProjectBudgetPlan] = useState(null);
 
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -81,27 +43,9 @@ const ProjectBudgetPlanList = () => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { data, isLoading, error, isError, refetch } = useState("");
-  const [quickFilterText, setQuickFilterText] = useState("");
-  const [selectedRows, setSelectedRows] = useState([]);
-  const gridRef = useRef(null);
 
-  // When selection changes, update selectedRows
-  const onSelectionChanged = () => {
-    const selectedNodes = gridRef.current.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
-    setSelectedRows(selectedData);
-  };
-  // Filter by marked rows
-  const filterMarked = () => {
-    if (gridRef.current) {
-      gridRef.current.api.setRowData(selectedRows);
-    }
-  };
-  // Clear the filter and show all rows again
-  const clearFilter = () => {
-    gridRef.current.api.setRowData(showSearchResults ? results : data);
-  };
   //START FOREIGN CALLS
 
   const handleSearchResults = ({ data, error }) => {
@@ -149,6 +93,9 @@ const ProjectBudgetPlanList = () => {
         field: "prj_name",
         sortable: true,
         filter: true,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_name, 35) || "-";
         },
@@ -158,6 +105,7 @@ const ProjectBudgetPlanList = () => {
         field: "prj_code",
         sortable: true,
         filter: true,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_code, 35) || "-";
         },
@@ -168,6 +116,7 @@ const ProjectBudgetPlanList = () => {
         field: "bpl_budget_year",
         sortable: true,
         filter: true,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.bpl_budget_year, 35) || "-";
         },
@@ -177,6 +126,9 @@ const ProjectBudgetPlanList = () => {
         field: "bpl_budget_code",
         sortable: true,
         filter: true,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.bpl_budget_code, 35) || "-";
         },
@@ -186,6 +138,9 @@ const ProjectBudgetPlanList = () => {
         field: "bpl_amount",
         sortable: true,
         filter: true,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.bpl_amount, 30) || "-";
         },
@@ -195,8 +150,11 @@ const ProjectBudgetPlanList = () => {
         field: "bpl_description",
         sortable: true,
         filter: true,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
-          return truncateText(params.data.bpl_description, 30) || "-";
+          return truncateText(params.data.bpl_description, 150) || "-";
         },
       },
     ];
@@ -218,8 +176,10 @@ const ProjectBudgetPlanList = () => {
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}
+              isCollapsed={isCollapsed}
+              setIsCollapsed={setIsCollapsed}
             />
-            <div className="w-100">
+            <SearchTableContainer isCollapsed={isCollapsed}>
               <AdvancedSearch
                 searchHook={useSearchProjectBudgetPlans}
                 textSearchKeys={["prj_name", "prj_code"]}
@@ -231,55 +191,25 @@ const ProjectBudgetPlanList = () => {
                 setIsSearchLoading={setIsSearchLoading}
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
-              />
-              {isLoading || isSearchLoading ? (
-                <Spinners />
-              ) : (
-                <div
-                  className="ag-theme-alpine"
-                  style={{ height: "100%", width: "100%" }}
-                >
-                  {/* Row for search input and buttons */}
-                  <Row className="mb-3">
-                    <Col sm="12" md="6">
-                      {/* Search Input for  Filter */}
-                      <Input
-                        type="text"
-                        placeholder="Search..."
-                        onChange={(e) => setQuickFilterText(e.target.value)}
-                        className="mb-2"
-                        style={{ width: "50%", maxWidth: "400px" }}
-                      />
-                    </Col>
-                    <Col sm="12" md="6" className="text-md-end"></Col>
-                  </Row>
-
-                  {/* AG Grid */}
-                  <div>
-                    <AgGridReact
-                      ref={gridRef}
-                      rowData={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      columnDefs={columnDefs}
-                      pagination={true}
-                      paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                      paginationPageSize={10}
-                      quickFilterText={quickFilterText}
-                      onSelectionChanged={onSelectionChanged}
-                      rowHeight={30} // Set the row height here
-                      animateRows={true} // Enables row animations
-                      domLayout="autoHeight" // Auto-size the grid to fit content
-                      onGridReady={(params) => {
-                        params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
+              >
+                <AgGridContainer
+                  rowData={
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
+                  columnDefs={columnDefs}
+                  isLoading={isSearchLoading}
+                  isPagination={true}
+                  rowHeight={35}
+                  paginationPageSize={10}
+                  isGlobalFilter={true}
+                  isExcelExport={true}
+                  isPdfExport={true}
+                  isPrint={true}
+                  tableName="Project Budget Plan"
+                  exportColumns={projectBudgetPlanExportColumns}
+                />
+              </AdvancedSearch>
+            </SearchTableContainer>
           </div>
         </div>
       </div>
