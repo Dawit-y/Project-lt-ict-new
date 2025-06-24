@@ -19,7 +19,7 @@ pipeline {
 
         // PROD container name + port settings
         PROD_CONTAINER_NAME      = 'react-app-prod-p'
-        PROD_PORT_EXT            = '8080'
+        PROD_PORT_EXT            = '8081'
         PROD_PORT_INT            = '80'
     }
 
