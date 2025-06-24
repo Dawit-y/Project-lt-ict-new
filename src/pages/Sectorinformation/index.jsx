@@ -49,6 +49,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { sectorInformationExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -551,6 +552,18 @@ const SectorInformationModel = () => {
                       divClassName="table-responsive"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Sector Information"
+                      exportColumns={[
+                        ...sectorInformationExportColumns,
+                        {
+                          key: "sci_sector_category_id",
+                          label: "sci_sector_category_id",
+                          format: (val) => sectorCategoryMap[val] || "-",
+                        },
+                      ]}
                     />
                   </CardBody>
                 </Card>

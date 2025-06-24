@@ -51,6 +51,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { contractTerminationReasonExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -459,6 +460,11 @@ const ContractTerminationReasonModel = () => {
                       divClassName="-"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Contract Termination Reason"
+                      exportColumns={contractTerminationReasonExportColumns}
                     />
                   </CardBody>
                 </Card>

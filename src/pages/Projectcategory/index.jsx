@@ -40,6 +40,7 @@ import {
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import Filter from "./Filter";
+import { projectCategoryExportColumns } from "../../utils/exportColumnsForLookups";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -534,6 +535,18 @@ const ProjectCategoryModel = () => {
                       divClassName="table-responsive"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Project Category"
+                      exportColumns={[
+                        ...projectCategoryExportColumns,
+                        {
+                          key: "pct_parent_id",
+                          label: "pct_parent_id",
+                          format: (val) => sectorCategoryMap[val] || "",
+                        },
+                      ]}
                     />
                   </CardBody>
                 </Card>

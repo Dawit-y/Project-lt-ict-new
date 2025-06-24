@@ -53,6 +53,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { budgetSourceExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -452,6 +453,11 @@ const BudgetSourceModel = () => {
                       divClassName="-"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Budget Source"
+                      exportColumns={budgetSourceExportColumns}
                     />
                   </CardBody>
                 </Card>

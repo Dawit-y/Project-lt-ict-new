@@ -52,6 +52,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { documentTypeExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -466,6 +467,11 @@ const DocumentTypeModel = () => {
                       divClassName="-"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Document Type"
+                      exportColumns={documentTypeExportColumns}
                     />
                   </CardBody>
                 </Card>

@@ -45,6 +45,7 @@ import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { alphanumericValidation } from "../../utils/Validation/validation";
+import { requestCategoryExportColumns } from "../../utils/exportColumnsForLookups";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -446,6 +447,11 @@ const RequestCategoryModel = () => {
                       divClassName="-"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Request Category"
+                      exportColumns={requestCategoryExportColumns}
                     />
                   </CardBody>
                 </Card>

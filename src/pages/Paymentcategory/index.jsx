@@ -44,6 +44,7 @@ import {
 } from "reactstrap";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { paymentCategoryExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -416,6 +417,11 @@ const PaymentCategoryModel = () => {
                       divClassName="-"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Payment Category"
+                      exportColumns={paymentCategoryExportColumns}
                     />
                   </CardBody>
                 </Card>

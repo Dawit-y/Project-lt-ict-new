@@ -43,6 +43,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { alphanumericValidation } from "../../utils/Validation/validation";
+import { requestStatusExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -406,6 +407,11 @@ const RequestStatusModel = () => {
                       divClassName="-"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Request Status"
+                      exportColumns={requestStatusExportColumns}
                     />
                   </CardBody>
                 </Card>

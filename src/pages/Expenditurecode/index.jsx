@@ -52,6 +52,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { expenditureCodeExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -429,6 +430,11 @@ const ExpenditureCodeModel = () => {
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Expenditure Code"
+                      exportColumns={expenditureCodeExportColumns}
                     />
                   </CardBody>
                 </Card>

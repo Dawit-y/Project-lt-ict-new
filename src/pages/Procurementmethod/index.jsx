@@ -50,6 +50,7 @@ import {
   numberValidation,
   onlyAmharicValidation,
 } from "../../utils/Validation/validation";
+import { procurementMethodExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -451,6 +452,11 @@ const ProcurementMethodModel = () => {
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Procurement Method"
+                      exportColumns={procurementMethodExportColumns}
                     />
                   </CardBody>
                 </Card>

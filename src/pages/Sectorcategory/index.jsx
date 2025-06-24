@@ -52,6 +52,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { sectorCategoryExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -505,6 +506,11 @@ const SectorCategoryModel = () => {
                       divClassName="-"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Sector Category"
+                      exportColumns={sectorCategoryExportColumns}
                     />
                   </CardBody>
                 </Card>

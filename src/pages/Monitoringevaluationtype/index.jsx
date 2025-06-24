@@ -36,6 +36,7 @@ import {
 } from "reactstrap";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { monitoringEvaluationTypeExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -89,22 +90,6 @@ const MonitoringEvaluationTypeModel = () => {
       });
     }
     toggle();
-  };
-  const handleDeleteMonitoringEvaluationType = async () => {
-    if (monitoringEvaluationType && monitoringEvaluationType.met_id) {
-      try {
-        const id = monitoringEvaluationType.met_id;
-        await deleteMonitoringEvaluationType.mutateAsync(id);
-        toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
-      } catch (error) {
-        toast.error(t("delete_failure"), {
-          autoClose: 2000,
-        });
-      }
-      setDeleteModal(false);
-    }
   };
 
   const validation = useFormik({
@@ -536,6 +521,11 @@ const MonitoringEvaluationTypeModel = () => {
                       paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Monitoring Evaluation Type"
+                      exportColumns={monitoringEvaluationTypeExportColumns}
                     />
                   </CardBody>
                 </Card>

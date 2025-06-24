@@ -38,6 +38,7 @@ import {
 } from "reactstrap";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { budgetYearExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -370,6 +371,11 @@ const BudgetYearModel = React.memo(() => {
                       divClassName="-"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Budget Year"
+                      exportColumns={budgetYearExportColumns}
                     />
                   </CardBody>
                 </Card>
