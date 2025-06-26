@@ -16,18 +16,17 @@ import { useFetchUser } from "../../queries/users_query";
 import { useTranslation } from "react-i18next";
 import UpdateModal from "./UpdateModal";
 import ChangePasswordModal from "../../components/Common/ChangePasswordModal";
+import { useAuthUser } from "../../hooks/useAuthUser";
 
 const API_URL = import.meta.env.VITE_BASE_API_FILE;
 
 const UsersProfile = () => {
   const { t } = useTranslation();
 
-  const storedUser = localStorage.getItem("authUser");
-  const authUser = storedUser ? JSON.parse(storedUser) : null;
-
+  const { user: authUser } = useAuthUser();
   const [profile, setProfile] = useState({});
   const { data, isLoading, refetch } = useFetchUser({
-    id: authUser?.user?.usr_id,
+    id: authUser?.usr_id,
   });
 
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -44,7 +43,6 @@ const UsersProfile = () => {
     return formatDistanceToNow(parsedDate, { addSuffix: true });
   };
 
-  const user = authUser?.user;
 
   return (
     <React.Fragment>
@@ -54,12 +52,10 @@ const UsersProfile = () => {
         toggle={() => setIsUpdateModalOpen(!isUpdateModalOpen)}
         refetch={refetch}
       />
-
       <ChangePasswordModal
         isOpen={isPasswordModalOpen}
         toggle={() => setIsPasswordModalOpen(!isPasswordModalOpen)}
       />
-
       <div className="page-content">
         <Container>
           <Row className="d-flex align-items-center justify-content-center">
@@ -103,7 +99,7 @@ const UsersProfile = () => {
                               <div className="p-3 border rounded">
                                 <i className="bx bx-building-house font-size-24 mb-2"></i>
                                 <h5 className="mb-1">
-                                  {user.user_info?.sector_name || "-"}
+                                  {authUser.user_info?.sector_name || "-"}
                                 </h5>
                                 <p className="text-muted mb-0">
                                   {t("sector_name")}
@@ -114,7 +110,7 @@ const UsersProfile = () => {
                               <div className="p-3 border rounded">
                                 <i className="bx bx-globe font-size-24 mb-2"></i>
                                 <h5 className="mb-1">
-                                  {user.user_info?.zone_name || "-"}
+                                  {authUser.user_info?.zone_name || "-"}
                                 </h5>
                                 <p className="text-muted mb-0">
                                   {t("zone_name")}
@@ -125,7 +121,7 @@ const UsersProfile = () => {
                               <div className="p-3 border rounded">
                                 <i className="bx bx-map font-size-24 mb-2"></i>
                                 <h5 className="mb-1">
-                                  {user.user_info?.woreda_name || "-"}
+                                  {authUser.user_info?.woreda_name || "-"}
                                 </h5>
                                 <p className="text-muted mb-0">
                                   {t("woreda_name")}
@@ -173,8 +169,8 @@ const UsersProfile = () => {
                                       {t("created")} :
                                     </th>
                                     <td>
-                                      {user.usr_create_time
-                                        ? formatDate(user.usr_create_time)
+                                      {authUser.usr_create_time
+                                        ? formatDate(authUser.usr_create_time)
                                         : "-"}
                                     </td>
                                   </tr>

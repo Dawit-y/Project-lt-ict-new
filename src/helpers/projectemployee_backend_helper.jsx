@@ -19,12 +19,12 @@ export const getProjectEmployee = async (params = {}) => {
 
 // add project_employee
 export const addProjectEmployee = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROJECT_EMPLOYEE, objectName);
+	post(ADD_PROJECT_EMPLOYEE, objectName);
 
 // update project_employee
 export const updateProjectEmployee = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROJECT_EMPLOYEE +`?emp_id=${objectName?.emp_id}`, objectName);
+	post(UPDATE_PROJECT_EMPLOYEE + `?emp_id=${objectName?.emp_id}`, objectName);
 
 // delete  project_employee
 export const deleteProjectEmployee = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROJECT_EMPLOYEE+`?emp_id=${objectName}`);
+	post(DELETE_PROJECT_EMPLOYEE + `?emp_id=${objectName}`);

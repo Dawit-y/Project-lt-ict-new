@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import Spinners from "../../components/Common/Spinner";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import BudgetRequestAmount from "../Budgetrequestamount/index";
@@ -17,45 +16,31 @@ import {
   Input,
   Badge,
 } from "reactstrap";
-import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-//import BudgetRequestAnalysis from "./BudgetRequestAnalysis";
-import {
-  useSearchBudgetRequests,
-} from "../../queries/budget_request_query";
+import { FaPaperclip, FaPenSquare, FaEye, FaCog } from "react-icons/fa";
+import AgGridContainer from "../../components/Common/AgGridContainer";
+import { useSearchBudgetRequests } from "../../queries/budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import TreeForLists from "../../components/Common/TreeForLists";
+import SearchTableContainer from "../../components/Common/SearchTableContainer";
+import TreeForLists from "../../components/Common/TreeForLists2";
 import AttachFileModal from "../../components/Common/AttachFileModal";
 import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal";
 import { PAGE_ID } from "../../constants/constantFile";
 import BudgetRequestModal from "./BudgetRequestModal";
-import ExportToExcel from "../../components/Common/ExportToExcel";
-import ExportToPDF from "../../components/Common/ExportToPdf";
-import PrintPage from "../../components/Common/PrintPage";
-import { budget_request } from "../../settings/printablecolumns";
 import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
-import { createSelectOptions } from "../../utils/commonMethods";
+import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
+import { budgetRequestExportColumns } from "../../utils/exportColumnsForLists";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
   }
   return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-const statusClasses = new Map([
-  ["Approved", "success"],
-  ["Rejected", "danger"],
-  ["Requested", "secondary"],
-]);
+
 const BudgetRequestListModel = () => {
   document.title = "Budget Request List";
-  const { t } = useTranslation();
-  const [quickFilterText, setQuickFilterText] = useState("");
-  const [selectedRows, setSelectedRows] = useState([]);
-  const gridRef = useRef(null);
-
+  const { t, i18n } = useTranslation();
   const [budgetRequestMetaData, setBudgetRequestMetaData] = useState({});
   const [showCanvas, setShowCanvas] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -66,6 +51,7 @@ const BudgetRequestListModel = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const { data, isLoading, error, isError, refetch } = useState(null);
   const { data: budgetYearData } = useFetchBudgetYears();
@@ -80,15 +66,6 @@ const BudgetRequestListModel = () => {
   const [include, setInclude] = useState(0);
 
   const [transaction, setTransaction] = useState({});
-
-  const budgetYearMap = useMemo(() => {
-    return (
-      budgetYearData?.data?.reduce((acc, year) => {
-        acc[year.bdy_id] = year.bdy_name;
-        return acc;
-      }, {}) || {}
-    );
-  }, [budgetYearData]);
 
   const budgetYearOptions = useMemo(() => {
     return (
@@ -108,11 +85,18 @@ const BudgetRequestListModel = () => {
     );
   }, [bgCategoryOptionsData]);
 
-  // const projectStatusOptions = createSelectOptions(
-  //   projectStatusData?.data || [],
-  //   "prs_id",
-  //   "prs_status_name_or"
-  // );
+  const bgCategoryMap = useMemo(() => {
+    return createMultiLangKeyValueMap(
+      bgCategoryOptionsData?.data || [],
+      "rqc_id",
+      {
+        en: "rqc_name_en",
+        am: "rqc_name_am",
+        or: "rqc_name_or",
+      },
+      i18n.language
+    );
+  }, [bgCategoryOptionsData, i18n.language]);
 
   const projectStatusOptions = useMemo(() => {
     return (
@@ -122,6 +106,19 @@ const BudgetRequestListModel = () => {
       })) || []
     );
   }, [projectStatusData]);
+
+  const projectStatusMap = useMemo(() => {
+    return createMultiLangKeyValueMap(
+      projectStatusData?.data || [],
+      "prs_id",
+      {
+        en: "prs_status_name_en",
+        am: "prs_status_name_am",
+        or: "prs_status_name_or",
+      },
+      i18n.language
+    );
+  }, [projectStatusData, i18n.language]);
 
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
@@ -138,13 +135,6 @@ const BudgetRequestListModel = () => {
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
 
-  // When selection changes, update selectedRows
-  const onSelectionChanged = () => {
-    const selectedNodes = gridRef.current.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
-    setSelectedRows(selectedData);
-  };
-
   useEffect(() => {
     setProjectParams({
       ...(prjLocationRegionId && {
@@ -157,6 +147,7 @@ const BudgetRequestListModel = () => {
       ...(include === 1 && { include }),
     });
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
+
   const handleNodeSelect = (node) => {
     if (node.level === "region") {
       setPrjLocationRegionId(node.id);
@@ -198,12 +189,11 @@ const BudgetRequestListModel = () => {
         field: "bdr_request_category_id",
         sortable: true,
         filter: true,
-        // flex: 1,
+        width: 150,
         cellRenderer: (params) => {
-          const category = requestCategoryOptions.find(
-            (option) => option.value === params.data.bdr_request_category_id
-          );
-          return category ? truncateText(category.label, 30) : "-";
+          if (!params.value || !bgCategoryMap) return "-";
+          const cat = bgCategoryMap[params.value];
+          return cat || "-";
         },
       },
       {
@@ -211,12 +201,10 @@ const BudgetRequestListModel = () => {
         field: "bdr_request_type",
         sortable: true,
         filter: true,
-
+        width: 150,
         cellRenderer: (params) => {
-          const requestType = projectStatusOptions.find(
-            (option) => option.value === params.data.bdr_request_type
-          );
-          return requestType ? truncateText(requestType.label, 30) : "-";
+          if (!params.data?.bdr_request_type || !projectStatusMap) return "-";
+          return projectStatusMap[params.data.bdr_request_type] || "-";
         },
       },
       {
@@ -224,7 +212,8 @@ const BudgetRequestListModel = () => {
         field: "prj_name",
         sortable: true,
         filter: true,
-        // flex: 2,
+        flex: 1,
+        minWidth: 200,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_name, 30) || "-";
         },
@@ -234,7 +223,7 @@ const BudgetRequestListModel = () => {
         field: "prj_code",
         sortable: true,
         filter: true,
-        // flex: 1.5,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_code, 30) || "-";
         },
@@ -244,7 +233,7 @@ const BudgetRequestListModel = () => {
         field: "bdr_requested_amount",
         sortable: true,
         filter: true,
-        // flex: 1.2,
+        width: 200,
         valueFormatter: (params) => {
           if (params.value != null) {
             return new Intl.NumberFormat("en-US", {
@@ -260,7 +249,7 @@ const BudgetRequestListModel = () => {
         field: "bdr_released_amount",
         sortable: true,
         filter: true,
-        // flex: 1.2,
+        width: 200,
         valueFormatter: (params) => {
           if (params.value != null) {
             return new Intl.NumberFormat("en-US", {
@@ -275,7 +264,7 @@ const BudgetRequestListModel = () => {
         headerName: t("bdr_requested_date_gc"),
         field: "bdr_requested_date_gc",
         sortable: true,
-        // flex: 1,
+        width: 200,
         filter: "agDateColumnFilter",
         cellRenderer: (params) => {
           return truncateText(params.data.bdr_requested_date_gc, 30) || "-";
@@ -285,10 +274,11 @@ const BudgetRequestListModel = () => {
         headerName: t("psc_sector_id"),
         field: "sector_name",
         sortable: true,
-        // flex: 1,
+        flex: 1,
         filter: "agDateColumnFilter",
+        minWidth: 300,
         cellRenderer: (params) => {
-          return truncateText(params.data.sector_name, 30) || "-";
+          return truncateText(params.data.sector_name, 60) || "-";
         },
       },
       {
@@ -297,6 +287,7 @@ const BudgetRequestListModel = () => {
         sortable: true,
         filter: true,
         // flex: 1,
+        width: 150,
         cellRenderer: (params) => {
           const badgeClass = params.data.color_code;
           return (
@@ -307,99 +298,78 @@ const BudgetRequestListModel = () => {
         },
       },
       {
-        headerName: t("view_detail"),
-        field: "view_detail",
-        // flex: 1,
-        width: 120,
+        headerName: t("actions"),
+        field: "actions",
+        width: 170,
         cellRenderer: (params) => {
+          const data = params.data;
+
           return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                toggleViewModal();
-                setTransaction(params.data);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
-      {
-        headerName: t("attach_files"),
-        field: "attach_files",
-        width: 80,
-        cellRenderer: (params) => {
-          return (
-            <Button
-              outline
-              type="button"
-              color="success"
-              className="btn-sm"
-              onClick={() => {
-                toggleFileModal();
-                setTransaction(params.data);
-              }}
-            >
-              {t("attach_files")}
-            </Button>
-          );
-        },
-      },
-      {
-        headerName: t("Message"),
-        field: "Message",
-        width: 100,
-        cellRenderer: (params) => {
-          return (
-            <Button
-              outline
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                toggleConvModal();
-                setTransaction(params.data);
-              }}
-            >
-              {t("Message")}
-            </Button>
+            <div className="d-flex gap-1">
+              <Button
+                id={`takeAction-${data.bdr_id}`}
+                color="light"
+                size="sm"
+                onClick={() => {
+                  toggleViewModal();
+                  setTransaction(data);
+                }}
+              >
+                <FaEye />
+              </Button>
+              <UncontrolledTooltip target={`takeAction-${data.bdr_id}`}>
+                {t("view_detail")}
+              </UncontrolledTooltip>
+              <Button
+                id={`view-${data.bdr_id}`}
+                color="light"
+                size="sm"
+                onClick={() => {
+                  handleClick(data);
+                }}
+              >
+                <FaCog />
+              </Button>
+              <UncontrolledTooltip target={`view-${data.bdr_id}`}>
+                {t("Add Detail")}
+              </UncontrolledTooltip>
+
+              <Button
+                id={`attachFiles-${data.bdr_id}`}
+                color="light"
+                size="sm"
+                onClick={() => {
+                  toggleFileModal();
+                  setTransaction(data);
+                }}
+              >
+                <FaPaperclip />
+              </Button>
+              <UncontrolledTooltip target={`attachFiles-${data.bdr_id}`}>
+                {t("attach_files")}
+              </UncontrolledTooltip>
+
+              <Button
+                id={`notes-${data.bdr_id}`}
+                color="light"
+                size="sm"
+                onClick={() => {
+                  toggleConvModal();
+                  setTransaction(data);
+                }}
+              >
+                <FaPenSquare />
+              </Button>
+              <UncontrolledTooltip target={`notes-${data.bdr_id}`}>
+                {t("Notes")}
+              </UncontrolledTooltip>
+            </div>
           );
         },
       },
     ];
-    if (1 == 1) {
-      baseColumnDefs.push({
-        headerName: t("view_detail"),
-        field: "view_detail",
-        width: 120,
-        cellRenderer: (params) => (
-          <div className="d-flex gap-3">
-            {params.data.is_editable ? (
-              <Link
-                to="#"
-                className="text-secondary"
-                onClick={() => handleClick(params.data)}
-              >
-                <i className="mdi mdi-cog font-size-18 ms-2" id="viewtooltip" />
-                <UncontrolledTooltip placement="top" target="viewtooltip">
-                  View
-                </UncontrolledTooltip>
-              </Link>
-            ) : (
-              ""
-            )}
-          </div>
-        ),
-      });
-    }
     return baseColumnDefs;
-  }, []);
-  if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
-  }
+  }, [bgCategoryMap, projectStatusMap]);
 
   return (
     <React.Fragment>
@@ -423,17 +393,16 @@ const BudgetRequestListModel = () => {
       />
       <div className="page-content">
         <div className="">
-          <Breadcrumbs
-            title={t("budget_request")}
-            breadcrumbItem={t("budget_request")}
-          />
+          <Breadcrumbs />
           <div className="w-100 d-flex gap-2">
             <TreeForLists
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}
+              isCollapsed={isCollapsed}
+              setIsCollapsed={setIsCollapsed}
             />
-            <div className="w-100">
+            <SearchTableContainer isCollapsed={isCollapsed}>
               <AdvancedSearch
                 searchHook={useSearchBudgetRequests}
                 dateSearchKeys={["budget_request_date"]}
@@ -458,94 +427,42 @@ const BudgetRequestListModel = () => {
                 setIsSearchLoading={setIsSearchLoading}
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
-              />
-
-              {isLoading || isSearchLoading ? (
-                <Spinners />
-              ) : (
-                <>
-                  <div
-                    className="ag-theme-alpine"
-                    style={{ height: "100%", width: "100%" }}
-                  >
-                    {/* Row for search input and buttons */}
-                    <Row className="mb-3">
-                      <Col sm="12" md="6">
-                        <Input
-                          type="text"
-                          placeholder="Search..."
-                          onChange={(e) => setQuickFilterText(e.target.value)}
-                          className="mb-2"
-                        />
-                      </Col>
-                      <Col
-                        sm="12"
-                        md="6"
-                        className="text-md-end d-flex align-items-center justify-content-end gap-2"
-                      >
-                        <ExportToExcel
-                          tableData={
-                            showSearchResult
-                              ? searchResults?.data
-                              : data?.data || []
-                          }
-                          tablename={"projects"}
-                          excludeKey={["is_editable", "is_deletable"]}
-                        />
-                        <ExportToPDF
-                          tableData={
-                            showSearchResult
-                              ? searchResults?.data
-                              : data?.data || []
-                          }
-                          tablename={"projects"}
-                          includeKey={budget_request}
-                        />
-                        <PrintPage
-                          tableData={
-                            showSearchResult
-                              ? searchResults?.data
-                              : data?.data || []
-                          }
-                          tablename={t("Projects")}
-                          excludeKey={["is_editable", "is_deletable"]}
-                          gridRef={gridRef}
-                          columnDefs={columnDefs}
-                          columnsToIgnore="3"
-                        />
-                      </Col>
-                    </Row>
-                    {/* AG Grid */}
-                    <div style={{}}>
-                      <AgGridReact
-                        ref={gridRef}
-                        rowData={
-                          showSearchResult
-                            ? searchResults?.data
-                            : data?.data || []
-                        }
-                        columnDefs={columnDefs}
-                        pagination={true}
-                        paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                        paginationPageSize={20}
-                        quickFilterText={quickFilterText}
-                        onSelectionChanged={onSelectionChanged}
-                        rowHeight={30}
-                        animateRows={true}
-                        domLayout="autoHeight"
-                      />
-                    </div>
-                    {/*<BudgetRequestAnalysis
-                      data={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                    />*/}
-                  </div>
-                </>
-              )}
-            </div>
+              >
+                <AgGridContainer
+                  rowData={
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
+                  columnDefs={columnDefs}
+                  isLoading={isSearchLoading}
+                  isPagination={true}
+                  paginationPageSize={20}
+                  isGlobalFilter={true}
+                  isAddButton={false}
+                  addButtonText="Add"
+                  isExcelExport={true}
+                  isPdfExport={true}
+                  isPrint={true}
+                  tableName="Budget Request"
+                  exportColumns={[
+                    ...budgetRequestExportColumns,
+                    {
+                      key: "bdr_request_type",
+                      label: t("bdr_request_type"),
+                      format: (val) => {
+                        return projectStatusMap[val] || "-";
+                      },
+                    },
+                    {
+                      key: "bdr_request_category_id",
+                      label: t("bdr_request_category_id"),
+                      format: (val) => {
+                        return bgCategoryMap[val] || "-";
+                      },
+                    },
+                  ]}
+                />
+              </AdvancedSearch>
+            </SearchTableContainer>
           </div>
         </div>
       </div>
@@ -559,7 +476,6 @@ const BudgetRequestListModel = () => {
           components={{
             [t("budget_request_amount")]: BudgetRequestAmount,
             [t("budget_request_task")]: BudgetRequestTask,
-            [t("budget_ex_source")]: BudgetExSource,
           }}
         />
       )}

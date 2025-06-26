@@ -66,7 +66,7 @@ const AttachFileModal = ({
     prd_owner_type_id: ownerTypeId,
     prd_owner_id: ownerId,
   };
-  const { data, isLoading, isError, error, refetch } = useFetchProjectDocuments(
+  const { data, isLoading, isFetching, isError, error, refetch } = useFetchProjectDocuments(
     param,
     isOpen
   );
@@ -442,6 +442,8 @@ const AttachFileModal = ({
                 pagination="pagination"
                 paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
                 divClassName="-"
+                refetch={refetch}
+                isFetching={isFetching}
               />
             )}
             <Modal isOpen={modal} toggle={toggleForm} className="modal-xl">

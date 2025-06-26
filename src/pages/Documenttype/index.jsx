@@ -52,6 +52,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { documentTypeExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -74,7 +75,8 @@ const DocumentTypeModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, isFetching, error, isError, refetch } = useFetchDocumentTypes();
+  const { data, isLoading, isFetching, error, isError, refetch } =
+    useFetchDocumentTypes();
 
   const addDocumentType = useAddDocumentType();
   const updateDocumentType = useUpdateDocumentType();
@@ -140,7 +142,7 @@ const DocumentTypeModel = () => {
       pdt_doc_name_en: (documentType && documentType.pdt_doc_name_en) || "",
       pdt_code: (documentType && documentType.pdt_code) || "",
       pdt_description: (documentType && documentType.pdt_description) || "",
-      pdt_status: (documentType && documentType.pdt_status) || "",
+      pdt_status: (documentType && documentType.pdt_status) || false,
 
       is_deletable: (documentType && documentType.is_deletable) || 1,
       is_editable: (documentType && documentType.is_editable) || 1,
@@ -173,7 +175,7 @@ const DocumentTypeModel = () => {
           pdt_doc_name_en: values.pdt_doc_name_en,
           pdt_code: values.pdt_code,
           pdt_description: values.pdt_description,
-          pdt_status: values.pdt_status,
+          pdt_status: values.pdt_status ? 1 : 0,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -187,7 +189,7 @@ const DocumentTypeModel = () => {
           pdt_doc_name_en: values.pdt_doc_name_en,
           pdt_code: values.pdt_code,
           pdt_description: values.pdt_description,
-          pdt_status: values.pdt_status,
+          pdt_status: values.pdt_status ? 1 : 0,
         };
         // save new DocumentType
         handleAddDocumentType(newDocumentType);
@@ -226,7 +228,7 @@ const DocumentTypeModel = () => {
       pdt_doc_name_en: documentType.pdt_doc_name_en,
       pdt_code: documentType.pdt_code,
       pdt_description: documentType.pdt_description,
-      pdt_status: documentType.pdt_status,
+      pdt_status: documentType.pdt_status === 1,
       is_deletable: documentType.is_deletable,
       is_editable: documentType.is_editable,
     });
@@ -315,6 +317,25 @@ const DocumentTypeModel = () => {
           return (
             <span>
               {truncateText(cellProps.row.original.pdt_description, 30) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: t("is_inactive"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span
+              className={
+                cellProps.row.original.pdt_status === 1
+                  ? "btn btn-sm btn-soft-danger"
+                  : ""
+              }
+            >
+              {cellProps.row.original.pdt_status === 1 ? t("yes") : t("no")}
             </span>
           );
         },
@@ -446,6 +467,11 @@ const DocumentTypeModel = () => {
                       divClassName="-"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Document Type"
+                      exportColumns={documentTypeExportColumns}
                     />
                   </CardBody>
                 </Card>
@@ -595,6 +621,33 @@ const DocumentTypeModel = () => {
                         {validation.errors.pdt_description}
                       </FormFeedback>
                     ) : null}
+                  </Col>
+
+                  <Col className="col-md-4 mb-3">
+                    <div className="form-check mb-4">
+                      <Label className="me-1" for="pdt_status">
+                        {t("is_inactive")}
+                      </Label>
+                      <Input
+                        id="pdt_status"
+                        name="pdt_status"
+                        type="checkbox"
+                        placeholder={t("pdt_status")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.pdt_status}
+                        invalid={
+                          validation.touched.pdt_status &&
+                          validation.errors.pdt_status
+                        }
+                      />
+                      {validation.touched.pdt_status &&
+                        validation.errors.pdt_status && (
+                          <FormFeedback type="invalid">
+                            {validation.errors.pdt_status}
+                          </FormFeedback>
+                        )}
+                    </div>
                   </Col>
                 </Row>
                 <Row>

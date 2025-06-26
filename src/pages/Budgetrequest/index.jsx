@@ -43,7 +43,6 @@ import {
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
-import ActionModal from "./ActionModal";
 import AttachFileModal from "../../components/Common/AttachFileModal";
 import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal"
 import {
@@ -524,11 +523,6 @@ const BudgetRequestModel = () => {
         isOpen={modal1}
         toggle={toggleViewModal}
         transaction={transaction}
-      />
-      <ActionModal
-        isOpen={actionModal}
-        toggle={toggleActionModal}
-        data={transaction}
       />
       <AttachFileModal
         isOpen={fileModal}

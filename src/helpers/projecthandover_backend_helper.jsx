@@ -19,12 +19,12 @@ export const getProjectHandover = async (params = {}) => {
 
 // add project_handover
 export const addProjectHandover = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROJECT_HANDOVER, objectName);
+	post(ADD_PROJECT_HANDOVER, objectName);
 
 // update project_handover
 export const updateProjectHandover = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROJECT_HANDOVER +`?prh_id=${objectName?.prh_id}`, objectName);
+	post(UPDATE_PROJECT_HANDOVER + `?prh_id=${objectName?.prh_id}`, objectName);
 
 // delete  project_handover
 export const deleteProjectHandover = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROJECT_HANDOVER+`?prh_id=${objectName}`);
+	post(DELETE_PROJECT_HANDOVER + `?prh_id=${objectName}`);

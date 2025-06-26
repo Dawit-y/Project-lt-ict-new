@@ -19,12 +19,15 @@ export const getContractTerminationReason = async (params = {}) => {
 
 // add contract_termination_reason
 export const addContractTerminationReason = async (objectName) =>
-  post(`${apiUrl}` + ADD_CONTRACT_TERMINATION_REASON, objectName);
+	post(ADD_CONTRACT_TERMINATION_REASON, objectName);
 
 // update contract_termination_reason
 export const updateContractTerminationReason = (objectName) =>
-post(`${apiUrl}`+UPDATE_CONTRACT_TERMINATION_REASON +`?ctr_id=${objectName?.ctr_id}`, objectName);
+	post(
+		UPDATE_CONTRACT_TERMINATION_REASON + `?ctr_id=${objectName?.ctr_id}`,
+		objectName
+	);
 
 // delete  contract_termination_reason
 export const deleteContractTerminationReason = (objectName) =>
-  post(`${apiUrl}`+DELETE_CONTRACT_TERMINATION_REASON+`?ctr_id=${objectName}`);
+	post(DELETE_CONTRACT_TERMINATION_REASON + `?ctr_id=${objectName}`);

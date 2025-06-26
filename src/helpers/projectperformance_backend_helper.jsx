@@ -19,12 +19,15 @@ export const getProjectPerformance = async (params = {}) => {
 
 // add project_performance
 export const addProjectPerformance = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROJECT_PERFORMANCE, objectName);
+	post(ADD_PROJECT_PERFORMANCE, objectName);
 
 // update project_performance
 export const updateProjectPerformance = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROJECT_PERFORMANCE +`?prp_id=${objectName?.prp_id}`, objectName);
+	post(
+		UPDATE_PROJECT_PERFORMANCE + `?prp_id=${objectName?.prp_id}`,
+		objectName
+	);
 
 // delete  project_performance
 export const deleteProjectPerformance = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROJECT_PERFORMANCE+`?prp_id=${objectName}`);
+	post(DELETE_PROJECT_PERFORMANCE + `?prp_id=${objectName}`);

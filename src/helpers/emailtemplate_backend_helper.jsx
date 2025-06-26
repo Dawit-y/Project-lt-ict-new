@@ -19,12 +19,12 @@ export const getEmailTemplate = async (params = {}) => {
 
 // add email_template
 export const addEmailTemplate = async (objectName) =>
-  post(`${apiUrl}` + ADD_EMAIL_TEMPLATE, objectName);
+	post(ADD_EMAIL_TEMPLATE, objectName);
 
 // update email_template
 export const updateEmailTemplate = (objectName) =>
-post(`${apiUrl}`+UPDATE_EMAIL_TEMPLATE +`?emt_id=${objectName?.emt_id}`, objectName);
+	post(UPDATE_EMAIL_TEMPLATE + `?emt_id=${objectName?.emt_id}`, objectName);
 
 // delete  email_template
 export const deleteEmailTemplate = (objectName) =>
-  post(`${apiUrl}`+DELETE_EMAIL_TEMPLATE+`?emt_id=${objectName}`);
+	post(DELETE_EMAIL_TEMPLATE + `?emt_id=${objectName}`);

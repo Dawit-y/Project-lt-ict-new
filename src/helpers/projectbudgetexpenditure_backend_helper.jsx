@@ -23,19 +23,15 @@ export const getProjectBudgetExpenditure = async (params = {}) => {
 
 // add project_budget_expenditure
 export const addProjectBudgetExpenditure = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROJECT_BUDGET_EXPENDITURE, objectName);
+	post(ADD_PROJECT_BUDGET_EXPENDITURE, objectName);
 
 // update project_budget_expenditure
 export const updateProjectBudgetExpenditure = (objectName) =>
-  post(
-    `${apiUrl}` +
-      UPDATE_PROJECT_BUDGET_EXPENDITURE +
-      `?pbe_id=${objectName?.pbe_id}`,
-    objectName
-  );
+	post(
+		UPDATE_PROJECT_BUDGET_EXPENDITURE + `?pbe_id=${objectName?.pbe_id}`,
+		objectName
+	);
 
 // delete  project_budget_expenditure
 export const deleteProjectBudgetExpenditure = (objectName) =>
-  post(
-    `${apiUrl}` + DELETE_PROJECT_BUDGET_EXPENDITURE + `?pbe_id=${objectName}`
-  );
+	post(DELETE_PROJECT_BUDGET_EXPENDITURE + `?pbe_id=${objectName}`);

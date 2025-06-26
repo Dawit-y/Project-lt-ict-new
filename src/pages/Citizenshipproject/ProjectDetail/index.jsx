@@ -47,6 +47,8 @@ const LazyComponents = {
   ProcurementInformationModel: lazy(() =>
     import("../../Procurementinformation")
   ),
+  ImplementingAreaModel: lazy(() => import("../../Implementingarea")),
+  ProjectBudgetSourceModel: lazy(() => import("../../Projectbudgetsource")),
 };
 
 const ProjectsOverview = () => {
@@ -120,6 +122,11 @@ const ProjectsOverview = () => {
         component: LazyComponents.ProjectSupplimentaryModel,
         path: "supplimentary",
       },
+      42: {
+        label: t("project_budget_source"),
+        component: LazyComponents.ProjectBudgetSourceModel,
+        path: "project_budget_source",
+      },
       40: {
         label: t("project_variation"),
         component: LazyComponents.ProjectVariationModel,
@@ -160,6 +167,11 @@ const ProjectsOverview = () => {
         component: LazyComponents.ProjectKpiResultModel,
         path: "kpi_result",
       },
+      81: {
+        label: t("implementing_area"),
+        component: LazyComponents.ImplementingAreaModel,
+        path: "implementing_area",
+      },
       //39: { label: t("request_information"), component: LazyComponents.RequestInformationModel, path: "information" },
     }),
     [t]
@@ -170,7 +182,7 @@ const ProjectsOverview = () => {
   const [allowedTabs, setAllowedTabs] = useState(data?.allowedTabs || []);
   useEffect(() => {
     if (data?.data?.prj_project_status_id <= 4) {
-      setAllowedTabs([34, 54, 37]);
+      setAllowedTabs([54, 33]);
     } else {
       setAllowedTabs(data?.allowedTabs || []);
     }

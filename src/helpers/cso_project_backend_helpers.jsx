@@ -40,25 +40,12 @@ export const fetchProject = async (prj_id) => {
 };
 
 // add project
-export const addProject = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROJECT, objectName);
+export const addProject = async (objectName) => post(ADD_PROJECT, objectName);
 
 // update project
 export const updateProject = (objectName) =>
-  post(
-    `${apiUrl}` + UPDATE_PROJECT + `?prj_id=${objectName?.prj_id}`,
-    objectName
-  );
+	post(UPDATE_PROJECT + `?prj_id=${objectName?.prj_id}`, objectName);
 
 // delete  project
 export const deleteProject = (objectName) =>
-  post(`${apiUrl}` + DELETE_PROJECT + `?prj_id=${objectName}`);
-
-export const fetchSingleProjectApi = async (prj_id) => {
-  try {
-    const response = await get(`/project/${prj_id}`);
-    return response;
-  } catch (error) {
-    console.log(error);
-  }
-};
+	post(DELETE_PROJECT + `?prj_id=${objectName}`);

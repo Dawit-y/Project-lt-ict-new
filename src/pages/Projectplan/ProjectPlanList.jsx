@@ -11,9 +11,12 @@ import { useTranslation } from "react-i18next";
 import { Button, Col, Row, Input } from "reactstrap";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import TreeForLists from "../../components/Common/TreeForLists";
+import TreeForLists from "../../components/Common/TreeForLists2";
+import { ProjectPlanExportColumns } from "../../utils/exportColumnsForLists";
+import SearchTableContainer from "../../components/Common/SearchTableContainer";
 import GanttModal from "./GanttModal";
-import { useFetchBudgetYears } from "../../queries/budgetyear_query"
+import { useFetchBudgetYears } from "../../queries/budgetyear_query";
+import { format } from "echarts";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -39,6 +42,7 @@ const ProjectPlanList = () => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const { data, isLoading, error, isError, refetch } = useState("");
   const [quickFilterText, setQuickFilterText] = useState("");
@@ -115,7 +119,7 @@ const ProjectPlanList = () => {
         valueGetter: (params) => params.node.rowIndex + 1,
         sortable: false,
         filter: false,
-        flex: .7,
+        flex: 0.7,
       },
       {
         headerName: t("pld_name"),
@@ -192,12 +196,12 @@ const ProjectPlanList = () => {
               size="sm"
               onClick={() => {
                 setProjectPlan(params.data);
-                toggleViewModal()
+                toggleViewModal();
               }}
             >
               {t("view_gannt")}
             </Button>
-          )
+          );
         },
       },
     ];
@@ -210,17 +214,23 @@ const ProjectPlanList = () => {
 
   return (
     <React.Fragment>
-      <GanttModal isOpen={modal1} toggle={toggleViewModal} projectPlan={projectPlan} />
+      <GanttModal
+        isOpen={modal1}
+        toggle={toggleViewModal}
+        projectPlan={projectPlan}
+      />
       <div className="page-content">
         <div>
           <Breadcrumbs />
-          <div className="w-100 d-flex gap-2">
+          <div className="d-flex gap-2 flex-nowrap">
             <TreeForLists
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}
+              setIsCollapsed={setIsCollapsed}
+              isCollapsed={isCollapsed}
             />
-            <div className="w-100">
+            <SearchTableContainer isCollapsed={isCollapsed}>
               <AdvancedSearch
                 searchHook={useSearchProjectPlans}
                 textSearchKeys={["pld_name"]}
@@ -246,16 +256,19 @@ const ProjectPlanList = () => {
                   isPdfExport={true}
                   isPrint={true}
                   tableName="Project Plan"
-                  includeKey={[
-                    "prj_name",
-                    "prj_code",
-                    "pld_start_date_gc",
-                    "pld_end_date_gc"
+                  exportColumns={[
+                    ...ProjectPlanExportColumns,
+                    {
+                      key: "pld_budget_year_id",
+                      label: t("pld_budget_year_id"),
+                      format: (val) => {
+                        return budgetYearMap[val] || "-";
+                      },
+                    },
                   ]}
-                  excludeKey={["is_editable", "is_deletable"]}
                 />
               </AdvancedSearch>
-            </div>
+            </SearchTableContainer>
           </div>
         </div>
       </div>

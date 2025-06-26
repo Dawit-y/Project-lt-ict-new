@@ -54,21 +54,21 @@ const ProjectDetailTabDynamic = ({
   return (
     <React.Fragment>
       {navItems.length > 0 && (
-        <Nav pills className="navtab-bg nav-justified">
+        <Nav className="navtab-bg nav-justified">
           {navItems.map((navItem) => (
             <NavItem key={navItem} className="me-3 mb-3" style={{ whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
               <NavLink
                 href={`#${components[navItem].path}`}
-                style={{
-                  cursor: "pointer",
-                  borderColor: activeTab1 === navItem ? "#007bff" : "#ccc",
-                }}
-                className={classnames({
-                  active: activeTab1 === components[navItem].path,
-                  "bg-light": activeTab1 !== components[navItem].path,
-                  "w-25": navItems.length === 1,
-                })}
                 onClick={() => toggleTab(components[navItem].path)}
+                style={{ cursor: "pointer" }}
+                className={classnames(
+                  "text-nowrap rounded",
+                  {
+                    "active bg-primary text-light border-primary": activeTab1 === components[navItem].path,
+                    "bg-light text-dark border-secondary": activeTab1 !== components[navItem].path,
+                    "w-25": navItems.length === 1,
+                  }
+                )}
               >
                 <span className="d-none d-sm-block">{navItem}</span>
               </NavLink>

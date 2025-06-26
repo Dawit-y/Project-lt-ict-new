@@ -70,7 +70,7 @@ const AuthMiddleware = ({ children }) => {
     allowedPaths.push("/projectdetail_cso/:id");
   }
 
-  const isAuthenticated = localStorage.getItem("authUser");
+  const isAuthenticated = storedUser && Object.keys(storedUser).length > 0;
 
   if (isRestoring || sideDataLoading || authLoading || csoInfoLoading) {
     return (

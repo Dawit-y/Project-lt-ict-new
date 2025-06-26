@@ -33,46 +33,46 @@ const RequestInformationModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('rqi_title')}: <span className="text-primary">{transaction.rqi_title}</span>
-          </p>
+          <tr>
+            <p className="mb-2">
+              {t('rqi_title')}: <span className="text-primary">{transaction.rqi_title}</span>
+            </p>
           </tr><tr>
-                    <p className="mb-2">
-            {t('rqi_object_id')}: <span className="text-primary">{transaction.rqi_object_id}</span>
-          </p>
+            <p className="mb-2">
+              {t('rqi_object_id')}: <span className="text-primary">{transaction.rqi_object_id}</span>
+            </p>
           </tr><tr>
-                    <p className="mb-2">
-            {t('rqi_request_status_id')}: <span className="text-primary">{transaction.rqi_request_status_id}</span>
-          </p>
+            <p className="mb-2">
+              {t('rqi_request_status_id')}: <span className="text-primary">{transaction.rqi_request_status_id}</span>
+            </p>
           </tr><tr>
-                    <p className="mb-2">
-            {t('rqi_request_category_id')}: <span className="text-primary">{transaction.rqi_request_category_id}</span>
-          </p>
+            <p className="mb-2">
+              {t('rqi_request_category_id')}: <span className="text-primary">{transaction.rqi_request_category_id}</span>
+            </p>
           </tr><tr>
-                    <p className="mb-2">
-            {t('rqi_request_date_et')}: <span className="text-primary">{transaction.rqi_request_date_et}</span>
-          </p>
+            <p className="mb-2">
+              {t('rqi_request_date_et')}: <span className="text-primary">{transaction.rqi_request_date_et}</span>
+            </p>
           </tr><tr>
-                    <p className="mb-2">
-            {t('rqi_request_date_gc')}: <span className="text-primary">{transaction.rqi_request_date_gc}</span>
-          </p>
+            <p className="mb-2">
+              {t('rqi_request_date_gc')}: <span className="text-primary">{transaction.rqi_request_date_gc}</span>
+            </p>
           </tr><tr>
-                    <p className="mb-2">
-            {t('rqi_description')}: <span className="text-primary">{transaction.rqi_description}</span>
-          </p>
+            <p className="mb-2">
+              {t('rqi_description')}: <span className="text-primary">{transaction.rqi_description}</span>
+            </p>
           </tr><tr>
-                    <p className="mb-2">
-            {t('rqi_status')}: <span className="text-primary">{transaction.rqi_status}</span>
-          </p>
+            <p className="mb-2">
+              {t('rqi_status')}: <span className="text-primary">{transaction.rqi_status}</span>
+            </p>
           </tr>
 
           {transaction.is_deletable === 1 && (
-            <p className="text-danger">data is deletable</p>
+            <p className="text-danger">{t('data_is_deletable')}</p>
           )}
-          
+
           {transaction.is_editable === 1 && (
-            <p className="text-success">Editable</p>
+            <p className="text-success">{t('editable')}</p>
           )}
         </ModalBody>
         <ModalFooter>

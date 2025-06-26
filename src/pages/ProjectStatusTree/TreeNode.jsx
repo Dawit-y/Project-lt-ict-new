@@ -1,8 +1,7 @@
 //////////////////////  tree one ////////////////
 
 // import React, { useState } from 'react';
-// import { FaChevronRight, FaChevronDown } from 'react-icons/fa';
-// import { AiOutlineFolder } from 'react-icons/ai';
+// import { FaChevronRight, FaChevronDown , FaFolder} from 'react-icons/fa';
 
 // // TreeNode component representing a project or folder
 // const TreeNode = ({ node, onNodeClick, level = 0 }) => {
@@ -58,7 +57,7 @@
 //             {isExpanded ? <FaChevronDown /> : <FaChevronRight />}
 //           </span>
 //         )}
-//         <AiOutlineFolder style={{ marginRight: '8px', color: '#007bff' }} />
+//         <FaFolder  style={{ marginRight: '8px', color: '#007bff' }} />
 //         <span>{node.name}</span>
 //       </div>
 
@@ -85,8 +84,7 @@
 
 
 import React, { useState } from 'react';
-import { FaChevronRight, FaChevronDown } from 'react-icons/fa';
-import { AiOutlineFolder } from 'react-icons/ai';
+import { FaChevronRight, FaChevronDown, FaFolder } from "react-icons/fa";
 
 // TreeNode component representing a project or folder
 const TreeNode = ({ node, onNodeClick, level = 0 }) => {
@@ -146,7 +144,7 @@ const TreeNode = ({ node, onNodeClick, level = 0 }) => {
             {isExpanded ? <FaChevronDown /> : <FaChevronRight />}
           </span>
         )}
-        <AiOutlineFolder style={{ marginRight: '8px', color: '#007bff' }} />
+        <FaFolder  style={{ marginRight: '8px', color: '#007bff' }} />
         <span>{node.name}</span>
       </div>
 

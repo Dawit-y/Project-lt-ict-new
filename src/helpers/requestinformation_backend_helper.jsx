@@ -19,12 +19,15 @@ export const getRequestInformation = async (params = {}) => {
 
 // add request_information
 export const addRequestInformation = async (objectName) =>
-  post(`${apiUrl}` + ADD_REQUEST_INFORMATION, objectName);
+	post(ADD_REQUEST_INFORMATION, objectName);
 
 // update request_information
 export const updateRequestInformation = (objectName) =>
-post(`${apiUrl}`+UPDATE_REQUEST_INFORMATION +`?rqi_id=${objectName?.rqi_id}`, objectName);
+	post(
+		UPDATE_REQUEST_INFORMATION + `?rqi_id=${objectName?.rqi_id}`,
+		objectName
+	);
 
 // delete  request_information
 export const deleteRequestInformation = (objectName) =>
-  post(`${apiUrl}`+DELETE_REQUEST_INFORMATION+`?rqi_id=${objectName}`);
+	post(DELETE_REQUEST_INFORMATION + `?rqi_id=${objectName}`);

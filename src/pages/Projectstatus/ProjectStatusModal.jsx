@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,16 +8,25 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+  Badge,
+} from "reactstrap";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+  width: "100%",
+  maxWidth: "1200px",
 };
 
 const ProjectStatusModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction } = props;
+
+  const renderBooleanBadge = (value) => {
+    return value === 1 ? (
+      <Badge color="success">{t("Yes")}</Badge>
+    ) : (
+      <Badge color="danger">{t("No")}</Badge>
+    );
+  };
 
   return (
     <Modal
@@ -30,52 +39,60 @@ const ProjectStatusModal = (props) => {
       toggle={toggle}
       style={modalStyle}
     >
-      <div className="modal-xl">
-        <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
-        <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('prs_status_name_or')}: <span className="text-primary">{transaction.prs_status_name_or}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prs_status_name_am')}: <span className="text-primary">{transaction.prs_status_name_am}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prs_status_name_en')}: <span className="text-primary">{transaction.prs_status_name_en}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prs_color_code')}: <span className="text-primary">{transaction.prs_color_code}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prs_order_number')}: <span className="text-primary">{transaction.prs_order_number}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prs_description')}: <span className="text-primary">{transaction.prs_description}</span>
-          </p>
-          </tr>
-         {/* <tr>
-                    <p className="mb-2">
-            {t('prs_spare_column')}: <span className="text-primary">{transaction.prs_spare_column}</span>
-          </p>
-          </tr>*/}
-        </ModalBody>
-        <ModalFooter>
-          <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
-          </Button>
-        </ModalFooter>
-      </div>
+      <ModalHeader toggle={toggle} className="">
+        <h4 className="modal-title">{t("view_details")}</h4>
+      </ModalHeader>
+      <ModalBody>
+        <Table bordered size="sm" responsive className="table-details">
+          <tbody>
+            <tr>
+              <th width="30%">{t("prs_status_name_or")}</th>
+              <td>{transaction.prs_status_name_or || "-"}</td>
+            </tr>
+            <tr>
+              <th>{t("prs_status_name_am")}</th>
+              <td>{transaction.prs_status_name_am || "-"}</td>
+            </tr>
+            <tr>
+              <th>{t("prs_status_name_en")}</th>
+              <td>{transaction.prs_status_name_en || "-"}</td>
+            </tr>
+            <tr>
+              <th>{t("prs_color_code")}</th>
+              <td>
+                <span className="text-primary font-weight-bold">
+                  {transaction.prs_color_code || "-"}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <th>{t("prs_order_number")}</th>
+              <td>{transaction.prs_order_number || "-"}</td>
+            </tr>
+            <tr>
+              <th>{t("prs_description")}</th>
+              <td>{transaction.prs_description || "-"}</td>
+            </tr>
+            <tr>
+              <th>{t("is_inactive")}</th>
+              <td>{renderBooleanBadge(transaction.prs_status)}</td>
+            </tr>
+          </tbody>
+        </Table>
+      </ModalBody>
+      <ModalFooter className="border-top-0">
+        <Button color="secondary" onClick={toggle} className="px-4">
+          {t("Close")}
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 };
+
 ProjectStatusModal.propTypes = {
   toggle: PropTypes.func,
   isOpen: PropTypes.bool,
   transaction: PropTypes.object,
 };
+
 export default ProjectStatusModal;

@@ -52,6 +52,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { sectorCategoryExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -140,13 +141,24 @@ const SectorCategoryModel = () => {
       psc_code: (sectorCategory && sectorCategory.psc_code) || "",
       psc_sector_id: (sectorCategory && sectorCategory.psc_sector_id) || "",
       psc_description: (sectorCategory && sectorCategory.psc_description) || "",
-      psc_status: (sectorCategory && sectorCategory.psc_status) || "",
+      psc_status: (sectorCategory && sectorCategory.psc_status) || false,
+      psc_gov_active:
+        (sectorCategory && sectorCategory.psc_gov_active) || false,
+      psc_cso_active:
+        (sectorCategory && sectorCategory.psc_cso_active) || false,
+      psc_citizenship_active:
+        (sectorCategory && sectorCategory.psc_citizenship_active) || false,
 
       is_deletable: (sectorCategory && sectorCategory.is_deletable) || 1,
       is_editable: (sectorCategory && sectorCategory.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
+      psc_gov_active: Yup.string().required(t("psc_gov_active")),
+      psc_cso_active: Yup.string().required(t("psc_cso_active")),
+      psc_citizenship_active: Yup.string().required(
+        t("psc_citizenship_active")
+      ),
       psc_name: alphanumericValidation(2, 100, true).test(
         "unique-psc_name",
         t("Already exists"),
@@ -170,7 +182,11 @@ const SectorCategoryModel = () => {
           psc_code: values.psc_code,
           psc_sector_id: values.psc_sector_id,
           psc_description: values.psc_description,
-          psc_status: values.psc_status,
+          psc_status: values.psc_status ? 1 : 0,
+
+          psc_gov_active: values.psc_gov_active ? 1 : 0,
+          psc_cso_active: values.psc_cso_active ? 1 : 0,
+          psc_citizenship_active: values.psc_citizenship_active ? 1 : 0,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -183,7 +199,11 @@ const SectorCategoryModel = () => {
           psc_code: values.psc_code,
           psc_sector_id: values.psc_sector_id,
           psc_description: values.psc_description,
-          psc_status: values.psc_status,
+          psc_status: values.psc_status ? 1 : 0,
+
+          psc_gov_active: values.psc_gov_active ? 1 : 0,
+          psc_cso_active: values.psc_cso_active ? 1 : 0,
+          psc_citizenship_active: values.psc_citizenship_active ? 1 : 0,
         };
         // save new SectorCategory
         handleAddSectorCategory(newSectorCategory);
@@ -221,7 +241,11 @@ const SectorCategoryModel = () => {
       psc_code: sectorCategory.psc_code,
       psc_sector_id: sectorCategory.psc_sector_id,
       psc_description: sectorCategory.psc_description,
-      psc_status: sectorCategory.psc_status,
+      psc_status: sectorCategory.psc_status === 1,
+
+      psc_gov_active: sectorCategory.psc_gov_active === 1,
+      psc_cso_active: sectorCategory.psc_cso_active === 1,
+      psc_citizenship_active: sectorCategory.psc_citizenship_active === 1,
 
       is_deletable: sectorCategory.is_deletable,
       is_editable: sectorCategory.is_editable,
@@ -272,6 +296,85 @@ const SectorCategoryModel = () => {
           return (
             <span>
               {truncateText(cellProps.row.original.psc_code, 30) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: "psc_gov_active",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span
+              className={
+                cellProps.row.original.psc_gov_active === 1
+                  ? "btn btn-sm btn-soft-success"
+                  : ""
+              }
+            >
+              {cellProps.row.original.psc_gov_active === 1 ? t("yes") : t("no")}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: "psc_cso_active",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span
+              className={
+                cellProps.row.original.psc_cso_active === 1
+                  ? "btn btn-sm btn-soft-success"
+                  : ""
+              }
+            >
+              {cellProps.row.original.psc_cso_active === 1 ? t("yes") : t("no")}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: "psc_citizenship_active",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span
+              className={
+                cellProps.row.original.psc_citizenship_active === 1
+                  ? "btn btn-sm btn-soft-success"
+                  : ""
+              }
+            >
+              {cellProps.row.original.psc_citizenship_active === 1
+                ? t("yes")
+                : t("no")}
+            </span>
+          );
+        },
+      },
+
+      {
+        header: "",
+        accessorKey: t("is_inactive"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span
+              className={
+                cellProps.row.original.psc_status === 1
+                  ? "btn btn-sm btn-soft-danger"
+                  : ""
+              }
+            >
+              {cellProps.row.original.psc_status === 1 ? t("yes") : t("no")}
             </span>
           );
         },
@@ -403,6 +506,11 @@ const SectorCategoryModel = () => {
                       divClassName="-"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Sector Category"
+                      exportColumns={sectorCategoryExportColumns}
                     />
                   </CardBody>
                 </Card>
@@ -438,14 +546,14 @@ const SectorCategoryModel = () => {
                       value={validation.values.psc_name || ""}
                       invalid={
                         validation.touched.psc_name &&
-                          validation.errors.psc_name
+                        validation.errors.psc_name
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.psc_name &&
-                      validation.errors.psc_name ? (
+                    validation.errors.psc_name ? (
                       <FormFeedback type="invalid">
                         {validation.errors.psc_name}
                       </FormFeedback>
@@ -462,20 +570,129 @@ const SectorCategoryModel = () => {
                       value={validation.values.psc_code || ""}
                       invalid={
                         validation.touched.psc_code &&
-                          validation.errors.psc_code
+                        validation.errors.psc_code
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.psc_code &&
-                      validation.errors.psc_code ? (
+                    validation.errors.psc_code ? (
                       <FormFeedback type="invalid">
                         {validation.errors.psc_code}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+
+                  <Col className="col-md-3 mb-3">
+                    <div className="form-check mb-4">
+                      <Label className="me-1" for="psc_gov_active">
+                        {t("psc_gov_active")}
+                      </Label>
+                      <Input
+                        id="psc_gov_active"
+                        name="psc_gov_active"
+                        type="checkbox"
+                        placeholder={t("psc_gov_active")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.psc_gov_active}
+                        invalid={
+                          validation.touched.psc_gov_active &&
+                          validation.errors.psc_gov_active
+                        }
+                      />
+                      {validation.touched.psc_gov_active &&
+                        validation.errors.psc_gov_active && (
+                          <FormFeedback type="invalid">
+                            {validation.errors.psc_gov_active}
+                          </FormFeedback>
+                        )}
+                    </div>
+                  </Col>
+
+                  <Col className="col-md-3 mb-3">
+                    <div className="form-check mb-4">
+                      <Label className="me-1" for="psc_cso_active">
+                        {t("psc_cso_active")}
+                      </Label>
+                      <Input
+                        id="psc_cso_active"
+                        name="psc_cso_active"
+                        type="checkbox"
+                        placeholder={t("psc_cso_active")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.psc_cso_active}
+                        invalid={
+                          validation.touched.psc_cso_active &&
+                          validation.errors.psc_cso_active
+                        }
+                      />
+                      {validation.touched.psc_cso_active &&
+                        validation.errors.psc_cso_active && (
+                          <FormFeedback type="invalid">
+                            {validation.errors.psc_cso_active}
+                          </FormFeedback>
+                        )}
+                    </div>
+                  </Col>
+
+                  <Col className="col-md-3 mb-3">
+                    <div className="form-check mb-4">
+                      <Label className="me-1" for="psc_citizenship_active">
+                        {t("psc_citizenship_active")}
+                      </Label>
+                      <Input
+                        id="psc_citizenship_active"
+                        name="psc_citizenship_active"
+                        type="checkbox"
+                        placeholder={t("psc_citizenship_active")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.psc_citizenship_active}
+                        invalid={
+                          validation.touched.psc_citizenship_active &&
+                          validation.errors.psc_citizenship_active
+                        }
+                      />
+                      {validation.touched.psc_citizenship_active &&
+                        validation.errors.psc_citizenship_active && (
+                          <FormFeedback type="invalid">
+                            {validation.errors.psc_citizenship_active}
+                          </FormFeedback>
+                        )}
+                    </div>
+                  </Col>
+
+                  <Col className="col-md-3 mb-3">
+                    <div className="form-check mb-4">
+                      <Label className="me-1" for="psc_status">
+                        {t("is_inactive")}
+                      </Label>
+                      <Input
+                        id="psc_status"
+                        name="psc_status"
+                        type="checkbox"
+                        placeholder={t("psc_status")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.psc_status}
+                        invalid={
+                          validation.touched.psc_status &&
+                          validation.errors.psc_status
+                        }
+                      />
+                      {validation.touched.psc_status &&
+                        validation.errors.psc_status && (
+                          <FormFeedback type="invalid">
+                            {validation.errors.psc_status}
+                          </FormFeedback>
+                        )}
+                    </div>
+                  </Col>
+
+                  <Col className="col-md-12 mb-3">
                     <Label>{t("psc_description")}</Label>
                     <Input
                       name="psc_description"
@@ -486,14 +703,14 @@ const SectorCategoryModel = () => {
                       value={validation.values.psc_description || ""}
                       invalid={
                         validation.touched.psc_description &&
-                          validation.errors.psc_description
+                        validation.errors.psc_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.psc_description &&
-                      validation.errors.psc_description ? (
+                    validation.errors.psc_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.psc_description}
                       </FormFeedback>
@@ -504,7 +721,7 @@ const SectorCategoryModel = () => {
                   <Col>
                     <div className="text-end">
                       {addSectorCategory.isPending ||
-                        updateSectorCategory.isPending ? (
+                      updateSectorCategory.isPending ? (
                         <Button
                           color="success"
                           type="submit"

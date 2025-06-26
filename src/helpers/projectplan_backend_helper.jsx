@@ -19,12 +19,12 @@ export const getProjectPlan = async (params = {}) => {
 
 // add project_plan
 export const addProjectPlan = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROJECT_PLAN, objectName);
+	post(ADD_PROJECT_PLAN, objectName);
 
 // update project_plan
 export const updateProjectPlan = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROJECT_PLAN +`?pld_id=${objectName?.pld_id}`, objectName);
+	post(UPDATE_PROJECT_PLAN + `?pld_id=${objectName?.pld_id}`, objectName);
 
 // delete  project_plan
 export const deleteProjectPlan = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROJECT_PLAN+`?pld_id=${objectName}`);
+	post(DELETE_PROJECT_PLAN + `?pld_id=${objectName}`);

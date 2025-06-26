@@ -19,12 +19,15 @@ export const getBudgetRequestAmount = async (params = {}) => {
 
 // add budget_request_amount
 export const addBudgetRequestAmount = async (objectName) =>
-  post(`${apiUrl}` + ADD_BUDGET_REQUEST_AMOUNT, objectName);
+	post(ADD_BUDGET_REQUEST_AMOUNT, objectName);
 
 // update budget_request_amount
 export const updateBudgetRequestAmount = (objectName) =>
-post(`${apiUrl}`+UPDATE_BUDGET_REQUEST_AMOUNT +`?bra_id=${objectName?.bra_id}`, objectName);
+	post(
+		UPDATE_BUDGET_REQUEST_AMOUNT + `?bra_id=${objectName?.bra_id}`,
+		objectName
+	);
 
 // delete  budget_request_amount
 export const deleteBudgetRequestAmount = (objectName) =>
-  post(`${apiUrl}`+DELETE_BUDGET_REQUEST_AMOUNT+`?bra_id=${objectName}`);
+	post(DELETE_BUDGET_REQUEST_AMOUNT + `?bra_id=${objectName}`);

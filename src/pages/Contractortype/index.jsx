@@ -29,9 +29,6 @@ import {
 import ContractorTypeModal from "./ContractorTypeModal";
 import { useTranslation } from "react-i18next";
 
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
 import {
   Button,
   Col,
@@ -46,12 +43,11 @@ import {
   Label,
   Card,
   CardBody,
-  FormGroup,
-  Badge,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { contractorTypeExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -142,7 +138,7 @@ const ContractorTypeModel = () => {
       cnt_type_name_en:
         (contractorType && contractorType.cnt_type_name_en) || "",
       cnt_description: (contractorType && contractorType.cnt_description) || "",
-      cnt_status: (contractorType && contractorType.cnt_status) || "",
+      cnt_status: (contractorType && contractorType.cnt_status) || false,
 
       is_deletable: (contractorType && contractorType.is_deletable) || 1,
       is_editable: (contractorType && contractorType.is_editable) || 1,
@@ -173,7 +169,7 @@ const ContractorTypeModel = () => {
           cnt_type_name_am: values.cnt_type_name_am,
           cnt_type_name_en: values.cnt_type_name_en,
           cnt_description: values.cnt_description,
-          cnt_status: values.cnt_status,
+          cnt_status: values.cnt_status ? 1 : 0,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -186,7 +182,7 @@ const ContractorTypeModel = () => {
           cnt_type_name_am: values.cnt_type_name_am,
           cnt_type_name_en: values.cnt_type_name_en,
           cnt_description: values.cnt_description,
-          cnt_status: values.cnt_status,
+          cnt_status: values.cnt_status ? 1 : 0,
         };
         // save new ContractorType
         handleAddContractorType(newContractorType);
@@ -224,7 +220,7 @@ const ContractorTypeModel = () => {
       cnt_type_name_am: contractorType.cnt_type_name_am,
       cnt_type_name_en: contractorType.cnt_type_name_en,
       cnt_description: contractorType.cnt_description,
-      cnt_status: contractorType.cnt_status,
+      cnt_status: contractorType.cnt_status === 1,
       is_deletable: contractorType.is_deletable,
       is_editable: contractorType.is_editable,
     });
@@ -287,6 +283,25 @@ const ContractorTypeModel = () => {
           return (
             <span>
               {truncateText(cellProps.row.original.cnt_type_name_en, 30) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: t("is_inactive"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span
+              className={
+                cellProps.row.original.cnt_status === 1
+                  ? "btn btn-sm btn-soft-danger"
+                  : ""
+              }
+            >
+              {cellProps.row.original.cnt_status === 1 ? t("yes") : t("no")}
             </span>
           );
         },
@@ -418,6 +433,11 @@ const ContractorTypeModel = () => {
                       divClassName="-"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Contractor Type"
+                      exportColumns={contractorTypeExportColumns}
                     />
                   </CardBody>
                 </Card>
@@ -439,7 +459,7 @@ const ContractorTypeModel = () => {
                 }}
               >
                 <Row>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>
                       {t("cnt_type_name_or")}
                       <span className="text-danger">*</span>
@@ -453,20 +473,20 @@ const ContractorTypeModel = () => {
                       value={validation.values.cnt_type_name_or || ""}
                       invalid={
                         validation.touched.cnt_type_name_or &&
-                          validation.errors.cnt_type_name_or
+                        validation.errors.cnt_type_name_or
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.cnt_type_name_or &&
-                      validation.errors.cnt_type_name_or ? (
+                    validation.errors.cnt_type_name_or ? (
                       <FormFeedback type="invalid">
                         {validation.errors.cnt_type_name_or}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>
                       {t("cnt_type_name_am")}
                       <span className="text-danger">*</span>
@@ -480,20 +500,20 @@ const ContractorTypeModel = () => {
                       value={validation.values.cnt_type_name_am || ""}
                       invalid={
                         validation.touched.cnt_type_name_am &&
-                          validation.errors.cnt_type_name_am
+                        validation.errors.cnt_type_name_am
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.cnt_type_name_am &&
-                      validation.errors.cnt_type_name_am ? (
+                    validation.errors.cnt_type_name_am ? (
                       <FormFeedback type="invalid">
                         {validation.errors.cnt_type_name_am}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>
                       {t("cnt_type_name_en")}
                       <span className="text-danger">*</span>
@@ -507,14 +527,14 @@ const ContractorTypeModel = () => {
                       value={validation.values.cnt_type_name_en || ""}
                       invalid={
                         validation.touched.cnt_type_name_en &&
-                          validation.errors.cnt_type_name_en
+                        validation.errors.cnt_type_name_en
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.cnt_type_name_en &&
-                      validation.errors.cnt_type_name_en ? (
+                    validation.errors.cnt_type_name_en ? (
                       <FormFeedback type="invalid">
                         {validation.errors.cnt_type_name_en}
                       </FormFeedback>
@@ -531,25 +551,52 @@ const ContractorTypeModel = () => {
                       value={validation.values.cnt_description || ""}
                       invalid={
                         validation.touched.cnt_description &&
-                          validation.errors.cnt_description
+                        validation.errors.cnt_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.cnt_description &&
-                      validation.errors.cnt_description ? (
+                    validation.errors.cnt_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.cnt_description}
                       </FormFeedback>
                     ) : null}
+                  </Col>
+
+                  <Col className="col-md-4 mb-3">
+                    <div className="form-check mb-4">
+                      <Label className="me-1" for="cnt_status">
+                        {t("is_inactive")}
+                      </Label>
+                      <Input
+                        id="cnt_status"
+                        name="cnt_status"
+                        type="checkbox"
+                        placeholder={t("cnt_status")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.cnt_status}
+                        invalid={
+                          validation.touched.cnt_status &&
+                          validation.errors.cnt_status
+                        }
+                      />
+                      {validation.touched.cnt_status &&
+                        validation.errors.cnt_status && (
+                          <FormFeedback type="invalid">
+                            {validation.errors.cnt_status}
+                          </FormFeedback>
+                        )}
+                    </div>
                   </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
                       {addContractorType.isPending ||
-                        updateContractorType.isPending ? (
+                      updateContractorType.isPending ? (
                         <Button
                           color="success"
                           type="submit"

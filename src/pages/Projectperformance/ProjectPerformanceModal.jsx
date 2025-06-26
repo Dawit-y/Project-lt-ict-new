@@ -60,7 +60,7 @@ const ProjectPerformanceModal = ({
       return `${numValue.toFixed(2)}%`;
     }
     if (isCurrency) {
-      return `Birr ${numValue.toLocaleString(undefined, {
+      return `${t("birr")} ${numValue.toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })}`;
@@ -126,7 +126,7 @@ const ProjectPerformanceModal = ({
     );
 
     return {
-      name: `Q${qNum + 1}`,
+      name: `${t("q")}${qNum + 1}`,
       months: quarterMonths,
       ...totals,
       physicalVariance: totals.actualPhysical - totals.plannedPhysical,
@@ -191,14 +191,14 @@ const ProjectPerformanceModal = ({
       <ModalHeader toggle={toggle} className="border-bottom-0 pb-0">
         <div>
           <h5 className="mb-1 text-dark d-flex align-items-center gap-2">
-            {t("Project Performance Details")}
+            {t("project_performance_details")}
             <span className="badge bg-primary text-white">
-              Annual Performance
+              {t("annual_performance")}
             </span>
           </h5>
           <div className="text-muted small">
             {budgetYearMap[transaction.prp_budget_year_id]} •{" "}
-            {transaction.prp_description || t("No description")}
+            {transaction.prp_description || t("no_description")}
           </div>
         </div>
       </ModalHeader>
@@ -208,44 +208,44 @@ const ProjectPerformanceModal = ({
         <Row className="mb-4 g-3">
           {[
             {
-              title: t("Physical Performance"),
+              title: t("physical_performance"),
               icon: "bx bx-trending-up",
               metrics: [
                 {
-                  label: t("Baseline"),
+                  label: t("baseline"),
                   value: annualSummary.baselinePhysical,
                   format: true,
                 },
                 {
-                  label: t("Total Planned"),
+                  label: t("total_planned"),
                   value: annualSummary.TotalPhysicalPlanned,
                   format: true,
                 },
                 {
-                  label: t("Total Actual"),
+                  label: t("total_actual"),
                   value: annualSummary.TotalPhysicalActual,
                   format: true,
                 },
               ],
             },
             {
-              title: t("Financial Performance"),
+              title: t("financial_performance"),
               icon: "bx bx-money",
               metrics: [
                 {
-                  label: t("Baseline"),
+                  label: t("baseline"),
                   value: annualSummary.baselineFinancial,
                   format: false,
                   currency: true,
                 },
                 {
-                  label: t("Planned Total"),
+                  label: t("planned_total"),
                   value: annualSummary.totalPlannedFinancial,
                   format: false,
                   currency: true,
                 },
                 {
-                  label: t("Actual Total"),
+                  label: t("actual_total"),
                   value: annualSummary.totalActualFinancial,
                   format: false,
                   currency: true,
@@ -253,11 +253,11 @@ const ProjectPerformanceModal = ({
               ],
             },
             {
-              title: t("Performance Summary"),
+              title: t("performance_summary"),
               icon: "bx bx-bar-chart-alt-2",
               metrics: [
                 {
-                  label: t("Physical Achievement"),
+                  label: t("physical_achievement"),
                   value:
                     annualSummary.avgPhysicalPlanned > 0
                       ? (annualSummary.avgPhysicalActual /
@@ -267,7 +267,7 @@ const ProjectPerformanceModal = ({
                   isPercentage: true,
                 },
                 {
-                  label: t("Financial Achievement"),
+                  label: t("financial_achievement"),
                   value:
                     annualSummary.totalPlannedFinancial > 0
                       ? (annualSummary.totalActualFinancial /
@@ -277,7 +277,7 @@ const ProjectPerformanceModal = ({
                   isPercentage: true,
                 },
                 {
-                  label: t("Overall Status"),
+                  label: t("overall_status"),
                   component: (
                     <Badge
                       color={getStatusColor(
@@ -297,13 +297,13 @@ const ProjectPerformanceModal = ({
                         annualSummary.avgPhysicalPlanned &&
                       annualSummary.totalActualFinancial >=
                         annualSummary.totalPlannedFinancial
-                        ? t("On Track")
+                        ? t("on_track")
                         : annualSummary.avgPhysicalActual >=
                             annualSummary.avgPhysicalPlanned * 0.8 ||
                           annualSummary.totalActualFinancial >=
                             annualSummary.totalPlannedFinancial * 0.8
-                        ? t("Needs Attention")
-                        : t("At Risk")}
+                        ? t("needs_attention")
+                        : t("at_risk")}
                     </Badge>
                   ),
                 },
@@ -330,7 +330,7 @@ const ProjectPerformanceModal = ({
                             {metric.isPercentage
                               ? metric.value
                                 ? `${metric.value.toFixed(2)}%`
-                                : "N/A"
+                                : `${t("N/A")}`
                               : formatValue(
                                   metric.value,
                                   metric.format,
@@ -350,7 +350,7 @@ const ProjectPerformanceModal = ({
         {/* Quarterly Breakdown */}
         <h5 className="mb-3 d-flex align-items-center text-dark">
           <i className="bx bx-calendar-quarter me-2 text-primary"></i>
-          {t("Quarterly Performance")}
+          {t("quarterly_performance")}
         </h5>
         <Row className="mb-4 g-3">
           {quarters.map((q, idx) => {
@@ -373,18 +373,18 @@ const ProjectPerformanceModal = ({
                   <CardBody>
                     <div className="mb-3">
                       <div className="text-muted small mb-1">
-                        {t("Physical Performance")}
+                        {t("physical_performance")}
                       </div>
                       <div className="d-flex justify-content-between align-items-end">
                         <div>
                           <div className="text-muted small">
-                            {t("Avg.Planned")}
+                            {t("avg.planned")}
                           </div>
                           <div>{formatValue(q.plannedPhysical / 3, true)}</div>
                         </div>
                         <div className="text-end">
                           <div className="text-muted small">
-                            {t("Avg.Actual")}
+                            {t("avg.actual")}
                           </div>
                           <div className={physicalColor}>
                             {formatValue(q.actualPhysical / 3, true)}
@@ -394,7 +394,7 @@ const ProjectPerformanceModal = ({
                       {q.physicalVariance !== 0 && (
                         <div className="mt-2">
                           <div className="text-muted small">
-                            {t("Variance")}
+                            {t("variance")}
                           </div>
                           <div className={physicalColor}>
                             {q.physicalVariance > 0 ? "+" : ""}
@@ -406,17 +406,17 @@ const ProjectPerformanceModal = ({
 
                     <div className="mb-2">
                       <div className="text-muted small mb-1">
-                        {t("Financial Performance")}
+                        {t("financial_performance")}
                       </div>
                       <div className="d-flex justify-content-between align-items-end">
                         <div>
-                          <div className="text-muted small">{t("Planned")}</div>
+                          <div className="text-muted small">{t("planned")}</div>
                           <div>
                             {formatValue(q.plannedFinancial, false, true)}
                           </div>
                         </div>
                         <div className="text-end">
-                          <div className="text-muted small">{t("Actual")}</div>
+                          <div className="text-muted small">{t("actual")}</div>
                           <div className={financialColor}>
                             {formatValue(q.actualFinancial, false, true)}
                           </div>
@@ -425,7 +425,7 @@ const ProjectPerformanceModal = ({
                       {q.financialVariance !== 0 && (
                         <div className="mt-2">
                           <div className="text-muted small">
-                            {t("Variance")}
+                            {t("variance")}
                           </div>
                           <div className={financialColor}>
                             {q.financialVariance > 0 ? "+" : ""}
@@ -444,18 +444,18 @@ const ProjectPerformanceModal = ({
         {/* Monthly Details */}
         <h5 className="mb-3 d-flex align-items-center text-dark">
           <i className="bx bx-calendar me-2 text-primary"></i>
-          {t("Monthly Performance Details")}
+          {t("monthly_performance_details")}
         </h5>
         <div className="table-responsive">
           <Table bordered hover className="mb-0">
             <thead className="table-light">
               <tr>
-                <th width="15%">{t("Month")}</th>
-                <th className="text-end">{t("Planned")}</th>
-                <th className="text-end">{t("Actual")}</th>
-                <th className="text-end">{t("Variance")}</th>
-                <th className="text-end">{t("Achievement %")}</th>
-                <th width="15%">{t("Status")}</th>
+                <th width="15%">{t("month")}</th>
+                <th className="text-end">{t("planned")}</th>
+                <th className="text-end">{t("actual")}</th>
+                <th className="text-end">{t("variance")}</th>
+                <th className="text-end">{t("achievement%")}</th>
+                <th width="15%">{t("status")}</th>
               </tr>
             </thead>
             <tbody>
@@ -484,7 +484,7 @@ const ProjectPerformanceModal = ({
                     <td className="text-end">
                       <div>
                         <small className="d-block text-muted">
-                          {t("Physical")}
+                          {t("physical")}
                         </small>
                         <span className="text-dark">
                           {formatValue(month.plannedPhysical, true)}
@@ -492,7 +492,7 @@ const ProjectPerformanceModal = ({
                       </div>
                       <div className="mt-1">
                         <small className="d-block text-muted">
-                          {t("Financial")}
+                          {t("financial")}
                         </small>
                         <span className="text-dark">
                           {formatValue(month.plannedFinancial, false, true)}
@@ -502,7 +502,7 @@ const ProjectPerformanceModal = ({
                     <td className="text-end">
                       <div>
                         <small className="d-block text-muted">
-                          {t("Physical")}
+                          {t("physical")}
                         </small>
                         <span className="text-dark">
                           {formatValue(month.actualPhysical, true)}
@@ -510,7 +510,7 @@ const ProjectPerformanceModal = ({
                       </div>
                       <div className="mt-1">
                         <small className="d-block text-muted">
-                          {t("Financial")}
+                          {t("financial")}
                         </small>
                         <span className="text-dark">
                           {formatValue(month.actualFinancial, false, true)}
@@ -520,7 +520,7 @@ const ProjectPerformanceModal = ({
                     <td className="text-end">
                       <div>
                         <small className="d-block text-muted">
-                          {t("Physical")}
+                          {t("physical")}
                         </small>
                         <span className={physicalColor}>
                           {formatValue(month.physicalVariance, true)}
@@ -528,7 +528,7 @@ const ProjectPerformanceModal = ({
                       </div>
                       <div className="mt-1">
                         <small className="d-block text-muted">
-                          {t("Financial")}
+                          {t("financial")}
                         </small>
                         <span className={financialColor}>
                           {formatValue(month.financialVariance, false, true)}
@@ -539,7 +539,7 @@ const ProjectPerformanceModal = ({
                     <td className="text-end">
                       <div>
                         <small className="d-block text-muted">
-                          {t("Physical")}
+                          {t("physical")}
                         </small>
                         <span
                           className={
@@ -554,12 +554,12 @@ const ProjectPerformanceModal = ({
                         >
                           {month.physicalAchievement
                             ? `${month.physicalAchievement.toFixed(0)}%`
-                            : "N/A"}
+                            : `${t("N/A")}`}
                         </span>
                       </div>
                       <div className="mt-1">
                         <small className="d-block text-muted">
-                          {t("Financial")}
+                          {t("financial")}
                         </small>
                         <span
                           className={
@@ -574,7 +574,7 @@ const ProjectPerformanceModal = ({
                         >
                           {month.financialAchievement
                             ? `${month.financialAchievement.toFixed(0)}%`
-                            : "N/A"}
+                            : `${t("N/A")}`}
                         </span>
                       </div>
                     </td>
@@ -587,7 +587,7 @@ const ProjectPerformanceModal = ({
                       >
                         {month.status
                           ? projectStatusMap[month.status]
-                          : t("Not set")}
+                          : t("not_set")}
                       </Badge>
                     </td>
                   </tr>

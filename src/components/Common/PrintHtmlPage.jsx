@@ -4,7 +4,7 @@ import { FOOTER_TEXT, COPYRIGHT_YEAR } from "../../constants/constantFile";
 import {
   UncontrolledTooltip, DropdownItem
 } from "reactstrap";
-import { FaPrint } from "react-icons/fa6";
+import { FaPrint } from "react-icons/fa";
 
 const PrintHtmlPage = ({ tableData, tablename, excludeKey = [], columnsToIgnore = 2, dropdownItem = false }) => {
   const { t } = useTranslation();

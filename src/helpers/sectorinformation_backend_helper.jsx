@@ -19,12 +19,12 @@ export const getSectorInformation = async (params = {}) => {
 
 // add sector_information
 export const addSectorInformation = async (objectName) =>
-  post(`${apiUrl}` + ADD_SECTOR_INFORMATION, objectName);
+	post(ADD_SECTOR_INFORMATION, objectName);
 
 // update sector_information
 export const updateSectorInformation = (objectName) =>
-  post(`${apiUrl}` + UPDATE_SECTOR_INFORMATION + `?sci_id=${objectName?.sci_id}`, objectName);
+	post(UPDATE_SECTOR_INFORMATION + `?sci_id=${objectName?.sci_id}`, objectName);
 
 // delete  sector_information
 export const deleteSectorInformation = (objectName) =>
-  post(`${apiUrl}` + DELETE_SECTOR_INFORMATION + `?sci_id=${objectName}`);
+	post(DELETE_SECTOR_INFORMATION + `?sci_id=${objectName}`);

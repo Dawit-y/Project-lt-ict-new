@@ -19,12 +19,12 @@ export const getBudgetExipDetail = async (params = {}) => {
 
 // add budget_exip_detail
 export const addBudgetExipDetail = async (objectName) =>
-  post(`${apiUrl}` + ADD_BUDGET_EXIP_DETAIL, objectName);
+	post(ADD_BUDGET_EXIP_DETAIL, objectName);
 
 // update budget_exip_detail
 export const updateBudgetExipDetail = (objectName) =>
-post(`${apiUrl}`+UPDATE_BUDGET_EXIP_DETAIL +`?bed_id=${objectName?.bed_id}`, objectName);
+	post(UPDATE_BUDGET_EXIP_DETAIL + `?bed_id=${objectName?.bed_id}`, objectName);
 
 // delete  budget_exip_detail
 export const deleteBudgetExipDetail = (objectName) =>
-  post(`${apiUrl}`+DELETE_BUDGET_EXIP_DETAIL+`?bed_id=${objectName}`);
+	post(DELETE_BUDGET_EXIP_DETAIL + `?bed_id=${objectName}`);

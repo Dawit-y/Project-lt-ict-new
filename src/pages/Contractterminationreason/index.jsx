@@ -51,6 +51,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { contractTerminationReasonExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -154,7 +155,7 @@ const ContractTerminationReasonModel = () => {
         "",
       ctr_status:
         (contractTerminationReason && contractTerminationReason.ctr_status) ||
-        "",
+        false,
 
       is_deletable:
         (contractTerminationReason && contractTerminationReason.is_deletable) ||
@@ -189,7 +190,7 @@ const ContractTerminationReasonModel = () => {
           ctr_reason_name_am: values.ctr_reason_name_am,
           ctr_reason_name_en: values.ctr_reason_name_en,
           ctr_description: values.ctr_description,
-          ctr_status: values.ctr_status,
+          ctr_status: values.ctr_status ? 1 : 0,
 
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
@@ -202,7 +203,7 @@ const ContractTerminationReasonModel = () => {
           ctr_reason_name_am: values.ctr_reason_name_am,
           ctr_reason_name_en: values.ctr_reason_name_en,
           ctr_description: values.ctr_description,
-          ctr_status: values.ctr_status,
+          ctr_status: values.ctr_status ? 1 : 0,
         };
         // save new ContractTerminationReason
         handleAddContractTerminationReason(newContractTerminationReason);
@@ -240,7 +241,7 @@ const ContractTerminationReasonModel = () => {
       ctr_reason_name_am: contractTerminationReason.ctr_reason_name_am,
       ctr_reason_name_en: contractTerminationReason.ctr_reason_name_en,
       ctr_description: contractTerminationReason.ctr_description,
-      ctr_status: contractTerminationReason.ctr_status,
+      ctr_status: contractTerminationReason.ctr_status === 1,
 
       is_deletable: contractTerminationReason.is_deletable,
       is_editable: contractTerminationReason.is_editable,
@@ -307,6 +308,25 @@ const ContractTerminationReasonModel = () => {
             <span>
               {truncateText(cellProps.row.original.ctr_reason_name_en, 30) ||
                 "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: t("is_inactive"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span
+              className={
+                cellProps.row.original.ctr_status === 1
+                  ? "btn btn-sm btn-soft-danger"
+                  : ""
+              }
+            >
+              {cellProps.row.original.ctr_status === 1 ? t("yes") : t("no")}
             </span>
           );
         },
@@ -440,6 +460,11 @@ const ContractTerminationReasonModel = () => {
                       divClassName="-"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Contract Termination Reason"
+                      exportColumns={contractTerminationReasonExportColumns}
                     />
                   </CardBody>
                 </Card>
@@ -461,7 +486,7 @@ const ContractTerminationReasonModel = () => {
                 }}
               >
                 <Row>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>
                       {t("ctr_reason_name_or")}
                       <span className="text-danger">*</span>
@@ -475,20 +500,20 @@ const ContractTerminationReasonModel = () => {
                       value={validation.values.ctr_reason_name_or || ""}
                       invalid={
                         validation.touched.ctr_reason_name_or &&
-                          validation.errors.ctr_reason_name_or
+                        validation.errors.ctr_reason_name_or
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.ctr_reason_name_or &&
-                      validation.errors.ctr_reason_name_or ? (
+                    validation.errors.ctr_reason_name_or ? (
                       <FormFeedback type="invalid">
                         {validation.errors.ctr_reason_name_or}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>
                       {t("ctr_reason_name_am")}
                       <span className="text-danger">*</span>
@@ -502,20 +527,20 @@ const ContractTerminationReasonModel = () => {
                       value={validation.values.ctr_reason_name_am || ""}
                       invalid={
                         validation.touched.ctr_reason_name_am &&
-                          validation.errors.ctr_reason_name_am
+                        validation.errors.ctr_reason_name_am
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.ctr_reason_name_am &&
-                      validation.errors.ctr_reason_name_am ? (
+                    validation.errors.ctr_reason_name_am ? (
                       <FormFeedback type="invalid">
                         {validation.errors.ctr_reason_name_am}
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <Label>
                       {t("ctr_reason_name_en")}
                       <span className="text-danger">*</span>
@@ -529,14 +554,14 @@ const ContractTerminationReasonModel = () => {
                       value={validation.values.ctr_reason_name_en || ""}
                       invalid={
                         validation.touched.ctr_reason_name_en &&
-                          validation.errors.ctr_reason_name_en
+                        validation.errors.ctr_reason_name_en
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.ctr_reason_name_en &&
-                      validation.errors.ctr_reason_name_en ? (
+                    validation.errors.ctr_reason_name_en ? (
                       <FormFeedback type="invalid">
                         {validation.errors.ctr_reason_name_en}
                       </FormFeedback>
@@ -553,25 +578,51 @@ const ContractTerminationReasonModel = () => {
                       value={validation.values.ctr_description || ""}
                       invalid={
                         validation.touched.ctr_description &&
-                          validation.errors.ctr_description
+                        validation.errors.ctr_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.ctr_description &&
-                      validation.errors.ctr_description ? (
+                    validation.errors.ctr_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.ctr_description}
                       </FormFeedback>
                     ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <div className="form-check mb-4">
+                      <Label className="me-1" for="ctr_status">
+                        {t("is_inactive")}
+                      </Label>
+                      <Input
+                        id="ctr_status"
+                        name="ctr_status"
+                        type="checkbox"
+                        placeholder={t("ctr_status")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.ctr_status}
+                        invalid={
+                          validation.touched.ctr_status &&
+                          validation.errors.ctr_status
+                        }
+                      />
+                      {validation.touched.ctr_status &&
+                        validation.errors.ctr_status && (
+                          <FormFeedback type="invalid">
+                            {validation.errors.ctr_status}
+                          </FormFeedback>
+                        )}
+                    </div>
                   </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
                       {addContractTerminationReason.isPending ||
-                        updateContractTerminationReason.isPending ? (
+                      updateContractTerminationReason.isPending ? (
                         <Button
                           color="success"
                           type="submit"

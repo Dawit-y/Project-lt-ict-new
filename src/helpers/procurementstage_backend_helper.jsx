@@ -19,12 +19,12 @@ export const getProcurementStage = async (params = {}) => {
 
 // add procurement_stage
 export const addProcurementStage = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROCUREMENT_STAGE, objectName);
+	post(ADD_PROCUREMENT_STAGE, objectName);
 
 // update procurement_stage
 export const updateProcurementStage = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROCUREMENT_STAGE +`?pst_id=${objectName?.pst_id}`, objectName);
+	post(UPDATE_PROCUREMENT_STAGE + `?pst_id=${objectName?.pst_id}`, objectName);
 
 // delete  procurement_stage
 export const deleteProcurementStage = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROCUREMENT_STAGE+`?pst_id=${objectName}`);
+	post(DELETE_PROCUREMENT_STAGE + `?pst_id=${objectName}`);

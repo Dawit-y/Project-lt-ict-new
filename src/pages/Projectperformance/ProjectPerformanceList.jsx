@@ -1,22 +1,31 @@
 import React, { useEffect, lazy, useMemo, useState } from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { useSearchProjectPerformances } from "../../queries/projectperformance_query";
-import TreeForLists from "../../components/Common/TreeForLists";
+import TreeForLists from "../../components/Common/TreeForLists2";
+import SearchTableContainer from "../../components/Common/SearchTableContainer";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
 import { useTranslation } from "react-i18next";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import { Card, CardBody, Button } from "reactstrap";
+import { Button } from "reactstrap";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { FaChartLine } from "react-icons/fa";
+
 import {
   createMultiSelectOptions,
   createSelectOptions,
 } from "../../utils/commonMethods";
+import { projectPerformanceExportColumns } from "../../utils/exportColumnsForLists";
 const AgGridContainer = lazy(() =>
   import("../../components/Common/AgGridContainer")
 );
-import ProjectPerformanceAnalysis from "./ProjectPerformanceAnalysis";
+const SinglePerformanceAnalysisModal = lazy(() =>
+  import("./Analysis/SinglePerformanceAnalysisModal")
+);
+const TotalPerformanceAnalysisModal = lazy(() =>
+  import("./Analysis/TotalPerformanceAnalysisModal")
+);
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -46,11 +55,16 @@ const ProjectPerformanceList = (props) => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [include, setInclude] = useState(0);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { data, error, isError, refetch } = useState({});
   const toggleViewModal = () => setModal1(!modal1);
   const { data: budgetYearData } = useFetchBudgetYears();
   const { data: budgetMonthData } = useFetchBudgetMonths();
   const { data: projectStatusData } = useFetchProjectStatuss();
+
+  const [singleAnalysisModal, setSingleAnalysisModal] = useState(false);
+  const [totalAnalysisModal, setTotalAnalysisModal] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
 
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [chartType, setChartType] = useState("bar"); // Track chart type globally
@@ -59,6 +73,15 @@ const ProjectPerformanceList = (props) => {
   const handleViewDetails = (rowData) => {
     setSelectedRowData(rowData);
   };
+
+  const handleSelectedData = (rowData) => {
+    setSelectedRequest(rowData);
+  };
+
+  const toggleSingleAnalysisModal = () =>
+    setSingleAnalysisModal(!singleAnalysisModal);
+  const toggleTotalAnalysisModal = () =>
+    setTotalAnalysisModal(!totalAnalysisModal);
 
   const {
     prs_status_name_en: projectStatusOptionsEn,
@@ -144,7 +167,7 @@ const ProjectPerformanceList = (props) => {
         width: 60,
       },
       {
-        headerName: t("Year"),
+        headerName: t("prp_budget_year"),
         field: "prp_budget_year_id",
         sortable: true,
         filter: true,
@@ -181,7 +204,7 @@ const ProjectPerformanceList = (props) => {
         },
       },
       {
-        headerName: t("Entry Date"),
+        headerName: t("prp_record_date_gc"),
         field: "prp_record_date_gc",
         sortable: true,
         filter: "agDateColumnFilter",
@@ -193,7 +216,7 @@ const ProjectPerformanceList = (props) => {
       ...quarterDefinitions
         .map((quarterMonths, quarterIndex) => [
           {
-            headerName: `Q${quarterIndex + 1} Physical Planned`,
+            headerName: `${t("q")}${quarterIndex + 1} ${t("physical_planned")}`,
             field: `quarter_${quarterIndex + 1}_physical_planned`,
             sortable: true,
             filter: true,
@@ -208,7 +231,9 @@ const ProjectPerformanceList = (props) => {
             },
           },
           {
-            headerName: `Q${quarterIndex + 1} Financial Planned`,
+            headerName: `${t("q")}${quarterIndex + 1} ${t(
+              "financial_planned"
+            )}`,
             field: `quarter_${quarterIndex + 1}_financial_planned`,
             sortable: true,
             filter: true,
@@ -222,7 +247,7 @@ const ProjectPerformanceList = (props) => {
             },
           },
           {
-            headerName: `Q${quarterIndex + 1} Physical Actual`,
+            headerName: `${t("q")}${quarterIndex + 1} ${t("physical_actual")}`,
             field: `quarter_${quarterIndex + 1}_physical_actual`,
             sortable: true,
             filter: true,
@@ -236,7 +261,7 @@ const ProjectPerformanceList = (props) => {
             },
           },
           {
-            headerName: `Q${quarterIndex + 1} Financial Actual`,
+            headerName: `${t("q")}${quarterIndex + 1} ${t("financial_actual")}`,
             field: `quarter_${quarterIndex + 1}_financial_actual`,
             sortable: true,
             filter: true,
@@ -252,7 +277,7 @@ const ProjectPerformanceList = (props) => {
         ])
         .flat(),
       {
-        headerName: t("Baseline Budget"),
+        headerName: t("prp_budget_baseline"),
         field: "prp_budget_baseline",
         sortable: true,
         filter: true,
@@ -266,7 +291,7 @@ const ProjectPerformanceList = (props) => {
         },
       },
       {
-        headerName: t("Baseline Physical"),
+        headerName: t("prp_physical_baseline"),
         field: "prp_physical_baseline",
         sortable: true,
         filter: true,
@@ -304,16 +329,27 @@ const ProjectPerformanceList = (props) => {
         },
       },
       {
-        headerName: t("Analysis"),
+        headerName: t("analysis"),
         field: "actions",
-        cellRenderer: (params) => (
-          <button
-            className="btn btn-sm btn-primary"
-            onClick={() => handleViewDetails(params.data)}
-          >
-            {t("Analysis")}
-          </button>
-        ),
+        cellRenderer: (params) => {
+          const data = params.data;
+
+          return (
+            <div className="d-flex gap-1">
+              <Button
+                id={`view-${data.prp_id}`}
+                color="light"
+                size="sm"
+                onClick={() => {
+                  toggleSingleAnalysisModal();
+                  setSelectedRequest(data);
+                }}
+              >
+                <FaChartLine />
+              </Button>
+            </div>
+          );
+        },
         width: 120,
         sortable: false,
         filter: false,
@@ -345,9 +381,11 @@ const ProjectPerformanceList = (props) => {
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}
+              setIsCollapsed={setIsCollapsed}
+              isCollapsed={isCollapsed}
             />
             {/* Main Content */}
-            <div style={{ flex: "0 0 75%" }}>
+            <SearchTableContainer isCollapsed={isCollapsed}>
               <AdvancedSearch
                 searchHook={useSearchProjectPerformances}
                 textSearchKeys={["prj_name", "prj_code"]}
@@ -374,75 +412,19 @@ const ProjectPerformanceList = (props) => {
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
               >
-                <AgGridContainer
-                  rowData={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
+                <TableWrapper
+                  // data={showSearchResult ? searchResults : data}
                   columnDefs={columnDefs}
-                  isLoading={isSearchLoading}
-                  isPagination={true}
-                  rowHeight={35}
-                  paginationPageSize={10}
-                  isGlobalFilter={true}
-                  isExcelExport={true}
-                  isPdfExport={true}
-                  isPrint={true}
-                  tableName="Project Performance"
-                  includeKey={[
-                    "prj_name",
-                    "prp_record_date_gc",
-                    "prp_total_budget_used",
-                    "prp_physical_performance",
-                    "status_name",
-                    "year_name",
-                    "month_name",
-                  ]}
-                  excludeKey={["is_editable", "is_deletable"]}
+                  showSearchResult={showSearchResult}
+                  selectedRequest={selectedRequest}
+                  singleAnalysisModal={singleAnalysisModal}
+                  totalAnalysisModal={totalAnalysisModal}
+                  toggleSingleAnalysisModal={toggleSingleAnalysisModal}
+                  toggleTotalAnalysisModal={toggleTotalAnalysisModal}
+                  // handleSelectedData={handleSelectedData}
                 />
               </AdvancedSearch>
-              {/* Performance Analysis Section */}
-
-              {selectedRowData ? (
-                <Card>
-                  <CardBody>
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                      <h4 className="card-title mb-0">
-                        <Button
-                          color="link"
-                          size="sm"
-                          onClick={() => setSelectedRowData(null)}
-                        >
-                          <i className="mdi mdi-arrow-left"></i> Back to
-                          Overview
-                        </Button>
-                      </h4>
-                    </div>
-                    <ProjectPerformanceAnalysis
-                      performanceData={selectedRowData}
-                      allData={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      isOverallView={false}
-                      chartType={chartType}
-                      onChartTypeChange={setChartType}
-                    />
-                  </CardBody>
-                </Card>
-              ) : (
-                showSearchResult && (
-                  <ProjectPerformanceAnalysis
-                    allData={
-                      showSearchResult ? searchResults?.data : data?.data || []
-                    }
-                    isOverallView={true}
-                    chartType={chartType}
-                    onChartTypeChange={setChartType}
-                  />
-                )
-              )}
-            </div>
+            </SearchTableContainer>
           </div>
         </div>
       </div>
@@ -451,3 +433,80 @@ const ProjectPerformanceList = (props) => {
 };
 
 export default ProjectPerformanceList;
+
+const TableWrapper = ({
+  data,
+  isLoading,
+  columnDefs,
+  showSearchResult,
+  selectedRequest,
+  singleAnalysisModal,
+  totalAnalysisModal,
+  toggleSingleAnalysisModal,
+  toggleTotalAnalysisModal,
+}) => {
+  let transformedData = [];
+  if (data) {
+    transformedData = Array.isArray(data.data) ? data.data : [];
+  }
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
+  const { data: projectStatusData } = useFetchProjectStatuss();
+  const projectStatusMap = useMemo(() => {
+    return (
+      projectStatusData?.data?.reduce((acc, project_status) => {
+        acc[project_status.prs_id] =
+          lang === "en"
+            ? project_status.prs_status_name_en
+            : lang === "am"
+            ? project_status.prs_status_name_am
+            : project_status.prs_status_name_or;
+        return acc;
+      }, {}) || {}
+    );
+  }, [projectStatusData, lang]);
+  return (
+    <>
+      <SinglePerformanceAnalysisModal
+        isOpen={singleAnalysisModal}
+        toggle={toggleSingleAnalysisModal}
+        selectedRequest={selectedRequest}
+        data={transformedData}
+      />
+
+      <TotalPerformanceAnalysisModal
+        isOpen={totalAnalysisModal}
+        toggle={toggleTotalAnalysisModal}
+        data={transformedData}
+      />
+      <div className="d-flex flex-column" style={{ gap: "20px" }}>
+        <AgGridContainer
+          rowData={showSearchResult ? transformedData : []}
+          columnDefs={columnDefs}
+          isLoading={isLoading}
+          isPagination={true}
+          rowHeight={35}
+          paginationPageSize={10}
+          isGlobalFilter={true}
+          isExcelExport={true}
+          isPdfExport={true}
+          isPrint={true}
+          tableName="Project Performance"
+          exportColumns={[
+            ...projectPerformanceExportColumns,
+            {
+              key: "prp_project_status_id",
+              label: t("prp_project_status_id"),
+              format: (val) => {
+                return projectStatusMap[val] || "-";
+              },
+            },
+          ]}
+          buttonChildren={<FaChartLine />}
+          onButtonClick={toggleTotalAnalysisModal}
+          disabled={!showSearchResult || isLoading}
+        />
+      </div>
+    </>
+  );
+};

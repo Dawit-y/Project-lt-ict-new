@@ -10,7 +10,8 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { Button, Card, CardBody } from "reactstrap";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import TreeForLists from "../../components/Common/TreeForLists";
+import TreeForLists from "../../components/Common/TreeForLists2";
+import SearchTableContainer from "../../components/Common/SearchTableContainer";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { createMultiSelectOptions } from "../../utils/commonMethods";
@@ -20,6 +21,7 @@ import {
 } from "../../queries/procurementinformation_query";
 import { useFetchProcurementStages } from "../../queries/procurementstage_query";
 import { useFetchProcurementMethods } from "../../queries/procurementmethod_query";
+import { procurementExportColumns } from "../../utils/exportColumnsForLists";
 
 const AgGridContainer = lazy(() =>
   import("../../components/Common/AgGridContainer")
@@ -40,6 +42,7 @@ const ProcurementInformationList = () => {
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [include, setInclude] = useState(0);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState(null);
@@ -102,9 +105,13 @@ const ProcurementInformationList = () => {
 
   useEffect(() => {
     setProjectParams({
-      ...(prjLocationRegionId && { prj_location_region_id: prjLocationRegionId }),
+      ...(prjLocationRegionId && {
+        prj_location_region_id: prjLocationRegionId,
+      }),
       ...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
-      ...(prjLocationWoredaId && { prj_location_woreda_id: prjLocationWoredaId }),
+      ...(prjLocationWoredaId && {
+        prj_location_woreda_id: prjLocationWoredaId,
+      }),
       ...(include === 1 && { include }),
     });
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
@@ -224,8 +231,10 @@ const ProcurementInformationList = () => {
           onNodeSelect={handleNodeSelect}
           setIsAddressLoading={() => {}}
           setInclude={setInclude}
+          setIsCollapsed={setIsCollapsed}
+          isCollapsed={isCollapsed}
         />
-        <div className="w-100">
+        <SearchTableContainer isCollapsed={isCollapsed}>
           <AdvancedSearch
             searchHook={useSearchProcurementInformations}
             textSearchKeys={["prj_name", "prj_code"]}
@@ -271,17 +280,22 @@ const ProcurementInformationList = () => {
               isPdfExport
               isPrint
               tableName="Project Procurement"
-              includeKey={[
-                "prj_name",
-                "prj_code",
-                "pri_total_procurement_amount",
-                "pri_bid_opening_date",
-                "pri_bid_closing_date",
+              exportColumns={[
+                ...procurementExportColumns,
+                {
+                  key: "pri_procurement_stage_id",
+                  label: "pri_procurement_stage_id",
+                  format: (val) => procurementStageMap[val] || "-",
+                },
+                {
+                  key: "pri_procurement_method_id",
+                  label: "pri_procurement_method_id",
+                  format: (val) => procurementMethodMap[val] || "-",
+                },
               ]}
-              excludeKey={["is_editable", "is_deletable"]}
             />
           </AdvancedSearch>
-        </div>
+        </SearchTableContainer>
       </div>
     </div>
   );

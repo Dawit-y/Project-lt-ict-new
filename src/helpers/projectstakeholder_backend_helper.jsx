@@ -19,12 +19,15 @@ export const getProjectStakeholder = async (params = {}) => {
 
 // add project_stakeholder
 export const addProjectStakeholder = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROJECT_STAKEHOLDER, objectName);
+	post(ADD_PROJECT_STAKEHOLDER, objectName);
 
 // update project_stakeholder
 export const updateProjectStakeholder = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROJECT_STAKEHOLDER +`?psh_id=${objectName?.psh_id}`, objectName);
+	post(
+		UPDATE_PROJECT_STAKEHOLDER + `?psh_id=${objectName?.psh_id}`,
+		objectName
+	);
 
 // delete  project_stakeholder
 export const deleteProjectStakeholder = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROJECT_STAKEHOLDER+`?psh_id=${objectName}`);
+	post(DELETE_PROJECT_STAKEHOLDER + `?psh_id=${objectName}`);

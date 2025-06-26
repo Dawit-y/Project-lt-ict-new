@@ -7,7 +7,10 @@ import { useSearchProjectStakeholders } from "../../queries/projectstakeholder_q
 import { useTranslation } from "react-i18next";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import TreeForLists from "../../components/Common/TreeForLists";
+import TreeForLists from "../../components/Common/TreeForLists2";
+import SearchTableContainer from "../../components/Common/SearchTableContainer";
+import { projectStakeholderExportColumns } from "../../utils/exportColumnsForLists";
+
 const AgGridContainer = lazy(() =>
   import("../../components/Common/AgGridContainer")
 );
@@ -32,6 +35,7 @@ const ProjectStakeholderList = () => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { data, error, isError, refetch } = useState("");
 
   //START FOREIGN CALLS
@@ -82,6 +86,9 @@ const ProjectStakeholderList = () => {
         field: "prj_name",
         sortable: true,
         filter: true,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_name, 30) || "-";
         },
@@ -91,6 +98,7 @@ const ProjectStakeholderList = () => {
         field: "prj_code",
         sortable: true,
         filter: true,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_code, 30) || "-";
         },
@@ -100,6 +108,9 @@ const ProjectStakeholderList = () => {
         field: "psh_name",
         sortable: true,
         filter: false,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.psh_name, 30) || "-";
         },
@@ -109,6 +120,7 @@ const ProjectStakeholderList = () => {
         field: "psh_stakeholder_type",
         sortable: true,
         filter: false,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.psh_stakeholder_type, 30) || "-";
         },
@@ -118,6 +130,9 @@ const ProjectStakeholderList = () => {
         field: "psh_representative_name",
         sortable: true,
         filter: false,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.psh_representative_name, 30) || "-";
         },
@@ -127,6 +142,7 @@ const ProjectStakeholderList = () => {
         field: "psh_representative_phone",
         sortable: true,
         filter: false,
+        width: 200,
         cellRenderer: (params) => {
           return truncateText(params.data.psh_representative_phone, 30) || "-";
         },
@@ -136,6 +152,7 @@ const ProjectStakeholderList = () => {
         field: "psh_role",
         sortable: true,
         filter: false,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.psh_role, 30) || "-";
         },
@@ -160,10 +177,12 @@ const ProjectStakeholderList = () => {
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}
+              setIsCollapsed={setIsCollapsed}
+              isCollapsed={isCollapsed}
             />
 
             {/* Main Content */}
-            <div style={{ flex: "0 0 75%" }}>
+            <SearchTableContainer isCollapsed={isCollapsed}>
               <AdvancedSearch
                 searchHook={useSearchProjectStakeholders}
                 textSearchKeys={["prj_name", "prj_code"]}
@@ -192,18 +211,10 @@ const ProjectStakeholderList = () => {
                   isPdfExport={true}
                   isPrint={true}
                   tableName="Project Stakeholder"
-                  includeKey={[
-                    "prj_name",
-                    "psh_name",
-                    "psh_stakeholder_type",
-                    "psh_representative_name",
-                    "psh_representative_phone",
-                    "psh_role",
-                  ]}
-                  excludeKey={["is_editable", "is_deletable"]}
+                  exportColumns={projectStakeholderExportColumns}
                 />
               </AdvancedSearch>
-            </div>
+            </SearchTableContainer>
           </div>
         </div>
       </div>

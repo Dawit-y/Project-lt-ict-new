@@ -13,7 +13,11 @@ import Spinners from "../../components/Common/Spinner";
 //import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-import { alphanumericValidation, amountValidation, numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 
 import {
   useFetchBudgetSources,
@@ -49,6 +53,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { budgetSourceExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -71,7 +76,8 @@ const BudgetSourceModel = () => {
   const [searcherror, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, isFetching, error, isError, refetch } = useFetchBudgetSources();
+  const { data, isLoading, isFetching, error, isError, refetch } =
+    useFetchBudgetSources();
 
   const addBudgetSource = useAddBudgetSource();
   const updateBudgetSource = useUpdateBudgetSource();
@@ -80,28 +86,27 @@ const BudgetSourceModel = () => {
   const handleAddBudgetSource = async (data) => {
     try {
       await addBudgetSource.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('add_failure'), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
     toggle();
   };
 
-
   const handleUpdateBudgetSource = async (data) => {
     try {
       await updateBudgetSource.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('update_failure'), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -112,11 +117,11 @@ const BudgetSourceModel = () => {
       try {
         const id = budgetSource.pbs_id;
         await deleteBudgetSource.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(t('delete_failure'), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -138,23 +143,26 @@ const BudgetSourceModel = () => {
       pbs_name_en: (budgetSource && budgetSource.pbs_name_en) || "",
       pbs_code: (budgetSource && budgetSource.pbs_code) || "",
       pbs_description: (budgetSource && budgetSource.pbs_description) || "",
-      pbs_status: (budgetSource && budgetSource.pbs_status) || "",
+      pbs_status: (budgetSource && budgetSource.pbs_status) || false,
 
       is_deletable: (budgetSource && budgetSource.is_deletable) || 1,
       is_editable: (budgetSource && budgetSource.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
-      pbs_name_or: alphanumericValidation(2, 100, true).test("unique-pbs_name_or", t("Already exists"), (value) => {
-        return !data?.data.some(
-          (item) =>
-            item.pbs_name_or == value && item.pbs_id !== budgetSource?.pbs_id
-        );
-      }),
+      pbs_name_or: alphanumericValidation(2, 100, true).test(
+        "unique-pbs_name_or",
+        t("Already exists"),
+        (value) => {
+          return !data?.data.some(
+            (item) =>
+              item.pbs_name_or == value && item.pbs_id !== budgetSource?.pbs_id
+          );
+        }
+      ),
       pbs_name_am: Yup.string().required(t("pbs_name_am")),
       pbs_name_en: alphanumericValidation(2, 100, true),
-      pbs_description: alphanumericValidation(3, 425, false)
-
+      pbs_description: alphanumericValidation(3, 425, false),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -167,7 +175,7 @@ const BudgetSourceModel = () => {
           pbs_name_en: values.pbs_name_en,
           pbs_code: values.pbs_code,
           pbs_description: values.pbs_description,
-          pbs_status: values.pbs_status,
+          pbs_status: values.pbs_status ? 1 : 0,
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -180,7 +188,7 @@ const BudgetSourceModel = () => {
           pbs_name_en: values.pbs_name_en,
           pbs_code: values.pbs_code,
           pbs_description: values.pbs_description,
-          pbs_status: values.pbs_status,
+          pbs_status: values.pbs_status ? 1 : 0,
         };
         // save new BudgetSource
         handleAddBudgetSource(newBudgetSource);
@@ -219,7 +227,7 @@ const BudgetSourceModel = () => {
       pbs_name_en: budgetSource.pbs_name_en,
       pbs_code: budgetSource.pbs_code,
       pbs_description: budgetSource.pbs_description,
-      pbs_status: budgetSource.pbs_status,
+      pbs_status: budgetSource.pbs_status === 1,
       is_deletable: budgetSource.is_deletable,
       is_editable: budgetSource.is_editable,
     });
@@ -295,6 +303,25 @@ const BudgetSourceModel = () => {
           return (
             <span>
               {truncateText(cellProps.row.original.pbs_code, 30) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: t("is_inactive"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span
+              className={
+                cellProps.row.original.pbs_status === 1
+                  ? "btn btn-sm btn-soft-danger"
+                  : ""
+              }
+            >
+              {cellProps.row.original.pbs_status === 1 ? t("yes") : t("no")}
             </span>
           );
         },
@@ -426,6 +453,11 @@ const BudgetSourceModel = () => {
                       divClassName="-"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Budget Source"
+                      exportColumns={budgetSourceExportColumns}
                     />
                   </CardBody>
                 </Card>
@@ -448,7 +480,10 @@ const BudgetSourceModel = () => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pbs_name_or")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pbs_name_or")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pbs_name_or"
                       type="text"
@@ -458,21 +493,24 @@ const BudgetSourceModel = () => {
                       value={validation.values.pbs_name_or || ""}
                       invalid={
                         validation.touched.pbs_name_or &&
-                          validation.errors.pbs_name_or
+                        validation.errors.pbs_name_or
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.pbs_name_or &&
-                      validation.errors.pbs_name_or ? (
+                    validation.errors.pbs_name_or ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pbs_name_or}
                       </FormFeedback>
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pbs_name_am")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pbs_name_am")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pbs_name_am"
                       type="text"
@@ -482,21 +520,24 @@ const BudgetSourceModel = () => {
                       value={validation.values.pbs_name_am || ""}
                       invalid={
                         validation.touched.pbs_name_am &&
-                          validation.errors.pbs_name_am
+                        validation.errors.pbs_name_am
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.pbs_name_am &&
-                      validation.errors.pbs_name_am ? (
+                    validation.errors.pbs_name_am ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pbs_name_am}
                       </FormFeedback>
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("pbs_name_en")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("pbs_name_en")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="pbs_name_en"
                       type="text"
@@ -506,14 +547,14 @@ const BudgetSourceModel = () => {
                       value={validation.values.pbs_name_en || ""}
                       invalid={
                         validation.touched.pbs_name_en &&
-                          validation.errors.pbs_name_en
+                        validation.errors.pbs_name_en
                           ? true
                           : false
                       }
                       maxLength={100}
                     />
                     {validation.touched.pbs_name_en &&
-                      validation.errors.pbs_name_en ? (
+                    validation.errors.pbs_name_en ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pbs_name_en}
                       </FormFeedback>
@@ -530,14 +571,14 @@ const BudgetSourceModel = () => {
                       value={validation.values.pbs_code || ""}
                       invalid={
                         validation.touched.pbs_code &&
-                          validation.errors.pbs_code
+                        validation.errors.pbs_code
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pbs_code &&
-                      validation.errors.pbs_code ? (
+                    validation.errors.pbs_code ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pbs_code}
                       </FormFeedback>
@@ -554,25 +595,52 @@ const BudgetSourceModel = () => {
                       value={validation.values.pbs_description || ""}
                       invalid={
                         validation.touched.pbs_description &&
-                          validation.errors.pbs_description
+                        validation.errors.pbs_description
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.pbs_description &&
-                      validation.errors.pbs_description ? (
+                    validation.errors.pbs_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.pbs_description}
                       </FormFeedback>
                     ) : null}
+                  </Col>
+                  <Col className="col-md-4 mb-3">
+                    <div className="form-check mb-4">
+                      <Label className="me-1" for="pbs_status">
+                        {t("is_inactive")}
+                      </Label>
+
+                      <Input
+                        id="pbs_status"
+                        name="pbs_status"
+                        type="checkbox"
+                        placeholder={t("pbs_status")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.pbs_status}
+                        invalid={
+                          validation.touched.pbs_status &&
+                          validation.errors.pbs_status
+                        }
+                      />
+                      {validation.touched.pbs_status &&
+                        validation.errors.pbs_status && (
+                          <FormFeedback type="invalid">
+                            {validation.errors.pbs_status}
+                          </FormFeedback>
+                        )}
+                    </div>
                   </Col>
                 </Row>
                 <Row>
                   <Col>
                     <div className="text-end">
                       {addBudgetSource.isPending ||
-                        updateBudgetSource.isPending ? (
+                      updateBudgetSource.isPending ? (
                         <Button
                           color="success"
                           type="submit"

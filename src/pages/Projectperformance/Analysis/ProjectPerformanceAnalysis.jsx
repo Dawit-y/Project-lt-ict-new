@@ -17,7 +17,10 @@ import {
 } from "reactstrap";
 import classnames from "classnames";
 import ReactApexChart from "react-apexcharts";
-import { formatNumber, calculatePercentage } from "../../utils/commonMethods";
+import {
+  formatNumber,
+  calculatePercentage,
+} from "../../../utils/commonMethods";
 import { useTranslation } from "react-i18next";
 
 const ProjectPerformanceAnalysis = ({
@@ -226,7 +229,9 @@ const ProjectPerformanceAnalysis = ({
             const formattedValue = Number(val).toFixed(2);
             return selectedView === "physical"
               ? `${formattedValue}%`
-              : `${formattedValue}${chartType === "pie" ? "M" : "M"} Birr`;
+              : `${formattedValue}${
+                  chartType === "pie" ? ` ${t("m")}` : ` ${t("m")}`
+                } ${t("birr")}`;
           },
         },
       },
@@ -328,15 +333,17 @@ const ProjectPerformanceAnalysis = ({
           title: {
             text:
               selectedView === "physical"
-                ? "Physical Progress (%)"
-                : "Budget (Millions)",
+                ? `${t("physical_progress_(%)")}`
+                : `${t("budget_(Millions)")}`,
           },
           labels: {
             formatter: function (val) {
               const formattedValue = Number(val).toFixed(2);
               return selectedView === "physical"
                 ? `${formattedValue}%`
-                : `${formattedValue}${chartType === "pie" ? "M" : "M"} Birr`;
+                : `${formattedValue}${
+                    chartType === "pie" ? ` ${t("m")}` : ` ${t("m")}`
+                  } ${t("birr")}`;
             },
           },
         },
@@ -385,12 +392,14 @@ const ProjectPerformanceAnalysis = ({
         series = [
           {
             name: isOverallView
-              ? "Average Planned Physical"
-              : "Planned Physical",
+              ? `${t("average_planned_physical")}`
+              : `${t("planned_physical")}`,
             data: planned,
           },
           {
-            name: isOverallView ? "Average Actual Physical" : "Actual Physical",
+            name: isOverallView
+              ? `${t("average_actual_physical")}`
+              : `${t("actual_physical")}`,
             data: actual,
           },
         ];
@@ -428,14 +437,14 @@ const ProjectPerformanceAnalysis = ({
         series = [
           {
             name: isOverallView
-              ? "Total Planned Budget (M)"
-              : "Planned Budget (M)",
+              ? `${t("total_planned_budget_(M)")}`
+              : `${t("planned_budget_(M)")}`,
             data: planned,
           },
           {
             name: isOverallView
-              ? "Total Actual Budget (M)"
-              : "Actual Budget (M)",
+              ? `${t("total_actual_budget_(M)")}`
+              : `${t("actual_budget_(M)")}`,
             data: actual,
           },
         ];
@@ -488,13 +497,13 @@ const ProjectPerformanceAnalysis = ({
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h4 className="card-title mb-0">
                 {isOverallView
-                  ? "Overall Projects Performance"
+                  ? `${t("overall_projects_performance")}`
                   : `${
                       performanceData?.prj_name || "Project"
                     } Performance Analysis`}
                 {isOverallView && (
                   <Badge color="primary" className="ms-2">
-                    {totals?.projectCount || 0} Projects
+                    {totals?.projectCount || 0} {t("projects")}
                   </Badge>
                 )}
               </h4>
@@ -502,15 +511,15 @@ const ProjectPerformanceAnalysis = ({
                 <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
                   <DropdownToggle caret className="btn btn-light">
                     {selectedView === "physical"
-                      ? "Physical View"
-                      : "Financial View"}
+                      ? `${t("physical_view")}`
+                      : `${t("financial_view")}`}
                   </DropdownToggle>
                   <DropdownMenu>
                     <DropdownItem onClick={() => setSelectedView("physical")}>
-                      Physical Progress
+                      {t("physical_progress")}
                     </DropdownItem>
                     <DropdownItem onClick={() => setSelectedView("financial")}>
-                      Financial Progress
+                      {t("financial_progress")}
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
@@ -522,7 +531,7 @@ const ProjectPerformanceAnalysis = ({
                     }`}
                     onClick={() => onChartTypeChange("bar")}
                   >
-                    <i className="mdi mdi-chart-bar"></i> Bar
+                    <i className="mdi mdi-chart-bar"></i> {t("bar")}
                   </button>
                   <button
                     className={`btn btn-light ${
@@ -530,7 +539,7 @@ const ProjectPerformanceAnalysis = ({
                     }`}
                     onClick={() => onChartTypeChange("pie")}
                   >
-                    <i className="mdi mdi-chart-pie"></i> Pie
+                    <i className="mdi mdi-chart-pie"></i> {t("pie")}
                   </button>
                 </div>
               </div>
@@ -544,7 +553,7 @@ const ProjectPerformanceAnalysis = ({
                     toggleTab("1");
                   }}
                 >
-                  Summary
+                  {t("summary")}
                 </NavLink>
               </NavItem>
               <NavItem>
@@ -554,7 +563,7 @@ const ProjectPerformanceAnalysis = ({
                     toggleTab("2");
                   }}
                 >
-                  Monthly Progress
+                  {t("monthly_progress")}
                 </NavLink>
               </NavItem>
               {isOverallView && (
@@ -565,7 +574,7 @@ const ProjectPerformanceAnalysis = ({
                       toggleTab("4");
                     }}
                   >
-                    Yearly Progress
+                    {t("yearly_progress")}
                   </NavLink>
                 </NavItem>
               )}
@@ -576,7 +585,7 @@ const ProjectPerformanceAnalysis = ({
                     toggleTab("3");
                   }}
                 >
-                  Details
+                  {t("details")}
                 </NavLink>
               </NavItem>
             </Nav>
@@ -591,10 +600,10 @@ const ProjectPerformanceAnalysis = ({
                     <div className="mt-4">
                       {!isOverallView && (
                         <>
-                          <p className="text-muted">Project Code</p>
+                          <p className="text-muted">{t("project_code")}</p>
                           <h4>{performanceData?.prj_code || "-"}</h4>
 
-                          <p className="text-muted mt-4">Status</p>
+                          <p className="text-muted mt-4">{t("status")}</p>
                           <h5 className="mb-4">
                             {performanceData?.status_name || "-"}
                           </h5>
@@ -604,7 +613,9 @@ const ProjectPerformanceAnalysis = ({
                       <Row>
                         <Col xs="6">
                           <div>
-                            <p className="text-muted mb-2">Total Planned</p>
+                            <p className="text-muted mb-2">
+                              {t("total_planned")}
+                            </p>
                             <h4>
                               {selectedView === "physical"
                                 ? `${formatNumber(
@@ -612,13 +623,15 @@ const ProjectPerformanceAnalysis = ({
                                   )}%`
                                 : `${formatNumber(
                                     totals?.financial?.planned || 0
-                                  )} Birr`}
+                                  )} ${t("birr")}`}
                             </h4>
                           </div>
                         </Col>
                         <Col xs="6">
                           <div>
-                            <p className="text-muted mb-2">Total Actual</p>
+                            <p className="text-muted mb-2">
+                              {t("total_actual")}
+                            </p>
                             <h4>
                               {selectedView === "physical"
                                 ? `${formatNumber(
@@ -626,14 +639,14 @@ const ProjectPerformanceAnalysis = ({
                                   )}%`
                                 : `${formatNumber(
                                     totals?.financial?.actual || 0
-                                  )} Birr`}
+                                  )} ${t("birr")}`}
                             </h4>
                           </div>
                         </Col>
                       </Row>
 
                       <div className="mt-4">
-                        <p className="text-muted mb-2">Variance</p>
+                        <p className="text-muted mb-2">{t("variance")}</p>
                         <h4
                           className={
                             totals?.[selectedView]?.variance >= 0
@@ -647,7 +660,7 @@ const ProjectPerformanceAnalysis = ({
                               )}%`
                             : `${formatNumber(
                                 Math.abs(totals?.financial?.variance || 0)
-                              )} Birr`}
+                              )} ${t("birr")}`}
                           {getStatusIndicator(
                             totals?.[selectedView]?.variance || 0
                           )}
@@ -681,16 +694,20 @@ const ProjectPerformanceAnalysis = ({
                   <table className="table table-bordered table-striped">
                     <thead className="table-light">
                       <tr>
-                        <th>Month</th>
+                        <th>{t("month")}</th>
                         <th>
-                          Planned{" "}
-                          {selectedView === "physical" ? "Physical" : "Budget"}
+                          {t("planned")}{" "}
+                          {selectedView === "physical"
+                            ? `${t("physical")}`
+                            : `${t("budget")}`}
                         </th>
                         <th>
-                          Actual{" "}
-                          {selectedView === "physical" ? "Physical" : "Budget"}
+                          {t("actual")}{" "}
+                          {selectedView === "physical"
+                            ? `${t("physical")}`
+                            : `${t("budget")}`}
                         </th>
-                        <th>Variance</th>
+                        <th>{t("variance")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -756,12 +773,16 @@ const ProjectPerformanceAnalysis = ({
                             <td>
                               {selectedView === "physical"
                                 ? `${formatNumber(planned)}%`
-                                : `${formatNumber(planned)}M Birr`}
+                                : `${formatNumber(planned)} ${t("m")} ${t(
+                                    "birr"
+                                  )}`}
                             </td>
                             <td>
                               {selectedView === "physical"
                                 ? `${formatNumber(actual)}%`
-                                : `${formatNumber(actual)}M Birr`}
+                                : `${formatNumber(actual)} ${t("m")} ${t(
+                                    "birr"
+                                  )}`}
                             </td>
                             <td
                               className={
@@ -770,7 +791,9 @@ const ProjectPerformanceAnalysis = ({
                             >
                               {selectedView === "physical"
                                 ? `${formatNumber(Math.abs(variance))}%`
-                                : `${formatNumber(Math.abs(variance))}M Birr`}
+                                : `${formatNumber(Math.abs(variance))} ${t(
+                                    "m"
+                                  )} ${t("birr")}`}
                               {getStatusIndicator(variance)}
                             </td>
                           </tr>
@@ -786,16 +809,18 @@ const ProjectPerformanceAnalysis = ({
                     <table className="table table-bordered table-striped">
                       <thead className="table-light">
                         <tr>
-                          <th>Year</th>
+                          <th>{t("year")}</th>
                           <th>
-                            Total Planned (
-                            {selectedView === "physical" ? "%" : "Birr"})
+                            {t("total_planned")} (
+                            {selectedView === "physical" ? "%" : `${t("birr")}`}
+                            )
                           </th>
                           <th>
-                            Total Actual (
-                            {selectedView === "physical" ? "%" : "Birr"})
+                            {t("total_actual")} (
+                            {selectedView === "physical" ? "%" : `${t("birr")}`}
+                            )
                           </th>
-                          <th>Variance</th>
+                          <th>{t("variance")}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -817,7 +842,7 @@ const ProjectPerformanceAnalysis = ({
                                     )}%`
                                   : `${formatNumber(
                                       yearTotals.financial.planned
-                                    )} Birr`}
+                                    )} ${t("birr")}`}
                               </td>
                               <td>
                                 {selectedView === "physical"
@@ -826,7 +851,7 @@ const ProjectPerformanceAnalysis = ({
                                     )}%`
                                   : `${formatNumber(
                                       yearTotals.financial.actual
-                                    )} Birr`}
+                                    )} ${t("birr")}`}
                               </td>
                               <td
                                 className={
@@ -841,7 +866,7 @@ const ProjectPerformanceAnalysis = ({
                                     )}%`
                                   : `${formatNumber(
                                       Math.abs(yearTotals.financial.variance)
-                                    )} Birr`}
+                                    )} ${t("birr")}`}
                                 {getStatusIndicator(
                                   yearTotals[selectedView].variance
                                 )}
@@ -860,19 +885,25 @@ const ProjectPerformanceAnalysis = ({
                   <Col md="6">
                     <Card>
                       <CardBody>
-                        <h5 className="card-title">Baseline Comparison</h5>
+                        <h5 className="card-title">
+                          {t("baseline_comparison")}
+                        </h5>
                         <div className="d-flex justify-content-between mt-3">
                           <div>
-                            <p className="text-muted mb-1">Physical Baseline</p>
+                            <p className="text-muted mb-1">
+                              {t("physical_baseline")}
+                            </p>
                             <h4>
                               {formatNumber(totals?.baseline?.physical || 0)}%
                             </h4>
                           </div>
                           <div>
-                            <p className="text-muted mb-1">Budget Baseline</p>
+                            <p className="text-muted mb-1">
+                              {t("budget_baseline")}
+                            </p>
                             <h4>
                               {formatNumber(totals?.baseline?.financial || 0)}{" "}
-                              Birr
+                              {t("birr")}
                             </h4>
                           </div>
                         </div>
@@ -882,11 +913,13 @@ const ProjectPerformanceAnalysis = ({
                   <Col md="6">
                     <Card>
                       <CardBody>
-                        <h5 className="card-title">Performance Summary</h5>
+                        <h5 className="card-title">
+                          {t("performance_summary")}
+                        </h5>
                         <div className="d-flex justify-content-between mt-3">
                           <div>
                             <p className="text-muted mb-1">
-                              Physical Performance
+                              {t("physical_performance")}
                             </p>
                             <h4>
                               {formatNumber(totals?.performance?.physical || 0)}
@@ -894,12 +927,14 @@ const ProjectPerformanceAnalysis = ({
                             </h4>
                           </div>
                           <div>
-                            <p className="text-muted mb-1">Budget Used</p>
+                            <p className="text-muted mb-1">
+                              {t("budget_used")}
+                            </p>
                             <h4>
                               {formatNumber(
                                 totals?.performance?.financial || 0
                               )}{" "}
-                              Birr
+                              {t("birr")}
                             </h4>
                           </div>
                         </div>
@@ -913,27 +948,31 @@ const ProjectPerformanceAnalysis = ({
                     <Col md="12">
                       <Card className="shadow-sm border-0">
                         <CardBody>
-                          <h4 className="card-title mb-4">Project Details</h4>
+                          <h4 className="card-title mb-4">
+                            {t("project_details")}
+                          </h4>
                           <Row>
                             <Col md="4">
                               <p className="text-muted fw-bold mb-1">
-                                Description
+                                {t("description")}
                               </p>
                               <p className="text-dark">
                                 {performanceData?.prp_description ||
-                                  "No description available"}
+                                  `${t("no_description_available")}`}
                               </p>
                             </Col>
                             <Col md="4">
                               <p className="text-muted fw-bold mb-1">
-                                Record Date
+                                {t("record_date")}
                               </p>
                               <p className="text-dark">
                                 {performanceData?.prp_record_date_gc || "-"}
                               </p>
                             </Col>
                             <Col md="4">
-                              <p className="text-muted fw-bold mb-1">Quarter</p>
+                              <p className="text-muted fw-bold mb-1">
+                                {t("quarter")}
+                              </p>
                               <p className="text-dark">
                                 {performanceData?.prp_quarter_id || "-"}
                               </p>

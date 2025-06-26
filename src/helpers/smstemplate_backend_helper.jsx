@@ -19,12 +19,12 @@ export const getSmsTemplate = async (params = {}) => {
 
 // add sms_template
 export const addSmsTemplate = async (objectName) =>
-  post(`${apiUrl}` + ADD_SMS_TEMPLATE, objectName);
+	post(ADD_SMS_TEMPLATE, objectName);
 
 // update sms_template
 export const updateSmsTemplate = (objectName) =>
-post(`${apiUrl}`+UPDATE_SMS_TEMPLATE +`?smt_id=${objectName?.smt_id}`, objectName);
+	post(UPDATE_SMS_TEMPLATE + `?smt_id=${objectName?.smt_id}`, objectName);
 
 // delete  sms_template
 export const deleteSmsTemplate = (objectName) =>
-  post(`${apiUrl}`+DELETE_SMS_TEMPLATE+`?smt_id=${objectName}`);
+	post(DELETE_SMS_TEMPLATE + `?smt_id=${objectName}`);

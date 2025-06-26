@@ -22,11 +22,8 @@ export const addUserRole = async (objectName) =>
   await post(ADD_USER_ROLE, objectName);
 // update objectNames
 export const updateUserRole = (objectName) =>
-  post(
-    `${apiUrl}` + UPDATE_USER_ROLE + `?url_id=${objectName?.url_id}`,
-    objectName
-  );
+	post(UPDATE_USER_ROLE + `?url_id=${objectName?.url_id}`, objectName);
 
 // delete objectNames
 export const deleteUserRole = (objectName) =>
-  post(`${apiUrl}` + DELETE_USER_ROLE + `?url_id=${objectName}`);
+	post(DELETE_USER_ROLE + `?url_id=${objectName}`);

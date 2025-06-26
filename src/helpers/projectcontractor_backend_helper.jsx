@@ -19,12 +19,12 @@ export const getProjectContractor = async (params = {}) => {
 
 // add project_contractor
 export const addProjectContractor = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROJECT_CONTRACTOR, objectName);
+	post(ADD_PROJECT_CONTRACTOR, objectName);
 
 // update project_contractor
 export const updateProjectContractor = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROJECT_CONTRACTOR +`?cni_id=${objectName?.cni_id}`, objectName);
+	post(UPDATE_PROJECT_CONTRACTOR + `?cni_id=${objectName?.cni_id}`, objectName);
 
 // delete  project_contractor
 export const deleteProjectContractor = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROJECT_CONTRACTOR+`?cni_id=${objectName}`);
+	post(DELETE_PROJECT_CONTRACTOR + `?cni_id=${objectName}`);

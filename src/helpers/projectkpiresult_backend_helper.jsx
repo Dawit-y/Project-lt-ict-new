@@ -19,12 +19,12 @@ export const getProjectKpiResult = async (params = {}) => {
 
 // add project_kpi_result
 export const addProjectKpiResult = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROJECT_KPI_RESULT, objectName);
+	post(ADD_PROJECT_KPI_RESULT, objectName);
 
 // update project_kpi_result
 export const updateProjectKpiResult = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROJECT_KPI_RESULT +`?kpr_id=${objectName?.kpr_id}`, objectName);
+	post(UPDATE_PROJECT_KPI_RESULT + `?kpr_id=${objectName?.kpr_id}`, objectName);
 
 // delete  project_kpi_result
 export const deleteProjectKpiResult = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROJECT_KPI_RESULT+`?kpr_id=${objectName}`);
+	post(DELETE_PROJECT_KPI_RESULT + `?kpr_id=${objectName}`);

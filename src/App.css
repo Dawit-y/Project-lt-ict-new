@@ -1,3 +1,4 @@
+
 .App {
 	text-align: center;
 }
@@ -39,12 +40,6 @@ button {
 		--bs-modal-width: 90% !important;
 	}
 }
-/*body{
-  zoom:90%;
-}
-.offcanvas-backdrop{
-height: 100%;
-}*/
 
 .leaflet-container {
 	height: 600px;

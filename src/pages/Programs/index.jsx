@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, Children } from 'react'
 import TreeTableContainer from './TreeTable'
-import { FaChevronRight, FaChevronDown, FaPen, FaPlus, FaTrash } from "react-icons/fa6";
+import { FaChevronRight, FaChevronDown, FaPen, FaPlus, FaTrash } from "react-icons/fa";
 import { Button, Card, Spinner, UncontrolledTooltip } from 'reactstrap';
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { useFetchSectorInformations } from '../../queries/sectorinformation_query';

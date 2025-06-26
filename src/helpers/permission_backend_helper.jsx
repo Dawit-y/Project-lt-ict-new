@@ -50,14 +50,11 @@ export const getAssignedPermission = async (params = {}) => {
 };
 
 export const addPermission = async (objectName) =>
-  post(`${apiUrl}` + ADD_PERMISSION, objectName);
+	post(ADD_PERMISSION, objectName);
 
 export const updatePermission = (objectName) =>
-  post(
-    `${apiUrl}` + UPDATE_PERMISSION + `?pem_id=${objectName?.pem_id}`,
-    objectName
-  );
+	post(UPDATE_PERMISSION + `?pem_id=${objectName?.pem_id}`, objectName);
 
 // delete objectNames
 export const deletePermission = (objectName) =>
-  post(`${apiUrl}` + DELETE_PERMISSION + `?pem_id=${objectName}`);
+	post(DELETE_PERMISSION + `?pem_id=${objectName}`);

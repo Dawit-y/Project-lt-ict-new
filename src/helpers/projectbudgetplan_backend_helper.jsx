@@ -19,12 +19,15 @@ export const getProjectBudgetPlan = async (params = {}) => {
 
 // add project_budget_plan
 export const addProjectBudgetPlan = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROJECT_BUDGET_PLAN, objectName);
+	post(ADD_PROJECT_BUDGET_PLAN, objectName);
 
 // update project_budget_plan
 export const updateProjectBudgetPlan = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROJECT_BUDGET_PLAN +`?bpl_id=${objectName?.bpl_id}`, objectName);
+	post(
+		UPDATE_PROJECT_BUDGET_PLAN + `?bpl_id=${objectName?.bpl_id}`,
+		objectName
+	);
 
 // delete  project_budget_plan
 export const deleteProjectBudgetPlan = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROJECT_BUDGET_PLAN+`?bpl_id=${objectName}`);
+	post(DELETE_PROJECT_BUDGET_PLAN + `?bpl_id=${objectName}`);

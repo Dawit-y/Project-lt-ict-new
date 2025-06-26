@@ -51,7 +51,6 @@ const BudgetRequestTask = lazy(() => import("../Budgetrequesttask/index"));
 const BudgetExSource = lazy(() => import("../Budgetexsource/index"));
 
 const BudgetRequestModal = lazy(() => import("./BudgetRequestModal"));
-const ActionModal = lazy(() => import("./ActionModal"));
 const AttachFileModal = lazy(() =>
   import("../../components/Common/AttachFileModal")
 );
@@ -69,7 +68,6 @@ import {
   createKeyValueMap,
   createMultiLangKeyValueMap,
 } from "../../utils/commonMethods";
-import EthiopianDatePicker from "../../components/Common/EthiopianDatePicker";
 import AsyncSelectField from "../../components/Common/AsyncSelectField";
 import InputField from "../../components/Common/InputField";
 
@@ -178,11 +176,11 @@ const BudgetRequestModel = (props) => {
 
       bdr_request_type: (budgetRequest && budgetRequest.bdr_request_type) || "",
       bdr_physical_baseline:
-        (budgetRequest && budgetRequest.bdr_physical_baseline) || 0,
+        (budgetRequest && budgetRequest.bdr_physical_baseline) || "",
       bdr_physical_planned:
         (budgetRequest && budgetRequest.bdr_physical_planned) || "",
       bdr_financial_baseline:
-        (budgetRequest && budgetRequest.bdr_financial_baseline) || 0,
+        (budgetRequest && budgetRequest.bdr_financial_baseline) || "",
       bdr_description: (budgetRequest && budgetRequest.bdr_description) || "",
       bdr_status: (budgetRequest && budgetRequest.bdr_status) || "",
       bdr_request_status:
@@ -228,7 +226,7 @@ const BudgetRequestModel = (props) => {
               (item) =>
                 item.bdr_id !== currentId && // Exclude current record when editing
                 parseInt(item.bdr_budget_year_id) ===
-                  parseInt(bdr_budget_year_id) &&
+                parseInt(bdr_budget_year_id) &&
                 parseInt(item.bdr_request_category_id) === parseInt(value)
             );
           }
@@ -759,13 +757,6 @@ const BudgetRequestModel = (props) => {
             transaction={transaction}
           />
         )}
-        {actionModal && (
-          <ActionModal
-            isOpen={actionModal}
-            toggle={toggleActionModal}
-            data={transaction}
-          />
-        )}
         {fileModal && (
           <AttachFileModal
             isOpen={fileModal}
@@ -917,8 +908,8 @@ const BudgetRequestModel = (props) => {
                 className="col-md-4 mb-3"
                 allowDecimal={true}
               />
-              <Col className="col-md-4 mb-3 pt-3">
-                <EthiopianDatePicker
+              <Col className="col-md-4 mb-3">
+                <DatePicker
                   isRequired={true}
                   validation={validation}
                   componentId="bdr_requested_date_gc"
@@ -937,7 +928,7 @@ const BudgetRequestModel = (props) => {
               <Col>
                 <div className="text-end">
                   {addBudgetRequest.isPending ||
-                  updateBudgetRequest.isPending ? (
+                    updateBudgetRequest.isPending ? (
                     <Button
                       color="success"
                       type="submit"

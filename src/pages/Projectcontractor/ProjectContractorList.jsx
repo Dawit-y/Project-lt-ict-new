@@ -1,13 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import axios from "axios";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
 import "bootstrap/dist/css/bootstrap.min.css";
-import TableContainer from "../../components/Common/TableContainer";
-import * as Yup from "yup";
-import { useFormik } from "formik";
-import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 
 //import components
@@ -16,43 +8,19 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import DeleteModal from "../../components/Common/DeleteModal";
 
-import {
-  useFetchProjectContractors,
-  useSearchProjectContractors,
-  useAddProjectContractor,
-  useDeleteProjectContractor,
-  useUpdateProjectContractor,
-} from "../../queries/projectcontractor_query";
-import ProjectContractorModal from "./ProjectContractorModal";
+import { useSearchProjectContractors } from "../../queries/projectcontractor_query";
 import { useTranslation } from "react-i18next";
 
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
-import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
-} from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
+import { Col, Row, Input } from "reactstrap";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import TreeForLists from "../../components/Common/TreeForLists";
+import TreeForLists from "../../components/Common/TreeForLists2";
+import SearchTableContainer from "../../components/Common/SearchTableContainer";
+import AgGridContainer from "../../components/Common/AgGridContainer";
+import { projectContractorExportColumns } from "../../utils/exportColumnsForLists";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -64,10 +32,6 @@ const ProjectContractorList = () => {
   //meta title
   document.title = " ProjectContractor";
   const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [projectContractor, setProjectContractor] = useState(null);
 
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -79,6 +43,7 @@ const ProjectContractorList = () => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { data, isLoading, error, isError, refetch } = useState("");
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
@@ -90,16 +55,7 @@ const ProjectContractorList = () => {
     const selectedData = selectedNodes.map((node) => node.data);
     setSelectedRows(selectedData);
   };
-  // Filter by marked rows
-  const filterMarked = () => {
-    if (gridRef.current) {
-      gridRef.current.api.setRowData(selectedRows);
-    }
-  };
-  // Clear the filter and show all rows again
-  const clearFilter = () => {
-    gridRef.current.api.setRowData(showSearchResults ? results : data);
-  };
+
   //START FOREIGN CALLS
 
   const handleSearchResults = ({ data, error }) => {
@@ -148,6 +104,9 @@ const ProjectContractorList = () => {
         field: "prj_name",
         sortable: true,
         filter: true,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_name, 35) || "-";
         },
@@ -167,6 +126,9 @@ const ProjectContractorList = () => {
         field: "cni_name",
         sortable: true,
         filter: true,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.cni_name, 35) || "-";
         },
@@ -177,6 +139,9 @@ const ProjectContractorList = () => {
         field: "cni_contractor_type",
         sortable: true,
         filter: true,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.cni_contractor_type, 35) || "-";
         },
@@ -186,6 +151,9 @@ const ProjectContractorList = () => {
         field: "cni_tin_num",
         sortable: true,
         filter: true,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.cni_tin_num, 35) || "-";
         },
@@ -195,6 +163,9 @@ const ProjectContractorList = () => {
         field: "cni_vat_num",
         sortable: true,
         filter: true,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.cni_vat_num, 35) || "-";
         },
@@ -204,6 +175,9 @@ const ProjectContractorList = () => {
         field: "cni_total_contract_price",
         sortable: true,
         filter: true,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.cni_total_contract_price, 35) || "-";
         },
@@ -214,6 +188,7 @@ const ProjectContractorList = () => {
         field: "cni_contract_start_date_gc",
         sortable: true,
         filter: true,
+        width: 220,
         cellRenderer: (params) => {
           return (
             truncateText(params.data.cni_contract_start_date_gc, 35) || "-"
@@ -226,6 +201,7 @@ const ProjectContractorList = () => {
         field: "cni_contract_end_date_gc",
         sortable: true,
         filter: true,
+        width: 200,
         cellRenderer: (params) => {
           return truncateText(params.data.cni_contract_end_date_gc, 35) || "-";
         },
@@ -236,6 +212,7 @@ const ProjectContractorList = () => {
         field: "cni_contact_person",
         sortable: true,
         filter: true,
+        width: 200,
         cellRenderer: (params) => {
           return truncateText(params.data.cni_contact_person, 35) || "-";
         },
@@ -246,6 +223,7 @@ const ProjectContractorList = () => {
         field: "cni_phone_number",
         sortable: true,
         filter: true,
+        width: 200,
         cellRenderer: (params) => {
           return truncateText(params.data.cni_phone_number, 35) || "-";
         },
@@ -272,8 +250,10 @@ const ProjectContractorList = () => {
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}
+              isCollapsed={isCollapsed}
+              setIsCollapsed={setIsCollapsed}
             />
-            <div className="w-100">
+            <SearchTableContainer isCollapsed={isCollapsed}>
               <AdvancedSearch
                 searchHook={useSearchProjectContractors}
                 textSearchKeys={["prj_name", "prj_code"]}
@@ -286,55 +266,25 @@ const ProjectContractorList = () => {
                 setIsSearchLoading={setIsSearchLoading}
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
-              />
-              {isLoading || isSearchLoading ? (
-                <Spinners />
-              ) : (
-                <div
-                  className="ag-theme-alpine"
-                  style={{ height: "100%", width: "100%" }}
-                >
-                  {/* Row for search input and buttons */}
-                  <Row className="mb-3">
-                    <Col sm="12" md="6">
-                      {/* Search Input for  Filter */}
-                      <Input
-                        type="text"
-                        placeholder="Search..."
-                        onChange={(e) => setQuickFilterText(e.target.value)}
-                        className="mb-2"
-                        style={{ width: "50%", maxWidth: "400px" }}
-                      />
-                    </Col>
-                    <Col sm="12" md="6" className="text-md-end"></Col>
-                  </Row>
-
-                  {/* AG Grid */}
-                  <div>
-                    <AgGridReact
-                      ref={gridRef}
-                      rowData={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      columnDefs={columnDefs}
-                      pagination={true}
-                      paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                      paginationPageSize={10}
-                      quickFilterText={quickFilterText}
-                      onSelectionChanged={onSelectionChanged}
-                      rowHeight={30} // Set the row height here
-                      animateRows={true} // Enables row animations
-                      domLayout="autoHeight" // Auto-size the grid to fit content
-                      onGridReady={(params) => {
-                        params.api.sizeColumnsToFit(); // Size columns to fit the grid width
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
+              >
+                <AgGridContainer
+                  rowData={
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
+                  columnDefs={columnDefs}
+                  isLoading={isSearchLoading}
+                  isPagination={true}
+                  rowHeight={35}
+                  paginationPageSize={10}
+                  isGlobalFilter={true}
+                  isExcelExport={true}
+                  isPdfExport={true}
+                  isPrint={true}
+                  tableName="Project Contract/Contractor"
+                  exportColumns={projectContractorExportColumns}
+                />
+              </AdvancedSearch>
+            </SearchTableContainer>
           </div>
         </div>
       </div>

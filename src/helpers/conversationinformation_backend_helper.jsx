@@ -25,12 +25,15 @@ export const getConversationInformation = async (params = {}) => {
 
 // add conversation_information
 export const addConversationInformation = async (objectName) =>
-  post(`${apiUrl}` + ADD_CONVERSATION_INFORMATION, objectName);
+	post(ADD_CONVERSATION_INFORMATION, objectName);
 
 // update conversation_information
 export const updateConversationInformation = (objectName) =>
-  post(`${apiUrl}` + UPDATE_CONVERSATION_INFORMATION + `?cvi_id=${objectName?.cvi_id}`, objectName);
+	post(
+		UPDATE_CONVERSATION_INFORMATION + `?cvi_id=${objectName?.cvi_id}`,
+		objectName
+	);
 
 // delete  conversation_information
 export const deleteConversationInformation = (objectName) =>
-  post(`${apiUrl}` + DELETE_CONVERSATION_INFORMATION + `?cvi_id=${objectName}`);
+	post(DELETE_CONVERSATION_INFORMATION + `?cvi_id=${objectName}`);

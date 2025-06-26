@@ -45,6 +45,7 @@ import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { alphanumericValidation } from "../../utils/Validation/validation";
+import { requestCategoryExportColumns } from "../../utils/exportColumnsForLookups";
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -126,7 +127,7 @@ const RequestCategoryModel = () => {
       rqc_name_en: (requestCategory && requestCategory.rqc_name_en) || "",
       rqc_description:
         (requestCategory && requestCategory.rqc_description) || "",
-      rqc_status: (requestCategory && requestCategory.rqc_status) || "",
+      rqc_status: requestCategory?.rqc_status || false,
       rqc_gov_active: requestCategory?.rqc_gov_active || false,
       rqc_cso_active: requestCategory?.rqc_cso_active || false,
       is_deletable: (requestCategory && requestCategory.is_deletable) || 1,
@@ -147,9 +148,9 @@ const RequestCategoryModel = () => {
           rqc_name_am: values.rqc_name_am,
           rqc_name_en: values.rqc_name_en,
           rqc_description: values.rqc_description,
-          rqc_status: values.rqc_status,
+          rqc_status: values?.rqc_status ? 1 : 0,
           rqc_gov_active: values?.rqc_gov_active ? 1 : 0,
-         rqc_cso_active: values?.rqc_cso_active ? 1 : 0,
+          rqc_cso_active: values?.rqc_cso_active ? 1 : 0,
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -161,9 +162,9 @@ const RequestCategoryModel = () => {
           rqc_name_am: values.rqc_name_am,
           rqc_name_en: values.rqc_name_en,
           rqc_description: values.rqc_description,
-          rqc_status: values.rqc_status,
+          rqc_status: values?.rqc_status ? 1 : 0,
           rqc_gov_active: values?.rqc_gov_active ? 1 : 0,
-         rqc_cso_active: values?.rqc_cso_active ? 1 : 0,
+          rqc_cso_active: values?.rqc_cso_active ? 1 : 0,
         };
         // save new RequestCategory
         handleAddRequestCategory(newRequestCategory);
@@ -199,7 +200,7 @@ const RequestCategoryModel = () => {
       rqc_name_am: requestCategory.rqc_name_am,
       rqc_name_en: requestCategory.rqc_name_en,
       rqc_description: requestCategory.rqc_description,
-      rqc_status: requestCategory.rqc_status,
+      rqc_status: requestCategory.rqc_status === 1,
       rqc_gov_active: requestCategory.rqc_gov_active === 1,
       rqc_cso_active: requestCategory.rqc_cso_active === 1,
       is_deletable: requestCategory.is_deletable,
@@ -271,7 +272,13 @@ const RequestCategoryModel = () => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => (
-          <span className={cellProps.row.original.rqc_gov_active === 1 ? "btn btn-sm btn-soft-success" : ""}>
+          <span
+            className={
+              cellProps.row.original.rqc_gov_active === 1
+                ? "btn btn-sm btn-soft-success"
+                : ""
+            }
+          >
             {cellProps.row.original.rqc_gov_active === 1 ? t("yes") : t("no")}
           </span>
         ),
@@ -281,10 +288,36 @@ const RequestCategoryModel = () => {
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => (
-          <span className={cellProps.row.original.rqc_cso_active === 1 ? "btn btn-sm btn-soft-success" : ""}>
+          <span
+            className={
+              cellProps.row.original.rqc_cso_active === 1
+                ? "btn btn-sm btn-soft-success"
+                : ""
+            }
+          >
             {cellProps.row.original.rqc_cso_active === 1 ? t("yes") : t("no")}
           </span>
         ),
+      },
+
+      {
+        header: "",
+        accessorKey: t("is_inactive"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span
+              className={
+                cellProps.row.original.rqc_status === 1
+                  ? "btn btn-sm btn-soft-danger"
+                  : ""
+              }
+            >
+              {cellProps.row.original.rqc_status === 1 ? t("yes") : t("no")}
+            </span>
+          );
+        },
       },
       {
         header: t("view_detail"),
@@ -414,6 +447,11 @@ const RequestCategoryModel = () => {
                       divClassName="-"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Request Category"
+                      exportColumns={requestCategoryExportColumns}
                     />
                   </CardBody>
                 </Card>
@@ -540,7 +578,7 @@ const RequestCategoryModel = () => {
                       </FormFeedback>
                     ) : null}
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <div className="form-check mb-4">
                       <Label className="me-1" for="rqc_gov_active">
                         {t("rqc_gov_active")}
@@ -553,14 +591,20 @@ const RequestCategoryModel = () => {
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
                         checked={validation.values.rqc_gov_active}
-                        invalid={validation.touched.rqc_gov_active && validation.errors.rqc_gov_active}
+                        invalid={
+                          validation.touched.rqc_gov_active &&
+                          validation.errors.rqc_gov_active
+                        }
                       />
-                      {validation.touched.rqc_gov_active && validation.errors.rqc_gov_active && (
-                        <FormFeedback type="invalid">{validation.errors.rqc_gov_active}</FormFeedback>
-                      )}
+                      {validation.touched.rqc_gov_active &&
+                        validation.errors.rqc_gov_active && (
+                          <FormFeedback type="invalid">
+                            {validation.errors.rqc_gov_active}
+                          </FormFeedback>
+                        )}
                     </div>
                   </Col>
-                  <Col className="col-md-6 mb-3">
+                  <Col className="col-md-4 mb-3">
                     <div className="form-check mb-4">
                       <Label className="me-1" for="rqc_cso_active">
                         {t("rqc_cso_active")}
@@ -573,11 +617,44 @@ const RequestCategoryModel = () => {
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
                         checked={validation.values.rqc_cso_active}
-                        invalid={validation.touched.rqc_cso_active && validation.errors.rqc_cso_active}
+                        invalid={
+                          validation.touched.rqc_cso_active &&
+                          validation.errors.rqc_cso_active
+                        }
                       />
-                      {validation.touched.rqc_cso_active && validation.errors.rqc_cso_active && (
-                        <FormFeedback type="invalid">{validation.errors.rqc_cso_active}</FormFeedback>
-                      )}
+                      {validation.touched.rqc_cso_active &&
+                        validation.errors.rqc_cso_active && (
+                          <FormFeedback type="invalid">
+                            {validation.errors.rqc_cso_active}
+                          </FormFeedback>
+                        )}
+                    </div>
+                  </Col>
+
+                  <Col className="col-md-4 mb-3">
+                    <div className="form-check mb-4">
+                      <Label className="me-1" for="rqc_status">
+                        {t("is_inactive")}
+                      </Label>
+                      <Input
+                        id="rqc_status"
+                        name="rqc_status"
+                        type="checkbox"
+                        placeholder={t("rqc_status")}
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        checked={validation.values.rqc_status}
+                        invalid={
+                          validation.touched.rqc_status &&
+                          validation.errors.rqc_status
+                        }
+                      />
+                      {validation.touched.rqc_status &&
+                        validation.errors.rqc_status && (
+                          <FormFeedback type="invalid">
+                            {validation.errors.rqc_status}
+                          </FormFeedback>
+                        )}
                     </div>
                   </Col>
                 </Row>

@@ -5,7 +5,10 @@ import { useTranslation } from "react-i18next";
 import { Button, Col, Row, Input } from "reactstrap";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import TreeForLists from "../../components/Common/TreeForLists";
+import TreeForLists from "../../components/Common/TreeForLists2";
+import SearchTableContainer from "../../components/Common/SearchTableContainer";
+import { projectEmployeeExportColumns } from "../../utils/exportColumnsForLists";
+
 const AgGridContainer = lazy(() =>
   import("../../components/Common/AgGridContainer")
 );
@@ -29,6 +32,7 @@ const ProjectEmployeeList = () => {
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { data, error, isError, refetch } = useState("");
 
   //START FOREIGN CALLS
@@ -79,6 +83,9 @@ const ProjectEmployeeList = () => {
         field: "prj_name",
         sortable: true,
         filter: true,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_name, 30) || "-";
         },
@@ -88,6 +95,7 @@ const ProjectEmployeeList = () => {
         field: "prj_code",
         sortable: true,
         filter: true,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.prj_code, 30) || "-";
         },
@@ -97,6 +105,7 @@ const ProjectEmployeeList = () => {
         field: "emp_id_no",
         sortable: true,
         filter: true,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.emp_id_no, 30) || "-";
         },
@@ -106,6 +115,9 @@ const ProjectEmployeeList = () => {
         field: "emp_full_name",
         sortable: true,
         filter: true,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.emp_full_name, 30) || "-";
         },
@@ -115,6 +127,9 @@ const ProjectEmployeeList = () => {
         field: "emp_email",
         sortable: true,
         filter: true,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.emp_email, 30) || "-";
         },
@@ -124,6 +139,7 @@ const ProjectEmployeeList = () => {
         field: "emp_phone_num",
         sortable: true,
         filter: true,
+        width: 150,
         cellRenderer: (params) => {
           return truncateText(params.data.emp_phone_num, 30) || "-";
         },
@@ -133,14 +149,18 @@ const ProjectEmployeeList = () => {
         field: "emp_role",
         sortable: true,
         filter: true,
+        flex: 1,
+        minWidth: 200,
+        width: 150,
         cellRenderer: (params) => {
-          return truncateText(params.data.emp_role, 30) || "-";
+          return truncateText(params.data.emp_role, 100) || "-";
         },
       },
       {
         headerName: t("emp_start_date_gc"),
         field: "emp_start_date_gc",
         sortable: true,
+        width: 150,
         filter: "agDateColumnFilter",
         cellRenderer: (params) => {
           return truncateText(params.data.emp_start_date_gc, 30) || "-";
@@ -165,10 +185,12 @@ const ProjectEmployeeList = () => {
               onNodeSelect={handleNodeSelect}
               setIsAddressLoading={setIsAddressLoading}
               setInclude={setInclude}
+              isCollapsed={isCollapsed}
+              setIsCollapsed={setIsCollapsed}
             />
 
             {/* Main Content */}
-            <div style={{ flex: "0 0 75%" }}>
+            <SearchTableContainer isCollapsed={isCollapsed}>
               <AdvancedSearch
                 searchHook={useSearchProjectEmployees}
                 textSearchKeys={[
@@ -201,19 +223,10 @@ const ProjectEmployeeList = () => {
                   isPdfExport={true}
                   isPrint={true}
                   tableName="Project Employee"
-                  includeKey={[
-                    "prj_name",
-                    "emp_full_name",
-                    "emp_id_no",
-                    "emp_email",
-                    "emp_phone_num",
-                    "emp_address",
-                    "emp_role",
-                  ]}
-                  excludeKey={["is_editable", "is_deletable"]}
+                  exportColumns={projectEmployeeExportColumns}
                 />
               </AdvancedSearch>
-            </div>
+            </SearchTableContainer>
           </div>
         </div>
       </div>

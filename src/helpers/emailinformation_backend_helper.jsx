@@ -19,12 +19,12 @@ export const getEmailInformation = async (params = {}) => {
 
 // add email_information
 export const addEmailInformation = async (objectName) =>
-  post(`${apiUrl}` + ADD_EMAIL_INFORMATION, objectName);
+	post(ADD_EMAIL_INFORMATION, objectName);
 
 // update email_information
 export const updateEmailInformation = (objectName) =>
-post(`${apiUrl}`+UPDATE_EMAIL_INFORMATION +`?emi_id=${objectName?.emi_id}`, objectName);
+	post(UPDATE_EMAIL_INFORMATION + `?emi_id=${objectName?.emi_id}`, objectName);
 
 // delete  email_information
 export const deleteEmailInformation = (objectName) =>
-  post(`${apiUrl}`+DELETE_EMAIL_INFORMATION+`?emi_id=${objectName}`);
+	post(DELETE_EMAIL_INFORMATION + `?emi_id=${objectName}`);

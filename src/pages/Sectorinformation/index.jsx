@@ -47,9 +47,9 @@ import {
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import { createSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { sectorInformationExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -80,6 +80,15 @@ const SectorInformationModel = () => {
     "psc_id",
     "psc_name"
   );
+
+  const sectorCategoryMap = useMemo(() => {
+    return (
+      sectorCategoryData?.data?.reduce((acc, category) => {
+        acc[category.psc_id] = category.psc_name;
+        return acc;
+      }, {}) || {}
+    );
+  }, [sectorCategoryData]);
   const addSectorInformation = useAddSectorInformation();
   const updateSectorInformation = useUpdateSectorInformation();
   const deleteSectorInformation = useDeleteSectorInformation();
@@ -153,7 +162,7 @@ const SectorInformationModel = () => {
         false,
       sci_description:
         (sectorInformation && sectorInformation.sci_description) || "",
-      sci_status: (sectorInformation && sectorInformation.sci_status) || "",
+      sci_status: (sectorInformation && sectorInformation.sci_status) || false,
 
       is_deletable: (sectorInformation && sectorInformation.is_deletable) || 1,
       is_editable: (sectorInformation && sectorInformation.is_editable) || 1,
@@ -191,7 +200,7 @@ const SectorInformationModel = () => {
           sci_available_at_zone: values.sci_available_at_zone ? 1 : 0,
           sci_available_at_woreda: values.sci_available_at_woreda ? 1 : 0,
           sci_description: values.sci_description,
-          sci_status: values.sci_status,
+          sci_status: values.sci_status ? 1 : 0,
           is_deletable: values.is_deletable,
           is_editable: values.is_editable,
         };
@@ -208,7 +217,7 @@ const SectorInformationModel = () => {
           sci_available_at_zone: values.sci_available_at_zone ? 1 : 0,
           sci_available_at_woreda: values.sci_available_at_woreda ? 1 : 0,
           sci_description: values.sci_description,
-          sci_status: values.sci_status,
+          sci_status: values.sci_status ? 1 : 0,
         };
         // save new SectorInformation
         handleAddSectorInformation(newSectorInformation);
@@ -251,7 +260,7 @@ const SectorInformationModel = () => {
       sci_available_at_zone: sectorInformation.sci_available_at_zone === 1,
       sci_available_at_woreda: sectorInformation.sci_available_at_woreda === 1,
       sci_description: sectorInformation.sci_description,
-      sci_status: sectorInformation.sci_status,
+      sci_status: sectorInformation.sci_status === 1,
 
       is_deletable: sectorInformation.is_deletable,
       is_editable: sectorInformation.is_editable,
@@ -342,7 +351,9 @@ const SectorInformationModel = () => {
           return (
             <span>
               {truncateText(
-                cellProps.row.original.sci_sector_category_id,
+                sectorCategoryMap[
+                  cellProps.row.original.sci_sector_category_id
+                ],
                 30
               ) || "-"}
             </span>
@@ -388,6 +399,26 @@ const SectorInformationModel = () => {
               {cellProps.row.original.sci_available_at_woreda == 1
                 ? "Yes"
                 : "No"}
+            </span>
+          );
+        },
+      },
+
+      {
+        header: "",
+        accessorKey: t("is_inactive"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span
+              className={
+                cellProps.row.original.sci_status === 1
+                  ? "btn btn-sm btn-soft-danger"
+                  : ""
+              }
+            >
+              {cellProps.row.original.sci_status === 1 ? t("yes") : t("no")}
             </span>
           );
         },
@@ -491,16 +522,7 @@ const SectorInformationModel = () => {
             title={t("sector_information")}
             breadcrumbItem={t("sector_information")}
           />
-          <AdvancedSearch
-            searchHook={useSearchSectorInformations}
-            textSearchKeys={["sci_name_or"]}
-            dropdownSearchKeys={[]}
-            checkboxSearchKeys={[]}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          />
+
           {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
@@ -530,6 +552,18 @@ const SectorInformationModel = () => {
                       divClassName="table-responsive"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Sector Information"
+                      exportColumns={[
+                        ...sectorInformationExportColumns,
+                        {
+                          key: "sci_sector_category_id",
+                          label: "sci_sector_category_id",
+                          format: (val) => sectorCategoryMap[val] || "-",
+                        },
+                      ]}
                     />
                   </CardBody>
                 </Card>
@@ -687,7 +721,7 @@ const SectorInformationModel = () => {
                     ) : null}
                   </Col>
                   <Row>
-                    <Col className="col-md-4 mb-3">
+                    <Col className="col-md-3 mb-3">
                       <Label className="me-1">
                         {t("sci_available_at_region")}
                       </Label>
@@ -713,7 +747,7 @@ const SectorInformationModel = () => {
                         </FormFeedback>
                       ) : null}
                     </Col>
-                    <Col className="col-md-4 mb-3">
+                    <Col className="col-md-3 mb-3">
                       <Label className="me-1">
                         {t("sci_available_at_zone")}
                       </Label>
@@ -739,7 +773,7 @@ const SectorInformationModel = () => {
                         </FormFeedback>
                       ) : null}
                     </Col>
-                    <Col className="col-md-4 mb-3">
+                    <Col className="col-md-3 mb-3">
                       <Label className="me-1">
                         {t("sci_available_at_woreda")}
                       </Label>
@@ -764,6 +798,32 @@ const SectorInformationModel = () => {
                           {validation.errors.sci_available_at_woreda}
                         </FormFeedback>
                       ) : null}
+                    </Col>
+                    <Col className="col-md-3 mb-3">
+                      <div className="form-check mb-4">
+                        <Label className="me-1" for="sci_status">
+                          {t("is_inactive")}
+                        </Label>
+                        <Input
+                          id="sci_status"
+                          name="sci_status"
+                          type="checkbox"
+                          placeholder={t("sci_status")}
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          checked={validation.values.sci_status}
+                          invalid={
+                            validation.touched.sci_status &&
+                            validation.errors.sci_status
+                          }
+                        />
+                        {validation.touched.sci_status &&
+                          validation.errors.sci_status && (
+                            <FormFeedback type="invalid">
+                              {validation.errors.sci_status}
+                            </FormFeedback>
+                          )}
+                      </div>
                     </Col>
                   </Row>
                   <Col className="col-md-6 mb-3">

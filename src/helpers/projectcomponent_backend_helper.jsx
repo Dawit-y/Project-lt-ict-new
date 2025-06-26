@@ -19,12 +19,12 @@ export const getProjectComponent = async (params = {}) => {
 
 // add project_component
 export const addProjectComponent = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROJECT_COMPONENT, objectName);
+	post(ADD_PROJECT_COMPONENT, objectName);
 
 // update project_component
 export const updateProjectComponent = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROJECT_COMPONENT +`?pcm_id=${objectName?.pcm_id}`, objectName);
+	post(UPDATE_PROJECT_COMPONENT + `?pcm_id=${objectName?.pcm_id}`, objectName);
 
 // delete  project_component
 export const deleteProjectComponent = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROJECT_COMPONENT+`?pcm_id=${objectName}`);
+	post(DELETE_PROJECT_COMPONENT + `?pcm_id=${objectName}`);

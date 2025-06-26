@@ -1332,7 +1332,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
                     </Button>
                   ) : (
                     <Button
-                      color="primary"
+                      color="success"
                       type="submit"
                       className="save-user"
                       disabled={

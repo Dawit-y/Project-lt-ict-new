@@ -19,12 +19,12 @@ export const getDateSetting = async (params = {}) => {
 
 // add date_setting
 export const addDateSetting = async (objectName) =>
-  post(`${apiUrl}` + ADD_DATE_SETTING, objectName);
+	post(ADD_DATE_SETTING, objectName);
 
 // update date_setting
 export const updateDateSetting = (objectName) =>
-post(`${apiUrl}`+UPDATE_DATE_SETTING +`?dts_id=${objectName?.dts_id}`, objectName);
+	post(UPDATE_DATE_SETTING + `?dts_id=${objectName?.dts_id}`, objectName);
 
 // delete  date_setting
 export const deleteDateSetting = (objectName) =>
-  post(`${apiUrl}`+DELETE_DATE_SETTING+`?dts_id=${objectName}`);
+	post(DELETE_DATE_SETTING + `?dts_id=${objectName}`);

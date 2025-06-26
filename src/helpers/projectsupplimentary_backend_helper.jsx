@@ -19,12 +19,15 @@ export const getProjectSupplimentary = async (params = {}) => {
 
 // add project_supplimentary
 export const addProjectSupplimentary = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROJECT_SUPPLIMENTARY, objectName);
+	post(ADD_PROJECT_SUPPLIMENTARY, objectName);
 
 // update project_supplimentary
 export const updateProjectSupplimentary = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROJECT_SUPPLIMENTARY +`?prs_id=${objectName?.prs_id}`, objectName);
+	post(
+		UPDATE_PROJECT_SUPPLIMENTARY + `?prs_id=${objectName?.prs_id}`,
+		objectName
+	);
 
 // delete  project_supplimentary
 export const deleteProjectSupplimentary = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROJECT_SUPPLIMENTARY+`?prs_id=${objectName}`);
+	post(DELETE_PROJECT_SUPPLIMENTARY + `?prs_id=${objectName}`);

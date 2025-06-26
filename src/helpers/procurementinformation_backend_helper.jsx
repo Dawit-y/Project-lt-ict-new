@@ -19,12 +19,15 @@ export const getProcurementInformation = async (params = {}) => {
 
 // add procurement_information
 export const addProcurementInformation = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROCUREMENT_INFORMATION, objectName);
+	post(ADD_PROCUREMENT_INFORMATION, objectName);
 
 // update procurement_information
 export const updateProcurementInformation = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROCUREMENT_INFORMATION +`?pri_id=${objectName?.pri_id}`, objectName);
+	post(
+		UPDATE_PROCUREMENT_INFORMATION + `?pri_id=${objectName?.pri_id}`,
+		objectName
+	);
 
 // delete  procurement_information
 export const deleteProcurementInformation = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROCUREMENT_INFORMATION+`?pri_id=${objectName}`);
+	post(DELETE_PROCUREMENT_INFORMATION + `?pri_id=${objectName}`);

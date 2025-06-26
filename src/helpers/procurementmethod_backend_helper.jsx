@@ -19,12 +19,12 @@ export const getProcurementMethod = async (params = {}) => {
 
 // add procurement_method
 export const addProcurementMethod = async (objectName) =>
-  post(`${apiUrl}` + ADD_PROCUREMENT_METHOD, objectName);
+	post(ADD_PROCUREMENT_METHOD, objectName);
 
 // update procurement_method
 export const updateProcurementMethod = (objectName) =>
-post(`${apiUrl}`+UPDATE_PROCUREMENT_METHOD +`?prm_id=${objectName?.prm_id}`, objectName);
+	post(UPDATE_PROCUREMENT_METHOD + `?prm_id=${objectName?.prm_id}`, objectName);
 
 // delete  procurement_method
 export const deleteProcurementMethod = (objectName) =>
-  post(`${apiUrl}`+DELETE_PROCUREMENT_METHOD+`?prm_id=${objectName}`);
+	post(DELETE_PROCUREMENT_METHOD + `?prm_id=${objectName}`);

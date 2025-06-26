@@ -38,6 +38,7 @@ import {
 } from "reactstrap";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+import { budgetYearExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -64,7 +65,8 @@ const BudgetYearModel = React.memo(() => {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState(null);
   const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, isFetching, error, isError, refetch } = useFetchBudgetYears();
+  const { data, isLoading, isFetching, error, isError, refetch } =
+    useFetchBudgetYears();
   const [transaction, setTransaction] = useState({});
   const toggleViewModal = useCallback(() => setModal1((prev) => !prev), []);
 
@@ -130,7 +132,11 @@ const BudgetYearModel = React.memo(() => {
       .typeError("Budget year must be a number")
       .required("Budget year is required")
       .integer("Budget year must be an integer")
-      .test("len", "Budget year must be a 4-digit number", (val) => String(val).length === 4)
+      .test(
+        "len",
+        "Budget year must be a 4-digit number",
+        (val) => String(val).length === 4
+      )
       .min(minYear, `Budget year must be >= ${minYear}`)
       .max(maxYear, `Budget year must not be beyond ${maxYear}`)
       .test("unique-bdy_name", t("Already exists"), function (value) {
@@ -194,19 +200,22 @@ const BudgetYearModel = React.memo(() => {
     },
   });
 
-  const handleBudgetYearClick = useCallback((arg) => {
-    setBudgetYear({
-      bdy_id: arg.bdy_id,
-      bdy_name: arg.bdy_name,
-      bdy_code: arg.bdy_code,
-      bdy_description: arg.bdy_description,
-      bdy_status: arg.bdy_status === 1,
-      is_deletable: arg.is_deletable,
-      is_editable: arg.is_editable,
-    });
-    setIsEdit(true);
-    toggle();
-  }, [toggle]);
+  const handleBudgetYearClick = useCallback(
+    (arg) => {
+      setBudgetYear({
+        bdy_id: arg.bdy_id,
+        bdy_name: arg.bdy_name,
+        bdy_code: arg.bdy_code,
+        bdy_description: arg.bdy_description,
+        bdy_status: arg.bdy_status === 1,
+        is_deletable: arg.is_deletable,
+        is_editable: arg.is_editable,
+      });
+      setIsEdit(true);
+      toggle();
+    },
+    [toggle]
+  );
 
   const [deleteModal, setDeleteModal] = useState(false);
   const onClickDelete = useCallback((budgetYear) => {
@@ -233,21 +242,29 @@ const BudgetYearModel = React.memo(() => {
         accessorKey: "bdy_name",
         enableColumnFilter: false,
         enableSorting: true,
-        cell: (cellProps) => truncateText(cellProps.row.original.bdy_name, 30) || "-",
+        cell: (cellProps) =>
+          truncateText(cellProps.row.original.bdy_name, 30) || "-",
       },
       {
         header: "",
         accessorKey: "bdy_code",
         enableColumnFilter: false,
         enableSorting: true,
-        cell: (cellProps) => truncateText(cellProps.row.original.bdy_code, 30) || "-",
+        cell: (cellProps) =>
+          truncateText(cellProps.row.original.bdy_code, 30) || "-",
       },
       {
-        header: t("is_deleted"),
+        header: t("is_inactive"),
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => (
-          <span className={cellProps.row.original.bdy_status === 1 ? "btn btn-sm btn-soft-danger" : ""}>
+          <span
+            className={
+              cellProps.row.original.bdy_status === 1
+                ? "btn btn-sm btn-soft-danger"
+                : ""
+            }
+          >
             {cellProps.row.original.bdy_status === 1 ? t("yes") : t("no")}
           </span>
         ),
@@ -272,7 +289,10 @@ const BudgetYearModel = React.memo(() => {
       },
     ];
 
-    if (data?.previledge?.is_role_editable === 1 || data?.previledge?.is_role_deletable === 1) {
+    if (
+      data?.previledge?.is_role_editable === 1 ||
+      data?.previledge?.is_role_deletable === 1
+    ) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -305,7 +325,11 @@ const BudgetYearModel = React.memo(() => {
 
   return (
     <React.Fragment>
-      <BudgetYearModal isOpen={modal1} toggle={toggleViewModal} transaction={transaction} />
+      <BudgetYearModal
+        isOpen={modal1}
+        toggle={toggleViewModal}
+        transaction={transaction}
+      />
       <DeleteModal
         show={deleteModal}
         onDeleteClick={handleDeleteBudgetYear}
@@ -314,7 +338,10 @@ const BudgetYearModel = React.memo(() => {
       />
       <div className="page-content">
         <div className="container-fluid">
-          <Breadcrumbs title={t("budget_year")} breadcrumbItem={t("budget_year")} />
+          <Breadcrumbs
+            title={t("budget_year")}
+            breadcrumbItem={t("budget_year")}
+          />
           {isLoading || isSearchLoading ? (
             <Spinners />
           ) : (
@@ -324,7 +351,11 @@ const BudgetYearModel = React.memo(() => {
                   <CardBody>
                     <TableContainer
                       columns={columns}
-                      data={showSearchResult ? searchResults?.data : data?.data || []}
+                      data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
                       isGlobalFilter={true}
                       isAddButton={data?.previledge?.is_role_can_add === 1}
                       isCustomPageSize={true}
@@ -340,6 +371,11 @@ const BudgetYearModel = React.memo(() => {
                       divClassName="-"
                       refetch={refetch}
                       isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Budget Year"
+                      exportColumns={budgetYearExportColumns}
                     />
                   </CardBody>
                 </Card>
@@ -348,14 +384,18 @@ const BudgetYearModel = React.memo(() => {
           )}
           <Modal isOpen={modal} toggle={toggle} className="modal-xl">
             <ModalHeader toggle={toggle} tag="h4">
-              {isEdit ? `${t("edit")} ${t("budget_year")}` : `${t("add")} ${t("budget_year")}`}
+              {isEdit
+                ? `${t("edit")} ${t("budget_year")}`
+                : `${t("add")} ${t("budget_year")}`}
             </ModalHeader>
             <ModalBody>
-              <Form onSubmit={(e) => {
-                e.preventDefault();
-                validation.handleSubmit();
-                return false;
-              }}>
+              <Form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  validation.handleSubmit();
+                  return false;
+                }}
+              >
                 <Row>
                   <Col className="col-md-6 mb-3">
                     <Label>
@@ -374,12 +414,18 @@ const BudgetYearModel = React.memo(() => {
                       }}
                       onBlur={validation.handleBlur}
                       value={validation.values.bdy_name || ""}
-                      invalid={validation.touched.bdy_name && validation.errors.bdy_name}
+                      invalid={
+                        validation.touched.bdy_name &&
+                        validation.errors.bdy_name
+                      }
                       maxLength={4}
                     />
-                    {validation.touched.bdy_name && validation.errors.bdy_name && (
-                      <FormFeedback type="invalid">{validation.errors.bdy_name}</FormFeedback>
-                    )}
+                    {validation.touched.bdy_name &&
+                      validation.errors.bdy_name && (
+                        <FormFeedback type="invalid">
+                          {validation.errors.bdy_name}
+                        </FormFeedback>
+                      )}
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <Label>{t("bdy_code")}</Label>
@@ -390,18 +436,25 @@ const BudgetYearModel = React.memo(() => {
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.bdy_code || ""}
-                      invalid={validation.touched.bdy_code && validation.errors.bdy_code}
+                      invalid={
+                        validation.touched.bdy_code &&
+                        validation.errors.bdy_code
+                      }
                       maxLength={10}
                     />
-                    {validation.touched.bdy_code && validation.errors.bdy_code && (
-                      <FormFeedback type="invalid">{validation.errors.bdy_code}</FormFeedback>
-                    )}
+                    {validation.touched.bdy_code &&
+                      validation.errors.bdy_code && (
+                        <FormFeedback type="invalid">
+                          {validation.errors.bdy_code}
+                        </FormFeedback>
+                      )}
                   </Col>
                   <Col className="col-md-6 mb-3">
                     <div className="form-check mb-4">
                       <Label className="me-1" for="bdy_status">
-                        {t("is_deleted")}
+                        {t("is_inactive")}
                       </Label>
+
                       <Input
                         id="bdy_status"
                         name="bdy_status"
@@ -410,11 +463,17 @@ const BudgetYearModel = React.memo(() => {
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
                         checked={validation.values.bdy_status}
-                        invalid={validation.touched.bdy_status && validation.errors.bdy_status}
+                        invalid={
+                          validation.touched.bdy_status &&
+                          validation.errors.bdy_status
+                        }
                       />
-                      {validation.touched.bdy_status && validation.errors.bdy_status && (
-                        <FormFeedback type="invalid">{validation.errors.bdy_status}</FormFeedback>
-                      )}
+                      {validation.touched.bdy_status &&
+                        validation.errors.bdy_status && (
+                          <FormFeedback type="invalid">
+                            {validation.errors.bdy_status}
+                          </FormFeedback>
+                        )}
                     </div>
                   </Col>
                   <Col className="col-md-6 mb-3">
@@ -426,12 +485,18 @@ const BudgetYearModel = React.memo(() => {
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.bdy_description || ""}
-                      invalid={validation.touched.bdy_description && validation.errors.bdy_description}
+                      invalid={
+                        validation.touched.bdy_description &&
+                        validation.errors.bdy_description
+                      }
                       maxLength={425}
                     />
-                    {validation.touched.bdy_description && validation.errors.bdy_description && (
-                      <FormFeedback type="invalid">{validation.errors.bdy_description}</FormFeedback>
-                    )}
+                    {validation.touched.bdy_description &&
+                      validation.errors.bdy_description && (
+                        <FormFeedback type="invalid">
+                          {validation.errors.bdy_description}
+                        </FormFeedback>
+                      )}
                   </Col>
                 </Row>
                 <Row>
