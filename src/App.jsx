@@ -1,12 +1,5 @@
 import PropTypes from "prop-types";
-import React, {
-	useState,
-	useEffect,
-	Suspense,
-	useMemo,
-	Lazy,
-	useLayoutEffect,
-} from "react";
+import React, { useState, useEffect, Suspense, useMemo, lazy } from "react";
 import {
 	createBrowserRouter,
 	createRoutesFromElements,
@@ -31,10 +24,13 @@ import Header from "./components/HorizontalLayout/Header";
 import NonAuthLayout from "./components/NonAuthLayout";
 import ErrorBoundary from "./components/Common/ErrorBoundary";
 import Unauthorized from "./components/Common/Unauthorized";
-const AccountVerification = lazy(() => import("./components/Common/AccountVerification"));
+const AccountVerification = lazy(() =>
+	import("./components/Common/AccountVerification")
+);
 
 import NetworkAlert from "./components/Common/NetworkAlert";
 import { scheduleTokenRefresh, refreshAccessToken } from "./helpers/api_Lists";
+import { changeLayout } from "./store/layout/actions.js";
 import "./App.css";
 
 function getLayout(layoutType) {
@@ -63,6 +59,27 @@ const authProperties = createSelector(
 		accessToken: auth.accessToken,
 	})
 );
+
+const ApprovalPage = () => {
+	const dispatch = useDispatch();
+
+	useEffect(() => {
+		dispatch(changeLayout("horizontal"));
+	}, [dispatch]);
+
+	return (
+		<div id="layout-wrapper">
+			<Header />
+			<div className="main-content">
+				<ErrorBoundary>
+					<Suspense fallback={<Spinners />}>
+						<AccountVerification />
+					</Suspense>
+				</ErrorBoundary>
+			</div>
+		</div>
+	);
+};
 
 const App = () => {
 	const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -152,6 +169,15 @@ const App = () => {
 					/>
 				))}
 
+				<Route
+					path="/not_approved"
+					element={
+						<>
+							<ApprovalPage />
+						</>
+					}
+					errorElement={<ErrorElement />}
+				/>
 				<Route
 					path="/unauthorized"
 					element={

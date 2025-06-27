@@ -7,14 +7,6 @@ import {
 } from "reactstrap";
 import { useAuthUser } from "../../hooks/useAuthUser";
 
-<<<<<<< HEAD
-    //const baseUrl=dashboardPath.dashboardPath;
-    let baseUrl = "https://report.pms.oro.gov.et/superset/dashboard/16";
-    // Force HTTPS if somehow HTTP sneaks in
-    if (baseUrl.startsWith("http://")) {
-      baseUrl = baseUrl.replace("http://", "https://");
-    }
-=======
 const SupersetListReport = () => {
 	const [dashboardUrl, setDashboardUrl] = useState("");
 	const { user: authUser } = useAuthUser();
@@ -25,7 +17,6 @@ const SupersetListReport = () => {
 		// Construct the iframe URL with dynamic parameters
 		//const baseUrl = "http://196.188.182.83:1110/superset/dashboard/12/?standalone=true";
 		//const baseUrl = "https://report.pms.oro.gov.et/superset/dashboard/p/elMJeM8JXQr/";
->>>>>>> main
 
 		//const baseUrl=dashboardPath.dashboardPath;
 		let baseUrl = "https://report.pms.oro.gov.et/superset/dashboard/16";
