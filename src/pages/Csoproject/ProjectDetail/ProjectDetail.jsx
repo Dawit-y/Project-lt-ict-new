@@ -1,11 +1,12 @@
-import React from "react";
 import PropTypes from "prop-types";
 import { Card, CardBody, Col, Row, Spinner, Table } from "reactstrap";
-import img1 from "../../../assets/images/companies/img-1.png";
 import { useTranslation } from "react-i18next";
+import { useFetchSectorInformations } from "../../../queries/sectorinformation_query"
 
 const ProjectDetail = ({ data }) => {
   const { t } = useTranslation();
+  const { data: sectorInfo } = useFetchSectorInformations()
+
   if (!data) {
     return (
       <Spinner className="position-absolute top-50 start-50" size={"md"} />
@@ -30,12 +31,14 @@ const ProjectDetail = ({ data }) => {
     "color_code",
     "prj_created_by",
     "prj_geo_location",
+    "prj_assigned_sectors"
   ];
 
   // Filter out unwanted keys
   const filteredDataArray = Object.entries(data).filter(
     ([key]) => !key.endsWith("_id") && !excludedKeys.includes(key)
   );
+
   return (
     <Card>
       <CardBody>
@@ -75,7 +78,8 @@ const ProjectDetail = ({ data }) => {
                   ))}
                 </tr>
               ))}
-
+              <tr>
+              </tr>
             </tbody>
           </Table>
         </div>

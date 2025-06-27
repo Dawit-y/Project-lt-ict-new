@@ -59,7 +59,7 @@ const ProjectDetailTabDynamic = ({
                 href={`#${components[navItem].path}`}
                 style={{
                   cursor: "pointer",
-                  borderColor: activeTab1 === navItem ? "#007bff" : "#ccc",
+                  borderColor: activeTab1 === components[navItem].path ? "#007bff" : "#ccc",
                 }}
                 className={classnames({
                   active: activeTab1 === components[navItem].path,

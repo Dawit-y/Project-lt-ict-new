@@ -27,6 +27,9 @@ const LazyComponents = {
   RequestInformationModel: lazy(() => import("../../../pages/Requestinformation")),
   BudgetRequestModel: lazy(() => import("../../../pages/Budgetrequest/BudgetRequestRegistration")),
   ProjectPlanModel: lazy(() => import("../../../pages/Projectplan/ProjectPlanRegistration")),
+  ProjectMonitoringEvaluationModel: lazy(() => import("../../Projectmonitoringevaluation/index")),
+  ImplementingAreaModel: lazy(() => import("../../Implementingarea")),
+  ProjectBudgetSourceModel: lazy(() => import("../../Projectbudgetsource")),
 };
 
 const ProjectsOverview = () => {
@@ -53,6 +56,11 @@ const ProjectsOverview = () => {
     38: { label: t("project_handover"), component: LazyComponents.ProjectHandoverModel, path: "handover" },
     37: { label: t("project_performance"), component: LazyComponents.ProjectPerformanceModel, path: "performance" },
     41: { label: t("project_supplimentary"), component: LazyComponents.ProjectSupplimentaryModel, path: "supplimentary" },
+    42: {
+      label: t("project_budget_source"),
+      component: LazyComponents.ProjectBudgetSourceModel,
+      path: "project_budget_source",
+    },
     40: { label: t("project_variation"), component: LazyComponents.ProjectVariationModel, path: "variation" },
     58: { label: t("proposal_request"), component: LazyComponents.ProposalRequestModel, path: "proposal-request" },
     57: { label: t("conversation_information"), component: LazyComponents.Conversation, path: "conversations" },
@@ -60,29 +68,42 @@ const ProjectsOverview = () => {
     //70: { label: t("proposal_request"), component: LazyComponents.BudgetRequestModel, path: "proposal_request" },
     61: { label: t("project_plan"), component: LazyComponents.ProjectPlanModel, path: "project_plan" },
     59: { label: t("request_information"), component: LazyComponents.RequestInformationModel, path: "information" },
+    72: {
+      label: t("project_monitoring_evaluation"),
+      component: LazyComponents.ProjectMonitoringEvaluationModel,
+      path: "project_monitoring_evaluation",
+    },
+    81: {
+      label: t("implementing_area"),
+      component: LazyComponents.ImplementingAreaModel,
+      path: "implementing_area",
+    },
+
   }), [t]);
 
   // Allowed tabs based on project data
-  const allowedTabs = useMemo(() => {
-    if (!data?.allowedTabs) return [];
-    let tabs = [...data.allowedTabs];
-    if (data?.data?.status_id < 5 || data?.data?.status_id > 7) {
-      tabs = tabs.filter(tab => tab !== 59);
+  //const allowedTabs = useMemo(() => data?.allowedTabs || [], [data]);
+  const [allowedTabs, setAllowedTabs] = useState(data?.allowedTabs || []);
+  useEffect(() => {
+    if (data?.data?.prj_project_status_id <= 4) {
+      setAllowedTabs([54, 33]);
+    } else {
+      setAllowedTabs(data?.allowedTabs || []);
     }
-    return tabs;
-  }, [data]);
-
+  }, [data?.data?.prj_project_status_id]);
 
   // Dynamic components based on allowed tabs
-  const dynamicComponents = useMemo(() => (
-    allowedTabs.reduce((acc, tabIndex) => {
-      const tab = tabMapping[tabIndex];
-      if (tab) {
-        acc[tab.label] = { component: tab.component, path: tab.path };
-      }
-      return acc;
-    }, {})
-  ), [allowedTabs, tabMapping]);
+  const dynamicComponents = useMemo(
+    () =>
+      allowedTabs.reduce((acc, tabIndex) => {
+        const tab = tabMapping[tabIndex];
+        if (tab) {
+          acc[tab.label] = { component: tab.component, path: tab.path };
+        }
+        return acc;
+      }, {}),
+    [allowedTabs, tabMapping]
+  );
 
   return (
     <div className="page-content" style={{ zoom: "90%" }}>
@@ -121,10 +142,9 @@ const ProjectsOverview = () => {
     </div>
   );
 };
-prj_male_participant, prj_female_participant, prj_sub_project_category_id, prj_job_opportunity,
 
-  ProjectsOverview.propTypes = {
-    match: PropTypes.object,
-  };
+ProjectsOverview.propTypes = {
+  match: PropTypes.object,
+};
 
 export default ProjectsOverview;

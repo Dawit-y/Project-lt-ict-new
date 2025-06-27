@@ -8,7 +8,6 @@ import React, {
 } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useAuthUser } from "../../hooks/useAuthUser";
 import {
 	Button,
 	Col,
@@ -30,7 +29,6 @@ import {
 } from "../../queries/cso_project_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import Spinners from "../../components/Common/Spinner";
 import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
 const TableContainer = lazy(() =>
 	import("../../components/Common/TableContainer")
@@ -38,9 +36,12 @@ const TableContainer = lazy(() =>
 const BudgetRequestRegistration = lazy(() =>
 	import("../Csobudgetrequest/BudgetRequestRegistration")
 );
+import { useFetchCsoInfos } from "../../queries/csoinfo_query";
+import { ProgramAlert } from "./ProjectTabs";
+import Spinners from "../../components/Common/Spinner";
+import { useAuthUser } from "../../hooks/useAuthUser";
 
 const ProjectTabs = ({
-	program,
 	handleAddClick,
 	handleEditClick,
 	handleTabChange,
@@ -50,13 +51,41 @@ const ProjectTabs = ({
 	const lang = i18n.language;
 	const [activeTab, setActiveTab] = useState(1);
 	const [passedSteps, setPassedSteps] = useState([1]);
+	const [selectedCsoId, setSelectedCsoId] = useState(null);
+	const [selectedCsoName, setSelectedCsoName] = useState(null);
 	const [selectedProject, setSelectedProject] = useState(null);
 	const programName = selectedProject?.prj_name;
 
-	const { userId } = useAuthUser();
 	useEffect(() => {
-		handleTabChange(activeTab, selectedProject?.prj_id);
+		if (!selectedProject?.prj_id || activeTab !== 2) {
+			handleTabChange(activeTab, selectedProject?.prj_id, selectedCsoId);
+		}
 	}, [activeTab, selectedProject?.prj_id]);
+
+	const { userId } = useAuthUser();
+
+	const {
+		data: csoData,
+		isLoading: isCsoLoading,
+		error: csoError,
+		isError: isCsoError,
+		refetch: csoRefetch,
+	} = useFetchCsoInfos();
+
+	//fetch projects
+	const projectParam = { object_type_id: 1, prj_owner_id: selectedCsoId };
+	const isValidProjectParam =
+		Object.keys(projectParam).length > 0 &&
+		Object.values(projectParam).every(
+			(value) => value !== null && value !== undefined
+		);
+	const {
+		data: projects,
+		isLoading: isProjectLoading,
+		isError: isProjectError,
+		error: projectError,
+		refetch: projectRefetch,
+	} = useFindProjects(projectParam, isValidProjectParam, userId);
 
 	// fetch activities
 	const param = { object_type_id: 5, parent_id: selectedProject?.prj_id };
@@ -65,8 +94,11 @@ const ProjectTabs = ({
 		Object.values(param).every(
 			(value) => value !== null && value !== undefined
 		);
-	const { data, isLoading, isFetching, isError, error, refetch } =
-		useFindProjects(param, isValidParam, userId);
+	const { data, isLoading, isError, error, refetch } = useFindProjects(
+		param,
+		isValidParam,
+		userId
+	);
 
 	useEffect(() => {
 		const totalActivitiesBudget = data?.data.reduce((sum, activity) => {
@@ -84,15 +116,17 @@ const ProjectTabs = ({
 				setPassedSteps((prevSteps) => [...prevSteps, tab]);
 				if (tab >= 1 && tab <= 4) {
 					setActiveTab(tab);
+					handleTabChange(tab, selectedProject?.prj_id, selectedCsoId);
 				}
 			}
 		},
-		[activeTab]
+		[activeTab, selectedProject?.prj_id, selectedCsoId, handleTabChange]
 	);
 
-	const isNextButtonDisabled = useCallback(() => {
-		return !selectedProject?.prj_id;
-	}, [selectedProject?.prj_id]);
+	const isNextDisabled =
+		(activeTab === 1 && !selectedCsoId) ||
+		(activeTab === 2 && !selectedProject?.prj_id) ||
+		activeTab >= 4;
 
 	const {
 		data: projectCategoryData,
@@ -112,7 +146,69 @@ const ProjectTabs = ({
 		);
 	}, [projectCategoryData, lang]);
 
-	const programColumns = useMemo(() => {
+	const csoColumnsDef = useMemo(() => {
+		const baseColumns = [
+			{
+				header: t("Select"),
+				accessorKey: "Select",
+				enableSorting: true,
+				enableColumnFilter: false,
+				cell: ({ row }) => (
+					<span>
+						<input
+							type="radio"
+							name="select_cso"
+							checked={selectedCsoId === row.original.cso_id}
+							onChange={() => {
+								setSelectedCsoId(row.original.cso_id);
+								setSelectedCsoName(row.original.cso_name);
+								setSelectedProject(null);
+							}}
+						/>
+					</span>
+				),
+			},
+			{
+				header: "CSO Name",
+				accessorKey: "cso_name",
+				enableSorting: true,
+				enableColumnFilter: false,
+				cell: ({ row, getValue }) => (
+					<span>{row.original.footer ? t("Total") : getValue()}</span>
+				),
+			},
+			{
+				header: t("cso_code"),
+				accessorKey: "cso_code",
+				enableSorting: true,
+				enableColumnFilter: false,
+				cell: ({ row, getValue }) => (
+					<span>{row.original.footer ? t("Total") : getValue()}</span>
+				),
+			},
+			{
+				header: t("cso_phone"),
+				accessorKey: "cso_phone",
+				enableSorting: true,
+				enableColumnFilter: false,
+				cell: ({ row, getValue }) => (
+					<span>{row.original.footer ? t("Total") : getValue()}</span>
+				),
+			},
+			{
+				header: t("cso_email"),
+				accessorKey: "cso_email",
+				enableSorting: true,
+				enableColumnFilter: false,
+				cell: ({ row, getValue }) => (
+					<span>{row.original.footer ? t("Total") : getValue()}</span>
+				),
+			},
+		];
+		return baseColumns;
+	}, [t, selectedCsoId]);
+
+	const projectsColumn = useMemo(() => {
 		const baseColumns = [
 			{
 				header: t("Select"),
@@ -133,7 +229,7 @@ const ProjectTabs = ({
 				),
 			},
 			{
-				header: "Project Title",
+				header: "Program Name",
 				accessorKey: "prj_name",
 				enableSorting: true,
 				enableColumnFilter: false,
@@ -212,8 +308,8 @@ const ProjectTabs = ({
 		];
 
 		if (
-			program?.previledge?.is_role_editable === 1 ||
-			program?.previledge?.is_role_deletable === 1
+			projects?.previledge?.is_role_editable === 1 ||
+			projects?.previledge?.is_role_deletable === 1
 		) {
 			baseColumns.push({
 				header: t("Action"),
@@ -222,7 +318,7 @@ const ProjectTabs = ({
 				enableSorting: true,
 				cell: ({ row }) => (
 					<div className="d-flex gap-3">
-						{program?.previledge?.is_role_editable === 1 &&
+						{projects?.previledge?.is_role_editable === 1 &&
 							row.original?.is_editable === 1 &&
 							row.original.prj_project_status_id === 1 && (
 								<Link
@@ -241,7 +337,7 @@ const ProjectTabs = ({
 			});
 		}
 		return baseColumns;
-	}, [program, t, selectedProject?.prj_id]);
+	}, [projects, t, selectedProject]);
 
 	const activitiesColumn = useMemo(() => {
 		const baseColumns = [
@@ -352,10 +448,6 @@ const ProjectTabs = ({
 		return baseColumns;
 	}, [data, t]);
 
-	if (isError) {
-		return <FetchErrorHandler error={error} refetch={refetch} />;
-	}
-
 	return (
 		<Col lg="12">
 			<Card>
@@ -377,7 +469,7 @@ const ProjectTabs = ({
 									<Button
 										color="primary"
 										onClick={() => toggleTab(activeTab + 1)}
-										disabled={isNextButtonDisabled() || activeTab === 3}
+										disabled={isNextDisabled || activeTab === 4}
 									>
 										Next
 									</Button>
@@ -389,94 +481,148 @@ const ProjectTabs = ({
 								<NavItem className={classnames({ current: activeTab === 1 })}>
 									<NavLink
 										className={classnames({ current: activeTab === 1 })}
-										onClick={() => setActiveTab(1)}
+										onClick={() => toggleTab(1)}
 										disabled={!passedSteps.includes(1)}
 									>
-										<span className="number">1.</span> Projects
+										<span className="number">1.</span> CSO List
 									</NavLink>
 								</NavItem>
 								<NavItem className={classnames({ current: activeTab === 2 })}>
 									<NavLink
-										className={classnames({ active: activeTab === 2 })}
-										onClick={() => setActiveTab(2)}
+										className={classnames({ current: activeTab === 2 })}
+										onClick={() => toggleTab(2)}
 										disabled={!passedSteps.includes(2)}
 									>
-										<span className="number">2.</span> Activities
+										<span className="number">2.</span> Projects
 									</NavLink>
 								</NavItem>
 								<NavItem className={classnames({ current: activeTab === 3 })}>
 									<NavLink
 										className={classnames({ active: activeTab === 3 })}
-										onClick={() => setActiveTab(3)}
+										onClick={() => toggleTab(3)}
 										disabled={!passedSteps.includes(3)}
 									>
-										<span className="number">3.</span> Proposed Request
+										<span className="number">3.</span> Activities
+									</NavLink>
+								</NavItem>
+								<NavItem className={classnames({ current: activeTab === 4 })}>
+									<NavLink
+										className={classnames({ active: activeTab === 4 })}
+										onClick={() => toggleTab(4)}
+										disabled={!passedSteps.includes(4)}
+									>
+										<span className="number">4.</span> Proposed Request
 									</NavLink>
 								</NavItem>
 							</ul>
 						</div>
+
 						<div className="content clearfix">
 							<TabContent activeTab={activeTab} className="body">
 								<TabPane tabId={1}>
-									<>
-										<ProgramAlert
-											label={t("Selected Project")}
-											value={programName}
-										/>
-										<Suspense fallback={<Spinners />}>
-											<TableContainer
-												columns={programColumns}
-												data={program?.data || []}
-												isAddButton={true}
-												isCustomPageSize
-												handleUserClick={handleAddClick}
-												isPagination
-												SearchPlaceholder={t("filter_placeholder")}
-												buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-												buttonName={`${t("add")} ${t("project")}`}
-												tableClass="table-sm align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-												pagination="pagination"
-												paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-												excludeKey={["is_editable", "is_deletable", "Select"]}
-												tableName="Project Data"
-												isExcelExport
-												isPdfExport
+									{isCsoError ? (
+										<FetchErrorHandler error={csoError} refetch={csoRefetch} />
+									) : (
+										<>
+											<ProgramAlert
+												label={t("Selected CSO")}
+												value={selectedCsoName}
 											/>
-										</Suspense>
-									</>
+											<Suspense fallback={<Spinners />}>
+												<TableContainer
+													columns={csoColumnsDef}
+													data={csoData?.data || []}
+													isLoading={isCsoLoading}
+													isAddButton={false}
+													isCustomPageSize
+													isPagination
+													SearchPlaceholder={t("filter_placeholder")}
+													buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+													buttonName={`${t("add")} ${t("program")}`}
+													tableClass="table align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+													pagination="pagination"
+													paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+													excludeKey={["is_editable", "is_deletable", "Select"]}
+													tableName="Project Data"
+													isExcelExport
+													isPdfExport
+												/>
+											</Suspense>
+										</>
+									)}
 								</TabPane>
 								<TabPane tabId={2}>
-									<>
-										<ProgramAlert
-											label={t("Activities for the project")}
-											value={programName}
+									{isProjectError ? (
+										<FetchErrorHandler
+											error={projectError}
+											refetch={projectRefetch}
 										/>
-										<Suspense fallback={<Spinners />}>
-											<TableContainer
-												columns={activitiesColumn}
-												data={data?.data || []}
-												isLoading={isLoading}
-												isAddButton={true}
-												isCustomPageSize
-												handleUserClick={handleAddClick}
-												isPagination
-												SearchPlaceholder={t("filter_placeholder")}
-												buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-												buttonName={`${t("add")} ${t("Actitvity")}`}
-												tableClass="table-sm align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-												pagination="pagination"
-												paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-												excludeKey={["is_editable", "is_deletable", "Select"]}
-												tableName="Project Data"
-												isExcelExport
-												isPdfExport
-												isFetching={isFetching}
-												refetch={refetch}
+									) : (
+										<>
+											<ProgramAlert
+												label={t("Selected Project")}
+												value={programName}
 											/>
-										</Suspense>
-									</>
+											<Suspense fallback={<Spinners />}>
+												<TableContainer
+													columns={projectsColumn}
+													data={projects?.data || []}
+													isLoading={isProjectLoading}
+													isAddButton={
+														projects?.previledge?.is_role_can_add === 1
+													}
+													isCustomPageSize
+													handleUserClick={handleAddClick}
+													isPagination
+													SearchPlaceholder={t("filter_placeholder")}
+													buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+													buttonName={`${t("add")} ${t("project")}`}
+													tableClass="table-sm align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+													pagination="pagination"
+													paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+													excludeKey={["is_editable", "is_deletable", "Select"]}
+													tableName="Project Data"
+													isExcelExport
+													isPdfExport
+												/>
+											</Suspense>
+										</>
+									)}
 								</TabPane>
 								<TabPane tabId={3}>
+									{isError ? (
+										<FetchErrorHandler error={error} refetch={refetch} />
+									) : (
+										<>
+											<ProgramAlert
+												label={t("Activities for the project")}
+												value={programName}
+											/>
+											<Suspense fallback={<Spinners />}>
+												<TableContainer
+													columns={activitiesColumn}
+													data={data?.data || []}
+													isLoading={isLoading}
+													isAddButton={data?.previledge?.is_role_can_add === 1}
+													isCustomPageSize
+													handleUserClick={handleAddClick}
+													isPagination
+													SearchPlaceholder={t("filter_placeholder")}
+													buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+													buttonName={`${t("add")} ${t("Actitvity")}`}
+													tableClass="table-sm align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+													pagination="pagination"
+													paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+													excludeKey={["is_editable", "is_deletable", "Select"]}
+													tableName="Project Data"
+													isExcelExport
+													isPdfExport
+												/>
+											</Suspense>
+										</>
+									)}
+								</TabPane>
+								<TabPane tabId={4}>
 									<ProgramAlert
 										label={t("Proposed request for the project")}
 										value={programName}
@@ -499,29 +645,3 @@ const ProjectTabs = ({
 };
 
 export default ProjectTabs;
-
-export const ProgramAlert = ({ label, value, color = "info" }) => {
-	if (!value || !label) return null;
-
-	return (
-		<Row>
-			<Col md={4}>
-				<Alert
-					color={color}
-					className="mb-3 p-2 d-flex align-items-center gap-2"
-				>
-					<i
-						className="bx bx-info-circle me-1"
-						style={{ fontSize: "1.2rem" }}
-					></i>
-					<h6 className="mb-0">
-						<strong>
-							{label} {" -> "}{" "}
-						</strong>{" "}
-						{value}
-					</h6>
-				</Alert>
-			</Col>
-		</Row>
-	);
-};
