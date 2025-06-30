@@ -44,46 +44,47 @@ const AuthMiddleware = ({ children }) => {
   const authPaths = extractAuthPaths(authProtectedRoutes);
   const allowedPaths = sidedata.length > 0 ? extractPaths(sidedata) : [];
 
-  const isProjectPath = (path) => {
-    //const projectPathRegex = /^\/Project(detail)?\/\d+(\/\w+)?(#\w+)?$/i;
-    const projectPathRegex = /^\/(Project(detail)?|citizenship_project_detail)\/\d+(\/\w+)?(#\w+)?$/i;
-    return projectPathRegex.test(path);
-  };
+  const isAnyProjectPath = (path) => {
+		const combinedProjectPathRegex =
+			/^\/(Project(detail)?|citizenship_project_detail|projectdetail_cso)\/\d+(\/\w+)?(#\w+)?$/i;
+		return combinedProjectPathRegex.test(path);
+	};
 
-  if (isProjectPath(currentPath)) {
-    allowedPaths.push("/projectdetail/:id");
-    allowedPaths.push("/citizenship_project_detail/:id");
-  }
+	if (isAnyProjectPath(currentPath)) {
+		allowedPaths.push("/projectdetail/:id");
+		allowedPaths.push("/citizenship_project_detail/:id");
+		allowedPaths.push("/projectdetail_cso/:id");
+	}
 
-  const isAuthenticated = storedUser && Object.keys(storedUser).length > 0;
+	const isAuthenticated = storedUser && Object.keys(storedUser).length > 0;
 
-  if (isRestoring || isLoading || authLoading) {
-    return (
-      <div
-        style={{
-          width: "100wh",
-          height: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Spinner color="primary" />
-      </div>
-    );
-  }
+	if (isRestoring || isLoading || authLoading) {
+		return (
+			<div
+				style={{
+					width: "100wh",
+					height: "100vh",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+				}}
+			>
+				<Spinner color="primary" />
+			</div>
+		);
+	}
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} />;
-  }
+	if (!isAuthenticated) {
+		return <Navigate to="/login" state={{ from: location }} />;
+	}
 
-  if (!authPaths.includes(currentPath) && !isProjectPath(currentPath)) {
-    return <Navigate to="/not_found" />;
-  }
+	if (!authPaths.includes(currentPath) && !isAnyProjectPath(currentPath)) {
+		return <Navigate to="/not_found" />;
+	}
 
-  if (!allowedPaths.includes(currentPath) && !isProjectPath(currentPath)) {
-    return <Navigate to="/unauthorized" />;
-  }
+	if (!allowedPaths.includes(currentPath) && !isAnyProjectPath(currentPath)) {
+		return <Navigate to="/unauthorized" />;
+	}
 
   return <React.Fragment>{children}</React.Fragment>;
 };
