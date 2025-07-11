@@ -11,24 +11,27 @@ import {
   Badge,
   Spinner,
 } from "reactstrap";
+import { FaPaperclip, FaPenSquare, FaGavel, FaCog } from "react-icons/fa";
 import AgGridContainer from "../../components/Common/AgGridContainer";
-import {
-  useSearchBudgetRequestforApproval,
-} from "../../queries/cso_budget_request_query";
+import { useSearchBudgetRequestforApproval } from "../../queries/cso_budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useAuthUser } from "../../hooks/useAuthUser";
 import { useFetchRequestStatuss } from "../../queries/requeststatus_query";
-import { useFetchRequestFollowups } from "../../queries/requestfollowup_query"
+import { useFetchRequestFollowups } from "../../queries/requestfollowup_query";
 import { PAGE_ID } from "../../constants/constantFile";
 import {
-  createSelectOptions,
-  createMultiSelectOptions,
+	createSelectOptions,
+	createMultiSelectOptions,
 } from "../../utils/commonMethods";
 
 // Lazy load components
 const Breadcrumbs = lazy(() => import("../../components/Common/Breadcrumb"));
-const AdvancedSearch = lazy(() => import("../../components/Common/AdvancedSearch"));
-const FetchErrorHandler = lazy(() => import("../../components/Common/FetchErrorHandler"));
+const AdvancedSearch = lazy(() =>
+	import("../../components/Common/AdvancedSearch")
+);
+const FetchErrorHandler = lazy(() =>
+	import("../../components/Common/FetchErrorHandler")
+);
 const TreeForLists = lazy(() =>
 	import("../../components/Common/TreeForLists2")
 );
@@ -251,65 +254,58 @@ const ApproverBudgetRequestList = () => {
 			//   },
 			// },
 			{
-				headerName: t("take_action"),
-				field: "take_action",
-				width: 120,
+				headerName: t("actions"),
+				field: "actions",
+				width: 170,
 				cellRenderer: (params) => {
+					const data = params.data;
+
 					return (
-						<Button
-							type="button"
-							color="primary"
-							className="btn-sm"
-							onClick={() => {
-								const data = params.data;
-								toggleViewModal();
-								setTransaction(data);
-							}}
-						>
-							{t("take_action")}
-						</Button>
-					);
-				},
-			},
-			{
-				headerName: t("attach_files"),
-				field: "attach_files",
-				width: 80,
-				cellRenderer: (params) => {
-					return (
-						<Button
-							outline
-							type="button"
-							color="success"
-							className="btn-sm"
-							onClick={() => {
-								toggleFileModal();
-								setTransaction(params.data);
-							}}
-						>
-							{t("attach_files")}
-						</Button>
-					);
-				},
-			},
-			{
-				headerName: t("Message"),
-				field: "Message",
-				width: 100,
-				cellRenderer: (params) => {
-					return (
-						<Button
-							outline
-							type="button"
-							color="primary"
-							className="btn-sm"
-							onClick={() => {
-								toggleConvModal();
-								setTransaction(params.data);
-							}}
-						>
-							{t("Message")}
-						</Button>
+						<div className="d-flex gap-1">
+							<Button
+								id={`cso-takeAction-${data.bdr_id}`}
+								color="light"
+								size="sm"
+								onClick={() => {
+									toggleViewModal();
+									setTransaction(data);
+								}}
+							>
+								<FaGavel />
+							</Button>
+							<UncontrolledTooltip target={`cso-takeAction-${data.bdr_id}`}>
+								{t("take_action")}
+							</UncontrolledTooltip>
+							<Button
+								id={`attachFiles-${data.bdr_id}`}
+								color="light"
+								size="sm"
+								onClick={() => {
+									toggleFileModal();
+									setTransaction(data);
+								}}
+							>
+								<FaPaperclip />
+							</Button>
+							<UncontrolledTooltip target={`attachFiles-${data.bdr_id}`}>
+								{t("attach_files")}
+							</UncontrolledTooltip>
+
+							<Button
+								id={`notes-${data.bdr_id}`}
+								color="light"
+								size="sm"
+								onClick={() => {
+									toggleConvModal();
+									setTransaction(data);
+								}}
+							>
+								<FaPenSquare />
+							</Button>
+							<UncontrolledTooltip target={`notes-${data.bdr_id}`}>
+								{t("Notes")}
+							</UncontrolledTooltip>
+						</div>
 					);
 				},
 			},
