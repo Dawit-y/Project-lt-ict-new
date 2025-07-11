@@ -42,8 +42,7 @@ import {
 } from "reactstrap";
 import { PAGE_ID } from "../../constants/constantFile";
 import { formattedAmountValidation } from "../../utils/Validation/validation";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import { convertToNumericValue } from "../../utils/commonMethods";
 const AttachFileModal = lazy(() =>
@@ -861,538 +860,533 @@ const ProjectPerformanceModel = (props) => {
   }, [projectPerformance]);
 
   return (
-    <React.Fragment>
-      <LazyLoader>
-        {fileModal && (
-          <AttachFileModal
-            isOpen={fileModal}
-            toggle={toggleFileModal}
-            projectId={passedId}
-            ownerTypeId={PAGE_ID.PROJ_PERFORMANCE}
-            ownerId={transaction?.prp_id}
-          />
-        )}
-        {convModal && (
-          <ConvInfoModal
-            isOpen={convModal}
-            toggle={toggleConvModal}
-            ownerTypeId={PAGE_ID.PROJ_PERFORMANCE}
-            ownerId={transaction?.prp_id ?? null}
-          />
-        )}
-      </LazyLoader>
-      <ProjectPerformanceModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-        budgetYearMap={budgetYearMap}
-        budgetMonthMap={budgetMonthMap}
-        projectStatusMap={projectStatusMap}
-      />
+		<React.Fragment>
+			<LazyLoader>
+				{fileModal && (
+					<AttachFileModal
+						isOpen={fileModal}
+						toggle={toggleFileModal}
+						projectId={passedId}
+						ownerTypeId={PAGE_ID.PROJ_PERFORMANCE}
+						ownerId={transaction?.prp_id}
+					/>
+				)}
+				{convModal && (
+					<ConvInfoModal
+						isOpen={convModal}
+						toggle={toggleConvModal}
+						ownerTypeId={PAGE_ID.PROJ_PERFORMANCE}
+						ownerId={transaction?.prp_id ?? null}
+					/>
+				)}
+			</LazyLoader>
+			<ProjectPerformanceModal
+				isOpen={modal1}
+				toggle={toggleViewModal}
+				transaction={transaction}
+				budgetYearMap={budgetYearMap}
+				budgetMonthMap={budgetMonthMap}
+				projectStatusMap={projectStatusMap}
+			/>
 
-      <DeleteModal
-        show={deleteModal}
-        onDeleteClick={handleDeleteProjectPerformance}
-        onCloseClick={() => setDeleteModal(false)}
-        isLoading={deleteProjectPerformance.isPending}
-      />
+			<DeleteModal
+				show={deleteModal}
+				onDeleteClick={handleDeleteProjectPerformance}
+				onCloseClick={() => setDeleteModal(false)}
+				isLoading={deleteProjectPerformance.isPending}
+			/>
 
-      {isLoading ? (
-        <Spinners />
-      ) : (
-        <TableContainer
-          columns={columns}
-          data={data?.data || []}
-          isGlobalFilter={true}
-          isAddButton={data?.previledge?.is_role_can_add == 1}
-          isCustomPageSize={true}
-          handleUserClick={handleAddNew}
-          isPagination={true}
-          SearchPlaceholder={t("filter_placeholder")}
-          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-          buttonName={t("add_planned")}
-          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-          theadClass="table-light"
-          pagination="pagination"
-          paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-          refetch={refetch}
-          isFetching={isFetching}
-        />
-      )}
+			{isLoading ? (
+				<Spinners />
+			) : (
+				<TableContainer
+					columns={columns}
+					data={data?.data || []}
+					isGlobalFilter={true}
+					isAddButton={data?.previledge?.is_role_can_add == 1}
+					isCustomPageSize={true}
+					handleUserClick={handleAddNew}
+					isPagination={true}
+					SearchPlaceholder={t("filter_placeholder")}
+					buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+					buttonName={t("add_planned")}
+					tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+					theadClass="table-light"
+					pagination="pagination"
+					paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+					refetch={refetch}
+					isFetching={isFetching}
+				/>
+			)}
 
-      <Modal isOpen={modal} toggle={toggle} size="xl">
-        <ModalHeader toggle={toggle} className="border-0 pb-0">
-          <h4 className="mb-0">
-            {isEdit
-              ? `${t(
-<<<<<<< HEAD
-                entryMode === "planned" ? "edit_planned" : "enter_actuals"
-              )}`
-=======
-                  entryMode === "planned"
-                    ? `${t("edit_planned")}`
-                    : `${t("enter_actuals")}`
-                )}`
->>>>>>> main
-              : `${t("add_planned")}`}
-            <Badge
-              color={entryMode === "planned" ? "info" : "success"}
-              className="ms-2"
-            >
-              {t(entryMode)}
-            </Badge>
-          </h4>
-        </ModalHeader>
+			<Modal isOpen={modal} toggle={toggle} size="xl">
+				<ModalHeader toggle={toggle} className="border-0 pb-0">
+					<h4 className="mb-0">
+						{isEdit
+							? `${t(
+									entryMode === "planned"
+										? `${t("edit_planned")}`
+										: `${t("enter_actuals")}`
+							  )}`
+							: `${t("add_planned")}`}
+						<Badge
+							color={entryMode === "planned" ? "info" : "success"}
+							className="ms-2"
+						>
+							{t(entryMode)}
+						</Badge>
+					</h4>
+				</ModalHeader>
 
-        <ModalBody className="pt-1">
-          <Form onSubmit={validation.handleSubmit}>
-            {/* Summary Section - Only show baseline fields */}
-            <Card className="mt-3 border-light shadow-sm">
-              <CardHeader className="bg-light">
-                <h5 className="mb-0">{t("baseline_values")}</h5>
-                <small className="text-muted">
-                  {t("total_project_budget")}:{" "}
-                  {Number(totalActualBudget).toLocaleString()}
-                </small>
-              </CardHeader>
-              <CardBody>
-                <Row>
-                  <Col md={4}>
-                    <Label className="fw-medium">{t("year")}</Label>
-                    <Input
-                      name="prp_budget_year_id"
-                      type="select"
-                      className="form-select"
-                      onChange={handleYearChange}
-                      value={validation.values.prp_budget_year_id || ""}
-                      invalid={
-                        validation.touched.prp_budget_year_id &&
-                        !!validation.errors.prp_budget_year_id
-                      }
-                      disabled={isEdit}
-                    >
-                      <option value="">{t("select")}</option>
-                      {bgYearsOptionsData?.data?.map((data) => (
-                        <option key={data.bdy_id} value={data.bdy_id}>
-                          {data.bdy_name}
-                        </option>
-                      ))}
-                    </Input>
-                    <FormFeedback>
-                      {validation.errors.prp_budget_year_id}
-                    </FormFeedback>
-                  </Col>
-                  <Col md={4}>
-                    <FormattedAmountField
-                      validation={validation}
-                      fieldId="prp_physical_baseline"
-                      label={t("prp_physical_baseline")}
-                      isRequired={true}
-                      max={100}
-                    />
-                  </Col>
-                  <Col md={4}>
-                    <FormattedAmountField
-                      validation={validation}
-                      fieldId="prp_budget_baseline"
-                      label={t("prp_budget_baseline")}
-                      isRequired={true}
-                    />
-                  </Col>
-                </Row>
+				<ModalBody className="pt-1">
+					<Form onSubmit={validation.handleSubmit}>
+						{/* Summary Section - Only show baseline fields */}
+						<Card className="mt-3 border-light shadow-sm">
+							<CardHeader className="bg-light">
+								<h5 className="mb-0">{t("baseline_values")}</h5>
+								<small className="text-muted">
+									{t("total_project_budget")}:{" "}
+									{Number(totalActualBudget).toLocaleString()}
+								</small>
+							</CardHeader>
+							<CardBody>
+								<Row>
+									<Col md={4}>
+										<Label className="fw-medium">{t("year")}</Label>
+										<Input
+											name="prp_budget_year_id"
+											type="select"
+											className="form-select"
+											onChange={handleYearChange}
+											value={validation.values.prp_budget_year_id || ""}
+											invalid={
+												validation.touched.prp_budget_year_id &&
+												!!validation.errors.prp_budget_year_id
+											}
+											disabled={isEdit}
+										>
+											<option value="">{t("select")}</option>
+											{bgYearsOptionsData?.data?.map((data) => (
+												<option key={data.bdy_id} value={data.bdy_id}>
+													{data.bdy_name}
+												</option>
+											))}
+										</Input>
+										<FormFeedback>
+											{validation.errors.prp_budget_year_id}
+										</FormFeedback>
+									</Col>
+									<Col md={4}>
+										<FormattedAmountField
+											validation={validation}
+											fieldId="prp_physical_baseline"
+											label={t("prp_physical_baseline")}
+											isRequired={true}
+											max={100}
+										/>
+									</Col>
+									<Col md={4}>
+										<FormattedAmountField
+											validation={validation}
+											fieldId="prp_budget_baseline"
+											label={t("prp_budget_baseline")}
+											isRequired={true}
+										/>
+									</Col>
+								</Row>
 
-                {/* New Actual Entry Checkbox and Date Picker - Only show in actual mode */}
-                {entryMode === "actual" && (
-                  <Row className="mt-3">
-                    <Col md={4}>
-                      <div className="form-check">
-                        <Input
-                          type="checkbox"
-                          id="is_new_actual_entry"
-                          name="is_new_actual_entry"
-                          className="form-check-input"
-                          checked={validation.values.is_new_actual_entry}
-                          onChange={(e) => {
-                            validation.setFieldValue(
-                              "is_new_actual_entry",
-                              e.target.checked
-                            );
-                            if (!e.target.checked) {
-                              validation.setFieldValue(
-                                "prp_record_date_gc",
-                                new Date().toISOString().split("T")[0]
-                              );
-                            }
-                          }}
-                        />
-                        <Label
-                          htmlFor="is_new_actual_entry"
-                          className="form-check-label fw-medium"
-                        >
-                          {t("new_actual_entry")}
-                        </Label>
-                      </div>
-                    </Col>
-                    {validation.values.is_new_actual_entry && (
-                      <Col md={4}>
-                        <Label className="fw-medium">{t("entry_date")}</Label>
-                        <Input
-                          name="prp_record_date_gc"
-                          type="date"
-                          onChange={validation.handleChange}
-                          onBlur={validation.handleBlur}
-                          value={validation.values.prp_record_date_gc}
-                          max={new Date().toISOString().split("T")[0]}
-                          invalid={
-                            validation.touched.prp_record_date_gc &&
-                            !!validation.errors.prp_record_date_gc
-                          }
-                        />
-                        {validation.errors.prp_record_date_gc && (
-                          <div className="text-danger small mt-1">
-                            {validation.errors.prp_record_date_gc}
-                          </div>
-                        )}
-                      </Col>
-                    )}
-                  </Row>
-                )}
-              </CardBody>
-            </Card>
-            {/* Quarterly Tabs */}
-            <Nav tabs className="nav-tabs-custom mb-3 justify-content-center">
-              {["Quarter1", "Quarter2", "Quarter3", "Quarter4"].map(
-                (quarter, idx) => (
-                  <NavItem key={idx} className="mx-3">
-                    <NavLink
-                      className={`cursor-pointer ${activeTab === quarter ? "active" : ""
-                        }`}
-                      onClick={() => setActiveTab(quarter)}
-                    >
-                      {t(quarter)}
-                    </NavLink>
-                  </NavItem>
-                )
-              )}
-            </Nav>
+								{/* New Actual Entry Checkbox and Date Picker - Only show in actual mode */}
+								{entryMode === "actual" && (
+									<Row className="mt-3">
+										<Col md={4}>
+											<div className="form-check">
+												<Input
+													type="checkbox"
+													id="is_new_actual_entry"
+													name="is_new_actual_entry"
+													className="form-check-input"
+													checked={validation.values.is_new_actual_entry}
+													onChange={(e) => {
+														validation.setFieldValue(
+															"is_new_actual_entry",
+															e.target.checked
+														);
+														if (!e.target.checked) {
+															validation.setFieldValue(
+																"prp_record_date_gc",
+																new Date().toISOString().split("T")[0]
+															);
+														}
+													}}
+												/>
+												<Label
+													htmlFor="is_new_actual_entry"
+													className="form-check-label fw-medium"
+												>
+													{t("new_actual_entry")}
+												</Label>
+											</div>
+										</Col>
+										{validation.values.is_new_actual_entry && (
+											<Col md={4}>
+												<Label className="fw-medium">{t("entry_date")}</Label>
+												<Input
+													name="prp_record_date_gc"
+													type="date"
+													onChange={validation.handleChange}
+													onBlur={validation.handleBlur}
+													value={validation.values.prp_record_date_gc}
+													max={new Date().toISOString().split("T")[0]}
+													invalid={
+														validation.touched.prp_record_date_gc &&
+														!!validation.errors.prp_record_date_gc
+													}
+												/>
+												{validation.errors.prp_record_date_gc && (
+													<div className="text-danger small mt-1">
+														{validation.errors.prp_record_date_gc}
+													</div>
+												)}
+											</Col>
+										)}
+									</Row>
+								)}
+							</CardBody>
+						</Card>
+						{/* Quarterly Tabs */}
+						<Nav tabs className="nav-tabs-custom mb-3 justify-content-center">
+							{["Quarter1", "Quarter2", "Quarter3", "Quarter4"].map(
+								(quarter, idx) => (
+									<NavItem key={idx} className="mx-3">
+										<NavLink
+											className={`cursor-pointer ${
+												activeTab === quarter ? "active" : ""
+											}`}
+											onClick={() => setActiveTab(quarter)}
+										>
+											{t(quarter)}
+										</NavLink>
+									</NavItem>
+								)
+							)}
+						</Nav>
 
-            <Card className="mt-3 border-light shadow-sm">
-              <CardHeader className="bg-light">
-                <h6 className="mb-0">{t("budget_summary")}</h6>
-              </CardHeader>
-              <CardBody>
-                <Row>
-                  <Col md={4}>
-                    <div className="d-flex justify-content-between">
-                      <span className="fw-medium">
-                        {t("total_physical_planned_you_entered")}:
-                      </span>
-                      <span>
-                        {Array.from({ length: 12 }, (_, i) =>
-                          convertToNumericValue(
-                            validation.values[
-                            `prp_pyhsical_planned_month_${i + 1}`
-                            ] || "0"
-                          )
-                        ).reduce((a, b) => a + b, 0)}
-                        %
-                      </span>
-                    </div>
-                    {validation.errors._sumPhysicalPlanned && (
-                      <div className="text-danger small mt-1">
-                        {validation.errors._sumPhysicalPlanned}
-                      </div>
-                    )}
-                  </Col>
+						<Card className="mt-3 border-light shadow-sm">
+							<CardHeader className="bg-light">
+								<h6 className="mb-0">{t("budget_summary")}</h6>
+							</CardHeader>
+							<CardBody>
+								<Row>
+									<Col md={4}>
+										<div className="d-flex justify-content-between">
+											<span className="fw-medium">
+												{t("total_physical_planned_you_entered")}:
+											</span>
+											<span>
+												{Array.from({ length: 12 }, (_, i) =>
+													convertToNumericValue(
+														validation.values[
+															`prp_pyhsical_planned_month_${i + 1}`
+														] || "0"
+													)
+												).reduce((a, b) => a + b, 0)}
+												%
+											</span>
+										</div>
+										{validation.errors._sumPhysicalPlanned && (
+											<div className="text-danger small mt-1">
+												{validation.errors._sumPhysicalPlanned}
+											</div>
+										)}
+									</Col>
 
-                  <Col md={4}>
-                    <div className="d-flex justify-content-between">
-                      <span className="fw-medium">
-                        {t("total_financial_planned_you_entered")}:
-                      </span>
-                      <span>
-                        {Array.from({ length: 12 }, (_, i) =>
-                          convertToNumericValue(
-                            validation.values[
-                            `prp_finan_planned_month_${i + 1}`
-                            ] || "0"
-                          )
-                        )
-                          .reduce((a, b) => a + b, 0)
-                          .toLocaleString()}{" "}
-                        {t("birr")}
-                      </span>
-                    </div>
-                    {validation.errors._sumFinancialPlanned && (
-                      <div className="text-danger small mt-1">
-                        {validation.errors._sumFinancialPlanned}
-                      </div>
-                    )}
-                  </Col>
+									<Col md={4}>
+										<div className="d-flex justify-content-between">
+											<span className="fw-medium">
+												{t("total_financial_planned_you_entered")}:
+											</span>
+											<span>
+												{Array.from({ length: 12 }, (_, i) =>
+													convertToNumericValue(
+														validation.values[
+															`prp_finan_planned_month_${i + 1}`
+														] || "0"
+													)
+												)
+													.reduce((a, b) => a + b, 0)
+													.toLocaleString()}{" "}
+												{t("birr")}
+											</span>
+										</div>
+										{validation.errors._sumFinancialPlanned && (
+											<div className="text-danger small mt-1">
+												{validation.errors._sumFinancialPlanned}
+											</div>
+										)}
+									</Col>
 
-                  <Col md={4}>
-                    <div className="d-flex justify-content-between">
-                      <span className="fw-medium">
-                        {t("total_physical_actual_you_entered")}:
-                      </span>
-                      <span>
-                        {Array.from({ length: 12 }, (_, i) =>
-                          convertToNumericValue(
-                            validation.values[
-                            `prp_pyhsical_actual_month_${i + 1}`
-                            ] || "0"
-                          )
-                        ).reduce((a, b) => a + b, 0)}
-                        %
-                      </span>
-                    </div>
-                    {validation.errors._sumPhysicalActual && (
-                      <div className="text-danger small mt-1">
-                        {validation.errors._sumPhysicalActual}
-                      </div>
-                    )}
-                  </Col>
-                </Row>
-              </CardBody>
-            </Card>
+									<Col md={4}>
+										<div className="d-flex justify-content-between">
+											<span className="fw-medium">
+												{t("total_physical_actual_you_entered")}:
+											</span>
+											<span>
+												{Array.from({ length: 12 }, (_, i) =>
+													convertToNumericValue(
+														validation.values[
+															`prp_pyhsical_actual_month_${i + 1}`
+														] || "0"
+													)
+												).reduce((a, b) => a + b, 0)}
+												%
+											</span>
+										</div>
+										{validation.errors._sumPhysicalActual && (
+											<div className="text-danger small mt-1">
+												{validation.errors._sumPhysicalActual}
+											</div>
+										)}
+									</Col>
+								</Row>
+							</CardBody>
+						</Card>
 
-            {/* Quarterly Input Groups */}
-            <TabContent activeTab={activeTab}>
-              {["Quarter1", "Quarter2", "Quarter3", "Quarter4"].map(
-                (quarter) => {
-                  const months = {
-                    Quarter1: [11, 12, 1],
-                    Quarter2: [2, 3, 4],
-                    Quarter3: [5, 6, 7],
-                    Quarter4: [8, 9, 10],
-                  }[quarter];
+						{/* Quarterly Input Groups */}
+						<TabContent activeTab={activeTab}>
+							{["Quarter1", "Quarter2", "Quarter3", "Quarter4"].map(
+								(quarter) => {
+									const months = {
+										Quarter1: [11, 12, 1],
+										Quarter2: [2, 3, 4],
+										Quarter3: [5, 6, 7],
+										Quarter4: [8, 9, 10],
+									}[quarter];
 
-                  return (
-                    <TabPane tabId={quarter} key={quarter}>
-                      <Card className="border-light shadow-sm">
-                        <CardBody>
-                          <Row>
-                            {months.map((month) => (
-                              <Col md={4} key={month} className="mb-3">
-                                <Card className="h-100">
-                                  <CardHeader className="bg-light py-2">
-                                    <h6 className="mb-0">
-                                      {t("month")} {month}
-                                    </h6>
-                                  </CardHeader>
-                                  <CardBody>
-                                    {entryMode === "planned" ? (
-                                      <>
-                                        <FormattedAmountField
-                                          validation={validation}
-                                          fieldId={`prp_pyhsical_planned_month_${month}`}
-                                          label={t("physical_planned_%")}
-                                          isRequired={true}
-                                          max={100}
-                                        />
-                                        <FormattedAmountField
-                                          validation={validation}
-                                          fieldId={`prp_finan_planned_month_${month}`}
-                                          label={t("financial_planned")}
-                                          isRequired={true}
-                                        />
-                                      </>
-                                    ) : (
-                                      <>
-                                        <FormattedAmountField
-                                          validation={validation}
-                                          fieldId={`prp_pyhsical_actual_month_${month}`}
-                                          label={t("physical_actual_%")}
-                                          isRequired={true}
-                                          max={100}
-                                        />
-                                        <FormattedAmountField
-                                          validation={validation}
-                                          fieldId={`prp_finan_actual_month_${month}`}
-                                          label={t("financial_actual")}
-                                          isRequired={true}
-                                        />
+									return (
+										<TabPane tabId={quarter} key={quarter}>
+											<Card className="border-light shadow-sm">
+												<CardBody>
+													<Row>
+														{months.map((month) => (
+															<Col md={4} key={month} className="mb-3">
+																<Card className="h-100">
+																	<CardHeader className="bg-light py-2">
+																		<h6 className="mb-0">
+																			{t("month")} {month}
+																		</h6>
+																	</CardHeader>
+																	<CardBody>
+																		{entryMode === "planned" ? (
+																			<>
+																				<FormattedAmountField
+																					validation={validation}
+																					fieldId={`prp_pyhsical_planned_month_${month}`}
+																					label={t("physical_planned_%")}
+																					isRequired={true}
+																					max={100}
+																				/>
+																				<FormattedAmountField
+																					validation={validation}
+																					fieldId={`prp_finan_planned_month_${month}`}
+																					label={t("financial_planned")}
+																					isRequired={true}
+																				/>
+																			</>
+																		) : (
+																			<>
+																				<FormattedAmountField
+																					validation={validation}
+																					fieldId={`prp_pyhsical_actual_month_${month}`}
+																					label={t("physical_actual_%")}
+																					isRequired={true}
+																					max={100}
+																				/>
+																				<FormattedAmountField
+																					validation={validation}
+																					fieldId={`prp_finan_actual_month_${month}`}
+																					label={t("financial_actual")}
+																					isRequired={true}
+																				/>
 
-                                        <div className="mb-3">
-                                          {/* Label with dynamic rules */}
-                                          <Label
-                                            htmlFor={`prp_status_month_${month}`}
-                                            className="form-label mb-1 fw-medium"
-                                          >
-                                            {t("status")}
+																				<div className="mb-3">
+																					{/* Label with dynamic rules */}
+																					<Label
+																						htmlFor={`prp_status_month_${month}`}
+																						className="form-label mb-1 fw-medium"
+																					>
+																						{t("status")}
 
-                                            {/* Conditional red asterisk */}
-                                            {(convertToNumericValue(
-                                              validation.values[
-                                              `prp_pyhsical_actual_month_${month}`
-                                              ] || "0"
-                                            ) > 0 ||
-                                              convertToNumericValue(
-                                                validation.values[
-                                                `prp_finan_actual_month_${month}`
-                                                ] || "0"
-                                              ) > 0) && (
-                                                <span className="text-danger ms-1">
-                                                  *
-                                                </span>
-                                              )}
+																						{/* Conditional red asterisk */}
+																						{(convertToNumericValue(
+																							validation.values[
+																								`prp_pyhsical_actual_month_${month}`
+																							] || "0"
+																						) > 0 ||
+																							convertToNumericValue(
+																								validation.values[
+																									`prp_finan_actual_month_${month}`
+																								] || "0"
+																							) > 0) && (
+																							<span className="text-danger ms-1">
+																								*
+																							</span>
+																						)}
 
-                                            {/* Dynamic tooltip */}
-                                            <span
-                                              id={`status-tooltip-${month}`}
-                                              className="ms-1 text-muted cursor-help"
-                                            >
-                                              <i className="ri-information-line"></i>
-                                            </span>
-                                            <UncontrolledTooltip
-                                              target={`status-tooltip-${month}`}
-                                            >
-                                              {t(
-                                                convertToNumericValue(
-                                                  validation.values[
-                                                  `prp_pyhsical_actual_month_${month}`
-                                                  ] || "0"
-                                                ) > 0 ||
-                                                  convertToNumericValue(
-                                                    validation.values[
-                                                    `prp_finan_actual_month_${month}`
-                                                    ] || "0"
-                                                  ) > 0
-                                                  ? "Status is required when actual values exist"
-                                                  : "Optional when both actuals are 0 (can select 'New' or leave empty)"
-                                              )}
-                                            </UncontrolledTooltip>
-                                          </Label>
+																						{/* Dynamic tooltip */}
+																						<span
+																							id={`status-tooltip-${month}`}
+																							className="ms-1 text-muted cursor-help"
+																						>
+																							<i className="ri-information-line"></i>
+																						</span>
+																						<UncontrolledTooltip
+																							target={`status-tooltip-${month}`}
+																						>
+																							{t(
+																								convertToNumericValue(
+																									validation.values[
+																										`prp_pyhsical_actual_month_${month}`
+																									] || "0"
+																								) > 0 ||
+																									convertToNumericValue(
+																										validation.values[
+																											`prp_finan_actual_month_${month}`
+																										] || "0"
+																									) > 0
+																									? "Status is required when actual values exist"
+																									: "Optional when both actuals are 0 (can select 'New' or leave empty)"
+																							)}
+																						</UncontrolledTooltip>
+																					</Label>
 
-                                          {/* Dropdown */}
-                                          <Input
-                                            id={`prp_status_month_${month}`}
-                                            name={`prp_status_month_${month}`}
-                                            type="select"
-                                            value={
-                                              validation.values[
-                                              `prp_status_month_${month}`
-                                              ] || ""
-                                            }
-                                            onChange={validation.handleChange}
-                                            onBlur={validation.handleBlur}
-                                            invalid={Boolean(
-                                              validation.touched[
-                                              `prp_status_month_${month}`
-                                              ] &&
-                                              validation.errors[
-                                              `prp_status_month_${month}`
-                                              ]
-                                            )}
-                                          >
-                                            <option value="">
-                                              {t("no_status")}
-                                            </option>
-                                            {projectStatusData?.data
-                                              ?.filter(
-                                                (status) => status.prs_id >= 5
-                                              )
-                                              .map((status) => (
-                                                <option
-                                                  key={status.prs_id}
-                                                  value={status.prs_id}
-                                                  disabled={
-                                                    convertToNumericValue(
-                                                      validation.values[
-                                                      `prp_pyhsical_actual_month_${month}`
-                                                      ] || "0"
-                                                    ) === 0 &&
-                                                    convertToNumericValue(
-                                                      validation.values[
-                                                      `prp_finan_actual_month_${month}`
-                                                      ] || "0"
-                                                    ) === 0 &&
-                                                    status.prs_id !== 5
-                                                  }
-                                                >
-                                                  {lang === "en"
-                                                    ? status.prs_status_name_en
-                                                    : lang === "am"
-                                                      ? status.prs_status_name_am
-                                                      : status.prs_status_name_or}
-                                                </option>
-                                              ))}
-                                          </Input>
+																					{/* Dropdown */}
+																					<Input
+																						id={`prp_status_month_${month}`}
+																						name={`prp_status_month_${month}`}
+																						type="select"
+																						value={
+																							validation.values[
+																								`prp_status_month_${month}`
+																							] || ""
+																						}
+																						onChange={validation.handleChange}
+																						onBlur={validation.handleBlur}
+																						invalid={Boolean(
+																							validation.touched[
+																								`prp_status_month_${month}`
+																							] &&
+																								validation.errors[
+																									`prp_status_month_${month}`
+																								]
+																						)}
+																					>
+																						<option value="">
+																							{t("no_status")}
+																						</option>
+																						{projectStatusData?.data
+																							?.filter(
+																								(status) => status.prs_id >= 5
+																							)
+																							.map((status) => (
+																								<option
+																									key={status.prs_id}
+																									value={status.prs_id}
+																									disabled={
+																										convertToNumericValue(
+																											validation.values[
+																												`prp_pyhsical_actual_month_${month}`
+																											] || "0"
+																										) === 0 &&
+																										convertToNumericValue(
+																											validation.values[
+																												`prp_finan_actual_month_${month}`
+																											] || "0"
+																										) === 0 &&
+																										status.prs_id !== 5
+																									}
+																								>
+																									{lang === "en"
+																										? status.prs_status_name_en
+																										: lang === "am"
+																										? status.prs_status_name_am
+																										: status.prs_status_name_or}
+																								</option>
+																							))}
+																					</Input>
 
-                                          {/* Error Message */}
-                                          {validation.errors[
-                                            `prp_status_month_${month}`
-                                          ] && (
-                                              <div className="text-danger small mt-1">
-                                                {
-                                                  validation.errors[
-                                                  `prp_status_month_${month}`
-                                                  ]
-                                                }
-                                              </div>
-                                            )}
-                                        </div>
-                                      </>
-                                    )}
-                                  </CardBody>
-                                </Card>
-                              </Col>
-                            ))}
-                          </Row>
-                        </CardBody>
-                      </Card>
-                    </TabPane>
-                  );
-                }
-              )}
-            </TabContent>
+																					{/* Error Message */}
+																					{validation.errors[
+																						`prp_status_month_${month}`
+																					] && (
+																						<div className="text-danger small mt-1">
+																							{
+																								validation.errors[
+																									`prp_status_month_${month}`
+																								]
+																							}
+																						</div>
+																					)}
+																				</div>
+																			</>
+																		)}
+																	</CardBody>
+																</Card>
+															</Col>
+														))}
+													</Row>
+												</CardBody>
+											</Card>
+										</TabPane>
+									);
+								}
+							)}
+						</TabContent>
 
-            {/* Description */}
-            <Card className="mt-3 border-light shadow-sm">
-              <CardBody>
-                <Label className="fw-medium">
-                  {t("description")}
-                  <small className="text-muted ms-1">({t("optional")})</small>
-                </Label>
-                <Input
-                  name="prp_description"
-                  type="textarea"
-                  rows="5"
-                  placeholder={t("description")}
-                  onChange={validation.handleChange}
-                  value={validation.values.prp_description || ""}
-                />
-              </CardBody>
-            </Card>
+						{/* Description */}
+						<Card className="mt-3 border-light shadow-sm">
+							<CardBody>
+								<Label className="fw-medium">
+									{t("description")}
+									<small className="text-muted ms-1">({t("optional")})</small>
+								</Label>
+								<Input
+									name="prp_description"
+									type="textarea"
+									rows="5"
+									placeholder={t("description")}
+									onChange={validation.handleChange}
+									value={validation.values.prp_description || ""}
+								/>
+							</CardBody>
+						</Card>
 
-            {/* Submit Button */}
-            <div className="text-end mt-4">
-              <Button
-                color="success"
-                type="submit"
-                disabled={
-                  addProjectPerformance.isPending ||
-                  updateProjectPerformance.isPending ||
-                  !validation.dirty
-                }
-              >
-                {addProjectPerformance.isPending ||
-                  updateProjectPerformance.isPending ? (
-                  <>
-                    <Spinner size="sm" className="me-2" />
-                    {t("saving")}...
-                  </>
-                ) : (
-                  t("save")
-                )}
-              </Button>
-            </div>
-          </Form>
-        </ModalBody>
-      </Modal>
-      <ToastContainer />
-    </React.Fragment>
-  );
+						{/* Submit Button */}
+						<div className="text-end mt-4">
+							<Button
+								color="success"
+								type="submit"
+								disabled={
+									addProjectPerformance.isPending ||
+									updateProjectPerformance.isPending ||
+									!validation.dirty
+								}
+							>
+								{addProjectPerformance.isPending ||
+								updateProjectPerformance.isPending ? (
+									<>
+										<Spinner size="sm" className="me-2" />
+										{t("saving")}...
+									</>
+								) : (
+									t("save")
+								)}
+							</Button>
+						</div>
+					</Form>
+				</ModalBody>
+			</Modal>
+		</React.Fragment>
+	);
 };
 
 ProjectPerformanceModel.propTypes = {

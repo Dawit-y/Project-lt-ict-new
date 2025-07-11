@@ -517,93 +517,65 @@ const UsersModel = () => {
       1 == 1
     ) {
       baseColumns.push({
-        headerName: t("Action"),
-        sortable: true,
-        filter: false,
-        minWidth: 120,
-        cellRenderer: (params) => (
-          <div className="d-flex gap-2">
-            {(params.data?.is_editable || params.data?.is_role_editable) && (
-              <Button
-                size="sm"
-                color="none"
-                className="text-success"
-                onClick={() => handleUsersClick(params.data)}
-                type="button"
-              >
-                <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                <UncontrolledTooltip placement="top" target="edittooltip">
-                  Edit
-                </UncontrolledTooltip>
-              </Button>
-            )}
-            {/* add view project  */}
-            {params.data?.is_editable || params.data?.is_role_editable ? (
-              <Button
-                size="sm"
-                color="none"
-                className="text-secondary"
-                onClick={() => handleClick(params.data)}
-                type="button"
-              >
-                <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
-                <UncontrolledTooltip placement="top" target="viewtooltip">
-                  View
-                </UncontrolledTooltip>
-              </Button>
-            ) : (
-              ""
-            )}
-            {/* added duplicat  */}
-            {/* Add duplicate project icon */}
-            <Button
-              size="sm"
-              color="none"
-              className="text-primary"
-              onClick={() => {
-                handleUsersDuplicateClick(params.data);
-              }}
-              type="button"
-            >
-              <i
-                className="mdi mdi-content-duplicate font-size-18"
-                id="duplicateTooltip"
-              />
-              <UncontrolledTooltip
-                placement="top"
-                target="duplicateTooltip"
-              >
-                Duplicate
-              </UncontrolledTooltip>
-            </Button>
-
-<<<<<<< HEAD
-
-            {/*<Link
-                  to="#"
-                  className="text-primary"
-                  onClick={() => {
-                    handleUsersDuplicateClick(params.data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-content-duplicate font-size-18"
-                    id="duplicateTooltip"
-                  />
-                  <UncontrolledTooltip
-                    placement="top"
-                    target="duplicateTooltip"
-                  >
-                    Duplicate
-                  </UncontrolledTooltip>
-                </Link>*/}
-
-            {/* End of duplicate project icon */}
-=======
->>>>>>> main
-          </div>
-        ),
-      });
+				headerName: t("Action"),
+				sortable: true,
+				filter: false,
+				minWidth: 120,
+				cellRenderer: (params) => (
+					<div className="d-flex gap-2">
+						{(params.data?.is_editable || params.data?.is_role_editable) && (
+							<Button
+								size="sm"
+								color="none"
+								className="text-success"
+								onClick={() => handleUsersClick(params.data)}
+								type="button"
+							>
+								<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+								<UncontrolledTooltip placement="top" target="edittooltip">
+									Edit
+								</UncontrolledTooltip>
+							</Button>
+						)}
+						{/* add view project  */}
+						{params.data?.is_editable || params.data?.is_role_editable ? (
+							<Button
+								size="sm"
+								color="none"
+								className="text-secondary"
+								onClick={() => handleClick(params.data)}
+								type="button"
+							>
+								<i className="mdi mdi-eye font-size-18" id="viewtooltip" />
+								<UncontrolledTooltip placement="top" target="viewtooltip">
+									View
+								</UncontrolledTooltip>
+							</Button>
+						) : (
+							""
+						)}
+						{/* added duplicat  */}
+						{/* Add duplicate project icon */}
+						<Button
+							size="sm"
+							color="none"
+							className="text-primary"
+							onClick={() => {
+								handleUsersDuplicateClick(params.data);
+							}}
+							type="button"
+						>
+							<i
+								className="mdi mdi-content-duplicate font-size-18"
+								id="duplicateTooltip"
+							/>
+							<UncontrolledTooltip placement="top" target="duplicateTooltip">
+								Duplicate
+							</UncontrolledTooltip>
+						</Button>
+					</div>
+				),
+			});
     }
     return baseColumns;
   }, [

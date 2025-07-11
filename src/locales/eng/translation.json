@@ -1119,12 +1119,8 @@
 	"date_modified": "Date Modified",
 	"size": "Size",
 	"create_new": "Create New",
-<<<<<<< HEAD
-	"Message": "Message",
-=======
 	"Message": "Notes",
 	"budget_request_approval": "Budget Request",
->>>>>>> main
 	"is_deleted": "Is Deleted",
 	"yes": "Yes",
 	"no": "No",
@@ -1570,11 +1566,8 @@
 	"prj_location": "Project Location",
 	"prj_implementation_year": "Implementation Year",
 	"prj_ben_number": "Number of Beneficiaries",
-<<<<<<< HEAD
-=======
 	"prp_physical_baseline": "Physical Baseline",
 	"prp_physical_planned": "Physical Plan",
->>>>>>> main
 	"prj_start_year": "Start Year",
 	"prj_end_year": "End Year",
 	"prj_location_description": "Specific Site",
@@ -1594,11 +1587,8 @@
 	"Q2": "Quarter 2",
 	"Q3": "Quarter 3",
 	"Q4": "Quarter 4",
-<<<<<<< HEAD
-=======
 	"m": "M",
 	"Sum": "Sum",
->>>>>>> main
 	"pct_parent_id": "Sector Category",
 	"project_financial_report": "Financial Report One",
 	"project_financial_report2": "Financial Report Two",
@@ -1694,7 +1684,6 @@
 	"Allocated": "Allocated",
 	"Remaining": "Remaining",
 	"Total_Project_Budget": "Total Project Budget",
-<<<<<<< HEAD
 	"prj_assigned_sectors": "Assigned Sectors",
 	"cso_proposal_request_list": "CSO Proposal Request List",
 	"prj_funding_agency": "Funding Agency",
@@ -1702,10 +1691,8 @@
 	"prj_admin_cost": "Admin Cost",
 	"prj_program_cost": "Program Cost",
 	"activity_cso_list": "CSO Activity List",
-	"cso_contact_person":"Contact Person",
-	"cso_type":"CSO Type"
-}
-=======
+	"cso_contact_person": "Contact Person",
+	"cso_type": "CSO Type",
 	"psc_gov_active": "Government Active",
 	"psc_cso_active": "CSO Active",
 	"psc_citizenship_active": "Citizenship Active",
@@ -1999,7 +1986,5 @@
 	"payments_analysis": "Payments Analysis",
 	"payment_date": "Payment Date",
 	"payment_summary": "Payment Summary",
-	"all_years": "All Years",
-	"prj_assigned_sectors": "Assigned Sectors"
+	"all_years": "All Years"
 }
->>>>>>> main
