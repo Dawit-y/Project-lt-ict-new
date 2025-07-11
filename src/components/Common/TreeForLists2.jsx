@@ -3,27 +3,29 @@ import { useTranslation } from "react-i18next";
 import { useFetchAddressStructures } from "../../queries/address_structure_query";
 import { Tree } from "react-arborist";
 import {
-  FaFolder,
-  FaChevronRight,
-  FaChevronDown,
-  FaChevronUp,
-  FaBars,
-  FaSearch,
+	FaFolder,
+	FaChevronRight,
+	FaChevronDown,
+	FaChevronUp,
+	FaBars,
+	FaSearch,
 } from "react-icons/fa";
 import {
-  Card,
-  CardBody,
-  Input,
-  Label,
-  Col,
-  Row,
-  Button,
-  UncontrolledTooltip,
+	Card,
+	CardBody,
+	Input,
+	Label,
+	Col,
+	Row,
+	Button,
+	UncontrolledTooltip,
+	Spinner,
 } from "reactstrap";
 import useResizeObserver from "use-resize-observer";
 import { v4 as uuidv4 } from "uuid";
 import { useAuthUser } from "../../hooks/useAuthUser";
 import { useDragDropManager } from "react-dnd";
+import FetchErrorHandler from "./FetchErrorHandler";
 
 const TreeForLists = ({
 	onNodeSelect,
@@ -37,7 +39,8 @@ const TreeForLists = ({
 	const treeRef = useRef();
 	const searchInputRef = useRef();
 	const { userId } = useAuthUser();
-	const { data, isLoading, isError } = useFetchAddressStructures(userId);
+	const { data, isLoading, isError, error, refetch } =
+		useFetchAddressStructures(userId);
 	const [treeData, setTreeData] = useState([]);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedNode, setSelectedNode] = useState({});
@@ -123,21 +126,49 @@ const TreeForLists = ({
 	}, []);
 
 	const lang = i18n.language;
-
+	if (isError) setIsCollapsed(false);
 	if (isLoading || isError) {
 		return (
 			<div
 				style={{
+					position: "relative",
 					flex: isCollapsed ? "0 0 60px" : "0 0 25%",
 					minWidth: isCollapsed ? "60px" : "250px",
 					transition: "all 0.3s ease",
 				}}
 				className="w-20 flex-shrink-0 p-3 border-end overflow-auto shadow-sm"
 			>
-				<h5>{t("address_tree_Search")}</h5>
+				{isCollapsed ? (
+					<div className="d-flex justify-content-center align-items-center mb-2 mx-auto w-100">
+						<>
+							<Button
+								id="expand-tree-button"
+								size="sm"
+								color="light"
+								onClick={handleExpandAndFocusSearch}
+							>
+								<FaBars />
+							</Button>
+							<UncontrolledTooltip
+								placement="right"
+								target="expand-tree-button"
+							>
+								Expand
+							</UncontrolledTooltip>
+						</>
+					</div>
+				) : (
+					<h5>{t("address_tree_Search")}</h5>
+				)}
 				<hr />
 				<p className="text-center">
-					{isLoading ? "Loading..." : "Error fetching address structure"}
+					{isLoading ? (
+						<Spinner size={"sm"} color="primary" />
+					) : (
+						<div className="absolute top-0">
+							<FetchErrorHandler error={error} refetch={refetch} onTree />
+						</div>
+					)}
 				</p>
 			</div>
 		);
@@ -365,57 +396,57 @@ const TreeForLists = ({
 };
 
 const Node = ({ node, style, dragHandle, onNodeSelect }) => {
-  if (!node?.data) return null;
-  const { i18n } = useTranslation();
-  const lang = i18n.language;
-  const isLeafNode = node.isLeaf;
-  const chevronIcon = node.isOpen ? <FaChevronDown /> : <FaChevronRight />;
+	if (!node?.data) return null;
+	const { i18n } = useTranslation();
+	const lang = i18n.language;
+	const isLeafNode = node.isLeaf;
+	const chevronIcon = node.isOpen ? <FaChevronDown /> : <FaChevronRight />;
 
-  const handleNodeClick = (node) => {
-    node.toggle();
-    onNodeSelect(node.data);
-  };
+	const handleNodeClick = (node) => {
+		node.toggle();
+		onNodeSelect(node.data);
+	};
 
-  return (
-    <div
-      onClick={() => handleNodeClick(node)}
-      style={{ ...style, display: "flex" }}
-      ref={dragHandle}
-      className={`${
-        node.isSelected ? "bg-info-subtle" : ""
-      } py-1 rounded hover-zoom`}
-    >
-      {!isLeafNode && node.data.level !== "woreda" && (
-        <span className="me-2 ps-2">{chevronIcon}</span>
-      )}
-      <span
-        className={`${
-          node.data.level === "woreda" ? "ms-4" : ""
-        }  me-1 text-warning`}
-      >
-        <FaFolder />
-      </span>
-      <span className="text-danger my-auto px-1" style={{ fontWeight: 900 }}>
-        {node.data.level.charAt(0).toUpperCase()}
-      </span>
-      <span
-        style={{
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          maxWidth: "100%",
-          display: "inline-block",
-          verticalAlign: "middle",
-        }}
-      >
-        {lang === "en" && node.data.add_name_en
-          ? node.data.add_name_en
-          : lang === "am" && node.data.add_name_am
-          ? node.data.add_name_am
-          : node.data.name}
-      </span>
-    </div>
-  );
+	return (
+		<div
+			onClick={() => handleNodeClick(node)}
+			style={{ ...style, display: "flex" }}
+			ref={dragHandle}
+			className={`${
+				node.isSelected ? "bg-info-subtle" : ""
+			} py-1 rounded hover-zoom`}
+		>
+			{!isLeafNode && node.data.level !== "woreda" && (
+				<span className="me-2 ps-2">{chevronIcon}</span>
+			)}
+			<span
+				className={`${
+					node.data.level === "woreda" ? "ms-4" : ""
+				}  me-1 text-warning`}
+			>
+				<FaFolder />
+			</span>
+			<span className="text-danger my-auto px-1" style={{ fontWeight: 900 }}>
+				{node.data.level.charAt(0).toUpperCase()}
+			</span>
+			<span
+				style={{
+					whiteSpace: "nowrap",
+					overflow: "hidden",
+					textOverflow: "ellipsis",
+					maxWidth: "100%",
+					display: "inline-block",
+					verticalAlign: "middle",
+				}}
+			>
+				{lang === "en" && node.data.add_name_en
+					? node.data.add_name_en
+					: lang === "am" && node.data.add_name_am
+					? node.data.add_name_am
+					: node.data.name}
+			</span>
+		</div>
+	);
 };
 
 export default memo(TreeForLists);

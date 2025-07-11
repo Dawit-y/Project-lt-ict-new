@@ -70,7 +70,7 @@ const AuthMiddleware = ({ children }) => {
     allowedPaths.push("/projectdetail_cso/:id");
   }
 
-  const isAuthenticated = storedUser && Object.keys(storedUser).length > 0;
+	const isAuthenticated = storedUser && Object.keys(storedUser).length > 0;
 
   if (isRestoring || sideDataLoading || authLoading || csoInfoLoading) {
     return (
@@ -88,9 +88,9 @@ const AuthMiddleware = ({ children }) => {
     );
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} />;
-  }
+	if (!isAuthenticated) {
+		return <Navigate to="/login" state={{ from: location }} />;
+	}
 
   if ((csoStatus === null || csoStatus === 0) && userType !== 2) {
     return <Navigate to="/not_approved" />;
