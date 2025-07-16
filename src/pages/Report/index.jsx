@@ -223,6 +223,7 @@ const { data: sectorInformationData } = useFetchSectorInformations();
       reportTypeIndex: 7,
     },
     project_financial_report: {
+      dateKeys: ["report_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
@@ -230,7 +231,7 @@ const { data: sectorInformationData } = useFetchSectorInformations();
       },
       dropdownSearchKeys: [
         {
-          key: "bdr_budget_year_id",
+          key: "prp_budget_year_id",
           options: budgetYearOptions,
         },
         {
@@ -241,6 +242,7 @@ const { data: sectorInformationData } = useFetchSectorInformations();
       reportTypeIndex: 8,
     },
     project_financial_report2: {
+      dateKeys: ["report_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
@@ -248,7 +250,7 @@ const { data: sectorInformationData } = useFetchSectorInformations();
       },
       dropdownSearchKeys: [
         {
-          key: "bdr_budget_year_id",
+          key: "prp_budget_year_id",
           options: budgetYearOptions,
         },
         {
@@ -259,6 +261,7 @@ const { data: sectorInformationData } = useFetchSectorInformations();
       reportTypeIndex: 9,
     },
   project_financial_report3: {
+      dateKeys: ["report_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
@@ -266,7 +269,7 @@ const { data: sectorInformationData } = useFetchSectorInformations();
       },
       dropdownSearchKeys: [
         {
-          key: "bdr_budget_year_id",
+          key: "prp_budget_year_id",
           options: budgetYearOptions,
         },
 
@@ -278,6 +281,7 @@ const { data: sectorInformationData } = useFetchSectorInformations();
       reportTypeIndex: 10,
     },
 project_physical_performance_report: {
+      dateKeys: ["report_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
@@ -296,6 +300,7 @@ project_physical_performance_report: {
       reportTypeIndex: 11,
     },
 project_financial_performance_report: {
+      dateKeys: ["report_date"],
       locationParams: {
         region: "prj_location_region_id",
         zone: "prj_location_zone_id",
@@ -321,11 +326,6 @@ project_financial_performance_report: {
         woreda: "prj_location_woreda_id",
       },
       dropdownSearchKeys: [
-        {
-          key: "prp_budget_year_id",
-          options: budgetYearOptions,
-        },
-
          {
           key: "prj_project_category_id",
           options: projectCategoryOptions,
@@ -335,7 +335,10 @@ project_financial_performance_report: {
           key: "sector_category",
           options: sectorCategoryOptions,
         },
-         
+          {
+          key: "prp_budget_year_id",
+          options: budgetYearOptions,
+        },
       ],
       reportTypeIndex: 13,
     },
@@ -686,5 +689,4 @@ project_financial_performance_report: {
     </div>
   );
 };
-
 export default Report;

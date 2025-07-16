@@ -13,7 +13,7 @@ import {
   useDeleteProjectPerformance,
   useUpdateProjectPerformance,
 } from "../../queries/projectperformance_query";
-import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
+import { useSearchProjectStatuss } from "../../queries/projectstatus_query";
 import { usePopulateBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
 import ProjectPerformanceModal from "./ProjectPerformanceModal";
@@ -106,7 +106,7 @@ const ProjectPerformanceModel = (props) => {
   const deleteProjectPerformance = useDeleteProjectPerformance();
   const { data: bgYearsOptionsData } = usePopulateBudgetYears();
   const { data: budgetMonthData } = useFetchBudgetMonths();
-  const { data: projectStatusData } = useFetchProjectStatuss();
+  const { data: projectStatusData } = useSearchProjectStatuss();
 
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
