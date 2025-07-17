@@ -1,10 +1,14 @@
 import PropTypes from "prop-types";
 
-const SearchTableContainer = ({ children, isCollapsed }) => {
+const SearchTableContainer = ({
+	children,
+	isCollapsed,
+	widthInPercent = 75,
+}) => {
 	return (
 		<div
 			style={{
-				flex: isCollapsed ? "1 1 auto" : "0 0 75%",
+				flex: isCollapsed ? "1 1 auto" : `0 0 ${widthInPercent}%`,
 				transition: "all 0.3s ease",
 			}}
 		>

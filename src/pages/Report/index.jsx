@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {
-  Row,
-  Col,
-  FormGroup,
-  Input,
-  Card,
-  CardBody,
-  Spinner,
+	Row,
+	Col,
+	FormGroup,
+	Input,
+	Card,
+	CardBody,
+	Spinner,
 } from "reactstrap";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import TreeForLists from "../../components/Common/TreeForLists";
+import TreeForLists from "../../components/Common/TreeForLists2";
+import SearchTableContainer from "../../components/Common/SearchTableContainer";
 import { useSearchReport } from "../../queries/report_query";
 import Greenbook from "./ReportDesign/Greenbook";
 import FinancialProjectsTable from "../Report/ProjectFinanicialReportsTable";
@@ -59,6 +60,7 @@ const Report = () => {
 		{ name: "project_plan_report", url: "uuuu" },
 	]);
 
+	const [isCollapsed, setIsCollapsed] = useState(false);
 	const [searchResults, setSearchResults] = useState([]);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
 	const [searcherror, setSearchError] = useState(null);
@@ -464,16 +466,14 @@ const Report = () => {
 				breadcrumbItem={t("Statistical Report")}
 			/>
 			<div className="d-flex" style={{ gap: "20px" }}>
-				{/* TreeForLists with fixed width */}
-				<div style={{ width: "250px", flexShrink: 0 }}>
-					<TreeForLists
-						onNodeSelect={handleNodeSelect}
-						setIsAddressLoading={setIsAddressLoading}
-					/>
-				</div>
-
-				{/* Main content area */}
-				<div style={{ flex: 1, minWidth: 0 }}>
+				<TreeForLists
+					onNodeSelect={handleNodeSelect}
+					setIsAddressLoading={setIsAddressLoading}
+					isCollapsed={isCollapsed}
+					setIsCollapsed={setIsCollapsed}
+					widthInPercent={15}
+				/>
+				<SearchTableContainer isCollapsed={isCollapsed} widthInPercent={85}>
 					<Row className="">
 						<Col xs="2">
 							<Card className="p-0 m-0 mb-3 shadow-none">
@@ -485,7 +485,7 @@ const Report = () => {
 											id="api-endpoints"
 											value={selectedEndpoint}
 											onChange={handleSelectionChange}
-											className="mb-2"
+											className="mb-2 mt-1"
 										>
 											<option value="">{t("select_stat")}</option>
 											{endpoints.map((endpoint, index) => (
@@ -695,7 +695,7 @@ const Report = () => {
 							</>
 						)}
 					</Col>
-				</div>
+				</SearchTableContainer>
 			</div>
 		</div>
 	);
