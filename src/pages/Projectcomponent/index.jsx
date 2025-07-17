@@ -350,196 +350,195 @@ const ProjectComponentModel = (props) => {
   }, [handleProjectComponentClick, toggleViewModal, onClickDelete]);
 
   return (
-    <React.Fragment>
-      <ProjectComponentModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      />
-      <DeleteModal
-        show={deleteModal}
-        onDeleteClick={handleDeleteProjectComponent}
-        onCloseClick={() => setDeleteModal(false)}
-        isLoading={deleteProjectComponent.isPending}
-      />
-      {isLoading || isSearchLoading ? (
-        <Spinners />
-      ) : (
-        <TableContainer
-          columns={columns}
-          data={showSearchResult ? searchResults?.data : data?.data || []}
-          isGlobalFilter={true}
-          isAddButton={data?.previledge?.is_role_can_add == 1}
-          isCustomPageSize={true}
-          handleUserClick={handleProjectComponentClicks}
-          isPagination={true}
-          SearchPlaceholder={26 + " " + t("Results") + "..."}
-          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-          buttonName={t("add")}
-          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-          theadClass="table-light"
-          pagination="pagination"
-          paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-          refetch={refetch}
-          isFetching={isFetching}
-        />
-      )}
-      <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-        <ModalHeader toggle={toggle} tag="h4">
-          {!!isEdit
-            ? t("edit") + " " + t("project_component")
-            : t("add") + " " + t("project_component")}
-        </ModalHeader>
-        <ModalBody>
-          <Form
-            onSubmit={(e) => {
-              e.preventDefault();
-              validation.handleSubmit();
-              return false;
-            }}
-          >
-            <Row>
-              <Col className="col-md-6 mb-3">
-                <Label>
-                  {t("pcm_component_name")} <RequiredIndicator />
-                </Label>
-                <Input
-                  name="pcm_component_name"
-                  type="text"
-                  placeholder={t("pcm_component_name")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.pcm_component_name || ""}
-                  invalid={
-                    validation.touched.pcm_component_name &&
-                    validation.errors.pcm_component_name
-                      ? true
-                      : false
-                  }
-                />
-                {validation.touched.pcm_component_name &&
-                validation.errors.pcm_component_name ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.pcm_component_name}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>
-                  {t("pcm_unit_measurement")} <RequiredIndicator />
-                </Label>
-                <Input
-                  name="pcm_unit_measurement"
-                  type="text"
-                  placeholder={t("pcm_unit_measurement")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.pcm_unit_measurement || ""}
-                  invalid={
-                    validation.touched.pcm_unit_measurement &&
-                    validation.errors.pcm_unit_measurement
-                      ? true
-                      : false
-                  }
-                />
-                {validation.touched.pcm_unit_measurement &&
-                validation.errors.pcm_unit_measurement ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.pcm_unit_measurement}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>
-                  {t("pcm_amount")} <RequiredIndicator />
-                </Label>
-                <Input
-                  name="pcm_amount"
-                  type="text"
-                  placeholder={t("pcm_amount")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.pcm_amount || ""}
-                  invalid={
-                    validation.touched.pcm_amount &&
-                    validation.errors.pcm_amount
-                      ? true
-                      : false
-                  }
-                />
-                {validation.touched.pcm_amount &&
-                validation.errors.pcm_amount ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.pcm_amount}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-              <Col className="col-md-6 mb-3">
-                <Label>{t("pcm_description")}</Label>
-                <Input
-                  name="pcm_description"
-                  type="textarea"
-                  placeholder={t("pcm_description")}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.pcm_description || ""}
-                  invalid={
-                    validation.touched.pcm_description &&
-                    validation.errors.pcm_description
-                      ? true
-                      : false
-                  }
-                  rows="3"
-                />
-                {validation.touched.pcm_description &&
-                validation.errors.pcm_description ? (
-                  <FormFeedback type="invalid">
-                    {validation.errors.pcm_description}
-                  </FormFeedback>
-                ) : null}
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <div className="text-end">
-                  {addProjectComponent.isPending ||
-                  updateProjectComponent.isPending ? (
-                    <Button
-                      color="success"
-                      type="submit"
-                      className="save-user"
-                      disabled={
-                        addProjectComponent.isPending ||
-                        updateProjectComponent.isPending ||
-                        !validation.dirty
-                      }
-                    >
-                      <Spinner size={"sm"} color="light" className="me-2" />
-                      {t("Save")}
-                    </Button>
-                  ) : (
-                    <Button
-                      color="success"
-                      type="submit"
-                      className="save-user"
-                      disabled={
-                        addProjectComponent.isPending ||
-                        updateProjectComponent.isPending ||
-                        !validation.dirty
-                      }
-                    >
-                      {t("Save")}
-                    </Button>
-                  )}
-                </div>
-              </Col>
-            </Row>
-          </Form>
-        </ModalBody>
-      </Modal>
-      <ToastContainer />
-    </React.Fragment>
-  );
+		<React.Fragment>
+			<ProjectComponentModal
+				isOpen={modal1}
+				toggle={toggleViewModal}
+				transaction={transaction}
+			/>
+			<DeleteModal
+				show={deleteModal}
+				onDeleteClick={handleDeleteProjectComponent}
+				onCloseClick={() => setDeleteModal(false)}
+				isLoading={deleteProjectComponent.isPending}
+			/>
+			{isLoading || isSearchLoading ? (
+				<Spinners />
+			) : (
+				<TableContainer
+					columns={columns}
+					data={showSearchResult ? searchResults?.data : data?.data || []}
+					isGlobalFilter={true}
+					isAddButton={data?.previledge?.is_role_can_add == 1}
+					isCustomPageSize={true}
+					handleUserClick={handleProjectComponentClicks}
+					isPagination={true}
+					SearchPlaceholder={26 + " " + t("Results") + "..."}
+					buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+					buttonName={t("add")}
+					tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+					theadClass="table-light"
+					pagination="pagination"
+					paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+					refetch={refetch}
+					isFetching={isFetching}
+				/>
+			)}
+			<Modal isOpen={modal} toggle={toggle} className="modal-xl">
+				<ModalHeader toggle={toggle} tag="h4">
+					{!!isEdit
+						? t("edit") + " " + t("project_component")
+						: t("add") + " " + t("project_component")}
+				</ModalHeader>
+				<ModalBody>
+					<Form
+						onSubmit={(e) => {
+							e.preventDefault();
+							validation.handleSubmit();
+							return false;
+						}}
+					>
+						<Row>
+							<Col className="col-md-6 mb-3">
+								<Label>
+									{t("pcm_component_name")} <RequiredIndicator />
+								</Label>
+								<Input
+									name="pcm_component_name"
+									type="text"
+									placeholder={t("pcm_component_name")}
+									onChange={validation.handleChange}
+									onBlur={validation.handleBlur}
+									value={validation.values.pcm_component_name || ""}
+									invalid={
+										validation.touched.pcm_component_name &&
+										validation.errors.pcm_component_name
+											? true
+											: false
+									}
+								/>
+								{validation.touched.pcm_component_name &&
+								validation.errors.pcm_component_name ? (
+									<FormFeedback type="invalid">
+										{validation.errors.pcm_component_name}
+									</FormFeedback>
+								) : null}
+							</Col>
+							<Col className="col-md-6 mb-3">
+								<Label>
+									{t("pcm_unit_measurement")} <RequiredIndicator />
+								</Label>
+								<Input
+									name="pcm_unit_measurement"
+									type="text"
+									placeholder={t("pcm_unit_measurement")}
+									onChange={validation.handleChange}
+									onBlur={validation.handleBlur}
+									value={validation.values.pcm_unit_measurement || ""}
+									invalid={
+										validation.touched.pcm_unit_measurement &&
+										validation.errors.pcm_unit_measurement
+											? true
+											: false
+									}
+								/>
+								{validation.touched.pcm_unit_measurement &&
+								validation.errors.pcm_unit_measurement ? (
+									<FormFeedback type="invalid">
+										{validation.errors.pcm_unit_measurement}
+									</FormFeedback>
+								) : null}
+							</Col>
+							<Col className="col-md-6 mb-3">
+								<Label>
+									{t("pcm_amount")} <RequiredIndicator />
+								</Label>
+								<Input
+									name="pcm_amount"
+									type="text"
+									placeholder={t("pcm_amount")}
+									onChange={validation.handleChange}
+									onBlur={validation.handleBlur}
+									value={validation.values.pcm_amount || ""}
+									invalid={
+										validation.touched.pcm_amount &&
+										validation.errors.pcm_amount
+											? true
+											: false
+									}
+								/>
+								{validation.touched.pcm_amount &&
+								validation.errors.pcm_amount ? (
+									<FormFeedback type="invalid">
+										{validation.errors.pcm_amount}
+									</FormFeedback>
+								) : null}
+							</Col>
+							<Col className="col-md-6 mb-3">
+								<Label>{t("pcm_description")}</Label>
+								<Input
+									name="pcm_description"
+									type="textarea"
+									placeholder={t("pcm_description")}
+									onChange={validation.handleChange}
+									onBlur={validation.handleBlur}
+									value={validation.values.pcm_description || ""}
+									invalid={
+										validation.touched.pcm_description &&
+										validation.errors.pcm_description
+											? true
+											: false
+									}
+									rows="3"
+								/>
+								{validation.touched.pcm_description &&
+								validation.errors.pcm_description ? (
+									<FormFeedback type="invalid">
+										{validation.errors.pcm_description}
+									</FormFeedback>
+								) : null}
+							</Col>
+						</Row>
+						<Row>
+							<Col>
+								<div className="text-end">
+									{addProjectComponent.isPending ||
+									updateProjectComponent.isPending ? (
+										<Button
+											color="success"
+											type="submit"
+											className="save-user"
+											disabled={
+												addProjectComponent.isPending ||
+												updateProjectComponent.isPending ||
+												!validation.dirty
+											}
+										>
+											<Spinner size={"sm"} color="light" className="me-2" />
+											{t("Save")}
+										</Button>
+									) : (
+										<Button
+											color="success"
+											type="submit"
+											className="save-user"
+											disabled={
+												addProjectComponent.isPending ||
+												updateProjectComponent.isPending ||
+												!validation.dirty
+											}
+										>
+											{t("Save")}
+										</Button>
+									)}
+								</div>
+							</Col>
+						</Row>
+					</Form>
+				</ModalBody>
+			</Modal>
+		</React.Fragment>
+	);
 };
 
 ProjectComponentModel.propTypes = {

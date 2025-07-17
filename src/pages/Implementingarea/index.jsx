@@ -562,221 +562,219 @@ const ImplementingAreaModel = (props) => {
   }, [handleImplementingAreaClick, toggleViewModal, onClickDelete, t]);
 
   return (
-    <React.Fragment>
-      <ImplementingAreaModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      />
-      <DeleteModal
-        show={deleteModal}
-        onDeleteClick={handleDeleteImplementingArea}
-        onCloseClick={() => setDeleteModal(false)}
-        isLoading={deleteImplementingArea.isPending}
-      />
+		<React.Fragment>
+			<ImplementingAreaModal
+				isOpen={modal1}
+				toggle={toggleViewModal}
+				transaction={transaction}
+			/>
+			<DeleteModal
+				show={deleteModal}
+				onDeleteClick={handleDeleteImplementingArea}
+				onCloseClick={() => setDeleteModal(false)}
+				isLoading={deleteImplementingArea.isPending}
+			/>
 
-      {isLoading || isSearchLoading ? (
-        <Spinners />
-      ) : (
-        <Row>
-          <Col xs="12">
-            <TableContainer
-              columns={columns}
-              data={showSearchResult ? searchResults?.data : data?.data || []}
-              isGlobalFilter={true}
-              isAddButton={data?.previledge?.is_role_can_add == 1}
-              isCustomPageSize={true}
-              handleUserClick={handleImplementingAreaClicks}
-              isPagination={true}
-              SearchPlaceholder={26 + " " + t("Results") + "..."}
-              buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-              buttonName={t("add")}
-              tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-              theadClass="table-light"
-              pagination="pagination"
-              paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-              refetch={refetch}
-              isFetching={isFetching}
-            />
-          </Col>
-        </Row>
-      )}
-      <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-        <ModalHeader toggle={toggle} tag="h4">
-          {!!isEdit
-            ? t("edit") + " " + t("implementing_area")
-            : t("add") + " " + t("implementing_area")}
-        </ModalHeader>
-        <ModalBody>
-          <Form
-            onSubmit={(e) => {
-              e.preventDefault();
-              validation.handleSubmit();
-              return false;
-            }}
-          >
-            <Row>
-              <Col className="col-12 mb-3">
-                <Card>
-                  <CardBody>
-                    <div className="d-flex justify-content-between">
-                      <div>
-                        <strong>{t("Total_Project_Budget")} : </strong>{" "}
-                        {totalActualBudget
-                          ? totalActualBudget.toLocaleString()
-                          : "0"}
-                      </div>
-                      <div>
-                        <strong>{t("Allocated")} : </strong>{" "}
-                        {calculateCurrentTotal(data)
-                          ? calculateCurrentTotal(data).toLocaleString()
-                          : "0"}
-                      </div>
-                      <div
-                        className={
-                          calculateCurrentTotal(data) > (totalActualBudget || 0)
-                            ? "text-danger"
-                            : "text-success"
-                        }
-                      >
-                        <strong>{t("Remaining")} : </strong>{" "}
-                        {(
-                          (totalActualBudget || 0) -
-                          (calculateCurrentTotal(data) || 0)
-                        ).toLocaleString()}
-                      </div>
-                    </div>
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
-            <Row>
-              <Col xl={12} className="mb-3">
-                <CascadingDropdowns
-                  validation={validation}
-                  dropdown1name="pia_region_id"
-                  dropdown2name="pia_zone_id_id"
-                  dropdown3name="pia_woreda_id"
-                  required={true}
-                  layout="horizontal"
-                  colSizes={{ md: 6, sm: 12, lg: 4 }}
-                />
-              </Col>
-              <Col xl={4} className="mb-3">
-                <Label>
-                  {t("pia_sector_id")} <span className="text-danger">*</span>
-                </Label>
-                <Input
-                  name="pia_sector_id"
-                  type="select"
-                  className="form-select"
-                  {...validation.getFieldProps("pia_sector_id")}
-                  invalid={
-                    validation.touched.pia_sector_id &&
-                    !!validation.errors.pia_sector_id
-                  }
-                >
-                  <option value="">{t("prj_select_category")}</option>
-                  {sectorOptions[`sci_name_${lang}`]?.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {t(option.label)}
-                    </option>
-                  ))}
-                </Input>
-                {validation.touched.pia_sector_id &&
-                  validation.errors.pia_sector_id && (
-                    <FormFeedback>
-                      {validation.errors.pia_sector_id}
-                    </FormFeedback>
-                  )}
-              </Col>
-              <Col className="col-md-4 mb-3">
-                <FormattedAmountField
-                  validation={validation}
-                  fieldId="pia_budget_amount"
-                  label={t("pia_budget_amount")}
-                  isRequired={true}
-                  max={totalActualBudget}
-                />
+			{isLoading || isSearchLoading ? (
+				<Spinners />
+			) : (
+				<Row>
+					<Col xs="12">
+						<TableContainer
+							columns={columns}
+							data={showSearchResult ? searchResults?.data : data?.data || []}
+							isGlobalFilter={true}
+							isAddButton={data?.previledge?.is_role_can_add == 1}
+							isCustomPageSize={true}
+							handleUserClick={handleImplementingAreaClicks}
+							isPagination={true}
+							SearchPlaceholder={26 + " " + t("Results") + "..."}
+							buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+							buttonName={t("add")}
+							tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+							theadClass="table-light"
+							pagination="pagination"
+							paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+							refetch={refetch}
+							isFetching={isFetching}
+						/>
+					</Col>
+				</Row>
+			)}
+			<Modal isOpen={modal} toggle={toggle} className="modal-xl">
+				<ModalHeader toggle={toggle} tag="h4">
+					{!!isEdit
+						? t("edit") + " " + t("implementing_area")
+						: t("add") + " " + t("implementing_area")}
+				</ModalHeader>
+				<ModalBody>
+					<Form
+						onSubmit={(e) => {
+							e.preventDefault();
+							validation.handleSubmit();
+							return false;
+						}}
+					>
+						<Row>
+							<Col className="col-12 mb-3">
+								<Card>
+									<CardBody>
+										<div className="d-flex justify-content-between">
+											<div>
+												<strong>{t("Total_Project_Budget")} : </strong>{" "}
+												{totalActualBudget
+													? totalActualBudget.toLocaleString()
+													: "0"}
+											</div>
+											<div>
+												<strong>{t("Allocated")} : </strong>{" "}
+												{calculateCurrentTotal(data)
+													? calculateCurrentTotal(data).toLocaleString()
+													: "0"}
+											</div>
+											<div
+												className={
+													calculateCurrentTotal(data) > (totalActualBudget || 0)
+														? "text-danger"
+														: "text-success"
+												}
+											>
+												<strong>{t("Remaining")} : </strong>{" "}
+												{(
+													(totalActualBudget || 0) -
+													(calculateCurrentTotal(data) || 0)
+												).toLocaleString()}
+											</div>
+										</div>
+									</CardBody>
+								</Card>
+							</Col>
+						</Row>
+						<Row>
+							<Col xl={12} className="mb-3">
+								<CascadingDropdowns
+									validation={validation}
+									dropdown1name="pia_region_id"
+									dropdown2name="pia_zone_id_id"
+									dropdown3name="pia_woreda_id"
+									required={true}
+									layout="horizontal"
+									colSizes={{ md: 6, sm: 12, lg: 4 }}
+								/>
+							</Col>
+							<Col xl={4} className="mb-3">
+								<Label>
+									{t("pia_sector_id")} <span className="text-danger">*</span>
+								</Label>
+								<Input
+									name="pia_sector_id"
+									type="select"
+									className="form-select"
+									{...validation.getFieldProps("pia_sector_id")}
+									invalid={
+										validation.touched.pia_sector_id &&
+										!!validation.errors.pia_sector_id
+									}
+								>
+									<option value="">{t("prj_select_category")}</option>
+									{sectorOptions[`sci_name_${lang}`]?.map((option) => (
+										<option key={option.value} value={option.value}>
+											{t(option.label)}
+										</option>
+									))}
+								</Input>
+								{validation.touched.pia_sector_id &&
+									validation.errors.pia_sector_id && (
+										<FormFeedback>
+											{validation.errors.pia_sector_id}
+										</FormFeedback>
+									)}
+							</Col>
+							<Col className="col-md-4 mb-3">
+								<FormattedAmountField
+									validation={validation}
+									fieldId="pia_budget_amount"
+									label={t("pia_budget_amount")}
+									isRequired={true}
+									max={totalActualBudget}
+								/>
 
-                <small className="text-muted">
-                  Available budget:{" "}
-                  {(
-                    (totalActualBudget || 0) -
-                    (calculateCurrentTotal(
-                      data,
-                      isEdit ? implementingArea?.pia_id : null
-                    ) || 0)
-                  ).toLocaleString()}
-                </small>
-              </Col>
+								<small className="text-muted">
+									Available budget:{" "}
+									{(
+										(totalActualBudget || 0) -
+										(calculateCurrentTotal(
+											data,
+											isEdit ? implementingArea?.pia_id : null
+										) || 0)
+									).toLocaleString()}
+								</small>
+							</Col>
 
-              <InputField
-                validation={validation}
-                fieldId={"pia_site"}
-                isRequired={true}
-                className="col-md-4 mb-3"
-                maxLength={400}
-              />
+							<InputField
+								validation={validation}
+								fieldId={"pia_site"}
+								isRequired={true}
+								className="col-md-4 mb-3"
+								maxLength={400}
+							/>
 
-              <InputField
-                validation={validation}
-                fieldId={"pia_geo_location"}
-                isRequired={true}
-                className="col-md-4 mb-3"
-                maxLength={400}
-              />
-              <InputField
-                type="textarea"
-                validation={validation}
-                fieldId={"pia_description"}
-                isRequired={true}
-                className="col-md-8 mb-3"
-                maxLength={1000}
-              />
-            </Row>
-            <Row>
-              <Col>
-                <div className="text-end">
-                  {addImplementingArea.isPending ||
-                  updateImplementingArea.isPending ? (
-                    <Button
-                      color="success"
-                      type="submit"
-                      className="save-user"
-                      disabled={
-                        addImplementingArea.isPending ||
-                        updateImplementingArea.isPending ||
-                        !validation.dirty
-                      }
-                    >
-                      <Spinner size={"sm"} color="light" className="me-2" />
-                      {t("Save")}
-                    </Button>
-                  ) : (
-                    <Button
-                      color="success"
-                      type="submit"
-                      className="save-user"
-                      disabled={
-                        addImplementingArea.isPending ||
-                        updateImplementingArea.isPending ||
-                        !validation.dirty
-                      }
-                    >
-                      {t("Save")}
-                    </Button>
-                  )}
-                </div>
-              </Col>
-            </Row>
-          </Form>
-        </ModalBody>
-      </Modal>
-
-      <ToastContainer />
-    </React.Fragment>
-  );
+							<InputField
+								validation={validation}
+								fieldId={"pia_geo_location"}
+								isRequired={true}
+								className="col-md-4 mb-3"
+								maxLength={400}
+							/>
+							<InputField
+								type="textarea"
+								validation={validation}
+								fieldId={"pia_description"}
+								isRequired={true}
+								className="col-md-8 mb-3"
+								maxLength={1000}
+							/>
+						</Row>
+						<Row>
+							<Col>
+								<div className="text-end">
+									{addImplementingArea.isPending ||
+									updateImplementingArea.isPending ? (
+										<Button
+											color="success"
+											type="submit"
+											className="save-user"
+											disabled={
+												addImplementingArea.isPending ||
+												updateImplementingArea.isPending ||
+												!validation.dirty
+											}
+										>
+											<Spinner size={"sm"} color="light" className="me-2" />
+											{t("Save")}
+										</Button>
+									) : (
+										<Button
+											color="success"
+											type="submit"
+											className="save-user"
+											disabled={
+												addImplementingArea.isPending ||
+												updateImplementingArea.isPending ||
+												!validation.dirty
+											}
+										>
+											{t("Save")}
+										</Button>
+									)}
+								</div>
+							</Col>
+						</Row>
+					</Form>
+				</ModalBody>
+			</Modal>
+		</React.Fragment>
+	);
 };
 
 ImplementingAreaModel.propTypes = {

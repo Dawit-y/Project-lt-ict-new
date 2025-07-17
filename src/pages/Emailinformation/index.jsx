@@ -309,246 +309,245 @@ const EmailInformationModel = () => {
   }, [handleEmailInformationClick, toggleViewModal, onClickDelete]);
 
   return (
-    <React.Fragment>
-      <EmailInformationModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      />
-      <DeleteModal
-        show={deleteModal}
-        onDeleteClick={handleDeleteEmailInformation}
-        onCloseClick={() => setDeleteModal(false)}
-        isLoading={deleteEmailInformation.isPending}
-      />
-      <div className="page-content">
-        <div className="container-fluid">
-          <Breadcrumbs
-            title={t("email_information")}
-            breadcrumbItem={t("email_information")}
-          />
-          <AdvancedSearch
-            searchHook={useSearchEmailInformations}
-            textSearchKeys={["emi_sent_to"]}
-            dropdownSearchKeys={[]}
-            checkboxSearchKeys={[]}
-            onSearchResult={handleSearchResults}
-            setIsSearchLoading={setIsSearchLoading}
-            setSearchResults={setSearchResults}
-            setShowSearchResult={setShowSearchResult}
-          />
-          {isLoading || isSearchLoading ? (
-            <Spinners />
-          ) : (
-            <Row>
-              <Col xs="12">
-                <Card>
-                  <CardBody>
-                    <TableContainer
-                      columns={columns}
-                      data={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      isGlobalFilter={true}
-                      isAddButton={false}
-                      isCustomPageSize={true}
-                      handleUserClick={handleEmailInformationClicks}
-                      isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={t("filter_placeholder")}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("email_information")}
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                    />
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
-          )}
-          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-            <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit
-                ? t("edit") + " " + t("email_information")
-                : t("add") + " " + t("email_information")}
-            </ModalHeader>
-            <ModalBody>
-              <Form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  validation.handleSubmit();
-                  return false;
-                }}
-              >
-                <Row>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("emi_email_template_id")}</Label>
-                    <Input
-                      name="emi_email_template_id"
-                      type="text"
-                      placeholder={t("emi_email_template_id")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.emi_email_template_id || ""}
-                      invalid={
-                        validation.touched.emi_email_template_id &&
-                        validation.errors.emi_email_template_id
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.emi_email_template_id &&
-                    validation.errors.emi_email_template_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.emi_email_template_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("emi_sent_to")}</Label>
-                    <Input
-                      name="emi_sent_to"
-                      type="text"
-                      placeholder={t("emi_sent_to")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.emi_sent_to || ""}
-                      invalid={
-                        validation.touched.emi_sent_to &&
-                        validation.errors.emi_sent_to
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.emi_sent_to &&
-                    validation.errors.emi_sent_to ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.emi_sent_to}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("emi_sent_date")}</Label>
-                    <Input
-                      name="emi_sent_date"
-                      type="text"
-                      placeholder={t("emi_sent_date")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.emi_sent_date || ""}
-                      invalid={
-                        validation.touched.emi_sent_date &&
-                        validation.errors.emi_sent_date
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.emi_sent_date &&
-                    validation.errors.emi_sent_date ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.emi_sent_date}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("emi_email_content")}</Label>
-                    <Input
-                      name="emi_email_content"
-                      type="textarea"
-                      placeholder={t("emi_email_content")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.emi_email_content || ""}
-                      invalid={
-                        validation.touched.emi_email_content &&
-                        validation.errors.emi_email_content
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.emi_email_content &&
-                    validation.errors.emi_email_content ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.emi_email_content}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("emi_description")}</Label>
-                    <Input
-                      name="emi_description"
-                      type="textarea"
-                      placeholder={t("emi_description")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.emi_description || ""}
-                      invalid={
-                        validation.touched.emi_description &&
-                        validation.errors.emi_description
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.emi_description &&
-                    validation.errors.emi_description ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.emi_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <div className="text-end">
-                      {addEmailInformation.isPending ||
-                      updateEmailInformation.isPending ? (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addEmailInformation.isPending ||
-                            updateEmailInformation.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          <Spinner size={"sm"} color="light" className="me-2" />
-                          {t("Save")}
-                        </Button>
-                      ) : (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addEmailInformation.isPending ||
-                            updateEmailInformation.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          {t("Save")}
-                        </Button>
-                      )}
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
-            </ModalBody>
-          </Modal>
-        </div>
-      </div>
-      <ToastContainer />
-    </React.Fragment>
-  );
+		<React.Fragment>
+			<EmailInformationModal
+				isOpen={modal1}
+				toggle={toggleViewModal}
+				transaction={transaction}
+			/>
+			<DeleteModal
+				show={deleteModal}
+				onDeleteClick={handleDeleteEmailInformation}
+				onCloseClick={() => setDeleteModal(false)}
+				isLoading={deleteEmailInformation.isPending}
+			/>
+			<div className="page-content">
+				<div className="container-fluid">
+					<Breadcrumbs
+						title={t("email_information")}
+						breadcrumbItem={t("email_information")}
+					/>
+					<AdvancedSearch
+						searchHook={useSearchEmailInformations}
+						textSearchKeys={["emi_sent_to"]}
+						dropdownSearchKeys={[]}
+						checkboxSearchKeys={[]}
+						onSearchResult={handleSearchResults}
+						setIsSearchLoading={setIsSearchLoading}
+						setSearchResults={setSearchResults}
+						setShowSearchResult={setShowSearchResult}
+					/>
+					{isLoading || isSearchLoading ? (
+						<Spinners />
+					) : (
+						<Row>
+							<Col xs="12">
+								<Card>
+									<CardBody>
+										<TableContainer
+											columns={columns}
+											data={
+												showSearchResult
+													? searchResults?.data
+													: data?.data || []
+											}
+											isGlobalFilter={true}
+											isAddButton={false}
+											isCustomPageSize={true}
+											handleUserClick={handleEmailInformationClicks}
+											isPagination={true}
+											// SearchPlaceholder="26 records..."
+											SearchPlaceholder={t("filter_placeholder")}
+											buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+											buttonName={t("add") + " " + t("email_information")}
+											tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+											theadClass="table-light"
+											pagination="pagination"
+											paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+										/>
+									</CardBody>
+								</Card>
+							</Col>
+						</Row>
+					)}
+					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
+						<ModalHeader toggle={toggle} tag="h4">
+							{!!isEdit
+								? t("edit") + " " + t("email_information")
+								: t("add") + " " + t("email_information")}
+						</ModalHeader>
+						<ModalBody>
+							<Form
+								onSubmit={(e) => {
+									e.preventDefault();
+									validation.handleSubmit();
+									return false;
+								}}
+							>
+								<Row>
+									<Col className="col-md-6 mb-3">
+										<Label>{t("emi_email_template_id")}</Label>
+										<Input
+											name="emi_email_template_id"
+											type="text"
+											placeholder={t("emi_email_template_id")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.emi_email_template_id || ""}
+											invalid={
+												validation.touched.emi_email_template_id &&
+												validation.errors.emi_email_template_id
+													? true
+													: false
+											}
+											maxLength={20}
+										/>
+										{validation.touched.emi_email_template_id &&
+										validation.errors.emi_email_template_id ? (
+											<FormFeedback type="invalid">
+												{validation.errors.emi_email_template_id}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-6 mb-3">
+										<Label>{t("emi_sent_to")}</Label>
+										<Input
+											name="emi_sent_to"
+											type="text"
+											placeholder={t("emi_sent_to")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.emi_sent_to || ""}
+											invalid={
+												validation.touched.emi_sent_to &&
+												validation.errors.emi_sent_to
+													? true
+													: false
+											}
+											maxLength={20}
+										/>
+										{validation.touched.emi_sent_to &&
+										validation.errors.emi_sent_to ? (
+											<FormFeedback type="invalid">
+												{validation.errors.emi_sent_to}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-6 mb-3">
+										<Label>{t("emi_sent_date")}</Label>
+										<Input
+											name="emi_sent_date"
+											type="text"
+											placeholder={t("emi_sent_date")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.emi_sent_date || ""}
+											invalid={
+												validation.touched.emi_sent_date &&
+												validation.errors.emi_sent_date
+													? true
+													: false
+											}
+											maxLength={20}
+										/>
+										{validation.touched.emi_sent_date &&
+										validation.errors.emi_sent_date ? (
+											<FormFeedback type="invalid">
+												{validation.errors.emi_sent_date}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-6 mb-3">
+										<Label>{t("emi_email_content")}</Label>
+										<Input
+											name="emi_email_content"
+											type="textarea"
+											placeholder={t("emi_email_content")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.emi_email_content || ""}
+											invalid={
+												validation.touched.emi_email_content &&
+												validation.errors.emi_email_content
+													? true
+													: false
+											}
+											maxLength={20}
+										/>
+										{validation.touched.emi_email_content &&
+										validation.errors.emi_email_content ? (
+											<FormFeedback type="invalid">
+												{validation.errors.emi_email_content}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-6 mb-3">
+										<Label>{t("emi_description")}</Label>
+										<Input
+											name="emi_description"
+											type="textarea"
+											placeholder={t("emi_description")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.emi_description || ""}
+											invalid={
+												validation.touched.emi_description &&
+												validation.errors.emi_description
+													? true
+													: false
+											}
+											maxLength={20}
+										/>
+										{validation.touched.emi_description &&
+										validation.errors.emi_description ? (
+											<FormFeedback type="invalid">
+												{validation.errors.emi_description}
+											</FormFeedback>
+										) : null}
+									</Col>
+								</Row>
+								<Row>
+									<Col>
+										<div className="text-end">
+											{addEmailInformation.isPending ||
+											updateEmailInformation.isPending ? (
+												<Button
+													color="success"
+													type="submit"
+													className="save-user"
+													disabled={
+														addEmailInformation.isPending ||
+														updateEmailInformation.isPending ||
+														!validation.dirty
+													}
+												>
+													<Spinner size={"sm"} color="light" className="me-2" />
+													{t("Save")}
+												</Button>
+											) : (
+												<Button
+													color="success"
+													type="submit"
+													className="save-user"
+													disabled={
+														addEmailInformation.isPending ||
+														updateEmailInformation.isPending ||
+														!validation.dirty
+													}
+												>
+													{t("Save")}
+												</Button>
+											)}
+										</div>
+									</Col>
+								</Row>
+							</Form>
+						</ModalBody>
+					</Modal>
+				</div>
+			</div>
+		</React.Fragment>
+	);
 };
 EmailInformationModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

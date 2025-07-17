@@ -1973,5 +1973,7 @@
 	"prj_assigned_sectors": "Assigned Sectors",
 	"prj_cluster_id": "Cluster",
 	"prj_program_cost": "Program Cost",
-	"prj_admin_cost": "Admin Cost"
+	"prj_admin_cost": "Admin Cost",
+	"cso_type": "Type",
+	"cso_contact_person": "Contact Person"
 }

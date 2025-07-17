@@ -517,344 +517,350 @@ const ProcurementInformationModel = (props) => {
     return baseColumns;
   }, [handleProcurementInformationClick, toggleViewModal, onClickDelete]);
   return (
-    <React.Fragment>
+		<React.Fragment>
+			<DynamicDetailsModal
+				isOpen={modal1}
+				toggle={toggleViewModal} // Function to close the modal
+				data={transaction} // Pass transaction as data to the modal
+				title={t("procurement_information")}
+				description={transaction.pri_description}
+				pri_total_procurement_amount={transaction.pri_total_procurement_amount}
+				fields={[
+					{
+						label: t("pri_procurement_stage_id"),
+						key: "pri_procurement_stage_id",
+						value: procurementStageMap[transaction.pri_procurement_stage_id],
+					},
+					{
+						label: t("pri_procurement_method_id"),
+						key: "pri_procurement_method_id",
+						value: procurementMethodMap[transaction.pri_procurement_method_id],
+					},
+				]}
+				footerText={t("close")}
+			/>
 
-      <DynamicDetailsModal
-        isOpen={modal1}
-        toggle={toggleViewModal} // Function to close the modal
-        data={transaction} // Pass transaction as data to the modal
-        title={t('procurement_information')}
-        description={transaction.pri_description}
-        pri_total_procurement_amount={transaction.pri_total_procurement_amount}
-        fields={[
-          { label: t('pri_procurement_stage_id'), key: "pri_procurement_stage_id", value: procurementStageMap[transaction.pri_procurement_stage_id] },
-          { label: t('pri_procurement_method_id'), key: "pri_procurement_method_id", value: procurementMethodMap[transaction.pri_procurement_method_id] },
-        ]}
-        footerText={t('close')}
-      />
+			<DeleteModal
+				show={deleteModal}
+				onDeleteClick={handleDeleteProcurementInformation}
+				onCloseClick={() => setDeleteModal(false)}
+				isLoading={deleteProcurementInformation.isPending}
+			/>
+			<div className="">
+				{isLoading || isSearchLoading ? (
+					<Spinners />
+				) : (
+					<TableContainer
+						columns={columns}
+						data={showSearchResult ? searchResults?.data : data?.data || []}
+						isGlobalFilter={true}
+						isAddButton={data?.previledge?.is_role_can_add == 1}
+						isCustomPageSize={true}
+						handleUserClick={handleProcurementInformationClicks}
+						isPagination={true}
+						SearchPlaceholder={t("Results") + "..."}
+						buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+						buttonName={t("add")}
+						tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+						theadClass="table-light"
+						pagination="pagination"
+						paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+						refetch={refetch}
+						isFetching={isFetching}
+					/>
+				)}
+				<Modal isOpen={modal} toggle={toggle} className="modal-xl">
+					<ModalHeader toggle={toggle} tag="h4">
+						{!!isEdit
+							? t("edit") + " " + t("procurement_information")
+							: t("add") + " " + t("procurement_information")}
+					</ModalHeader>
+					<ModalBody>
+						<Form
+							onSubmit={(e) => {
+								e.preventDefault();
+								validation.handleSubmit();
+								return false;
+							}}
+						>
+							<Row>
+								<Col className="col-md-6 mb-3">
+									<Label>
+										{t("pri_total_procurement_amount")}
+										<span className="text-danger">*</span>
+									</Label>
+									<Input
+										name="pri_total_procurement_amount"
+										type="number"
+										placeholder={t("pri_total_procurement_amount")}
+										onChange={validation.handleChange}
+										onBlur={validation.handleBlur}
+										value={validation.values.pri_total_procurement_amount || ""}
+										invalid={
+											validation.touched.pri_total_procurement_amount &&
+											validation.errors.pri_total_procurement_amount
+												? true
+												: false
+										}
+										maxLength={20}
+									/>
+									{validation.touched.pri_total_procurement_amount &&
+									validation.errors.pri_total_procurement_amount ? (
+										<FormFeedback type="invalid">
+											{validation.errors.pri_total_procurement_amount}
+										</FormFeedback>
+									) : null}
+								</Col>
 
-      <DeleteModal
-        show={deleteModal}
-        onDeleteClick={handleDeleteProcurementInformation}
-        onCloseClick={() => setDeleteModal(false)}
-        isLoading={deleteProcurementInformation.isPending}
-      />
-      <div className="">
-        {isLoading || isSearchLoading ? (
-          <Spinners />
-        ) : (
+								<Col className="col-md-6 mb-3">
+									<DatePicker
+										isRequired={true}
+										componentId={"pri_bid_announced_date"}
+										validation={validation}
+										minDate={startDate}
+									/>
+								</Col>
 
-          <TableContainer
-            columns={columns}
-            data={
-              showSearchResult
-                ? searchResults?.data
-                : data?.data || []
-            }
-            isGlobalFilter={true}
-            isAddButton={data?.previledge?.is_role_can_add == 1}
-            isCustomPageSize={true}
-            handleUserClick={handleProcurementInformationClicks}
-            isPagination={true}
-            SearchPlaceholder={t("Results") + "..."}
-            buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-            buttonName={t("add")}
-            tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-            theadClass="table-light"
-            pagination="pagination"
-            paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-            refetch={refetch}
-            isFetching={isFetching}
-          />
-        )}
-        <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-          <ModalHeader toggle={toggle} tag="h4">
-            {!!isEdit ? (t("edit") + " " + t("procurement_information")) : (t("add") + " " + t("procurement_information"))}
-          </ModalHeader>
-          <ModalBody>
-            <Form
-              onSubmit={(e) => {
-                e.preventDefault();
-                validation.handleSubmit();
-                return false;
-              }}
-            >
-              <Row>
-                <Col className='col-md-6 mb-3'>
-                  <Label>{t('pri_total_procurement_amount')}
-                    <span className="text-danger">*</span></Label>
-                  <Input
-                    name='pri_total_procurement_amount'
-                    type='number'
-                    placeholder={t('pri_total_procurement_amount')}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.pri_total_procurement_amount || ''}
-                    invalid={
-                      validation.touched.pri_total_procurement_amount &&
-                        validation.errors.pri_total_procurement_amount
-                        ? true
-                        : false
-                    }
-                    maxLength={20}
-                  />
-                  {validation.touched.pri_total_procurement_amount &&
-                    validation.errors.pri_total_procurement_amount ? (
-                    <FormFeedback type='invalid'>
-                      {validation.errors.pri_total_procurement_amount}
-                    </FormFeedback>
-                  ) : null}
-                </Col>
+								<Col className="col-md-6 mb-3">
+									<DatePicker
+										isRequired={true}
+										componentId={"pri_bid_invitation_date"}
+										validation={validation}
+										minDate={validation.values.pri_bid_announced_date}
+									/>
+								</Col>
 
-                <Col className="col-md-6 mb-3">
-                  <DatePicker
-                    isRequired={true}
-                    componentId={"pri_bid_announced_date"}
-                    validation={validation}
-                    minDate={startDate}
-                  />
-                </Col>
+								<Col className="col-md-6 mb-3">
+									<DatePicker
+										isRequired={true}
+										componentId={"pri_bid_opening_date"}
+										validation={validation}
+										minDate={validation.values.pri_bid_invitation_date}
+									/>
+								</Col>
 
-                <Col className="col-md-6 mb-3">
-                  <DatePicker
-                    isRequired={true}
-                    componentId={"pri_bid_invitation_date"}
-                    validation={validation}
-                    minDate={validation.values.pri_bid_announced_date}
-                  />
-                </Col>
+								<Col className="col-md-6 mb-3">
+									<DatePicker
+										isRequired={true}
+										componentId={"pri_bid_closing_date"}
+										validation={validation}
+										minDate={validation.values.pri_bid_opening_date}
+									/>
+								</Col>
 
-                <Col className="col-md-6 mb-3">
-                  <DatePicker
-                    isRequired={true}
-                    componentId={"pri_bid_opening_date"}
-                    validation={validation}
-                    minDate={validation.values.pri_bid_invitation_date} />
-                </Col>
+								<Col className="col-md-6 mb-3">
+									<DatePicker
+										isRequired={true}
+										componentId={"pri_bid_evaluation_date"}
+										validation={validation}
+										minDate={validation.values.pri_bid_closing_date}
+									/>
+								</Col>
 
-                <Col className="col-md-6 mb-3">
-                  <DatePicker
-                    isRequired={true}
-                    componentId={"pri_bid_closing_date"}
-                    validation={validation}
-                    minDate={validation.values.pri_bid_opening_date} />
-                </Col>
+								<Col md={6} className="col-md-6 mb-3">
+									<DatePicker
+										isRequired={true}
+										componentId={"pri_bid_award_date"}
+										validation={validation}
+										minDate={validation.values.pri_bid_evaluation_date}
+									/>
+								</Col>
 
-                <Col className="col-md-6 mb-3">
-                  <DatePicker
-                    isRequired={true}
-                    componentId={"pri_bid_evaluation_date"}
-                    validation={validation}
-                    minDate={validation.values.pri_bid_closing_date} />
-                </Col>
+								<Col className="col-md-6 mb-3" style={{ display: "none" }}>
+									<Label>{t("pri_project_id")}</Label>
+									<Input
+										name="pri_project_id"
+										type="text"
+										placeholder={t("pri_project_id")}
+										onChange={validation.handleChange}
+										onBlur={validation.handleBlur}
+										value={validation.values.pri_project_id || ""}
+										invalid={
+											validation.touched.pri_project_id &&
+											validation.errors.pri_project_id
+												? true
+												: false
+										}
+										maxLength={20}
+									/>
+									{validation.touched.pri_project_id &&
+									validation.errors.pri_project_id ? (
+										<FormFeedback type="invalid">
+											{validation.errors.pri_project_id}
+										</FormFeedback>
+									) : null}
+								</Col>
 
-                <Col md={6} className="col-md-6 mb-3">
-                  <DatePicker
-                    isRequired={true}
-                    componentId={"pri_bid_award_date"}
-                    validation={validation}
-                    minDate={validation.values.pri_bid_evaluation_date} />
-                </Col>
+								<Col className="col-md-6 mb-3">
+									<Label>
+										{t("pri_procurement_stage_id")}
+										<span className="text-danger">*</span>
+									</Label>
+									<Input
+										name="pri_procurement_stage_id"
+										type="select"
+										className="form-select"
+										onChange={validation.handleChange}
+										onBlur={validation.handleBlur}
+										value={validation.values.pri_procurement_stage_id || ""}
+										invalid={
+											validation.touched.pri_procurement_stage_id &&
+											validation.errors.pri_procurement_stage_id
+												? true
+												: false
+										}
+									>
+										<option value="">{t("select_one")}</option>
+										{procurementStageData?.data?.map((data) => (
+											<option key={data.pst_id} value={data.pst_id}>
+												{data.pst_name_or}
+											</option>
+										))}
+									</Input>
+									{validation.touched.pri_procurement_stage_id &&
+									validation.errors.pri_procurement_stage_id ? (
+										<FormFeedback type="invalid">
+											{validation.errors.pri_procurement_stage_id}
+										</FormFeedback>
+									) : null}
+								</Col>
 
-                <Col className='col-md-6 mb-3' style={{ display: 'none' }}>
-                  <Label>{t('pri_project_id')}</Label>
-                  <Input
-                    name='pri_project_id'
-                    type='text'
-                    placeholder={t('pri_project_id')}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.pri_project_id || ''}
-                    invalid={
-                      validation.touched.pri_project_id &&
-                        validation.errors.pri_project_id
-                        ? true
-                        : false
-                    }
-                    maxLength={20}
-                  />
-                  {validation.touched.pri_project_id &&
-                    validation.errors.pri_project_id ? (
-                    <FormFeedback type='invalid'>
-                      {validation.errors.pri_project_id}
-                    </FormFeedback>
-                  ) : null}
-                </Col>
+								<Col className="col-md-6 mb-3">
+									<Label>
+										{t("pri_procurement_method_id")}
+										<span className="text-danger">*</span>
+									</Label>
+									<Input
+										name="pri_procurement_method_id"
+										type="select"
+										className="form-select"
+										onChange={validation.handleChange}
+										onBlur={validation.handleBlur}
+										value={validation.values.pri_procurement_method_id || ""}
+										invalid={
+											validation.touched.pri_procurement_method_id &&
+											validation.errors.pri_procurement_method_id
+												? true
+												: false
+										}
+									>
+										<option value="">{t("select_one")}</option>
+										{procurementMethodData?.data?.map((data) => (
+											<option key={data.prm_id} value={data.prm_id}>
+												{data.prm_name_or}
+											</option>
+										))}
+									</Input>
+									{validation.touched.pri_procurement_method_id &&
+									validation.errors.pri_procurement_method_id ? (
+										<FormFeedback type="invalid">
+											{validation.errors.pri_procurement_method_id}
+										</FormFeedback>
+									) : null}
+								</Col>
 
-                <Col className="col-md-6 mb-3">
-                  <Label>
-                    {t("pri_procurement_stage_id")}
-                    <span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    name="pri_procurement_stage_id"
-                    type="select"
-                    className="form-select"
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.pri_procurement_stage_id || ""}
-                    invalid={
-                      validation.touched.pri_procurement_stage_id &&
-                        validation.errors.pri_procurement_stage_id
-                        ? true
-                        : false
-                    }
-                  >
-                    <option value="">{t('select_one')}</option>
-                    {procurementStageData?.data?.map((data) => (
-                      <option key={data.pst_id} value={data.pst_id}>
-                        {data.pst_name_or}
-                      </option>
-                    ))}
-                  </Input>
-                  {validation.touched.pri_procurement_stage_id &&
-                    validation.errors.pri_procurement_stage_id ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.pri_procurement_stage_id}
-                    </FormFeedback>
-                  ) : null}
-                </Col>
-
-
-                <Col className="col-md-6 mb-3">
-                  <Label>
-                    {t("pri_procurement_method_id")}
-                    <span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    name="pri_procurement_method_id"
-                    type="select"
-                    className="form-select"
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.pri_procurement_method_id || ""}
-                    invalid={
-                      validation.touched.pri_procurement_method_id &&
-                        validation.errors.pri_procurement_method_id
-                        ? true
-                        : false
-                    }
-                  >
-                    <option value="">{t('select_one')}</option>
-                    {procurementMethodData?.data?.map((data) => (
-                      <option key={data.prm_id} value={data.prm_id}>
-                        {data.prm_name_or}
-                      </option>
-                    ))}
-                  </Input>
-                  {validation.touched.pri_procurement_method_id &&
-                    validation.errors.pri_procurement_method_id ? (
-                    <FormFeedback type="invalid">
-                      {validation.errors.pri_procurement_method_id}
-                    </FormFeedback>
-                  ) : null}
-                </Col>
-
-                <Col className='col-md-6 mb-3'>
-                  <Label>{t('pri_description')}</Label>
-                  <Input
-                    name='pri_description'
-                    type='textarea'
-                    placeholder={t('pri_description')}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.pri_description || ''}
-                    invalid={
-                      validation.touched.pri_description &&
-                        validation.errors.pri_description
-                        ? true
-                        : false
-                    }
-                    maxLength={425}
-                  />
-                  {validation.touched.pri_description &&
-                    validation.errors.pri_description ? (
-                    <FormFeedback type='invalid'>
-                      {validation.errors.pri_description}
-                    </FormFeedback>
-                  ) : null}
-                </Col>
-                <Col className='col-md-6 mb-3' style={{ display: 'none' }}>
-                  <Label>{t('pri_status')}</Label>
-                  <Input
-                    name='pri_status'
-                    type='text'
-                    placeholder={t('pri_status')}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.pri_status || ''}
-                    invalid={
-                      validation.touched.pri_status &&
-                        validation.errors.pri_status
-                        ? true
-                        : false
-                    }
-                    maxLength={20}
-                  />
-                  {validation.touched.pri_status &&
-                    validation.errors.pri_status ? (
-                    <FormFeedback type='invalid'>
-                      {validation.errors.pri_status}
-                    </FormFeedback>
-                  ) : null}
-                </Col>
-
-              </Row>
-              <Row>
-                <Col>
-                  <div className="text-end">
-                    {addProcurementInformation.isPending || updateProcurementInformation.isPending ? (
-                      <Button
-                        color="success"
-                        type="submit"
-                        className="save-user"
-                        disabled={
-                          addProcurementInformation.isPending ||
-                          updateProcurementInformation.isPending ||
-                          !validation.dirty
-                        }
-                      >
-                        <Spinner size={"sm"} color="light" className="me-2" />
-                        {t("Save")}
-                      </Button>
-                    ) : (
-                      <Button
-                        color="success"
-                        type="submit"
-                        className="save-user"
-                        disabled={
-                          addProcurementInformation.isPending ||
-                          updateProcurementInformation.isPending ||
-                          !validation.dirty
-                        }
-                      >
-                        {t("Save")}
-                      </Button>
-                    )}
-                  </div>
-                </Col>
-              </Row>
-            </Form>
-          </ModalBody>
-        </Modal>
-
-      </div>
-      {showCanvas && (
-        <RightOffCanvas
-          handleClick={handleClick}
-          showCanvas={showCanvas}
-          canvasWidth={84}
-          name={""}
-          id={procurementInformationMetaData.pri_id}
-          components={{
-            [t("procurement_participant")]: ProcurementParticipant,
-          }}
-        />
-      )}
-      <ToastContainer />
-
-    </React.Fragment>
-  );
+								<Col className="col-md-6 mb-3">
+									<Label>{t("pri_description")}</Label>
+									<Input
+										name="pri_description"
+										type="textarea"
+										placeholder={t("pri_description")}
+										onChange={validation.handleChange}
+										onBlur={validation.handleBlur}
+										value={validation.values.pri_description || ""}
+										invalid={
+											validation.touched.pri_description &&
+											validation.errors.pri_description
+												? true
+												: false
+										}
+										maxLength={425}
+									/>
+									{validation.touched.pri_description &&
+									validation.errors.pri_description ? (
+										<FormFeedback type="invalid">
+											{validation.errors.pri_description}
+										</FormFeedback>
+									) : null}
+								</Col>
+								<Col className="col-md-6 mb-3" style={{ display: "none" }}>
+									<Label>{t("pri_status")}</Label>
+									<Input
+										name="pri_status"
+										type="text"
+										placeholder={t("pri_status")}
+										onChange={validation.handleChange}
+										onBlur={validation.handleBlur}
+										value={validation.values.pri_status || ""}
+										invalid={
+											validation.touched.pri_status &&
+											validation.errors.pri_status
+												? true
+												: false
+										}
+										maxLength={20}
+									/>
+									{validation.touched.pri_status &&
+									validation.errors.pri_status ? (
+										<FormFeedback type="invalid">
+											{validation.errors.pri_status}
+										</FormFeedback>
+									) : null}
+								</Col>
+							</Row>
+							<Row>
+								<Col>
+									<div className="text-end">
+										{addProcurementInformation.isPending ||
+										updateProcurementInformation.isPending ? (
+											<Button
+												color="success"
+												type="submit"
+												className="save-user"
+												disabled={
+													addProcurementInformation.isPending ||
+													updateProcurementInformation.isPending ||
+													!validation.dirty
+												}
+											>
+												<Spinner size={"sm"} color="light" className="me-2" />
+												{t("Save")}
+											</Button>
+										) : (
+											<Button
+												color="success"
+												type="submit"
+												className="save-user"
+												disabled={
+													addProcurementInformation.isPending ||
+													updateProcurementInformation.isPending ||
+													!validation.dirty
+												}
+											>
+												{t("Save")}
+											</Button>
+										)}
+									</div>
+								</Col>
+							</Row>
+						</Form>
+					</ModalBody>
+				</Modal>
+			</div>
+			{showCanvas && (
+				<RightOffCanvas
+					handleClick={handleClick}
+					showCanvas={showCanvas}
+					canvasWidth={84}
+					name={""}
+					id={procurementInformationMetaData.pri_id}
+					components={{
+						[t("procurement_participant")]: ProcurementParticipant,
+					}}
+				/>
+			)}
+		</React.Fragment>
+	);
 };
 ProcurementInformationModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

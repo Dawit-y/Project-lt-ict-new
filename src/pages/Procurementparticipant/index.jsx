@@ -428,316 +428,321 @@ const ProcurementParticipantModel = (props ) => {
   return baseColumns;
 }, [handleProcurementParticipantClick, toggleViewModal, onClickDelete]);
   return (
-    <React.Fragment>
-    <ProcurementParticipantModal
-    isOpen={modal1}
-    toggle={toggleViewModal}
-    transaction={transaction}
-    />
-    <DeleteModal
-    show={deleteModal}
-    onDeleteClick={handleDeleteProcurementParticipant}
-    onCloseClick={() => setDeleteModal(false)}
-    isLoading={deleteProcurementParticipant.isPending}
-    />
-    {isLoading || isSearchLoading ? (
-      <Spinners />
-      ) : (
-     
-      <TableContainer
-      columns={columns}
-      data={
-        showSearchResult
-        ? searchResults?.data
-        : data?.data || []
-      }
-      isGlobalFilter={true}
-      isAddButton={data?.previledge?.is_role_can_add==1}
-      isCustomPageSize={true}
-      handleUserClick={handleProcurementParticipantClicks}
-      isPagination={true}
-      SearchPlaceholder={t("Results") + "..."}
-      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-      buttonName={t("add")}
-      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-      theadClass="table-light"
-      pagination="pagination"
-      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-      refetch={refetch}
-      isFetching={isFetching}
-      />
-      )}
-      <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-      <ModalHeader toggle={toggle} tag="h4">
-      {!!isEdit ? (t("edit") + " "+t("procurement_participant")) : (t("add") +" "+t("procurement_participant"))}
-      </ModalHeader>
-      <ModalBody>
-      <Form
-      onSubmit={(e) => {
-        e.preventDefault();
-        validation.handleSubmit();
-        return false;
-      }}
-      >
-      <Row>
-                 <Col className='col-md-6 mb-3'>
-                      <Label>{t('ppp_name_or')}<span className="text-danger">*</span></Label>
-                      <Input
-                        name='ppp_name_or'
-                        type='text'
-                        placeholder={t('ppp_name_or')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.ppp_name_or || ''}
-                        invalid={
-                          validation.touched.ppp_name_or &&
-                          validation.errors.ppp_name_or
-                            ? true
-                            : false
-                        }
-                        maxLength={50}
-                      />
-                      {validation.touched.ppp_name_or &&
-                      validation.errors.ppp_name_or ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.ppp_name_or}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-                  <Col className='col-md-6 mb-3'>
-                      <Label>{t('ppp_name_en')}<span className="text-danger">*</span></Label>
-                      <Input
-                        name='ppp_name_en'
-                        type='text'
-                        placeholder={t('ppp_name_en')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.ppp_name_en || ''}
-                        invalid={
-                          validation.touched.ppp_name_en &&
-                          validation.errors.ppp_name_en
-                            ? true
-                            : false
-                        }
-                        maxLength={50}
-                      />
-                      {validation.touched.ppp_name_en &&
-                      validation.errors.ppp_name_en ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.ppp_name_en}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-            <Col className='col-md-6 mb-3'>
-                      <Label>{t('ppp_name_am')}<span className="text-danger">*</span></Label>
-                      <Input
-                        name='ppp_name_am'
-                        type='text'
-                        placeholder={t('ppp_name_am')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.ppp_name_am || ''}
-                        invalid={
-                          validation.touched.ppp_name_am &&
-                          validation.errors.ppp_name_am
-                            ? true
-                            : false
-                        }
-                        maxLength={50}
-                      />
-                      {validation.touched.ppp_name_am &&
-                      validation.errors.ppp_name_am ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.ppp_name_am}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-          <Col className='col-md-6 mb-3'>
-                      <Label>{t('ppp_tin_number')}</Label>
-                      <Input
-                        name='ppp_tin_number'
-                        type='text'
-                        placeholder={t('ppp_tin_number')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.ppp_tin_number || ''}
-                        invalid={
-                          validation.touched.ppp_tin_number &&
-                          validation.errors.ppp_tin_number
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.ppp_tin_number &&
-                      validation.errors.ppp_tin_number ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.ppp_tin_number}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-            <Col className='col-md-6 mb-3'>
-                      <Label>{t('ppp_participant_phone_number')}</Label>
-                      <Input
-                        name='ppp_participant_phone_number'
-                        type='text'
-                        placeholder={t('ppp_participant_phone_number')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.ppp_participant_phone_number || ''}
-                        invalid={
-                          validation.touched.ppp_participant_phone_number &&
-                          validation.errors.ppp_participant_phone_number
-                            ? true
-                            : false
-                        }
-                        maxLength={15}
-                      />
-                      {validation.touched.ppp_participant_phone_number &&
-                      validation.errors.ppp_participant_phone_number ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.ppp_participant_phone_number}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-              <Col className='col-md-6 mb-3'>
-                      <Label>{t('ppp_participant_email')}</Label>
-                      <Input
-                        name='ppp_participant_email'
-                        type='text'
-                        placeholder={t('ppp_participant_email')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.ppp_participant_email || ''}
-                        invalid={
-                          validation.touched.ppp_participant_email &&
-                          validation.errors.ppp_participant_email
-                            ? true
-                            : false
-                        }
-                        maxLength={50}
-                      />
-                      {validation.touched.ppp_participant_email &&
-                      validation.errors.ppp_participant_email ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.ppp_participant_email}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-                <Col className='col-md-6 mb-3'>
-                      <Label>{t('ppp_participant_address')}</Label>
-                      <Input
-                        name='ppp_participant_address'
-                        type='text'
-                        placeholder={t('ppp_participant_address')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.ppp_participant_address || ''}
-                        invalid={
-                          validation.touched.ppp_participant_address &&
-                          validation.errors.ppp_participant_address
-                            ? true
-                            : false
-                        }
-                        maxLength={100}
-                      />
-                      {validation.touched.ppp_participant_address &&
-                      validation.errors.ppp_participant_address ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.ppp_participant_address}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-              <Col className='col-md-6 mb-3'>
-                      <Label>{t('ppp_description')}</Label>
-                      <Input
-                        name='ppp_description'
-                        type='textarea'
-                        placeholder={t('ppp_description')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.ppp_description || ''}
-                        invalid={
-                          validation.touched.ppp_description &&
-                          validation.errors.ppp_description
-                            ? true
-                            : false
-                        }
-                        maxLength={425}
-                      />
-                      {validation.touched.ppp_description &&
-                      validation.errors.ppp_description ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.ppp_description}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-                <Col className='col-md-6 mb-3' style={{ display: 'none' }}>
-                      <Label>{t('ppp_status')}</Label>
-                      <Input
-                        name='ppp_status'
-                        type='text'
-                        placeholder={t('ppp_status')}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.ppp_status || ''}
-                        invalid={
-                          validation.touched.ppp_status &&
-                          validation.errors.ppp_status
-                            ? true
-                            : false
-                        }
-                        maxLength={20}
-                      />
-                      {validation.touched.ppp_status &&
-                      validation.errors.ppp_status ? (
-                        <FormFeedback type='invalid'>
-                          {validation.errors.ppp_status}
-                        </FormFeedback>
-                      ) : null}
-                    </Col> 
-                
-      </Row>
-      <Row>
-      <Col>
-      <div className="text-end">
-      {addProcurementParticipant.isPending || updateProcurementParticipant.isPending ? (
-        <Button
-        color="success"
-        type="submit"
-        className="save-user"
-        disabled={
-          addProcurementParticipant.isPending ||
-          updateProcurementParticipant.isPending ||
-          !validation.dirty
-        }
-        >
-        <Spinner size={"sm"} color="light" className="me-2" />
-        {t("Save")}
-        </Button>
-        ) : (
-        <Button
-        color="success"
-        type="submit"
-        className="save-user"
-        disabled={
-          addProcurementParticipant.isPending ||
-          updateProcurementParticipant.isPending ||
-          !validation.dirty
-        }
-        >
-        {t("Save")}
-        </Button>
-        )}
-        </div>
-        </Col>
-        </Row>
-        </Form>
-        </ModalBody>
-        </Modal>
-        <ToastContainer />
-        </React.Fragment>
-        );
+		<React.Fragment>
+			<ProcurementParticipantModal
+				isOpen={modal1}
+				toggle={toggleViewModal}
+				transaction={transaction}
+			/>
+			<DeleteModal
+				show={deleteModal}
+				onDeleteClick={handleDeleteProcurementParticipant}
+				onCloseClick={() => setDeleteModal(false)}
+				isLoading={deleteProcurementParticipant.isPending}
+			/>
+			{isLoading || isSearchLoading ? (
+				<Spinners />
+			) : (
+				<TableContainer
+					columns={columns}
+					data={showSearchResult ? searchResults?.data : data?.data || []}
+					isGlobalFilter={true}
+					isAddButton={data?.previledge?.is_role_can_add == 1}
+					isCustomPageSize={true}
+					handleUserClick={handleProcurementParticipantClicks}
+					isPagination={true}
+					SearchPlaceholder={t("Results") + "..."}
+					buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+					buttonName={t("add")}
+					tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+					theadClass="table-light"
+					pagination="pagination"
+					paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+					refetch={refetch}
+					isFetching={isFetching}
+				/>
+			)}
+			<Modal isOpen={modal} toggle={toggle} className="modal-xl">
+				<ModalHeader toggle={toggle} tag="h4">
+					{!!isEdit
+						? t("edit") + " " + t("procurement_participant")
+						: t("add") + " " + t("procurement_participant")}
+				</ModalHeader>
+				<ModalBody>
+					<Form
+						onSubmit={(e) => {
+							e.preventDefault();
+							validation.handleSubmit();
+							return false;
+						}}
+					>
+						<Row>
+							<Col className="col-md-6 mb-3">
+								<Label>
+									{t("ppp_name_or")}
+									<span className="text-danger">*</span>
+								</Label>
+								<Input
+									name="ppp_name_or"
+									type="text"
+									placeholder={t("ppp_name_or")}
+									onChange={validation.handleChange}
+									onBlur={validation.handleBlur}
+									value={validation.values.ppp_name_or || ""}
+									invalid={
+										validation.touched.ppp_name_or &&
+										validation.errors.ppp_name_or
+											? true
+											: false
+									}
+									maxLength={50}
+								/>
+								{validation.touched.ppp_name_or &&
+								validation.errors.ppp_name_or ? (
+									<FormFeedback type="invalid">
+										{validation.errors.ppp_name_or}
+									</FormFeedback>
+								) : null}
+							</Col>
+							<Col className="col-md-6 mb-3">
+								<Label>
+									{t("ppp_name_en")}
+									<span className="text-danger">*</span>
+								</Label>
+								<Input
+									name="ppp_name_en"
+									type="text"
+									placeholder={t("ppp_name_en")}
+									onChange={validation.handleChange}
+									onBlur={validation.handleBlur}
+									value={validation.values.ppp_name_en || ""}
+									invalid={
+										validation.touched.ppp_name_en &&
+										validation.errors.ppp_name_en
+											? true
+											: false
+									}
+									maxLength={50}
+								/>
+								{validation.touched.ppp_name_en &&
+								validation.errors.ppp_name_en ? (
+									<FormFeedback type="invalid">
+										{validation.errors.ppp_name_en}
+									</FormFeedback>
+								) : null}
+							</Col>
+							<Col className="col-md-6 mb-3">
+								<Label>
+									{t("ppp_name_am")}
+									<span className="text-danger">*</span>
+								</Label>
+								<Input
+									name="ppp_name_am"
+									type="text"
+									placeholder={t("ppp_name_am")}
+									onChange={validation.handleChange}
+									onBlur={validation.handleBlur}
+									value={validation.values.ppp_name_am || ""}
+									invalid={
+										validation.touched.ppp_name_am &&
+										validation.errors.ppp_name_am
+											? true
+											: false
+									}
+									maxLength={50}
+								/>
+								{validation.touched.ppp_name_am &&
+								validation.errors.ppp_name_am ? (
+									<FormFeedback type="invalid">
+										{validation.errors.ppp_name_am}
+									</FormFeedback>
+								) : null}
+							</Col>
+							<Col className="col-md-6 mb-3">
+								<Label>{t("ppp_tin_number")}</Label>
+								<Input
+									name="ppp_tin_number"
+									type="text"
+									placeholder={t("ppp_tin_number")}
+									onChange={validation.handleChange}
+									onBlur={validation.handleBlur}
+									value={validation.values.ppp_tin_number || ""}
+									invalid={
+										validation.touched.ppp_tin_number &&
+										validation.errors.ppp_tin_number
+											? true
+											: false
+									}
+									maxLength={20}
+								/>
+								{validation.touched.ppp_tin_number &&
+								validation.errors.ppp_tin_number ? (
+									<FormFeedback type="invalid">
+										{validation.errors.ppp_tin_number}
+									</FormFeedback>
+								) : null}
+							</Col>
+							<Col className="col-md-6 mb-3">
+								<Label>{t("ppp_participant_phone_number")}</Label>
+								<Input
+									name="ppp_participant_phone_number"
+									type="text"
+									placeholder={t("ppp_participant_phone_number")}
+									onChange={validation.handleChange}
+									onBlur={validation.handleBlur}
+									value={validation.values.ppp_participant_phone_number || ""}
+									invalid={
+										validation.touched.ppp_participant_phone_number &&
+										validation.errors.ppp_participant_phone_number
+											? true
+											: false
+									}
+									maxLength={15}
+								/>
+								{validation.touched.ppp_participant_phone_number &&
+								validation.errors.ppp_participant_phone_number ? (
+									<FormFeedback type="invalid">
+										{validation.errors.ppp_participant_phone_number}
+									</FormFeedback>
+								) : null}
+							</Col>
+							<Col className="col-md-6 mb-3">
+								<Label>{t("ppp_participant_email")}</Label>
+								<Input
+									name="ppp_participant_email"
+									type="text"
+									placeholder={t("ppp_participant_email")}
+									onChange={validation.handleChange}
+									onBlur={validation.handleBlur}
+									value={validation.values.ppp_participant_email || ""}
+									invalid={
+										validation.touched.ppp_participant_email &&
+										validation.errors.ppp_participant_email
+											? true
+											: false
+									}
+									maxLength={50}
+								/>
+								{validation.touched.ppp_participant_email &&
+								validation.errors.ppp_participant_email ? (
+									<FormFeedback type="invalid">
+										{validation.errors.ppp_participant_email}
+									</FormFeedback>
+								) : null}
+							</Col>
+							<Col className="col-md-6 mb-3">
+								<Label>{t("ppp_participant_address")}</Label>
+								<Input
+									name="ppp_participant_address"
+									type="text"
+									placeholder={t("ppp_participant_address")}
+									onChange={validation.handleChange}
+									onBlur={validation.handleBlur}
+									value={validation.values.ppp_participant_address || ""}
+									invalid={
+										validation.touched.ppp_participant_address &&
+										validation.errors.ppp_participant_address
+											? true
+											: false
+									}
+									maxLength={100}
+								/>
+								{validation.touched.ppp_participant_address &&
+								validation.errors.ppp_participant_address ? (
+									<FormFeedback type="invalid">
+										{validation.errors.ppp_participant_address}
+									</FormFeedback>
+								) : null}
+							</Col>
+							<Col className="col-md-6 mb-3">
+								<Label>{t("ppp_description")}</Label>
+								<Input
+									name="ppp_description"
+									type="textarea"
+									placeholder={t("ppp_description")}
+									onChange={validation.handleChange}
+									onBlur={validation.handleBlur}
+									value={validation.values.ppp_description || ""}
+									invalid={
+										validation.touched.ppp_description &&
+										validation.errors.ppp_description
+											? true
+											: false
+									}
+									maxLength={425}
+								/>
+								{validation.touched.ppp_description &&
+								validation.errors.ppp_description ? (
+									<FormFeedback type="invalid">
+										{validation.errors.ppp_description}
+									</FormFeedback>
+								) : null}
+							</Col>
+							<Col className="col-md-6 mb-3" style={{ display: "none" }}>
+								<Label>{t("ppp_status")}</Label>
+								<Input
+									name="ppp_status"
+									type="text"
+									placeholder={t("ppp_status")}
+									onChange={validation.handleChange}
+									onBlur={validation.handleBlur}
+									value={validation.values.ppp_status || ""}
+									invalid={
+										validation.touched.ppp_status &&
+										validation.errors.ppp_status
+											? true
+											: false
+									}
+									maxLength={20}
+								/>
+								{validation.touched.ppp_status &&
+								validation.errors.ppp_status ? (
+									<FormFeedback type="invalid">
+										{validation.errors.ppp_status}
+									</FormFeedback>
+								) : null}
+							</Col>
+						</Row>
+						<Row>
+							<Col>
+								<div className="text-end">
+									{addProcurementParticipant.isPending ||
+									updateProcurementParticipant.isPending ? (
+										<Button
+											color="success"
+											type="submit"
+											className="save-user"
+											disabled={
+												addProcurementParticipant.isPending ||
+												updateProcurementParticipant.isPending ||
+												!validation.dirty
+											}
+										>
+											<Spinner size={"sm"} color="light" className="me-2" />
+											{t("Save")}
+										</Button>
+									) : (
+										<Button
+											color="success"
+											type="submit"
+											className="save-user"
+											disabled={
+												addProcurementParticipant.isPending ||
+												updateProcurementParticipant.isPending ||
+												!validation.dirty
+											}
+										>
+											{t("Save")}
+										</Button>
+									)}
+								</div>
+							</Col>
+						</Row>
+					</Form>
+				</ModalBody>
+			</Modal>
+		</React.Fragment>
+	);
 };
 ProcurementParticipantModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,
