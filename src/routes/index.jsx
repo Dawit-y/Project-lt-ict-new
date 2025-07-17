@@ -79,7 +79,6 @@ const CascadingDropdowns = lazy(() =>
 const Notifications = lazy(() => import("../pages/notifications"));
 const ProjectDetail = lazy(() => import("../pages/Project/ProjectDetail"));
 const ProjectsLocation = lazy(() => import("../pages/ProjectsLocation"));
-const Gantty = lazy(() => import("../pages/GanttChart/index"));
 const StatisticalReport = lazy(() => import("../pages/StatisticalReport"));
 const Report = lazy(() => import("../pages/Report/index"));
 const ExpenditureCode = lazy(() => import("../pages/Expenditurecode/index"));

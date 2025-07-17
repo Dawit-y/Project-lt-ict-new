@@ -392,7 +392,11 @@ const ProjectTabs = ({
 										onClick={() => setActiveTab(1)}
 										disabled={!passedSteps.includes(1)}
 									>
-										<span className="number">1.</span> Projects
+										<InfoItem
+											number={1}
+											title={t("Projects")}
+											subtitle={programName}
+										/>
 									</NavLink>
 								</NavItem>
 								<NavItem className={classnames({ current: activeTab === 2 })}>
@@ -401,7 +405,11 @@ const ProjectTabs = ({
 										onClick={() => setActiveTab(2)}
 										disabled={!passedSteps.includes(2)}
 									>
-										<span className="number">2.</span> Activities
+										<InfoItem
+											number={2}
+											title={t("Activities")}
+											subtitle={programName && `For Project ${programName}`}
+										/>
 									</NavLink>
 								</NavItem>
 								<NavItem className={classnames({ current: activeTab === 3 })}>
@@ -410,7 +418,11 @@ const ProjectTabs = ({
 										onClick={() => setActiveTab(3)}
 										disabled={!passedSteps.includes(3)}
 									>
-										<span className="number">3.</span> Proposed Request
+										<InfoItem
+											number={3}
+											title={t("Proposed Requests")}
+											subtitle={programName && `For Project ${programName}`}
+										/>
 									</NavLink>
 								</NavItem>
 							</ul>
@@ -419,10 +431,6 @@ const ProjectTabs = ({
 							<TabContent activeTab={activeTab} className="body">
 								<TabPane tabId={1}>
 									<>
-										<ProgramAlert
-											label={t("Selected Project")}
-											value={programName}
-										/>
 										<Suspense fallback={<Spinners />}>
 											<TableContainer
 												columns={programColumns}
@@ -447,10 +455,6 @@ const ProjectTabs = ({
 								</TabPane>
 								<TabPane tabId={2}>
 									<>
-										<ProgramAlert
-											label={t("Activities for the project")}
-											value={programName}
-										/>
 										<Suspense fallback={<Spinners />}>
 											<TableContainer
 												columns={activitiesColumn}
@@ -477,10 +481,6 @@ const ProjectTabs = ({
 									</>
 								</TabPane>
 								<TabPane tabId={3}>
-									<ProgramAlert
-										label={t("Proposed request for the project")}
-										value={programName}
-									/>
 									<Suspense fallback={<Spinners />}>
 										<BudgetRequestRegistration
 											projectStatus={selectedProject?.prj_project_status_id}
@@ -500,28 +500,18 @@ const ProjectTabs = ({
 
 export default ProjectTabs;
 
-export const ProgramAlert = ({ label, value, color = "info" }) => {
-	if (!value || !label) return null;
-
+export const InfoItem = ({ number, title, subtitle }) => {
 	return (
-		<Row>
-			<Col md={4}>
-				<Alert
-					color={color}
-					className="mb-3 p-2 d-flex align-items-center gap-2"
-				>
-					<i
-						className="bx bx-info-circle me-1"
-						style={{ fontSize: "1.2rem" }}
-					></i>
-					<h6 className="mb-0">
-						<strong>
-							{label} {" -> "}{" "}
-						</strong>{" "}
-						{value}
-					</h6>
-				</Alert>
-			</Col>
-		</Row>
+		<div className="d-flex align-items-center justify-content-start">
+			<span className="number me-2">{number}.</span>
+			<div className="d-flex flex-column align-items-start justify-content-center">
+				<h6 className="mb-1" style={{ lineHeight: "1.2" }}>
+					{title}
+				</h6>
+				<p className="mb-0 small" style={{ lineHeight: "1.2" }}>
+					{subtitle}
+				</p>
+			</div>
+		</div>
 	);
 };

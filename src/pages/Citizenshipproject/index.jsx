@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { isEmpty } from "lodash";
 import { toast } from "react-toastify";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import {
