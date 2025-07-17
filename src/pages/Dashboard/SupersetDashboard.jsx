@@ -19,7 +19,7 @@ const SupersetDashboard = ({ dashboardPath }) => {
 		const sectorIds = user_sector?.[0]?.sector_ids;
 		//const sectorId =
 			//Array.isArray(sectorIds) && sectorIds.length > 0 ? sectorIds : 0;
-    const sectorId = sectorIds.length > 0 ? sectorIds : 0;
+    const sectorId = sectorIds?.length > 0 ? sectorIds : 0;
 		const baseUrl = dashboardPath;
 		const url = new URL(baseUrl);
 
