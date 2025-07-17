@@ -37,7 +37,7 @@ const BudgetRequestRegistration = lazy(() =>
 	import("../Csobudgetrequest/BudgetRequestRegistration")
 );
 import { useFetchCsoInfos } from "../../queries/csoinfo_query";
-import { ProgramAlert } from "./ProjectTabs";
+import { InfoItem } from "./ProjectTabs";
 import Spinners from "../../components/Common/Spinner";
 import { useAuthUser } from "../../hooks/useAuthUser";
 
@@ -484,7 +484,11 @@ const ProjectTabs = ({
 										onClick={() => toggleTab(1)}
 										disabled={!passedSteps.includes(1)}
 									>
-										<span className="number">1.</span> CSO List
+										<InfoItem
+											number={1}
+											title={"CSO List"}
+											subtitle={selectedCsoName}
+										/>
 									</NavLink>
 								</NavItem>
 								<NavItem className={classnames({ current: activeTab === 2 })}>
@@ -493,25 +497,37 @@ const ProjectTabs = ({
 										onClick={() => toggleTab(2)}
 										disabled={!passedSteps.includes(2)}
 									>
-										<span className="number">2.</span> Projects
+										<InfoItem
+											number={2}
+											title={"Projects"}
+											subtitle={selectedCsoName && `For CSO ${selectedCsoName}`}
+										/>
 									</NavLink>
 								</NavItem>
 								<NavItem className={classnames({ current: activeTab === 3 })}>
 									<NavLink
 										className={classnames({ active: activeTab === 3 })}
 										onClick={() => toggleTab(3)}
-										disabled={!passedSteps.includes(3)}
+										disabled={!passedSteps.includes(3) || !programName}
 									>
-										<span className="number">3.</span> Activities
+										<InfoItem
+											number={3}
+											title={"Activities"}
+											subtitle={programName && `For Project ${programName}`}
+										/>
 									</NavLink>
 								</NavItem>
 								<NavItem className={classnames({ current: activeTab === 4 })}>
 									<NavLink
 										className={classnames({ active: activeTab === 4 })}
 										onClick={() => toggleTab(4)}
-										disabled={!passedSteps.includes(4)}
+										disabled={!passedSteps.includes(4) || !programName}
 									>
-										<span className="number">4.</span> Proposed Request
+										<InfoItem
+											number={4}
+											title={"Proposed Requests"}
+											subtitle={programName && `For Project ${programName}`}
+										/>
 									</NavLink>
 								</NavItem>
 							</ul>
@@ -524,10 +540,6 @@ const ProjectTabs = ({
 										<FetchErrorHandler error={csoError} refetch={csoRefetch} />
 									) : (
 										<>
-											<ProgramAlert
-												label={t("Selected CSO")}
-												value={selectedCsoName}
-											/>
 											<Suspense fallback={<Spinners />}>
 												<TableContainer
 													columns={csoColumnsDef}
@@ -559,10 +571,6 @@ const ProjectTabs = ({
 										/>
 									) : (
 										<>
-											<ProgramAlert
-												label={t("Selected Project")}
-												value={programName}
-											/>
 											<Suspense fallback={<Spinners />}>
 												<TableContainer
 													columns={projectsColumn}
@@ -594,10 +602,6 @@ const ProjectTabs = ({
 										<FetchErrorHandler error={error} refetch={refetch} />
 									) : (
 										<>
-											<ProgramAlert
-												label={t("Activities for the project")}
-												value={programName}
-											/>
 											<Suspense fallback={<Spinners />}>
 												<TableContainer
 													columns={activitiesColumn}
@@ -623,10 +627,6 @@ const ProjectTabs = ({
 									)}
 								</TabPane>
 								<TabPane tabId={4}>
-									<ProgramAlert
-										label={t("Proposed request for the project")}
-										value={programName}
-									/>
 									<Suspense fallback={<Spinners />}>
 										<BudgetRequestRegistration
 											projectStatus={selectedProject?.prj_project_status_id}

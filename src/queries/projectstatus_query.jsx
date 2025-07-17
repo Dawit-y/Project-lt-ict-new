@@ -24,11 +24,9 @@ export const useSearchProjectStatuss = (searchParams = {}) => {
   return useQuery({
     queryKey: [...PROJECT_STATUS_QUERY_KEY, searchParams],
     queryFn: () => getProjectStatus(searchParams),
-    staleTime: 1000 * 60 * 2,
-    gcTime: 1000 * 60 * 5,
+   staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    enabled: searchParams.length > 0,
+    refetchOnMount: true,
   });
 };
 

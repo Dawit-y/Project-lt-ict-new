@@ -1986,5 +1986,7 @@
 	"payments_analysis": "Payments Analysis",
 	"payment_date": "Payment Date",
 	"payment_summary": "Payment Summary",
-	"all_years": "All Years"
+	"all_years": "All Years",
+	"prj_cluster_id": "Cluster"
+
 }

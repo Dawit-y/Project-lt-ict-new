@@ -17,9 +17,9 @@ const SupersetDashboard = ({ dashboardPath }) => {
 		} = authUser;
 
 		const sectorIds = user_sector?.[0]?.sector_ids;
-		const sectorId =
-			Array.isArray(sectorIds) && sectorIds.length > 0 ? sectorIds : 0;
-
+		//const sectorId =
+			//Array.isArray(sectorIds) && sectorIds.length > 0 ? sectorIds : 0;
+    const sectorId = sectorIds.length > 0 ? sectorIds : 0;
 		const baseUrl = dashboardPath;
 		const url = new URL(baseUrl);
 
@@ -28,8 +28,10 @@ const SupersetDashboard = ({ dashboardPath }) => {
 		url.searchParams.set("woreda_id", woredaId);
 		url.searchParams.set("sector_id", sectorId);
 		url.searchParams.set("project_type", projectType);
-
+//console.log("Sector ID : " + authUser);
+console.log("User:", user_sector);
 		setDashboardUrl(url.toString());
+
 	}, [authUser, dashboardPath]);
 
 	if (!dashboardUrl) return null;
