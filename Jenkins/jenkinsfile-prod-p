@@ -119,7 +119,7 @@ pipeline {
                     sh 'docker buildx create --use || true'
 
                     // Build the Docker image using Buildx
-                    sh "docker buildx build --tag ${FULL_DOCKER_IMAGE} --load ."
+                    sh "docker buildx build --network=host --tag ${FULL_DOCKER_IMAGE} --load ."
                 }
             }
         }
