@@ -1,9 +1,7 @@
 FROM node:16.20-alpine
 
 # 1) Update and install Nginx
-#RUN apk update && apk add --no-cache nginx
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirror.mirjamali.me/' /etc/apk/repositories \
-    && apk update && apk add --no-cache nginx
+RUN apk update && apk add --no-cache nginx
 
 # Explicitly create necessary directories (if needed)
 RUN mkdir -p /etc/nginx/conf.d /usr/share/nginx/html
