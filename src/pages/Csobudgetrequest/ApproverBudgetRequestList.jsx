@@ -176,9 +176,21 @@ const ApproverBudgetRequestList = () => {
 				field: "cso_name",
 				sortable: true,
 				filter: true,
-				width: 220,
+				flex: 1,
+				minWidth: 220,
 				cellRenderer: (params) => {
 					return truncateText(params.data.cso_name, 30) || "-";
+				},
+			},
+			{
+				headerName: t("prj_name"),
+				field: "prj_name",
+				sortable: true,
+				filter: true,
+				flex: 1,
+				minWidth: 220,
+				cellRenderer: (params) => {
+					return truncateText(params.data.prj_name, 30) || "-";
 				},
 			},
 			{
@@ -189,15 +201,6 @@ const ApproverBudgetRequestList = () => {
 				width: 120,
 				cellRenderer: (params) => {
 					return truncateText(params.data.bdy_name, 30) || "-";
-				},
-			},
-			{
-				headerName: t("prj_name"),
-				field: "prj_name",
-				sortable: true,
-				filter: true,
-				cellRenderer: (params) => {
-					return truncateText(params.data.prj_name, 30) || "-";
 				},
 			},
 			{

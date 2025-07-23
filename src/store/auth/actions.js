@@ -5,6 +5,9 @@ export const setAuthData = (accessToken, userData) => ({
 	payload: { accessToken, userData },
 });
 
-export const clearAuthData = () => ({
-	type: CLEAR_AUTH_DATA,
-});
+export const clearAuthData = (reason = null) => {
+	return {
+		type: "CLEAR_AUTH_DATA",
+		payload: { reason },
+	};
+};
