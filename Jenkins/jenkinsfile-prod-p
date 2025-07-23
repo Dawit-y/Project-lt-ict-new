@@ -116,10 +116,12 @@ pipeline {
             steps {
                 script {
                     // Initialize Buildx (if not already)
-                    sh 'docker buildx create --use || true'
+                    //sh 'docker buildx create --use || true'
 
                     // Build the Docker image using Buildx
-                    sh "docker buildx build --tag ${FULL_DOCKER_IMAGE} --load ."
+                    //sh "docker buildx build --tag ${FULL_DOCKER_IMAGE} --load ."
+                     docker build --network=host -t ${FULL_DOCKER_IMAGE} .  
+                     echo "Docker image built successfully."
                 }
             }
         }
