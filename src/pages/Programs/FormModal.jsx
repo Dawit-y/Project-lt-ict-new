@@ -1,17 +1,29 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { Modal, ModalBody, ModalHeader, Form, Label, Input, Button, FormFeedback, Row, Col, Spinner } from "reactstrap";
+import {
+	Modal,
+	ModalBody,
+	ModalHeader,
+	Form,
+	Label,
+	Input,
+	Button,
+	FormFeedback,
+	Row,
+	Col,
+	Spinner,
+} from "reactstrap";
 import { useTranslation } from "react-i18next";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
-  useAddProgramInfo,
-  useDeleteProgramInfo,
-  useUpdateProgramInfo,
+	useAddProgramInfo,
+	useDeleteProgramInfo,
+	useUpdateProgramInfo,
 } from "../../queries/programinfo_query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
-import DatePicker from "../../components/Common/DatePicker"
+import DatePicker from "../../components/Common/DatePicker";
 import { addYears } from "../../utils/commonMethods";
 import { onlyAmharicValidation } from "../../utils/Validation/validation";
 
@@ -64,8 +76,9 @@ const FormModal = ({
 			toast.error(t("add_failure"), {
 				autoClose: 2000,
 			});
+		} finally {
+			toggle();
 		}
-		toggle();
 	};
 	const handleUpdateProgramInfo = async (data) => {
 		try {
@@ -78,8 +91,9 @@ const FormModal = ({
 			toast.error(t("update_failure"), {
 				autoClose: 2000,
 			});
+		} finally {
+			toggle();
 		}
-		toggle();
 	};
 	const handleDeleteProgramInfo = async () => {
 		if (selectedRow && selectedRow.p_id) {
@@ -93,8 +107,9 @@ const FormModal = ({
 				toast.error(t("delete_failure"), {
 					autoClose: 2000,
 				});
+			} finally {
+				toggleDelete();
 			}
-			toggleDelete();
 		}
 	};
 
@@ -404,10 +419,10 @@ const FormModal = ({
 };
 
 FormModal.propTypes = {
-  show: PropTypes.bool.isRequired,
-  toggle: PropTypes.func.isRequired,
-  action: PropTypes.oneOf(["add", "edit"]),
-  selectedRow: PropTypes.object,
+	show: PropTypes.bool.isRequired,
+	toggle: PropTypes.func.isRequired,
+	action: PropTypes.oneOf(["add", "edit"]),
+	selectedRow: PropTypes.object,
 };
 
 export default FormModal;
