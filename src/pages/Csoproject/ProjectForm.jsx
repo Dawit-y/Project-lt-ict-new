@@ -28,22 +28,32 @@ const ProjectForm = ({ isOpen, toggle, isEdit, activeTabName, validation, isPend
   const lang = i18n.language
   const { data: projectCategoryData, isLoading: isPctLoading, isError: isPctError } = useFetchProjectCategorys();
   const projectCategoryMap = useMemo(() => {
-    return createMultiLangKeyValueMap(
-      projectCategoryData?.data || [],
-      "pct_id",
-      {
-        en: "pct_name_en",
-        am: "pct_name_am",
-        or: "pct_name_or",
-      },
-      lang,
-    );
-  }, [projectCategoryData, lang]);
+		return createMultiLangKeyValueMap(
+			projectCategoryData?.data || [],
+			"pct_id",
+			{
+				en: "pct_name_en",
+				am: "pct_name_am",
+				or: "pct_name_or",
+			},
+			lang,
+			(item) => item.pct_owner_type_id === 2
+		);
+	}, [projectCategoryData, lang]);
 
-  const { data: sectorCategories, isLoading: isSectorCatLoading, isError: isSectorCatError } = useFetchSectorCategorys()
-  const sectorCategoryMap = useMemo(() => {
-    return createKeyValueMap(sectorCategories?.data || [], "psc_id", "psc_name");
-  }, [sectorCategories]);
+	const {
+		data: sectorCategories,
+		isLoading: isSectorCatLoading,
+		isError: isSectorCatError,
+	} = useFetchSectorCategorys();
+	const sectorCategoryMap = useMemo(() => {
+		return createKeyValueMap(
+			sectorCategories?.data || [],
+			"psc_id",
+			"psc_name",
+			(item) => item.psc_cso_active === 1
+		);
+	}, [sectorCategories]);
 
   const rawStartDate = validation.values.prj_start_date_plan_gc;
   const startDate = rawStartDate
