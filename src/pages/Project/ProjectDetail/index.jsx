@@ -215,45 +215,46 @@ const ProjectsOverview = () => {
   ];
 
   return (
-    <div className="page-content" style={{ zoom: "90%" }}>
-      <Container fluid>
-        <Breadcrumbs title="Projects" breadcrumbItem="Project Overview" />
-        {isLoading ? (
-          <Spinner
-            className="position-absolute top-50 start-50"
-            color="primary"
-          />
-        ) : (
-          <>
-            <Row>
-              <Col lg="12">
-                <TabWrapper tabs={tabs} />
-              </Col>
-            </Row>
-            <Row>
-              <Col lg="12">
-                <Card>
-                  <CardBody>
-                    <Suspense fallback={<Spinner size="sm" />}>
-                      <ProjectDetailTabDynamic
-                        canvasWidth={84}
-                        name={data?.data.prj_name}
-                        id={data?.data.prj_id}
-                        totalActualBudget={data?.data?.prj_total_actual_budget}
-                        status={data?.data.prj_project_status_id}
-                        startDate={data?.data.prj_start_date_gc}
-                        components={dynamicComponents}
-                      />
-                    </Suspense>
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
-          </>
-        )}
-      </Container>
-    </div>
-  );
+		<div className="page-content" style={{ zoom: "90%" }}>
+			<Container fluid>
+				<Breadcrumbs title="Projects" breadcrumbItem="Project Overview" />
+				{isLoading ? (
+					<Spinner
+						className="position-absolute top-50 start-50"
+						color="primary"
+					/>
+				) : (
+					<>
+						<Row>
+							<Col lg="12">
+								<TabWrapper tabs={tabs} />
+							</Col>
+						</Row>
+						<Row>
+							<Col lg="12">
+								<Card>
+									<CardBody>
+										<Suspense fallback={<Spinner size="sm" />}>
+											<ProjectDetailTabDynamic
+												canvasWidth={84}
+												name={data?.data.prj_name}
+												id={data?.data.prj_id}
+												totalActualBudget={data?.data?.prj_total_actual_budget}
+												status={data?.data.prj_project_status_id}
+												startDate={data?.data.prj_start_date_gc}
+												endDate={data?.data.prj_end_date_actual_gc}
+												components={dynamicComponents}
+											/>
+										</Suspense>
+									</CardBody>
+								</Card>
+							</Col>
+						</Row>
+					</>
+				)}
+			</Container>
+		</div>
+	);
 };
 
 ProjectsOverview.propTypes = {

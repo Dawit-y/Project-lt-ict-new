@@ -1975,5 +1975,6 @@
 	"prj_program_cost": "Program Cost",
 	"prj_admin_cost": "Admin Cost",
 	"cso_type": "Type",
-	"cso_contact_person": "Contact Person"
+	"cso_contact_person": "Contact Person",
+	"completion_date": "Completion Date"
 }

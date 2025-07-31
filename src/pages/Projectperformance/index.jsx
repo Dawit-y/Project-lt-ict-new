@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, lazy, Suspense } from "react";
 import PropTypes from "prop-types";
-import { isEmpty } from "lodash";
+import { isEmpty, update } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -13,6 +13,7 @@ import {
 	useDeleteProjectPerformance,
 	useUpdateProjectPerformance,
 } from "../../queries/projectperformance_query";
+import { useUpdateProject } from "../../queries/project_query";
 import { useSearchProjectStatuss } from "../../queries/projectstatus_query";
 import { usePopulateBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
@@ -53,6 +54,7 @@ const AttachFileModal = lazy(() =>
 const ConvInfoModal = lazy(() =>
 	import("../../pages/Conversationinformation/ConvInfoModal")
 );
+import DatePicker from "../../components/Common/DatePicker";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -67,7 +69,7 @@ const LazyLoader = ({ children }) => (
 
 const ProjectPerformanceModel = (props) => {
 	document.title = "Project Performance";
-	const { passedId, isActive, startDate, totalActualBudget } = props;
+	const { passedId, isActive, endDate, totalActualBudget } = props;
 	const param = {
 		prp_project_id: passedId,
 		request_type: "single",
@@ -104,6 +106,7 @@ const ProjectPerformanceModel = (props) => {
 		useFetchProjectPerformances(param, isActive);
 	const addProjectPerformance = useAddProjectPerformance();
 	const updateProjectPerformance = useUpdateProjectPerformance();
+	const updateProject = useUpdateProject();
 	const deleteProjectPerformance = useDeleteProjectPerformance();
 	const { data: bgYearsOptionsData } = usePopulateBudgetYears();
 	const { data: budgetMonthData } = useFetchBudgetMonths();
@@ -256,6 +259,7 @@ const ProjectPerformanceModel = (props) => {
 			prp_total_budget_used: projectPerformance?.prp_total_budget_used
 				? Number(projectPerformance.prp_total_budget_used).toLocaleString()
 				: DEFAULT_TOTAL_BUDGET_USED.toString(),
+			completion_date: endDate ? endDate : null,
 		},
 
 		validationSchema: Yup.object().shape({
@@ -416,6 +420,10 @@ const ProjectPerformanceModel = (props) => {
 		validateOnChange: true,
 
 		onSubmit: (values) => {
+			const projectPayload = {
+				prj_id: passedId,
+				prj_end_date_actual_gc: values.completion_date,
+			};
 			const payload = {
 				prp_project_id: passedId,
 				prj_total_actual_budget: totalActualBudget,
@@ -471,9 +479,9 @@ const ProjectPerformanceModel = (props) => {
 			}
 
 			if (isEdit) {
-				handleUpdateProjectPerformance(payload);
+				handleUpdateProjectPerformance(payload, projectPayload);
 			} else {
-				handleAddProjectPerformance(payload);
+				handleAddProjectPerformance(payload, projectPayload);
 			}
 		},
 	});
@@ -488,6 +496,9 @@ const ProjectPerformanceModel = (props) => {
 	const handleAddProjectPerformance = async (data) => {
 		try {
 			await addProjectPerformance.mutateAsync(data);
+			if (entryMode === "actual") {
+				await updateProject.mutateAsync(projectData);
+			}
 			toast.success(t("add_success"), { autoClose: 2000 });
 			validation.resetForm();
 		} catch (error) {
@@ -496,9 +507,12 @@ const ProjectPerformanceModel = (props) => {
 		toggle();
 	};
 
-	const handleUpdateProjectPerformance = async (data) => {
+	const handleUpdateProjectPerformance = async (data, projectData) => {
 		try {
 			await updateProjectPerformance.mutateAsync(data);
+			if (entryMode === "actual") {
+				await updateProject.mutateAsync(projectData);
+			}
 			toast.success(t("update_success"), { autoClose: 2000 });
 			validation.resetForm();
 		} catch (error) {
@@ -810,7 +824,6 @@ const ProjectPerformanceModel = (props) => {
 			},
 		];
 
-		
 		if (data?.previledge?.is_role_editable == 1) {
 			finalColumns.push({
 				id: "action",
@@ -1037,24 +1050,12 @@ const ProjectPerformanceModel = (props) => {
 										</Col>
 										{validation.values.is_new_actual_entry && (
 											<Col md={4}>
-												<Label className="fw-medium">{t("entry_date")}</Label>
-												<Input
-													name="prp_record_date_gc"
-													type="date"
-													onChange={validation.handleChange}
-													onBlur={validation.handleBlur}
-													value={validation.values.prp_record_date_gc}
-													max={new Date().toISOString().split("T")[0]}
-													invalid={
-														validation.touched.prp_record_date_gc &&
-														!!validation.errors.prp_record_date_gc
-													}
+												<DatePicker
+													isRequired={false}
+													validation={validation}
+													componentId={"prp_record_date_gc"}
+													label={t("entry_date")}
 												/>
-												{validation.errors.prp_record_date_gc && (
-													<div className="text-danger small mt-1">
-														{validation.errors.prp_record_date_gc}
-													</div>
-												)}
 											</Col>
 										)}
 									</Row>
@@ -1277,7 +1278,19 @@ const ProjectPerformanceModel = (props) => {
 																								`prp_status_month_${month}`
 																							] || ""
 																						}
-																						onChange={validation.handleChange}
+																						onChange={(e) => {
+																							validation.handleChange(e);
+
+																							const selectedStatus = Number(
+																								e.target.value
+																							);
+																							if (selectedStatus !== 7) {
+																								validation.setFieldValue(
+																									"completion_date",
+																									null
+																								);
+																							}
+																						}}
 																						onBlur={validation.handleBlur}
 																						invalid={Boolean(
 																							validation.touched[
@@ -1333,6 +1346,20 @@ const ProjectPerformanceModel = (props) => {
 																								]
 																							}
 																						</div>
+																					)}
+
+																					{Number(
+																						validation.values[
+																							`prp_status_month_${month}`
+																						]
+																					) === 7 && (
+																						<Col className="col-md-12 mt-2">
+																							<DatePicker
+																								isRequired={true}
+																								validation={validation}
+																								componentId={"completion_date"}
+																							/>
+																						</Col>
 																					)}
 																				</div>
 																			</>
