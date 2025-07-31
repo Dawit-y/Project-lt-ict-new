@@ -465,7 +465,7 @@ const Report = () => {
 				title={t("Report")}
 				breadcrumbItem={t("Statistical Report")}
 			/>
-			<div className="d-flex" style={{ gap: "20px" }}>
+			<div className="w-100 d-flex gap-2">
 				<TreeForLists
 					onNodeSelect={handleNodeSelect}
 					setIsAddressLoading={setIsAddressLoading}
@@ -473,229 +473,236 @@ const Report = () => {
 					setIsCollapsed={setIsCollapsed}
 					widthInPercent={15}
 				/>
-				<SearchTableContainer isCollapsed={isCollapsed} widthInPercent={85}>
-					<Row className="">
-						<Col xs="2">
-							<Card className="p-0 m-0 mb-3 shadow-none">
-								<CardBody className="p-2">
-									<>
-										<Input
-											type="select"
-											name="endpoint"
-											id="api-endpoints"
-											value={selectedEndpoint}
-											onChange={handleSelectionChange}
-											className="mb-2 mt-1"
-										>
-											<option value="">{t("select_stat")}</option>
-											{endpoints.map((endpoint, index) => (
-												<option key={index} value={endpoint.name}>
-													{t(endpoint.name)}
-												</option>
-											))}
-										</Input>
-									</>
-								</CardBody>
-							</Card>
+				<div style={{ flex: "1 1 0", overflowX: "auto" }}>
+					<div
+						style={{
+							flex: isCollapsed ? "1 1 auto" : `0 0 85%`,
+							transition: "all 0.3s ease",
+						}}
+					>
+						<Row className="">
+							<Col xs={2} sm={2} md={2} lg={2} xl={2}>
+								<Card className="p-0 m-0 mb-3 shadow-none">
+									<CardBody className="p-2">
+										<>
+											<Input
+												type="select"
+												name="endpoint"
+												id="api-endpoints"
+												value={selectedEndpoint}
+												onChange={handleSelectionChange}
+												className="mb-2 mt-1"
+											>
+												<option value="">{t("select_stat")}</option>
+												{endpoints.map((endpoint, index) => (
+													<option key={index} value={endpoint.name}>
+														{t(endpoint.name)}
+													</option>
+												))}
+											</Input>
+										</>
+									</CardBody>
+								</Card>
+							</Col>
+							<Col xs={10} sm={10} md={10} lg={10} xl={10}>
+								<AdvancedSearch
+									searchHook={useSearchReport}
+									textSearchKeys={textSearchKeys}
+									dateSearchKeys={dateSearchKeys}
+									dropdownSearchKeys={dropdownSearchKeys}
+									checkboxSearchKeys={[]}
+									additionalParams={projectParams}
+									setAdditionalParams={setProjectParams}
+									onSearchResult={handleSearchResults}
+									setIsSearchLoading={setIsSearchLoading}
+									setSearchResults={setSearchResults}
+									setShowSearchResult={setShowSearchResult}
+								/>
+							</Col>
+						</Row>
+
+						<Col xs="12">
+							{loading || isSearchLoading ? (
+								<div className="d-flex justify-content-center">
+									<Spinner color="primary" />
+								</div>
+							) : (
+								<>
+									{searchResults?.length > 0 && showSearchResult && (
+										<Card>
+											<CardBody style={{ padding: "10px" }}>
+												{ReportTypeId === 1 && (
+													<Greenbook
+														columns={columns}
+														data={searchResults}
+														isGlobalFilter
+														isAddButton
+														isCustomPageSize
+														isPagination
+														SearchPlaceholder={t("filter_placeholder")}
+														buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+														buttonName={`${t("add")} ${t("budget_source")}`}
+														tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+														theadClass="table-info"
+														pagination="pagination"
+														paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+													/>
+												)}
+												{ReportTypeId === 2 && (
+													<ProjectEmployeeReportsTable
+														data={searchResults}
+														isGlobalFilter
+														SearchPlaceholder={t("filter_placeholder")}
+														buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+														tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+														theadClass="table-light"
+														t={t}
+													/>
+												)}
+												{ReportTypeId === 3 && (
+													<ProjectsBudgetPlanTable
+														data={searchResults}
+														isGlobalFilter
+														SearchPlaceholder={t("filter_placeholder")}
+														buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+														tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+														theadClass="table-light"
+														t={t}
+													/>
+												)}
+
+												{ReportTypeId === 4 && (
+													<ProjectsBudgetExpenditureTable
+														data={searchResults}
+														isGlobalFilter
+														SearchPlaceholder={t("filter_placeholder")}
+														buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+														tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+														theadClass="table-light"
+														t={t}
+													/>
+												)}
+
+												{ReportTypeId === 5 && (
+													<ProjectsBudgetSourceTable
+														data={searchResults}
+														isGlobalFilter
+														SearchPlaceholder={t("filter_placeholder")}
+														buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+														tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+														theadClass="table-light"
+														t={t}
+													/>
+												)}
+
+												{ReportTypeId === 6 && (
+													<ProjectsContractorTable
+														data={searchResults}
+														isGlobalFilter
+														SearchPlaceholder={t("filter_placeholder")}
+														buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+														tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+														theadClass="table-light"
+														t={t}
+													/>
+												)}
+												{ReportTypeId === 7 && (
+													<ProjectsPaymentTable
+														data={searchResults}
+														isGlobalFilter
+														SearchPlaceholder={t("filter_placeholder")}
+														buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+														tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+														theadClass="table-light"
+														t={t}
+													/>
+												)}
+												{ReportTypeId === 8 && (
+													<FinancialProjectsTable
+														data={searchResults}
+														isGlobalFilter
+														SearchPlaceholder={t("filter_placeholder")}
+														buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+														tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+														theadClass="table-light"
+														t={t}
+													/>
+												)}
+												{ReportTypeId === 9 && (
+													<FinancialProjectsTable2
+														data={searchResults}
+														isGlobalFilter
+														SearchPlaceholder={t("filter_placeholder")}
+														buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+														tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+														theadClass="table-light"
+														t={t}
+													/>
+												)}
+												{ReportTypeId === 10 && (
+													<FinancialProjectsTable3
+														data={searchResults}
+														isGlobalFilter
+														SearchPlaceholder={t("filter_placeholder")}
+														buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+														tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+														theadClass="table-light"
+														t={t}
+													/>
+												)}
+
+												{ReportTypeId === 11 && (
+													<ProjectPhysicalPerformanceReportsTable
+														data={searchResults}
+														isGlobalFilter
+														SearchPlaceholder={t("filter_placeholder")}
+														buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+														tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+														theadClass="table-light"
+														t={t}
+													/>
+												)}
+
+												{ReportTypeId === 12 && (
+													<ProjectFinancialPerformanceReportsTable
+														data={searchResults}
+														isGlobalFilter
+														SearchPlaceholder={t("filter_placeholder")}
+														buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+														tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+														theadClass="table-light"
+														t={t}
+													/>
+												)}
+
+												{ReportTypeId === 13 && (
+													<ProjectPlanTable
+														data={searchResults}
+														isGlobalFilter
+														SearchPlaceholder={t("filter_placeholder")}
+														buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+														tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+														theadClass="table-light"
+														t={t}
+													/>
+												)}
+											</CardBody>
+										</Card>
+									)}
+									{searchResults?.length === 0 && (
+										<div className="w-100 text-center">
+											<p className="mt-5">
+												{t(
+													"No data available for the selected endpoint please select related Address Structure and click Search button."
+												)}
+											</p>
+										</div>
+									)}
+								</>
+							)}
 						</Col>
-						<Col xs="10">
-							<AdvancedSearch
-								searchHook={useSearchReport}
-								textSearchKeys={textSearchKeys}
-								dateSearchKeys={dateSearchKeys}
-								dropdownSearchKeys={dropdownSearchKeys}
-								checkboxSearchKeys={[]}
-								additionalParams={projectParams}
-								setAdditionalParams={setProjectParams}
-								onSearchResult={handleSearchResults}
-								setIsSearchLoading={setIsSearchLoading}
-								setSearchResults={setSearchResults}
-								setShowSearchResult={setShowSearchResult}
-							/>
-						</Col>
-					</Row>
-
-					<Col xs="12">
-						{loading || isSearchLoading ? (
-							<div className="d-flex justify-content-center">
-								<Spinner color="primary" />
-							</div>
-						) : (
-							<>
-								{searchResults?.length > 0 && showSearchResult && (
-									<Card>
-										<CardBody style={{ padding: "10px" }}>
-											{ReportTypeId === 1 && (
-												<Greenbook
-													columns={columns}
-													data={searchResults}
-													isGlobalFilter
-													isAddButton
-													isCustomPageSize
-													isPagination
-													SearchPlaceholder={t("filter_placeholder")}
-													buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-													buttonName={`${t("add")} ${t("budget_source")}`}
-													tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-													theadClass="table-info"
-													pagination="pagination"
-													paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-												/>
-											)}
-											{ReportTypeId === 2 && (
-												<ProjectEmployeeReportsTable
-													data={searchResults}
-													isGlobalFilter
-													SearchPlaceholder={t("filter_placeholder")}
-													buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-													tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-													theadClass="table-light"
-													t={t}
-												/>
-											)}
-											{ReportTypeId === 3 && (
-												<ProjectsBudgetPlanTable
-													data={searchResults}
-													isGlobalFilter
-													SearchPlaceholder={t("filter_placeholder")}
-													buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-													tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-													theadClass="table-light"
-													t={t}
-												/>
-											)}
-
-											{ReportTypeId === 4 && (
-												<ProjectsBudgetExpenditureTable
-													data={searchResults}
-													isGlobalFilter
-													SearchPlaceholder={t("filter_placeholder")}
-													buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-													tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-													theadClass="table-light"
-													t={t}
-												/>
-											)}
-
-											{ReportTypeId === 5 && (
-												<ProjectsBudgetSourceTable
-													data={searchResults}
-													isGlobalFilter
-													SearchPlaceholder={t("filter_placeholder")}
-													buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-													tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-													theadClass="table-light"
-													t={t}
-												/>
-											)}
-
-											{ReportTypeId === 6 && (
-												<ProjectsContractorTable
-													data={searchResults}
-													isGlobalFilter
-													SearchPlaceholder={t("filter_placeholder")}
-													buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-													tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-													theadClass="table-light"
-													t={t}
-												/>
-											)}
-											{ReportTypeId === 7 && (
-												<ProjectsPaymentTable
-													data={searchResults}
-													isGlobalFilter
-													SearchPlaceholder={t("filter_placeholder")}
-													buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-													tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-													theadClass="table-light"
-													t={t}
-												/>
-											)}
-											{ReportTypeId === 8 && (
-												<FinancialProjectsTable
-													data={searchResults}
-													isGlobalFilter
-													SearchPlaceholder={t("filter_placeholder")}
-													buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-													tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-													theadClass="table-light"
-													t={t}
-												/>
-											)}
-											{ReportTypeId === 9 && (
-												<FinancialProjectsTable2
-													data={searchResults}
-													isGlobalFilter
-													SearchPlaceholder={t("filter_placeholder")}
-													buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-													tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-													theadClass="table-light"
-													t={t}
-												/>
-											)}
-											{ReportTypeId === 10 && (
-												<FinancialProjectsTable3
-													data={searchResults}
-													isGlobalFilter
-													SearchPlaceholder={t("filter_placeholder")}
-													buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-													tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-													theadClass="table-light"
-													t={t}
-												/>
-											)}
-
-											{ReportTypeId === 11 && (
-												<ProjectPhysicalPerformanceReportsTable
-													data={searchResults}
-													isGlobalFilter
-													SearchPlaceholder={t("filter_placeholder")}
-													buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-													tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-													theadClass="table-light"
-													t={t}
-												/>
-											)}
-
-											{ReportTypeId === 12 && (
-												<ProjectFinancialPerformanceReportsTable
-													data={searchResults}
-													isGlobalFilter
-													SearchPlaceholder={t("filter_placeholder")}
-													buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-													tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-													theadClass="table-light"
-													t={t}
-												/>
-											)}
-
-											{ReportTypeId === 13 && (
-												<ProjectPlanTable
-													data={searchResults}
-													isGlobalFilter
-													SearchPlaceholder={t("filter_placeholder")}
-													buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-													tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-													theadClass="table-light"
-													t={t}
-												/>
-											)}
-										</CardBody>
-									</Card>
-								)}
-								{searchResults?.length === 0 && (
-									<div className="w-100 text-center">
-										<p className="mt-5">
-											{t(
-												"No data available for the selected endpoint please select related Address Structure and click Search button."
-											)}
-										</p>
-									</div>
-								)}
-							</>
-						)}
-					</Col>
-				</SearchTableContainer>
+					</div>
+				</div>
 			</div>
 		</div>
 	);
