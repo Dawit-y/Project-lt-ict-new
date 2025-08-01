@@ -86,26 +86,33 @@ axiosApi.interceptors.response.use(
 			return Promise.reject(error);
 		}
 
-		// Retry logic for other 401s (not refresh and not already retried)
+		const isOnLoginPage = window.location.pathname === "/login";
+
+		// Retry logic for other 401s
 		if (
 			error.response?.status === 401 &&
 			!originalRequest._retry &&
-			logoutReason !== "timeout"
+			logoutReason !== "timeout" &&
+			!isOnLoginPage
 		) {
 			originalRequest._retry = true;
 			try {
 				await refreshAccessToken();
+
+				const updatedState = store.getState();
+
 				originalRequest.headers[
 					"Authorization"
-				] = `Bearer ${state.Auth.accessToken}`;
+				] = `Bearer ${updatedState.Auth.accessToken}`;
 
 				return axiosApi(originalRequest);
 			} catch (refreshError) {
 				store.dispatch(clearAuthData());
-				if (window.location.pathname !== "/login") redirectToLogin();
+				if (!isOnLoginPage) redirectToLogin();
 				return Promise.reject(refreshError);
 			}
 		}
+
 		return Promise.reject(error);
 	}
 );
