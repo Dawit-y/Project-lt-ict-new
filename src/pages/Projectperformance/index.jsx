@@ -876,7 +876,14 @@ const ProjectPerformanceModel = (props) => {
 		}
 
 		return finalColumns;
-	}, [data, t, budgetYearMap]);
+	}, [
+		data,
+		t,
+		budgetYearMap,
+		handleAddActuals,
+		onClickDelete,
+		handleEditPlanned,
+	]);
 
 	if (isError) return <FetchErrorHandler error={error} refetch={refetch} />;
 
