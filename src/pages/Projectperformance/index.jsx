@@ -259,7 +259,7 @@ const ProjectPerformanceModel = (props) => {
 			prp_total_budget_used: projectPerformance?.prp_total_budget_used
 				? Number(projectPerformance.prp_total_budget_used).toLocaleString()
 				: DEFAULT_TOTAL_BUDGET_USED.toString(),
-			completion_date: endDate ? endDate : null,
+			completion_date: endDate,
 		},
 
 		validationSchema: Yup.object().shape({
@@ -351,7 +351,6 @@ const ProjectPerformanceModel = (props) => {
 							)
 						).reduce((a, b) => a + b, 0);
 						const totalBudget = convertToNumericValue(totalActualBudget || "0");
-						console.log("amount " + totalBudget);
 						if (totalBudget <= 0) {
 							return this.createError({
 								message: t("Total project budget is not available or invalid"),
@@ -631,6 +630,7 @@ const ProjectPerformanceModel = (props) => {
 				? Number(data.prp_physical_baseline).toLocaleString()
 				: "0",
 			prp_total_budget_used: DEFAULT_TOTAL_BUDGET_USED.toString(),
+			completion_date: endDate,
 		};
 		validation.setValues(values);
 	};
