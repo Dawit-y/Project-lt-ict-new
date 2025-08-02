@@ -1,522 +1,558 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-//import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
-  useFetchProcurementInformations,
-  useSearchProcurementInformations,
-  useAddProcurementInformation,
-  useDeleteProcurementInformation,
-  useUpdateProcurementInformation,
+	useFetchProcurementInformations,
+	useSearchProcurementInformations,
+	useAddProcurementInformation,
+	useDeleteProcurementInformation,
+	useUpdateProcurementInformation,
 } from "../../queries/procurementinformation_query";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import { useFetchProcurementStages } from "../../queries/procurementstage_query";
 import { useFetchProcurementMethods } from "../../queries/procurementmethod_query";
 import DatePicker from "../../components/Common/DatePicker";
-
-import ProcurementInformationModal from "./ProcurementInformationModal";
 import { useTranslation } from "react-i18next";
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
 import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
+	Button,
+	Col,
+	Row,
+	UncontrolledTooltip,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	Form,
+	Input,
+	FormFeedback,
+	Label,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
+import { toast } from "react-toastify";
 import ProcurementParticipant from "../Procurementparticipant/index";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
-
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import { createSelectOptions } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import {
-  alphanumericValidation,
-  amountValidation,
-  numberValidation,
+	alphanumericValidation,
+	amountValidation,
+	numberValidation,
 } from "../../utils/Validation/validation";
+import { procurementExportColumns } from "../../utils/exportColumnsForDetails";
 
 const truncateText = (text, maxLength) => {
-  if (typeof text !== "string") {
-    return text;
-  }
-  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+	if (typeof text !== "string") {
+		return text;
+	}
+	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
 const ProcurementInformationModel = (props) => {
-  //meta title
-  document.title = " ProcurementInformation";
-  const { t } = useTranslation();
-  const { passedId, isActive, startDate } = props;
-  const param = { pri_project_id: passedId, request_type: "single" };
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [procurementInformationMetaData, setProcurementInformationMetaData] = useState([]);
-  const [showCanvas, setShowCanvas] = useState(false);
-  const [procurementInformation, setProcurementInformation] = useState(null);
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, isFetching, error, isError, refetch } = useFetchProcurementInformations(param, isActive);
+	//meta title
+	document.title = "Procurement Information";
+	const { t } = useTranslation();
+	const { passedId, isActive, startDate } = props;
+	const param = { pri_project_id: passedId, request_type: "single" };
+	const [modal, setModal] = useState(false);
+	const [modal1, setModal1] = useState(false);
+	const [isEdit, setIsEdit] = useState(false);
+	const [procurementInformationMetaData, setProcurementInformationMetaData] =
+		useState([]);
+	const [showCanvas, setShowCanvas] = useState(false);
+	const [procurementInformation, setProcurementInformation] = useState(null);
+	const [searchResults, setSearchResults] = useState(null);
+	const [isSearchLoading, setIsSearchLoading] = useState(false);
+	const [searcherror, setSearchError] = useState(null);
+	const [showSearchResult, setShowSearchResult] = useState(false);
+	const { data, isLoading, isFetching, error, isError, refetch } =
+		useFetchProcurementInformations(param, isActive);
 
-  const { data: procurementStageData } = useFetchProcurementStages();
-  const { data: procurementMethodData } = useFetchProcurementMethods();
+	const { data: procurementStageData } = useFetchProcurementStages();
+	const { data: procurementMethodData } = useFetchProcurementMethods();
 
-  const procurementStageMap = useMemo(() => {
-    return (
-      procurementStageData?.data?.reduce((acc, procurement_stage) => {
-        acc[procurement_stage.pst_id] = procurement_stage.pst_name_or;
-        return acc;
-      }, {}) || {}
-    );
-  }, [procurementStageData]);
+	const procurementStageMap = useMemo(() => {
+		return (
+			procurementStageData?.data?.reduce((acc, procurement_stage) => {
+				acc[procurement_stage.pst_id] = procurement_stage.pst_name_or;
+				return acc;
+			}, {}) || {}
+		);
+	}, [procurementStageData]);
 
-  const procurementMethodMap = useMemo(() => {
-    return (
-      procurementMethodData?.data?.reduce((acc, procurement_method) => {
-        acc[procurement_method.prm_id] = procurement_method.prm_name_or;
-        return acc;
-      }, {}) || {}
-    );
-  }, [procurementMethodData]);
+	const procurementMethodMap = useMemo(() => {
+		return (
+			procurementMethodData?.data?.reduce((acc, procurement_method) => {
+				acc[procurement_method.prm_id] = procurement_method.prm_name_or;
+				return acc;
+			}, {}) || {}
+		);
+	}, [procurementMethodData]);
 
-  const addProcurementInformation = useAddProcurementInformation();
-  const updateProcurementInformation = useUpdateProcurementInformation();
-  const deleteProcurementInformation = useDeleteProcurementInformation();
-  //START CRUD
-  const handleAddProcurementInformation = async (data) => {
-    try {
-      await addProcurementInformation.mutateAsync(data);
-      toast.success(t('add_success'), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t('add_failure'), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleUpdateProcurementInformation = async (data) => {
-    try {
-      await updateProcurementInformation.mutateAsync(data);
-      toast.success(t('update_success'), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t('update_failure'), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleDeleteProcurementInformation = async () => {
-    if (procurementInformation && procurementInformation.pri_id) {
-      try {
-        const id = procurementInformation.pri_id;
-        await deleteProcurementInformation.mutateAsync(id);
-        toast.success(t('delete_success'), {
-          autoClose: 2000,
-        });
-      } catch (error) {
-        toast.success(t('delete_failure'), {
-          autoClose: 2000,
-        });
-      }
-      setDeleteModal(false);
-    }
-  };
-  //END CRUD
-  //START FOREIGN CALLS
+	const addProcurementInformation = useAddProcurementInformation();
+	const updateProcurementInformation = useUpdateProcurementInformation();
+	const deleteProcurementInformation = useDeleteProcurementInformation();
+	//START CRUD
+	const handleAddProcurementInformation = async (data) => {
+		try {
+			await addProcurementInformation.mutateAsync(data);
+			toast.success(t("add_success"), {
+				autoClose: 2000,
+			});
+			validation.resetForm();
+		} catch (error) {
+			toast.success(t("add_failure"), {
+				autoClose: 2000,
+			});
+		}
+		toggle();
+	};
+	const handleUpdateProcurementInformation = async (data) => {
+		try {
+			await updateProcurementInformation.mutateAsync(data);
+			toast.success(t("update_success"), {
+				autoClose: 2000,
+			});
+			validation.resetForm();
+		} catch (error) {
+			toast.success(t("update_failure"), {
+				autoClose: 2000,
+			});
+		}
+		toggle();
+	};
+	const handleDeleteProcurementInformation = async () => {
+		if (procurementInformation && procurementInformation.pri_id) {
+			try {
+				const id = procurementInformation.pri_id;
+				await deleteProcurementInformation.mutateAsync(id);
+				toast.success(t("delete_success"), {
+					autoClose: 2000,
+				});
+			} catch (error) {
+				toast.success(t("delete_failure"), {
+					autoClose: 2000,
+				});
+			}
+			setDeleteModal(false);
+		}
+	};
 
+	const validation = useFormik({
+		enableReinitialize: true,
+		initialValues: {
+			pri_total_procurement_amount:
+				(procurementInformation &&
+					procurementInformation.pri_total_procurement_amount) ||
+				"",
+			pri_bid_announced_date:
+				(procurementInformation &&
+					procurementInformation.pri_bid_announced_date) ||
+				"",
+			pri_bid_invitation_date:
+				(procurementInformation &&
+					procurementInformation.pri_bid_invitation_date) ||
+				"",
+			pri_bid_opening_date:
+				(procurementInformation &&
+					procurementInformation.pri_bid_opening_date) ||
+				"",
+			pri_bid_closing_date:
+				(procurementInformation &&
+					procurementInformation.pri_bid_closing_date) ||
+				"",
+			pri_bid_evaluation_date:
+				(procurementInformation &&
+					procurementInformation.pri_bid_evaluation_date) ||
+				"",
+			pri_bid_award_date:
+				(procurementInformation && procurementInformation.pri_bid_award_date) ||
+				"",
+			pri_project_id:
+				(procurementInformation && procurementInformation.pri_project_id) || "",
+			pri_procurement_stage_id:
+				(procurementInformation &&
+					procurementInformation.pri_procurement_stage_id) ||
+				"",
+			pri_procurement_method_id:
+				(procurementInformation &&
+					procurementInformation.pri_procurement_method_id) ||
+				"",
+			pri_description:
+				(procurementInformation && procurementInformation.pri_description) ||
+				"",
+			pri_status:
+				(procurementInformation && procurementInformation.pri_status) || "",
 
-  // validation
-  const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
-    enableReinitialize: true,
-    initialValues: {
-      pri_total_procurement_amount: (procurementInformation && procurementInformation.pri_total_procurement_amount) || "",
-      pri_bid_announced_date: (procurementInformation && procurementInformation.pri_bid_announced_date) || "",
-      pri_bid_invitation_date: (procurementInformation && procurementInformation.pri_bid_invitation_date) || "",
-      pri_bid_opening_date: (procurementInformation && procurementInformation.pri_bid_opening_date) || "",
-      pri_bid_closing_date: (procurementInformation && procurementInformation.pri_bid_closing_date) || "",
-      pri_bid_evaluation_date: (procurementInformation && procurementInformation.pri_bid_evaluation_date) || "",
-      pri_bid_award_date: (procurementInformation && procurementInformation.pri_bid_award_date) || "",
-      pri_project_id: (procurementInformation && procurementInformation.pri_project_id) || "",
-      pri_procurement_stage_id: (procurementInformation && procurementInformation.pri_procurement_stage_id) || "",
-      pri_procurement_method_id: (procurementInformation && procurementInformation.pri_procurement_method_id) || "",
-      pri_description: (procurementInformation && procurementInformation.pri_description) || "",
-      pri_status: (procurementInformation && procurementInformation.pri_status) || "",
+			is_deletable:
+				(procurementInformation && procurementInformation.is_deletable) || 1,
+			is_editable:
+				(procurementInformation && procurementInformation.is_editable) || 1,
+		},
+		validationSchema: Yup.object({
+			pri_total_procurement_amount: amountValidation(100, 1000000000000, true),
+			pri_bid_announced_date: Yup.string().required(
+				t("pri_bid_announced_date")
+			),
+			pri_bid_invitation_date: Yup.string().required(
+				t("pri_bid_invitation_date")
+			),
+			pri_bid_opening_date: Yup.string().required(t("pri_bid_opening_date")),
+			pri_bid_closing_date: Yup.string().required(t("pri_bid_closing_date")),
+			pri_bid_evaluation_date: Yup.string().required(
+				t("pri_bid_evaluation_date")
+			),
+			pri_bid_award_date: Yup.string().required(t("pri_bid_award_date")),
+			pri_procurement_stage_id: Yup.string().required(
+				t("pri_procurement_stage_id")
+			),
+			pri_procurement_method_id: Yup.string().required(
+				t("pri_procurement_method_id")
+			),
+			pri_description: alphanumericValidation(3, 425, false),
+		}),
+		validateOnBlur: true,
+		validateOnChange: false,
+		onSubmit: (values) => {
+			if (isEdit) {
+				const updateProcurementInformation = {
+					pri_id: procurementInformation ? procurementInformation.pri_id : 0,
+					pri_total_procurement_amount: values.pri_total_procurement_amount,
+					pri_bid_announced_date: values.pri_bid_announced_date,
+					pri_bid_invitation_date: values.pri_bid_invitation_date,
+					pri_bid_opening_date: values.pri_bid_opening_date,
+					pri_bid_closing_date: values.pri_bid_closing_date,
+					pri_bid_evaluation_date: values.pri_bid_evaluation_date,
+					pri_bid_award_date: values.pri_bid_award_date,
+					pri_project_id: values.pri_project_id,
+					pri_procurement_stage_id: values.pri_procurement_stage_id,
+					pri_procurement_method_id: values.pri_procurement_method_id,
+					pri_description: values.pri_description,
+					pri_status: values.pri_status,
 
-      is_deletable: (procurementInformation && procurementInformation.is_deletable) || 1,
-      is_editable: (procurementInformation && procurementInformation.is_editable) || 1
-    },
-    validationSchema: Yup.object({
-      pri_total_procurement_amount: amountValidation(100, 1000000000000, true),
-      pri_bid_announced_date: Yup.string().required(t('pri_bid_announced_date')),
-      pri_bid_invitation_date: Yup.string().required(t('pri_bid_invitation_date')),
-      pri_bid_opening_date: Yup.string().required(t('pri_bid_opening_date')),
-      pri_bid_closing_date: Yup.string().required(t('pri_bid_closing_date')),
-      pri_bid_evaluation_date: Yup.string().required(t('pri_bid_evaluation_date')),
-      pri_bid_award_date: Yup.string().required(t('pri_bid_award_date')),
-      pri_procurement_stage_id: Yup.string().required(t('pri_procurement_stage_id')),
-      pri_procurement_method_id: Yup.string().required(t('pri_procurement_method_id')),
-      pri_description: alphanumericValidation(3, 425, false)
-    }),
-    validateOnBlur: true,
-    validateOnChange: false,
-    onSubmit: (values) => {
-      if (isEdit) {
-        const updateProcurementInformation = {
-          pri_id: procurementInformation ? procurementInformation.pri_id : 0,
-          pri_total_procurement_amount: values.pri_total_procurement_amount,
-          pri_bid_announced_date: values.pri_bid_announced_date,
-          pri_bid_invitation_date: values.pri_bid_invitation_date,
-          pri_bid_opening_date: values.pri_bid_opening_date,
-          pri_bid_closing_date: values.pri_bid_closing_date,
-          pri_bid_evaluation_date: values.pri_bid_evaluation_date,
-          pri_bid_award_date: values.pri_bid_award_date,
-          pri_project_id: values.pri_project_id,
-          pri_procurement_stage_id: values.pri_procurement_stage_id,
-          pri_procurement_method_id: values.pri_procurement_method_id,
-          pri_description: values.pri_description,
-          pri_status: values.pri_status,
+					is_deletable: values.is_deletable,
+					is_editable: values.is_editable,
+				};
+				// update ProcurementInformation
+				handleUpdateProcurementInformation(updateProcurementInformation);
+			} else {
+				const newProcurementInformation = {
+					pri_total_procurement_amount: values.pri_total_procurement_amount,
+					pri_bid_announced_date: values.pri_bid_announced_date,
+					pri_bid_invitation_date: values.pri_bid_invitation_date,
+					pri_bid_opening_date: values.pri_bid_opening_date,
+					pri_bid_closing_date: values.pri_bid_closing_date,
+					pri_bid_evaluation_date: values.pri_bid_evaluation_date,
+					pri_bid_award_date: values.pri_bid_award_date,
+					pri_project_id: passedId,
+					pri_procurement_stage_id: values.pri_procurement_stage_id,
+					pri_procurement_method_id: values.pri_procurement_method_id,
+					pri_description: values.pri_description,
+					pri_status: values.pri_status,
+				};
+				// save new ProcurementInformation
+				handleAddProcurementInformation(newProcurementInformation);
+			}
+		},
+	});
+	const [transaction, setTransaction] = useState({});
+	const toggleViewModal = () => setModal1(!modal1);
 
-          is_deletable: values.is_deletable,
-          is_editable: values.is_editable,
-        };
-        // update ProcurementInformation
-        handleUpdateProcurementInformation(updateProcurementInformation);
-      } else {
-        const newProcurementInformation = {
-          pri_total_procurement_amount: values.pri_total_procurement_amount,
-          pri_bid_announced_date: values.pri_bid_announced_date,
-          pri_bid_invitation_date: values.pri_bid_invitation_date,
-          pri_bid_opening_date: values.pri_bid_opening_date,
-          pri_bid_closing_date: values.pri_bid_closing_date,
-          pri_bid_evaluation_date: values.pri_bid_evaluation_date,
-          pri_bid_award_date: values.pri_bid_award_date,
-          pri_project_id: passedId,
-          pri_procurement_stage_id: values.pri_procurement_stage_id,
-          pri_procurement_method_id: values.pri_procurement_method_id,
-          pri_description: values.pri_description,
-          pri_status: values.pri_status,
+	const handleClick = (data) => {
+		setShowCanvas(!showCanvas);
+		setProcurementInformationMetaData(data);
+	};
+	// Fetch ProcurementInformation on component mount
+	useEffect(() => {
+		setProcurementInformation(data);
+	}, [data]);
+	useEffect(() => {
+		if (!isEmpty(data) && !!isEdit) {
+			setProcurementInformation(data);
+			setIsEdit(false);
+		}
+	}, [data]);
+	const toggle = () => {
+		if (modal) {
+			setModal(false);
+			setProcurementInformation(null);
+		} else {
+			setModal(true);
+		}
+	};
+	const handleProcurementInformationClick = (arg) => {
+		const procurementInformation = arg;
+		// console.log("handleProcurementInformationClick", procurementInformation);
+		setProcurementInformation({
+			pri_id: procurementInformation.pri_id,
+			pri_total_procurement_amount:
+				procurementInformation.pri_total_procurement_amount,
+			pri_bid_announced_date: procurementInformation.pri_bid_announced_date,
+			pri_bid_invitation_date: procurementInformation.pri_bid_invitation_date,
+			pri_bid_opening_date: procurementInformation.pri_bid_opening_date,
+			pri_bid_closing_date: procurementInformation.pri_bid_closing_date,
+			pri_bid_evaluation_date: procurementInformation.pri_bid_evaluation_date,
+			pri_bid_award_date: procurementInformation.pri_bid_award_date,
+			pri_project_id: procurementInformation.pri_project_id,
+			pri_procurement_stage_id: procurementInformation.pri_procurement_stage_id,
+			pri_procurement_method_id:
+				procurementInformation.pri_procurement_method_id,
+			pri_description: procurementInformation.pri_description,
+			pri_status: procurementInformation.pri_status,
+			is_deletable: procurementInformation.is_deletable,
+			is_editable: procurementInformation.is_editable,
+		});
+		setIsEdit(true);
+		toggle();
+	};
+	//delete projects
+	const [deleteModal, setDeleteModal] = useState(false);
+	const onClickDelete = (procurementInformation) => {
+		setProcurementInformation(procurementInformation);
+		setDeleteModal(true);
+	};
+	const handleProcurementInformationClicks = () => {
+		setIsEdit(false);
+		setProcurementInformation("");
+		toggle();
+	};
+	const handleSearchResults = ({ data, error }) => {
+		setSearchResults(data);
+		setSearchError(error);
+		setShowSearchResult(true);
+	};
+	//START UNCHANGED
+	const columns = useMemo(() => {
+		const baseColumns = [
+			{
+				header: "",
+				accessorKey: "pri_total_procurement_amount",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(
+								cellProps.row.original.pri_total_procurement_amount,
+								30
+							) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "pri_bid_announced_date",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(
+								cellProps.row.original.pri_bid_announced_date,
+								30
+							) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "pri_bid_invitation_date",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(
+								cellProps.row.original.pri_bid_invitation_date,
+								30
+							) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "pri_bid_opening_date",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.pri_bid_opening_date, 30) ||
+								"-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "pri_bid_closing_date",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.pri_bid_closing_date, 30) ||
+								"-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "pri_bid_evaluation_date",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(
+								cellProps.row.original.pri_bid_evaluation_date,
+								30
+							) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "pri_bid_award_date",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.pri_bid_award_date, 30) ||
+								"-"}
+						</span>
+					);
+				},
+			},
 
-        };
-        // save new ProcurementInformation
-        handleAddProcurementInformation(newProcurementInformation);
-      }
-    },
-  });
-  const [transaction, setTransaction] = useState({});
-  const toggleViewModal = () => setModal1(!modal1);
+			{
+				header: "",
+				accessorKey: "pri_procurement_stage_id",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{procurementStageMap[
+								cellProps.row.original.pri_procurement_stage_id
+							] || ""}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "pri_procurement_method_id",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{procurementMethodMap[
+								cellProps.row.original.pri_procurement_method_id
+							] || ""}
+						</span>
+					);
+				},
+			},
 
-  const handleClick = (data) => {
-    setShowCanvas(!showCanvas);
-    setProcurementInformationMetaData(data);
-  };
-  // Fetch ProcurementInformation on component mount
-  useEffect(() => {
-    setProcurementInformation(data);
-  }, [data]);
-  useEffect(() => {
-    if (!isEmpty(data) && !!isEdit) {
-      setProcurementInformation(data);
-      setIsEdit(false);
-    }
-  }, [data]);
-  const toggle = () => {
-    if (modal) {
-      setModal(false);
-      setProcurementInformation(null);
-    } else {
-      setModal(true);
-    }
-  };
-  const handleProcurementInformationClick = (arg) => {
-    const procurementInformation = arg;
-    // console.log("handleProcurementInformationClick", procurementInformation);
-    setProcurementInformation({
-      pri_id: procurementInformation.pri_id,
-      pri_total_procurement_amount: procurementInformation.pri_total_procurement_amount,
-      pri_bid_announced_date: procurementInformation.pri_bid_announced_date,
-      pri_bid_invitation_date: procurementInformation.pri_bid_invitation_date,
-      pri_bid_opening_date: procurementInformation.pri_bid_opening_date,
-      pri_bid_closing_date: procurementInformation.pri_bid_closing_date,
-      pri_bid_evaluation_date: procurementInformation.pri_bid_evaluation_date,
-      pri_bid_award_date: procurementInformation.pri_bid_award_date,
-      pri_project_id: procurementInformation.pri_project_id,
-      pri_procurement_stage_id: procurementInformation.pri_procurement_stage_id,
-      pri_procurement_method_id: procurementInformation.pri_procurement_method_id,
-      pri_description: procurementInformation.pri_description,
-      pri_status: procurementInformation.pri_status,
-      is_deletable: procurementInformation.is_deletable,
-      is_editable: procurementInformation.is_editable,
-    });
-    setIsEdit(true);
-    toggle();
-  };
-  //delete projects
-  const [deleteModal, setDeleteModal] = useState(false);
-  const onClickDelete = (procurementInformation) => {
-    setProcurementInformation(procurementInformation);
-    setDeleteModal(true);
-  };
-  const handleProcurementInformationClicks = () => {
-    setIsEdit(false);
-    setProcurementInformation("");
-    toggle();
-  }
-    ; const handleSearchResults = ({ data, error }) => {
-      setSearchResults(data);
-      setSearchError(error);
-      setShowSearchResult(true);
-    };
-  //START UNCHANGED
-  const columns = useMemo(() => {
-    const baseColumns = [
-      {
-        header: '',
-        accessorKey: 'pri_total_procurement_amount',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pri_total_procurement_amount, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'pri_bid_announced_date',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pri_bid_announced_date, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'pri_bid_invitation_date',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pri_bid_invitation_date, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'pri_bid_opening_date',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pri_bid_opening_date, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'pri_bid_closing_date',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pri_bid_closing_date, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'pri_bid_evaluation_date',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pri_bid_evaluation_date, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'pri_bid_award_date',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pri_bid_award_date, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
+			{
+				header: t("view_detail"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								const data = cellProps.row.original;
+								toggleViewModal(data);
+								setTransaction(cellProps.row.original);
+							}}
+						>
+							{t("view_detail")}
+						</Button>
+					);
+				},
+			},
+		];
+		if (
+			data?.previledge?.is_role_editable == 1 ||
+			data?.previledge?.is_role_deletable == 1
+		) {
+			baseColumns.push({
+				header: t("Action"),
+				accessorKey: t("Action"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<div className="d-flex gap-3">
+							{cellProps.row.original.is_editable == 1 && (
+								<Button
+									size="sm"
+									color="none"
+									className="text-success"
+									onClick={() => {
+										const data = cellProps.row.original;
+										handleProcurementInformationClick(data);
+									}}
+								>
+									<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+								</Button>
+							)}
+							{cellProps.row.original.is_deletable == 1 && (
+								<Link
+									to="#"
+									className="text-danger"
+									onClick={() => {
+										const data = cellProps.row.original;
+										onClickDelete(data);
+									}}
+								>
+									<i
+										className="mdi mdi-delete font-size-18"
+										id="deletetooltip"
+									/>
+									<UncontrolledTooltip placement="top" target="deletetooltip">
+										Delete
+									</UncontrolledTooltip>
+								</Link>
+							)}
 
-      {
-        header: '',
-        accessorKey: 'pri_procurement_stage_id',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
+							<Button
+								to="#"
+								color="none"
+								className="text-secondary"
+								onClick={() => handleClick(cellProps.row.original)}
+							>
+								<i className="mdi mdi-cog font-size-18" id="viewtooltip" />
+								<UncontrolledTooltip placement="top" target="viewtooltip">
+									Detail
+								</UncontrolledTooltip>
+							</Button>
+						</div>
+					);
+				},
+			});
+		}
+		return baseColumns;
+	}, [handleProcurementInformationClick, toggleViewModal, onClickDelete]);
 
-              {procurementStageMap[cellProps.row.original.pri_procurement_stage_id] || ""}
+	if (isError) return <FetchErrorHandler error={error} refetch={refetch} />;
 
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'pri_procurement_method_id',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {procurementMethodMap[cellProps.row.original.pri_procurement_method_id] || ""}
-            </span>
-          );
-        },
-      },
-
-      {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
-    ];
-    if (
-      data?.previledge?.is_role_editable == 1 ||
-      data?.previledge?.is_role_deletable == 1
-    ) {
-      baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable == 1 && (
-                <Button
-                  size="sm"
-                  color="none"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleProcurementInformationClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                </Button>
-              )}
-              {cellProps.row.original.is_deletable == 1 && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-
-              <Button
-                to="#"
-                color="none"
-                className="text-secondary"
-                onClick={() => handleClick(cellProps.row.original)}
-              >
-                <i className="mdi mdi-cog font-size-18" id="viewtooltip" />
-                <UncontrolledTooltip placement="top" target="viewtooltip">
-                  Detail
-                </UncontrolledTooltip>
-              </Button>
-
-            </div>
-          );
-        },
-      });
-    }
-    return baseColumns;
-  }, [handleProcurementInformationClick, toggleViewModal, onClickDelete]);
-  return (
+	return (
 		<React.Fragment>
 			<DynamicDetailsModal
 				isOpen={modal1}
@@ -567,6 +603,7 @@ const ProcurementInformationModel = (props) => {
 						paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
 						refetch={refetch}
 						isFetching={isFetching}
+						exportColumns={procurementExportColumns}
 					/>
 				)}
 				<Modal isOpen={modal} toggle={toggle} className="modal-xl">
@@ -863,6 +900,6 @@ const ProcurementInformationModel = (props) => {
 	);
 };
 ProcurementInformationModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+	preGlobalFilteredRows: PropTypes.any,
 };
 export default ProcurementInformationModel;

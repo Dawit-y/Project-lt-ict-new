@@ -55,6 +55,7 @@ const ConvInfoModal = lazy(() =>
 	import("../../pages/Conversationinformation/ConvInfoModal")
 );
 import DatePicker from "../../components/Common/DatePicker";
+import { projectPerformanceExportColumns } from "../../utils/exportColumnsForDetails";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -944,6 +945,7 @@ const ProjectPerformanceModel = (props) => {
 					paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
 					refetch={refetch}
 					isFetching={isFetching}
+					exportColumns={projectPerformanceExportColumns}
 				/>
 			)}
 
