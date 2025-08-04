@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState, Suspense, lazy } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -408,16 +407,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 	const toggleViewModal = () => setModal1(!modal1);
 	const toggleFileModal = () => setFileModal(!fileModal);
 	const toggleConvModal = () => setConvModal(!convModal);
-	// Fetch ProjectMonitoringEvaluation on component mount
-	useEffect(() => {
-		setProjectMonitoringEvaluation(data);
-	}, [data]);
-	useEffect(() => {
-		if (!isEmpty(data) && !!isEdit) {
-			setProjectMonitoringEvaluation(data);
-			setIsEdit(false);
-		}
-	}, [data]);
+
 	const toggle = () => {
 		if (modal) {
 			setModal(false);
@@ -482,12 +472,26 @@ const ProjectMonitoringEvaluationModel = (props) => {
 		setProjectMonitoringEvaluation("");
 		toggle();
 	};
-	const handleSearchResults = ({ data, error }) => {
-		setSearchResults(data);
-		setSearchError(error);
-		setShowSearchResult(true);
-	};
-	//START UNCHANGED
+
+	const tabErrors = useMemo(() => {
+		const touched = validation.touched;
+		return {
+			// regional
+			2: touched.mne_physical_region || touched.mne_financial_region,
+			// zonal
+			3: touched.mne_physical_zone || touched.mne_financial_zone,
+			// woreda
+			1: touched.mne_physical || touched.mne_financial,
+		};
+	}, [validation.touched]);
+
+	const navLinkClass = (tabId) =>
+		classnames("nav-link", {
+			active: activeTab === tabId,
+			"border border-danger text-danger":
+				tabErrors[tabId] && activeTab !== tabId,
+		});
+
 	const columns = useMemo(() => {
 		const baseColumns = [
 			{
@@ -965,10 +969,8 @@ const ProjectMonitoringEvaluationModel = (props) => {
 								>
 									<NavItem>
 										<NavLink
-											className={classnames({ active: activeTab === "2" })}
-											onClick={() => {
-												toggleTab("2");
-											}}
+											className={navLinkClass("2")}
+											onClick={() => toggleTab("2")}
 										>
 											<i className="mdi mdi-map-marker-multiple me-1"></i>
 											{t("regional_level")}
@@ -976,10 +978,8 @@ const ProjectMonitoringEvaluationModel = (props) => {
 									</NavItem>
 									<NavItem>
 										<NavLink
-											className={classnames({ active: activeTab === "3" })}
-											onClick={() => {
-												toggleTab("3");
-											}}
+											className={navLinkClass("3")}
+											onClick={() => toggleTab("3")}
 										>
 											<i className="mdi mdi-map-marker-outline me-1"></i>
 											{t("zonal_level")}
@@ -987,10 +987,8 @@ const ProjectMonitoringEvaluationModel = (props) => {
 									</NavItem>
 									<NavItem>
 										<NavLink
-											className={classnames({ active: activeTab === "1" })}
-											onClick={() => {
-												toggleTab("1");
-											}}
+											className={navLinkClass("1")}
+											onClick={() => toggleTab("1")}
 										>
 											<i className="mdi mdi-map-marker-radius me-1"></i>
 											{t("woreda_level")}
@@ -1125,6 +1123,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 								<Row>
 									<Col className="col-md-12 mb-3">
 										<Label>{t("mne_team_members")}</Label>
+										<span className="text-danger ms-1">*</span>
 										<Input
 											name="mne_team_members"
 											type="textarea"
