@@ -46,9 +46,7 @@ const Login = () => {
 		mutationFn: loginUser,
 		onSuccess: (data) => {
 			// Store access token and user data in Redux
-			dispatch(
-				setAuthData(data.authorization.token, data.user)
-			);
+			dispatch(setAuthData(data.authorization.token, data.user));
 
 			// Set language preferences
 			localStorage.setItem("I18N_LANGUAGE", "en");
@@ -60,6 +58,8 @@ const Login = () => {
 		onError: (error) => {
 			if (error.response?.status === 401) {
 				setErrorMessage("Incorrect email or password. Please try again.");
+			} else if (error.response?.status === 429) {
+				setErrorMessage("You have attempted 3 times. Try after 5 minutes.");
 			} else {
 				setErrorMessage("Something went wrong. Please try again later.");
 			}
@@ -186,5 +186,5 @@ const Login = () => {
 export default Login;
 
 Login.propTypes = {
-  history: PropTypes.object,
+	history: PropTypes.object,
 };

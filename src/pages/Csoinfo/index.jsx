@@ -646,6 +646,7 @@ const CsoInfoModel = () => {
 
 									<Col className="col-md-6 mb-3">
 										<Label>{t("cso_code")}</Label>
+										<span className="text-danger">*</span>
 										<Input
 											name="cso_code"
 											type="text"

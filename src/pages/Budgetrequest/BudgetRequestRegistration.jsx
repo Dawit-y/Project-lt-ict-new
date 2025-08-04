@@ -564,9 +564,8 @@ const BudgetRequestModel = (props) => {
           );
         },
       },
-
       {
-        headerName: t("bdr_request_status"),
+        header: t("bdr_request_status"),
         accessorKey: "bdr_request_status",
         enableSorting: false,
         enableColumnFilter: false,

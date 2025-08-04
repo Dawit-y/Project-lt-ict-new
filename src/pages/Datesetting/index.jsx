@@ -359,197 +359,199 @@ const DateSettingModel = () => {
     return baseColumns;
   }, [handleDateSettingClick, toggleViewModal, onClickDelete]);
   return (
-    <React.Fragment>
-      <DateSettingModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      />
-      <DeleteModal
-        show={deleteModal}
-        onDeleteClick={handleDeleteDateSetting}
-        onCloseClick={() => setDeleteModal(false)}
-        isLoading={deleteDateSetting.isPending}
-      />
-      <div className="page-content">
-        <div className="container-fluid">
-          <Breadcrumbs
-            title={t("date_setting")}
-            breadcrumbItem={t("date_setting")}
-          />
-          {isLoading || isSearchLoading ? (
-            <Spinners />
-          ) : (
-            <Row>
-              <Col xs="12">
-                <Card>
-                  <CardBody>
-                    <TableContainer
-                      columns={columns}
-                      data={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      isGlobalFilter={true}
-                      isAddButton={false}
-                      isCustomPageSize={true}
-                      handleUserClick={handleDateSettingClicks}
-                      isPagination={true}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add")}
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                    />
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
-          )}
-          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-            <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit ? (t("edit") + " " + t("date_setting")) : (t("add") + " " + t("date_setting"))}
-            </ModalHeader>
-            <ModalBody>
-              <Form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  validation.handleSubmit();
-                  return false;
-                }}
-              >
-                <Row>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('dts_parameter_name')}</Label>
-                    <Input
-                      name='dts_parameter_name'
-                      type='text'
-                      placeholder={t('dts_parameter_name')}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.dts_parameter_name || ''}
-                      invalid={
-                        validation.touched.dts_parameter_name &&
-                          validation.errors.dts_parameter_name
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.dts_parameter_name &&
-                      validation.errors.dts_parameter_name ? (
-                      <FormFeedback type='invalid'>
-                        {validation.errors.dts_parameter_name}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('dts_parameter_code')}</Label>
-                    <Input
-                      name='dts_parameter_code'
-                      type='text'
-                      placeholder={t('dts_parameter_code')}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.dts_parameter_code || ''}
-                      invalid={
-                        validation.touched.dts_parameter_code &&
-                          validation.errors.dts_parameter_code
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.dts_parameter_code &&
-                      validation.errors.dts_parameter_code ? (
-                      <FormFeedback type='invalid'>
-                        {validation.errors.dts_parameter_code}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <DatePicker
-                      isRequired="true"
-                      validation={validation}
-                      componentId="dts_start_date"
-                    />
-                  </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <DatePicker
-                      isRequired="true"
-                      validation={validation}
-                      componentId="dts_end_date"
-                    />
-                  </Col>
-                  <Col className='col-md-6 mb-3'>
-                    <Label>{t('dts_description')}</Label>
-                    <Input
-                      name='dts_description'
-                      type='textarea'
-                      placeholder={t('dts_description')}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.dts_description || ''}
-                      invalid={
-                        validation.touched.dts_description &&
-                          validation.errors.dts_description
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.dts_description &&
-                      validation.errors.dts_description ? (
-                      <FormFeedback type='invalid'>
-                        {validation.errors.dts_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <div className="text-end">
-                      {addDateSetting.isPending || updateDateSetting.isPending ? (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addDateSetting.isPending ||
-                            updateDateSetting.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          <Spinner size={"sm"} color="light" className="me-2" />
-                          {t("Save")}
-                        </Button>
-                      ) : (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addDateSetting.isPending ||
-                            updateDateSetting.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          {t("Save")}
-                        </Button>
-                      )}
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
-            </ModalBody>
-          </Modal>
-        </div>
-      </div>
-      <ToastContainer />
-    </React.Fragment>
-  );
+		<React.Fragment>
+			<DateSettingModal
+				isOpen={modal1}
+				toggle={toggleViewModal}
+				transaction={transaction}
+			/>
+			<DeleteModal
+				show={deleteModal}
+				onDeleteClick={handleDeleteDateSetting}
+				onCloseClick={() => setDeleteModal(false)}
+				isLoading={deleteDateSetting.isPending}
+			/>
+			<div className="page-content">
+				<div className="container-fluid">
+					<Breadcrumbs
+						title={t("date_setting")}
+						breadcrumbItem={t("date_setting")}
+					/>
+					{isLoading || isSearchLoading ? (
+						<Spinners />
+					) : (
+						<Row>
+							<Col xs="12">
+								<Card>
+									<CardBody>
+										<TableContainer
+											columns={columns}
+											data={
+												showSearchResult
+													? searchResults?.data
+													: data?.data || []
+											}
+											isGlobalFilter={true}
+											isAddButton={false}
+											isCustomPageSize={true}
+											handleUserClick={handleDateSettingClicks}
+											isPagination={true}
+											buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+											buttonName={t("add")}
+											tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+											theadClass="table-light"
+											pagination="pagination"
+											paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+										/>
+									</CardBody>
+								</Card>
+							</Col>
+						</Row>
+					)}
+					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
+						<ModalHeader toggle={toggle} tag="h4">
+							{!!isEdit
+								? t("edit") + " " + t("date_setting")
+								: t("add") + " " + t("date_setting")}
+						</ModalHeader>
+						<ModalBody>
+							<Form
+								onSubmit={(e) => {
+									e.preventDefault();
+									validation.handleSubmit();
+									return false;
+								}}
+							>
+								<Row>
+									<Col className="col-md-6 mb-3">
+										<Label>{t("dts_parameter_name")}</Label>
+										<Input
+											name="dts_parameter_name"
+											type="text"
+											placeholder={t("dts_parameter_name")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.dts_parameter_name || ""}
+											invalid={
+												validation.touched.dts_parameter_name &&
+												validation.errors.dts_parameter_name
+													? true
+													: false
+											}
+											maxLength={20}
+										/>
+										{validation.touched.dts_parameter_name &&
+										validation.errors.dts_parameter_name ? (
+											<FormFeedback type="invalid">
+												{validation.errors.dts_parameter_name}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-6 mb-3">
+										<Label>{t("dts_parameter_code")}</Label>
+										<Input
+											name="dts_parameter_code"
+											type="text"
+											placeholder={t("dts_parameter_code")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.dts_parameter_code || ""}
+											invalid={
+												validation.touched.dts_parameter_code &&
+												validation.errors.dts_parameter_code
+													? true
+													: false
+											}
+											maxLength={20}
+										/>
+										{validation.touched.dts_parameter_code &&
+										validation.errors.dts_parameter_code ? (
+											<FormFeedback type="invalid">
+												{validation.errors.dts_parameter_code}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-6 mb-3">
+										<DatePicker
+											isRequired="true"
+											validation={validation}
+											componentId="dts_start_date"
+										/>
+									</Col>
+									<Col className="col-md-6 mb-3">
+										<DatePicker
+											isRequired="true"
+											validation={validation}
+											componentId="dts_end_date"
+										/>
+									</Col>
+									<Col className="col-md-6 mb-3">
+										<Label>{t("dts_description")}</Label>
+										<Input
+											name="dts_description"
+											type="textarea"
+											placeholder={t("dts_description")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.dts_description || ""}
+											invalid={
+												validation.touched.dts_description &&
+												validation.errors.dts_description
+													? true
+													: false
+											}
+											maxLength={20}
+										/>
+										{validation.touched.dts_description &&
+										validation.errors.dts_description ? (
+											<FormFeedback type="invalid">
+												{validation.errors.dts_description}
+											</FormFeedback>
+										) : null}
+									</Col>
+								</Row>
+								<Row>
+									<Col>
+										<div className="text-end">
+											{addDateSetting.isPending ||
+											updateDateSetting.isPending ? (
+												<Button
+													color="success"
+													type="submit"
+													className="save-user"
+													disabled={
+														addDateSetting.isPending ||
+														updateDateSetting.isPending ||
+														!validation.dirty
+													}
+												>
+													<Spinner size={"sm"} color="light" className="me-2" />
+													{t("Save")}
+												</Button>
+											) : (
+												<Button
+													color="success"
+													type="submit"
+													className="save-user"
+													disabled={
+														addDateSetting.isPending ||
+														updateDateSetting.isPending ||
+														!validation.dirty
+													}
+												>
+													{t("Save")}
+												</Button>
+											)}
+										</div>
+									</Col>
+								</Row>
+							</Form>
+						</ModalBody>
+					</Modal>
+				</div>
+			</div>
+		</React.Fragment>
+	);
 };
 DateSettingModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

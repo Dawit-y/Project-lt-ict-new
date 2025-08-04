@@ -98,18 +98,22 @@ export function createMultiSelectOptions(data, valueKey, labelKeys, filterFn) {
  * @param {Array} data - The array of objects to transform.
  * @param {string} keyProp - The property to use as the key in the map.
  * @param {string} valueProp - The property to use as the value in the map.
+ * @param {Function} [filterFn] - Optional function to filter items before mapping.
  * @returns {Object} - A key-value map.
  */
-export function createKeyValueMap(data, keyProp, valueProp) {
+export function createKeyValueMap(data, keyProp, valueProp, filterFn = () => true) {
 	if (!Array.isArray(data)) {
 		throw new Error("The first argument must be an array.");
 	}
 
 	return data.reduce((acc, item) => {
-		acc[item[keyProp]] = item[valueProp];
+		if (filterFn(item)) {
+			acc[item[keyProp]] = item[valueProp];
+		}
 		return acc;
 	}, {});
 }
+
 
 /**
  * Creates a key-value map from an array of objects, supporting multilingual value selection.

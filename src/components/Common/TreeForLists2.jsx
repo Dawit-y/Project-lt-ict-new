@@ -33,6 +33,7 @@ const TreeForLists = ({
 	setInclude,
 	isCollapsed,
 	setIsCollapsed,
+	widthInPercent = 25,
 }) => {
 	const { t, i18n } = useTranslation();
 	const dndManager = useDragDropManager();
@@ -177,7 +178,7 @@ const TreeForLists = ({
 	return (
 		<div
 			style={{
-				flex: isCollapsed ? "0 0 60px" : "0 0 25%",
+				flex: isCollapsed ? "0 0 60px" : `0 0 ${widthInPercent}%`,
 				minWidth: isCollapsed ? "60px" : "250px",
 				transition: "all 0.3s ease",
 			}}

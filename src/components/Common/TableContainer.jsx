@@ -105,6 +105,7 @@ const TableContainer = ({
 	infoIcon = false,
 	refetch,
 	isFetching,
+	resetPageIndexTrigger,
 }) => {
 	const [columnFilters, setColumnFilters] = useState([]);
 	const [globalFilter, setGlobalFilter] = useState("");
@@ -181,6 +182,13 @@ const TableContainer = ({
 			nextPage(); // Call the function to go to the next page
 		}
 	};
+
+	useEffect(() => {
+		if (resetPageIndexTrigger) {
+			pageIndexRef.current = 0;
+			table.setPageIndex(0);
+		}
+	}, [resetPageIndexTrigger]);
 
 	return (
 		<Fragment>
@@ -466,4 +474,5 @@ const TableContainer = ({
 		</Fragment>
 	);
 };
+
 export default TableContainer;

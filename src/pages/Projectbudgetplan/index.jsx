@@ -387,221 +387,220 @@ const ProjectBudgetPlanModel = (props) => {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
-    <React.Fragment>
-      <ProjectBudgetPlanModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      />
-      <DeleteModal
-        show={deleteModal}
-        onDeleteClick={handleDeleteProjectBudgetPlan}
-        onCloseClick={() => setDeleteModal(false)}
-        isLoading={deleteProjectBudgetPlan.isPending}
-      />
-      <div className="page-content1">
-        <div>
-          {isLoading || isSearchLoading ? (
-            <Spinners />
-          ) : (
-            <TableContainer
-              columns={columns}
-              data={showSearchResult ? searchResults?.data : data?.data || []}
-              isGlobalFilter={true}
-              isAddButton={true}
-              isCustomPageSize={true}
-              handleUserClick={handleProjectBudgetPlanClicks}
-              isPagination={true}
-              SearchPlaceholder={t("filter_placeholder")}
-              buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-              buttonName={t("add") + " " + t("project_budget_plan")}
-              tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-              theadClass="table-light"
-              pagination="pagination"
-              paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-            />
-          )}
-          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-            <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit
-                ? t("edit") + " " + t("project_budget_plan")
-                : t("add") + " " + t("project_budget_plan")}
-            </ModalHeader>
-            <ModalBody>
-              <Form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  validation.handleSubmit();
-                  return false;
-                }}
-              >
-                <Row>
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("bpl_budget_year_id")}{" "}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="bpl_budget_year_id"
-                      id="bpl_budget_year_id"
-                      type="select"
-                      className="form-select"
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bpl_budget_year_id || ""}
-                      invalid={
-                        validation.touched.bpl_budget_year_id &&
-                        validation.errors.bpl_budget_year_id
-                          ? true
-                          : false
-                      }
-                    >
-                      <option value={null}>Select Budget Year</option>
-                      {budgetYearOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {t(`${option.label}`)}
-                        </option>
-                      ))}
-                    </Input>
-                    {validation.touched.bpl_budget_year_id &&
-                    validation.errors.bpl_budget_year_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bpl_budget_year_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+		<React.Fragment>
+			<ProjectBudgetPlanModal
+				isOpen={modal1}
+				toggle={toggleViewModal}
+				transaction={transaction}
+			/>
+			<DeleteModal
+				show={deleteModal}
+				onDeleteClick={handleDeleteProjectBudgetPlan}
+				onCloseClick={() => setDeleteModal(false)}
+				isLoading={deleteProjectBudgetPlan.isPending}
+			/>
+			<div className="page-content1">
+				<div>
+					{isLoading || isSearchLoading ? (
+						<Spinners />
+					) : (
+						<TableContainer
+							columns={columns}
+							data={showSearchResult ? searchResults?.data : data?.data || []}
+							isGlobalFilter={true}
+							isAddButton={true}
+							isCustomPageSize={true}
+							handleUserClick={handleProjectBudgetPlanClicks}
+							isPagination={true}
+							SearchPlaceholder={t("filter_placeholder")}
+							buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+							buttonName={t("add") + " " + t("project_budget_plan")}
+							tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+							theadClass="table-light"
+							pagination="pagination"
+							paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+						/>
+					)}
+					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
+						<ModalHeader toggle={toggle} tag="h4">
+							{!!isEdit
+								? t("edit") + " " + t("project_budget_plan")
+								: t("add") + " " + t("project_budget_plan")}
+						</ModalHeader>
+						<ModalBody>
+							<Form
+								onSubmit={(e) => {
+									e.preventDefault();
+									validation.handleSubmit();
+									return false;
+								}}
+							>
+								<Row>
+									<Col className="col-md-6 mb-3">
+										<Label>
+											{t("bpl_budget_year_id")}{" "}
+											<span className="text-danger">*</span>
+										</Label>
+										<Input
+											name="bpl_budget_year_id"
+											id="bpl_budget_year_id"
+											type="select"
+											className="form-select"
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.bpl_budget_year_id || ""}
+											invalid={
+												validation.touched.bpl_budget_year_id &&
+												validation.errors.bpl_budget_year_id
+													? true
+													: false
+											}
+										>
+											<option value={null}>Select Budget Year</option>
+											{budgetYearOptions.map((option) => (
+												<option key={option.value} value={option.value}>
+													{t(`${option.label}`)}
+												</option>
+											))}
+										</Input>
+										{validation.touched.bpl_budget_year_id &&
+										validation.errors.bpl_budget_year_id ? (
+											<FormFeedback type="invalid">
+												{validation.errors.bpl_budget_year_id}
+											</FormFeedback>
+										) : null}
+									</Col>
 
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("bpl_budget_code_id")}{" "}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="bpl_budget_code_id"
-                      id="bpl_budget_code_id"
-                      type="select"
-                      className="form-select"
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bpl_budget_code_id || ""}
-                      invalid={
-                        validation.touched.bpl_budget_code_id &&
-                        validation.errors.bpl_budget_code_id
-                          ? true
-                          : false
-                      }
-                    >
-                      <option value={null}>Select Expenditure Code</option>
-                      {expenditureCodeOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {t(`${option.label}`)}
-                        </option>
-                      ))}
-                    </Input>
-                    {validation.touched.bpl_budget_code_id &&
-                    validation.errors.bpl_budget_code_id ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bpl_budget_code_id}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+									<Col className="col-md-6 mb-3">
+										<Label>
+											{t("bpl_budget_code_id")}{" "}
+											<span className="text-danger">*</span>
+										</Label>
+										<Input
+											name="bpl_budget_code_id"
+											id="bpl_budget_code_id"
+											type="select"
+											className="form-select"
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.bpl_budget_code_id || ""}
+											invalid={
+												validation.touched.bpl_budget_code_id &&
+												validation.errors.bpl_budget_code_id
+													? true
+													: false
+											}
+										>
+											<option value={null}>Select Expenditure Code</option>
+											{expenditureCodeOptions.map((option) => (
+												<option key={option.value} value={option.value}>
+													{t(`${option.label}`)}
+												</option>
+											))}
+										</Input>
+										{validation.touched.bpl_budget_code_id &&
+										validation.errors.bpl_budget_code_id ? (
+											<FormFeedback type="invalid">
+												{validation.errors.bpl_budget_code_id}
+											</FormFeedback>
+										) : null}
+									</Col>
 
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("bpl_amount")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="bpl_amount"
-                      type="number"
-                      placeholder={t("bpl_amount")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bpl_amount || ""}
-                      invalid={
-                        validation.touched.bpl_amount &&
-                        validation.errors.bpl_amount
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.bpl_amount &&
-                    validation.errors.bpl_amount ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bpl_amount}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("bpl_description")}</Label>
-                    <Input
-                      name="bpl_description"
-                      type="textarea"
-                      rows={2}
-                      placeholder={t("bpl_description")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.bpl_description || ""}
-                      invalid={
-                        validation.touched.bpl_description &&
-                        validation.errors.bpl_description
-                          ? true
-                          : false
-                      }
-                      maxLength={425}
-                    />
-                    {validation.touched.bpl_description &&
-                    validation.errors.bpl_description ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.bpl_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <div className="text-end">
-                      {addProjectBudgetPlan.isPending ||
-                      updateProjectBudgetPlan.isPending ? (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addProjectBudgetPlan.isPending ||
-                            updateProjectBudgetPlan.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          <Spinner size={"sm"} color="light" className="me-2" />
-                          {t("Save")}
-                        </Button>
-                      ) : (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addProjectBudgetPlan.isPending ||
-                            updateProjectBudgetPlan.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          {t("Save")}
-                        </Button>
-                      )}
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
-            </ModalBody>
-          </Modal>
-        </div>
-      </div>
-      <ToastContainer />
-    </React.Fragment>
-  );
+									<Col className="col-md-6 mb-3">
+										<Label>
+											{t("bpl_amount")}
+											<span className="text-danger">*</span>
+										</Label>
+										<Input
+											name="bpl_amount"
+											type="number"
+											placeholder={t("bpl_amount")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.bpl_amount || ""}
+											invalid={
+												validation.touched.bpl_amount &&
+												validation.errors.bpl_amount
+													? true
+													: false
+											}
+											maxLength={20}
+										/>
+										{validation.touched.bpl_amount &&
+										validation.errors.bpl_amount ? (
+											<FormFeedback type="invalid">
+												{validation.errors.bpl_amount}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-6 mb-3">
+										<Label>{t("bpl_description")}</Label>
+										<Input
+											name="bpl_description"
+											type="textarea"
+											rows={2}
+											placeholder={t("bpl_description")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.bpl_description || ""}
+											invalid={
+												validation.touched.bpl_description &&
+												validation.errors.bpl_description
+													? true
+													: false
+											}
+											maxLength={425}
+										/>
+										{validation.touched.bpl_description &&
+										validation.errors.bpl_description ? (
+											<FormFeedback type="invalid">
+												{validation.errors.bpl_description}
+											</FormFeedback>
+										) : null}
+									</Col>
+								</Row>
+								<Row>
+									<Col>
+										<div className="text-end">
+											{addProjectBudgetPlan.isPending ||
+											updateProjectBudgetPlan.isPending ? (
+												<Button
+													color="success"
+													type="submit"
+													className="save-user"
+													disabled={
+														addProjectBudgetPlan.isPending ||
+														updateProjectBudgetPlan.isPending ||
+														!validation.dirty
+													}
+												>
+													<Spinner size={"sm"} color="light" className="me-2" />
+													{t("Save")}
+												</Button>
+											) : (
+												<Button
+													color="success"
+													type="submit"
+													className="save-user"
+													disabled={
+														addProjectBudgetPlan.isPending ||
+														updateProjectBudgetPlan.isPending ||
+														!validation.dirty
+													}
+												>
+													{t("Save")}
+												</Button>
+											)}
+										</div>
+									</Col>
+								</Row>
+							</Form>
+						</ModalBody>
+					</Modal>
+				</div>
+			</div>
+		</React.Fragment>
+	);
 };
 ProjectBudgetPlanModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

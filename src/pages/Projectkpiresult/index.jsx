@@ -497,254 +497,254 @@ const ProjectKpiResultModel = (props) => {
   }, [projectKpiResult]);
 
   return (
-    <React.Fragment>
-      <LazyLoader>
-        {fileModal && (
-          <AttachFileModal
-            isOpen={fileModal}
-            toggle={toggleFileModal}
-            projectId={passedId}
-            ownerTypeId={PAGE_ID.PROJ_KPI_RESULT}
-            ownerId={transaction?.kpr_id}
-          />
-        )}
-        {convModal && (
-          <ConvInfoModal
-            isOpen={convModal}
-            toggle={toggleConvModal}
-            ownerTypeId={PAGE_ID.PROJ_KPI_RESULT}
-            ownerId={transaction?.kpr_id ?? null}
-          />
-        )}
-      </LazyLoader>
-      <ProjectKpiResultModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      />
+		<React.Fragment>
+			<LazyLoader>
+				{fileModal && (
+					<AttachFileModal
+						isOpen={fileModal}
+						toggle={toggleFileModal}
+						projectId={passedId}
+						ownerTypeId={PAGE_ID.PROJ_KPI_RESULT}
+						ownerId={transaction?.kpr_id}
+					/>
+				)}
+				{convModal && (
+					<ConvInfoModal
+						isOpen={convModal}
+						toggle={toggleConvModal}
+						ownerTypeId={PAGE_ID.PROJ_KPI_RESULT}
+						ownerId={transaction?.kpr_id ?? null}
+					/>
+				)}
+			</LazyLoader>
+			<ProjectKpiResultModal
+				isOpen={modal1}
+				toggle={toggleViewModal}
+				transaction={transaction}
+			/>
 
-      <DeleteModal
-        show={deleteModal}
-        onDeleteClick={handleDeleteProjectKpiResult}
-        onCloseClick={() => setDeleteModal(false)}
-        isLoading={deleteProjectKpiResult.isPending}
-      />
+			<DeleteModal
+				show={deleteModal}
+				onDeleteClick={handleDeleteProjectKpiResult}
+				onCloseClick={() => setDeleteModal(false)}
+				isLoading={deleteProjectKpiResult.isPending}
+			/>
 
-      {isLoading ? (
-        <Spinners />
-      ) : (
-        <TableContainer
-          columns={columns}
-          data={showSearchResult ? results : data?.data || []}
-          isGlobalFilter={true}
-          isAddButton={data?.previledge?.is_role_can_add == 1}
-          isCustomPageSize={true}
-          handleUserClick={handleAddNew}
-          isPagination={true}
-          SearchPlaceholder={26 + " " + t("Results") + "..."}
-          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-          buttonName={t("add_planned")}
-          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-          theadClass="table-light"
-          pagination="pagination"
-          paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-          refetch={refetch}
-          isFetching={isFetching}
-        />
-      )}
+			{isLoading ? (
+				<Spinners />
+			) : (
+				<TableContainer
+					columns={columns}
+					data={showSearchResult ? results : data?.data || []}
+					isGlobalFilter={true}
+					isAddButton={data?.previledge?.is_role_can_add == 1}
+					isCustomPageSize={true}
+					handleUserClick={handleAddNew}
+					isPagination={true}
+					SearchPlaceholder={26 + " " + t("Results") + "..."}
+					buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+					buttonName={t("add_planned")}
+					tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+					theadClass="table-light"
+					pagination="pagination"
+					paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+					refetch={refetch}
+					isFetching={isFetching}
+				/>
+			)}
 
-      <Modal isOpen={modal} toggle={toggle} size="xl">
-        <ModalHeader toggle={toggle} className="border-0 pb-0">
-          <h4 className="mb-0">
-            {isEdit
-              ? `${t(
-                entryMode === "planned" ? "edit_planned" : "enter_actuals"
-              )}`
-              : `${t("add_planned")}`}
-            <Badge
-              color={entryMode === "planned" ? "info" : "success"}
-              className="ms-2"
-            >
-              {t(entryMode)}
-            </Badge>
-          </h4>
-        </ModalHeader>
+			<Modal isOpen={modal} toggle={toggle} size="xl">
+				<ModalHeader toggle={toggle} className="border-0 pb-0">
+					<h4 className="mb-0">
+						{isEdit
+							? `${t(
+									entryMode === "planned" ? "edit_planned" : "enter_actuals"
+							  )}`
+							: `${t("add_planned")}`}
+						<Badge
+							color={entryMode === "planned" ? "info" : "success"}
+							className="ms-2"
+						>
+							{t(entryMode)}
+						</Badge>
+					</h4>
+				</ModalHeader>
 
-        <ModalBody className="pt-1">
-          <Form onSubmit={validation.handleSubmit}>
-            {/* KPI & Year Selection */}
-            <Card className="mb-4 border-light shadow-sm">
-              <CardBody>
-                <Row>
-                  <Col md={6}>
-                    <Label className="fw-medium">
-                      {t("kpr_project_kpi_id")}
-                    </Label>
-                    <Input
-                      name="kpr_project_kpi_id"
-                      type="select"
-                      className="form-select"
-                      onChange={validation.handleChange}
-                      value={validation.values.kpr_project_kpi_id || ""}
-                      invalid={
-                        validation.touched.kpr_project_kpi_id &&
-                        !!validation.errors.kpr_project_kpi_id
-                      }
-                      disabled={isEdit}
-                    >
-                      <option value="">{t("select")}</option>
-                      {kpiOptionsData?.data?.map((data) => (
-                        <option key={data.kpi_id} value={data.kpi_id}>
-                          {data.kpi_name_or}
-                        </option>
-                      ))}
-                    </Input>
-                    <FormFeedback>
-                      {validation.errors.kpr_project_kpi_id}
-                    </FormFeedback>
-                  </Col>
+				<ModalBody className="pt-1">
+					<Form onSubmit={validation.handleSubmit}>
+						{/* KPI & Year Selection */}
+						<Card className="mb-4 border-light shadow-sm">
+							<CardBody>
+								<Row>
+									<Col md={6}>
+										<Label className="fw-medium">
+											{t("kpr_project_kpi_id")}
+										</Label>
+										<Input
+											name="kpr_project_kpi_id"
+											type="select"
+											className="form-select"
+											onChange={validation.handleChange}
+											value={validation.values.kpr_project_kpi_id || ""}
+											invalid={
+												validation.touched.kpr_project_kpi_id &&
+												!!validation.errors.kpr_project_kpi_id
+											}
+											disabled={isEdit}
+										>
+											<option value="">{t("select")}</option>
+											{kpiOptionsData?.data?.map((data) => (
+												<option key={data.kpi_id} value={data.kpi_id}>
+													{data.kpi_name_or}
+												</option>
+											))}
+										</Input>
+										<FormFeedback>
+											{validation.errors.kpr_project_kpi_id}
+										</FormFeedback>
+									</Col>
 
-                  <Col md={6}>
-                    <Label className="fw-medium">{t("kpr_year_id")}</Label>
-                    <Input
-                      name="kpr_year_id"
-                      type="select"
-                      className="form-select"
-                      onChange={validation.handleChange}
-                      value={validation.values.kpr_year_id || ""}
-                      invalid={
-                        validation.touched.kpr_year_id &&
-                        !!validation.errors.kpr_year_id
-                      }
-                      disabled={isEdit}
-                    >
-                      <option value="">{t("select")}</option>
-                      {bgYearsOptionsData?.data?.map((data) => (
-                        <option key={data.bdy_id} value={data.bdy_id}>
-                          {data.bdy_name}
-                        </option>
-                      ))}
-                    </Input>
-                    <FormFeedback>{validation.errors.kpr_year_id}</FormFeedback>
-                  </Col>
-                </Row>
-              </CardBody>
-            </Card>
+									<Col md={6}>
+										<Label className="fw-medium">{t("kpr_year_id")}</Label>
+										<Input
+											name="kpr_year_id"
+											type="select"
+											className="form-select"
+											onChange={validation.handleChange}
+											value={validation.values.kpr_year_id || ""}
+											invalid={
+												validation.touched.kpr_year_id &&
+												!!validation.errors.kpr_year_id
+											}
+											disabled={isEdit}
+										>
+											<option value="">{t("select")}</option>
+											{bgYearsOptionsData?.data?.map((data) => (
+												<option key={data.bdy_id} value={data.bdy_id}>
+													{data.bdy_name}
+												</option>
+											))}
+										</Input>
+										<FormFeedback>{validation.errors.kpr_year_id}</FormFeedback>
+									</Col>
+								</Row>
+							</CardBody>
+						</Card>
 
-            {/* Quarterly Tabs */}
-            <Nav tabs className="nav-tabs-custom mb-3 justify-content-center">
-              {["Quarter1", "Quarter2", "Quarter3", "Quarter4"].map(
-                (quarter, idx) => (
-                  <NavItem key={idx} className="mx-3">
-                    <NavLink
-                      className={`cursor-pointer ${activeTab === quarter ? "active" : ""
-                        }`}
-                      onClick={() => setActiveTab(quarter)}
-                    >
-                      {quarter}
-                    </NavLink>
-                  </NavItem>
-                )
-              )}
-            </Nav>
+						{/* Quarterly Tabs */}
+						<Nav tabs className="nav-tabs-custom mb-3 justify-content-center">
+							{["Quarter1", "Quarter2", "Quarter3", "Quarter4"].map(
+								(quarter, idx) => (
+									<NavItem key={idx} className="mx-3">
+										<NavLink
+											className={`cursor-pointer ${
+												activeTab === quarter ? "active" : ""
+											}`}
+											onClick={() => setActiveTab(quarter)}
+										>
+											{quarter}
+										</NavLink>
+									</NavItem>
+								)
+							)}
+						</Nav>
 
-            {/* Quarterly Input Groups */}
-            <TabContent activeTab={activeTab}>
-              {["Quarter1", "Quarter2", "Quarter3", "Quarter4"].map(
-                (quarter) => {
-                  const months = {
-                    Quarter1: [11, 12, 1],
-                    Quarter2: [2, 3, 4],
-                    Quarter3: [5, 6, 7],
-                    Quarter4: [8, 9, 10],
-                  }[quarter];
+						{/* Quarterly Input Groups */}
+						<TabContent activeTab={activeTab}>
+							{["Quarter1", "Quarter2", "Quarter3", "Quarter4"].map(
+								(quarter) => {
+									const months = {
+										Quarter1: [11, 12, 1],
+										Quarter2: [2, 3, 4],
+										Quarter3: [5, 6, 7],
+										Quarter4: [8, 9, 10],
+									}[quarter];
 
-                  return (
-                    <TabPane tabId={quarter} key={quarter}>
-                      <Card className="border-light shadow-sm">
-                        <CardBody>
-                          <Row>
-                            {months.map((month) => (
-                              <Col md={4} key={month} className="mb-3">
-                                <Card className="h-100">
-                                  <CardHeader className="bg-light py-2">
-                                    <h6 className="mb-0">Month {month}</h6>
-                                  </CardHeader>
-                                  <CardBody>
-                                    {entryMode === "planned" ? (
-                                      <FormattedAmountField
-                                        validation={validation}
-                                        fieldId={`kpr_planned_month_${month}`}
-                                        label={t("planned")}
-                                        isRequired={true}
-                                      />
-                                    ) : (
-                                      <FormattedAmountField
-                                        validation={validation}
-                                        fieldId={`kpr_actual_month_${month}`}
-                                        label={t("actual")}
-                                        isRequired={true}
-                                      />
-                                    )}
-                                  </CardBody>
-                                </Card>
-                              </Col>
-                            ))}
-                          </Row>
-                        </CardBody>
-                      </Card>
-                    </TabPane>
-                  );
-                }
-              )}
-            </TabContent>
+									return (
+										<TabPane tabId={quarter} key={quarter}>
+											<Card className="border-light shadow-sm">
+												<CardBody>
+													<Row>
+														{months.map((month) => (
+															<Col md={4} key={month} className="mb-3">
+																<Card className="h-100">
+																	<CardHeader className="bg-light py-2">
+																		<h6 className="mb-0">Month {month}</h6>
+																	</CardHeader>
+																	<CardBody>
+																		{entryMode === "planned" ? (
+																			<FormattedAmountField
+																				validation={validation}
+																				fieldId={`kpr_planned_month_${month}`}
+																				label={t("planned")}
+																				isRequired={true}
+																			/>
+																		) : (
+																			<FormattedAmountField
+																				validation={validation}
+																				fieldId={`kpr_actual_month_${month}`}
+																				label={t("actual")}
+																				isRequired={true}
+																			/>
+																		)}
+																	</CardBody>
+																</Card>
+															</Col>
+														))}
+													</Row>
+												</CardBody>
+											</Card>
+										</TabPane>
+									);
+								}
+							)}
+						</TabContent>
 
-            {/* Description */}
-            <Card className="mt-3 border-light shadow-sm">
-              <CardBody>
-                <Label className="fw-medium">
-                  {t("kpr_description")}
-                  <small className="text-muted ms-1">({t("optional")})</small>
-                </Label>
-                <Input
-                  name="kpr_description"
-                  type="textarea"
-                  rows="2"
-                  placeholder={t("description")}
-                  onChange={validation.handleChange}
-                  value={validation.values.kpr_description || ""}
-                />
-              </CardBody>
-            </Card>
+						{/* Description */}
+						<Card className="mt-3 border-light shadow-sm">
+							<CardBody>
+								<Label className="fw-medium">
+									{t("kpr_description")}
+									<small className="text-muted ms-1">({t("optional")})</small>
+								</Label>
+								<Input
+									name="kpr_description"
+									type="textarea"
+									rows="2"
+									placeholder={t("description")}
+									onChange={validation.handleChange}
+									value={validation.values.kpr_description || ""}
+								/>
+							</CardBody>
+						</Card>
 
-            {/* Submit Button */}
-            <div className="text-end mt-4">
-              <Button
-                color="primary"
-                type="submit"
-                disabled={
-                  addProjectKpiResult.isPending ||
-                  updateProjectKpiResult.isPending ||
-                  !validation.dirty
-                }
-              >
-                {addProjectKpiResult.isPending ||
-                  updateProjectKpiResult.isPending ? (
-                  <>
-                    <Spinner size="sm" className="me-2" />
-                    {t("saving")}...
-                  </>
-                ) : (
-                  t("save")
-                )}
-              </Button>
-            </div>
-          </Form>
-        </ModalBody>
-      </Modal>
-      <ToastContainer />
-    </React.Fragment>
-  );
+						{/* Submit Button */}
+						<div className="text-end mt-4">
+							<Button
+								color="primary"
+								type="submit"
+								disabled={
+									addProjectKpiResult.isPending ||
+									updateProjectKpiResult.isPending ||
+									!validation.dirty
+								}
+							>
+								{addProjectKpiResult.isPending ||
+								updateProjectKpiResult.isPending ? (
+									<>
+										<Spinner size="sm" className="me-2" />
+										{t("saving")}...
+									</>
+								) : (
+									t("save")
+								)}
+							</Button>
+						</div>
+					</Form>
+				</ModalBody>
+			</Modal>
+		</React.Fragment>
+	);
 };
 
 ProjectKpiResultModel.propTypes = {

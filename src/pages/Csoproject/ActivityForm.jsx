@@ -26,15 +26,16 @@ const ActivityForm = ({ isOpen, toggle, isEdit, activeTabName, validation, isPen
   const { data: projectCategoryData, isLoading: isPctLoading, isError: isPctError } = useFetchProjectCategorys();
   const projectCategoryMap = useMemo(() => {
     return createMultiLangKeyValueMap(
-      projectCategoryData?.data || [],
-      "pct_id",
-      {
-        en: "pct_name_en",
-        am: "pct_name_am",
-        or: "pct_name_or",
-      },
-      lang,
-    );
+			projectCategoryData?.data || [],
+			"pct_id",
+			{
+				en: "pct_name_en",
+				am: "pct_name_am",
+				or: "pct_name_or",
+			},
+			lang,
+			(item) => item.pct_owner_type_id === 2
+		);
   }, [projectCategoryData, lang]);
 
   return (

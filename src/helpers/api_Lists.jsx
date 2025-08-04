@@ -34,7 +34,7 @@ export const scheduleTokenRefresh = (token) => {
 export const refreshAccessToken = async () => {
 	try {
 		const response = await post(`refreshtoken`, null, {
-			withCredentials: true, 
+			withCredentials: true,
 		});
 
 		const state = store.getState();
@@ -72,6 +72,9 @@ axiosApi.interceptors.response.use(
 	async (error) => {
 		const originalRequest = error.config;
 
+		const state = store.getState();
+		const logoutReason = state.Auth.logoutReason;
+
 		// Prevent infinite loop by NOT retrying refresh request
 		const isRefreshRequest = originalRequest.url.includes("refreshtoken");
 		if (isRefreshRequest) {
@@ -83,29 +86,41 @@ axiosApi.interceptors.response.use(
 			return Promise.reject(error);
 		}
 
-		// Retry logic for other 401s (not refresh and not already retried)
-		if (error.response?.status === 401 && !originalRequest._retry) {
+		const isOnLoginPage = window.location.pathname === "/login";
+
+		// Retry logic for other 401s
+		if (
+			error.response?.status === 401 &&
+			!originalRequest._retry &&
+			logoutReason !== "timeout" &&
+			!isOnLoginPage
+		) {
 			originalRequest._retry = true;
 			try {
 				await refreshAccessToken();
-				const state = store.getState();
+
+				const updatedState = store.getState();
+
 				originalRequest.headers[
 					"Authorization"
-				] = `Bearer ${state.Auth.accessToken}`;
+				] = `Bearer ${updatedState.Auth.accessToken}`;
 
 				return axiosApi(originalRequest);
 			} catch (refreshError) {
 				store.dispatch(clearAuthData());
-				if (window.location.pathname !== "/login") redirectToLogin();
+				if (!isOnLoginPage) redirectToLogin();
 				return Promise.reject(refreshError);
 			}
 		}
+
 		return Promise.reject(error);
 	}
 );
 
 export async function get(url, config = {}) {
-	return axiosApi.get(url, { ...config }).then((response) => response?.data);
+	return axiosApi
+		.get(url, { ...config, withCredentials: true })
+		.then((response) => response?.data);
 }
 
 export async function post(url, data, config = {}) {

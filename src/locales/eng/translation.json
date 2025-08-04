@@ -1340,7 +1340,7 @@
 	"mne_transaction_type_id": "Transaction Type Id",
 	"mne_visit_type": "Visit Type",
 	"mne_project_id": "Project Id",
-	"mne_type_id": "Type Id",
+	"mne_type_id": "Type",
 	"mne_physical_region": "Physical Region",
 	"mne_financial_region": "Financial Region",
 	"mne_physical_zone": "Physical Zone",
@@ -1987,6 +1987,6 @@
 	"payment_date": "Payment Date",
 	"payment_summary": "Payment Summary",
 	"all_years": "All Years",
+	"completion_date": "Completion Date",
 	"prj_cluster_id": "Cluster"
-
 }
