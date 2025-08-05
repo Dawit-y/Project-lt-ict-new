@@ -1,24 +1,29 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
+import classnames from "classnames";
 import { useFormik } from "formik";
-import { Spinner } from "reactstrap";
+import {
+	Spinner,
+	Button,
+	Nav,
+	NavItem,
+	NavLink,
+	TabContent,
+	TabPane,
+} from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
 	useFetchProjectContractors,
-	useSearchProjectContractors,
 	useAddProjectContractor,
-	useDeleteProjectContractor,
 	useUpdateProjectContractor,
+	useDeleteProjectContractor,
 } from "../../queries/projectcontractor_query";
 import { useFetchContractorTypes } from "../../queries/contractortype_query";
 import { useTranslation } from "react-i18next";
 import {
-	Button,
 	Col,
 	Row,
 	UncontrolledTooltip,
@@ -26,177 +31,137 @@ import {
 	ModalHeader,
 	ModalBody,
 	Form,
-	Input,
-	FormFeedback,
-	Label,
-	Card,
-	CardBody,
-	CardHeader,
-	FormGroup,
-	Badge,
-	InputGroup,
-	Collapse,
 } from "reactstrap";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import { createSelectOptions } from "../../utils/commonMethods";
-import { formatDate } from "../../utils/commonMethods";
+import { convertToNumericValue } from "../../utils/commonMethods";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import DatePicker from "../../components/Common/DatePicker";
-import { formattedAmountValidation } from "../../utils/Validation/validation";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
-import { convertToNumericValue } from "../../utils/commonMethods";
 import { projectContractorExportColumns } from "../../utils/exportColumnsForDetails";
+import InputField from "../../components/Common/InputField";
+import AsyncSelectField from "../../components/Common/AsyncSelectField";
+import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
 
-const truncateText = (text, maxLength) => {
-	if (typeof text !== "string") {
-		return text;
-	}
-	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+const truncateText = (text, maxLength) =>
+	typeof text === "string" && text.length > maxLength
+		? `${text.substring(0, maxLength)}…`
+		: text || "-";
+
+const hasErrorsInTab = (tab, errors) => {
+	const fields = {
+		general: [
+			"cni_name",
+			"cni_tin_num",
+			"cni_contractor_type_id",
+			"cni_vat_num",
+			"cni_total_contract_price",
+			"cni_contact_person",
+			"cni_phone_number",
+			"cni_address",
+			"cni_email",
+			"cni_website",
+		],
+		procurement: [
+			"cni_procrument_method",
+			"cni_financial_start",
+			"cni_physical_start",
+			"cni_financial_end",
+			"cni_physical_end",
+		],
+		dates: [
+			"cni_contract_start_date_gc",
+			"cni_contract_end_date_gc",
+			"cni_bid_invitation_date",
+			"cni_bid_opening_date",
+			"cni_bid_evaluation_date",
+			"cni_bid_award_date",
+			"cni_bid_contract_signing_date",
+		],
+	};
+
+	return fields[tab].some((field) => errors[field]);
 };
 
-const ProjectContractorModel = (props) => {
-	const { passedId, isActive, startDate } = props;
-	const param = { cni_project_id: passedId, request_type: "single" };
-	const { t } = useTranslation();
-	const [modal, setModal] = useState(false);
-	const [modal1, setModal1] = useState(false);
+const ProjectContractorModel = ({ passedId, isActive, startDate }) => {
+	const { t, i18n } = useTranslation();
+	const [modalOpen, setModalOpen] = useState(false);
+	const [detailModalOpen, setDetailModalOpen] = useState(false);
+	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 	const [isEdit, setIsEdit] = useState(false);
 	const [projectContractor, setProjectContractor] = useState(null);
+	const [activeTab, setActiveTab] = useState("general");
+	const [transaction, setTransaction] = useState({});
 
-	const [searchResults, setSearchResults] = useState(null);
-	const [isSearchLoading, setIsSearchLoading] = useState(false);
-	const [searcherror, setSearchError] = useState(null);
-	const [showSearchResult, setShowSearchResult] = useState(false);
-
-	const [isExpanded, setIsExpanded] = useState(false);
-
-	const { data, isLoading, isFetching, error, isError, refetch } =
+	const param = { cni_project_id: passedId, request_type: "single" };
+	const { data, isLoading, isFetching, error, refetch } =
 		useFetchProjectContractors(param, isActive);
+	const addMutation = useAddProjectContractor();
+	const updateMutation = useUpdateProjectContractor();
+	const deleteMutation = useDeleteProjectContractor();
 
-	const addProjectContractor = useAddProjectContractor();
-	const updateProjectContractor = useUpdateProjectContractor();
-	const deleteProjectContractor = useDeleteProjectContractor();
+	const {
+		data: contractorTypeData,
+		isLoading: cntTypeLoading,
+		isError: cntTypeError,
+	} = useFetchContractorTypes();
+	const contractorTypeMap = useMemo(() => {
+		return createMultiLangKeyValueMap(
+			contractorTypeData?.data || [],
+			"cnt_id",
+			{
+				en: "cnt_type_name_en",
+				am: "cnt_type_name_am",
+				or: "cnt_type_name_or",
+			},
+			i18n.language
+		);
+	}, [contractorTypeData, i18n.language]);
 
-	const { data: contractorTypeData } = useFetchContractorTypes();
-	const contractorTypeOptions = createSelectOptions(
-		contractorTypeData?.data || [],
-		"cnt_id",
-		"cnt_type_name_or"
-	);
-
-	//START CRUD
-	const handleAddProjectContractor = async (data) => {
-		try {
-			await addProjectContractor.mutateAsync(data);
-			toast.success(`Data added successfully`, {
-				autoClose: 2000,
-			});
-			validation.resetForm();
-		} catch (error) {
-			toast.error("Failed to add data", {
-				autoClose: 2000,
-			});
-		}
-		toggle();
-	};
-
-	const handleUpdateProjectContractor = async (data) => {
-		try {
-			await updateProjectContractor.mutateAsync(data);
-			toast.success(`data updated successfully`, {
-				autoClose: 2000,
-			});
-			validation.resetForm();
-		} catch (error) {
-			toast.error(`Failed to update Data`, {
-				autoClose: 2000,
-			});
-		}
-		toggle();
-	};
-	const handleDeleteProjectContractor = async () => {
-		if (projectContractor && projectContractor.cni_id) {
-			try {
-				const id = projectContractor.cni_id;
-				await deleteProjectContractor.mutateAsync(id);
-				toast.success(`Data deleted successfully`, {
-					autoClose: 2000,
-				});
-			} catch (error) {
-				toast.error(`Failed to delete Data`, {
-					autoClose: 2000,
-				});
-			}
-			setDeleteModal(false);
-		}
-	};
-
-	// validation
 	const validation = useFormik({
 		enableReinitialize: true,
 		initialValues: {
-			cni_name: (projectContractor && projectContractor.cni_name) || "",
-			cni_tin_num: (projectContractor && projectContractor.cni_tin_num) || "",
-			cni_contractor_type_id:
-				(projectContractor && projectContractor.cni_contractor_type_id) || "",
-			cni_vat_num: (projectContractor && projectContractor.cni_vat_num) || "",
+			cni_name: projectContractor?.cni_name || "",
+			cni_tin_num: projectContractor?.cni_tin_num || "",
+			cni_contractor_type_id: projectContractor?.cni_contractor_type_id || "",
+			cni_vat_num: projectContractor?.cni_vat_num || "",
 			cni_total_contract_price:
-				(projectContractor && projectContractor.cni_total_contract_price) || "",
-			cni_contract_start_date_et:
-				(projectContractor && projectContractor.cni_contract_start_date_et) ||
-				"",
+				projectContractor?.cni_total_contract_price || "",
 			cni_contract_start_date_gc:
-				(projectContractor && projectContractor.cni_contract_start_date_gc) ||
-				"",
-			cni_contract_end_date_et:
-				(projectContractor && projectContractor.cni_contract_end_date_et) || "",
+				projectContractor?.cni_contract_start_date_gc || "",
 			cni_contract_end_date_gc:
-				(projectContractor && projectContractor.cni_contract_end_date_gc) || "",
-			cni_contact_person:
-				(projectContractor && projectContractor.cni_contact_person) || "",
-			cni_phone_number:
-				(projectContractor && projectContractor.cni_phone_number) || "",
-			cni_address: (projectContractor && projectContractor.cni_address) || "",
-			cni_email: (projectContractor && projectContractor.cni_email) || "",
-			cni_website: (projectContractor && projectContractor.cni_website) || "",
-			cni_project_id: passedId,
-			cni_procrument_method:
-				(projectContractor && projectContractor.cni_procrument_method) || "",
-			cni_bid_invitation_date:
-				(projectContractor && projectContractor.cni_bid_invitation_date) || "",
-			cni_bid_opening_date:
-				(projectContractor && projectContractor.cni_bid_opening_date) || "",
-			cni_bid_evaluation_date:
-				(projectContractor && projectContractor.cni_bid_evaluation_date) || "",
-			cni_bid_award_date:
-				(projectContractor && projectContractor.cni_bid_award_date) || "",
+				projectContractor?.cni_contract_end_date_gc || "",
+			cni_contact_person: projectContractor?.cni_contact_person || "",
+			cni_phone_number: projectContractor?.cni_phone_number || "",
+			cni_address: projectContractor?.cni_address || "",
+			cni_email: projectContractor?.cni_email || "",
+			cni_website: projectContractor?.cni_website || "",
+			cni_procrument_method: projectContractor?.cni_procrument_method || "",
+			cni_bid_invitation_date: projectContractor?.cni_bid_invitation_date || "",
+			cni_bid_opening_date: projectContractor?.cni_bid_opening_date || "",
+			cni_bid_evaluation_date: projectContractor?.cni_bid_evaluation_date || "",
+			cni_bid_award_date: projectContractor?.cni_bid_award_date || "",
 			cni_bid_contract_signing_date:
-				(projectContractor &&
-					projectContractor.cni_bid_contract_signing_date) ||
-				"",
-			cni_description:
-				(projectContractor && projectContractor.cni_description) || "",
-			cni_status: (projectContractor && projectContractor.cni_status) || "",
-
-			is_deletable: (projectContractor && projectContractor.is_deletable) || 1,
-			is_editable: (projectContractor && projectContractor.is_editable) || 1,
-			cni_financial_start:
-				(projectContractor && projectContractor.cni_financial_start) || "0",
-			cni_physical_start:
-				(projectContractor && projectContractor.cni_physical_start) || "0",
-			cni_financial_end:
-				(projectContractor && projectContractor.cni_financial_end) || "0",
-			cni_physical_end:
-				(projectContractor && projectContractor.cni_physical_end) || "0",
+				projectContractor?.cni_bid_contract_signing_date || "",
+			cni_description: projectContractor?.cni_description || "",
+			cni_status: projectContractor?.cni_status || "",
+			cni_financial_start: projectContractor?.cni_financial_start || "0",
+			cni_physical_start: projectContractor?.cni_physical_start || "0",
+			cni_financial_end: projectContractor?.cni_financial_end || "0",
+			cni_physical_end: projectContractor?.cni_physical_end || "0",
+			cni_project_id: passedId,
+			is_deletable: projectContractor?.is_deletable ?? 1,
+			is_editable: projectContractor?.is_editable ?? 1,
 		},
-
 		validationSchema: Yup.object({
 			cni_name: Yup.string().required(t("cni_name")),
 			cni_tin_num: Yup.string().required(t("cni_tin_num")),
 			cni_vat_num: Yup.string().required(t("cni_vat_num")),
 			cni_total_contract_price: Yup.string().required(
 				t("cni_total_contract_price")
+			),
+			cni_contractor_type_id: Yup.string().required(
+				t("cni_contractor_type_id")
 			),
 			cni_contract_start_date_gc: Yup.string().required(
 				t("cni_contract_start_date_gc")
@@ -206,388 +171,184 @@ const ProjectContractorModel = (props) => {
 			),
 			cni_contact_person: Yup.string().required(t("cni_contact_person")),
 			cni_phone_number: Yup.string().required(t("cni_phone_number")),
-			//cni_address: Yup.string().required(t("cni_address")),
 			cni_procrument_method: Yup.string().required(t("cni_procrument_method")),
-			//cni_bid_invitation_date: Yup.string().required( t("cni_bid_invitation_date")),
-			//cni_bid_opening_date: Yup.string().required(t("cni_bid_opening_date")),
-			//cni_bid_evaluation_date: Yup.string().required( t("cni_bid_evaluation_date")),
-			//cni_bid_award_date: Yup.string().required(t("cni_bid_award_date")),
-			//cni_bid_contract_signing_date: Yup.string().required(t("cni_bid_contract_signing_date"))
 		}),
 		validateOnBlur: true,
 		validateOnChange: false,
-		onSubmit: (values) => {
-			if (isEdit) {
-				const updateProjectContractor = {
-					cni_id: projectContractor.cni_id,
-					cni_name: values.cni_name,
-					cni_tin_num: values.cni_tin_num,
-					cni_contractor_type_id: values.cni_contractor_type_id,
-					cni_vat_num: values.cni_vat_num,
-					cni_total_contract_price: values.cni_total_contract_price,
-					cni_contract_start_date_et: values.cni_contract_start_date_et,
-					cni_contract_start_date_gc: values.cni_contract_start_date_gc,
-					cni_contract_end_date_et: values.cni_contract_end_date_et,
-					cni_contract_end_date_gc: values.cni_contract_end_date_gc,
-					cni_contact_person: values.cni_contact_person,
-					cni_phone_number: values.cni_phone_number,
-					cni_address: values.cni_address,
-					cni_email: values.cni_email,
-					cni_website: values.cni_website,
-					cni_project_id: passedId,
-					cni_procrument_method: values.cni_procrument_method,
-					cni_bid_invitation_date: values.cni_bid_invitation_date,
-					cni_bid_opening_date: values.cni_bid_opening_date,
-					cni_bid_evaluation_date: values.cni_bid_evaluation_date,
-					cni_bid_award_date: values.cni_bid_award_date,
-					cni_bid_contract_signing_date: values.cni_bid_contract_signing_date,
-					cni_description: values.cni_description,
-					cni_status: values.cni_status,
-					cni_financial_start: convertToNumericValue(
-						values.cni_financial_start
-					),
-					cni_physical_start: convertToNumericValue(values.cni_physical_start),
-					cni_financial_end: convertToNumericValue(values.cni_financial_end),
-					cni_physical_end: convertToNumericValue(values.cni_physical_end),
-					is_deletable: values.is_deletable,
-					is_editable: values.is_editable,
-				};
-
-				// update ProjectContractor
-				handleUpdateProjectContractor(updateProjectContractor);
-			} else {
-				const newProjectContractor = {
-					cni_name: values.cni_name,
-					cni_tin_num: values.cni_tin_num,
-					cni_contractor_type_id: values.cni_contractor_type_id,
-					cni_vat_num: values.cni_vat_num,
-					cni_total_contract_price: values.cni_total_contract_price,
-					cni_contract_start_date_et: values.cni_contract_start_date_et,
-					cni_contract_start_date_gc: values.cni_contract_start_date_gc,
-					cni_contract_end_date_et: values.cni_contract_end_date_et,
-					cni_contract_end_date_gc: values.cni_contract_end_date_gc,
-					cni_contact_person: values.cni_contact_person,
-					cni_phone_number: values.cni_phone_number,
-					cni_address: values.cni_address,
-					cni_email: values.cni_email,
-					cni_website: values.cni_website,
-					cni_project_id: passedId,
-					cni_procrument_method: values.cni_procrument_method,
-					cni_bid_invitation_date: values.cni_bid_invitation_date,
-					cni_bid_opening_date: values.cni_bid_opening_date,
-					cni_bid_evaluation_date: values.cni_bid_evaluation_date,
-					cni_bid_award_date: values.cni_bid_award_date,
-					cni_bid_contract_signing_date: values.cni_bid_contract_signing_date,
-					cni_description: values.cni_description,
-					cni_status: values.cni_status,
-					cni_financial_start: convertToNumericValue(
-						values.cni_financial_start
-					),
-					cni_physical_start: convertToNumericValue(values.cni_physical_start),
-					cni_financial_end: convertToNumericValue(values.cni_financial_end),
-					cni_physical_end: convertToNumericValue(values.cni_physical_end),
-				};
-				// save new ProjectContractor
-				handleAddProjectContractor(newProjectContractor);
+		onSubmit: async (values) => {
+			const payload = {
+				...values,
+				cni_id: isEdit ? projectContractor.cni_id : undefined,
+				cni_financial_start: convertToNumericValue(values.cni_financial_start),
+				cni_physical_start: convertToNumericValue(values.cni_physical_start),
+				cni_financial_end: convertToNumericValue(values.cni_financial_end),
+				cni_physical_end: convertToNumericValue(values.cni_physical_end),
+			};
+			try {
+				if (isEdit) {
+					await updateMutation.mutateAsync(payload);
+					toast.success("Data updated successfully", { autoClose: 2000 });
+				} else {
+					await addMutation.mutateAsync(payload);
+					toast.success("Data added successfully", { autoClose: 2000 });
+				}
+				validation.resetForm();
+				setModalOpen(false);
+			} catch {
+				toast.error(isEdit ? "Failed to update data" : "Failed to add data", {
+					autoClose: 2000,
+				});
 			}
 		},
 	});
-	const [transaction, setTransaction] = useState({});
-	const toggleViewModal = () => setModal1(!modal1);
 
-	// Fetch ProjectContractor on component mount
-	useEffect(() => {
-		setProjectContractor(data);
-	}, [data]);
-	useEffect(() => {
-		if (!isEmpty(data) && !!isEdit) {
-			setProjectContractor(data);
-			setIsEdit(false);
+	const openModal = (row, edit) => {
+		setIsEdit(edit);
+		setProjectContractor(row || null);
+		setModalOpen(true);
+		setActiveTab("general"); // reset to first tab
+	};
+	const openDeleteModal = (row) => {
+		setProjectContractor(row);
+		setDeleteModalOpen(true);
+	};
+	const handleDelete = async () => {
+		if (!projectContractor?.cni_id) return;
+		try {
+			await deleteMutation.mutateAsync(projectContractor.cni_id);
+			toast.success("Data deleted successfully", { autoClose: 2000 });
+		} catch {
+			toast.error("Failed to delete data", { autoClose: 2000 });
 		}
-	}, [data]);
-	const toggle = () => {
-		if (modal) {
-			setModal(false);
-			setProjectContractor(null);
-		} else {
-			setModal(true);
-		}
+		setDeleteModalOpen(false);
 	};
 
-	const handleProjectContractorClick = (arg) => {
-		const projectContractor = arg;
-		// console.log("handleProjectContractorClick", projectContractor);
-		setProjectContractor({
-			cni_id: projectContractor.cni_id,
-			cni_name: projectContractor.cni_name,
-			cni_tin_num: projectContractor.cni_tin_num,
-			cni_contractor_type_id: projectContractor.cni_contractor_type_id,
-			cni_vat_num: projectContractor.cni_vat_num,
-			cni_total_contract_price: projectContractor.cni_total_contract_price,
-			cni_contract_start_date_et: projectContractor.cni_contract_start_date_et,
-			cni_contract_start_date_gc: projectContractor.cni_contract_start_date_gc,
-			cni_contract_end_date_et: projectContractor.cni_contract_end_date_et,
-			cni_contract_end_date_gc: projectContractor.cni_contract_end_date_gc,
-			cni_contact_person: projectContractor.cni_contact_person,
-			cni_phone_number: projectContractor.cni_phone_number,
-			cni_address: projectContractor.cni_address,
-			cni_email: projectContractor.cni_email,
-			cni_website: projectContractor.cni_website,
-			cni_project_id: projectContractor.cni_project_id,
-			cni_procrument_method: projectContractor.cni_procrument_method,
-			cni_bid_invitation_date: projectContractor.cni_bid_invitation_date,
-			cni_bid_opening_date: projectContractor.cni_bid_opening_date,
-			cni_bid_evaluation_date: projectContractor.cni_bid_evaluation_date,
-			cni_bid_award_date: projectContractor.cni_bid_award_date,
-			cni_bid_contract_signing_date:
-				projectContractor.cni_bid_contract_signing_date,
-			cni_description: projectContractor.cni_description,
-			cni_status: projectContractor.cni_status,
-			cni_financial_start: projectContractor.cni_financial_start,
-			cni_physical_start: projectContractor.cni_physical_start,
-			cni_financial_end: projectContractor.cni_financial_end,
-			cni_physical_end: projectContractor.cni_physical_end,
-			is_deletable: projectContractor.is_deletable,
-			is_editable: projectContractor.is_editable,
-		});
-		setIsEdit(true);
-		toggle();
-	};
-
-	//delete projects
-	const [deleteModal, setDeleteModal] = useState(false);
-	const onClickDelete = (projectContractor) => {
-		setProjectContractor(projectContractor);
-		setDeleteModal(true);
-	};
-
-	const handleProjectContractorClicks = () => {
-		setIsEdit(false);
-		setProjectContractor("");
-		toggle();
-	};
-	const handleSearchResults = ({ data, error }) => {
-		setSearchResults(data);
-		setSearchError(error);
-		setShowSearchResult(true);
-	};
-	//START UNCHANGED
 	const columns = useMemo(() => {
-		const baseColumns = [
+		const base = [
 			{
 				header: "",
+				enableColumnFilter: false,
+				enableColumnSorting: true,
 				accessorKey: "cni_name",
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.cni_name, 30) || "-"}
-						</span>
-					);
-				},
+				cell: ({ row }) => truncateText(row.original.cni_name, 30),
 			},
-			/* {
-         header: "",
-         accessorKey: "cni_contractor_type_id",
-         enableColumnFilter: false,
-         enableSorting: true,
-         cell: (cellProps) => {
-           return (
-             <span>
-               {truncateText(
-                 cellProps.row.original.cni_contractor_type_id,
-                 30
-               ) || "-"}
-             </span>
-           );
-         },
-       },*/
 			{
 				header: "",
+				enableColumnFilter: false,
+				enableColumnSorting: false,
 				accessorKey: "cni_tin_num",
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.cni_tin_num, 30) || "-"}
-						</span>
-					);
-				},
+				cell: ({ row }) => truncateText(row.original.cni_tin_num, 30),
 			},
 			{
 				header: "",
+				enableColumnFilter: false,
+				enableColumnSorting: false,
 				accessorKey: "cni_total_contract_price",
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								cellProps.row.original.cni_total_contract_price,
-								30
-							) || "-"}
-						</span>
-					);
-				},
+				cell: ({ row }) =>
+					truncateText(row.original.cni_total_contract_price, 30),
 			},
-
 			{
 				header: "",
+				enableColumnFilter: false,
+				enableColumnSorting: false,
 				accessorKey: "cni_contract_start_date_gc",
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								cellProps.row.original.cni_contract_start_date_gc,
-								30
-							) || "-"}
-						</span>
-					);
-				},
+				cell: ({ row }) =>
+					truncateText(row.original.cni_contract_start_date_gc, 30),
 			},
 			{
 				header: "",
+				enableColumnFilter: false,
+				enableColumnSorting: false,
 				accessorKey: "cni_contract_end_date_gc",
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								cellProps.row.original.cni_contract_end_date_gc,
-								30
-							) || "-"}
-						</span>
-					);
-				},
+				cell: ({ row }) =>
+					truncateText(row.original.cni_contract_end_date_gc, 30),
 			},
 			{
 				header: "",
+				enableColumnFilter: false,
+				enableColumnSorting: false,
 				accessorKey: "cni_contact_person",
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.cni_contact_person, 30) ||
-								"-"}
-						</span>
-					);
-				},
+				cell: ({ row }) => truncateText(row.original.cni_contact_person, 30),
 			},
 			{
 				header: "",
-				accessorKey: "cni_phone_number",
 				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.cni_phone_number, 30) || "-"}
-						</span>
-					);
-				},
+				enableColumnSorting: false,
+				accessorKey: "cni_phone_number",
+				cell: ({ row }) => truncateText(row.original.cni_phone_number, 30),
 			},
-
 			{
 				header: t("view_detail"),
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<Button
-							type="button"
-							color="primary"
-							className="btn-sm"
-							onClick={() => {
-								const data = cellProps.row.original;
-								toggleViewModal(data);
-								setTransaction(cellProps.row.original);
-							}}
-						>
-							{t("view_detail")}
-						</Button>
-					);
-				},
+				cell: ({ row }) => (
+					<Button
+						color="primary"
+						size="sm"
+						onClick={() => {
+							setTransaction(row.original);
+							setDetailModalOpen(true);
+						}}
+					>
+						{t("view_detail")}
+					</Button>
+				),
 			},
 		];
 		if (
-			data?.previledge?.is_role_editable == 1 ||
-			data?.previledge?.is_role_deletable == 1
+			data?.previledge?.is_role_editable === 1 ||
+			data?.previledge?.is_role_deletable === 1
 		) {
-			baseColumns.push({
+			base.push({
 				header: t("Action"),
-				accessorKey: t("Action"),
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<div className="d-flex gap-3">
-							{data?.previledge?.is_role_editable == 1 &&
-								cellProps.row.original?.is_editable == 1 && (
-									<Button
-										size="sm"
-										color="none"
-										className="text-success"
-										onClick={() => {
-											const data = cellProps.row.original;
-											handleProjectContractorClick(data);
-										}}
-									>
-										<i
-											className="mdi mdi-pencil font-size-18"
-											id="edittooltip"
-										/>
-										<UncontrolledTooltip placement="top" target="edittooltip">
-											Edit
-										</UncontrolledTooltip>
-									</Button>
-								)}
-							{data?.previledge?.is_role_deletable == 9 &&
-								cellProps.row.original?.is_deletable == 9 && (
-									<Link
-										to="#"
-										className="text-danger"
-										onClick={() => {
-											const data = cellProps.row.original;
-											onClickDelete(data);
-										}}
-									>
-										<i
-											className="mdi mdi-delete font-size-18"
-											id="deletetooltip"
-										/>
-										<UncontrolledTooltip placement="top" target="deletetooltip">
-											Delete
-										</UncontrolledTooltip>
-									</Link>
-								)}
-						</div>
-					);
-				},
+				cell: ({ row }) => (
+					<div className="d-flex gap-1">
+						{data?.previledge?.is_role_editable === 1 &&
+							row.original.is_editable === 1 && (
+								<Button
+									color="link"
+									className="text-success"
+									onClick={() => openModal(row.original, true)}
+								>
+									<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+									<UncontrolledTooltip target="edittooltip">
+										Edit
+									</UncontrolledTooltip>
+								</Button>
+							)}
+						{data?.previledge?.is_role_deletable === 1 &&
+							row.original.is_deletable === 1 && (
+								<Button
+									color="link"
+									disabled={deleteMutation.isPending}
+									className="text-danger"
+									onClick={() => openDeleteModal(row.original)}
+								>
+									<i
+										className="mdi mdi-delete font-size-18"
+										id="deletetooltip"
+									/>
+									<UncontrolledTooltip target="deletetooltip">
+										Delete
+									</UncontrolledTooltip>
+								</Button>
+							)}
+					</div>
+				),
 			});
 		}
-		return baseColumns;
-	}, [handleProjectContractorClick, toggleViewModal, onClickDelete]);
+		return base;
+	}, [data, openModal, openDeleteModal]);
 
-	if (isError) {
-		return <FetchErrorHandler error={error} refetch={refetch} />;
-	}
+	if (error) return <FetchErrorHandler error={error} refetch={refetch} />;
 
 	return (
-		<React.Fragment>
+		<>
 			<DynamicDetailsModal
-				isOpen={modal1}
-				toggle={toggleViewModal} // Function to close the modal
-				data={transaction} // Pass transaction as data to the modal
+				isOpen={detailModalOpen}
+				toggle={() => setDetailModalOpen(false)}
+				data={transaction}
 				title={t("project_contractor")}
 				description={transaction.cni_description}
 				fields={[
-					/* { label: t('prp_type'), key: "prp_type", value:paymentCategoryMap[transaction.prp_type]},*/
 					{ label: t("cni_name"), key: "cni_name" },
 					{ label: t("cni_tin_num"), key: "cni_tin_num" },
 					{ label: t("cni_vat_num"), key: "cni_vat_num" },
@@ -614,43 +375,47 @@ const ProjectContractorModel = (props) => {
 						key: "cni_bid_invitation_date",
 					},
 					{ label: t("cni_bid_opening_date"), key: "cni_bid_opening_date" },
+					{
+						label: t("cni_bid_evaluation_date"),
+						key: "cni_bid_evaluation_date",
+					},
 					{ label: t("cni_bid_award_date"), key: "cni_bid_award_date" },
 					{
 						label: t("cni_bid_contract_signing_date"),
 						key: "cni_bid_contract_signing_date",
 					},
-
 					{ label: t("cni_financial_start"), key: "cni_financial_start" },
 					{ label: t("cni_physical_start"), key: "cni_physical_start" },
 					{ label: t("cni_financial_end"), key: "cni_financial_end" },
 					{ label: t("cni_physical_end"), key: "cni_physical_end" },
-					//{ label: t('prp_payment_percentage'), key: "prp_status" },
 				]}
 				footerText={t("close")}
 			/>
+
 			<DeleteModal
-				show={deleteModal}
-				onDeleteClick={handleDeleteProjectContractor}
-				onCloseClick={() => setDeleteModal(false)}
-				isLoading={deleteProjectContractor.isPending}
+				show={deleteModalOpen}
+				onDeleteClick={handleDelete}
+				onCloseClick={() => setDeleteModalOpen(false)}
+				isLoading={deleteMutation.isPending}
 			/>
+
 			<div className={passedId ? "" : "page-content"}>
-				<div className="container-fluid1">
-					{isLoading || isSearchLoading ? (
+				<div className="">
+					{isLoading ? (
 						<Spinners top={isActive ? "top-70" : ""} />
 					) : (
 						<TableContainer
 							columns={columns}
-							data={showSearchResult ? searchResults?.data : data?.data || []}
-							isGlobalFilter={true}
-							isAddButton={data?.previledge?.is_role_can_add == 1}
-							isCustomPageSize={true}
-							handleUserClick={handleProjectContractorClicks}
-							isPagination={true}
+							data={data?.data || []}
+							isGlobalFilter
+							isAddButton={data?.previledge?.is_role_can_add === 1}
+							isCustomPageSize
+							handleUserClick={() => openModal(null, false)}
+							isPagination
 							SearchPlaceholder={t("filter_placeholder")}
-							buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-							buttonName={t("add") + " " + t("project_contractor")}
-							tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+							buttonClass="btn btn-success waves-effect waves-light mb-2 me-2"
+							buttonName={`${t("add")} ${t("project_contractor")}`}
+							tableClass="align-middle table-nowrap dt-responsive nowrap w-100"
 							theadClass="table-light"
 							pagination="pagination"
 							paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
@@ -659,491 +424,261 @@ const ProjectContractorModel = (props) => {
 							exportColumns={projectContractorExportColumns}
 						/>
 					)}
-					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
-						<ModalHeader toggle={toggle} tag="h4">
-							{!!isEdit
-								? t("edit") + " " + t("project_contractor")
-								: t("add") + " " + t("project_contractor")}
+
+					<Modal
+						isOpen={modalOpen}
+						toggle={() => setModalOpen(false)}
+						size="xl"
+					>
+						<ModalHeader toggle={() => setModalOpen(false)} tag="h5">
+							{isEdit
+								? `${t("edit")} ${t("project_contractor")}`
+								: `${t("add")} ${t("project_contractor")}`}
 						</ModalHeader>
+
 						<ModalBody>
-							<Form
-								onSubmit={(e) => {
-									e.preventDefault();
-									validation.handleSubmit();
-									return false;
-								}}
-							>
-								<Row>
-									<Col className="col-md-4 mb-3">
-										<Label>
-											{t("cni_name")}
-											<span className="text-danger">*</span>
-										</Label>
-										<Input
-											name="cni_name"
-											type="text"
-											placeholder={t("cni_name")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.cni_name || ""}
-											invalid={
-												validation.touched.cni_name &&
-												validation.errors.cni_name
-													? true
-													: false
-											}
-											maxLength={100}
-										/>
-										{validation.touched.cni_name &&
-										validation.errors.cni_name ? (
-											<FormFeedback type="invalid">
-												{validation.errors.cni_name}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-4 mb-3">
-										<Label>
-											{t("cni_tin_num")}
-											<span className="text-danger">*</span>
-										</Label>
-										<Input
-											name="cni_tin_num"
-											type="text"
-											placeholder={t("cni_tin_num")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.cni_tin_num || ""}
-											invalid={
-												validation.touched.cni_tin_num &&
-												validation.errors.cni_tin_num
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.cni_tin_num &&
-										validation.errors.cni_tin_num ? (
-											<FormFeedback type="invalid">
-												{validation.errors.cni_tin_num}
-											</FormFeedback>
-										) : null}
-									</Col>
-
-									<Col className="col-md-4 mb-3">
-										<Label>
-											{t("cni_contractor_type_id")}{" "}
-											<span className="text-danger">*</span>
-										</Label>
-										<Input
-											name="cni_contractor_type_id"
-											id="cni_contractor_type_id"
-											type="select"
-											className="form-select"
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.cni_contractor_type_id || ""}
-											invalid={
-												validation.touched.cni_contractor_type_id &&
-												validation.errors.cni_contractor_type_id
-													? true
-													: false
-											}
-										>
-											<option value={null}>Select Contractor Type</option>
-											{contractorTypeOptions.map((option) => (
-												<option key={option.value} value={option.value}>
-													{t(`${option.label}`)}
-												</option>
-											))}
-										</Input>
-										{validation.touched.cni_contractor_type_id &&
-										validation.errors.cni_contractor_type_id ? (
-											<FormFeedback type="invalid">
-												{validation.errors.cni_contractor_type_id}
-											</FormFeedback>
-										) : null}
-									</Col>
-
-									<Col className="col-md-4 mb-3">
-										<Label>
-											{t("cni_vat_num")}
-											<span className="text-danger">*</span>
-										</Label>
-										<Input
-											name="cni_vat_num"
-											type="text"
-											placeholder={t("cni_vat_num")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.cni_vat_num || ""}
-											invalid={
-												validation.touched.cni_vat_num &&
-												validation.errors.cni_vat_num
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.cni_vat_num &&
-										validation.errors.cni_vat_num ? (
-											<FormFeedback type="invalid">
-												{validation.errors.cni_vat_num}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-4 mb-3">
-										<Label>
-											{t("cni_total_contract_price")}
-											<span className="text-danger">*</span>
-										</Label>
-										<Input
-											name="cni_total_contract_price"
-											type="text"
-											placeholder={t("cni_total_contract_price")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.cni_total_contract_price || ""}
-											invalid={
-												validation.touched.cni_total_contract_price &&
-												validation.errors.cni_total_contract_price
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.cni_total_contract_price &&
-										validation.errors.cni_total_contract_price ? (
-											<FormFeedback type="invalid">
-												{validation.errors.cni_total_contract_price}
-											</FormFeedback>
-										) : null}
-									</Col>
-
-									<Col className="col-md-4 mb-3">
-										<Label>
-											{t("cni_contact_person")}
-											<span className="text-danger">*</span>
-										</Label>
-										<Input
-											name="cni_contact_person"
-											type="text"
-											placeholder={t("cni_contact_person")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.cni_contact_person || ""}
-											invalid={
-												validation.touched.cni_contact_person &&
-												validation.errors.cni_contact_person
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.cni_contact_person &&
-										validation.errors.cni_contact_person ? (
-											<FormFeedback type="invalid">
-												{validation.errors.cni_contact_person}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-4 mb-3">
-										<Label>
-											{t("cni_phone_number")}
-											<span className="text-danger">*</span>
-										</Label>
-										<Input
-											name="cni_phone_number"
-											type="text"
-											placeholder={t("cni_phone_number")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.cni_phone_number || ""}
-											invalid={
-												validation.touched.cni_phone_number &&
-												validation.errors.cni_phone_number
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.cni_phone_number &&
-										validation.errors.cni_phone_number ? (
-											<FormFeedback type="invalid">
-												{validation.errors.cni_phone_number}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-4 mb-3">
-										<Label>{t("cni_address")}</Label>
-										<Input
-											name="cni_address"
-											type="text"
-											placeholder={t("cni_address")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.cni_address || ""}
-											invalid={
-												validation.touched.cni_address &&
-												validation.errors.cni_address
-													? true
-													: false
-											}
-											maxLength={425}
-										/>
-										{validation.touched.cni_address &&
-										validation.errors.cni_address ? (
-											<FormFeedback type="invalid">
-												{validation.errors.cni_address}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-4 mb-3">
-										<Label>{t("cni_email")}</Label>
-										<Input
-											name="cni_email"
-											type="text"
-											placeholder={t("cni_email")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.cni_email || ""}
-											invalid={
-												validation.touched.cni_email &&
-												validation.errors.cni_email
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.cni_email &&
-										validation.errors.cni_email ? (
-											<FormFeedback type="invalid">
-												{validation.errors.cni_email}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-4 mb-3">
-										<Label>{t("cni_website")}</Label>
-										<Input
-											name="cni_website"
-											type="text"
-											placeholder={t("cni_website")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.cni_website || ""}
-											invalid={
-												validation.touched.cni_website &&
-												validation.errors.cni_website
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.cni_website &&
-										validation.errors.cni_website ? (
-											<FormFeedback type="invalid">
-												{validation.errors.cni_website}
-											</FormFeedback>
-										) : null}
-									</Col>
-
-									<Col className="col-md-8 mb-3">
-										<Label>
-											{t("cni_procrument_method")}
-											<span className="text-danger">*</span>
-										</Label>
-										<Input
-											name="cni_procrument_method"
-											type="text"
-											placeholder={t("cni_procrument_method")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.cni_procrument_method || ""}
-											invalid={
-												validation.touched.cni_procrument_method &&
-												validation.errors.cni_procrument_method
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.cni_procrument_method &&
-										validation.errors.cni_procrument_method ? (
-											<FormFeedback type="invalid">
-												{validation.errors.cni_procrument_method}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col md={3}>
-										<FormattedAmountField
-											validation={validation}
-											fieldId="cni_financial_start"
-											isRequired={true}
-											max={100}
-										/>
-									</Col>
-									<Col md={3}>
-										<FormattedAmountField
-											validation={validation}
-											fieldId="cni_physical_start"
-											isRequired={true}
-											max={100}
-										/>
-									</Col>
-
-									<Col md={3}>
-										<FormattedAmountField
-											validation={validation}
-											fieldId="cni_financial_end"
-											isRequired={false}
-											max={100}
-										/>
-									</Col>
-									<Col md={3}>
-										<FormattedAmountField
-											validation={validation}
-											fieldId="cni_physical_end"
-											isRequired={false}
-											max={100}
-										/>
-									</Col>
-									<Col className="col-md-12 mb-3">
-										<Card>
-											<CardHeader
+							<Form onSubmit={validation.handleSubmit}>
+								<Nav
+									tabs
+									className="nav-tabs-custom justify-content-center gap-2"
+								>
+									{["general", "procurement", "dates"].map((tab) => (
+										<NavItem key={tab}>
+											<NavLink
+												className={classnames(
+													activeTab === tab
+														? "active fw-bold"
+														: hasErrorsInTab(tab, validation.errors)
+														? "text-danger"
+														: ""
+												)}
+												onClick={() => setActiveTab(tab)}
 												style={{ cursor: "pointer" }}
-												onClick={() => setIsExpanded(!isExpanded)}
 											>
-												<span style={{ fontSize: "0.9rem" }}>
-													{isExpanded ? "▼" : "▶"}{" "}
-													{isExpanded
-														? "Collapse Date Fields"
-														: "Expand Date Fields"}
-												</span>
-											</CardHeader>
-											<Collapse isOpen={isExpanded}>
-												<CardBody>
-													<Row>
-														<Col className="col-md-4 mb-3">
-															<DatePicker
-																isRequired={true}
-																componentId={"cni_contract_start_date_gc"}
-																validation={validation}
-																minDate={startDate}
-															/>
-														</Col>
-														<Col className="col-md-4 mb-3">
-															<DatePicker
-																isRequired={true}
-																componentId={"cni_contract_end_date_gc"}
-																validation={validation}
-																minDate={startDate}
-															/>
-														</Col>
-														<Col className="col-md-4 mb-3">
-															<DatePicker
-																isRequired={true}
-																componentId={"cni_bid_invitation_date"}
-																validation={validation}
-																minDate={startDate}
-															/>
-														</Col>
-														<Col className="col-md-4 mb-3">
-															<DatePicker
-																isRequired={true}
-																componentId={"cni_bid_opening_date"}
-																validation={validation}
-																minDate={startDate}
-															/>
-														</Col>
-														<Col className="col-md-4 mb-3">
-															<DatePicker
-																isRequired={true}
-																componentId={"cni_bid_evaluation_date"}
-																validation={validation}
-																minDate={startDate}
-															/>
-														</Col>
-														<Col className="col-md-4 mb-3">
-															<DatePicker
-																isRequired={true}
-																componentId={"cni_bid_award_date"}
-																validation={validation}
-																minDate={startDate}
-															/>
-														</Col>
-														<Col className="col-md-4 mb-3">
-															<DatePicker
-																isRequired={true}
-																componentId={"cni_bid_contract_signing_date"}
-																validation={validation}
-																minDate={startDate}
-															/>
-														</Col>
-													</Row>
-												</CardBody>
-											</Collapse>
-										</Card>
-									</Col>
+												{t(tab)}
+											</NavLink>
+										</NavItem>
+									))}
+								</Nav>
 
-									<Col className="col-md-12 mb-3">
-										<Label>{t("cni_description")}</Label>
-										<Input
-											name="cni_description"
+								<TabContent activeTab={activeTab} className="pt-3">
+									{/* TAB 1 : GENERAL */}
+									<TabPane tabId="general">
+										<Row>
+											<InputField
+												fieldId="cni_name"
+												className="col-md-4 mb-3"
+												label={t("cni_name")}
+												isRequired
+												validation={validation}
+												maxLength={100}
+											/>
+											<InputField
+												fieldId="cni_tin_num"
+												className="col-md-4 mb-3"
+												label={t("cni_tin_num")}
+												isRequired
+												validation={validation}
+												maxLength={20}
+											/>
+											<AsyncSelectField
+												fieldId="cni_contractor_type_id"
+												validation={validation}
+												isRequired
+												className="col-md-4 mb-3"
+												optionMap={contractorTypeMap}
+												isLoading={cntTypeLoading}
+												isError={cntTypeError}
+											/>
+											<InputField
+												fieldId="cni_vat_num"
+												className="col-md-4 mb-3"
+												label={t("cni_vat_num")}
+												isRequired
+												validation={validation}
+												maxLength={20}
+											/>
+											<FormattedAmountField
+												fieldId="cni_total_contract_price"
+												className="col-md-4 mb-3"
+												label={t("cni_total_contract_price")}
+												isRequired
+												validation={validation}
+											/>
+											<InputField
+												fieldId="cni_contact_person"
+												className="col-md-4 mb-3"
+												label={t("cni_contact_person")}
+												isRequired
+												validation={validation}
+												maxLength={20}
+											/>
+											<InputField
+												fieldId="cni_phone_number"
+												className="col-md-4 mb-3"
+												label={t("cni_phone_number")}
+												isRequired
+												validation={validation}
+												maxLength={20}
+											/>
+											<InputField
+												fieldId="cni_address"
+												className="col-md-4 mb-3"
+												label={t("cni_address")}
+												validation={validation}
+												maxLength={425}
+											/>
+											<InputField
+												fieldId="cni_email"
+												className="col-md-4 mb-3"
+												label={t("cni_email")}
+												type="email"
+												validation={validation}
+												maxLength={50}
+											/>
+											<InputField
+												fieldId="cni_website"
+												className="col-md-4 mb-3"
+												label={t("cni_website")}
+												validation={validation}
+												maxLength={50}
+											/>
+										</Row>
+									</TabPane>
+
+									{/* TAB 2 : PROCUREMENT */}
+									<TabPane tabId="procurement">
+										<Row>
+											<InputField
+												fieldId="cni_procrument_method"
+												className="col-md-4 mb-3"
+												label={t("cni_procrument_method")}
+												isRequired
+												validation={validation}
+												maxLength={20}
+											/>
+											<FormattedAmountField
+												validation={validation}
+												fieldId="cni_financial_start"
+												max={100}
+												className="col-md-4 mb-3"
+											/>
+											<FormattedAmountField
+												validation={validation}
+												fieldId="cni_physical_start"
+												max={100}
+												className="col-md-4 mb-3"
+											/>
+											<FormattedAmountField
+												validation={validation}
+												fieldId="cni_financial_end"
+												max={100}
+												className="col-md-4 mb-3"
+											/>
+											<FormattedAmountField
+												validation={validation}
+												fieldId="cni_physical_end"
+												max={100}
+												className="col-md-4 mb-3"
+											/>
+										</Row>
+									</TabPane>
+
+									{/* TAB 3 : DATES */}
+									<TabPane tabId="dates">
+										<Row>
+											<Col className="col-md-4 mb-3">
+												<DatePicker
+													componentId="cni_contract_start_date_gc"
+													validation={validation}
+													isRequired
+													minDate={startDate}
+												/>
+											</Col>
+											<Col className="col-md-4 mb-3">
+												<DatePicker
+													componentId="cni_contract_end_date_gc"
+													validation={validation}
+													isRequired
+													minDate={startDate}
+												/>
+											</Col>
+
+											<Col className="col-md-4 mb-3">
+												<DatePicker
+													componentId="cni_bid_invitation_date"
+													validation={validation}
+													minDate={startDate}
+												/>
+											</Col>
+
+											<Col className="col-md-4 mb-3">
+												<DatePicker
+													componentId="cni_bid_opening_date"
+													validation={validation}
+													minDate={startDate}
+												/>
+											</Col>
+
+											<Col className="col-md-4 mb-3">
+												<DatePicker
+													componentId="cni_bid_evaluation_date"
+													validation={validation}
+													minDate={startDate}
+												/>
+											</Col>
+
+											<Col className="col-md-4 mb-3">
+												<DatePicker
+													componentId="cni_bid_award_date"
+													validation={validation}
+													minDate={startDate}
+												/>
+											</Col>
+
+											<Col className="col-md-4 mb-3">
+												<DatePicker
+													componentId="cni_bid_contract_signing_date"
+													validation={validation}
+													minDate={startDate}
+												/>
+											</Col>
+										</Row>
+									</TabPane>
+								</TabContent>
+								<Row>
+									<Col xs={12}>
+										<InputField
+											fieldId="cni_description"
+											className="col-md-12 mb-3"
+											label={t("cni_description")}
 											type="textarea"
-											rows={4}
-											placeholder={t("cni_description")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.cni_description || ""}
-											invalid={
-												validation.touched.cni_description &&
-												validation.errors.cni_description
-													? true
-													: false
-											}
+											validation={validation}
 											maxLength={425}
 										/>
-										{validation.touched.cni_description &&
-										validation.errors.cni_description ? (
-											<FormFeedback type="invalid">
-												{validation.errors.cni_description}
-											</FormFeedback>
-										) : null}
 									</Col>
 								</Row>
 
 								<Row>
-									<Col>
-										<div className="text-end">
-											{addProjectContractor.isPending ||
-											updateProjectContractor.isPending ? (
-												<Button
-													color="success"
-													type="submit"
-													className="save-user"
-													disabled={
-														addProjectContractor.isPending ||
-														updateProjectContractor.isPending ||
-														!validation.dirty
-													}
-												>
-													<Spinner size={"sm"} color="light" className="me-2" />
-													{t("Save")}
-												</Button>
+									<Col className="text-end mt-3">
+										<Button
+											color="success"
+											type="submit"
+											disabled={
+												!validation.dirty ||
+												addMutation.isPending ||
+												updateMutation.isPending
+											}
+										>
+											{addMutation.isPending || updateMutation.isPending ? (
+												<>
+													<Spinner size="sm" className="me-2" />
+													{t("Saving")}
+												</>
 											) : (
-												<Button
-													color="success"
-													type="submit"
-													className="save-user"
-													disabled={
-														addProjectContractor.isPending ||
-														updateProjectContractor.isPending ||
-														!validation.dirty
-													}
-												>
-													{t("Save")}
-												</Button>
+												t("Save")
 											)}
-										</div>
+										</Button>
 									</Col>
 								</Row>
 							</Form>
@@ -1151,11 +686,15 @@ const ProjectContractorModel = (props) => {
 					</Modal>
 				</div>
 			</div>
-		</React.Fragment>
+		</>
 	);
 };
+
 ProjectContractorModel.propTypes = {
-	preGlobalFilteredRows: PropTypes.any,
+	passedId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+		.isRequired,
+	isActive: PropTypes.bool,
+	startDate: PropTypes.string,
 };
 
 export default ProjectContractorModel;

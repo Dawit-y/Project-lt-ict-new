@@ -296,9 +296,9 @@
 	"cni_vat_num": "VAT Number",
 	"cni_total_contract_price": "Total Contract Price",
 	"cni_contract_start_date_et": "Contract Start Date (ET)",
-	"cni_contract_start_date_gc": "Contract Start Date (GC)",
+	"cni_contract_start_date_gc": "Contract Start Date",
 	"cni_contract_end_date_et": "Contract End Date (ET)",
-	"cni_contract_end_date_gc": "Contract End Date (GC)",
+	"cni_contract_end_date_gc": "Contract End Date",
 	"cni_contact_person": "Contact Person",
 	"cni_phone_number": "Phone Number",
 	"cni_address": "Address",
@@ -1976,5 +1976,8 @@
 	"prj_admin_cost": "Admin Cost",
 	"cso_type": "Type",
 	"cso_contact_person": "Contact Person",
-	"completion_date": "Completion Date"
+	"completion_date": "Completion Date",
+	"general": "General",
+	"procurement": "Procurement",
+	"dates": "Dates"
 }
