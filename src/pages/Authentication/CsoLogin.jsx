@@ -58,6 +58,8 @@ const Login = () => {
 		onError: (error) => {
 			if (error.response?.status === 401) {
 				setErrorMessage("Incorrect email or password. Please try again.");
+			} else if (error.response?.status === 429) {
+				setErrorMessage("You have attempted 3 times. Try after 5 minutes.");
 			} else {
 				setErrorMessage("Something went wrong. Please try again later.");
 			}
@@ -173,6 +175,13 @@ const Login = () => {
 						</Card>
 						<div className="mt-5 text-center">
 							<p>
+								Don&#39;t have an account ?{" "}
+								<Link to="/register" className="fw-medium text-primary">
+									{" "}
+									Create now{" "}
+								</Link>{" "}
+							</p>
+							<p>
 								© {new Date().getFullYear()} {FOOTER_TEXT}
 							</p>
 						</div>
@@ -186,5 +195,5 @@ const Login = () => {
 export default Login;
 
 Login.propTypes = {
-  history: PropTypes.object,
+	history: PropTypes.object,
 };
