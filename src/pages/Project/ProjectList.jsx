@@ -1,9 +1,9 @@
 import React, {
-  useEffect,
-  useMemo,
-  useState,
-  useRef,
-  useCallback,
+	useEffect,
+	useMemo,
+	useState,
+	useRef,
+	useCallback,
 } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
@@ -13,11 +13,11 @@ import { useSearchOnlyProjects } from "../../queries/project_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import { useTranslation } from "react-i18next";
+import { Button, Badge } from "reactstrap";
 import {
-  Button,
-  Badge
-} from "reactstrap";
-import { createSelectOptions, createMultiSelectOptions } from "../../utils/commonMethods";
+	createSelectOptions,
+	createMultiSelectOptions,
+} from "../../utils/commonMethods";
 import SearchTableContainer from "../../components/Common/SearchTableContainer";
 import TreeForLists from "../../components/Common/TreeForLists2";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
@@ -71,11 +71,16 @@ const ProjectModel = () => {
 		"sci_name_en"
 	);
 	const { data: projectCategoryData } = useFetchProjectCategorys();
+	const filteredCategoryData = useMemo(() => {
+		return projectCategoryData?.data?.filter(
+			(category) => category.pct_owner_type_id === 1
+		);
+	}, [projectCategoryData?.data]);
 	const {
 		pct_name_en: projectCategoryOptionsEn,
 		pct_name_or: projectCategoryOptionsOr,
 		pct_name_am: projectCategoryOptionsAm,
-	} = createMultiSelectOptions(projectCategoryData?.data || [], "pct_id", [
+	} = createMultiSelectOptions(filteredCategoryData || [], "pct_id", [
 		"pct_name_en",
 		"pct_name_or",
 		"pct_name_am",
@@ -320,6 +325,6 @@ const ProjectModel = () => {
 	);
 };
 ProjectModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+	preGlobalFilteredRows: PropTypes.any,
 };
 export default ProjectModel;
