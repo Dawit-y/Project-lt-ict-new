@@ -46,6 +46,9 @@ export const refreshAccessToken = async () => {
 		scheduleTokenRefresh(response.authorization.token);
 	} catch (error) {
 		store.dispatch(clearAuthData());
+		if (window.location.pathname === "/") {
+			return Promise.reject(error);
+		}
 		if (window.location.pathname !== "/login") {
 			redirectToLogin();
 		}
@@ -81,6 +84,9 @@ axiosApi.interceptors.response.use(
 			// Only clear auth and redirect if the refresh request failed
 			if (error.response?.status === 401) {
 				store.dispatch(clearAuthData());
+				if (window.location.pathname === "/") {
+					return Promise.reject(error);
+				}
 				if (window.location.pathname !== "/login") redirectToLogin();
 			}
 			return Promise.reject(error);
@@ -108,6 +114,9 @@ axiosApi.interceptors.response.use(
 				return axiosApi(originalRequest);
 			} catch (refreshError) {
 				store.dispatch(clearAuthData());
+				if (window.location.pathname === "/") {
+					return Promise.reject(error);
+				}
 				if (!isOnLoginPage) redirectToLogin();
 				return Promise.reject(refreshError);
 			}
