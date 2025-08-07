@@ -264,7 +264,7 @@ const ProjectModel = () => {
 			prj_total_actual_budget: formattedAmountValidation(
 				1000,
 				1000000000000,
-				true
+				false
 			),
 			//prj_geo_location: Yup.string().required(t('prj_geo_location')),
 			//prj_sector_id: Yup.string().required(t("prj_sector_id")),
@@ -822,7 +822,7 @@ const ProjectModel = () => {
 							<FormattedAmountField
 								validation={validation}
 								fieldId={"prj_total_actual_budget"}
-								isRequired={true}
+								isRequired={false}
 								allowDecimal={true}
 								className={"col-md-4 mb-3"}
 							/>

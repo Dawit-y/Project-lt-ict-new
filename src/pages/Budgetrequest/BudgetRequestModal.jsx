@@ -25,7 +25,12 @@ const modalStyle = {
 	width: "100%",
 };
 
-const BudgetRequestModal = ({ isOpen, toggle, transaction }) => {
+const BudgetRequestModal = ({
+	isOpen,
+	toggle,
+	transaction,
+	showDetail = true,
+}) => {
 	const { t } = useTranslation();
 	const id = transaction?.bdr_id;
 
@@ -85,25 +90,28 @@ const BudgetRequestModal = ({ isOpen, toggle, transaction }) => {
 					<Alert color="danger">{t("failed_to_load")}</Alert>
 				) : (
 					<>
-						<DetailsView
-							details={transaction}
-							keysToRemove={[
-								"bdr_id",
-								"bdr_project_id",
-								"bdr_released_date_ec",
-								"bdr_requested_date_ec",
-								"bdr_create_time",
-								"bdr_update_time",
-								"bdr_delete_time",
-								"bdr_action_remark",
-								"bdr_status",
-								"bdr_created_by",
-								"is_editable",
-								"is_deletable",
-								"color_code",
-								"bdr_request_status",
-							]}
-						/>
+						{showDetail && (
+							<DetailsView
+								details={transaction}
+								keysToRemove={[
+									"bdr_id",
+									"bdr_project_id",
+									"bdr_released_date_ec",
+									"bdr_requested_date_ec",
+									"bdr_create_time",
+									"bdr_update_time",
+									"bdr_delete_time",
+									"bdr_action_remark",
+									"bdr_status",
+									"bdr_created_by",
+									"is_editable",
+									"is_deletable",
+									"color_code",
+									"bdr_request_status",
+								]}
+							/>
+						)}
+
 						<div id="budget-request-amount-table">
 							<h5 className="mt-4 mb-2 text-center">
 								{t("budget_request_amounts")}
