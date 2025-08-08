@@ -7,19 +7,19 @@ pipeline {
         
         // Instead of overriding Dev image, we commit a brand-new PROD image.
         // PROD image is defined WITHOUT a tag; a version tag based on BUILD_NUMBER will be applied.
-        PROD_DOCKER_IMAGE        = 'otecpms/react-app-prod-p'
+        PROD_DOCKER_IMAGE        = 'otecpms/react-app-training'
         QA_DOCKER_IMAGE          = 'otecpms/react-app-devx:latest'
         
         // Docker registry URL updated to the Docker Hub v1 endpoint.
         DOCKER_REGISTRY_URL      = 'https://index.docker.io/v1/'
 
         // PROD .env file on Jenkins and container path
-        PROD_ENV_FILE_PATH       = '/var/jenkins_home/pms_files/prod-frontend-p.env'
+        PROD_ENV_FILE_PATH       = '/var/jenkins_home/pms_files/training-frontend.env'
         PROD_ENV_CONTAINER_PATH  = '/app/.env'
 
         // PROD container name + port settings
-        PROD_CONTAINER_NAME      = 'react-app-prod-p'
-        PROD_PORT_EXT            = '8088'
+        PROD_CONTAINER_NAME      = 'react-app-training'
+        PROD_PORT_EXT            = '8086'
         PROD_PORT_INT            = '80'
     }
 
