@@ -108,20 +108,6 @@ pipeline {
             }
         }
 
-        stage('Push PROD Docker Image') {
-            steps {
-                script {
-                    docker.withRegistry(DOCKER_REGISTRY_URL, REGISTRY_CREDENTIALS) {
-                        // Push the versioned image
-                        sh "docker push ${env.VERSIONED_PROD_IMAGE}"
-                        // Optionally, tag the versioned image as latest, then push that tag
-                        sh "docker tag ${env.VERSIONED_PROD_IMAGE} ${PROD_DOCKER_IMAGE}:latest"
-                        sh "docker push ${PROD_DOCKER_IMAGE}:latest"
-                    }
-                }
-            }
-        }
-
         stage('Deploy PROD Container') {
             steps {
                 script {
