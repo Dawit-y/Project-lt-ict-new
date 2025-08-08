@@ -42,6 +42,8 @@ import { projectContractorExportColumns } from "../../utils/exportColumnsForDeta
 import InputField from "../../components/Common/InputField";
 import AsyncSelectField from "../../components/Common/AsyncSelectField";
 import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
+import AttachFileModal from "../../components/Common/AttachFileModal";
+import { PAGE_ID } from "../../constants/constantFile";
 
 const truncateText = (text, maxLength) =>
 	typeof text === "string" && text.length > maxLength
@@ -92,6 +94,8 @@ const ProjectContractorModel = ({ passedId, isActive, startDate }) => {
 	const [projectContractor, setProjectContractor] = useState(null);
 	const [activeTab, setActiveTab] = useState("general");
 	const [transaction, setTransaction] = useState({});
+	const [fileModalOpen, setFileModalOpen] = useState(false);
+	const toggleFileModal = () => setFileModalOpen(!fileModalOpen);
 
 	const param = { cni_project_id: passedId, request_type: "single" };
 	const { data, isLoading, isFetching, error, refetch } =
@@ -292,6 +296,27 @@ const ProjectContractorModel = ({ passedId, isActive, startDate }) => {
 					</Button>
 				),
 			},
+			{
+				header: t("attach_files"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							outline
+							type="button"
+							color="success"
+							className="btn-sm"
+							onClick={() => {
+								toggleFileModal();
+								setTransaction(cellProps.row.original);
+							}}
+						>
+							{t("attach_files")}
+						</Button>
+					);
+				},
+			},
 		];
 		if (
 			data?.previledge?.is_role_editable === 1 ||
@@ -397,6 +422,13 @@ const ProjectContractorModel = ({ passedId, isActive, startDate }) => {
 				onDeleteClick={handleDelete}
 				onCloseClick={() => setDeleteModalOpen(false)}
 				isLoading={deleteMutation.isPending}
+			/>
+
+			<AttachFileModal
+				isOpen={fileModalOpen}
+				toggle={toggleFileModal}
+				ownerTypeId={PAGE_ID.PROJ_CONTRACTOR}
+				ownerId={transaction?.cni_id}
 			/>
 
 			<div className={passedId ? "" : "page-content"}>

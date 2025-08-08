@@ -770,7 +770,7 @@ const BudgetRequestModel = (props) => {
             isOpen={convModal}
             toggle={toggleConvModal}
             ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-            ownerId={transaction?.bdr_id ?? null}
+            ownerId={transaction?.bdr_id}
           />
         )}
       </LazyLoader>
