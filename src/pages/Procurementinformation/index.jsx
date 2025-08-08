@@ -43,6 +43,7 @@ import {
 	numberValidation,
 } from "../../utils/Validation/validation";
 import { procurementExportColumns } from "../../utils/exportColumnsForDetails";
+import FormattedAmountField from "../../components/Common/FormattedAmountField";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -319,11 +320,7 @@ const ProcurementInformationModel = (props) => {
 		setProcurementInformation("");
 		toggle();
 	};
-	const handleSearchResults = ({ data, error }) => {
-		setSearchResults(data);
-		setSearchError(error);
-		setShowSearchResult(true);
-	};
+
 	//START UNCHANGED
 	const columns = useMemo(() => {
 		const baseColumns = [
@@ -332,16 +329,10 @@ const ProcurementInformationModel = (props) => {
 				accessorKey: "pri_total_procurement_amount",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								cellProps.row.original.pri_total_procurement_amount,
-								30
-							) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => parseFloat(getValue()).toLocaleString(undefined, {
+					minimumFractionDigits: 0,
+					maximumFractionDigits: 2,	
+				}) || "-",
 			},
 			{
 				header: "",
@@ -621,34 +612,14 @@ const ProcurementInformationModel = (props) => {
 							}}
 						>
 							<Row>
-								<Col className="col-md-6 mb-3">
-									<Label>
-										{t("pri_total_procurement_amount")}
-										<span className="text-danger">*</span>
-									</Label>
-									<Input
-										name="pri_total_procurement_amount"
-										type="number"
-										placeholder={t("pri_total_procurement_amount")}
-										onChange={validation.handleChange}
-										onBlur={validation.handleBlur}
-										value={validation.values.pri_total_procurement_amount || ""}
-										invalid={
-											validation.touched.pri_total_procurement_amount &&
-											validation.errors.pri_total_procurement_amount
-												? true
-												: false
-										}
-										maxLength={20}
-									/>
-									{validation.touched.pri_total_procurement_amount &&
-									validation.errors.pri_total_procurement_amount ? (
-										<FormFeedback type="invalid">
-											{validation.errors.pri_total_procurement_amount}
-										</FormFeedback>
-									) : null}
-								</Col>
-
+								<FormattedAmountField
+									fieldId="pri_total_procurement_amount"
+									label={t("pri_total_procurement_amount")}
+									validation={validation}
+									className={"col-md-6 mb-3"}
+									isRequired={true}
+									allowDecimal={true}
+								/>
 								<Col className="col-md-6 mb-3">
 									<DatePicker
 										isRequired={true}

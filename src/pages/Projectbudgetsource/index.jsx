@@ -643,7 +643,7 @@ const ProjectBudgetSourceModel = (props) => {
 													? true
 													: false
 											}
-											maxLength={20}
+											maxLength={400}
 										/>
 										{validation.touched.bsr_description &&
 										validation.errors.bsr_description ? (

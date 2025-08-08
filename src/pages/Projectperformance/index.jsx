@@ -1026,7 +1026,7 @@ const ProjectPerformanceModel = (props) => {
 								</Row>
 
 								{/* New Actual Entry Checkbox and Date Picker - Only show in actual mode */}
-								{entryMode === "actual" && (
+								{entryMode === "planned" && (
 									<Row className="mt-3">
 										<Col md={4}>
 											<div className="form-check">
