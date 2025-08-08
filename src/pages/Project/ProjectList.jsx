@@ -11,7 +11,11 @@ import { isEmpty } from "lodash";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { useSearchOnlyProjects } from "../../queries/project_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
-import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
+import { useSelector, useDispatch } from "react-redux";
+import {
+	setProjectListState,
+	resetProjectListState,
+} from "../../store/projectList/actions";
 import { useTranslation } from "react-i18next";
 import { Button, Badge } from "reactstrap";
 import {
@@ -26,28 +30,76 @@ import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 import { getUserSectorList } from "../../queries/usersector_query";
 import { projectExportColumns } from "../../utils/exportColumnsForLists";
 
+export const useProjectListDispatchers = () => {
+	const dispatch = useDispatch();
+
+	return {
+		setProjectParams: (value) =>
+			dispatch(setProjectListState({ projectParams: value })),
+		setParams: (value) => dispatch(setProjectListState({ params: value })),
+		setSearchParams: (value) =>
+			dispatch(setProjectListState({ searchParams: value })),
+		setShowSearchResult: (value) =>
+			dispatch(setProjectListState({ showSearchResult: value })),
+		setSearchResults: (data, error = null) =>
+			dispatch(
+				setProjectListState({
+					searchResults: data,
+					searchError: error,
+					showSearchResult: true,
+				})
+			),
+		setInclude: (value) => dispatch(setProjectListState({ include: value })),
+		setIsCollapsed: (value) =>
+			dispatch(setProjectListState({ isCollapsed: value })),
+	};
+};
+
 const ProjectModel = () => {
 	document.title = "Projects List";
 	const [projectMetaData, setProjectMetaData] = useState([]);
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
-	const [isEdit, setIsEdit] = useState(false);
-	const [project, setProject] = useState(null);
 	const { data: projectStatusData } = useFetchProjectStatuss();
-	const [searchResults, setSearchResults] = useState(null);
+	// const [searchResults, setSearchResults] = useState(null);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
 	const [searchError, setSearchError] = useState(null);
-	const [showSearchResult, setShowSearchResult] = useState(false);
+	// const [showSearchResult, setShowSearchResult] = useState(false);
 
-	const [projectParams, setProjectParams] = useState({});
-	const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
-	const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
-	const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
-	const [include, setInclude] = useState(0);
-	const [isCollapsed, setIsCollapsed] = useState(false);
+	// const [projectParams, setProjectParams] = useState({});
+	// const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
+	// const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
+	// const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
+	// const [include, setInclude] = useState(0);
+	// const [isCollapsed, setIsCollapsed] = useState(false);
 
-	const [params, setParams] = useState({});
-	const [searchParams, setSearchParams] = useState({});
+	// const [params, setParams] = useState({});
+	// const [searchParams, setSearchParams] = useState({});
+
+	const dispatch = useDispatch();
+	const {
+		projectParams,
+		searchResults,
+		showSearchResult,
+		prjLocationRegionId,
+		prjLocationZoneId,
+		prjLocationWoredaId,
+		include,
+		isCollapsed,
+		params,
+		searchParams,
+		selectedNode,
+	} = useSelector((state) => state.projectListReducer);
+
+	const {
+		setProjectParams,
+		setParams,
+		setSearchParams,
+		setShowSearchResult,
+		setSearchResults,
+		setInclude,
+		setIsCollapsed,
+	} = useProjectListDispatchers();
 
 	useEffect(() => {
 		setProjectParams({
@@ -98,49 +150,53 @@ const ProjectModel = () => {
 		}
 	}, [projectMetaData?.prj_project_status_id, searchResults]);
 
-	useEffect(() => {
-		setProject(searchResults?.data);
-	}, [searchResults?.data]);
+	// const handleNodeSelect = useCallback(
+	// 	(node) => {
+	// 		if (node.level === "region") {
+	// 			setPrjLocationRegionId(node.id);
+	// 			setPrjLocationZoneId(null);
+	// 			setPrjLocationWoredaId(null);
+	// 		} else if (node.level === "zone") {
+	// 			setPrjLocationZoneId(node.id);
+	// 			setPrjLocationWoredaId(null);
+	// 		} else if (node.level === "woreda") {
+	// 			setPrjLocationWoredaId(node.id);
+	// 		}
 
-	useEffect(() => {
-		if (!isEmpty(searchResults?.data) && !!isEdit) {
-			setProject(searchResults?.data);
-			setIsEdit(false);
-		}
-	}, [searchResults?.data]);
-
+	// 		if (showSearchResult) {
+	// 			setShowSearchResult(false);
+	// 		}
+	// 	},
+	// 	[
+	// 		setPrjLocationRegionId,
+	// 		setPrjLocationZoneId,
+	// 		setPrjLocationWoredaId,
+	// 		showSearchResult,
+	// 		setShowSearchResult,
+	// 	]
+	// );
 	const handleNodeSelect = useCallback(
 		(node) => {
+			const updates = {};
 			if (node.level === "region") {
-				setPrjLocationRegionId(node.id);
-				setPrjLocationZoneId(null);
-				setPrjLocationWoredaId(null);
+				updates.prjLocationRegionId = node.id;
+				updates.prjLocationZoneId = null;
+				updates.prjLocationWoredaId = null;
 			} else if (node.level === "zone") {
-				setPrjLocationZoneId(node.id);
-				setPrjLocationWoredaId(null);
+				updates.prjLocationZoneId = node.id;
+				updates.prjLocationWoredaId = null;
 			} else if (node.level === "woreda") {
-				setPrjLocationWoredaId(node.id);
+				updates.prjLocationWoredaId = node.id;
 			}
-
 			if (showSearchResult) {
-				setShowSearchResult(false);
+				updates.showSearchResult = false;
 			}
+			dispatch(setProjectListState({ selectedNode: node }));
+			dispatch(setProjectListState(updates));
 		},
-		[
-			setPrjLocationRegionId,
-			setPrjLocationZoneId,
-			setPrjLocationWoredaId,
-			showSearchResult,
-			setShowSearchResult,
-		]
+		[dispatch, showSearchResult]
 	);
 
-	//delete projects
-	const [deleteModal, setDeleteModal] = useState(false);
-	const onClickDelete = (project) => {
-		setProject(project);
-		setDeleteModal(true);
-	};
 	const projectStatusOptions = useMemo(() => {
 		return (
 			projectStatusData?.data
@@ -240,7 +296,7 @@ const ProjectModel = () => {
 					}
 					const { prj_id } = params.data || {};
 					return (
-						<Link to={`/projectdetail/${prj_id}`} target="_blank">
+						<Link to={`/projectdetail/${prj_id}`}>
 							<Button type="button" className="btn-sm mb-1 default" outline>
 								<i className="fa fa-eye"></i>
 							</Button>
@@ -250,7 +306,7 @@ const ProjectModel = () => {
 			},
 		];
 		return baseColumnDefs;
-	}, [onClickDelete, t]);
+	}, [t]);
 
 	return (
 		<React.Fragment>
@@ -265,6 +321,8 @@ const ProjectModel = () => {
 							setInclude={setInclude}
 							setIsCollapsed={setIsCollapsed}
 							isCollapsed={isCollapsed}
+							initialIncludeChecked={include === 1}
+							initialSelectedNode={selectedNode}
 						/>
 						{/* Main Content */}
 						<SearchTableContainer isCollapsed={isCollapsed}>

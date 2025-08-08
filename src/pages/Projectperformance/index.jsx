@@ -196,10 +196,7 @@ const ProjectPerformanceModel = (props) => {
 				projectPerformance?.prp_record_date_gc &&
 				projectPerformance.prp_record_date_gc !==
 					new Date().toISOString().split("T")[0],
-			prp_record_date_gc:
-				projectPerformance?.prp_record_date_gc ||
-				new Date().toISOString().split("T")[0],
-
+			prp_record_date_gc: projectPerformance?.prp_record_date_gc,
 			prp_description: projectPerformance?.prp_description || "",
 			prp_physical_performance:
 				projectPerformance?.prp_physical_performance ||
@@ -343,14 +340,14 @@ const ProjectPerformanceModel = (props) => {
 								this.parent[`prp_finan_planned_month_${i + 1}`] || "0"
 							)
 						).reduce((a, b) => a + b, 0);
-						const totalBudget = convertToNumericValue(totalActualBudget || "0");
-						if (totalBudget <= 0) {
-							return this.createError({
-								message: t("Total project budget is not available or invalid"),
-							});
-						}
+						const totalBudget = convertToNumericValue(totalActualBudget || 0);
+						// if (totalBudget <= 0) {
+						// 	return this.createError({
+						// 		message: t("Total project budget is not available or invalid"),
+						// 	});
+						// }
 
-						if (sum > totalBudget) {
+						if (totalBudget > 0 && sum > totalBudget) {
 							return this.createError({
 								message: t(
 									`Sum of financial planned values (${sum.toLocaleString()}) exceeds total project budget (${totalBudget.toLocaleString()})`
