@@ -75,7 +75,7 @@ const ProjectSummary = ({ data }) => {
   // Calculate project metrics with null checks
   const projectMetrics = {
     // Financial metrics
-    totalBudget: project?.prj_total_estimate_budget || 0,
+    totalBudget: project?.prj_total_actual_budget || 0,
     actualFinancial: performance?.actual_financial || 0,
     plannedFinancial: performance?.planned_financial || 0,
     financialProgress: performance?.planned_financial
@@ -944,7 +944,7 @@ const ProjectSummary = ({ data }) => {
                       <table className="table mb-0">
                         <tbody>
                           <tr>
-                            <th>{t("total_estimated_budget")}</th>
+                            <th>Total Actual Budget</th>
                             <td className="text-end">
                               {formatCurrency(projectMetrics.totalBudget)}
                             </td>
