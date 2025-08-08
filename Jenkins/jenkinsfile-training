@@ -1,0 +1,158 @@
+pipeline {
+    agent any
+
+    environment {
+        NODE_OPTIONS             = '--max-old-space-size=4096'
+        REGISTRY_CREDENTIALS     = 'dockerhub-credentials'
+        
+        // Instead of overriding Dev image, we commit a brand-new PROD image.
+        // PROD image is defined WITHOUT a tag; a version tag based on BUILD_NUMBER will be applied.
+        PROD_DOCKER_IMAGE        = 'otecpms/react-app-prod-p'
+        QA_DOCKER_IMAGE          = 'otecpms/react-app-devx:latest'
+        
+        // Docker registry URL updated to the Docker Hub v1 endpoint.
+        DOCKER_REGISTRY_URL      = 'https://index.docker.io/v1/'
+
+        // PROD .env file on Jenkins and container path
+        PROD_ENV_FILE_PATH       = '/var/jenkins_home/pms_files/prod-frontend-p.env'
+        PROD_ENV_CONTAINER_PATH  = '/app/.env'
+
+        // PROD container name + port settings
+        PROD_CONTAINER_NAME      = 'react-app-prod-p'
+        PROD_PORT_EXT            = '8088'
+        PROD_PORT_INT            = '80'
+    }
+
+    options {
+        retry(3)  // Retry failing stages up to 3 times
+    }
+
+    stages {
+        stage('Pull Dev Docker Image') {
+            steps {
+                script {
+                    // Log in to Docker Hub and pull the QA image
+                    docker.withRegistry(DOCKER_REGISTRY_URL, REGISTRY_CREDENTIALS) {
+                        sh """
+                            echo "Pulling the Dev image from QA..."
+                            docker pull ${QA_DOCKER_IMAGE}
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Swap Env & Rebuild in Container') {
+            steps {
+                script {
+                    // Remove any old temporary container
+                    sh """
+                        if [ \$(docker ps -aq -f name=temp-container-prod) ]; then
+                            echo "Removing old temp-container-prod..."
+                            docker rm -f temp-container-prod
+                        fi
+                    """
+
+                    // Create a new temporary container from the QA image (which is used as a base)
+                    sh """
+                        echo "Creating temp-container-prod from ${QA_DOCKER_IMAGE}..."
+                        docker create --name temp-container-prod ${QA_DOCKER_IMAGE}
+                    """
+
+                    // Start the container so we can copy the PROD .env file into it
+                    sh """
+                        echo "Starting temp-container-prod and copying PROD env file..."
+                        docker start temp-container-prod
+                        docker exec temp-container-prod mkdir -p /app
+                        docker cp ${PROD_ENV_FILE_PATH} temp-container-prod:${PROD_ENV_CONTAINER_PATH}
+                    """
+
+                    // (Optional) Reinstall dependencies if needed (using legacy-peer-deps as in the example)
+                    sh """
+                        echo "Re-installing dependencies (optional)..."
+                        docker exec temp-container-prod npm install --legacy-peer-deps
+                    """
+
+                    // Rebuild the React/Vite app with the new .env file
+                    sh """
+                        echo "Rebuilding app in temp-container-prod..."
+                        docker exec temp-container-prod npm run build
+                    """
+
+                    // Copy the built files to the Nginx serving folder
+                    sh """
+                        echo "Copying built files into nginx html folder..."
+                        docker exec temp-container-prod rm -rf /usr/share/nginx/html/
+                        docker exec temp-container-prod cp -r /app/dist/ /usr/share/nginx/html/
+                    """
+
+                    // Stop the container once the build is complete
+                    sh """
+                        echo "Stopping temp-container-prod..."
+                        docker stop temp-container-prod
+                    """
+
+                    // Build a versioned image tag using the Jenkins build number
+                    def versionedImage = "${PROD_DOCKER_IMAGE}:${env.BUILD_NUMBER}"
+                    
+                    // Commit the temporary container to create a new PROD image with the versioned tag
+                    sh """
+                        echo "Committing temp-container-prod to new PROD image: ${versionedImage}"
+                        docker commit temp-container-prod ${versionedImage}
+                        docker rm -f temp-container-prod
+                    """
+                    
+                    // Save the new image tag in an environment variable for later use
+                    env.VERSIONED_PROD_IMAGE = versionedImage
+                }
+            }
+        }
+
+        stage('Push PROD Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry(DOCKER_REGISTRY_URL, REGISTRY_CREDENTIALS) {
+                        // Push the versioned image
+                        sh "docker push ${env.VERSIONED_PROD_IMAGE}"
+                        // Optionally, tag the versioned image as latest, then push that tag
+                        sh "docker tag ${env.VERSIONED_PROD_IMAGE} ${PROD_DOCKER_IMAGE}:latest"
+                        sh "docker push ${PROD_DOCKER_IMAGE}:latest"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy PROD Container') {
+            steps {
+                script {
+                    sh """
+                        echo "Deploying PROD environment from the new PROD image..."
+
+                        # Stop and remove any old PROD container
+                        if [ \$(docker ps -aq -f name=${PROD_CONTAINER_NAME}) ]; then
+                            docker stop ${PROD_CONTAINER_NAME} || true
+                            docker rm ${PROD_CONTAINER_NAME} || true
+                        fi
+
+                        # Run the newly committed PROD image (using the versioned tag)
+                           docker run -d --name ${PROD_CONTAINER_NAME} \\
+                            -p ${PROD_PORT_EXT}:${PROD_PORT_INT} \\
+                            ${env.VERSIONED_PROD_IMAGE} \\
+                            nginx -g "daemon off;"
+
+                        echo "PROD container is now running on port ${PROD_PORT_EXT}."
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "PROD pipeline executed successfully! Deployed image: ${env.VERSIONED_PROD_IMAGE}"
+        }
+        failure {
+            echo "PROD pipeline execution failed!"
+        }
+    }
+}
