@@ -210,56 +210,48 @@ const ProjectPerformanceModel = (props) => {
 				[`prp_pyhsical_planned_month_${i + 1}`]: projectPerformance?.[
 					`prp_pyhsical_planned_month_${i + 1}`
 				]
-					? Number(
-							projectPerformance[`prp_pyhsical_planned_month_${i + 1}`]
-					  ).toLocaleString()
+					? Number(projectPerformance[`prp_pyhsical_planned_month_${i + 1}`])
 					: "0",
 				[`prp_pyhsical_actual_month_${i + 1}`]: projectPerformance?.[
 					`prp_pyhsical_actual_month_${i + 1}`
 				]
-					? Number(
-							projectPerformance[`prp_pyhsical_actual_month_${i + 1}`]
-					  ).toLocaleString()
+					? Number(projectPerformance[`prp_pyhsical_actual_month_${i + 1}`])
 					: "0",
 				[`prp_finan_planned_month_${i + 1}`]: projectPerformance?.[
 					`prp_finan_planned_month_${i + 1}`
 				]
-					? Number(
-							projectPerformance[`prp_finan_planned_month_${i + 1}`]
-					  ).toLocaleString()
+					? Number(projectPerformance[`prp_finan_planned_month_${i + 1}`])
 					: "0",
 				[`prp_finan_actual_month_${i + 1}`]: projectPerformance?.[
 					`prp_finan_actual_month_${i + 1}`
 				]
-					? Number(
-							projectPerformance[`prp_finan_actual_month_${i + 1}`]
-					  ).toLocaleString()
+					? Number(projectPerformance[`prp_finan_actual_month_${i + 1}`])
 					: "0",
 				[`prp_status_month_${i + 1}`]:
 					projectPerformance?.[`prp_status_month_${i + 1}`] || "",
 			})).reduce((acc, curr) => ({ ...acc, ...curr })),
 			// Summary fields
 			prp_physical_planned: projectPerformance?.prp_physical_planned
-				? Number(projectPerformance.prp_physical_planned).toLocaleString()
-				: DEFAULT_PHYSICAL_PLANNED.toString(),
+				? Number(projectPerformance.prp_physical_planned)
+				: DEFAULT_PHYSICAL_PLANNED,
 			prp_budget_planned: projectPerformance?.prp_budget_planned
-				? Number(projectPerformance.prp_budget_planned).toLocaleString()
-				: DEFAULT_BUDGET_PLANNED.toString(),
+				? Number(projectPerformance.prp_budget_planned)
+				: DEFAULT_BUDGET_PLANNED,
 			prp_budget_by_region: projectPerformance?.prp_budget_by_region
-				? Number(projectPerformance.prp_budget_by_region).toLocaleString()
-				: DEFAULT_REGION_BUDGET.toString(),
+				? Number(projectPerformance.prp_budget_by_region)
+				: DEFAULT_REGION_BUDGET,
 			prp_physical_by_region: projectPerformance?.prp_physical_by_region
-				? Number(projectPerformance.prp_physical_by_region).toLocaleString()
-				: DEFAULT_REGION_PHYSICAL.toString(),
+				? Number(projectPerformance.prp_physical_by_region)
+				: DEFAULT_REGION_PHYSICAL,
 			prp_budget_baseline: projectPerformance?.prp_budget_baseline
-				? Number(projectPerformance.prp_budget_baseline).toLocaleString()
+				? Number(projectPerformance.prp_budget_baseline)
 				: "0",
 			prp_physical_baseline: projectPerformance?.prp_physical_baseline
-				? Number(projectPerformance.prp_physical_baseline).toLocaleString()
+				? Number(projectPerformance.prp_physical_baseline)
 				: "0",
 			prp_total_budget_used: projectPerformance?.prp_total_budget_used
-				? Number(projectPerformance.prp_total_budget_used).toLocaleString()
-				: DEFAULT_TOTAL_BUDGET_USED.toString(),
+				? Number(projectPerformance.prp_total_budget_used)
+				: DEFAULT_TOTAL_BUDGET_USED,
 			completion_date: endDate,
 		},
 
@@ -600,37 +592,37 @@ const ProjectPerformanceModel = (props) => {
 				[`prp_pyhsical_planned_month_${i + 1}`]: data[
 					`prp_pyhsical_planned_month_${i + 1}`
 				]
-					? Number(data[`prp_pyhsical_planned_month_${i + 1}`]).toLocaleString()
+					? Number(data[`prp_pyhsical_planned_month_${i + 1}`])
 					: "0",
 				[`prp_pyhsical_actual_month_${i + 1}`]: data[
 					`prp_pyhsical_actual_month_${i + 1}`
 				]
-					? Number(data[`prp_pyhsical_actual_month_${i + 1}`]).toLocaleString()
+					? Number(data[`prp_pyhsical_actual_month_${i + 1}`])
 					: "0",
 				[`prp_finan_planned_month_${i + 1}`]: data[
 					`prp_finan_planned_month_${i + 1}`
 				]
-					? Number(data[`prp_finan_planned_month_${i + 1}`]).toLocaleString()
+					? Number(data[`prp_finan_planned_month_${i + 1}`])
 					: "0",
 				[`prp_finan_actual_month_${i + 1}`]: data[
 					`prp_finan_actual_month_${i + 1}`
 				]
-					? Number(data[`prp_finan_actual_month_${i + 1}`]).toLocaleString()
+					? Number(data[`prp_finan_actual_month_${i + 1}`])
 					: "0",
 				[`prp_status_month_${i + 1}`]: data[`prp_status_month_${i + 1}`] || "",
 			})).reduce((acc, curr) => ({ ...acc, ...curr })),
 			// Summary fields
-			prp_physical_planned: DEFAULT_PHYSICAL_PLANNED.toString(),
-			prp_budget_planned: DEFAULT_BUDGET_PLANNED.toString(),
-			prp_budget_by_region: DEFAULT_REGION_BUDGET.toString(),
-			prp_physical_by_region: DEFAULT_REGION_PHYSICAL.toString(),
+			prp_physical_planned: DEFAULT_PHYSICAL_PLANNED,
+			prp_budget_planned: DEFAULT_BUDGET_PLANNED,
+			prp_budget_by_region: DEFAULT_REGION_BUDGET,
+			prp_physical_by_region: DEFAULT_REGION_PHYSICAL,
 			prp_budget_baseline: data.prp_budget_baseline
-				? Number(data.prp_budget_baseline).toLocaleString()
-				: "0",
+				? Number(data.prp_budget_baseline)
+				: 0,
 			prp_physical_baseline: data.prp_physical_baseline
-				? Number(data.prp_physical_baseline).toLocaleString()
-				: "0",
-			prp_total_budget_used: DEFAULT_TOTAL_BUDGET_USED.toString(),
+				? Number(data.prp_physical_baseline)
+				: 0,
+			prp_total_budget_used: DEFAULT_TOTAL_BUDGET_USED,
 			completion_date: endDate,
 		};
 		validation.setValues(values);
@@ -1021,6 +1013,7 @@ const ProjectPerformanceModel = (props) => {
 											fieldId="prp_budget_baseline"
 											label={t("prp_budget_baseline")}
 											isRequired={true}
+											allowDecimals={true}
 										/>
 									</Col>
 								</Row>
