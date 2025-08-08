@@ -217,6 +217,7 @@ export const PDFPreview = ({ filePath, fileSize }) => {
 	const [pageNumber, setPageNumber] = useState(1);
 	const [pageDimensions, setPageDimensions] = useState({});
 	const [goToPage, setGoToPage] = useState("");
+	const [loadError, setLoadError] = useState(null);
 
 	const fullPath = useMemo(
 		() => `${API_URL}uploads/projectfiles/${filePath}`,
@@ -273,6 +274,32 @@ export const PDFPreview = ({ filePath, fileSize }) => {
 		);
 	}
 
+	if (loadError) {
+		return (
+			<div
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					flexDirection: "column",
+					padding: "20px",
+					height: "100%",
+				}}
+			>
+				<h6 className="text-danger">Failed to load PDF</h6>
+				<p className="text-muted">{loadError}</p>
+				<a
+					className="btn btn-success mt-3"
+					target="_blank"
+					rel="noopener noreferrer"
+					href={`${API_URL}uploads/projectfiles/${filePath}`}
+				>
+					Download instead
+				</a>
+			</div>
+		);
+	}
+
 	return (
 		<>
 			{fileSize > MAX_SIZE ? (
@@ -308,9 +335,12 @@ export const PDFPreview = ({ filePath, fileSize }) => {
 						<Document
 							file={fullPath}
 							onLoadSuccess={onDocumentLoadSuccess}
-							onLoadError={(error) =>
-								console.error("PDF loading error:", error)
-							}
+							onLoadError={(error) => {
+								console.error("PDF loading error:", error);
+								setLoadError(
+									error.message || "An error occurred while loading the PDF."
+								);
+							}}
 						>
 							<Page
 								pageNumber={pageNumber}

@@ -43,7 +43,7 @@ import {
 } from "reactstrap";
 import { PAGE_ID } from "../../constants/constantFile";
 import { formattedAmountValidation } from "../../utils/Validation/validation";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import { convertToNumericValue } from "../../utils/commonMethods";
@@ -1053,7 +1053,7 @@ const ProjectPerformanceModel = (props) => {
 													isRequired={false}
 													validation={validation}
 													componentId={"prp_record_date_gc"}
-													label={t("entry_date")}
+													label={t("Actual Project Start Date")}
 												/>
 											</Col>
 										)}

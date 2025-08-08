@@ -159,6 +159,8 @@ const ProjectContractorModel = ({ passedId, isActive, startDate }) => {
 		},
 		validationSchema: Yup.object({
 			cni_name: Yup.string().required(t("cni_name")),
+			cni_email: Yup.string()
+				.email(t("Invalida Email Format")),
 			cni_tin_num: Yup.string().required(t("cni_tin_num")),
 			cni_vat_num: Yup.string().required(t("cni_vat_num")),
 			cni_total_contract_price: Yup.string().required(
@@ -564,7 +566,6 @@ const ProjectContractorModel = ({ passedId, isActive, startDate }) => {
 												fieldId="cni_email"
 												className="col-md-4 mb-3"
 												label={t("cni_email")}
-												type="email"
 												validation={validation}
 												maxLength={50}
 											/>
