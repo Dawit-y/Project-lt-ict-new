@@ -412,6 +412,7 @@ const ProjectPerformanceModel = (props) => {
 			const projectPayload = {
 				prj_id: passedId,
 				prj_end_date_actual_gc: values.completion_date,
+				prj_project_status_id :7
 			};
 			const payload = {
 				prp_project_id: passedId,
