@@ -22,7 +22,7 @@ pipeline {
     }
 
     options {
-        retry(2) // Retry twice for quicker failover
+        retry(2) // Fail fast after two tries
     }
 
     stages {
@@ -33,7 +33,7 @@ pipeline {
                     cp ${ENV_FILE_PATH} .env
                     echo "Environment file copied."
 
-                    # SSL prep (uncomment if container needs certs copied)
+                    # SSL prep (uncomment if container needs certs)
                     # mkdir -p certs_ssl
                     # cp ${SSL_CERTIFICATE} certs_ssl/fullchain.pem
                     # cp ${SSL_CERTIFICATE_KEY} certs_ssl/privkey.pem
@@ -44,7 +44,6 @@ pipeline {
         stage('Build & Push Docker Image') {
             steps {
                 script {
-                    // Initialize Buildx if needed
                     sh 'docker buildx create --use || true'
 
                     docker.withRegistry('', REGISTRY_CREDENTIALS) {
@@ -64,18 +63,15 @@ pipeline {
         stage('Deploy Container') {
             steps {
                 sh """
-                    echo "Pulling ${FULL_DOCKER_IMAGE}..."
-                    docker pull ${FULL_DOCKER_IMAGE}
-
-                    echo "Stopping old container (if exists)..."
+                    echo "Stopping old container if it exists..."
                     docker rm -f ${CONTAINER_NAME} 2>/dev/null || true
 
-                    echo "Starting new container..."
+                    echo "Starting new container from local image..."
                     docker run -d --name ${CONTAINER_NAME} \
                         -p ${PORT_EXT}:${PORT_INT} \
                         ${FULL_DOCKER_IMAGE}
 
-                    echo "Deployment completed."
+                    echo "Deployment completed — container running on port ${PORT_EXT}."
                 """
             }
         }
