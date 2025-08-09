@@ -243,7 +243,7 @@ const ProjectModel = () => {
 					);
 				}
 			),
-			prj_code: alphanumericValidation(3, 20, false),
+			prj_code: Yup.string(),
 			/*test(
         "unique-prj_code",
         t("Already exists"),
