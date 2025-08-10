@@ -34,9 +34,6 @@ const TreeForLists = ({
 	isCollapsed,
 	setIsCollapsed,
 	widthInPercent = 25,
-	initialSelectedNode = {},
-	initialSearchTerm = "",
-	initialIncludeChecked = false,
 }) => {
 	const { t, i18n } = useTranslation();
 	const dndManager = useDragDropManager();
@@ -46,24 +43,14 @@ const TreeForLists = ({
 	const { data, isLoading, isError, error, refetch } =
 		useFetchAddressStructures(userId);
 	const [treeData, setTreeData] = useState([]);
-	const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
-	const [selectedNode, setSelectedNode] = useState(initialSelectedNode);
-	const [includeChecked, setIncludeChecked] = useState(initialIncludeChecked);
+	const [searchTerm, setSearchTerm] = useState("");
+	const [selectedNode, setSelectedNode] = useState({});
+	const [includeChecked, setIncludeChecked] = useState(false);
 	const { ref, width, height } = useResizeObserver();
 
 	useEffect(() => {
 		setIsAddressLoading(isLoading);
 	}, [isLoading]);
-
-	useEffect(() => {
-		if (treeRef.current && initialSelectedNode?.id) {
-			// wait for the tree to render
-			setTimeout(() => {
-				treeRef.current?.select(initialSelectedNode.id);
-				treeRef.current?.scrollTo(initialSelectedNode.id);
-			}, 200);
-		}
-	}, [treeData, initialSelectedNode]);
 
 	useEffect(() => {
 		if (data) {

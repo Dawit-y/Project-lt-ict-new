@@ -61,45 +61,20 @@ const ProjectModel = () => {
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
 	const { data: projectStatusData } = useFetchProjectStatuss();
-	// const [searchResults, setSearchResults] = useState(null);
+	const [searchResults, setSearchResults] = useState(null);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
 	const [searchError, setSearchError] = useState(null);
-	// const [showSearchResult, setShowSearchResult] = useState(false);
+	const [showSearchResult, setShowSearchResult] = useState(false);
 
-	// const [projectParams, setProjectParams] = useState({});
-	// const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
-	// const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
-	// const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
-	// const [include, setInclude] = useState(0);
-	// const [isCollapsed, setIsCollapsed] = useState(false);
+	const [projectParams, setProjectParams] = useState({});
+	const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
+	const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
+	const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
+	const [include, setInclude] = useState(0);
+	const [isCollapsed, setIsCollapsed] = useState(false);
 
-	// const [params, setParams] = useState({});
-	// const [searchParams, setSearchParams] = useState({});
-
-	const dispatch = useDispatch();
-	const {
-		projectParams,
-		searchResults,
-		showSearchResult,
-		prjLocationRegionId,
-		prjLocationZoneId,
-		prjLocationWoredaId,
-		include,
-		isCollapsed,
-		params,
-		searchParams,
-		selectedNode,
-	} = useSelector((state) => state.projectListReducer);
-
-	const {
-		setProjectParams,
-		setParams,
-		setSearchParams,
-		setShowSearchResult,
-		setSearchResults,
-		setInclude,
-		setIsCollapsed,
-	} = useProjectListDispatchers();
+	const [params, setParams] = useState({});
+	const [searchParams, setSearchParams] = useState({});
 
 	useEffect(() => {
 		setProjectParams({
@@ -150,51 +125,30 @@ const ProjectModel = () => {
 		}
 	}, [projectMetaData?.prj_project_status_id, searchResults]);
 
-	// const handleNodeSelect = useCallback(
-	// 	(node) => {
-	// 		if (node.level === "region") {
-	// 			setPrjLocationRegionId(node.id);
-	// 			setPrjLocationZoneId(null);
-	// 			setPrjLocationWoredaId(null);
-	// 		} else if (node.level === "zone") {
-	// 			setPrjLocationZoneId(node.id);
-	// 			setPrjLocationWoredaId(null);
-	// 		} else if (node.level === "woreda") {
-	// 			setPrjLocationWoredaId(node.id);
-	// 		}
-
-	// 		if (showSearchResult) {
-	// 			setShowSearchResult(false);
-	// 		}
-	// 	},
-	// 	[
-	// 		setPrjLocationRegionId,
-	// 		setPrjLocationZoneId,
-	// 		setPrjLocationWoredaId,
-	// 		showSearchResult,
-	// 		setShowSearchResult,
-	// 	]
-	// );
 	const handleNodeSelect = useCallback(
 		(node) => {
-			const updates = {};
 			if (node.level === "region") {
-				updates.prjLocationRegionId = node.id;
-				updates.prjLocationZoneId = null;
-				updates.prjLocationWoredaId = null;
+				setPrjLocationRegionId(node.id);
+				setPrjLocationZoneId(null);
+				setPrjLocationWoredaId(null);
 			} else if (node.level === "zone") {
-				updates.prjLocationZoneId = node.id;
-				updates.prjLocationWoredaId = null;
+				setPrjLocationZoneId(node.id);
+				setPrjLocationWoredaId(null);
 			} else if (node.level === "woreda") {
-				updates.prjLocationWoredaId = node.id;
+				setPrjLocationWoredaId(node.id);
 			}
+
 			if (showSearchResult) {
-				updates.showSearchResult = false;
+				setShowSearchResult(false);
 			}
-			dispatch(setProjectListState({ selectedNode: node }));
-			dispatch(setProjectListState(updates));
 		},
-		[dispatch, showSearchResult]
+		[
+			setPrjLocationRegionId,
+			setPrjLocationZoneId,
+			setPrjLocationWoredaId,
+			showSearchResult,
+			setShowSearchResult,
+		]
 	);
 
 	const projectStatusOptions = useMemo(() => {
@@ -321,8 +275,6 @@ const ProjectModel = () => {
 							setInclude={setInclude}
 							setIsCollapsed={setIsCollapsed}
 							isCollapsed={isCollapsed}
-							initialIncludeChecked={include === 1}
-							initialSelectedNode={selectedNode}
 						/>
 						{/* Main Content */}
 						<SearchTableContainer isCollapsed={isCollapsed}>

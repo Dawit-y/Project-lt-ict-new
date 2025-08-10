@@ -58,7 +58,7 @@ const AuthMiddleware = ({ children }) => {
 
 	const isAuthenticated = storedUser && Object.keys(storedUser).length > 0;
 
-	if (isRestoring || isLoading || authLoading) {
+	if (isRestoring || isLoading || authLoading || sidedata.length === 0) {
 		return (
 			<div
 				style={{
