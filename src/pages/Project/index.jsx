@@ -16,15 +16,12 @@ import TableContainer from "../../components/Common/TableContainer";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
-	useFetchProjects,
-	useSearchProjects,
 	useFetchChildProjects,
 	useAddProject,
 	useDeleteProject,
 	useUpdateProject,
 } from "../../queries/project_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
-import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import { useTranslation } from "react-i18next";
 import {
 	Button,
@@ -51,8 +48,6 @@ import {
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import { toast } from "react-toastify";
 import {
-	createSelectOptions,
-	createMultiSelectOptions,
 	convertToNumericValue,
 	createMultiLangKeyValueMap,
 } from "../../utils/commonMethods";
@@ -123,13 +118,13 @@ const ProjectModel = () => {
 			toast.success(t("add_success"), {
 				autoClose: 2000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
 			toast.error(t("add_failure"), {
 				autoClose: 2000,
 			});
 		}
-		toggle();
 	};
 
 	const handleUpdateProject = async (data) => {
@@ -138,13 +133,13 @@ const ProjectModel = () => {
 			toast.success(t("update_success"), {
 				autoClose: 2000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
 			toast.error(t("update_failure"), {
 				autoClose: 2000,
 			});
 		}
-		toggle();
 	};
 
 	const handleDeleteProject = async () => {
@@ -155,12 +150,12 @@ const ProjectModel = () => {
 				toast.success(t("delete_success"), {
 					autoClose: 2000,
 				});
+				setDeleteModal(false);
 			} catch (error) {
 				toast.error(t("delete_success"), {
 					autoClose: 2000,
 				});
 			}
-			setDeleteModal(false);
 		}
 	};
 
@@ -509,7 +504,6 @@ const ProjectModel = () => {
 	};
 
 	const handleProjectClicks = () => {
-		validation.resetForm();
 		setIsEdit(false);
 		setProject("");
 		toggle();
@@ -771,10 +765,7 @@ const ProjectModel = () => {
 								type="text"
 								validation={validation}
 								fieldId="prj_name"
-								onChange={(e) => {
-									validation.handleChange(e);
-									validation.setFieldValue("prj_name_en", e.target.value);
-								}}
+								label={t("prj_name_or")}
 								isRequired={true}
 								className="col-md-4 mb-3"
 								maxLength={200}

@@ -113,6 +113,10 @@ const ApproveDecline = ({ request, toggleParent }) => {
 	const brTasks = useFetchBudgetRequestTasks(param, verticalActiveTab === "2");
 	const brExSources = useFetchBudgetExSources(param, verticalActiveTab === "3");
 
+	const isExportDisabled =
+		!(braAmount?.data?.data && braAmount?.data?.data.length > 0) &&
+		!(brTasks?.data?.data && brTasks?.data?.data.length > 0);
+
 	const braColumns = useMemo(() => {
 		const baseColumns = [
 			{
@@ -543,11 +547,24 @@ const ApproveDecline = ({ request, toggleParent }) => {
 																	{t(key)} :{" "}
 																</td>
 																<td key={`value-${rowIndex}-${colIndex}`}>
-																	{value?.toString()}
+																	{key === "bdr_financial_baseline" ||
+																	key === "bdr_financial_recommended" ||
+																	key === "bdr_requested_amount"
+																		? !isNaN(parseFloat(value))
+																			? parseFloat(value).toLocaleString()
+																			: "-"
+																		: key === "bdr_physical_approved" ||
+																		  key === "bdr_physical_baseline" ||
+																		  key === "bdr_physical_planned" ||
+																		  key === "bdr_physical_recommended"
+																		? !isNaN(parseFloat(value))
+																			? `${parseFloat(value).toFixed(2)}%`
+																			: "-"
+																		: value?.toString()}
 																</td>
 															</>
 														))}
-														{Array.from({ length: 3 - row.length }).map(
+														{Array.from({ length: 2 - row.length }).map(
 															(_, i) => (
 																<>
 																	<td key={`empty-key-${rowIndex}-${i}`}></td>
@@ -567,7 +584,9 @@ const ApproveDecline = ({ request, toggleParent }) => {
 								<tbody>
 									<tr>
 										<td>{t("bdr_released_amount")}:</td>
-										<td>{request.bdr_released_amount}</td>
+										<td>
+											{parseFloat(request.bdr_released_amount).toLocaleString()}
+										</td>
 									</tr>
 									<tr>
 										<td>{t("bdr_released_date_gc")}:</td>
@@ -601,6 +620,7 @@ const ApproveDecline = ({ request, toggleParent }) => {
 															size="sm"
 															onClick={toggleViewModal}
 															className="ms-2"
+															disabled={isExportDisabled}
 														>
 															<FaFileExport />
 														</Button>
