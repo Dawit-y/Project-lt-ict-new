@@ -410,7 +410,7 @@ const StatisticalReport = () => {
 						setIsCollapsed={setIsCollapsed}
 						widthInPercent={15}
 					/>
-					<div style={{ flex: "1 1 0", overflowX: "auto" }}>
+					<div style={{ flex: "1 1 0", overflowX: "auto", minHeight: "100vh" }}>
 						<div
 							style={{
 								flex: isCollapsed ? "1 1 auto" : `0 0 85%`,
@@ -493,7 +493,9 @@ const StatisticalReport = () => {
 												</Card>
 											)}
 										{searchResults && searchResults.length === 0 && (
-											<p>{t("statistical_search")}</p>
+											<div className="text-center mt-5">
+												<p>{t("statistical_search")}</p>
+											</div>
 										)}
 									</>
 								)}
