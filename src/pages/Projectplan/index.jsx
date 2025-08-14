@@ -46,6 +46,7 @@ import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import DatePicker from "../../components/Common/DatePicker";
 import Breadcrumb from "../../components/Common/Breadcrumb.jsx";
 import { ProjectPlanExportColumns } from "../../utils/exportColumnsForDetails.js";
+import { toEthiopian } from "../../utils/commonMethods";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -333,27 +334,14 @@ const ProjectPlanModel = () => {
 				accessorKey: "pld_start_date_gc",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.pld_start_date_gc, 30) ||
-								"-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: "",
 				accessorKey: "pld_end_date_gc",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.pld_end_date_gc, 30) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: t("view_detail"),

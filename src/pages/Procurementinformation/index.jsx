@@ -329,100 +329,53 @@ const ProcurementInformationModel = (props) => {
 				accessorKey: "pri_total_procurement_amount",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: ({ getValue }) => parseFloat(getValue()).toLocaleString(undefined, {
-					minimumFractionDigits: 0,
-					maximumFractionDigits: 2,	
-				}) || "-",
+				cell: ({ getValue }) =>
+					parseFloat(getValue()).toLocaleString(undefined, {
+						minimumFractionDigits: 0,
+						maximumFractionDigits: 2,
+					}) || "-",
 			},
 			{
 				header: "",
 				accessorKey: "pri_bid_announced_date",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								cellProps.row.original.pri_bid_announced_date,
-								30
-							) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: "",
 				accessorKey: "pri_bid_invitation_date",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								cellProps.row.original.pri_bid_invitation_date,
-								30
-							) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: "",
 				accessorKey: "pri_bid_opening_date",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.pri_bid_opening_date, 30) ||
-								"-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: "",
 				accessorKey: "pri_bid_closing_date",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.pri_bid_closing_date, 30) ||
-								"-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: "",
 				accessorKey: "pri_bid_evaluation_date",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								cellProps.row.original.pri_bid_evaluation_date,
-								30
-							) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: "",
 				accessorKey: "pri_bid_award_date",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.pri_bid_award_date, 30) ||
-								"-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 
 			{

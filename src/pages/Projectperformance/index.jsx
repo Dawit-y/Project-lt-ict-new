@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState, lazy, Suspense } from "react";
 import PropTypes from "prop-types";
-import { isEmpty, update } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -44,7 +43,6 @@ import {
 import { PAGE_ID } from "../../constants/constantFile";
 import { formattedAmountValidation } from "../../utils/Validation/validation";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import { convertToNumericValue } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -56,6 +54,7 @@ const ConvInfoModal = lazy(() =>
 );
 import DatePicker from "../../components/Common/DatePicker";
 import { projectPerformanceExportColumns } from "../../utils/exportColumnsForDetails";
+import { toEthiopian } from "../../utils/commonMethods";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -411,7 +410,7 @@ const ProjectPerformanceModel = (props) => {
 		onSubmit: (values) => {
 			const projectPayload = {
 				prj_id: passedId,
-				prj_end_date_actual_gc: values.completion_date
+				prj_end_date_actual_gc: values.completion_date,
 			};
 			const payload = {
 				prp_project_id: passedId,
@@ -647,7 +646,7 @@ const ProjectPerformanceModel = (props) => {
 				header: t("prp_record_date_gc"),
 				accessorKey: "prp_record_date_gc",
 				enableColumnFilter: false,
-				cell: (cellProps) => cellProps.row.original.prp_record_date_gc || "-",
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 		];
 

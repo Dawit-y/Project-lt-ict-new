@@ -9,7 +9,6 @@ import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
 	useFetchProjectHandovers,
-	useSearchProjectHandovers,
 	useAddProjectHandover,
 	useDeleteProjectHandover,
 	useUpdateProjectHandover,
@@ -41,14 +40,12 @@ import {
 } from "reactstrap";
 import {
 	alphanumericValidation,
-	amountValidation,
-	numberValidation,
 } from "../../utils/Validation/validation";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import FileUploadField from "../../components/Common/FileUploadField";
 import AttachFileModal from "../../components/Common/AttachFileModal";
 import { projectHandoverExportColumns } from "../../utils/exportColumnsForDetails";
+import { toEthiopian } from "../../utils/commonMethods";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -265,27 +262,7 @@ const ProjectHandoverModel = (props) => {
 				accessorKey: "prh_handover_date_gc",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.prh_handover_date_gc, 30) ||
-								"-"}
-						</span>
-					);
-				},
-			},
-			{
-				header: "",
-				accessorKey: "prh_description",
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.prh_description, 30) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: t("view_detail"),
@@ -315,8 +292,9 @@ const ProjectHandoverModel = (props) => {
 					return (
 						<Button
 							type="button"
-							color="primary"
+							color="success"
 							className="btn-sm"
+							outline
 							onClick={() => {
 								toggleFileModal();
 								setTransaction(cellProps.row.original);
@@ -337,6 +315,7 @@ const ProjectHandoverModel = (props) => {
 							type="button"
 							color="primary"
 							className="btn-sm"
+							outline
 							onClick={() => {
 								toggleConvModal();
 								setTransaction(cellProps.row.original);
@@ -467,8 +446,8 @@ const ProjectHandoverModel = (props) => {
 											pagination="pagination"
 											paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
 											refetch={refetch}
-                        isFetching={isFetching}
-                        exportColumns={projectHandoverExportColumns}
+											isFetching={isFetching}
+											exportColumns={projectHandoverExportColumns}
 										/>
 									</CardBody>
 								</Card>

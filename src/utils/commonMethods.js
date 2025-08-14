@@ -24,10 +24,19 @@ export function parseDateString(dateStr) {
 }
 
 // Converts "yyyy/mm/dd" GC → dd/mm/yyyy" EC
+// export const toEthiopian = (date) => {
+// 	if (!date) return "";
+// 	const parsedDate = parseDateString(date);
+// 	const ethiopian = convertToEthiopian(parsedDate);
+// 	return `${ethiopian.day}/${ethiopian.month}/${ethiopian.year}`;
+// };
+
 export const toEthiopian = (date) => {
 	if (!date) return "";
-	const parsedDate = parseDateString(date);
-	const ethiopian = convertToEthiopian(parsedDate);
+	if (typeof date !== "string") return "";
+
+	const clean = date.replace(/\//g, "-"); 
+	const ethiopian = convertToEthiopian(clean);
 	return `${ethiopian.day}/${ethiopian.month}/${ethiopian.year}`;
 };
 

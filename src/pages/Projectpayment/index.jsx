@@ -8,38 +8,38 @@ import Spinners from "../../components/Common/Spinner";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
-  useFetchProjectPayments,
-  useAddProjectPayment,
-  useUpdateProjectPayment,
-  useDeleteProjectPayment,
+	useFetchProjectPayments,
+	useAddProjectPayment,
+	useUpdateProjectPayment,
+	useDeleteProjectPayment,
 } from "../../queries/projectpayment_query";
 import { useFetchPaymentCategorys } from "../../queries/paymentcategory_query";
 import {
-  useFetchBudgetYears,
-  usePopulateBudgetYears,
+	useFetchBudgetYears,
+	usePopulateBudgetYears,
 } from "../../queries/budgetyear_query";
 import {
-  alphanumericValidation,
-  amountValidation,
-  numberValidation,
-  formattedAmountValidation,
+	alphanumericValidation,
+	amountValidation,
+	numberValidation,
+	formattedAmountValidation,
 } from "../../utils/Validation/validation";
 import { useTranslation } from "react-i18next";
 import DatePicker from "../../components/Common/DatePicker";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 
 import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
+	Button,
+	Col,
+	Row,
+	UncontrolledTooltip,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	Form,
+	Input,
+	FormFeedback,
+	Label,
 } from "reactstrap";
 import { toast } from "react-toastify";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
@@ -49,12 +49,13 @@ import { useStatusCheck } from "../../hooks/useStatusCheck";
 import TableContainer from "../../components/Common/TableContainer";
 import { convertToNumericValue } from "../../utils/commonMethods";
 const AttachFileModal = lazy(() =>
-  import("../../components/Common/AttachFileModal")
+	import("../../components/Common/AttachFileModal")
 );
 const ConvInfoModal = lazy(() =>
-  import("../../pages/Conversationinformation/ConvInfoModal")
+	import("../../pages/Conversationinformation/ConvInfoModal")
 );
 import { projectPaymentExportColumns } from "../../utils/exportColumnsForDetails";
+import { toEthiopian } from "../../utils/commonMethods";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -340,14 +341,7 @@ const ProjectPaymentModel = (props) => {
 				accessorKey: "prp_payment_date_gc",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.prp_payment_date_gc, 30) ||
-								"-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: "",
@@ -826,7 +820,7 @@ const ProjectPaymentModel = (props) => {
 	);
 };
 ProjectPaymentModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+	preGlobalFilteredRows: PropTypes.any,
 };
 
 export default ProjectPaymentModel;

@@ -356,19 +356,6 @@ const ProjectBudgetSourceModel = (props) => {
 				},
 			},
 			{
-				header: "",
-				accessorKey: "bsr_description",
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.bsr_description, 30) || "-"}
-						</span>
-					);
-				},
-			},
-			{
 				header: t("view_detail"),
 				enableColumnFilter: false,
 				enableSorting: true,

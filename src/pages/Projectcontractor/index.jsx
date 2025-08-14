@@ -44,6 +44,7 @@ import AsyncSelectField from "../../components/Common/AsyncSelectField";
 import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
 import AttachFileModal from "../../components/Common/AttachFileModal";
 import { PAGE_ID } from "../../constants/constantFile";
+import { toEthiopian } from "../../utils/commonMethods";
 
 const truncateText = (text, maxLength) =>
 	typeof text === "string" && text.length > maxLength
@@ -159,8 +160,7 @@ const ProjectContractorModel = ({ passedId, isActive, startDate }) => {
 		},
 		validationSchema: Yup.object({
 			cni_name: Yup.string().required(t("cni_name")),
-			cni_email: Yup.string()
-				.email(t("Invalida Email Format")),
+			cni_email: Yup.string().email(t("Invalida Email Format")),
 			cni_tin_num: Yup.string().required(t("cni_tin_num")),
 			cni_vat_num: Yup.string().required(t("cni_vat_num")),
 			cni_total_contract_price: Yup.string().required(
@@ -258,16 +258,14 @@ const ProjectContractorModel = ({ passedId, isActive, startDate }) => {
 				enableColumnFilter: false,
 				enableColumnSorting: false,
 				accessorKey: "cni_contract_start_date_gc",
-				cell: ({ row }) =>
-					truncateText(row.original.cni_contract_start_date_gc, 30),
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: "",
 				enableColumnFilter: false,
 				enableColumnSorting: false,
 				accessorKey: "cni_contract_end_date_gc",
-				cell: ({ row }) =>
-					truncateText(row.original.cni_contract_end_date_gc, 30),
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: "",
