@@ -36,15 +36,15 @@ export const useSearchUserSectors = (searchParams = {}) => {
 //search user_sector
 export const getUserSectorList = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...USER_SECTOR_QUERY_KEY, "search", searchParams],
-    queryFn: () => getUserSectorTree(searchParams),
-    cacheTime: 0,          // Don't keep it in memory
-    staleTime: 0,          // Always stale
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    keepPreviousData: false, // Don't keep any previous results
-  });
+		queryKey: [...USER_SECTOR_QUERY_KEY, "search", searchParams],
+		queryFn: () => getUserSectorTree(searchParams),
+		staleTime: 1000 * 60 * 2,
+		gcTime: 1000 * 60 * 5,
+		refetchOnMount: true,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: false,
+		keepPreviousData: false, // Don't keep any previous results
+	});
 };
 export const getUserSectorListTree = (userId) => {
   return useQuery({

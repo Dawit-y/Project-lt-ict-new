@@ -60,7 +60,6 @@ const ProjectModel = () => {
 	const [projectMetaData, setProjectMetaData] = useState([]);
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
-	const { data: projectStatusData } = useFetchProjectStatuss();
 	const [searchResults, setSearchResults] = useState(null);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
 	const [searchError, setSearchError] = useState(null);
@@ -91,18 +90,26 @@ const ProjectModel = () => {
 
 	const [isAddressLoading, setIsAddressLoading] = useState(false);
 
+	// sector information
 	const { data: sectorInformationData } = getUserSectorList();
-	const sectorInformationOptions = createSelectOptions(
-		sectorInformationData?.data || [],
-		"sci_id",
-		"sci_name_en"
-	);
+	const {
+		sci_name_en: sectorInformationOptionsEn,
+		sci_name_or: sectorInformationOptionsOr,
+		sci_name_am: sectorInformationOptionsAm,
+	} = createMultiSelectOptions(sectorInformationData?.data || [], "sci_id", [
+		"sci_name_en",
+		"sci_name_or",
+		"sci_name_am",
+	]);
+
+	// project category options
 	const { data: projectCategoryData } = useFetchProjectCategorys();
 	const filteredCategoryData = useMemo(() => {
 		return projectCategoryData?.data?.filter(
 			(category) => category.pct_owner_type_id === 1
 		);
 	}, [projectCategoryData?.data]);
+
 	const {
 		pct_name_en: projectCategoryOptionsEn,
 		pct_name_or: projectCategoryOptionsOr,
@@ -112,18 +119,18 @@ const ProjectModel = () => {
 		"pct_name_or",
 		"pct_name_am",
 	]);
-	const [allowedTabs, setAllowedTabs] = useState(
-		searchResults?.allowedTabs || []
-	);
-	const allowedLinks = searchResults?.allowedLinks || [];
 
-	useEffect(() => {
-		if (projectMetaData?.prj_project_status_id <= 4) {
-			setAllowedTabs([54, 37]);
-		} else {
-			setAllowedTabs(searchResults?.allowedTabs || []);
-		}
-	}, [projectMetaData?.prj_project_status_id, searchResults]);
+	// project status options
+	const { data: projectStatusData } = useFetchProjectStatuss();
+	const {
+		prs_status_name_en: projectStatusOptionsEn,
+		prs_status_name_or: projectStatusOptionsOr,
+		prs_status_name_am: projectStatusOptionsAm,
+	} = createMultiSelectOptions(
+		projectStatusData?.data?.filter((type) => type.prs_id >= 1) || [],
+		"prs_id",
+		["prs_status_name_en", "prs_status_name_or", "prs_status_name_am"]
+	);
 
 	const handleNodeSelect = useCallback(
 		(node) => {
@@ -151,17 +158,6 @@ const ProjectModel = () => {
 		]
 	);
 
-	const projectStatusOptions = useMemo(() => {
-		return (
-			projectStatusData?.data
-				?.filter((type) => type.prs_id >= 1)
-				.map((type) => ({
-					label: type.prs_status_name_or,
-					value: type.prs_id,
-				})) || []
-		);
-	}, [projectStatusData]);
-
 	const handleSearch = useCallback(({ data, error }) => {
 		setSearchResults(data);
 		setSearchError(error);
@@ -177,6 +173,7 @@ const ProjectModel = () => {
 				sortable: false,
 				filter: false,
 				width: 60,
+				pinned: "left",
 			},
 			{
 				field: "prj_name",
@@ -185,6 +182,7 @@ const ProjectModel = () => {
 				filter: "agTextColumnFilter",
 				flex: 1,
 				minWidth: 200,
+				pinned: "left",
 			},
 			{
 				field: "prj_code",
@@ -244,6 +242,7 @@ const ProjectModel = () => {
 				sortable: false,
 				filter: false,
 				width: 120,
+				pinned: "right",
 				cellRenderer: (params) => {
 					if (params.node.footer) {
 						return ""; // Suppress button for footer
@@ -293,11 +292,21 @@ const ProjectModel = () => {
 									},
 									{
 										key: "prj_project_status_id",
-										options: projectStatusOptions,
+										options:
+											lang === "en"
+												? projectStatusOptionsEn
+												: lang === "am"
+												? projectStatusOptionsAm
+												: projectStatusOptionsOr,
 									},
 									{
 										key: "prj_sector_id",
-										options: sectorInformationOptions,
+										options:
+											lang === "en"
+												? sectorInformationOptionsEn
+												: lang === "am"
+												? sectorInformationOptionsAm
+												: sectorInformationOptionsOr,
 									},
 								]}
 								checkboxSearchKeys={[]}
