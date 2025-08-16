@@ -20,22 +20,29 @@ import {
 } from "reactstrap";
 import classnames from "classnames";
 import { FaFileExport } from "react-icons/fa";
-import { useFetchExpenditureCodes } from "../../../queries/expenditurecode_query";
-import { useFetchBudgetExSources } from "../../../queries/budgetexsource_query";
-import { useFetchBudgetRequestAmounts } from "../../../queries/budgetrequestamount_query";
-import { useFetchBudgetRequestTasks } from "../../../queries/budgetrequesttask_query";
-import TableContainer from "../../../components/Common/TableContainer";
+import { useFetchExpenditureCodes } from "../../../../queries/expenditurecode_query";
+import { useFetchBudgetExSources } from "../../../../queries/budgetexsource_query";
+import { useFetchBudgetRequestAmounts } from "../../../../queries/budgetrequestamount_query";
+import { useFetchBudgetRequestTasks } from "../../../../queries/budgetrequesttask_query";
+import TableContainer from "../../../../components/Common/TableContainer";
 import ApproveModal from "./ApproveModal";
-import BudgetRequestModal from "../BudgetRequestModal";
-import { useAuthUser } from "../../../hooks/useAuthUser";
+import BudgetRequestModal from "../../BudgetRequestModal";
+import { useAuthUser } from "../../../../hooks/useAuthUser";
 import BrAmountApproverModal from "./BrAmountApproverModal";
-import { createKeyValueMap } from "../../../utils/commonMethods";
+import { createKeyValueMap } from "../../../../utils/commonMethods";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
 		return text;
 	}
 	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+};
+
+const color_code = {
+	1: "primary",
+	2: "danger",
+	3: "success",
+	4: "warning",
 };
 
 const ApproveDecline = ({ request, toggleParent }) => {
@@ -520,7 +527,11 @@ const ApproveDecline = ({ request, toggleParent }) => {
 					)}
 					<Row>
 						<Col>
-							<Badge color={request.color_code} pill className="py-1 px-2 mb-2">
+							<Badge
+								color={color_code[request?.bdr_request_status]}
+								pill
+								className="py-1 px-2 mb-2"
+							>
 								{request?.status_name}
 							</Badge>
 						</Col>

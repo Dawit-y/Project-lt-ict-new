@@ -42,7 +42,7 @@ import { post } from "../../helpers/api_Lists";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import DatePicker from "../../components/Common/DatePicker"
-import RecommendModal from "../../pages/Budgetrequest/ApproverSide/RecommendModal"
+import RecommendModal from "./RecommendModal";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {

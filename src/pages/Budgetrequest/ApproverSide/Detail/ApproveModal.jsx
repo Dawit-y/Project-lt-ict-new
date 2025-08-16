@@ -14,10 +14,10 @@ import {
 } from "reactstrap";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { useUpdateBudgetRequestApproval } from "../../../queries/budget_request_query";
+import { useUpdateBudgetRequestApproval } from "../../../../queries/budget_request_query";
 import { toast } from "react-toastify";
-import DatePicker from "../../../components/Common/DatePicker";
-import FormattedAmountField from "../../../components/Common/FormattedAmountField";
+import DatePicker from "../../../../components/Common/DatePicker";
+import FormattedAmountField from "../../../../components/Common/FormattedAmountField";
 
 const ApproveModal = ({ isOpen, toggle, request, toggleParent, action }) => {
 	const { t } = useTranslation();

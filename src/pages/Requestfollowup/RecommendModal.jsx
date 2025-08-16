@@ -2,10 +2,10 @@ import { useTranslation } from 'react-i18next'
 import { Spinner, Modal, ModalBody, ModalHeader, Form, Label, Input, Button, Col, FormFeedback, Row } from 'reactstrap'
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { useUpdateRequestFollowup } from "../../../queries/requestfollowup_query"
+import { useUpdateRequestFollowup } from "../../queries/requestfollowup_query"
 import { toast } from "react-toastify"
-import DatePicker from "../../../components/Common/DatePicker";
-import FormattedAmountField from "../../../components/Common/FormattedAmountField"
+import DatePicker from "../../components/Common/DatePicker";
+import FormattedAmountField from "../../components/Common/FormattedAmountField"
 
 const RecommendModal = ({ isOpen, toggle, request, requestedAmount }) => {
   const { t } = useTranslation()

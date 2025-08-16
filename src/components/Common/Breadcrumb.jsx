@@ -34,11 +34,29 @@ const Breadcrumb = (props) => {
 				label.toLowerCase() === "project" &&
 				i + 1 < pathParts.length &&
 				!isNaN(pathParts[i + 1]) && // Ensure the next part is numeric
-				i + 2 === pathParts.length // Ensure there are no further segments
+				i + 2 === pathParts.length // Ensure no further segments
 			) {
 				breadcrumbs.push({
 					path: accumulatedPath,
 					label: "project",
+				});
+				breadcrumbs.push({
+					path: accumulatedPath,
+					label: "details",
+				});
+				break;
+			}
+
+			// Special case for `/budget_request_approval/:id` to add "Details"
+			if (
+				label.toLowerCase() === "budget_request_approval" &&
+				i + 1 < pathParts.length &&
+				!isNaN(pathParts[i + 1]) && // Ensure the next part is numeric
+				i + 2 === pathParts.length // Ensure no further segments
+			) {
+				breadcrumbs.push({
+					path: accumulatedPath,
+					label: "budget_request_approval",
 				});
 				breadcrumbs.push({
 					path: accumulatedPath,

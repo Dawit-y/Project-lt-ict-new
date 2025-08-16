@@ -15,9 +15,6 @@ import { Button, Badge, UncontrolledTooltip } from "reactstrap";
 import Spinners from "../../../components/Common/Spinner";
 import { FaGavel, FaChartLine, FaPaperclip, FaPenSquare } from "react-icons/fa";
 const Breadcrumbs = lazy(() => import("../../../components/Common/Breadcrumb"));
-const ApproverBudgetRequestListModal = lazy(() =>
-	import("./ApproverBudgetRequestModal")
-);
 const AdvancedSearch = lazy(() =>
 	import("../../../components/Common/AdvancedSearch")
 );
@@ -37,7 +34,6 @@ const TotalAnalysisModal = lazy(() => import("../Analysis/TotalAnalysisModal"));
 const AgGridContainer = lazy(() =>
 	import("../../../components/Common/AgGridContainer")
 );
-import { budget_request } from "../../../settings/printablecolumns";
 import { useSearchBudgetRequestforApproval } from "../../../queries/budget_request_query";
 import { useFetchBudgetYears } from "../../../queries/budgetyear_query";
 import { useSearchRequestCategorys } from "../../../queries/requestcategory_query";
@@ -63,7 +59,6 @@ const truncateText = (text, maxLength) => {
 const ApproverBudgetRequestList = () => {
 	document.title = "Budget Request List";
 	const { t, i18n } = useTranslation();
-	const [modal1, setModal1] = useState(false);
 	const [fileModal, setFileModal] = useState(false);
 	const [convModal, setConvModal] = useState(false);
 	const [singleAnalysisModal, setSingleAnalysisModal] = useState(false);
@@ -152,7 +147,6 @@ const ApproverBudgetRequestList = () => {
 		setShowSearchResult(true);
 	}, []);
 
-	const toggleViewModal = () => setModal1(!modal1);
 	const toggleFileModal = () => setFileModal(!fileModal);
 	const toggleConvModal = () => setConvModal(!convModal);
 	const toggleSingleAnalysisModal = () =>
@@ -352,22 +346,19 @@ const ApproverBudgetRequestList = () => {
 				headerName: t("actions"),
 				field: "actions",
 				width: 170,
-        pinned: "right",
-        sortable: false,
-        filter: false,
+				pinned: "right",
+				sortable: false,
+				filter: false,
 				cellRenderer: (params) => {
 					const data = params.data;
-
 					return (
 						<div className="d-flex gap-1">
 							<Button
+								tag={Link}
+								to={`/budget_request_approval/${data.bdr_id}`}
 								id={`takeAction-${data.bdr_id}`}
 								color="light"
 								size="sm"
-								onClick={() => {
-									toggleViewModal();
-									setTransaction(data);
-								}}
 							>
 								<FaGavel />
 							</Button>
@@ -429,12 +420,6 @@ const ApproverBudgetRequestList = () => {
 	return (
 		<Suspense fallback={<Spinners />}>
 			<React.Fragment>
-				<ApproverBudgetRequestListModal
-					isOpen={modal1}
-					toggle={toggleViewModal}
-					transaction={transaction}
-					budgetYearMap={budgetYearMap}
-				/>
 				<AttachFileModal
 					isOpen={fileModal}
 					toggle={toggleFileModal}

@@ -1,6 +1,5 @@
-import { post } from "./api_Lists";
+import { post, get } from "./api_Lists";
 
-const apiUrl = import.meta.env.VITE_BASE_API_URL;
 const GET_BUDGET_REQUEST = "budget_request/listgrid";
 const ADD_BUDGET_REQUEST = "budget_request/insertgrid";
 const UPDATE_BUDGET_REQUEST = "budget_request/updategrid";
@@ -20,6 +19,15 @@ export const getBudgetRequest = async (params) => {
   } catch (error) {
     throw error
   }
+};
+
+export const fetchBudgetRequest = async (bdr_id) => {
+	try {
+		const response = await get(`/budget_request_approval/${bdr_id}`);
+		return response;
+	} catch (error) {
+		throw error;
+	}
 };
 
 // add project_budget_request
