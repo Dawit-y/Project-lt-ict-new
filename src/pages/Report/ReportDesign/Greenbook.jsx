@@ -270,7 +270,7 @@ const Greenbook = ({
         approved: 0,
         requestedAmount: 0,
         releasedAmount: 0,
-      }
+      },
     );
 
     overallTotals.requested += totals.requested;

@@ -118,8 +118,8 @@ const ProjectKpiResultModal = (props) => {
                       transaction.kpr_status === "approved"
                         ? "success"
                         : transaction.kpr_status === "pending"
-                        ? "warning"
-                        : "secondary"
+                          ? "warning"
+                          : "secondary"
                     }
                     pill
                     className="px-3 py-2"

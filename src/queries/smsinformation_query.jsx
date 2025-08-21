@@ -68,7 +68,7 @@ export const useUpdateSmsInformation = () => {
           data: oldData.data.map((SmsInformationData) =>
             SmsInformationData.smi_id === updatedSmsInformation.data.smi_id
               ? { ...SmsInformationData, ...updatedSmsInformation.data }
-              : SmsInformationData
+              : SmsInformationData,
           ),
         };
       });
@@ -87,7 +87,8 @@ export const useDeleteSmsInformation = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (SmsInformationData) => SmsInformationData.smi_id !== parseInt(deletedData.deleted_id)
+            (SmsInformationData) =>
+              SmsInformationData.smi_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

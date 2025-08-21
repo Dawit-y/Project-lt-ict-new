@@ -1,20 +1,13 @@
 import React, { useTransition } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "reactstrap";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { DetailsView } from "../../components/Common/DetailViewWrapper";
 
 const modalStyle = {
   width: "100%",
   // height: '100%',
 };
-
 
 const PermissionModal = (props) => {
   const { t } = useTranslation();

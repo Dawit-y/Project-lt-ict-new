@@ -75,7 +75,7 @@ export const useUpdateProjectComponent = () => {
             data: oldData.data.map((data) =>
               data.pcm_id === updatedData.data.pcm_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -100,7 +100,7 @@ export const useDeleteProjectComponent = () => {
             ...oldData,
             data: oldData.data.filter(
               (deletedData) =>
-                deletedData.pcm_id !== parseInt(deletedData.deleted_id)
+                deletedData.pcm_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

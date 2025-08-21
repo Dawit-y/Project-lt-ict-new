@@ -68,7 +68,7 @@ export const useUpdateBudgetSource = () => {
           data: oldData.data.map((BudgetSourceData) =>
             BudgetSourceData.pbs_id === updatedBudgetSource.data.pbs_id
               ? { ...BudgetSourceData, ...updatedBudgetSource.data }
-              : BudgetSourceData
+              : BudgetSourceData,
           ),
         };
       });
@@ -87,7 +87,8 @@ export const useDeleteBudgetSource = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (BudgetSourceData) => BudgetSourceData.pbs_id !== parseInt(deletedData.deleted_id)
+            (BudgetSourceData) =>
+              BudgetSourceData.pbs_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

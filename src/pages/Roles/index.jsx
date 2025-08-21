@@ -60,7 +60,8 @@ const RolesModel = () => {
   const [showCanvas, setShowCanvas] = useState(false);
 
   const [roles, setRoles] = useState(null);
-  const { data, isLoading, isFetching, error, isError, refetch} = useFetchRoles();
+  const { data, isLoading, isFetching, error, isError, refetch } =
+    useFetchRoles();
   const addRoles = useAddRoles();
   const updateRoles = useUpdateRoles();
   const deleteRoles = useDeleteRoles();
@@ -68,12 +69,12 @@ const RolesModel = () => {
   const handleAddRoles = async (data) => {
     try {
       await addRoles.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.success(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -83,12 +84,12 @@ const RolesModel = () => {
   const handleUpdateRoles = async (data) => {
     try {
       await updateRoles.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
+      toast.success(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -100,12 +101,12 @@ const RolesModel = () => {
         const id = roles.rol_id;
         console.log("role id", id);
         await deleteRoles.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
         validation.resetForm();
       } catch (error) {
-        toast.success(t('delete_failure'), {
+        toast.success(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -129,9 +130,11 @@ const RolesModel = () => {
         t("Already exists"),
         (value) => {
           return !data?.data.some(
-            (item) => item.rol_name.toLowerCase() == value.toLowerCase() && item.rol_id !== roles?.rol_id
+            (item) =>
+              item.rol_name.toLowerCase() == value.toLowerCase() &&
+              item.rol_id !== roles?.rol_id,
           );
-        }
+        },
       ),
       rol_description: alphanumericValidation(3, 425, false),
     }),

@@ -146,9 +146,9 @@ const ProcurementMethodModel = () => {
           return !data?.data.some(
             (item) =>
               item.prm_name_or == value &&
-              item.prm_id !== procurementMethod?.prm_id
+              item.prm_id !== procurementMethod?.prm_id,
           );
-        }
+        },
       ),
       prm_name_am: onlyAmharicValidation(2, 100, true),
       prm_name_en: alphanumericValidation(2, 100, true),
@@ -388,266 +388,266 @@ const ProcurementMethodModel = () => {
     return baseColumns;
   }, [handleProcurementMethodClick, toggleViewModal, onClickDelete]);
   return (
-		<React.Fragment>
-			<ProcurementMethodModal
-				isOpen={modal1}
-				toggle={toggleViewModal}
-				transaction={transaction}
-			/>
-			<DeleteModal
-				show={deleteModal}
-				onDeleteClick={handleDeleteProcurementMethod}
-				onCloseClick={() => setDeleteModal(false)}
-				isLoading={deleteProcurementMethod.isPending}
-			/>
-			<div className="page-content">
-				<div className="container-fluid">
-					<Breadcrumbs
-						title={t("procurement_method")}
-						breadcrumbItem={t("procurement_method")}
-					/>
-					<AdvancedSearch
-						searchHook={useSearchProcurementMethods}
-						textSearchKeys={["prm_name_or", "prm_name_en", "prm_name_am"]}
-						dropdownSearchKeys={[]}
-						checkboxSearchKeys={[
-							{
-								key: "example1",
-								options: [
-									{ value: "Engineering", label: "Example1" },
-									{ value: "Science", label: "Example2" },
-								],
-							},
-						]}
-						onSearchResult={handleSearchResults}
-						setIsSearchLoading={setIsSearchLoading}
-						setSearchResults={setSearchResults}
-						setShowSearchResult={setShowSearchResult}
-					/>
-					{isLoading || isSearchLoading ? (
-						<Spinners />
-					) : (
-						<Row>
-							<Col xs="12">
-								<Card>
-									<CardBody>
-										<TableContainer
-											columns={columns}
-											data={
-												showSearchResult
-													? searchResults?.data
-													: data?.data || []
-											}
-											isGlobalFilter={true}
-											isAddButton={data?.previledge?.is_role_can_add == 1}
-											isCustomPageSize={true}
-											handleUserClick={handleProcurementMethodClicks}
-											isPagination={true}
-											SearchPlaceholder={t("Results") + "..."}
-											buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-											buttonName={t("add")}
-											tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-											theadClass="table-light"
-											pagination="pagination"
-											paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-											refetch={refetch}
-											isFetching={isFetching}
-											isExcelExport={true}
-											isPdfExport={true}
-											isPrint={true}
-											tableName="Procurement Method"
-											exportColumns={procurementMethodExportColumns}
-										/>
-									</CardBody>
-								</Card>
-							</Col>
-						</Row>
-					)}
-					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
-						<ModalHeader toggle={toggle} tag="h4">
-							{!!isEdit
-								? t("edit") + " " + t("procurement_method")
-								: t("add") + " " + t("procurement_method")}
-						</ModalHeader>
-						<ModalBody>
-							<Form
-								onSubmit={(e) => {
-									e.preventDefault();
-									validation.handleSubmit();
-									return false;
-								}}
-							>
-								<Row>
-									<Col className="col-md-6 mb-3">
-										<Label>
-											{t("prm_name_or")}
-											<span className="text-danger">*</span>
-										</Label>
-										<Input
-											name="prm_name_or"
-											type="text"
-											placeholder={t("prm_name_or")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.prm_name_or || ""}
-											invalid={
-												validation.touched.prm_name_or &&
-												validation.errors.prm_name_or
-													? true
-													: false
-											}
-											maxLength={50}
-										/>
-										{validation.touched.prm_name_or &&
-										validation.errors.prm_name_or ? (
-											<FormFeedback type="invalid">
-												{validation.errors.prm_name_or}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>
-											{t("prm_name_en")}
-											<span className="text-danger">*</span>
-										</Label>
-										<Input
-											name="prm_name_en"
-											type="text"
-											placeholder={t("prm_name_en")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.prm_name_en || ""}
-											invalid={
-												validation.touched.prm_name_en &&
-												validation.errors.prm_name_en
-													? true
-													: false
-											}
-											maxLength={50}
-										/>
-										{validation.touched.prm_name_en &&
-										validation.errors.prm_name_en ? (
-											<FormFeedback type="invalid">
-												{validation.errors.prm_name_en}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>
-											{t("prm_name_am")}
-											<span className="text-danger">*</span>
-										</Label>
-										<Input
-											name="prm_name_am"
-											type="text"
-											placeholder={t("prm_name_am")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.prm_name_am || ""}
-											invalid={
-												validation.touched.prm_name_am &&
-												validation.errors.prm_name_am
-													? true
-													: false
-											}
-											maxLength={50}
-										/>
-										{validation.touched.prm_name_am &&
-										validation.errors.prm_name_am ? (
-											<FormFeedback type="invalid">
-												{validation.errors.prm_name_am}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("prm_description")}</Label>
-										<Input
-											name="prm_description"
-											type="textarea"
-											placeholder={t("prm_description")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.prm_description || ""}
-											invalid={
-												validation.touched.prm_description &&
-												validation.errors.prm_description
-													? true
-													: false
-											}
-											maxLength={425}
-										/>
-										{validation.touched.prm_description &&
-										validation.errors.prm_description ? (
-											<FormFeedback type="invalid">
-												{validation.errors.prm_description}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label className="me-2">{t("is_inactive")}</Label>
+    <React.Fragment>
+      <ProcurementMethodModal
+        isOpen={modal1}
+        toggle={toggleViewModal}
+        transaction={transaction}
+      />
+      <DeleteModal
+        show={deleteModal}
+        onDeleteClick={handleDeleteProcurementMethod}
+        onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteProcurementMethod.isPending}
+      />
+      <div className="page-content">
+        <div className="container-fluid">
+          <Breadcrumbs
+            title={t("procurement_method")}
+            breadcrumbItem={t("procurement_method")}
+          />
+          <AdvancedSearch
+            searchHook={useSearchProcurementMethods}
+            textSearchKeys={["prm_name_or", "prm_name_en", "prm_name_am"]}
+            dropdownSearchKeys={[]}
+            checkboxSearchKeys={[
+              {
+                key: "example1",
+                options: [
+                  { value: "Engineering", label: "Example1" },
+                  { value: "Science", label: "Example2" },
+                ],
+              },
+            ]}
+            onSearchResult={handleSearchResults}
+            setIsSearchLoading={setIsSearchLoading}
+            setSearchResults={setSearchResults}
+            setShowSearchResult={setShowSearchResult}
+          />
+          {isLoading || isSearchLoading ? (
+            <Spinners />
+          ) : (
+            <Row>
+              <Col xs="12">
+                <Card>
+                  <CardBody>
+                    <TableContainer
+                      columns={columns}
+                      data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
+                      isGlobalFilter={true}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
+                      isCustomPageSize={true}
+                      handleUserClick={handleProcurementMethodClicks}
+                      isPagination={true}
+                      SearchPlaceholder={t("Results") + "..."}
+                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                      buttonName={t("add")}
+                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                      theadClass="table-light"
+                      pagination="pagination"
+                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                      refetch={refetch}
+                      isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Procurement Method"
+                      exportColumns={procurementMethodExportColumns}
+                    />
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          )}
+          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
+            <ModalHeader toggle={toggle} tag="h4">
+              {!!isEdit
+                ? t("edit") + " " + t("procurement_method")
+                : t("add") + " " + t("procurement_method")}
+            </ModalHeader>
+            <ModalBody>
+              <Form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  validation.handleSubmit();
+                  return false;
+                }}
+              >
+                <Row>
+                  <Col className="col-md-6 mb-3">
+                    <Label>
+                      {t("prm_name_or")}
+                      <span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      name="prm_name_or"
+                      type="text"
+                      placeholder={t("prm_name_or")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prm_name_or || ""}
+                      invalid={
+                        validation.touched.prm_name_or &&
+                        validation.errors.prm_name_or
+                          ? true
+                          : false
+                      }
+                      maxLength={50}
+                    />
+                    {validation.touched.prm_name_or &&
+                    validation.errors.prm_name_or ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prm_name_or}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>
+                      {t("prm_name_en")}
+                      <span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      name="prm_name_en"
+                      type="text"
+                      placeholder={t("prm_name_en")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prm_name_en || ""}
+                      invalid={
+                        validation.touched.prm_name_en &&
+                        validation.errors.prm_name_en
+                          ? true
+                          : false
+                      }
+                      maxLength={50}
+                    />
+                    {validation.touched.prm_name_en &&
+                    validation.errors.prm_name_en ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prm_name_en}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>
+                      {t("prm_name_am")}
+                      <span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      name="prm_name_am"
+                      type="text"
+                      placeholder={t("prm_name_am")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prm_name_am || ""}
+                      invalid={
+                        validation.touched.prm_name_am &&
+                        validation.errors.prm_name_am
+                          ? true
+                          : false
+                      }
+                      maxLength={50}
+                    />
+                    {validation.touched.prm_name_am &&
+                    validation.errors.prm_name_am ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prm_name_am}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("prm_description")}</Label>
+                    <Input
+                      name="prm_description"
+                      type="textarea"
+                      placeholder={t("prm_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.prm_description || ""}
+                      invalid={
+                        validation.touched.prm_description &&
+                        validation.errors.prm_description
+                          ? true
+                          : false
+                      }
+                      maxLength={425}
+                    />
+                    {validation.touched.prm_description &&
+                    validation.errors.prm_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prm_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label className="me-2">{t("is_inactive")}</Label>
 
-										<Input
-											name="prm_status"
-											type="checkbox"
-											placeholder={t("prm_status")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											checked={validation.values.prm_status}
-											invalid={
-												validation.touched.prm_status &&
-												validation.errors.prm_status
-											}
-										/>
-										{validation.touched.prm_status &&
-										validation.errors.prm_status ? (
-											<FormFeedback type="invalid">
-												{validation.errors.prm_status}
-											</FormFeedback>
-										) : null}
-									</Col>
-								</Row>
-								<Row>
-									<Col>
-										<div className="text-end">
-											{addProcurementMethod.isPending ||
-											updateProcurementMethod.isPending ? (
-												<Button
-													color="success"
-													type="submit"
-													className="save-user"
-													disabled={
-														addProcurementMethod.isPending ||
-														updateProcurementMethod.isPending ||
-														!validation.dirty
-													}
-												>
-													<Spinner size={"sm"} color="light" className="me-2" />
-													{t("Save")}
-												</Button>
-											) : (
-												<Button
-													color="success"
-													type="submit"
-													className="save-user"
-													disabled={
-														addProcurementMethod.isPending ||
-														updateProcurementMethod.isPending ||
-														!validation.dirty
-													}
-												>
-													{t("Save")}
-												</Button>
-											)}
-										</div>
-									</Col>
-								</Row>
-							</Form>
-						</ModalBody>
-					</Modal>
-				</div>
-			</div>
-		</React.Fragment>
-	);
+                    <Input
+                      name="prm_status"
+                      type="checkbox"
+                      placeholder={t("prm_status")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      checked={validation.values.prm_status}
+                      invalid={
+                        validation.touched.prm_status &&
+                        validation.errors.prm_status
+                      }
+                    />
+                    {validation.touched.prm_status &&
+                    validation.errors.prm_status ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.prm_status}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <div className="text-end">
+                      {addProcurementMethod.isPending ||
+                      updateProcurementMethod.isPending ? (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addProcurementMethod.isPending ||
+                            updateProcurementMethod.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          <Spinner size={"sm"} color="light" className="me-2" />
+                          {t("Save")}
+                        </Button>
+                      ) : (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addProcurementMethod.isPending ||
+                            updateProcurementMethod.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          {t("Save")}
+                        </Button>
+                      )}
+                    </div>
+                  </Col>
+                </Row>
+              </Form>
+            </ModalBody>
+          </Modal>
+        </div>
+      </div>
+    </React.Fragment>
+  );
 };
 ProcurementMethodModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

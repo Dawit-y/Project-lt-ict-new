@@ -75,7 +75,7 @@ export const useUpdateProcurementStage = () => {
             data: oldData.data.map((data) =>
               data.pst_id === updatedData.data.pst_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -99,7 +99,8 @@ export const useDeleteProcurementStage = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (deletedData) => deletedData.pst_id !== parseInt(deletedData.deleted_id)
+              (deletedData) =>
+                deletedData.pst_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

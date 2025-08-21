@@ -2,7 +2,7 @@ import { useState, lazy } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getProjectDashboard } from "../../helpers/dashboard_backend_helper";
 import { withTranslation } from "react-i18next";
-const SupersetDashboard = lazy(() => import('./SupersetDashboard'));
+const SupersetDashboard = lazy(() => import("./SupersetDashboard"));
 import Spinners from "../../components/Common/Spinner";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import ChangePasswordModal from "../../components/Common/ChangePasswordModal";
@@ -62,16 +62,18 @@ const Dashboard = () => {
             toggle={() => setIsPasswordModalOpen(!isPasswordModalOpen)}
           />
 
-          {Array.isArray(data) && data.map((supersetPath, index) => (
-            <div key={index}>
-              {supersetPath ? (
-                <SupersetDashboard dashboardPath={supersetPath.superset_url} />
-              ) : (
-                <Spinners />
-              )}
-            </div>
-          ))}
-
+          {Array.isArray(data) &&
+            data.map((supersetPath, index) => (
+              <div key={index}>
+                {supersetPath ? (
+                  <SupersetDashboard
+                    dashboardPath={supersetPath.superset_url}
+                  />
+                ) : (
+                  <Spinners />
+                )}
+              </div>
+            ))}
         </div>
       </div>
     </div>

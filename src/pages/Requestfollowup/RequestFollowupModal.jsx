@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useTransition } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,11 +8,11 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+} from "reactstrap";
 import { DetailsView } from "../../components/Common/DetailViewWrapper";
 
 const modalStyle = {
-  width: '100%',
+  width: "100%",
 };
 
 const RequestFollowupModal = (props) => {
@@ -45,12 +45,13 @@ const RequestFollowupModal = (props) => {
               "rqf_delete_time",
               "rqf_created_by",
               "rqf_id",
-              "rqf_status"
-            ]} />
+              "rqf_status",
+            ]}
+          />
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

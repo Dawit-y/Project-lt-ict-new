@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useTransition } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,11 +8,11 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+} from "reactstrap";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+  width: "100%",
+  height: "100%",
 };
 const EmailTemplateModal = (props) => {
   const { t } = useTranslation();
@@ -31,23 +31,34 @@ const EmailTemplateModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('emt_template_name')}: <span className="text-primary">{transaction.emt_template_name}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('emt_template_content')}: <span className="text-primary">{transaction.emt_template_content}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('emt_description')}: <span className="text-primary">{transaction.emt_description}</span>
-          </p>
+          <tr>
+            <p className="mb-2">
+              {t("emt_template_name")}:{" "}
+              <span className="text-primary">
+                {transaction.emt_template_name}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("emt_template_content")}:{" "}
+              <span className="text-primary">
+                {transaction.emt_template_content}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("emt_description")}:{" "}
+              <span className="text-primary">
+                {transaction.emt_description}
+              </span>
+            </p>
           </tr>
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

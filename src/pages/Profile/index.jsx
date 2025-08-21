@@ -43,7 +43,6 @@ const UsersProfile = () => {
     return formatDistanceToNow(parsedDate, { addSuffix: true });
   };
 
-
   return (
     <React.Fragment>
       <UpdateModal

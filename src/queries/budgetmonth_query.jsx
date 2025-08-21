@@ -68,7 +68,7 @@ export const useUpdateBudgetMonth = () => {
           data: oldData.data.map((BudgetMonthData) =>
             BudgetMonthData.bdm_id === updatedBudgetMonth.data.bdm_id
               ? { ...BudgetMonthData, ...updatedBudgetMonth.data }
-              : BudgetMonthData
+              : BudgetMonthData,
           ),
         };
       });
@@ -87,7 +87,8 @@ export const useDeleteBudgetMonth = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (BudgetMonthData) => BudgetMonthData.bdm_id !== parseInt(deletedData.deleted_id)
+            (BudgetMonthData) =>
+              BudgetMonthData.bdm_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

@@ -66,7 +66,7 @@ const getColorKeyFromValue = (input) => {
   if (!input) return "";
   const lowerInput = input.toLowerCase();
   return Object.entries(colorMap).find(
-    ([, value]) => value.toLowerCase() === lowerInput
+    ([, value]) => value.toLowerCase() === lowerInput,
   )?.[0]; // returns "warning" for "yellow"
 };
 
@@ -167,9 +167,9 @@ const ProjectStatusModel = () => {
           return !data?.data.some(
             (item) =>
               item.prs_status_name_or == value &&
-              item.prs_id !== projectStatus?.prs_id
+              item.prs_id !== projectStatus?.prs_id,
           );
-        }
+        },
       ),
       prs_status_name_am: Yup.string().required(t("prs_status_name_am")),
       prs_status_name_en: alphanumericValidation(2, 100, true),
@@ -181,7 +181,7 @@ const ProjectStatusModel = () => {
           return Object.values(colorMap)
             .map((v) => v.toLowerCase())
             .includes(value.toLowerCase());
-        }
+        },
       ),
       prs_order_number: numberValidation(1, 10, true),
       prs_description: alphanumericValidation(2, 425, false),

@@ -39,7 +39,7 @@ export const useAddContractorType = () => {
   return useMutation({
     mutationFn: addContractorType,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( CONTRACTOR_TYPE_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(CONTRACTOR_TYPE_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,
@@ -68,7 +68,7 @@ export const useUpdateContractorType = () => {
           data: oldData.data.map((ContractorTypeData) =>
             ContractorTypeData.cnt_id === updatedContractorType.data.cnt_id
               ? { ...ContractorTypeData, ...updatedContractorType.data }
-              : ContractorTypeData
+              : ContractorTypeData,
           ),
         };
       });
@@ -87,7 +87,8 @@ export const useDeleteContractorType = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (ContractorTypeData) => ContractorTypeData.cnt_id !== parseInt(deletedData.deleted_id)
+            (ContractorTypeData) =>
+              ContractorTypeData.cnt_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

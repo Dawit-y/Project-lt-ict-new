@@ -102,13 +102,13 @@ const ProjectPerformanceModal = ({
 
   // Reordered for display (Hamle to Sene)
   const displayMonthlyData = [11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(
-    (month) => monthlyData.find((m) => m.month === month)
+    (month) => monthlyData.find((m) => m.month === month),
   );
 
   // Calculate quarterly summaries using Ethiopian fiscal quarters
   const quarters = ETHIOPIAN_QUARTERS.map((quarterMonths, qNum) => {
     const quarterData = monthlyData.filter((m) =>
-      quarterMonths.includes(m.month)
+      quarterMonths.includes(m.month),
     );
     const totals = quarterData.reduce(
       (acc, m) => ({
@@ -122,7 +122,7 @@ const ProjectPerformanceModal = ({
         actualPhysical: 0,
         plannedFinancial: 0,
         actualFinancial: 0,
-      }
+      },
     );
 
     return {
@@ -146,11 +146,11 @@ const ProjectPerformanceModal = ({
   const annualSummary = {
     TotalPhysicalPlanned: monthlyData.reduce(
       (sum, m) => sum + m.plannedPhysical,
-      0
+      0,
     ),
     TotalPhysicalActual: monthlyData.reduce(
       (sum, m) => sum + m.actualPhysical,
-      0
+      0,
     ),
     avgPhysicalPlanned:
       monthlyData.reduce((sum, m) => sum + m.plannedPhysical, 0) / 12,
@@ -158,11 +158,11 @@ const ProjectPerformanceModal = ({
       monthlyData.reduce((sum, m) => sum + m.actualPhysical, 0) / 12,
     totalPlannedFinancial: monthlyData.reduce(
       (sum, m) => sum + m.plannedFinancial,
-      0
+      0,
     ),
     totalActualFinancial: monthlyData.reduce(
       (sum, m) => sum + m.actualFinancial,
-      0
+      0,
     ),
     baselinePhysical: transaction.prp_physical_baseline,
     baselineFinancial: transaction.prp_budget_baseline,
@@ -287,8 +287,8 @@ const ProjectPerformanceModal = ({
                             100,
                           (annualSummary.totalActualFinancial /
                             annualSummary.totalPlannedFinancial) *
-                            100
-                        )
+                            100,
+                        ),
                       )}
                       pill
                       className="px-3 py-1 fw-normal"
@@ -299,11 +299,11 @@ const ProjectPerformanceModal = ({
                         annualSummary.totalPlannedFinancial
                         ? t("on_track")
                         : annualSummary.avgPhysicalActual >=
-                            annualSummary.avgPhysicalPlanned * 0.8 ||
-                          annualSummary.totalActualFinancial >=
-                            annualSummary.totalPlannedFinancial * 0.8
-                        ? t("needs_attention")
-                        : t("at_risk")}
+                              annualSummary.avgPhysicalPlanned * 0.8 ||
+                            annualSummary.totalActualFinancial >=
+                              annualSummary.totalPlannedFinancial * 0.8
+                          ? t("needs_attention")
+                          : t("at_risk")}
                     </Badge>
                   ),
                 },
@@ -334,7 +334,7 @@ const ProjectPerformanceModal = ({
                               : formatValue(
                                   metric.value,
                                   metric.format,
-                                  metric.currency
+                                  metric.currency,
                                 )}
                           </span>
                         </div>
@@ -462,13 +462,13 @@ const ProjectPerformanceModal = ({
               {displayMonthlyData.map((month, idx) => {
                 const physicalColor = getVarianceColor(month.physicalVariance);
                 const financialColor = getVarianceColor(
-                  month.financialVariance
+                  month.financialVariance,
                 );
                 const statusColor = getStatusColor(
                   Math.min(
                     month.physicalAchievement || 0,
-                    month.financialAchievement || 0
-                  )
+                    month.financialAchievement || 0,
+                  ),
                 );
 
                 return (
@@ -546,10 +546,10 @@ const ProjectPerformanceModal = ({
                             month.physicalAchievement === null
                               ? ""
                               : month.physicalAchievement >= 100
-                              ? "text-success"
-                              : month.physicalAchievement >= 80
-                              ? "text-warning"
-                              : "text-danger"
+                                ? "text-success"
+                                : month.physicalAchievement >= 80
+                                  ? "text-warning"
+                                  : "text-danger"
                           }
                         >
                           {month.physicalAchievement
@@ -566,10 +566,10 @@ const ProjectPerformanceModal = ({
                             month.financialAchievement === null
                               ? ""
                               : month.financialAchievement >= 100
-                              ? "text-success"
-                              : month.financialAchievement >= 80
-                              ? "text-warning"
-                              : "text-danger"
+                                ? "text-success"
+                                : month.financialAchievement >= 80
+                                  ? "text-warning"
+                                  : "text-danger"
                           }
                         >
                           {month.financialAchievement

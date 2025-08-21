@@ -72,7 +72,7 @@ const ResetPasswordForm = () => {
               new_password: values.password,
               confirm_password: values.confirmPassword,
             }),
-          }
+          },
         );
 
         const data = await response.json();

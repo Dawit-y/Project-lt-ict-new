@@ -79,7 +79,7 @@ export const useUpdateProjectSupplimentary = () => {
             data: oldData.data.map((data) =>
               data.prs_id === updatedProjectSupplimentary.data.prs_id
                 ? { ...data, ...updatedProjectSupplimentary.data }
-                : data
+                : data,
             ),
           };
         });
@@ -104,7 +104,7 @@ export const useDeleteProjectSupplimentary = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.prs_id !== parseInt(deletedData.deleted_id)
+              (dept) => dept.prs_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

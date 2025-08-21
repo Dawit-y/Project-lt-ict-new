@@ -85,7 +85,7 @@ export const useUpdateUsers = () => {
           data: oldData.data.map((UsersData) =>
             UsersData.usr_id === updatedUsers.data.usr_id
               ? { ...UsersData, ...updatedUsers.data }
-              : UsersData
+              : UsersData,
           ),
         };
       });
@@ -107,7 +107,7 @@ export const useUpdateProfile = () => {
           data: oldData.data.map((UsersData) =>
             UsersData.usr_id === updatedUsers.data.usr_id
               ? { ...UsersData, ...updatedUsers.data }
-              : UsersData
+              : UsersData,
           ),
         };
       });
@@ -128,7 +128,7 @@ export const useChangeUserStatus = () => {
           data: oldData.data.map((UsersData) =>
             UsersData.usr_id === updatedUsers.data.usr_id
               ? { ...UsersData, ...updatedUsers.data }
-              : UsersData
+              : UsersData,
           ),
         };
       });
@@ -149,7 +149,7 @@ export const useChangePassword = () => {
           data: oldData.data.map((UsersData) =>
             UsersData.usr_id === updatedUsers.data.usr_id
               ? { ...UsersData, ...updatedUsers.data }
-              : UsersData
+              : UsersData,
           ),
         };
       });
@@ -168,7 +168,7 @@ export const useDeleteUsers = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (UsersData) => UsersData.usr_id !== parseInt(variable)
+            (UsersData) => UsersData.usr_id !== parseInt(variable),
           ),
         };
       });

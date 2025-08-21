@@ -3,11 +3,11 @@
 //
 
 .jobs-categories {
-    a {
-        color: var(--#{$prefix}body-color); 
-        transition: all 0.5s ease;
-        &:hover  {
-            color: $primary;
-        }
+  a {
+    color: var(--#{$prefix}body-color);
+    transition: all 0.5s ease;
+    &:hover {
+      color: $primary;
     }
+  }
 }

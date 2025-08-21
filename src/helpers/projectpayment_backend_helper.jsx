@@ -9,13 +9,15 @@ export const getProjectPayment = async (project_id_payment) => {
   try {
     let response;
     if (project_id_payment != null) {
-      response = await post(`${GET_PROJECT_PAYMENT}?project_id=${project_id_payment}`);
+      response = await post(
+        `${GET_PROJECT_PAYMENT}?project_id=${project_id_payment}`,
+      );
     } else {
       response = await post(`${GET_PROJECT_PAYMENT}`);
     }
     return response;
   } catch (error) {
-    throw error
+    throw error;
   }
 };
 

@@ -57,28 +57,28 @@ const MonitoringEvaluationAnalysis = ({
         evaluationType:
           evaluationTypes.find(
             (et) =>
-              et.value === monitoringEvaluationData.mne_transaction_type_id
+              et.value === monitoringEvaluationData.mne_transaction_type_id,
           )?.label || t("unknown"),
         visitType:
           visitTypes.find(
-            (vt) => vt.value === monitoringEvaluationData.mne_visit_type
+            (vt) => vt.value === monitoringEvaluationData.mne_visit_type,
           )?.label || t("unknown"),
         periodType:
           periodTypes.find(
-            (pt) => pt.met_id === monitoringEvaluationData.mne_type_id
+            (pt) => pt.met_id === monitoringEvaluationData.mne_type_id,
           )?.met_name_en || t("unknown"),
         durationDays: getDurationDays(
           monitoringEvaluationData.mne_start_date,
-          monitoringEvaluationData.mne_end_date
+          monitoringEvaluationData.mne_end_date,
         ),
         formattedFinancial: formatCurrency(
-          monitoringEvaluationData.mne_financial || 0
+          monitoringEvaluationData.mne_financial || 0,
         ),
         formattedFinancialZone: formatCurrency(
-          monitoringEvaluationData.mne_financial_zone || 0
+          monitoringEvaluationData.mne_financial_zone || 0,
         ),
         formattedFinancialRegion: formatCurrency(
-          monitoringEvaluationData.mne_financial_region || 0
+          monitoringEvaluationData.mne_financial_region || 0,
         ),
         // Fixed total financial calculation
         totalFinancial:
@@ -88,7 +88,7 @@ const MonitoringEvaluationAnalysis = ({
         formattedTotalFinancial: formatCurrency(
           (monitoringEvaluationData.mne_financial || 0) +
             (monitoringEvaluationData.mne_financial_zone || 0) +
-            (monitoringEvaluationData.mne_financial_region || 0)
+            (monitoringEvaluationData.mne_financial_region || 0),
         ),
         physicalPercentage: monitoringEvaluationData.mne_physical || 0,
         physicalZonePercentage: monitoringEvaluationData.mne_physical_zone || 0,
@@ -120,20 +120,20 @@ const MonitoringEvaluationAnalysis = ({
         (item.mne_financial || 0) +
         (item.mne_financial_zone || 0) +
         (item.mne_financial_region || 0),
-      0
+      0,
     ),
 
     totalFinancialWoreda: allData.reduce(
       (sum, item) => sum + (item.mne_financial || 0),
-      0
+      0,
     ),
     totalFinancialZone: allData.reduce(
       (sum, item) => sum + (item.mne_financial_zone || 0),
-      0
+      0,
     ),
     totalFinancialRegion: allData.reduce(
       (sum, item) => sum + (item.mne_financial_region || 0),
-      0
+      0,
     ),
 
     // Fixed average physical progress calculation
@@ -158,7 +158,7 @@ const MonitoringEvaluationAnalysis = ({
     evaluationTypes: evaluationTypes.map((type) => ({
       ...type,
       count: allData.filter(
-        (item) => item.mne_transaction_type_id === type.value
+        (item) => item.mne_transaction_type_id === type.value,
       ).length,
       percentage:
         (allData.filter((item) => item.mne_transaction_type_id === type.value)
@@ -179,7 +179,7 @@ const MonitoringEvaluationAnalysis = ({
 
     periodTypes: periodTypes.map((type) => {
       const filteredData = allData.filter(
-        (item) => item.mne_type_id === type.met_id
+        (item) => item.mne_type_id === type.met_id,
       );
       const count = filteredData.length;
 
@@ -188,7 +188,7 @@ const MonitoringEvaluationAnalysis = ({
         count > 0
           ? filteredData.reduce(
               (sum, item) => sum + (item.mne_physical || 0),
-              0
+              0,
             ) / count
           : 0;
 
@@ -196,7 +196,7 @@ const MonitoringEvaluationAnalysis = ({
         count > 0
           ? filteredData.reduce(
               (sum, item) => sum + (item.mne_physical_zone || 0),
-              0
+              0,
             ) / count
           : 0;
 
@@ -204,7 +204,7 @@ const MonitoringEvaluationAnalysis = ({
         count > 0
           ? filteredData.reduce(
               (sum, item) => sum + (item.mne_physical_region || 0),
-              0
+              0,
             ) / count
           : 0;
 
@@ -212,7 +212,7 @@ const MonitoringEvaluationAnalysis = ({
         count > 0
           ? filteredData.reduce(
               (sum, item) => sum + (item.mne_financial || 0),
-              0
+              0,
             ) / count
           : 0;
 
@@ -220,7 +220,7 @@ const MonitoringEvaluationAnalysis = ({
         count > 0
           ? filteredData.reduce(
               (sum, item) => sum + (item.mne_financial_zone || 0),
-              0
+              0,
             ) / count
           : 0;
 
@@ -228,7 +228,7 @@ const MonitoringEvaluationAnalysis = ({
         count > 0
           ? filteredData.reduce(
               (sum, item) => sum + (item.mne_financial_region || 0),
-              0
+              0,
             ) / count
           : 0;
 
@@ -503,7 +503,7 @@ const MonitoringEvaluationAnalysis = ({
         enabled: true,
         formatter: (val, { seriesIndex }) => {
           return `${t(
-            overallStats.visitTypes[seriesIndex].label
+            overallStats.visitTypes[seriesIndex].label,
           )}\n${val.toFixed(2)}%)`;
         },
         style: {
@@ -665,17 +665,17 @@ const MonitoringEvaluationAnalysis = ({
                   {new Date(
                     Math.min(
                       ...allData.map((item) =>
-                        new Date(item.mne_start_date).getTime()
-                      )
-                    )
+                        new Date(item.mne_start_date).getTime(),
+                      ),
+                    ),
                   ).toLocaleDateString()}{" "}
                   -{" "}
                   {new Date(
                     Math.max(
                       ...allData.map((item) =>
-                        new Date(item.mne_end_date).getTime()
-                      )
-                    )
+                        new Date(item.mne_end_date).getTime(),
+                      ),
+                    ),
                   ).toLocaleDateString()}
                 </Badge>
               </div>
@@ -922,7 +922,7 @@ const MonitoringEvaluationAnalysis = ({
                                           {type.count.toLocaleString()}
                                         </td>
                                       </tr>
-                                    )
+                                    ),
                                   )}
                                   <tr className="bg-light fw-semibold">
                                     <td className="ps-3">
@@ -941,7 +941,7 @@ const MonitoringEvaluationAnalysis = ({
                                 <i className="mdi mdi-information-outline me-2"></i>
                                 <small>
                                   {t(
-                                    "financial_values_represent_average_expenditure"
+                                    "financial_values_represent_average_expenditure",
                                   )}
                                 </small>
                               </div>
@@ -1091,10 +1091,10 @@ const MonitoringEvaluationAnalysis = ({
                                       sum +
                                       getDurationDays(
                                         item.mne_start_date,
-                                        item.mne_end_date
+                                        item.mne_end_date,
                                       ),
-                                    0
-                                  ) / allData.length
+                                    0,
+                                  ) / allData.length,
                                 )}{" "}
                                 {t("days")}
                               </td>
@@ -1104,14 +1104,14 @@ const MonitoringEvaluationAnalysis = ({
                               <td className="text-end">
                                 {
                                   overallStats.evaluationTypes.find(
-                                    (et) => et.label === "monitoring"
+                                    (et) => et.label === "monitoring",
                                   )?.count
                                 }{" "}
                                 (
                                 {Math.round(
                                   overallStats.evaluationTypes.find(
-                                    (et) => et.label === "monitoring"
-                                  )?.percentage
+                                    (et) => et.label === "monitoring",
+                                  )?.percentage,
                                 )}
                                 %)
                               </td>
@@ -1121,14 +1121,14 @@ const MonitoringEvaluationAnalysis = ({
                               <td className="text-end">
                                 {
                                   overallStats.evaluationTypes.find(
-                                    (et) => et.label === "evaluation"
+                                    (et) => et.label === "evaluation",
                                   )?.count
                                 }{" "}
                                 (
                                 {Math.round(
                                   overallStats.evaluationTypes.find(
-                                    (et) => et.label === "evaluation"
-                                  )?.percentage
+                                    (et) => et.label === "evaluation",
+                                  )?.percentage,
                                 )}
                                 %)
                               </td>
@@ -1194,7 +1194,7 @@ const MonitoringEvaluationAnalysis = ({
                                 </th>
                                 <td className="text-end">
                                   {formatCurrency(
-                                    Math.round(period.totalAvgFinancial)
+                                    Math.round(period.totalAvgFinancial),
                                   )}
                                 </td>
                               </tr>

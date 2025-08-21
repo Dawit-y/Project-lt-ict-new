@@ -64,32 +64,32 @@ const ActionForm = ({ isOpen, toggle, amount }) => {
     },
     validationSchema: Yup.object({
       bra_approved_amount: amountValidation(0, 10000000000, false).required(
-        t(`bra_approved_amount`)
+        t(`bra_approved_amount`),
       ),
       bra_source_government_approved: amountValidation(
         0,
         10000000000,
-        false
+        false,
       ).required(t(`bra_source_government_approved`)),
       bra_source_internal_approved: amountValidation(
         0,
         10000000000,
-        false
+        false,
       ).required(t(`bra_source_internal_approved`)),
       bra_source_support_approved: amountValidation(
         0,
         10000000000,
-        false
+        false,
       ).required(t(`bra_source_support_approved`)),
       bra_source_credit_approved: amountValidation(
         0,
         10000000000,
-        false
+        false,
       ).required(t(`bra_source_credit_approved`)),
       bra_source_other_approved: amountValidation(
         0,
         10000000000,
-        false
+        false,
       ).required(t(`bra_source_other_approved`)),
       bra_approved_date: Yup.string().required(t("bra_approved_date")),
       bdr_request_status: Yup.string().required(t("bdr_request_status")),
@@ -114,7 +114,7 @@ const ActionForm = ({ isOpen, toggle, amount }) => {
       };
       handleUpdateBudgetRequestAmount(
         updateBudgetRequestAmount,
-        updateBudgetRequest
+        updateBudgetRequest,
       );
     },
   });
@@ -357,7 +357,7 @@ const ActionForm = ({ isOpen, toggle, amount }) => {
                               const formattedDate = formatDate(date[0]);
                               validation.setFieldValue(
                                 "bra_approved_date",
-                                formattedDate
+                                formattedDate,
                               );
                             }}
                             onBlur={validation.handleBlur}

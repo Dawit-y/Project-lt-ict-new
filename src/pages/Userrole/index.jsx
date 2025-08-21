@@ -59,13 +59,13 @@ const UserRoleModel = (props) => {
 
   const { data, isLoading, error, isError, refetch } = useFetchUserRoles(
     param,
-    isActive
+    isActive,
   );
   const { data: rolesData } = useFetchRoles();
   const rolesOptions = createSelectOptions(
     rolesData?.data || [],
     "rol_id",
-    "rol_name"
+    "rol_name",
   );
 
   const addUserRole = useAddUserRoles();
@@ -133,7 +133,7 @@ const UserRoleModel = (props) => {
         .test("unique-role-id", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
-              item.url_role_id == value && item.url_id !== userRole?.url_id
+              item.url_role_id == value && item.url_id !== userRole?.url_id,
           );
         }),
       url_description: alphanumericValidation(3, 425, false),
@@ -388,7 +388,7 @@ const UserRoleModel = (props) => {
                   onChange={(e) => {
                     validation.setFieldValue(
                       "url_role_id",
-                      Number(e.target.value)
+                      Number(e.target.value),
                     );
                   }}
                   onBlur={validation.handleBlur}
@@ -446,7 +446,7 @@ const UserRoleModel = (props) => {
                   onChange={(e) => {
                     validation.setFieldValue(
                       "url_status",
-                      Number(e.target.value)
+                      Number(e.target.value),
                     );
                   }}
                   onBlur={validation.handleBlur}

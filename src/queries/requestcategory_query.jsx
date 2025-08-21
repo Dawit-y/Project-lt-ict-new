@@ -68,7 +68,7 @@ export const useUpdateRequestCategory = () => {
           data: oldData.data.map((RequestCategoryData) =>
             RequestCategoryData.rqc_id === updatedRequestCategory.data.rqc_id
               ? { ...RequestCategoryData, ...updatedRequestCategory.data }
-              : RequestCategoryData
+              : RequestCategoryData,
           ),
         };
       });
@@ -87,7 +87,8 @@ export const useDeleteRequestCategory = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (RequestCategoryData) => RequestCategoryData.rqc_id !== parseInt(deletedData.deleted_id)
+            (RequestCategoryData) =>
+              RequestCategoryData.rqc_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

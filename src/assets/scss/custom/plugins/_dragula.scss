@@ -2,13 +2,11 @@
   Druafula
 ===================*/
 
-
 .task-box {
-
   border: 1px solid var(--#{$prefix}border-color);
 }
 
-[data-bs-theme=dark] .card .task-box {
+[data-bs-theme="dark"] .card .task-box {
   border: 1px solid var(--bs-gray-dark) !important;
 }
 

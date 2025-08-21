@@ -148,9 +148,9 @@ const BudgetMonthModel = () => {
         (value) => {
           return !data?.data.some(
             (item) =>
-              item.bdm_month == value && item.bdm_id !== budgetMonth?.bdm_id
+              item.bdm_month == value && item.bdm_id !== budgetMonth?.bdm_id,
           );
-        }
+        },
       ),
       bdm_name_am: Yup.string().required(t("bdm_name_am")),
       bdm_name_or: alphanumericValidation(2, 100, true),

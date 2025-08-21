@@ -68,7 +68,7 @@ export const useUpdatePages = () => {
           data: oldData.data.map((PagesData) =>
             PagesData.pag_id === updatedPages.data.pag_id
               ? { ...PagesData, ...updatedPages.data }
-              : PagesData
+              : PagesData,
           ),
         };
       });
@@ -87,7 +87,8 @@ export const useDeletePages = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (PagesData) => PagesData.pag_id !== parseInt(deletedData.deleted_id)
+            (PagesData) =>
+              PagesData.pag_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

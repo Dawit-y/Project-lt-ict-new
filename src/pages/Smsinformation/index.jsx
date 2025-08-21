@@ -323,268 +323,268 @@ const SmsInformationModel = () => {
     return baseColumns;
   }, [handleSmsInformationClick, toggleViewModal, onClickDelete]);
   return (
-		<React.Fragment>
-			<SmsInformationModal
-				isOpen={modal1}
-				toggle={toggleViewModal}
-				transaction={transaction}
-			/>
-			<DeleteModal
-				show={deleteModal}
-				onDeleteClick={handleDeleteSmsInformation}
-				onCloseClick={() => setDeleteModal(false)}
-				isLoading={deleteSmsInformation.isPending}
-			/>
-			<div className="page-content">
-				<div className="container-fluid">
-					<Breadcrumbs
-						title={t("sms_information")}
-						breadcrumbItem={t("sms_information")}
-					/>
-					<AdvancedSearch
-						searchHook={useSearchSmsInformations}
-						textSearchKeys={["smi_sent_to"]}
-						dropdownSearchKeys={[]}
-						onSearchResult={handleSearchResults}
-						setIsSearchLoading={setIsSearchLoading}
-						setSearchResults={setSearchResults}
-						setShowSearchResult={setShowSearchResult}
-					/>
-					{isLoading || isSearchLoading ? (
-						<Spinners />
-					) : (
-						<Row>
-							<Col xs="12">
-								<Card>
-									<CardBody>
-										<TableContainer
-											columns={columns}
-											data={
-												showSearchResult
-													? searchResults?.data
-													: data?.data || []
-											}
-											isGlobalFilter={true}
-											isAddButton={data?.previledge?.is_role_can_add == 1}
-											isCustomPageSize={true}
-											handleUserClick={handleSmsInformationClicks}
-											isPagination={true}
-											// SearchPlaceholder="26 records..."
-											SearchPlaceholder={t("filter_placeholder")}
-											buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-											buttonName={t("add") + " " + t("sms_information")}
-											tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-											theadClass="table-light"
-											pagination="pagination"
-											paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-										/>
-									</CardBody>
-								</Card>
-							</Col>
-						</Row>
-					)}
-					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
-						<ModalHeader toggle={toggle} tag="h4">
-							{!!isEdit
-								? t("edit") + " " + t("sms_information")
-								: t("add") + " " + t("sms_information")}
-						</ModalHeader>
-						<ModalBody>
-							<Form
-								onSubmit={(e) => {
-									e.preventDefault();
-									validation.handleSubmit();
-									return false;
-								}}
-							>
-								<Row>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("smi_sms_template_id")}</Label>
-										<Input
-											name="smi_sms_template_id"
-											type="text"
-											placeholder={t("smi_sms_template_id")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.smi_sms_template_id || ""}
-											invalid={
-												validation.touched.smi_sms_template_id &&
-												validation.errors.smi_sms_template_id
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.smi_sms_template_id &&
-										validation.errors.smi_sms_template_id ? (
-											<FormFeedback type="invalid">
-												{validation.errors.smi_sms_template_id}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("smi_sent_to")}</Label>
-										<Input
-											name="smi_sent_to"
-											type="text"
-											placeholder={t("smi_sent_to")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.smi_sent_to || ""}
-											invalid={
-												validation.touched.smi_sent_to &&
-												validation.errors.smi_sent_to
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.smi_sent_to &&
-										validation.errors.smi_sent_to ? (
-											<FormFeedback type="invalid">
-												{validation.errors.smi_sent_to}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("smi_sent_date")}</Label>
-										<Input
-											name="smi_sent_date"
-											type="text"
-											placeholder={t("smi_sent_date")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.smi_sent_date || ""}
-											invalid={
-												validation.touched.smi_sent_date &&
-												validation.errors.smi_sent_date
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.smi_sent_date &&
-										validation.errors.smi_sent_date ? (
-											<FormFeedback type="invalid">
-												{validation.errors.smi_sent_date}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("smi_sms_content")}</Label>
-										<Input
-											name="smi_sms_content"
-											type="text"
-											placeholder={t("smi_sms_content")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.smi_sms_content || ""}
-											invalid={
-												validation.touched.smi_sms_content &&
-												validation.errors.smi_sms_content
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.smi_sms_content &&
-										validation.errors.smi_sms_content ? (
-											<FormFeedback type="invalid">
-												{validation.errors.smi_sms_content}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("smi_description")}</Label>
-										<Input
-											name="smi_description"
-											type="text"
-											placeholder={t("smi_description")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.smi_description || ""}
-											invalid={
-												validation.touched.smi_description &&
-												validation.errors.smi_description
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.smi_description &&
-										validation.errors.smi_description ? (
-											<FormFeedback type="invalid">
-												{validation.errors.smi_description}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("smi_status")}</Label>
-										<Input
-											name="smi_status"
-											type="text"
-											placeholder={t("smi_status")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.smi_status || ""}
-											invalid={
-												validation.touched.smi_status &&
-												validation.errors.smi_status
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.smi_status &&
-										validation.errors.smi_status ? (
-											<FormFeedback type="invalid">
-												{validation.errors.smi_status}
-											</FormFeedback>
-										) : null}
-									</Col>
-								</Row>
-								<Row>
-									<Col>
-										<div className="text-end">
-											{addSmsInformation.isPending ||
-											updateSmsInformation.isPending ? (
-												<Button
-													color="success"
-													type="submit"
-													className="save-user"
-													disabled={
-														addSmsInformation.isPending ||
-														updateSmsInformation.isPending ||
-														!validation.dirty
-													}
-												>
-													<Spinner size={"sm"} color="light" className="me-2" />
-													{t("Save")}
-												</Button>
-											) : (
-												<Button
-													color="success"
-													type="submit"
-													className="save-user"
-													disabled={
-														addSmsInformation.isPending ||
-														updateSmsInformation.isPending ||
-														!validation.dirty
-													}
-												>
-													{t("Save")}
-												</Button>
-											)}
-										</div>
-									</Col>
-								</Row>
-							</Form>
-						</ModalBody>
-					</Modal>
-				</div>
-			</div>
-		</React.Fragment>
-	);
+    <React.Fragment>
+      <SmsInformationModal
+        isOpen={modal1}
+        toggle={toggleViewModal}
+        transaction={transaction}
+      />
+      <DeleteModal
+        show={deleteModal}
+        onDeleteClick={handleDeleteSmsInformation}
+        onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteSmsInformation.isPending}
+      />
+      <div className="page-content">
+        <div className="container-fluid">
+          <Breadcrumbs
+            title={t("sms_information")}
+            breadcrumbItem={t("sms_information")}
+          />
+          <AdvancedSearch
+            searchHook={useSearchSmsInformations}
+            textSearchKeys={["smi_sent_to"]}
+            dropdownSearchKeys={[]}
+            onSearchResult={handleSearchResults}
+            setIsSearchLoading={setIsSearchLoading}
+            setSearchResults={setSearchResults}
+            setShowSearchResult={setShowSearchResult}
+          />
+          {isLoading || isSearchLoading ? (
+            <Spinners />
+          ) : (
+            <Row>
+              <Col xs="12">
+                <Card>
+                  <CardBody>
+                    <TableContainer
+                      columns={columns}
+                      data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
+                      isGlobalFilter={true}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
+                      isCustomPageSize={true}
+                      handleUserClick={handleSmsInformationClicks}
+                      isPagination={true}
+                      // SearchPlaceholder="26 records..."
+                      SearchPlaceholder={t("filter_placeholder")}
+                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                      buttonName={t("add") + " " + t("sms_information")}
+                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                      theadClass="table-light"
+                      pagination="pagination"
+                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                    />
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          )}
+          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
+            <ModalHeader toggle={toggle} tag="h4">
+              {!!isEdit
+                ? t("edit") + " " + t("sms_information")
+                : t("add") + " " + t("sms_information")}
+            </ModalHeader>
+            <ModalBody>
+              <Form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  validation.handleSubmit();
+                  return false;
+                }}
+              >
+                <Row>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("smi_sms_template_id")}</Label>
+                    <Input
+                      name="smi_sms_template_id"
+                      type="text"
+                      placeholder={t("smi_sms_template_id")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.smi_sms_template_id || ""}
+                      invalid={
+                        validation.touched.smi_sms_template_id &&
+                        validation.errors.smi_sms_template_id
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.smi_sms_template_id &&
+                    validation.errors.smi_sms_template_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.smi_sms_template_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("smi_sent_to")}</Label>
+                    <Input
+                      name="smi_sent_to"
+                      type="text"
+                      placeholder={t("smi_sent_to")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.smi_sent_to || ""}
+                      invalid={
+                        validation.touched.smi_sent_to &&
+                        validation.errors.smi_sent_to
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.smi_sent_to &&
+                    validation.errors.smi_sent_to ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.smi_sent_to}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("smi_sent_date")}</Label>
+                    <Input
+                      name="smi_sent_date"
+                      type="text"
+                      placeholder={t("smi_sent_date")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.smi_sent_date || ""}
+                      invalid={
+                        validation.touched.smi_sent_date &&
+                        validation.errors.smi_sent_date
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.smi_sent_date &&
+                    validation.errors.smi_sent_date ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.smi_sent_date}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("smi_sms_content")}</Label>
+                    <Input
+                      name="smi_sms_content"
+                      type="text"
+                      placeholder={t("smi_sms_content")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.smi_sms_content || ""}
+                      invalid={
+                        validation.touched.smi_sms_content &&
+                        validation.errors.smi_sms_content
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.smi_sms_content &&
+                    validation.errors.smi_sms_content ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.smi_sms_content}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("smi_description")}</Label>
+                    <Input
+                      name="smi_description"
+                      type="text"
+                      placeholder={t("smi_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.smi_description || ""}
+                      invalid={
+                        validation.touched.smi_description &&
+                        validation.errors.smi_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.smi_description &&
+                    validation.errors.smi_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.smi_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("smi_status")}</Label>
+                    <Input
+                      name="smi_status"
+                      type="text"
+                      placeholder={t("smi_status")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.smi_status || ""}
+                      invalid={
+                        validation.touched.smi_status &&
+                        validation.errors.smi_status
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.smi_status &&
+                    validation.errors.smi_status ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.smi_status}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <div className="text-end">
+                      {addSmsInformation.isPending ||
+                      updateSmsInformation.isPending ? (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addSmsInformation.isPending ||
+                            updateSmsInformation.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          <Spinner size={"sm"} color="light" className="me-2" />
+                          {t("Save")}
+                        </Button>
+                      ) : (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addSmsInformation.isPending ||
+                            updateSmsInformation.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          {t("Save")}
+                        </Button>
+                      )}
+                    </div>
+                  </Col>
+                </Row>
+              </Form>
+            </ModalBody>
+          </Modal>
+        </div>
+      </div>
+    </React.Fragment>
+  );
 };
 SmsInformationModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

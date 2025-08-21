@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useTransition } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,11 +8,11 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+} from "reactstrap";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+  width: "100%",
+  height: "100%",
 };
 
 const BudgetRequestTaskModal = (props) => {
@@ -33,43 +33,56 @@ const BudgetRequestTaskModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-       <table className="table table-bordered">
-  <tbody>
-    <tr>
-      <td>{t('brt_task_name')}</td>
-      <td className="text-primary">{transaction.brt_task_name}</td>
-      <td>{t('brt_measurement')}</td>
-      <td className="text-primary">{transaction.brt_measurement}</td>
-    </tr>
-    <tr>
-      <td>{t('brt_previous_year_physical')}</td>
-      <td className="text-primary">{transaction.brt_previous_year_physical}</td>
-      <td>{t('brt_previous_year_financial')}</td>
-      <td className="text-primary">{transaction.brt_previous_year_financial}</td>
-    </tr>
-    <tr>
-      <td>{t('brt_current_year_physical')}</td>
-      <td className="text-primary">{transaction.brt_current_year_physical}</td>
-      <td>{t('brt_current_year_financial')}</td>
-      <td className="text-primary">{transaction.brt_current_year_financial}</td>
-    </tr>
-    <tr>
-      <td>{t('brt_next_year_physical')}</td>
-      <td className="text-primary">{transaction.brt_next_year_physical}</td>
-      <td>{t('brt_next_year_financial')}</td>
-      <td className="text-primary">{transaction.brt_next_year_financial}</td>
-    </tr>
-    <tr>
-      <td>{t('brt_description')}</td>
-      <td className="text-primary" colSpan="3">{transaction.brt_description}</td>
-    </tr>
-  </tbody>
-</table>
-
+          <table className="table table-bordered">
+            <tbody>
+              <tr>
+                <td>{t("brt_task_name")}</td>
+                <td className="text-primary">{transaction.brt_task_name}</td>
+                <td>{t("brt_measurement")}</td>
+                <td className="text-primary">{transaction.brt_measurement}</td>
+              </tr>
+              <tr>
+                <td>{t("brt_previous_year_physical")}</td>
+                <td className="text-primary">
+                  {transaction.brt_previous_year_physical}
+                </td>
+                <td>{t("brt_previous_year_financial")}</td>
+                <td className="text-primary">
+                  {transaction.brt_previous_year_financial}
+                </td>
+              </tr>
+              <tr>
+                <td>{t("brt_current_year_physical")}</td>
+                <td className="text-primary">
+                  {transaction.brt_current_year_physical}
+                </td>
+                <td>{t("brt_current_year_financial")}</td>
+                <td className="text-primary">
+                  {transaction.brt_current_year_financial}
+                </td>
+              </tr>
+              <tr>
+                <td>{t("brt_next_year_physical")}</td>
+                <td className="text-primary">
+                  {transaction.brt_next_year_physical}
+                </td>
+                <td>{t("brt_next_year_financial")}</td>
+                <td className="text-primary">
+                  {transaction.brt_next_year_financial}
+                </td>
+              </tr>
+              <tr>
+                <td>{t("brt_description")}</td>
+                <td className="text-primary" colSpan="3">
+                  {transaction.brt_description}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

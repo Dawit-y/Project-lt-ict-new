@@ -249,7 +249,7 @@ dd {
   padding: 0.47rem 0.75rem 0.47rem 1.75rem;
 }
 
-[dir="rtl"] .form-select{
+[dir="rtl"] .form-select {
   padding: 0.47rem 2rem 0.47rem 0rem !important;
 }
 
@@ -408,7 +408,9 @@ dd {
 // }
 
 .input-group
-  > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
+  > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(
+    .valid-feedback
+  ):not(.invalid-tooltip):not(.invalid-feedback) {
   margin-right: -1px;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;

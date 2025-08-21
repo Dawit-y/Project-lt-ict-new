@@ -29,10 +29,8 @@ const UserRoleModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction } = props;
   const param = { pem_role_id: transaction.url_role_id };
-  const { data, isLoading, error, isError, refetch } = useFetchRoleAssignedPermissions(
-    param,
-    isOpen
-  );
+  const { data, isLoading, error, isError, refetch } =
+    useFetchRoleAssignedPermissions(param, isOpen);
 
   const updatedTransaction = {
     ...transaction,

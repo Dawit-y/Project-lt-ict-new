@@ -39,7 +39,7 @@ export const useAddRequestStatus = () => {
   return useMutation({
     mutationFn: addRequestStatus,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( REQUEST_STATUS_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(REQUEST_STATUS_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,
@@ -68,7 +68,7 @@ export const useUpdateRequestStatus = () => {
           data: oldData.data.map((RequestStatusData) =>
             RequestStatusData.rqs_id === updatedRequestStatus.data.rqs_id
               ? { ...RequestStatusData, ...updatedRequestStatus.data }
-              : RequestStatusData
+              : RequestStatusData,
           ),
         };
       });
@@ -87,7 +87,8 @@ export const useDeleteRequestStatus = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (RequestStatusData) => RequestStatusData.rqs_id !== parseInt(deletedData.deleted_id)
+            (RequestStatusData) =>
+              RequestStatusData.rqs_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

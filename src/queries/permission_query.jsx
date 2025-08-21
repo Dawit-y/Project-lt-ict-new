@@ -5,7 +5,7 @@ import {
   updatePermission,
   deletePermission,
   getRoleAssignedPermission,
-  getUserAssignedPermission
+  getUserAssignedPermission,
 } from "../helpers/permission_backend_helper";
 
 const PERMISSION_QUERY_KEY = ["permission"];
@@ -106,9 +106,9 @@ export const useUpdatePermission = () => {
             ...oldData,
             data: oldData.data.map((data) =>
               data?.pag_name.toString() ===
-                updatedData.data?.pag_name.toString()
+              updatedData.data?.pag_name.toString()
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -133,7 +133,7 @@ export const useDeletePermission = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (permission) => permission.pem_id !== parseInt(variable)
+              (permission) => permission.pem_id !== parseInt(variable),
             ),
           };
         });

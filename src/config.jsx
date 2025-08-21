@@ -7,4 +7,4 @@ module.exports = {
   facebook: {
     APP_ID: "",
   },
-}
+};

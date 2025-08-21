@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import { Modal, ModalHeader, ModalBody, Col, ModalFooter, Button } from "reactstrap";
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  Col,
+  ModalFooter,
+  Button,
+} from "reactstrap";
 import GanttChart from "../GanttChart";
 import { useFetchProject } from "../../queries/project_query";
 import { useAuthUser } from "../../hooks/useAuthUser";
@@ -17,10 +24,14 @@ const GanttModal = (props) => {
   const { t, i18n } = useTranslation();
   const { isOpen, toggle, projectPlan } = props;
 
-  const projectId = projectPlan?.pld_project_id
+  const projectId = projectPlan?.pld_project_id;
   const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
-  const { data, isLoading, isError, error, refetch } = useFetchProject(projectId, userId, isOpen);
-  const projectStatusId = data?.data?.prj_project_status_id || ""
+  const { data, isLoading, isError, error, refetch } = useFetchProject(
+    projectId,
+    userId,
+    isOpen,
+  );
+  const projectStatusId = data?.data?.prj_project_status_id || "";
 
   const [rerenderKey, setRerenderKey] = useState(0);
   useEffect(() => {
@@ -35,7 +46,7 @@ const GanttModal = (props) => {
   }, [i18n, t]);
 
   if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />
+    return <FetchErrorHandler error={error} refetch={refetch} />;
   }
 
   return (
@@ -52,8 +63,9 @@ const GanttModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-          {isLoading ?
-            <Spinners /> :
+          {isLoading ? (
+            <Spinners />
+          ) : (
             <Col className="">
               <GanttChart
                 key={rerenderKey}
@@ -64,11 +76,12 @@ const GanttModal = (props) => {
                 projectStatusId={projectStatusId}
                 readOnly={true}
               />
-            </Col>}
+            </Col>
+          )}
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

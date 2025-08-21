@@ -12,13 +12,13 @@ import { PAGE_ID } from "../../constants/constantFile";
 export const alphanumericValidation = (
   minLength,
   maxLength,
-  isRequired = true
+  isRequired = true,
 ) => {
   const { t } = useTranslation();
   let schema = Yup.string()
     .matches(
       /^(?=.*[a-zA-Z])[a-zA-Z0-9 !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/,
-      t("val_alphanumeric")
+      t("val_alphanumeric"),
     )
     .min(minLength, `${t("val_min_length")}: ${minLength}`)
     .max(maxLength, `${t("val_max_length")}: ${maxLength}`);
@@ -32,13 +32,13 @@ export const alphanumericValidation = (
 export const onlyAmharicValidation = (
   minLength,
   maxLength,
-  isRequired = true
+  isRequired = true,
 ) => {
   const { t } = useTranslation();
   let schema = Yup.string()
     .matches(
       /^[\u1200-\u137F0-9\s.,;!?@#$%^&*()_+\-=[\]{}|:'"<>\\/`~]+$/,
-      t("only_amharic")
+      t("only_amharic"),
     )
     .min(minLength, `${t("val_min_length")}: ${minLength}`)
     .max(maxLength, `${t("val_max_length")}: ${maxLength}`);
@@ -87,7 +87,7 @@ export const amountValidation = (minLength, maxLength, isRequired = true) => {
         value === 0 ||
         value === undefined ||
         value === null ||
-        /^\d+(\.\d{1,2})?$/.test(value.toString())
+        /^\d+(\.\d{1,2})?$/.test(value.toString()),
     );
 
   if (isRequired) {
@@ -100,7 +100,7 @@ export const amountValidation = (minLength, maxLength, isRequired = true) => {
 export const formattedAmountValidation = (
   minLength,
   maxLength,
-  isRequired = true
+  isRequired = true,
 ) => {
   const { t } = useTranslation();
 
@@ -124,16 +124,24 @@ export const formattedAmountValidation = (
       const val = cleanValue(value);
       return /^\d+(\.\d{1,2})?$/.test(val);
     })
-    .test("min-value", `${t("val_min_amount")}: ${parseFloat(minLength).toLocaleString()}`, (value) => {
-      if (value === undefined || value === "") return true;
-      const val = cleanValue(value);
-      return parseFloat(val) >= minLength;
-    })
-    .test("max-value", `${t("val_max_amount")}: ${parseFloat(maxLength).toLocaleString()}`, (value) => {
-      if (value === undefined || value === "") return true;
-      const val = cleanValue(value);
-      return parseFloat(val) <= maxLength;
-    });
+    .test(
+      "min-value",
+      `${t("val_min_amount")}: ${parseFloat(minLength).toLocaleString()}`,
+      (value) => {
+        if (value === undefined || value === "") return true;
+        const val = cleanValue(value);
+        return parseFloat(val) >= minLength;
+      },
+    )
+    .test(
+      "max-value",
+      `${t("val_max_amount")}: ${parseFloat(maxLength).toLocaleString()}`,
+      (value) => {
+        if (value === undefined || value === "") return true;
+        const val = cleanValue(value);
+        return parseFloat(val) <= maxLength;
+      },
+    );
 
   if (isRequired) {
     schema = schema.required(t("val_required"));
@@ -168,7 +176,7 @@ export const dropdownValidation = (minLength, maxLength, isRequired = true) => {
 export const websiteUrlValidation = (required = false) => {
   let schema = Yup.string().matches(
     /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
-    "Invalid website URL"
+    "Invalid website URL",
   );
 
   if (required) {
@@ -185,7 +193,7 @@ export const emailValidation = (isRequired = true) => {
     .email(t("val_invalid_email")) // Built-in Yup email validation
     .matches(
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, // Additional format check
-      t("val_invalid_email_format")
+      t("val_invalid_email_format"),
     );
 
   if (isRequired) {
@@ -201,7 +209,7 @@ export const tinValidation = (minLength, maxLength, isRequired = true) => {
     // Only letters and numbers allowed (no spaces or special chars)
     .matches(
       /^[a-zA-Z0-9]*$/, // <-- Only alphanumeric characters
-      t("val_letters_numbers_only") // Error message key
+      t("val_letters_numbers_only"), // Error message key
     )
     .min(minLength, t("val_min_length", { length: minLength }))
     .max(maxLength, t("val_max_length", { length: maxLength }));

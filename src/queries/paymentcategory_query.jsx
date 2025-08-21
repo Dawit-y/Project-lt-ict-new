@@ -65,7 +65,7 @@ export const useUpdatePaymentCategory = () => {
           data: oldData.data.map((PaymentCategoryData) =>
             PaymentCategoryData.pyc_id === updatedPaymentCategory.data.pyc_id
               ? { ...PaymentCategoryData, ...updatedPaymentCategory.data }
-              : PaymentCategoryData
+              : PaymentCategoryData,
           ),
         };
       });
@@ -84,7 +84,8 @@ export const useDeletePaymentCategory = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (PaymentCategoryData) => PaymentCategoryData.pyc_id !== parseInt(deletedData.deleted_id)
+            (PaymentCategoryData) =>
+              PaymentCategoryData.pyc_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

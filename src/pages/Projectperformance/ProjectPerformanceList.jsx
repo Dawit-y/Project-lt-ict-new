@@ -17,14 +17,14 @@ import {
   createSelectOptions,
 } from "../../utils/commonMethods";
 import { projectPerformanceExportColumns } from "../../utils/exportColumnsForLists";
-const AgGridContainer = lazy(() =>
-  import("../../components/Common/AgGridContainer")
+const AgGridContainer = lazy(
+  () => import("../../components/Common/AgGridContainer"),
 );
-const SinglePerformanceAnalysisModal = lazy(() =>
-  import("./Analysis/SinglePerformanceAnalysisModal")
+const SinglePerformanceAnalysisModal = lazy(
+  () => import("./Analysis/SinglePerformanceAnalysisModal"),
 );
-const TotalPerformanceAnalysisModal = lazy(() =>
-  import("./Analysis/TotalPerformanceAnalysisModal")
+const TotalPerformanceAnalysisModal = lazy(
+  () => import("./Analysis/TotalPerformanceAnalysisModal"),
 );
 
 const truncateText = (text, maxLength) => {
@@ -97,7 +97,7 @@ const ProjectPerformanceList = (props) => {
   const budgetYearOptions = createSelectOptions(
     budgetYearData?.data || [],
     "bdy_id",
-    "bdy_name"
+    "bdy_name",
   );
 
   const projectStatusMap = useMemo(() => {
@@ -107,8 +107,8 @@ const ProjectPerformanceList = (props) => {
           lang === "en"
             ? project_status.prs_status_name_en
             : lang === "am"
-            ? project_status.prs_status_name_am
-            : project_status.prs_status_name_or;
+              ? project_status.prs_status_name_am
+              : project_status.prs_status_name_or;
         return acc;
       }, {}) || {}
     );
@@ -232,7 +232,7 @@ const ProjectPerformanceList = (props) => {
           },
           {
             headerName: `${t("q")}${quarterIndex + 1} ${t(
-              "financial_planned"
+              "financial_planned",
             )}`,
             field: `quarter_${quarterIndex + 1}_financial_planned`,
             sortable: true,
@@ -285,7 +285,7 @@ const ProjectPerformanceList = (props) => {
           return params.data.prp_budget_baseline
             ? truncateText(
                 Number(params.data.prp_budget_baseline).toLocaleString(),
-                15
+                15,
               )
             : "-";
         },
@@ -299,7 +299,7 @@ const ProjectPerformanceList = (props) => {
           return params.data.prp_physical_baseline
             ? truncateText(
                 Number(params.data.prp_physical_baseline).toLocaleString(),
-                15
+                15,
               )
             : "-";
         },
@@ -396,8 +396,8 @@ const ProjectPerformanceList = (props) => {
                       lang === "en"
                         ? projectStatusOptionsEn
                         : lang === "am"
-                        ? projectStatusOptionsAm
-                        : projectStatusOptionsOr,
+                          ? projectStatusOptionsAm
+                          : projectStatusOptionsOr,
                   },
                   {
                     key: "budget_year",
@@ -459,8 +459,8 @@ const TableWrapper = ({
           lang === "en"
             ? project_status.prs_status_name_en
             : lang === "am"
-            ? project_status.prs_status_name_am
-            : project_status.prs_status_name_or;
+              ? project_status.prs_status_name_am
+              : project_status.prs_status_name_or;
         return acc;
       }, {}) || {}
     );

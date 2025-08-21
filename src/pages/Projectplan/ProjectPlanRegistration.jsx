@@ -34,11 +34,11 @@ import {
   Card,
   CardBody,
 } from "reactstrap";
-const AttachFileModal = lazy(() =>
-  import("../../components/Common/AttachFileModal")
+const AttachFileModal = lazy(
+  () => import("../../components/Common/AttachFileModal"),
 );
-const ConvInfoModal = lazy(() =>
-  import("../../pages/Conversationinformation/ConvInfoModal")
+const ConvInfoModal = lazy(
+  () => import("../../pages/Conversationinformation/ConvInfoModal"),
 );
 import { PAGE_ID } from "../../constants/constantFile";
 import {
@@ -193,7 +193,7 @@ const ProjectPlanModel = () => {
               !value ||
               new Date(value) <= new Date(pld_end_date_gc)
             );
-          }
+          },
         ),
       pld_description: alphanumericValidation(3, 425, false),
       //pld_status: Yup.string().required(t("pld_status")),
@@ -243,7 +243,7 @@ const ProjectPlanModel = () => {
     setProjectPlan(data?.data);
     if (projectPlanSelected) {
       const plan = data?.data.find(
-        (plan) => plan.id === projectPlanSelected?.id
+        (plan) => plan.id === projectPlanSelected?.id,
       );
       setProjectPlanSelected(plan);
     }
@@ -664,7 +664,7 @@ const ProjectPlanModel = () => {
                   value={validation.values.pld_budget_year_id || ""}
                   invalid={
                     validation.touched.pld_budget_year_id &&
-                      validation.errors.pld_budget_year_id
+                    validation.errors.pld_budget_year_id
                       ? true
                       : false
                   }
@@ -677,7 +677,7 @@ const ProjectPlanModel = () => {
                   ))}
                 </Input>
                 {validation.touched.pld_budget_year_id &&
-                  validation.errors.pld_budget_year_id ? (
+                validation.errors.pld_budget_year_id ? (
                   <FormFeedback type="invalid">
                     {validation.errors.pld_budget_year_id}
                   </FormFeedback>
@@ -710,14 +710,14 @@ const ProjectPlanModel = () => {
                   value={validation.values.pld_description || ""}
                   invalid={
                     validation.touched.pld_description &&
-                      validation.errors.pld_description
+                    validation.errors.pld_description
                       ? true
                       : false
                   }
                   maxLength={425}
                 />
                 {validation.touched.pld_description &&
-                  validation.errors.pld_description ? (
+                validation.errors.pld_description ? (
                   <FormFeedback type="invalid">
                     {validation.errors.pld_description}
                   </FormFeedback>

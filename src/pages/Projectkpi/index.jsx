@@ -62,52 +62,52 @@ const ProjectKpiModel = () => {
   const deleteProjectKpi = useDeleteProjectKpi();
   //START CRUD
   const handleAddProjectKpi = async (data) => {
-		try {
-			await addProjectKpi.mutateAsync(data);
-			toast.success(t("add_success"), {
-				autoClose: 2000,
-			});
-			validation.resetForm();
-			refetch();
-		} catch (error) {
-			toast.error(t("add_failure"), {
-				autoClose: 2000,
-			});
-		}
-		toggle();
-	};
-	const handleUpdateProjectKpi = async (data) => {
-		try {
-			await updateProjectKpi.mutateAsync(data);
-			toast.success(t("update_success"), {
-				autoClose: 2000,
-			});
-			validation.resetForm();
-			refetch();
-		} catch (error) {
-			toast.error(t("update_failure"), {
-				autoClose: 2000,
-			});
-		}
-		toggle();
-	};
-	const handleDeleteProjectKpi = async () => {
-		if (projectKpi && projectKpi.kpi_id) {
-			try {
-				const id = projectKpi.kpi_id;
-				await deleteProjectKpi.mutateAsync(id);
-				toast.success(t("delete_success"), {
-					autoClose: 2000,
-				});
-				refetch();
-			} catch (error) {
-				toast.error(t("delete_failure"), {
-					autoClose: 2000,
-				});
-			}
-			setDeleteModal(false);
-		}
-	};
+    try {
+      await addProjectKpi.mutateAsync(data);
+      toast.success(t("add_success"), {
+        autoClose: 2000,
+      });
+      validation.resetForm();
+      refetch();
+    } catch (error) {
+      toast.error(t("add_failure"), {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+  const handleUpdateProjectKpi = async (data) => {
+    try {
+      await updateProjectKpi.mutateAsync(data);
+      toast.success(t("update_success"), {
+        autoClose: 2000,
+      });
+      validation.resetForm();
+      refetch();
+    } catch (error) {
+      toast.error(t("update_failure"), {
+        autoClose: 2000,
+      });
+    }
+    toggle();
+  };
+  const handleDeleteProjectKpi = async () => {
+    if (projectKpi && projectKpi.kpi_id) {
+      try {
+        const id = projectKpi.kpi_id;
+        await deleteProjectKpi.mutateAsync(id);
+        toast.success(t("delete_success"), {
+          autoClose: 2000,
+        });
+        refetch();
+      } catch (error) {
+        toast.error(t("delete_failure"), {
+          autoClose: 2000,
+        });
+      }
+      setDeleteModal(false);
+    }
+  };
   //END CRUD
   //START FOREIGN CALLS
 

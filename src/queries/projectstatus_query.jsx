@@ -24,7 +24,7 @@ export const useSearchProjectStatuss = (searchParams = {}) => {
   return useQuery({
     queryKey: [...PROJECT_STATUS_QUERY_KEY, searchParams],
     queryFn: () => getProjectStatus(searchParams),
-   staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     refetchOnMount: true,
   });
@@ -66,7 +66,7 @@ export const useUpdateProjectStatus = () => {
           data: oldData.data.map((ProjectStatusData) =>
             ProjectStatusData.prs_id === updatedProjectStatus.data.prs_id
               ? { ...ProjectStatusData, ...updatedProjectStatus.data }
-              : ProjectStatusData
+              : ProjectStatusData,
           ),
         };
       });
@@ -85,7 +85,8 @@ export const useDeleteProjectStatus = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (ProjectStatusData) => ProjectStatusData.prs_id !== parseInt(deletedData.deleted_id)
+            (ProjectStatusData) =>
+              ProjectStatusData.prs_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

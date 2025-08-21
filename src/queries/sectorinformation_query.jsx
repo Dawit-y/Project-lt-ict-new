@@ -29,7 +29,7 @@ export const useSearchSectorInformations = (searchParams = {}) => {
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    enabled: Object.keys(searchParams).length > 0
+    enabled: Object.keys(searchParams).length > 0,
   });
 };
 
@@ -80,7 +80,7 @@ export const useUpdateSectorInformation = () => {
             data: oldData.data.map((data) =>
               data.sci_id === updatedData.data.sci_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -105,7 +105,7 @@ export const useDeleteSectorInformation = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (data) => data.sci_id !== parseInt(deletedData.deleted_id)
+              (data) => data.sci_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

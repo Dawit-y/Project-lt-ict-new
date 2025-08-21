@@ -82,7 +82,7 @@ export const useUpdateBudgetExSource = () => {
             data: oldData.data.map((data) =>
               data.bes_id === updatedBudgetExSource.data.bes_id
                 ? { ...data, ...updatedBudgetExSource.data }
-                : data
+                : data,
             ),
           };
         });
@@ -107,7 +107,7 @@ export const useDeleteBudgetExSource = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.bes_id !== parseInt(deletedData.deleted_id)
+              (dept) => dept.bes_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

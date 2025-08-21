@@ -42,8 +42,7 @@ import {
   leftSideBarThemeTypes,
 } from "../../constants/layout";
 
-const RightSidebar = props => {
-
+const RightSidebar = (props) => {
   // Save layout changes to localStorage
   const handleLayoutChange = (layoutType) => {
     props.changeLayout(layoutType);
@@ -65,9 +64,9 @@ const RightSidebar = props => {
             <div className="rightbar-title px-3 py-4">
               <Link
                 to="#"
-                onClick={e => {
-                  e.preventDefault()
-                  props.showRightSidebarAction(false)
+                onClick={(e) => {
+                  e.preventDefault();
+                  props.showRightSidebarAction(false);
                 }}
                 className="right-bar-toggle float-end"
               >
@@ -87,16 +86,18 @@ const RightSidebar = props => {
                   name="radioFruit"
                   value={layoutTypes.VERTICAL}
                   checked={props.layoutType === layoutTypes.VERTICAL}
-                  onChange={e => handleLayoutChange(e.target.value)}
+                  onChange={(e) => handleLayoutChange(e.target.value)}
                 />
-                <label className="me-1" htmlFor="radioVertical">Vertical</label>
+                <label className="me-1" htmlFor="radioVertical">
+                  Vertical
+                </label>
                 <input
                   type="radio"
                   id="radioHorizontal"
                   name="radioFruit"
                   value={layoutTypes.HORIZONTAL}
                   checked={props.layoutType === layoutTypes.HORIZONTAL}
-                  onChange={e => handleLayoutChange(e.target.value)}
+                  onChange={(e) => handleLayoutChange(e.target.value)}
                 />
                 <label htmlFor="radioHorizontal">Horizontal</label>
               </div>
@@ -110,16 +111,18 @@ const RightSidebar = props => {
                   name="radioLight"
                   value={layoutModeTypes.LIGHT}
                   checked={props.layoutModeType === layoutModeTypes.LIGHT}
-                  onChange={e => props.changeLayoutMode(e.target.value)}
+                  onChange={(e) => props.changeLayoutMode(e.target.value)}
                 />
-                <label className="me-1" htmlFor="radioLight">Light</label>
+                <label className="me-1" htmlFor="radioLight">
+                  Light
+                </label>
                 <input
                   type="radio"
                   id="radioDark"
                   name="radioDark"
                   value={layoutModeTypes.DARK}
                   checked={props.layoutModeType === layoutModeTypes.DARK}
-                  onChange={e => props.changeLayoutMode(e.target.value)}
+                  onChange={(e) => props.changeLayoutMode(e.target.value)}
                 />
                 <label htmlFor="radioDark">Dark</label>
               </div>
@@ -135,16 +138,18 @@ const RightSidebar = props => {
                   name="radioWidth"
                   value={layoutWidthTypes.FLUID}
                   checked={props.layoutWidth === layoutWidthTypes.FLUID}
-                  onChange={e => handleLayoutWidthChange(e.target.value)}
+                  onChange={(e) => handleLayoutWidthChange(e.target.value)}
                 />
-                <label className="me-1" htmlFor="radioFluid">Fluid</label>
+                <label className="me-1" htmlFor="radioFluid">
+                  Fluid
+                </label>
                 <input
                   type="radio"
                   id="radioBoxed"
                   name="radioWidth"
                   value={layoutWidthTypes.BOXED}
                   checked={props.layoutWidth === layoutWidthTypes.BOXED}
-                  onChange={e => handleLayoutWidthChange(e.target.value)}
+                  onChange={(e) => handleLayoutWidthChange(e.target.value)}
                 />
                 <label htmlFor="radioBoxed" className="me-1">
                   Boxed
@@ -155,7 +160,7 @@ const RightSidebar = props => {
                   name="radioscrollable"
                   value={layoutWidthTypes.SCROLLABLE}
                   checked={props.layoutWidth === layoutWidthTypes.SCROLLABLE}
-                  onChange={e => handleLayoutWidthChange(e.target.value)}
+                  onChange={(e) => handleLayoutWidthChange(e.target.value)}
                 />
                 <label htmlFor="radioscrollable">Scrollable</label>
               </div>
@@ -171,18 +176,22 @@ const RightSidebar = props => {
                   name="radioTheme"
                   value={topBarThemeTypes.LIGHT}
                   checked={props.topbarTheme === topBarThemeTypes.LIGHT}
-                  onChange={e => handleTopbarThemeChange(e.target.value)}
+                  onChange={(e) => handleTopbarThemeChange(e.target.value)}
                 />
-                <label className="me-1" htmlFor="radioThemeLight">Light</label>
+                <label className="me-1" htmlFor="radioThemeLight">
+                  Light
+                </label>
                 <input
                   type="radio"
                   id="radioThemeDark"
                   name="radioTheme"
                   value={topBarThemeTypes.DARK}
                   checked={props.topbarTheme === topBarThemeTypes.DARK}
-                  onChange={e => handleTopbarThemeChange(e.target.value)}
+                  onChange={(e) => handleTopbarThemeChange(e.target.value)}
                 />
-                <label className="me-1" htmlFor="radioThemeDark">Dark</label>
+                <label className="me-1" htmlFor="radioThemeDark">
+                  Dark
+                </label>
                 {props.layoutType === "vertical" ? null : (
                   <>
                     <input
@@ -191,9 +200,11 @@ const RightSidebar = props => {
                       name="radioTheme"
                       value={topBarThemeTypes.COLORED}
                       checked={props.topbarTheme === topBarThemeTypes.COLORED}
-                      onChange={e => handleTopbarThemeChange(e.target.value)}
+                      onChange={(e) => handleTopbarThemeChange(e.target.value)}
                     />
-                    <label className="me-1" htmlFor="radioThemeColored">Colored</label>{" "}
+                    <label className="me-1" htmlFor="radioThemeColored">
+                      Colored
+                    </label>{" "}
                   </>
                 )}
               </div>
@@ -210,28 +221,38 @@ const RightSidebar = props => {
                       id="sidebarDefault"
                       name="sidebarType"
                       value={leftSidebarTypes.DEFAULT}
-                      checked={props.leftSideBarType === leftSidebarTypes.DEFAULT}
-                      onChange={e => props.changeSidebarType(e.target.value)}
+                      checked={
+                        props.leftSideBarType === leftSidebarTypes.DEFAULT
+                      }
+                      onChange={(e) => props.changeSidebarType(e.target.value)}
                     />
-                    <label className="me-1" htmlFor="sidebarDefault">Default</label>
+                    <label className="me-1" htmlFor="sidebarDefault">
+                      Default
+                    </label>
                     <input
                       type="radio"
                       id="sidebarCompact"
                       name="sidebarType"
                       value={leftSidebarTypes.COMPACT}
-                      checked={props.leftSideBarType === leftSidebarTypes.COMPACT}
-                      onChange={e => props.changeSidebarType(e.target.value)}
+                      checked={
+                        props.leftSideBarType === leftSidebarTypes.COMPACT
+                      }
+                      onChange={(e) => props.changeSidebarType(e.target.value)}
                     />
-                    <label className="me-1" htmlFor="sidebarCompact">Compact</label>
+                    <label className="me-1" htmlFor="sidebarCompact">
+                      Compact
+                    </label>
                     <input
                       type="radio"
                       id="sidebarIcon"
                       name="sidebarType"
                       value={leftSidebarTypes.ICON}
                       checked={props.leftSidebarType === leftSidebarTypes.ICON}
-                      onChange={e => props.changeSidebarType(e.target.value)}
+                      onChange={(e) => props.changeSidebarType(e.target.value)}
                     />
-                    <label className="me-1" htmlFor="sidebarIcon">Icon</label>
+                    <label className="me-1" htmlFor="sidebarIcon">
+                      Icon
+                    </label>
                   </div>
                   <hr className="mt-1" />
                 </React.Fragment>
@@ -267,7 +288,7 @@ RightSidebar.propTypes = {
   onClose: PropTypes.func,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return { ...state.Layout };
 };
 
@@ -282,4 +303,3 @@ export default connect(mapStateToProps, {
   changePreloader,
   showRightSidebarAction,
 })(RightSidebar);
-

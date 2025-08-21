@@ -23,10 +23,10 @@ import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForLists from "../../components/Common/TreeForLists";
-import AttachFileModal from "../../components/Common/AttachFileModal"
-import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal"
+import AttachFileModal from "../../components/Common/AttachFileModal";
+import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal";
 import { PAGE_ID } from "../../constants/constantFile";
-import BudgetRequestModal from "./BudgetRequestModal"
+import BudgetRequestModal from "./BudgetRequestModal";
 import ExportToExcel from "../../components/Common/ExportToExcel";
 import ExportToPDF from "../../components/Common/ExportToPdf";
 import PrintPage from "../../components/Common/PrintPage";
@@ -52,8 +52,8 @@ const BudgetRequestListModel = () => {
   const [budgetRequestMetaData, setBudgetRequestMetaData] = useState({});
   const [showCanvas, setShowCanvas] = useState(false);
   const [modal1, setModal1] = useState(false);
-  const [fileModal, setFileModal] = useState(false)
-  const [convModal, setConvModal] = useState(false)
+  const [fileModal, setFileModal] = useState(false);
+  const [convModal, setConvModal] = useState(false);
 
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -148,7 +148,7 @@ const BudgetRequestListModel = () => {
         valueGetter: (params) => params.node.rowIndex + 1,
         sortable: false,
         filter: false,
-        flex: .5,
+        flex: 0.5,
       },
       {
         headerName: t("bdr_budget_year_id"),
@@ -222,13 +222,12 @@ const BudgetRequestListModel = () => {
         cellRenderer: (params) => {
           return (
             <Button
-
               type="button"
               color="primary"
               className="btn-sm"
               onClick={() => {
                 toggleViewModal();
-                console.log(params.data)
+                console.log(params.data);
                 setTransaction(params.data);
               }}
             >
@@ -282,7 +281,7 @@ const BudgetRequestListModel = () => {
     ];
     return baseColumnDefs;
   }, []);
-  console.log("error", error)
+  console.log("error", error);
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
@@ -359,24 +358,31 @@ const BudgetRequestListModel = () => {
                         sm="12"
                         md="6"
                         className="text-md-end d-flex align-items-center justify-content-end gap-2"
-                      ><ExportToExcel
-                          tableData={showSearchResult
-                            ? searchResults?.data
-                            : data?.data || []}
+                      >
+                        <ExportToExcel
+                          tableData={
+                            showSearchResult
+                              ? searchResults?.data
+                              : data?.data || []
+                          }
                           tablename={"projects"}
                           excludeKey={["is_editable", "is_deletable"]}
                         />
                         <ExportToPDF
-                          tableData={showSearchResult
-                            ? searchResults?.data
-                            : data?.data || []}
+                          tableData={
+                            showSearchResult
+                              ? searchResults?.data
+                              : data?.data || []
+                          }
                           tablename={"projects"}
                           includeKey={budget_request}
                         />
                         <PrintPage
-                          tableData={showSearchResult
-                            ? searchResults?.data
-                            : data?.data || []}
+                          tableData={
+                            showSearchResult
+                              ? searchResults?.data
+                              : data?.data || []
+                          }
                           tablename={t("Projects")}
                           excludeKey={["is_editable", "is_deletable"]}
                           gridRef={gridRef}
@@ -403,9 +409,9 @@ const BudgetRequestListModel = () => {
                         rowHeight={30}
                         animateRows={true}
                         domLayout="autoHeight"
-                      // onGridReady={(params) => {
-                      //   params.api.sizeColumnsToFit();
-                      // }}
+                        // onGridReady={(params) => {
+                        //   params.api.sizeColumnsToFit();
+                        // }}
                       />
                     </div>
                     {/*<BudgetRequestAnalysis

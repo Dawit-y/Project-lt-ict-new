@@ -7,64 +7,64 @@ import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 
 const useErrorMessages = () => {
-	const { t } = useTranslation();
-	return {
-		452: t("errors_duplicateEntry"),
-		453: t("errors_missingField"),
-		454: t("errors_invalidReference"),
-		455: t("errors_genericError"),
-		429: t("Too Many Attempts"),
-		487: t("Incorrect Input"),
-		500: t("Internal Server Error"),
-	};
+  const { t } = useTranslation();
+  return {
+    452: t("errors_duplicateEntry"),
+    453: t("errors_missingField"),
+    454: t("errors_invalidReference"),
+    455: t("errors_genericError"),
+    429: t("Too Many Attempts"),
+    487: t("Incorrect Input"),
+    500: t("Internal Server Error"),
+  };
 };
 
 // Function to extract API error message
 const GetErrorMessage = ({ error }) => {
-	const statusMessages = useErrorMessages();
+  const statusMessages = useErrorMessages();
 
-	if (error?.response?.status) {
-		return `${statusMessages[error?.response?.status]}`;
-	} else if (error?.response?.data) {
-		const { status_code, errorMsg, column } = error.response.data;
-		if (statusMessages[status_code]) {
-			return `${statusMessages[status_code]} ${column ? `on ${column}` : ""}`;
-		}
-		return `${errorMsg} ${column ? `on ${column}` : ""}`;
-	}
+  if (error?.response?.status) {
+    return `${statusMessages[error?.response?.status]}`;
+  } else if (error?.response?.data) {
+    const { status_code, errorMsg, column } = error.response.data;
+    if (statusMessages[status_code]) {
+      return `${statusMessages[status_code]} ${column ? `on ${column}` : ""}`;
+    }
+    return `${errorMsg} ${column ? `on ${column}` : ""}`;
+  }
 
-	return error.message || "An unexpected error occurred.";
+  return error.message || "An unexpected error occurred.";
 };
 
 // Create a Web Storage Persistor
 const localStoragePersistor = createSyncStoragePersister({
-	storage: window.localStorage,
+  storage: window.localStorage,
 });
 
 // Create the QueryClient
 const queryClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			retry: 1,
-			refetchOnWindowFocus: false,
-			gcTime: 1000 * 60 * 10,
-		},
-	},
-	queryCache: new QueryCache({
-		// onError: (error) => {
-		//   const message = getErrorMessage(error);
-		//   toast.error(message);
-		// },
-	}),
-	mutationCache: new MutationCache({
-		onError: (error, _, __, mutation) => {
-			if (!error.handledByMutationCache && error.response?.status !== 401) {
-				error.handledByMutationCache = true;
-				const message = <GetErrorMessage error={error} />;
-				toast.error(message, { autoClose: 2000 });
-			}
-		},
-	}),
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      gcTime: 1000 * 60 * 10,
+    },
+  },
+  queryCache: new QueryCache({
+    // onError: (error) => {
+    //   const message = getErrorMessage(error);
+    //   toast.error(message);
+    // },
+  }),
+  mutationCache: new MutationCache({
+    onError: (error, _, __, mutation) => {
+      if (!error.handledByMutationCache && error.response?.status !== 401) {
+        error.handledByMutationCache = true;
+        const message = <GetErrorMessage error={error} />;
+        toast.error(message, { autoClose: 2000 });
+      }
+    },
+  }),
 });
 
 const QueryProvider = ({ children }) => {
@@ -76,7 +76,7 @@ const QueryProvider = ({ children }) => {
         dehydrateOptions: {
           shouldDehydrateQuery: (query) => query.meta?.persist === true,
         },
-        buster: "1"
+        buster: "1",
       }}
     >
       {children}

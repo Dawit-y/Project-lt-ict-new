@@ -64,7 +64,7 @@ const BudgetRequestListModal = (props) => {
       .min(0, "Released amount must be greater or equal to 0")
       .max(
         transaction.bdr_requested_amount,
-        "Can not release more than requested"
+        "Can not release more than requested",
       )
       .when("bdr_request_status", {
         is: "Accepted",
@@ -206,7 +206,7 @@ const BudgetRequestListModal = (props) => {
                         onChange={(date) =>
                           formik.setFieldValue(
                             "bdr_released_date_gc",
-                            formatDate(date[0])
+                            formatDate(date[0]),
                           )
                         }
                         options={{

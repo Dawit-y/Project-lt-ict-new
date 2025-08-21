@@ -76,12 +76,12 @@ const DateSettingModel = () => {
   const handleAddDateSetting = async (data) => {
     try {
       await addDateSetting.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('add_failure'), {
+      toast.error(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -90,12 +90,12 @@ const DateSettingModel = () => {
   const handleUpdateDateSetting = async (data) => {
     try {
       await updateDateSetting.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.error(t('update_failure'), {
+      toast.error(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -106,11 +106,11 @@ const DateSettingModel = () => {
       try {
         const id = dateSetting.dts_id;
         await deleteDateSetting.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.error(t('delete_failure'), {
+        toast.error(t("delete_failure"), {
           autoClose: 2000,
         });
       }
@@ -119,7 +119,6 @@ const DateSettingModel = () => {
   };
   //END CRUD
   //START FOREIGN CALLS
-
 
   // validation
   const validation = useFormik({
@@ -134,14 +133,14 @@ const DateSettingModel = () => {
       dts_status: (dateSetting && dateSetting.dts_status) || "",
 
       is_deletable: (dateSetting && dateSetting.is_deletable) || 1,
-      is_editable: (dateSetting && dateSetting.is_editable) || 1
+      is_editable: (dateSetting && dateSetting.is_editable) || 1,
     },
     validationSchema: Yup.object({
       dts_parameter_name: alphanumericValidation(3, 425, true),
       dts_parameter_code: Yup.string().required(t("dts_parameter_code")),
       dts_start_date: Yup.string().required(t("dts_start_date")),
       dts_end_date: Yup.string().required(t("dts_end_date")),
-      dts_description: alphanumericValidation(3, 425, false)
+      dts_description: alphanumericValidation(3, 425, false),
     }),
     validateOnBlur: true,
     validateOnChange: false,
@@ -168,7 +167,6 @@ const DateSettingModel = () => {
           dts_end_date: values.dts_end_date,
           dts_description: values.dts_description,
           dts_status: values.dts_status,
-
         };
         // save new DateSetting
         handleAddDateSetting(newDateSetting);
@@ -223,81 +221,78 @@ const DateSettingModel = () => {
     setIsEdit(false);
     setDateSetting("");
     toggle();
-  }
-    ; const handleSearchResults = ({ data, error }) => {
-      setSearchResults(data);
-      setSearchError(error);
-      setShowSearchResult(true);
-    };
+  };
+  const handleSearchResults = ({ data, error }) => {
+    setSearchResults(data);
+    setSearchError(error);
+    setShowSearchResult(true);
+  };
   //START UNCHANGED
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'dts_parameter_name',
+        header: "",
+        accessorKey: "dts_parameter_name",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.dts_parameter_name, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'dts_parameter_code',
+        header: "",
+        accessorKey: "dts_parameter_code",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
               {truncateText(cellProps.row.original.dts_parameter_code, 30) ||
-                '-'}
+                "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'dts_start_date',
+        header: "",
+        accessorKey: "dts_start_date",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.dts_start_date, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.dts_start_date, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'dts_end_date',
+        header: "",
+        accessorKey: "dts_end_date",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.dts_end_date, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.dts_end_date, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'dts_description',
+        header: "",
+        accessorKey: "dts_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.dts_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.dts_description, 30) || "-"}
             </span>
           );
         },
@@ -359,199 +354,199 @@ const DateSettingModel = () => {
     return baseColumns;
   }, [handleDateSettingClick, toggleViewModal, onClickDelete]);
   return (
-		<React.Fragment>
-			<DateSettingModal
-				isOpen={modal1}
-				toggle={toggleViewModal}
-				transaction={transaction}
-			/>
-			<DeleteModal
-				show={deleteModal}
-				onDeleteClick={handleDeleteDateSetting}
-				onCloseClick={() => setDeleteModal(false)}
-				isLoading={deleteDateSetting.isPending}
-			/>
-			<div className="page-content">
-				<div className="container-fluid">
-					<Breadcrumbs
-						title={t("date_setting")}
-						breadcrumbItem={t("date_setting")}
-					/>
-					{isLoading || isSearchLoading ? (
-						<Spinners />
-					) : (
-						<Row>
-							<Col xs="12">
-								<Card>
-									<CardBody>
-										<TableContainer
-											columns={columns}
-											data={
-												showSearchResult
-													? searchResults?.data
-													: data?.data || []
-											}
-											isGlobalFilter={true}
-											isAddButton={false}
-											isCustomPageSize={true}
-											handleUserClick={handleDateSettingClicks}
-											isPagination={true}
-											buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-											buttonName={t("add")}
-											tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-											theadClass="table-light"
-											pagination="pagination"
-											paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-										/>
-									</CardBody>
-								</Card>
-							</Col>
-						</Row>
-					)}
-					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
-						<ModalHeader toggle={toggle} tag="h4">
-							{!!isEdit
-								? t("edit") + " " + t("date_setting")
-								: t("add") + " " + t("date_setting")}
-						</ModalHeader>
-						<ModalBody>
-							<Form
-								onSubmit={(e) => {
-									e.preventDefault();
-									validation.handleSubmit();
-									return false;
-								}}
-							>
-								<Row>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("dts_parameter_name")}</Label>
-										<Input
-											name="dts_parameter_name"
-											type="text"
-											placeholder={t("dts_parameter_name")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.dts_parameter_name || ""}
-											invalid={
-												validation.touched.dts_parameter_name &&
-												validation.errors.dts_parameter_name
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.dts_parameter_name &&
-										validation.errors.dts_parameter_name ? (
-											<FormFeedback type="invalid">
-												{validation.errors.dts_parameter_name}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("dts_parameter_code")}</Label>
-										<Input
-											name="dts_parameter_code"
-											type="text"
-											placeholder={t("dts_parameter_code")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.dts_parameter_code || ""}
-											invalid={
-												validation.touched.dts_parameter_code &&
-												validation.errors.dts_parameter_code
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.dts_parameter_code &&
-										validation.errors.dts_parameter_code ? (
-											<FormFeedback type="invalid">
-												{validation.errors.dts_parameter_code}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<DatePicker
-											isRequired="true"
-											validation={validation}
-											componentId="dts_start_date"
-										/>
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<DatePicker
-											isRequired="true"
-											validation={validation}
-											componentId="dts_end_date"
-										/>
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("dts_description")}</Label>
-										<Input
-											name="dts_description"
-											type="textarea"
-											placeholder={t("dts_description")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.dts_description || ""}
-											invalid={
-												validation.touched.dts_description &&
-												validation.errors.dts_description
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.dts_description &&
-										validation.errors.dts_description ? (
-											<FormFeedback type="invalid">
-												{validation.errors.dts_description}
-											</FormFeedback>
-										) : null}
-									</Col>
-								</Row>
-								<Row>
-									<Col>
-										<div className="text-end">
-											{addDateSetting.isPending ||
-											updateDateSetting.isPending ? (
-												<Button
-													color="success"
-													type="submit"
-													className="save-user"
-													disabled={
-														addDateSetting.isPending ||
-														updateDateSetting.isPending ||
-														!validation.dirty
-													}
-												>
-													<Spinner size={"sm"} color="light" className="me-2" />
-													{t("Save")}
-												</Button>
-											) : (
-												<Button
-													color="success"
-													type="submit"
-													className="save-user"
-													disabled={
-														addDateSetting.isPending ||
-														updateDateSetting.isPending ||
-														!validation.dirty
-													}
-												>
-													{t("Save")}
-												</Button>
-											)}
-										</div>
-									</Col>
-								</Row>
-							</Form>
-						</ModalBody>
-					</Modal>
-				</div>
-			</div>
-		</React.Fragment>
-	);
+    <React.Fragment>
+      <DateSettingModal
+        isOpen={modal1}
+        toggle={toggleViewModal}
+        transaction={transaction}
+      />
+      <DeleteModal
+        show={deleteModal}
+        onDeleteClick={handleDeleteDateSetting}
+        onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteDateSetting.isPending}
+      />
+      <div className="page-content">
+        <div className="container-fluid">
+          <Breadcrumbs
+            title={t("date_setting")}
+            breadcrumbItem={t("date_setting")}
+          />
+          {isLoading || isSearchLoading ? (
+            <Spinners />
+          ) : (
+            <Row>
+              <Col xs="12">
+                <Card>
+                  <CardBody>
+                    <TableContainer
+                      columns={columns}
+                      data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
+                      isGlobalFilter={true}
+                      isAddButton={false}
+                      isCustomPageSize={true}
+                      handleUserClick={handleDateSettingClicks}
+                      isPagination={true}
+                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                      buttonName={t("add")}
+                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                      theadClass="table-light"
+                      pagination="pagination"
+                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                    />
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          )}
+          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
+            <ModalHeader toggle={toggle} tag="h4">
+              {!!isEdit
+                ? t("edit") + " " + t("date_setting")
+                : t("add") + " " + t("date_setting")}
+            </ModalHeader>
+            <ModalBody>
+              <Form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  validation.handleSubmit();
+                  return false;
+                }}
+              >
+                <Row>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("dts_parameter_name")}</Label>
+                    <Input
+                      name="dts_parameter_name"
+                      type="text"
+                      placeholder={t("dts_parameter_name")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.dts_parameter_name || ""}
+                      invalid={
+                        validation.touched.dts_parameter_name &&
+                        validation.errors.dts_parameter_name
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.dts_parameter_name &&
+                    validation.errors.dts_parameter_name ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.dts_parameter_name}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("dts_parameter_code")}</Label>
+                    <Input
+                      name="dts_parameter_code"
+                      type="text"
+                      placeholder={t("dts_parameter_code")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.dts_parameter_code || ""}
+                      invalid={
+                        validation.touched.dts_parameter_code &&
+                        validation.errors.dts_parameter_code
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.dts_parameter_code &&
+                    validation.errors.dts_parameter_code ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.dts_parameter_code}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <DatePicker
+                      isRequired="true"
+                      validation={validation}
+                      componentId="dts_start_date"
+                    />
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <DatePicker
+                      isRequired="true"
+                      validation={validation}
+                      componentId="dts_end_date"
+                    />
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("dts_description")}</Label>
+                    <Input
+                      name="dts_description"
+                      type="textarea"
+                      placeholder={t("dts_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.dts_description || ""}
+                      invalid={
+                        validation.touched.dts_description &&
+                        validation.errors.dts_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.dts_description &&
+                    validation.errors.dts_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.dts_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <div className="text-end">
+                      {addDateSetting.isPending ||
+                      updateDateSetting.isPending ? (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addDateSetting.isPending ||
+                            updateDateSetting.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          <Spinner size={"sm"} color="light" className="me-2" />
+                          {t("Save")}
+                        </Button>
+                      ) : (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addDateSetting.isPending ||
+                            updateDateSetting.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          {t("Save")}
+                        </Button>
+                      )}
+                    </div>
+                  </Col>
+                </Row>
+              </Form>
+            </ModalBody>
+          </Modal>
+        </div>
+      </div>
+    </React.Fragment>
+  );
 };
 DateSettingModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

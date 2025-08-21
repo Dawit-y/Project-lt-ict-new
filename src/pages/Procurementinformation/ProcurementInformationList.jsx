@@ -23,8 +23,8 @@ import { useFetchProcurementStages } from "../../queries/procurementstage_query"
 import { useFetchProcurementMethods } from "../../queries/procurementmethod_query";
 import { procurementExportColumns } from "../../utils/exportColumnsForLists";
 
-const AgGridContainer = lazy(() =>
-  import("../../components/Common/AgGridContainer")
+const AgGridContainer = lazy(
+  () => import("../../components/Common/AgGridContainer"),
 );
 
 const truncateText = (text, maxLength) =>
@@ -82,8 +82,8 @@ const ProcurementInformationList = () => {
           lang === "en"
             ? item.pst_name_en
             : lang === "am"
-            ? item.pst_name_am
-            : item.pst_name_or;
+              ? item.pst_name_am
+              : item.pst_name_or;
         return acc;
       }, {}) || {}
     );
@@ -96,8 +96,8 @@ const ProcurementInformationList = () => {
           lang === "en"
             ? item.prm_name_en
             : lang === "am"
-            ? item.prm_name_am
-            : item.prm_name_or;
+              ? item.prm_name_am
+              : item.prm_name_or;
         return acc;
       }, {}) || {}
     );
@@ -199,7 +199,7 @@ const ProcurementInformationList = () => {
         cellRenderer: (params) =>
           truncateText(
             procurementStageMap[params.data.pri_procurement_stage_id],
-            30
+            30,
           ),
       },
       {
@@ -210,7 +210,7 @@ const ProcurementInformationList = () => {
         cellRenderer: (params) =>
           truncateText(
             procurementMethodMap[params.data.pri_procurement_method_id],
-            30
+            30,
           ),
       },
     ];
@@ -245,8 +245,8 @@ const ProcurementInformationList = () => {
                   lang === "en"
                     ? procurementStageOptionsEn
                     : lang === "am"
-                    ? procurementStageOptionsAm
-                    : procurementStageOptionsOr,
+                      ? procurementStageOptionsAm
+                      : procurementStageOptionsOr,
               },
               {
                 key: "pri_procurement_method_id",
@@ -254,8 +254,8 @@ const ProcurementInformationList = () => {
                   lang === "en"
                     ? procurementMethodOptionsEn
                     : lang === "am"
-                    ? procurementMethodOptionsAm
-                    : procurementMethodOptionsOr,
+                      ? procurementMethodOptionsAm
+                      : procurementMethodOptionsOr,
               },
             ]}
             additionalParams={projectParams}

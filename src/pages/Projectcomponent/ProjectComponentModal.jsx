@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useTransition } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,11 +8,11 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+} from "reactstrap";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+  width: "100%",
+  height: "100%",
 };
 
 const ProjectComponentModal = (props) => {
@@ -33,43 +33,60 @@ const ProjectComponentModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('pcm_project_id')}: <span className="text-primary">{transaction.pcm_project_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pcm_component_name')}: <span className="text-primary">{transaction.pcm_component_name}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pcm_unit_measurement')}: <span className="text-primary">{transaction.pcm_unit_measurement}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pcm_amount')}: <span className="text-primary">{transaction.pcm_amount}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pcm_description')}: <span className="text-primary">{transaction.pcm_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pcm_status')}: <span className="text-primary">{transaction.pcm_status}</span>
-          </p>
+          <tr>
+            <p className="mb-2">
+              {t("pcm_project_id")}:{" "}
+              <span className="text-primary">{transaction.pcm_project_id}</span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("pcm_component_name")}:{" "}
+              <span className="text-primary">
+                {transaction.pcm_component_name}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("pcm_unit_measurement")}:{" "}
+              <span className="text-primary">
+                {transaction.pcm_unit_measurement}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("pcm_amount")}:{" "}
+              <span className="text-primary">{transaction.pcm_amount}</span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("pcm_description")}:{" "}
+              <span className="text-primary">
+                {transaction.pcm_description}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("pcm_status")}:{" "}
+              <span className="text-primary">{transaction.pcm_status}</span>
+            </p>
           </tr>
 
           {transaction.is_deletable === 1 && (
             <p className="text-danger">data is deletable</p>
           )}
-          
+
           {transaction.is_editable === 1 && (
             <p className="text-success">Editable</p>
           )}
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

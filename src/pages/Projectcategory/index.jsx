@@ -163,9 +163,9 @@ const ProjectCategoryModel = () => {
           return !data?.data.some(
             (item) =>
               item.pct_name_or == value &&
-              item.pct_id !== projectCategory?.pct_id
+              item.pct_id !== projectCategory?.pct_id,
           );
-        }
+        },
       ),
       pct_owner_type_id: Yup.number()
         .required(t("Owner type is required"))

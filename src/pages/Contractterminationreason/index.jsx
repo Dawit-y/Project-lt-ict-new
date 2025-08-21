@@ -172,9 +172,9 @@ const ContractTerminationReasonModel = () => {
           return !data?.data.some(
             (item) =>
               item.ctr_reason_name_or == value &&
-              item.ctr_id !== contractTerminationReason?.ctr_id
+              item.ctr_id !== contractTerminationReason?.ctr_id,
           );
-        }
+        },
       ),
       ctr_reason_name_am: Yup.string().required(t("ctr_reason_name_am")),
       ctr_reason_name_en: alphanumericValidation(2, 100, true),

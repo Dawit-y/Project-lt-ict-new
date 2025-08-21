@@ -69,7 +69,7 @@ const BudgetRequestAnalysis = ({ data }) => {
       colors: ["#34c38f", "#f46a6a", "#74788d"],
       labels: ["Approved", "Rejected", "Pending"],
     }),
-    [budgetData]
+    [budgetData],
   );
 
   return (

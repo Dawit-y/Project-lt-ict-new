@@ -34,6 +34,6 @@ export const useFetchSideData = (userId) => {
     meta: { persist: true },
     refetchOnMount: true,
     refetchOnWindowFocus: false,
-    enabled: !!userId
+    enabled: !!userId,
   });
 };

@@ -1,28 +1,28 @@
-import { Col, Input, Row, UncontrolledTooltip } from 'reactstrap'
-import { useTranslation } from 'react-i18next'
-import { pageTypeLabels } from '.'
-import { useState } from 'react'
+import { Col, Input, Row, UncontrolledTooltip } from "reactstrap";
+import { useTranslation } from "react-i18next";
+import { pageTypeLabels } from ".";
+import { useState } from "react";
 
 const Filter = ({ onFilterChange, onClear }) => {
-  const { t } = useTranslation()
-  const [category, setCategory] = useState('')
+  const { t } = useTranslation();
+  const [category, setCategory] = useState("");
 
   const handleCategoryChange = (e) => {
-    setCategory(e.target.value)
-  }
+    setCategory(e.target.value);
+  };
 
   const handleSearch = () => {
-    onFilterChange({ page_category: category })
-  }
+    onFilterChange({ page_category: category });
+  };
 
   const handleClear = () => {
-    setCategory('')
-    onClear()
-  }
+    setCategory("");
+    onClear();
+  };
 
   return (
     <>
-      <Row className='mb-3 border-light'>
+      <Row className="mb-3 border-light">
         <Col md={3}>
           <Input
             name={"page_category"}
@@ -33,7 +33,9 @@ const Filter = ({ onFilterChange, onClear }) => {
             value={category}
           >
             <>
-              <option value="">{t("Select")} {t("Page Category")}</option>
+              <option value="">
+                {t("Select")} {t("Page Category")}
+              </option>
               {Object.entries(pageTypeLabels).map(([value, label]) => (
                 <option key={value} value={value}>
                   {t(label)}
@@ -42,11 +44,14 @@ const Filter = ({ onFilterChange, onClear }) => {
             </>
           </Input>
         </Col>
-        <Col md={7}>
-        </Col>
+        <Col md={7}></Col>
         <Col
-          xxl={2} lg={2} md={2} sm={12}
-          className="d-flex flex-row flex-wrap justify-content-center align-items-start gap-1">
+          xxl={2}
+          lg={2}
+          md={2}
+          sm={12}
+          className="d-flex flex-row flex-wrap justify-content-center align-items-start gap-1"
+        >
           <div
             id="search-icon-wrapper"
             className=" flex-grow-1 mb-2"
@@ -61,10 +66,7 @@ const Filter = ({ onFilterChange, onClear }) => {
             >
               <i className="bx bx-search-alt align-middle"></i>
             </button>
-            <UncontrolledTooltip
-              placement="top"
-              target={"search-icon-wrapper"}
-            >
+            <UncontrolledTooltip placement="top" target={"search-icon-wrapper"}>
               {t("srch_search")}
             </UncontrolledTooltip>
           </div>
@@ -87,17 +89,14 @@ const Filter = ({ onFilterChange, onClear }) => {
                 <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
               </svg>
             </button>
-            <UncontrolledTooltip
-              placement="top"
-              target={"clear-button"}
-            >
+            <UncontrolledTooltip placement="top" target={"clear-button"}>
               {t("srch_clear")}
             </UncontrolledTooltip>
           </div>
         </Col>
       </Row>
     </>
-  )
-}
+  );
+};
 
-export default Filter
+export default Filter;

@@ -79,7 +79,7 @@ export const useUpdateProjectStakeholder = () => {
             data: oldData.data.map((data) =>
               data.psh_id === updatedData.data.psh_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -104,7 +104,7 @@ export const useDeleteProjectStakeholder = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.psh_id !== parseInt(variable)
+              (dept) => dept.psh_id !== parseInt(variable),
             ),
           };
         });

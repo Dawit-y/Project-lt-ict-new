@@ -85,9 +85,6 @@ const RequestStatusList = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
 
-
-
-
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
     const selectedNodes = gridRef.current.api.getSelectedNodes();
@@ -105,7 +102,6 @@ const RequestStatusList = () => {
     gridRef.current.api.setRowData(showSearchResults ? results : data);
   };
   //START FOREIGN CALLS
-
 
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
@@ -140,76 +136,70 @@ const RequestStatusList = () => {
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'rqs_name_or',
+        header: "",
+        accessorKey: "rqs_name_or",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rqs_name_or, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.rqs_name_or, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'rqs_name_am',
+        header: "",
+        accessorKey: "rqs_name_am",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rqs_name_am, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.rqs_name_am, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'rqs_name_en',
+        header: "",
+        accessorKey: "rqs_name_en",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rqs_name_en, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.rqs_name_en, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'rqs_description',
+        header: "",
+        accessorKey: "rqs_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rqs_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.rqs_description, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'rqs_status',
+        header: "",
+        accessorKey: "rqs_status",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rqs_status, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.rqs_status, 30) || "-"}
             </span>
           );
         },
       },
-
     ];
     return baseColumns;
   });
@@ -225,7 +215,10 @@ const RequestStatusList = () => {
             breadcrumbItem={t("Project Payment List")}
           />
           <div className="w-100 d-flex gap-2">
-            <TreeForLists onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />
+            <TreeForLists
+              onNodeSelect={handleNodeSelect}
+              setIsAddressLoading={setIsAddressLoading}
+            />
             <div className="w-100">
               <AdvancedSearch
                 searchHook={useSearchRequestStatuss}
@@ -282,7 +275,9 @@ const RequestStatusList = () => {
                     <AgGridReact
                       ref={gridRef}
                       rowData={
-                        showSearchResult ? searchResults?.data : data?.data || []
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
                       }
                       columnDefs={columnDefs}
                       pagination={true}
@@ -304,7 +299,6 @@ const RequestStatusList = () => {
           </div>
         </div>
       </div>
-
     </React.Fragment>
   );
 };

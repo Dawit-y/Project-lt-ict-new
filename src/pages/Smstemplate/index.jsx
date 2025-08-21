@@ -340,245 +340,245 @@ const SmsTemplateModel = () => {
   }, [handleSmsTemplateClick, toggleViewModal, onClickDelete]);
 
   return (
-		<React.Fragment>
-			<SmsTemplateModal
-				isOpen={modal1}
-				toggle={toggleViewModal}
-				transaction={transaction}
-			/>
-			<DeleteModal
-				show={deleteModal}
-				onDeleteClick={handleDeleteSmsTemplate}
-				onCloseClick={() => setDeleteModal(false)}
-				isLoading={deleteSmsTemplate.isPending}
-			/>
-			<div className="page-content">
-				<div className="container-fluid">
-					<Breadcrumbs
-						title={t("sms_template")}
-						breadcrumbItem={t("sms_template")}
-					/>
-					<AdvancedSearch
-						searchHook={useSearchSmsTemplates}
-						textSearchKeys={["smt_template_name"]}
-						dropdownSearchKeys={[]}
-						checkboxSearchKeys={[]}
-						onSearchResult={handleSearchResults}
-						setIsSearchLoading={setIsSearchLoading}
-						setSearchResults={setSearchResults}
-						setShowSearchResult={setShowSearchResult}
-					/>
-					{isLoading || isSearchLoading ? (
-						<Spinners />
-					) : (
-						<Row>
-							<Col xs="12">
-								<Card>
-									<CardBody>
-										<TableContainer
-											columns={columns}
-											data={
-												showSearchResult
-													? searchResults?.data
-													: data?.data || []
-											}
-											isGlobalFilter={true}
-											isAddButton={data?.previledge?.is_role_can_add == 1}
-											isCustomPageSize={true}
-											handleUserClick={handleSmsTemplateClicks}
-											isPagination={true}
-											// SearchPlaceholder="26 records..."
-											SearchPlaceholder={t("filter_placeholder")}
-											buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-											buttonName={t("add") + " " + t("sms_template")}
-											tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-											theadClass="table-light"
-											pagination="pagination"
-											paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-										/>
-									</CardBody>
-								</Card>
-							</Col>
-						</Row>
-					)}
-					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
-						<ModalHeader toggle={toggle} tag="h4">
-							{!!isEdit
-								? t("edit") + " " + t("sms_template")
-								: t("add") + " " + t("sms_template")}
-						</ModalHeader>
-						<ModalBody>
-							<Form
-								onSubmit={(e) => {
-									e.preventDefault();
-									validation.handleSubmit();
-									return false;
-								}}
-							>
-								<Row>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("smt_template_name")}</Label>
-										<Input
-											name="smt_template_name"
-											type="text"
-											placeholder={t("smt_template_name")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.smt_template_name || ""}
-											invalid={
-												validation.touched.smt_template_name &&
-												validation.errors.smt_template_name
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.smt_template_name &&
-										validation.errors.smt_template_name ? (
-											<FormFeedback type="invalid">
-												{validation.errors.smt_template_name}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("smt_template_content")}</Label>
-										<Input
-											name="smt_template_content"
-											type="textarea"
-											placeholder={t("smt_template_content")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.smt_template_content || ""}
-											invalid={
-												validation.touched.smt_template_content &&
-												validation.errors.smt_template_content
-													? true
-													: false
-											}
-											maxLength={200}
-										/>
-										{validation.touched.smt_template_content &&
-										validation.errors.smt_template_content ? (
-											<FormFeedback type="invalid">
-												{validation.errors.smt_template_content}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("smt_template_content_am")}</Label>
-										<Input
-											name="smt_template_content_am"
-											type="textarea"
-											placeholder={t("smt_template_content_am")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.smt_template_content_am || ""}
-											invalid={
-												validation.touched.smt_template_content_am &&
-												validation.errors.smt_template_content_am
-													? true
-													: false
-											}
-											maxLength={200}
-										/>
-										{validation.touched.smt_template_content_am &&
-										validation.errors.smt_template_content_am ? (
-											<FormFeedback type="invalid">
-												{validation.errors.smt_template_content_am}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("smt_template_content_en")}</Label>
-										<Input
-											name="smt_template_content_en"
-											type="textarea"
-											placeholder={t("smt_template_content_en")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.smt_template_content_en || ""}
-											invalid={
-												validation.touched.smt_template_content_en &&
-												validation.errors.smt_template_content_en
-													? true
-													: false
-											}
-											maxLength={200}
-										/>
-										{validation.touched.smt_template_content_en &&
-										validation.errors.smt_template_content_en ? (
-											<FormFeedback type="invalid">
-												{validation.errors.smt_template_content_en}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("smt_description")}</Label>
-										<Input
-											name="smt_description"
-											type="textarea"
-											placeholder={t("smt_description")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.smt_description || ""}
-											invalid={
-												validation.touched.smt_description &&
-												validation.errors.smt_description
-													? true
-													: false
-											}
-											maxLength={425}
-										/>
-										{validation.touched.smt_description &&
-										validation.errors.smt_description ? (
-											<FormFeedback type="invalid">
-												{validation.errors.smt_description}
-											</FormFeedback>
-										) : null}
-									</Col>
-								</Row>
-								<Row>
-									<Col>
-										<div className="text-end">
-											{addSmsTemplate.isPending ||
-											updateSmsTemplate.isPending ? (
-												<Button
-													color="success"
-													type="submit"
-													className="save-user"
-													disabled={
-														addSmsTemplate.isPending ||
-														updateSmsTemplate.isPending ||
-														!validation.dirty
-													}
-												>
-													<Spinner size={"sm"} color="light" className="me-2" />
-													{t("Save")}
-												</Button>
-											) : (
-												<Button
-													color="success"
-													type="submit"
-													className="save-user"
-													disabled={
-														addSmsTemplate.isPending ||
-														updateSmsTemplate.isPending ||
-														!validation.dirty
-													}
-												>
-													{t("Save")}
-												</Button>
-											)}
-										</div>
-									</Col>
-								</Row>
-							</Form>
-						</ModalBody>
-					</Modal>
-				</div>
-			</div>
-		</React.Fragment>
-	);
+    <React.Fragment>
+      <SmsTemplateModal
+        isOpen={modal1}
+        toggle={toggleViewModal}
+        transaction={transaction}
+      />
+      <DeleteModal
+        show={deleteModal}
+        onDeleteClick={handleDeleteSmsTemplate}
+        onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteSmsTemplate.isPending}
+      />
+      <div className="page-content">
+        <div className="container-fluid">
+          <Breadcrumbs
+            title={t("sms_template")}
+            breadcrumbItem={t("sms_template")}
+          />
+          <AdvancedSearch
+            searchHook={useSearchSmsTemplates}
+            textSearchKeys={["smt_template_name"]}
+            dropdownSearchKeys={[]}
+            checkboxSearchKeys={[]}
+            onSearchResult={handleSearchResults}
+            setIsSearchLoading={setIsSearchLoading}
+            setSearchResults={setSearchResults}
+            setShowSearchResult={setShowSearchResult}
+          />
+          {isLoading || isSearchLoading ? (
+            <Spinners />
+          ) : (
+            <Row>
+              <Col xs="12">
+                <Card>
+                  <CardBody>
+                    <TableContainer
+                      columns={columns}
+                      data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
+                      isGlobalFilter={true}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
+                      isCustomPageSize={true}
+                      handleUserClick={handleSmsTemplateClicks}
+                      isPagination={true}
+                      // SearchPlaceholder="26 records..."
+                      SearchPlaceholder={t("filter_placeholder")}
+                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                      buttonName={t("add") + " " + t("sms_template")}
+                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                      theadClass="table-light"
+                      pagination="pagination"
+                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                    />
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          )}
+          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
+            <ModalHeader toggle={toggle} tag="h4">
+              {!!isEdit
+                ? t("edit") + " " + t("sms_template")
+                : t("add") + " " + t("sms_template")}
+            </ModalHeader>
+            <ModalBody>
+              <Form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  validation.handleSubmit();
+                  return false;
+                }}
+              >
+                <Row>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("smt_template_name")}</Label>
+                    <Input
+                      name="smt_template_name"
+                      type="text"
+                      placeholder={t("smt_template_name")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.smt_template_name || ""}
+                      invalid={
+                        validation.touched.smt_template_name &&
+                        validation.errors.smt_template_name
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.smt_template_name &&
+                    validation.errors.smt_template_name ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.smt_template_name}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("smt_template_content")}</Label>
+                    <Input
+                      name="smt_template_content"
+                      type="textarea"
+                      placeholder={t("smt_template_content")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.smt_template_content || ""}
+                      invalid={
+                        validation.touched.smt_template_content &&
+                        validation.errors.smt_template_content
+                          ? true
+                          : false
+                      }
+                      maxLength={200}
+                    />
+                    {validation.touched.smt_template_content &&
+                    validation.errors.smt_template_content ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.smt_template_content}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("smt_template_content_am")}</Label>
+                    <Input
+                      name="smt_template_content_am"
+                      type="textarea"
+                      placeholder={t("smt_template_content_am")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.smt_template_content_am || ""}
+                      invalid={
+                        validation.touched.smt_template_content_am &&
+                        validation.errors.smt_template_content_am
+                          ? true
+                          : false
+                      }
+                      maxLength={200}
+                    />
+                    {validation.touched.smt_template_content_am &&
+                    validation.errors.smt_template_content_am ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.smt_template_content_am}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("smt_template_content_en")}</Label>
+                    <Input
+                      name="smt_template_content_en"
+                      type="textarea"
+                      placeholder={t("smt_template_content_en")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.smt_template_content_en || ""}
+                      invalid={
+                        validation.touched.smt_template_content_en &&
+                        validation.errors.smt_template_content_en
+                          ? true
+                          : false
+                      }
+                      maxLength={200}
+                    />
+                    {validation.touched.smt_template_content_en &&
+                    validation.errors.smt_template_content_en ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.smt_template_content_en}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("smt_description")}</Label>
+                    <Input
+                      name="smt_description"
+                      type="textarea"
+                      placeholder={t("smt_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.smt_description || ""}
+                      invalid={
+                        validation.touched.smt_description &&
+                        validation.errors.smt_description
+                          ? true
+                          : false
+                      }
+                      maxLength={425}
+                    />
+                    {validation.touched.smt_description &&
+                    validation.errors.smt_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.smt_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <div className="text-end">
+                      {addSmsTemplate.isPending ||
+                      updateSmsTemplate.isPending ? (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addSmsTemplate.isPending ||
+                            updateSmsTemplate.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          <Spinner size={"sm"} color="light" className="me-2" />
+                          {t("Save")}
+                        </Button>
+                      ) : (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addSmsTemplate.isPending ||
+                            updateSmsTemplate.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          {t("Save")}
+                        </Button>
+                      )}
+                    </div>
+                  </Col>
+                </Row>
+              </Form>
+            </ModalBody>
+          </Modal>
+        </div>
+      </div>
+    </React.Fragment>
+  );
 };
 SmsTemplateModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

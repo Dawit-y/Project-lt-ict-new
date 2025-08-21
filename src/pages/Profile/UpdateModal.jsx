@@ -129,7 +129,7 @@ const UpdateModal = ({ modal, toggle, profile, refetch }) => {
                       formattedValue = formattedValue.substring(0, 9);
                       validation.setFieldValue(
                         "usr_phone_number",
-                        formattedValue
+                        formattedValue,
                       );
                     }}
                     onBlur={validation.handleBlur}

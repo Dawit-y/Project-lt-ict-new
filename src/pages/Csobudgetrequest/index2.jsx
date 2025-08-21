@@ -17,7 +17,10 @@ import {
   useDeleteBudgetRequest,
 } from "../../queries/budget_request_query";
 import { useFetchProject } from "../../queries/project_query";
-import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
+import {
+  useFetchBudgetYears,
+  usePopulateBudgetYears,
+} from "../../queries/budgetyear_query";
 import BudgetRequestModal from "./BudgetRequestModal";
 import { useTranslation } from "react-i18next";
 import { useAuthUser } from "../../hooks/useAuthUser";
@@ -46,10 +49,10 @@ import ProjectDetailColapse from "../Project/ProjectDetailColapse";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
 import ActionModal from "./ActionModal";
 import AttachFileModal from "../../components/Common/AttachFileModal";
-import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal"
+import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal";
 import {
   alphanumericValidation,
-  formattedAmountValidation
+  formattedAmountValidation,
 } from "../../utils/Validation/validation";
 import DatePicker from "../../components/Common/DatePicker";
 import { PAGE_ID } from "../../constants/constantFile";
@@ -71,8 +74,8 @@ const BudgetRequestModel = () => {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [actionModal, setActionModal] = useState(false);
-  const [fileModal, setFileModal] = useState(false)
-  const [convModal, setConvModal] = useState(false)
+  const [fileModal, setFileModal] = useState(false);
+  const [convModal, setConvModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [budgetRequest, setBudgetRequest] = useState(null);
@@ -162,7 +165,9 @@ const BudgetRequestModel = () => {
         const updatedBudgetRequest = {
           bdr_id: budgetRequest ? budgetRequest.bdr_id : 0,
           bdr_budget_year_id: parseInt(values.bdr_budget_year_id),
-          bdr_requested_amount: convertToNumericValue(values.bdr_requested_amount),
+          bdr_requested_amount: convertToNumericValue(
+            values.bdr_requested_amount,
+          ),
           bdr_requested_date_ec: values.bdr_requested_date_ec,
           bdr_requested_date_gc: values.bdr_requested_date_gc,
           bdr_description: values.bdr_description,
@@ -175,7 +180,9 @@ const BudgetRequestModel = () => {
         const newBudgetRequest = {
           bdr_budget_year_id: parseInt(values.bdr_budget_year_id),
           bdr_project_id: id,
-          bdr_requested_amount: convertToNumericValue(values.bdr_requested_amount),
+          bdr_requested_amount: convertToNumericValue(
+            values.bdr_requested_amount,
+          ),
           bdr_requested_date_ec: values.bdr_requested_date_ec,
           bdr_requested_date_gc: values.bdr_requested_date_gc,
           bdr_description: values.bdr_description,
@@ -225,7 +232,9 @@ const BudgetRequestModel = () => {
     setBudgetRequest({
       bdr_id: budgetRequest.bdr_id,
       bdr_budget_year_id: budgetRequest.bdr_budget_year_id,
-      bdr_requested_amount: Number(budgetRequest.bdr_requested_amount).toLocaleString(),
+      bdr_requested_amount: Number(
+        budgetRequest.bdr_requested_amount,
+      ).toLocaleString(),
       bdr_project_id: budgetRequest.bdr_project_id,
       bdr_requested_date_ec: budgetRequest.bdr_requested_date_ec,
       bdr_requested_date_gc: budgetRequest.bdr_requested_date_gc,
@@ -297,8 +306,12 @@ const BudgetRequestModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(Number(cellProps.row.original.bdr_requested_amount).toLocaleString(), 30) ||
-                "-"}
+              {truncateText(
+                Number(
+                  cellProps.row.original.bdr_requested_amount,
+                ).toLocaleString(),
+                30,
+              ) || "-"}
             </span>
           );
         },
@@ -311,8 +324,12 @@ const BudgetRequestModel = () => {
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(Number(cellProps.row.original.bdr_released_amount).toLocaleString(), 30) ||
-                "-"}
+              {truncateText(
+                Number(
+                  cellProps.row.original.bdr_released_amount,
+                ).toLocaleString(),
+                30,
+              ) || "-"}
             </span>
           );
         },
@@ -423,9 +440,7 @@ const BudgetRequestModel = () => {
         },
       },
     ];
-    if (
-      1 == 1
-    ) {
+    if (1 == 1) {
       baseColumns.push({
         header: t("Action"),
         accessorKey: t("Action"),
@@ -436,52 +451,52 @@ const BudgetRequestModel = () => {
             <div className="d-flex gap-3">
               {(cellProps.row.original?.is_editable == 5 ||
                 cellProps.row.original?.is_role_editable) && (
-                  <Link
-                    to="#"
-                    className="text-success"
-                    onClick={() => {
-                      const data = cellProps.row.original;
-                      handleBudgetRequestClick(data);
-                    }}
-                  >
-                    <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                    <UncontrolledTooltip placement="top" target="edittooltip">
-                      Edit
-                    </UncontrolledTooltip>
-                  </Link>
-                )}
+                <Link
+                  to="#"
+                  className="text-success"
+                  onClick={() => {
+                    const data = cellProps.row.original;
+                    handleBudgetRequestClick(data);
+                  }}
+                >
+                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                  <UncontrolledTooltip placement="top" target="edittooltip">
+                    Edit
+                  </UncontrolledTooltip>
+                </Link>
+              )}
               {(cellProps.row.original?.is_deletable == 9 ||
                 cellProps.row.original?.is_role_deletable == 9) && (
-                  <div>
-                    <Link
-                      to="#"
-                      className="text-danger"
-                      onClick={() => {
-                        const data = cellProps.row.original;
-                        onClickDelete(data);
-                      }}
-                    >
-                      <i
-                        className="mdi mdi-delete font-size-18"
-                        id="deletetooltip"
-                      />
-                      <UncontrolledTooltip placement="top" target="deletetooltip">
-                        Delete
-                      </UncontrolledTooltip>
-                    </Link>
+                <div>
+                  <Link
+                    to="#"
+                    className="text-danger"
+                    onClick={() => {
+                      const data = cellProps.row.original;
+                      onClickDelete(data);
+                    }}
+                  >
+                    <i
+                      className="mdi mdi-delete font-size-18"
+                      id="deletetooltip"
+                    />
+                    <UncontrolledTooltip placement="top" target="deletetooltip">
+                      Delete
+                    </UncontrolledTooltip>
+                  </Link>
 
-                    <Link
-                      to="#"
-                      className="text-secondary me-2"
-                      onClick={() => handleClick(cellProps.row.original)}
-                    >
-                      <i className="mdi mdi-cog font-size-18" id="viewtooltip" />
-                      <UncontrolledTooltip placement="top" target="viewtooltip">
-                        Budget Request Detail
-                      </UncontrolledTooltip>
-                    </Link>
-                  </div>
-                )}
+                  <Link
+                    to="#"
+                    className="text-secondary me-2"
+                    onClick={() => handleClick(cellProps.row.original)}
+                  >
+                    <i className="mdi mdi-cog font-size-18" id="viewtooltip" />
+                    <UncontrolledTooltip placement="top" target="viewtooltip">
+                      Budget Request Detail
+                    </UncontrolledTooltip>
+                  </Link>
+                </div>
+              )}
             </div>
           );
         },
@@ -617,7 +632,7 @@ const BudgetRequestModel = () => {
                       value={validation.values.bdr_budget_year_id || ""}
                       invalid={
                         validation.touched.bdr_budget_year_id &&
-                          validation.errors.bdr_budget_year_id
+                        validation.errors.bdr_budget_year_id
                           ? true
                           : false
                       }
@@ -631,7 +646,7 @@ const BudgetRequestModel = () => {
                       ))}
                     </Input>
                     {validation.touched.bdr_budget_year_id &&
-                      validation.errors.bdr_budget_year_id ? (
+                    validation.errors.bdr_budget_year_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.bdr_budget_year_id}
                       </FormFeedback>
@@ -735,14 +750,14 @@ const BudgetRequestModel = () => {
                       value={validation.values.bdr_description || ""}
                       invalid={
                         validation.touched.bdr_description &&
-                          validation.errors.bdr_description
+                        validation.errors.bdr_description
                           ? true
                           : false
                       }
                       maxLength={200}
                     />
                     {validation.touched.bdr_description &&
-                      validation.errors.bdr_description ? (
+                    validation.errors.bdr_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.bdr_description}
                       </FormFeedback>
@@ -779,7 +794,7 @@ const BudgetRequestModel = () => {
                   <Col>
                     <div className="text-end">
                       {addBudgetRequest.isPending ||
-                        updateBudgetRequest.isPending ? (
+                      updateBudgetRequest.isPending ? (
                         <Button
                           color="success"
                           type="submit"

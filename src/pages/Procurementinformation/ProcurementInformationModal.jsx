@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useTransition } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,11 +8,11 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+} from "reactstrap";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+  width: "100%",
+  height: "100%",
 };
 
 const ProcurementInformationModal = (props) => {
@@ -33,59 +33,98 @@ const ProcurementInformationModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('pri_total_procurement_amount')}: <span className="text-primary">{transaction.pri_total_procurement_amount}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pri_bid_announced_date')}: <span className="text-primary">{transaction.pri_bid_announced_date}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pri_bid_invitation_date')}: <span className="text-primary">{transaction.pri_bid_invitation_date}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pri_bid_opening_date')}: <span className="text-primary">{transaction.pri_bid_opening_date}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pri_bid_closing_date')}: <span className="text-primary">{transaction.pri_bid_closing_date}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pri_bid_evaluation_date')}: <span className="text-primary">{transaction.pri_bid_evaluation_date}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pri_bid_award_date')}: <span className="text-primary">{transaction.pri_bid_award_date}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pri_procurement_stage_id')}: <span className="text-primary">{transaction.pri_procurement_stage_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pri_procurement_method_id')}: <span className="text-primary">{transaction.pri_procurement_method_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('pri_description')}: <span className="text-primary">{transaction.pri_description}</span>
-          </p>
+          <tr>
+            <p className="mb-2">
+              {t("pri_total_procurement_amount")}:{" "}
+              <span className="text-primary">
+                {transaction.pri_total_procurement_amount}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("pri_bid_announced_date")}:{" "}
+              <span className="text-primary">
+                {transaction.pri_bid_announced_date}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("pri_bid_invitation_date")}:{" "}
+              <span className="text-primary">
+                {transaction.pri_bid_invitation_date}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("pri_bid_opening_date")}:{" "}
+              <span className="text-primary">
+                {transaction.pri_bid_opening_date}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("pri_bid_closing_date")}:{" "}
+              <span className="text-primary">
+                {transaction.pri_bid_closing_date}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("pri_bid_evaluation_date")}:{" "}
+              <span className="text-primary">
+                {transaction.pri_bid_evaluation_date}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("pri_bid_award_date")}:{" "}
+              <span className="text-primary">
+                {transaction.pri_bid_award_date}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("pri_procurement_stage_id")}:{" "}
+              <span className="text-primary">
+                {transaction.pri_procurement_stage_id}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("pri_procurement_method_id")}:{" "}
+              <span className="text-primary">
+                {transaction.pri_procurement_method_id}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("pri_description")}:{" "}
+              <span className="text-primary">
+                {transaction.pri_description}
+              </span>
+            </p>
           </tr>
 
           {transaction.is_deletable === 1 && (
             <p className="text-danger">data is deletable</p>
           )}
-          
+
           {transaction.is_editable === 1 && (
             <p className="text-success">Editable</p>
           )}
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

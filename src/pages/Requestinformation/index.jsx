@@ -71,7 +71,7 @@ const RequestInformationModel = (props) => {
   const statusOptions = createSelectOptions(
     statusData?.data || [],
     "rqs_id",
-    "rqs_name_or"
+    "rqs_name_or",
   );
   const statusMap = useMemo(() => {
     return (
@@ -86,7 +86,7 @@ const RequestInformationModel = (props) => {
   const categoryOptions = createSelectOptions(
     categoryData?.data || [],
     "rqc_id",
-    "rqc_name_or"
+    "rqc_name_or",
   );
 
   const categoryMap = useMemo(() => {
@@ -178,7 +178,7 @@ const RequestInformationModel = (props) => {
       rqi_title: alphanumericValidation(2, 100, true),
       rqi_request_status_id: Yup.string().required(t("rqi_request_status_id")),
       rqi_request_category_id: Yup.string().required(
-        t("rqi_request_category_id")
+        t("rqi_request_category_id"),
       ),
       rqi_request_date_gc: Yup.string().required(t("rqi_request_date_gc")),
     }),

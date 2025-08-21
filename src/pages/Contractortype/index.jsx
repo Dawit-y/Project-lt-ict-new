@@ -152,9 +152,9 @@ const ContractorTypeModel = () => {
           return !data?.data.some(
             (item) =>
               item.cnt_type_name_or == value &&
-              item.cnt_id !== contractorType?.cnt_id
+              item.cnt_id !== contractorType?.cnt_id,
           );
-        }
+        },
       ),
       cnt_type_name_am: Yup.string().required(t("cnt_type_name_am")),
       cnt_type_name_en: alphanumericValidation(2, 100, true),

@@ -9,7 +9,7 @@ export const getProjectDocument = async (params = {}) => {
   const safeParams = params || {};
 
   const cleanedParams = Object.fromEntries(
-    Object.entries(safeParams).filter(([_, value]) => value != null)
+    Object.entries(safeParams).filter(([_, value]) => value != null),
   );
 
   const queryString = new URLSearchParams(cleanedParams).toString();
@@ -20,31 +20,23 @@ export const getProjectDocument = async (params = {}) => {
     const response = await post(url);
     return response;
   } catch (error) {
-    throw error
+    throw error;
   }
 };
 
 export const addProjectDocument = async (data) =>
-  post(
-    ADD_PROJECT_DOCUMENT,
-    data,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+  post(ADD_PROJECT_DOCUMENT, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
 export const updateProjectDocument = (data) =>
-  post(
-    UPDATE_PROJECT_DOCUMENT + `?prd_id=${data?.prd_id}`,
-    data,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+  post(UPDATE_PROJECT_DOCUMENT + `?prd_id=${data?.prd_id}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
 export const deleteProjectDocument = (id) =>
   post(DELETE_PROJECT_DOCUMENT + `?prd_id=${id}`);

@@ -28,7 +28,7 @@ export const useSearchRequestFollowups = (searchParams = {}, enabled) => {
     gcTime: 1000 * 60 * 10,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
-    enabled
+    enabled,
   });
 };
 
@@ -78,7 +78,7 @@ export const useUpdateRequestFollowup = () => {
             data: oldData.data.map((data) =>
               data.rqf_id === updatedData.data.rqf_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -97,7 +97,8 @@ export const useDeleteRequestFollowup = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (RequestFollowupData) => RequestFollowupData.rqf_id !== parseInt(deletedData.deleted_id)
+            (RequestFollowupData) =>
+              RequestFollowupData.rqf_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

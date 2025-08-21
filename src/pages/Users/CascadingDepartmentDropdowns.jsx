@@ -2,11 +2,16 @@ import React, { useEffect, useMemo } from "react";
 import { FormGroup, Label, Input, FormFeedback } from "reactstrap";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
-import { useFetchDepartments, useSearchDepartments } from "../../queries/department_query";
+import {
+  useFetchDepartments,
+  useSearchDepartments,
+} from "../../queries/department_query";
 import { post } from "../../helpers/api_Lists";
 
 const fetchDepartmentsByParent = async (parentId = null) => {
-  const response = await post(`department/departmentbyparent?parent_id=${parentId}`);
+  const response = await post(
+    `department/departmentbyparent?parent_id=${parentId}`,
+  );
   return response?.data || [];
 };
 
@@ -21,7 +26,8 @@ const CascadingDepartmentDropdowns = ({
   const { t } = useTranslation();
   // Fetch initial departments
   const params = { dep_id: 1 };
-  const { data: departments = [], isLoading: loadingDepartments } = useSearchDepartments(params);
+  const { data: departments = [], isLoading: loadingDepartments } =
+    useSearchDepartments(params);
   // const { data: departments = [], isLoading: loadingDepartments } = useQuery({
   //   queryKey: ["subDepartments"],
   //   queryFn: () => fetchDepartmentsByParent(),
@@ -74,7 +80,9 @@ const CascadingDepartmentDropdowns = ({
     <>
       {/* Department Dropdown */}
       <FormGroup>
-        <Label for={dropdown1name}>{t("department")} {required && <span className="text-danger">*</span>}</Label>
+        <Label for={dropdown1name}>
+          {t("department")} {required && <span className="text-danger">*</span>}
+        </Label>
         <Input
           type="select"
           name={dropdown1name}
@@ -83,18 +91,24 @@ const CascadingDepartmentDropdowns = ({
           onBlur={validation.handleBlur}
           invalid={
             validation.touched[dropdown1name] &&
-              validation.errors[dropdown1name]
+            validation.errors[dropdown1name]
               ? true
               : false
           }
         >
           <option value="">{t("select_department")}</option>
-          {loadingDepartments ? <option disabled>{t("Loading...")}</option> :
-            departments?.data.map((dept) => <option key={dept.dep_id} value={dept.dep_id}>{dept.dep_name_en}</option>)
-          }
+          {loadingDepartments ? (
+            <option disabled>{t("Loading...")}</option>
+          ) : (
+            departments?.data.map((dept) => (
+              <option key={dept.dep_id} value={dept.dep_id}>
+                {dept.dep_name_en}
+              </option>
+            ))
+          )}
         </Input>
         {validation.touched[dropdown1name] &&
-          validation.errors[dropdown1name] ? (
+        validation.errors[dropdown1name] ? (
           <FormFeedback type="invalid">
             {validation.errors[dropdown1name]}
           </FormFeedback>
@@ -113,7 +127,11 @@ const CascadingDepartmentDropdowns = ({
           disabled={loadingSub1 || subDepartments1.length === 0}
         >
           <option value="">{t("select_sub_department_1")}</option>
-          {subDepartments1.map((dept) => <option key={dept.id} value={dept.id}>{dept.name}</option>)}
+          {subDepartments1.map((dept) => (
+            <option key={dept.id} value={dept.id}>
+              {dept.name}
+            </option>
+          ))}
         </Input>
       </FormGroup>
 
@@ -129,7 +147,11 @@ const CascadingDepartmentDropdowns = ({
           disabled={loadingSub2 || subDepartments2.length === 0}
         >
           <option value="">{t("select_sub_department_2")}</option>
-          {subDepartments2.map((dept) => <option key={dept.id} value={dept.id}>{dept.name}</option>)}
+          {subDepartments2.map((dept) => (
+            <option key={dept.id} value={dept.id}>
+              {dept.name}
+            </option>
+          ))}
         </Input>
       </FormGroup>
 
@@ -145,7 +167,11 @@ const CascadingDepartmentDropdowns = ({
           disabled={loadingSub3 || subDepartments3.length === 0}
         >
           <option value="">{t("select_sub_department_3")}</option>
-          {subDepartments3.map((dept) => <option key={dept.id} value={dept.id}>{dept.name}</option>)}
+          {subDepartments3.map((dept) => (
+            <option key={dept.id} value={dept.id}>
+              {dept.name}
+            </option>
+          ))}
         </Input>
       </FormGroup>
     </>

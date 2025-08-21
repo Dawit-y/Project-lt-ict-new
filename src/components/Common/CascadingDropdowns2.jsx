@@ -37,7 +37,7 @@ const CascadingDropdowns1 = ({
         .post(
           `${
             import.meta.env.VITE_BASE_API_URL
-          }addressbyparent?parent_id=${selectedRegion}`
+          }addressbyparent?parent_id=${selectedRegion}`,
         )
         .then((response) => {
           setZones(response.data.data || []);
@@ -58,7 +58,7 @@ const CascadingDropdowns1 = ({
         .post(
           `${import.meta.env.VITE_BASE_API_URL}addressbyparent?parent_id=${
             validation.values[dropdown2name]
-          }`
+          }`,
         )
         .then((response) => {
           setWoredas(response.data.data || []);
@@ -147,7 +147,7 @@ const CascadingDropdowns1 = ({
                 {isEdit
                   ? validation.values[dropdown2name]
                     ? zones.find(
-                        (zone) => zone.id === validation.values[dropdown2name]
+                        (zone) => zone.id === validation.values[dropdown2name],
                       )?.id
                     : t("select_zone")
                   : t("select_zone")}
@@ -203,7 +203,7 @@ const CascadingDropdowns1 = ({
                   ? validation.values[dropdown3name]
                     ? woredas.find(
                         (woreda) =>
-                          woreda.id === validation.values[dropdown3name]
+                          woreda.id === validation.values[dropdown3name],
                       )?.name
                     : t("select_woreda")
                   : t("select_woreda")}

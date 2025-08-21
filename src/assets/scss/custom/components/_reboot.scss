@@ -36,16 +36,21 @@ label {
 
 // container
 
-.container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl{
-  @media (min-width: 1200px){
-      max-width: 1140px;
+.container,
+.container-lg,
+.container-md,
+.container-sm,
+.container-xl,
+.container-xxl {
+  @media (min-width: 1200px) {
+    max-width: 1140px;
   }
 }
 
 // row
 
-.row{
+.row {
   > * {
-      position: relative;
+    position: relative;
   }
 }

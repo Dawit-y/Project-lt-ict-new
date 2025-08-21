@@ -77,7 +77,7 @@ export const useUpdateImplementingArea = () => {
             data: oldData.data.map((data) =>
               data.pia_id === updatedData.data.pia_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -102,7 +102,7 @@ export const useDeleteImplementingArea = () => {
             ...oldData,
             data: oldData.data.filter(
               (deletedData) =>
-                deletedData.pia_id !== parseInt(deletedData.deleted_id)
+                deletedData.pia_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

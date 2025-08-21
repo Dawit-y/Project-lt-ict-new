@@ -16,7 +16,7 @@ export const useFetchConversationInformations = (param = {}, isActive) => {
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     refetchOnMount: true,
-    enabled: isActive
+    enabled: isActive,
   });
 };
 
@@ -85,9 +85,12 @@ export const useUpdateConversationInformation = () => {
             ...oldData,
             data: oldData.data.map((ConversationInformationData) =>
               ConversationInformationData.cvi_id ===
-                updatedConversationInformation.data.cvi_id
-                ? { ...ConversationInformationData, ...updatedConversationInformation.data }
-                : ConversationInformationData
+              updatedConversationInformation.data.cvi_id
+                ? {
+                    ...ConversationInformationData,
+                    ...updatedConversationInformation.data,
+                  }
+                : ConversationInformationData,
             ),
           };
         });
@@ -117,7 +120,7 @@ export const useDeleteConversationInformation = () => {
             data: oldData.data.filter(
               (ConversationInformationData) =>
                 ConversationInformationData.cvi_id !==
-                parseInt(deletedData.deleted_id)
+                parseInt(deletedData.deleted_id),
             ),
           };
         });

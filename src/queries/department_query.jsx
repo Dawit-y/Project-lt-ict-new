@@ -69,7 +69,7 @@ export const useUpdateDepartment = () => {
           data: oldData.data.map((dept) =>
             dept.dep_id === updatedDepartment.data.dep_id
               ? { ...dept, ...updatedDepartment.data }
-              : dept
+              : dept,
           ),
         };
       });
@@ -89,7 +89,7 @@ export const useDeleteDepartment = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (dept) => dept.dep_id !== parseInt(deletedDepartment.deleted_id)
+            (dept) => dept.dep_id !== parseInt(deletedDepartment.deleted_id),
           ),
         };
       });

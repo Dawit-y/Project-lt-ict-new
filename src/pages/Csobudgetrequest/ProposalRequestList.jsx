@@ -1,4 +1,11 @@
-import React, { useEffect, useMemo, useState, useRef, lazy, Suspense } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+  lazy,
+  Suspense,
+} from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -12,21 +19,29 @@ import {
   Spinner,
 } from "reactstrap";
 import AgGridContainer from "../../components/Common/AgGridContainer";
-import {
-  useSearchBudgetRequestforApproval,
-} from "../../queries/cso_budget_request_query";
+import { useSearchBudgetRequestforApproval } from "../../queries/cso_budget_request_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { PAGE_ID } from "../../constants/constantFile";
 
 // Lazy load components
 const Breadcrumbs = lazy(() => import("../../components/Common/Breadcrumb"));
-const AdvancedSearch = lazy(() => import("../../components/Common/AdvancedSearch"));
-const FetchErrorHandler = lazy(() => import("../../components/Common/FetchErrorHandler"));
+const AdvancedSearch = lazy(
+  () => import("../../components/Common/AdvancedSearch"),
+);
+const FetchErrorHandler = lazy(
+  () => import("../../components/Common/FetchErrorHandler"),
+);
 const TreeForLists = lazy(() => import("../../components/Common/TreeForLists"));
-const AttachFileModal = lazy(() => import("../../components/Common/AttachFileModal"));
-const ConvInfoModal = lazy(() => import("../../pages/Conversationinformation/ConvInfoModal"));
+const AttachFileModal = lazy(
+  () => import("../../components/Common/AttachFileModal"),
+);
+const ConvInfoModal = lazy(
+  () => import("../../pages/Conversationinformation/ConvInfoModal"),
+);
 const BudgetRequestModal = lazy(() => import("./BudgetRequestModal"));
-const ApproverBudgetRequestListModal = lazy(() => import("./ApproverBudgetRequestModal"));
+const ApproverBudgetRequestListModal = lazy(
+  () => import("./ApproverBudgetRequestModal"),
+);
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -44,10 +59,10 @@ const ApproverBudgetRequestList = () => {
   const [modal1, setModal1] = useState(false);
 
   const [budgetRequestMetaData, setBudgetRequestMetaData] = useState({});
-  const [detailModal, setDetailModal] = useState(false)
+  const [detailModal, setDetailModal] = useState(false);
   const [showCanvas, setShowCanvas] = useState(false);
-  const [fileModal, setFileModal] = useState(false)
-  const [convModal, setConvModal] = useState(false)
+  const [fileModal, setFileModal] = useState(false);
+  const [convModal, setConvModal] = useState(false);
 
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -63,7 +78,7 @@ const ApproverBudgetRequestList = () => {
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
-  const [include, setInclude] = useState(0)
+  const [include, setInclude] = useState(0);
 
   const budgetYearMap = useMemo(() => {
     return (
@@ -94,7 +109,7 @@ const ApproverBudgetRequestList = () => {
     setBudgetRequestMetaData(data);
   };
 
-  const toggleDetailModal = () => setDetailModal(!detailModal)
+  const toggleDetailModal = () => setDetailModal(!detailModal);
   const toggleViewModal = () => setModal1(!modal1);
   const toggleFileModal = () => setFileModal(!fileModal);
   const toggleConvModal = () => setConvModal(!convModal);
@@ -283,7 +298,6 @@ const ApproverBudgetRequestList = () => {
           );
         },
       },
-
     ];
 
     if (
@@ -330,14 +344,16 @@ const ApproverBudgetRequestList = () => {
             isOpen={detailModal}
             toggle={toggleDetailModal}
             transaction={transaction}
-          />)}
+          />
+        )}
         {modal1 && (
           <ApproverBudgetRequestListModal
             isOpen={modal1}
             toggle={toggleViewModal}
             transaction={transaction}
             budgetYearMap={budgetYearMap}
-          />)}
+          />
+        )}
         {fileModal && (
           <AttachFileModal
             isOpen={fileModal}
@@ -345,7 +361,8 @@ const ApproverBudgetRequestList = () => {
             projectId={transaction?.bdr_project_id}
             ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
             ownerId={transaction?.bdr_id}
-          />)}
+          />
+        )}
         {convModal && (
           <ConvInfoModal
             isOpen={convModal}
@@ -381,7 +398,10 @@ const ApproverBudgetRequestList = () => {
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
               >
-                <TableWrapper columnDefs={columnDefs} showSearchResult={showSearchResult} />
+                <TableWrapper
+                  columnDefs={columnDefs}
+                  showSearchResult={showSearchResult}
+                />
               </AdvancedSearch>
             </div>
           </div>
@@ -396,7 +416,6 @@ ApproverBudgetRequestList.propTypes = {
 export default ApproverBudgetRequestList;
 
 const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
-
   return (
     <AgGridContainer
       rowData={showSearchResult ? data?.data : []}

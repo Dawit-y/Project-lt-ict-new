@@ -6,10 +6,7 @@ import { withTranslation } from "react-i18next";
 import SidebarContent from "./SidebarContent";
 
 import { Link } from "react-router-dom";
-import {
-  logoLightPng,
-
-} from "../../constants/constantFile";
+import { logoLightPng } from "../../constants/constantFile";
 import { useFetchSideData } from "../../queries/side_data_query";
 import { useAuthUser } from "../../hooks/useAuthUser";
 
@@ -54,5 +51,5 @@ const mapStatetoProps = (state) => {
 
 export default connect(
   mapStatetoProps,
-  {}
+  {},
 )(withRouter(withTranslation()(Sidebar)));

@@ -76,7 +76,7 @@ export const useUpdateBudgetExipDetail = () => {
             data: oldData.data.map((data) =>
               data.bed_id === updatedBudgetExipDetail.data.bed_id
                 ? { ...data, ...updatedBudgetExipDetail.data }
-                : data
+                : data,
             ),
           };
         });
@@ -99,7 +99,7 @@ export const useDeleteBudgetExipDetail = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.bed_id !== parseInt(deletedData.deleted_id)
+              (dept) => dept.bed_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

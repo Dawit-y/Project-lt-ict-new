@@ -41,7 +41,7 @@ const ResetPassword = () => {
           `https://pms.awashsol.com/api/forgot-password?email=${values.email}`,
           {
             method: "POST",
-          }
+          },
         );
         const data = await response.json();
         if (response.ok) {

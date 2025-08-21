@@ -1,12 +1,16 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { FOOTER_TEXT, COPYRIGHT_YEAR } from "../../constants/constantFile";
-import {
-  UncontrolledTooltip, DropdownItem
-} from "reactstrap";
+import { UncontrolledTooltip, DropdownItem } from "reactstrap";
 import { FaPrint } from "react-icons/fa";
 
-const PrintHtmlPage = ({ tableData, tablename, excludeKey = [], columnsToIgnore = 2, dropdownItem = false }) => {
+const PrintHtmlPage = ({
+  tableData,
+  tablename,
+  excludeKey = [],
+  columnsToIgnore = 2,
+  dropdownItem = false,
+}) => {
   const { t } = useTranslation();
 
   const printPage = (event) => {
@@ -16,7 +20,11 @@ const PrintHtmlPage = ({ tableData, tablename, excludeKey = [], columnsToIgnore 
     //const printableElement = button.closest("#printable-content");
     //const modalContent = printableElement.innerHTML;
     const modalContent = document.getElementById("printable-table").innerHTML;
-    const printWindow = window.open("", "_blank", `width=${window.screen.width},height=${window.screen.height}`);
+    const printWindow = window.open(
+      "",
+      "_blank",
+      `width=${window.screen.width},height=${window.screen.height}`,
+    );
     printWindow.document.open();
     printWindow.document.write(`
       <html>
@@ -121,7 +129,10 @@ const PrintHtmlPage = ({ tableData, tablename, excludeKey = [], columnsToIgnore 
 
   if (dropdownItem) {
     return (
-      <DropdownItem onClick={printPage} disabled={!tableData || tableData.length === 0}>
+      <DropdownItem
+        onClick={printPage}
+        disabled={!tableData || tableData.length === 0}
+      >
         <FaPrint className="me-1" />
         {t("print")}
       </DropdownItem>

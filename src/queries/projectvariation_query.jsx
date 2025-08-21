@@ -33,7 +33,6 @@ export const useSearchProjectVariations = (searchParams = {}) => {
   });
 };
 
-
 // Add project_variation
 export const useAddProjectVariation = () => {
   const queryClient = useQueryClient();
@@ -81,7 +80,7 @@ export const useUpdateProjectVariation = () => {
             data: oldData.data.map((data) =>
               data.prv_id === updatedData.data.prv_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -106,7 +105,7 @@ export const useDeleteProjectVariation = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.prv_id !== parseInt(deletedData.deleted_id)
+              (dept) => dept.prv_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

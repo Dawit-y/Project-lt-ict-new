@@ -41,7 +41,7 @@ const CollapsibleDiv = ({
       </div>
       {/* Toggle Button */}
       <button
-      className="btn btn-soft-primary"
+        className="btn btn-soft-primary"
         onClick={toggleCollapse}
         style={{
           position: "absolute",

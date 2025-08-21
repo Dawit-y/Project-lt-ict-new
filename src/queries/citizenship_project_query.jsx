@@ -5,7 +5,7 @@ import {
   updateProject,
   addProject,
   deleteProject,
-  getSearchProject
+  getSearchProject,
 } from "../helpers/citizenship_project_backend_helper";
 
 export const PROJECT_QUERY_KEY = ["citizen_project"];

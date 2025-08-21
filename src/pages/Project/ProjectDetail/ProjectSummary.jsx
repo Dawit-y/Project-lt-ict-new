@@ -81,7 +81,7 @@ const ProjectSummary = ({ data }) => {
     financialProgress: performance?.planned_financial
       ? Math.min(
           (performance.actual_financial / performance.planned_financial) * 100,
-          100
+          100,
         )
       : 0,
 
@@ -91,7 +91,7 @@ const ProjectSummary = ({ data }) => {
     physicalProgress: performance?.planned_physical
       ? Math.min(
           (performance.actual_physical / performance.planned_physical) * 100,
-          100
+          100,
         )
       : 0,
 
@@ -100,26 +100,26 @@ const ProjectSummary = ({ data }) => {
     endDate: project?.prj_end_date_plan_gc,
     durationDays: getDurationDays(
       project?.prj_start_date_plan_gc,
-      project?.prj_end_date_plan_gc
+      project?.prj_end_date_plan_gc,
     ),
     daysElapsed: project?.prj_start_date_plan_gc
       ? getDurationDays(
           project.prj_start_date_plan_gc,
-          new Date().toISOString().split("T")[0].replace(/-/g, "/")
+          new Date().toISOString().split("T")[0].replace(/-/g, "/"),
         )
       : 0,
     daysRemaining: Math.max(
       0,
       getDurationDays(
         new Date().toISOString().split("T")[0].replace(/-/g, "/"),
-        project?.prj_end_date_plan_gc
-      )
+        project?.prj_end_date_plan_gc,
+      ),
     ),
 
     // Budget breakdown
     releasedBudget: budgetInfo.reduce(
       (sum, item) => sum + (item?.released_amount || 0),
-      0
+      0,
     ),
     budgetTypes: budgetInfo.map((item) => ({
       type: item?.budget_type || "Unknown",
@@ -189,7 +189,7 @@ const ProjectSummary = ({ data }) => {
               fontSize: "14px", // Smaller font
               formatter: () =>
                 `${formatCompactCurrency(
-                  projectMetrics.actualFinancial
+                  projectMetrics.actualFinancial,
                 )} / ${formatCompactCurrency(projectMetrics.plannedFinancial)}`,
             },
           },
@@ -384,8 +384,8 @@ const ProjectSummary = ({ data }) => {
                       Math.round(
                         (projectMetrics.daysElapsed /
                           projectMetrics.durationDays) *
-                          100
-                      )
+                          100,
+                      ),
                     )} %`
                   : 0;
               },
@@ -415,8 +415,8 @@ const ProjectSummary = ({ data }) => {
         ? Math.min(
             100,
             Math.round(
-              (projectMetrics.daysElapsed / projectMetrics.durationDays) * 100
-            )
+              (projectMetrics.daysElapsed / projectMetrics.durationDays) * 100,
+            ),
           )
         : 0,
     ],
@@ -648,7 +648,7 @@ const ProjectSummary = ({ data }) => {
                             ? Math.round(
                                 (projectMetrics.daysElapsed /
                                   projectMetrics.durationDays) *
-                                  100
+                                  100,
                               )
                             : 0
                         }
@@ -760,7 +760,7 @@ const ProjectSummary = ({ data }) => {
                           : "Behind by "}
                         {Math.abs(
                           projectMetrics.actualPhysical -
-                            projectMetrics.plannedPhysical
+                            projectMetrics.plannedPhysical,
                         )}
                         %
                       </Badge>
@@ -820,9 +820,9 @@ const ProjectSummary = ({ data }) => {
                           projectMetrics.plannedFinancial
                             ? "danger"
                             : projectMetrics.actualFinancial ===
-                              projectMetrics.plannedFinancial
-                            ? "success"
-                            : "warning"
+                                projectMetrics.plannedFinancial
+                              ? "success"
+                              : "warning"
                         }
                         className="fs-6"
                       >
@@ -830,16 +830,16 @@ const ProjectSummary = ({ data }) => {
                         projectMetrics.plannedFinancial
                           ? "Over Budget by "
                           : projectMetrics.actualFinancial ===
-                            projectMetrics.plannedFinancial
-                          ? "On Budget"
-                          : "Under Budget by "}
+                              projectMetrics.plannedFinancial
+                            ? "On Budget"
+                            : "Under Budget by "}
                         {projectMetrics.actualFinancial !==
                           projectMetrics.plannedFinancial &&
                           formatCurrency(
                             Math.abs(
                               projectMetrics.actualFinancial -
-                                projectMetrics.plannedFinancial
-                            )
+                                projectMetrics.plannedFinancial,
+                            ),
                           )}
                       </Badge>
                     </div>
@@ -887,8 +887,8 @@ const ProjectSummary = ({ data }) => {
                             Math.round(
                               (projectMetrics.daysElapsed /
                                 projectMetrics.durationDays) *
-                                100
-                            )
+                                100,
+                            ),
                           )}
                           %
                         </span>
@@ -1024,7 +1024,7 @@ const ProjectSummary = ({ data }) => {
                             <td className="text-end">
                               {formatCurrency(
                                 projectMetrics.releasedBudget -
-                                  projectMetrics.actualFinancial
+                                  projectMetrics.actualFinancial,
                               )}
                               {projectMetrics.releasedBudget > 0 && (
                                 <small className="text-muted ms-2">
@@ -1054,7 +1054,7 @@ const ProjectSummary = ({ data }) => {
                             <td className="text-end">
                               {formatCurrency(
                                 projectMetrics.totalBudget -
-                                  projectMetrics.releasedBudget
+                                  projectMetrics.releasedBudget,
                               )}
                               {projectMetrics.totalBudget > 0 && (
                                 <small className="text-muted ms-2">
@@ -1092,13 +1092,13 @@ const ProjectSummary = ({ data }) => {
                           >
                             <th>
                               {t(
-                                "remaining_budget_from_total_estimated_(not_used)"
+                                "remaining_budget_from_total_estimated_(not_used)",
                               )}
                             </th>
                             <td className="text-end">
                               {formatCurrency(
                                 projectMetrics.totalBudget -
-                                  projectMetrics.actualFinancial
+                                  projectMetrics.actualFinancial,
                               )}
                               {projectMetrics.totalBudget > 0 && (
                                 <small className="text-muted ms-2">
@@ -1189,7 +1189,7 @@ const ProjectSummary = ({ data }) => {
                                 <td>Total Released</td>
                                 <td className="text-end">
                                   {formatCurrency(
-                                    projectMetrics.releasedBudget
+                                    projectMetrics.releasedBudget,
                                   )}
                                 </td>
                                 <td className="text-end">100%</td>
@@ -1206,7 +1206,7 @@ const ProjectSummary = ({ data }) => {
                         </h5>
                         <p className="text-muted">
                           {t(
-                            "budget_breakdown_data_has_not_been_provided_for_this_project"
+                            "budget_breakdown_data_has_not_been_provided_for_this_project",
                           )}
                         </p>
                       </div>

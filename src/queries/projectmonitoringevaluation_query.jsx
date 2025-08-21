@@ -22,7 +22,11 @@ export const useFetchProjectMonitoringEvaluations = (param, isActive) => {
 //search project_monitoring_evaluation
 export const useSearchProjectMonitoringEvaluations = (searchParams = {}) => {
   return useQuery({
-    queryKey: [...PROJECT_MONITORING_EVALUATION_QUERY_KEY, "search", searchParams],
+    queryKey: [
+      ...PROJECT_MONITORING_EVALUATION_QUERY_KEY,
+      "search",
+      searchParams,
+    ],
     queryFn: () => getProjectMonitoringEvaluation(searchParams),
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
@@ -76,7 +80,7 @@ export const useUpdateProjectMonitoringEvaluation = () => {
             data: oldData.data.map((data) =>
               data.mne_id === updatedData.data.mne_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -100,7 +104,8 @@ export const useDeleteProjectMonitoringEvaluation = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (deletedData) => deletedData.mne_id !== parseInt(deletedData.deleted_id)
+              (deletedData) =>
+                deletedData.mne_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

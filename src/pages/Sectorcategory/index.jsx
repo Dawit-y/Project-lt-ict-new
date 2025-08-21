@@ -157,7 +157,7 @@ const SectorCategoryModel = () => {
       psc_gov_active: Yup.string().required(t("psc_gov_active")),
       psc_cso_active: Yup.string().required(t("psc_cso_active")),
       psc_citizenship_active: Yup.string().required(
-        t("psc_citizenship_active")
+        t("psc_citizenship_active"),
       ),
       psc_name: alphanumericValidation(2, 100, true).test(
         "unique-psc_name",
@@ -165,9 +165,9 @@ const SectorCategoryModel = () => {
         (value) => {
           return !data?.data.some(
             (item) =>
-              item.psc_name == value && item.psc_id !== sectorCategory?.psc_id
+              item.psc_name == value && item.psc_id !== sectorCategory?.psc_id,
           );
-        }
+        },
       ),
       psc_code: numberValidation(2, 5, false),
       psc_description: alphanumericValidation(3, 425, false),

@@ -85,12 +85,12 @@ export const useUpdateRequestInformation = () => {
             ...oldData,
             data: oldData.data.map((RequestInformationData) =>
               RequestInformationData.rqi_id ===
-                updatedRequestInformation.data.rqi_id
+              updatedRequestInformation.data.rqi_id
                 ? {
-                  ...RequestInformationData,
-                  ...updatedRequestInformation.data,
-                }
-                : RequestInformationData
+                    ...RequestInformationData,
+                    ...updatedRequestInformation.data,
+                  }
+                : RequestInformationData,
             ),
           };
         });
@@ -120,7 +120,7 @@ export const useDeleteRequestInformation = () => {
             data: oldData.data.filter(
               (RequestInformationData) =>
                 RequestInformationData.rqi_id !==
-                parseInt(deletedData.deleted_id)
+                parseInt(deletedData.deleted_id),
             ),
           };
         });

@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types'
-import React from "react"
-import { Card, CardBody, Col } from "reactstrap"
+import PropTypes from "prop-types";
+import React from "react";
+import { Card, CardBody, Col } from "reactstrap";
 
-const MiniCards = props => {
-  const { title, text, iconClass } = props
+const MiniCards = (props) => {
+  const { title, text, iconClass } = props;
   return (
     <React.Fragment>
       <Col md="4">
@@ -24,13 +24,13 @@ const MiniCards = props => {
         </Card>
       </Col>
     </React.Fragment>
-  )
-}
+  );
+};
 
 MiniCards.propTypes = {
   iconClass: PropTypes.string,
   text: PropTypes.string,
-  title: PropTypes.string
-}
+  title: PropTypes.string,
+};
 
-export default MiniCards
+export default MiniCards;

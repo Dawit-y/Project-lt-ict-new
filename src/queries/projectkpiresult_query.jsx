@@ -75,7 +75,7 @@ export const useUpdateProjectKpiResult = () => {
             data: oldData.data.map((data) =>
               data.kpr_id === updatedData.data.kpr_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -99,7 +99,8 @@ export const useDeleteProjectKpiResult = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (deletedData) => deletedData.kpr_id !== parseInt(deletedData.deleted_id)
+              (deletedData) =>
+                deletedData.kpr_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

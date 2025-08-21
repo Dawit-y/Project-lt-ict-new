@@ -81,7 +81,7 @@ export const useUpdateBudgetRequestTask = () => {
             data: oldData.data.map((data) =>
               data.brt_id === updatedBudgetRequestTask.data.brt_id
                 ? { ...data, ...updatedBudgetRequestTask.data }
-                : data
+                : data,
             ),
           };
         });
@@ -106,7 +106,7 @@ export const useDeleteBudgetRequestTask = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.brt_id !== parseInt(deletedData.deleted_id)
+              (dept) => dept.brt_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

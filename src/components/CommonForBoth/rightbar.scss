@@ -16,7 +16,7 @@
     position: fixed;
     width: 0;
 
-    &:checked+label {
+    &:checked + label {
       background-color: $primary;
       border: none;
       color: $white;
@@ -26,7 +26,7 @@
   // color option
   &.coloropt-radio {
     input[type="radio"] {
-      &:checked+label {
+      &:checked + label {
         &:after {
           content: "\F012C";
           position: absolute;
@@ -65,7 +65,7 @@
     }
 
     input[type="radio"] {
-      &:checked+label {
+      &:checked + label {
         &::before {
           content: "";
           position: absolute;

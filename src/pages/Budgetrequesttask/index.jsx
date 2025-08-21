@@ -39,11 +39,11 @@ import "react-toastify/dist/ReactToastify.css";
 import {
   alphanumericValidation,
   amountValidation,
-  formattedAmountValidation
+  formattedAmountValidation,
 } from "../../utils/Validation/validation";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import InputField from "../../components/Common/InputField"
-import FormattedAmountField from "../../components/Common/FormattedAmountField"
+import InputField from "../../components/Common/InputField";
+import FormattedAmountField from "../../components/Common/FormattedAmountField";
 
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -155,9 +155,17 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
       brt_task_name: alphanumericValidation(2, 200, true),
       brt_measurement: alphanumericValidation(2, 20, true),
       brt_previous_year_physical: formattedAmountValidation(0, 100, true),
-      brt_previous_year_financial: formattedAmountValidation(0, 100000000000, true),
+      brt_previous_year_financial: formattedAmountValidation(
+        0,
+        100000000000,
+        true,
+      ),
       brt_current_year_physical: formattedAmountValidation(0, 100, true),
-      brt_current_year_financial: formattedAmountValidation(0, 100000000000, true),
+      brt_current_year_financial: formattedAmountValidation(
+        0,
+        100000000000,
+        true,
+      ),
       brt_next_year_physical: formattedAmountValidation(0, 100, true),
       brt_next_year_financial: formattedAmountValidation(0, 100000000000, true),
       brt_description: alphanumericValidation(3, 425, false),
@@ -231,7 +239,8 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
       brt_measurement: budgetRequestTask.brt_measurement,
       brt_budget_request_id: budgetRequestTask.brt_budget_request_id,
       brt_previous_year_physical: budgetRequestTask.brt_previous_year_physical,
-      brt_previous_year_financial: budgetRequestTask.brt_previous_year_financial,
+      brt_previous_year_financial:
+        budgetRequestTask.brt_previous_year_financial,
       brt_current_year_physical: budgetRequestTask.brt_current_year_physical,
       brt_current_year_financial: budgetRequestTask.brt_current_year_financial,
       brt_next_year_physical: budgetRequestTask.brt_next_year_physical,
@@ -264,130 +273,130 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
 
   const columns = useMemo(() => {
     const baseColumns = [
-			{
-				header: "",
-				accessorKey: "brt_task_name",
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.brt_task_name, 30) || "-"}
-						</span>
-					);
-				},
-			},
-			{
-				header: "",
-				accessorKey: "brt_measurement",
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.brt_measurement, 30) || "-"}
-						</span>
-					);
-				},
-			},
-			{
-				header: t("performance_last_year"),
-				columns: [
-					{
-						header: t("physical"),
-						accessorKey: "brt_previous_year_physical",
-						enableColumnFilter: false,
-						enableSorting: true,
-						cell: (cellProps) => {
-							return <span>{`${cellProps.getValue()}%`}</span>;
-						},
-					},
-					{
-						header: t("financial"),
-						accessorKey: "brt_previous_year_financial",
-						enableColumnFilter: false,
-						enableSorting: true,
-						cell: (cellProps) => {
-							return (
-								<span>{parseFloat(cellProps.getValue()).toLocaleString()}</span>
-							);
-						},
-					},
-				],
-			},
-			{
-				header: t("performance_this_year"),
-				columns: [
-					{
-						header: t("physical"),
-						accessorKey: "brt_current_year_physical",
-						enableColumnFilter: false,
-						enableSorting: true,
-						cell: (cellProps) => {
-							return <span>{`${cellProps.getValue()}%`}</span>;
-						},
-					},
-					{
-						header: t("financial"),
-						accessorKey: "brt_current_year_financial",
-						enableColumnFilter: false,
-						enableSorting: true,
-						cell: (cellProps) => {
-							return (
-								<span>{parseFloat(cellProps.getValue()).toLocaleString()}</span>
-							);
-						},
-					},
-				],
-			},
-			{
-				header: t("plans_coming_year"),
-				columns: [
-					{
-						header: t("physical"),
-						accessorKey: "brt_next_year_physical",
-						enableColumnFilter: false,
-						enableSorting: true,
-						cell: (cellProps) => {
-							return <span>{`${cellProps.getValue()}%`}</span>;
-						},
-					},
-					{
-						header: t("financial"),
-						accessorKey: "brt_next_year_financial",
-						enableColumnFilter: false,
-						enableSorting: true,
-						cell: (cellProps) => {
-							return (
-								<span>{parseFloat(cellProps.getValue()).toLocaleString()}</span>
-							);
-						},
-					},
-				],
-			},
-			{
-				header: t("view_detail"),
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<Button
-							type="button"
-							color="primary"
-							className="btn-sm"
-							onClick={() => {
-								const data = cellProps.row.original;
-								toggleViewModal(data);
-								setTransaction(cellProps.row.original);
-							}}
-						>
-							{t("view_detail")}
-						</Button>
-					);
-				},
-			},
+      {
+        header: "",
+        accessorKey: "brt_task_name",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.brt_task_name, 30) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "",
+        accessorKey: "brt_measurement",
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <span>
+              {truncateText(cellProps.row.original.brt_measurement, 30) || "-"}
+            </span>
+          );
+        },
+      },
+      {
+        header: t("performance_last_year"),
+        columns: [
+          {
+            header: t("physical"),
+            accessorKey: "brt_previous_year_physical",
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              return <span>{`${cellProps.getValue()}%`}</span>;
+            },
+          },
+          {
+            header: t("financial"),
+            accessorKey: "brt_previous_year_financial",
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              return (
+                <span>{parseFloat(cellProps.getValue()).toLocaleString()}</span>
+              );
+            },
+          },
+        ],
+      },
+      {
+        header: t("performance_this_year"),
+        columns: [
+          {
+            header: t("physical"),
+            accessorKey: "brt_current_year_physical",
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              return <span>{`${cellProps.getValue()}%`}</span>;
+            },
+          },
+          {
+            header: t("financial"),
+            accessorKey: "brt_current_year_financial",
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              return (
+                <span>{parseFloat(cellProps.getValue()).toLocaleString()}</span>
+              );
+            },
+          },
+        ],
+      },
+      {
+        header: t("plans_coming_year"),
+        columns: [
+          {
+            header: t("physical"),
+            accessorKey: "brt_next_year_physical",
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              return <span>{`${cellProps.getValue()}%`}</span>;
+            },
+          },
+          {
+            header: t("financial"),
+            accessorKey: "brt_next_year_financial",
+            enableColumnFilter: false,
+            enableSorting: true,
+            cell: (cellProps) => {
+              return (
+                <span>{parseFloat(cellProps.getValue()).toLocaleString()}</span>
+              );
+            },
+          },
+        ],
+      },
+      {
+        header: t("view_detail"),
+        enableColumnFilter: false,
+        enableSorting: true,
+        cell: (cellProps) => {
+          return (
+            <Button
+              type="button"
+              color="primary"
+              className="btn-sm"
+              onClick={() => {
+                const data = cellProps.row.original;
+                toggleViewModal(data);
+                setTransaction(cellProps.row.original);
+              }}
+            >
+              {t("view_detail")}
+            </Button>
+          );
+        },
+      },
     ];
-    
+
     if (
       data?.previledge?.is_role_editable == 1 ||
       data?.previledge?.is_role_deletable == 1
@@ -446,199 +455,199 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
   }
 
   return (
-		<React.Fragment>
-			<BudgetRequestTaskModal
-				isOpen={modal1}
-				toggle={toggleViewModal}
-				transaction={transaction}
-			/>
-			<DeleteModal
-				show={deleteModal}
-				onDeleteClick={handleDeleteBudgetRequestTask}
-				onCloseClick={() => setDeleteModal(false)}
-				isLoading={deleteBudgetRequestTask.isPending}
-			/>
-			{isLoading || isSearchLoading ? (
-				<Spinners />
-			) : (
-				<Row>
-					<Col xs="12">
-						<Card>
-							<CardBody>
-								<TableContainer
-									columns={columns}
-									data={
-										showSearchResult ? searchResults?.data : data?.data || []
-									}
-									isLoading={isLoading || isSearchLoading}
-									isGlobalFilter={true}
-									isAddButton={true}
-									isCustomPageSize={true}
-									handleUserClick={handleBudgetRequestTaskClicks}
-									isPagination={true}
-									SearchPlaceholder={t("filter_placeholder")}
-									buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-									buttonName={t("add")}
-									tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-									theadClass="table-light"
-									pagination="pagination"
-									paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-								/>
-							</CardBody>
-						</Card>
-					</Col>
-				</Row>
-			)}
-			<Modal isOpen={modal} toggle={toggle} className="modal-xl">
-				<ModalHeader toggle={toggle} tag="h4">
-					{!!isEdit
-						? t("edit") + " " + t("budget_request_task")
-						: t("add") + " " + t("budget_request_task")}
-				</ModalHeader>
-				<ModalBody>
-					<Form
-						onSubmit={(e) => {
-							e.preventDefault();
-							validation.handleSubmit();
-							return false;
-						}}
-					>
-						<Row>
-							<InputField
-								type="text"
-								validation={validation}
-								fieldId={"brt_task_name"}
-								isRequired={false}
-								className="col-md-6 mb-3"
-								maxLength={200}
-							/>
-							<InputField
-								type="text"
-								validation={validation}
-								fieldId={"brt_measurement"}
-								isRequired={false}
-								className="col-md-6 mb-3"
-								maxLength={200}
-							/>
-							<Col sm={12} md={4} lg={4}>
-								<Card body className="shadow-sm border">
-									<CardTitle className="bg-light p-2 mb-2">
-										Performance of Last Year
-									</CardTitle>
-									<FormattedAmountField
-										validation={validation}
-										fieldId={"brt_previous_year_physical"}
-										label={
-											t("brt_previous_year_physical") + " " + t("in_percent")
-										}
-										isRequired={true}
-										className="col-md-12 mb-3"
-										allowDecimal={true}
-									/>
-									<FormattedAmountField
-										validation={validation}
-										fieldId={"brt_previous_year_financial"}
-										isRequired={true}
-										className="col-md-12 mb-3"
-										allowDecimal={true}
-									/>
-								</Card>
-							</Col>
-							<Col sm={12} md={4} lg={4}>
-								<Card body className="shadow-sm border">
-									<CardTitle className="bg-light p-2 mb-2">
-										Performance Estimates for this Year
-									</CardTitle>
-									<FormattedAmountField
-										validation={validation}
-										fieldId={"brt_current_year_physical"}
-										label={
-											t("brt_current_year_physical") + " " + t("in_percent")
-										}
-										isRequired={true}
-										className="col-md-12 mb-3"
-										allowDecimal={true}
-									/>
-									<FormattedAmountField
-										validation={validation}
-										fieldId={"brt_current_year_financial"}
-										isRequired={true}
-										className="col-md-12 mb-3"
-										allowDecimal={true}
-									/>
-								</Card>
-							</Col>
-							<Col sm={12} md={4} lg={4}>
-								<Card body className="shadow-sm border">
-									<CardTitle className="bg-light p-2 mb-2">
-										Plans for the Coming Year
-									</CardTitle>
-									<FormattedAmountField
-										validation={validation}
-										fieldId={"brt_next_year_physical"}
-										label={t("brt_next_year_physical") + " " + t("in_percent")}
-										isRequired={true}
-										className="col-md-12 mb-3"
-										allowDecimal={true}
-									/>
-									<FormattedAmountField
-										validation={validation}
-										fieldId={"brt_next_year_financial"}
-										isRequired={true}
-										className="col-md-12 mb-3"
-										allowDecimal={true}
-									/>
-								</Card>
-							</Col>
-							<InputField
-								type="textarea"
-								validation={validation}
-								fieldId={"brt_description"}
-								isRequired={false}
-								className="col-md-12 mb-3"
-								maxLength={400}
-							/>
-						</Row>
-						<Row>
-							<Col>
-								<div className="text-end">
-									{addBudgetRequestTask.isPending ||
-									updateBudgetRequestTask.isPending ? (
-										<Button
-											color="success"
-											type="submit"
-											className="save-user"
-											disabled={
-												addBudgetRequestTask.isPending ||
-												updateBudgetRequestTask.isPending ||
-												!validation.dirty
-											}
-										>
-											<Spinner size={"sm"} color="light" className="me-2" />
-											{t("Save")}
-										</Button>
-									) : (
-										<Button
-											color="success"
-											type="submit"
-											className="save-user"
-											disabled={
-												addBudgetRequestTask.isPending ||
-												updateBudgetRequestTask.isPending ||
-												!validation.dirty
-											}
-										>
-											{t("Save")}
-										</Button>
-									)}
-								</div>
-							</Col>
-						</Row>
-					</Form>
-				</ModalBody>
-			</Modal>
-		</React.Fragment>
-	);
+    <React.Fragment>
+      <BudgetRequestTaskModal
+        isOpen={modal1}
+        toggle={toggleViewModal}
+        transaction={transaction}
+      />
+      <DeleteModal
+        show={deleteModal}
+        onDeleteClick={handleDeleteBudgetRequestTask}
+        onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteBudgetRequestTask.isPending}
+      />
+      {isLoading || isSearchLoading ? (
+        <Spinners />
+      ) : (
+        <Row>
+          <Col xs="12">
+            <Card>
+              <CardBody>
+                <TableContainer
+                  columns={columns}
+                  data={
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
+                  isLoading={isLoading || isSearchLoading}
+                  isGlobalFilter={true}
+                  isAddButton={true}
+                  isCustomPageSize={true}
+                  handleUserClick={handleBudgetRequestTaskClicks}
+                  isPagination={true}
+                  SearchPlaceholder={t("filter_placeholder")}
+                  buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                  buttonName={t("add")}
+                  tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                  theadClass="table-light"
+                  pagination="pagination"
+                  paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                />
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      )}
+      <Modal isOpen={modal} toggle={toggle} className="modal-xl">
+        <ModalHeader toggle={toggle} tag="h4">
+          {!!isEdit
+            ? t("edit") + " " + t("budget_request_task")
+            : t("add") + " " + t("budget_request_task")}
+        </ModalHeader>
+        <ModalBody>
+          <Form
+            onSubmit={(e) => {
+              e.preventDefault();
+              validation.handleSubmit();
+              return false;
+            }}
+          >
+            <Row>
+              <InputField
+                type="text"
+                validation={validation}
+                fieldId={"brt_task_name"}
+                isRequired={false}
+                className="col-md-6 mb-3"
+                maxLength={200}
+              />
+              <InputField
+                type="text"
+                validation={validation}
+                fieldId={"brt_measurement"}
+                isRequired={false}
+                className="col-md-6 mb-3"
+                maxLength={200}
+              />
+              <Col sm={12} md={4} lg={4}>
+                <Card body className="shadow-sm border">
+                  <CardTitle className="bg-light p-2 mb-2">
+                    Performance of Last Year
+                  </CardTitle>
+                  <FormattedAmountField
+                    validation={validation}
+                    fieldId={"brt_previous_year_physical"}
+                    label={
+                      t("brt_previous_year_physical") + " " + t("in_percent")
+                    }
+                    isRequired={true}
+                    className="col-md-12 mb-3"
+                    allowDecimal={true}
+                  />
+                  <FormattedAmountField
+                    validation={validation}
+                    fieldId={"brt_previous_year_financial"}
+                    isRequired={true}
+                    className="col-md-12 mb-3"
+                    allowDecimal={true}
+                  />
+                </Card>
+              </Col>
+              <Col sm={12} md={4} lg={4}>
+                <Card body className="shadow-sm border">
+                  <CardTitle className="bg-light p-2 mb-2">
+                    Performance Estimates for this Year
+                  </CardTitle>
+                  <FormattedAmountField
+                    validation={validation}
+                    fieldId={"brt_current_year_physical"}
+                    label={
+                      t("brt_current_year_physical") + " " + t("in_percent")
+                    }
+                    isRequired={true}
+                    className="col-md-12 mb-3"
+                    allowDecimal={true}
+                  />
+                  <FormattedAmountField
+                    validation={validation}
+                    fieldId={"brt_current_year_financial"}
+                    isRequired={true}
+                    className="col-md-12 mb-3"
+                    allowDecimal={true}
+                  />
+                </Card>
+              </Col>
+              <Col sm={12} md={4} lg={4}>
+                <Card body className="shadow-sm border">
+                  <CardTitle className="bg-light p-2 mb-2">
+                    Plans for the Coming Year
+                  </CardTitle>
+                  <FormattedAmountField
+                    validation={validation}
+                    fieldId={"brt_next_year_physical"}
+                    label={t("brt_next_year_physical") + " " + t("in_percent")}
+                    isRequired={true}
+                    className="col-md-12 mb-3"
+                    allowDecimal={true}
+                  />
+                  <FormattedAmountField
+                    validation={validation}
+                    fieldId={"brt_next_year_financial"}
+                    isRequired={true}
+                    className="col-md-12 mb-3"
+                    allowDecimal={true}
+                  />
+                </Card>
+              </Col>
+              <InputField
+                type="textarea"
+                validation={validation}
+                fieldId={"brt_description"}
+                isRequired={false}
+                className="col-md-12 mb-3"
+                maxLength={400}
+              />
+            </Row>
+            <Row>
+              <Col>
+                <div className="text-end">
+                  {addBudgetRequestTask.isPending ||
+                  updateBudgetRequestTask.isPending ? (
+                    <Button
+                      color="success"
+                      type="submit"
+                      className="save-user"
+                      disabled={
+                        addBudgetRequestTask.isPending ||
+                        updateBudgetRequestTask.isPending ||
+                        !validation.dirty
+                      }
+                    >
+                      <Spinner size={"sm"} color="light" className="me-2" />
+                      {t("Save")}
+                    </Button>
+                  ) : (
+                    <Button
+                      color="success"
+                      type="submit"
+                      className="save-user"
+                      disabled={
+                        addBudgetRequestTask.isPending ||
+                        updateBudgetRequestTask.isPending ||
+                        !validation.dirty
+                      }
+                    >
+                      {t("Save")}
+                    </Button>
+                  )}
+                </div>
+              </Col>
+            </Row>
+          </Form>
+        </ModalBody>
+      </Modal>
+    </React.Fragment>
+  );
 };
 BudgetRequestTaskModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

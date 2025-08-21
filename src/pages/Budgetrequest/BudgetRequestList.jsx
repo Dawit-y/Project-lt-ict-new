@@ -94,7 +94,7 @@ const BudgetRequestListModel = () => {
         am: "rqc_name_am",
         or: "rqc_name_or",
       },
-      i18n.language
+      i18n.language,
     );
   }, [bgCategoryOptionsData, i18n.language]);
 
@@ -116,7 +116,7 @@ const BudgetRequestListModel = () => {
         am: "prs_status_name_am",
         or: "prs_status_name_or",
       },
-      i18n.language
+      i18n.language,
     );
   }, [projectStatusData, i18n.language]);
 
@@ -372,115 +372,115 @@ const BudgetRequestListModel = () => {
   }, [bgCategoryMap, projectStatusMap]);
 
   return (
-		<React.Fragment>
-			<BudgetRequestModal
-				isOpen={modal1}
-				toggle={toggleViewModal}
-				transaction={transaction}
-			/>
-			<AttachFileModal
-				isOpen={fileModal}
-				toggle={toggleFileModal}
-				projectId={transaction?.bdr_project_id}
-				ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-				ownerId={transaction?.bdr_id}
-			/>
-			<ConvInfoModal
-				isOpen={convModal}
-				toggle={toggleConvModal}
-				ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-				ownerId={transaction?.bdr_id}
-			/>
-			<div className="page-content">
-				<div className="">
-					<Breadcrumbs />
-					<div className="w-100 d-flex gap-2">
-						<TreeForLists
-							onNodeSelect={handleNodeSelect}
-							setIsAddressLoading={setIsAddressLoading}
-							setInclude={setInclude}
-							isCollapsed={isCollapsed}
-							setIsCollapsed={setIsCollapsed}
-						/>
-						<SearchTableContainer isCollapsed={isCollapsed}>
-							<AdvancedSearch
-								searchHook={useSearchBudgetRequests}
-								dateSearchKeys={["budget_request_date"]}
-								textSearchKeys={["prj_name"]}
-								dropdownSearchKeys={[
-									{
-										key: "bdr_budget_year_id",
-										options: budgetYearOptions,
-									},
-									{
-										key: "bdr_request_category_id",
-										options: requestCategoryOptions,
-									},
-									{
-										key: "bdr_request_type",
-										options: projectStatusOptions,
-									},
-								]}
-								additionalParams={projectParams}
-								setAdditionalParams={setProjectParams}
-								onSearchResult={handleSearchResults}
-								setIsSearchLoading={setIsSearchLoading}
-								setSearchResults={setSearchResults}
-								setShowSearchResult={setShowSearchResult}
-							>
-								<AgGridContainer
-									rowData={
-										showSearchResult ? searchResults?.data : data?.data || []
-									}
-									columnDefs={columnDefs}
-									isLoading={isSearchLoading}
-									isPagination={true}
-									paginationPageSize={20}
-									isGlobalFilter={true}
-									isAddButton={false}
-									addButtonText="Add"
-									isExcelExport={true}
-									isPdfExport={true}
-									isPrint={true}
-									tableName="Budget Request"
-									exportColumns={[
-										...budgetRequestExportColumns,
-										{
-											key: "bdr_request_type",
-											label: t("bdr_request_type"),
-											format: (val) => {
-												return projectStatusMap[val] || "-";
-											},
-										},
-										{
-											key: "bdr_request_category_id",
-											label: t("bdr_request_category_id"),
-											format: (val) => {
-												return bgCategoryMap[val] || "-";
-											},
-										},
-									]}
-								/>
-							</AdvancedSearch>
-						</SearchTableContainer>
-					</div>
-				</div>
-			</div>
-			{showCanvas && (
-				<RightOffCanvas
-					handleClick={handleClick}
-					showCanvas={showCanvas}
-					canvasWidth={84}
-					name={t("budget_request")}
-					id={budgetRequestMetaData.bdr_id}
-					components={{
-						[t("budget_request_amount")]: BudgetRequestAmount,
-						[t("budget_request_task")]: BudgetRequestTask,
-					}}
-				/>
-			)}
-		</React.Fragment>
-	);
+    <React.Fragment>
+      <BudgetRequestModal
+        isOpen={modal1}
+        toggle={toggleViewModal}
+        transaction={transaction}
+      />
+      <AttachFileModal
+        isOpen={fileModal}
+        toggle={toggleFileModal}
+        projectId={transaction?.bdr_project_id}
+        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+        ownerId={transaction?.bdr_id}
+      />
+      <ConvInfoModal
+        isOpen={convModal}
+        toggle={toggleConvModal}
+        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+        ownerId={transaction?.bdr_id}
+      />
+      <div className="page-content">
+        <div className="">
+          <Breadcrumbs />
+          <div className="w-100 d-flex gap-2">
+            <TreeForLists
+              onNodeSelect={handleNodeSelect}
+              setIsAddressLoading={setIsAddressLoading}
+              setInclude={setInclude}
+              isCollapsed={isCollapsed}
+              setIsCollapsed={setIsCollapsed}
+            />
+            <SearchTableContainer isCollapsed={isCollapsed}>
+              <AdvancedSearch
+                searchHook={useSearchBudgetRequests}
+                dateSearchKeys={["budget_request_date"]}
+                textSearchKeys={["prj_name"]}
+                dropdownSearchKeys={[
+                  {
+                    key: "bdr_budget_year_id",
+                    options: budgetYearOptions,
+                  },
+                  {
+                    key: "bdr_request_category_id",
+                    options: requestCategoryOptions,
+                  },
+                  {
+                    key: "bdr_request_type",
+                    options: projectStatusOptions,
+                  },
+                ]}
+                additionalParams={projectParams}
+                setAdditionalParams={setProjectParams}
+                onSearchResult={handleSearchResults}
+                setIsSearchLoading={setIsSearchLoading}
+                setSearchResults={setSearchResults}
+                setShowSearchResult={setShowSearchResult}
+              >
+                <AgGridContainer
+                  rowData={
+                    showSearchResult ? searchResults?.data : data?.data || []
+                  }
+                  columnDefs={columnDefs}
+                  isLoading={isSearchLoading}
+                  isPagination={true}
+                  paginationPageSize={20}
+                  isGlobalFilter={true}
+                  isAddButton={false}
+                  addButtonText="Add"
+                  isExcelExport={true}
+                  isPdfExport={true}
+                  isPrint={true}
+                  tableName="Budget Request"
+                  exportColumns={[
+                    ...budgetRequestExportColumns,
+                    {
+                      key: "bdr_request_type",
+                      label: t("bdr_request_type"),
+                      format: (val) => {
+                        return projectStatusMap[val] || "-";
+                      },
+                    },
+                    {
+                      key: "bdr_request_category_id",
+                      label: t("bdr_request_category_id"),
+                      format: (val) => {
+                        return bgCategoryMap[val] || "-";
+                      },
+                    },
+                  ]}
+                />
+              </AdvancedSearch>
+            </SearchTableContainer>
+          </div>
+        </div>
+      </div>
+      {showCanvas && (
+        <RightOffCanvas
+          handleClick={handleClick}
+          showCanvas={showCanvas}
+          canvasWidth={84}
+          name={t("budget_request")}
+          id={budgetRequestMetaData.bdr_id}
+          components={{
+            [t("budget_request_amount")]: BudgetRequestAmount,
+            [t("budget_request_task")]: BudgetRequestTask,
+          }}
+        />
+      )}
+    </React.Fragment>
+  );
 };
 BudgetRequestListModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

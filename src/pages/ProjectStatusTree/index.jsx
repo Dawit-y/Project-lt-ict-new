@@ -80,11 +80,11 @@ const Index = () => {
     try {
       const response = await fetch(
         `${apiUrl}address_structure/insertgrid?rootId=${encodeURIComponent(
-          selectedNode.id
+          selectedNode.id,
         )}&name=${encodeURIComponent(newSubFolderName)}`,
         {
           method: "POST",
-        }
+        },
       );
 
       if (!response.ok) {
@@ -129,13 +129,13 @@ const Index = () => {
       try {
         const response = await fetch(
           `${apiUrl}address_structure/updategrid?rootId=${encodeURIComponent(
-            selectedNode.rootId
+            selectedNode.rootId,
           )}&name=${encodeURIComponent(newName)}&id=${encodeURIComponent(
-            selectedNode.id
+            selectedNode.id,
           )}&selected=${encodeURIComponent(selectedNode.selected ? 1 : 0)}`,
           {
             method: "POST",
-          }
+          },
         );
 
         if (!response.ok) {
@@ -172,7 +172,7 @@ const Index = () => {
         `${apiUrl}address_structure/deletegrid?id=${node.id}`,
         {
           method: "POST",
-        }
+        },
       );
 
       if (!response.ok) {

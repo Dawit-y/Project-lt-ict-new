@@ -82,7 +82,7 @@ export const useUpdateBudgetRequestAmount = () => {
             data: oldData.data.map((data) =>
               data.bra_id === updatedBudgetRequestAmount.data.bra_id
                 ? { ...data, ...updatedBudgetRequestAmount.data }
-                : data
+                : data,
             ),
           };
         });
@@ -107,7 +107,7 @@ export const useDeleteBudgetRequestAmount = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.bra_id !== parseInt(deletedData.deleted_id)
+              (dept) => dept.bra_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

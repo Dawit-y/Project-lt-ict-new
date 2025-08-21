@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo } from "react";
 import {
   Button,
   Col,
@@ -11,49 +11,65 @@ import {
   FormFeedback,
   Label,
   Spinner,
-  Table
+  Table,
 } from "reactstrap";
-import FormattedAmountField from "../../components/Common/FormattedAmountField"
-import InputField from "../../components/Common/InputField"
-import AsyncSelectField from "../../components/Common/AsyncSelectField"
+import FormattedAmountField from "../../components/Common/FormattedAmountField";
+import InputField from "../../components/Common/InputField";
+import AsyncSelectField from "../../components/Common/AsyncSelectField";
 import DatePicker from "../../components/Common/DatePicker";
 import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import { useFetchSectorCategorys } from "../../queries/sectorcategory_query";
-import { createMultiLangKeyValueMap, addMonths, addYears, createKeyValueMap } from "../../utils/commonMethods";
+import {
+  createMultiLangKeyValueMap,
+  addMonths,
+  addYears,
+  createKeyValueMap,
+} from "../../utils/commonMethods";
 
-const ProjectForm = ({ isOpen, toggle, isEdit, activeTabName, validation, isPending }) => {
-  const { t, i18n } = useTranslation()
-  const lang = i18n.language
-  const { data: projectCategoryData, isLoading: isPctLoading, isError: isPctError } = useFetchProjectCategorys();
+const ProjectForm = ({
+  isOpen,
+  toggle,
+  isEdit,
+  activeTabName,
+  validation,
+  isPending,
+}) => {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
+  const {
+    data: projectCategoryData,
+    isLoading: isPctLoading,
+    isError: isPctError,
+  } = useFetchProjectCategorys();
   const projectCategoryMap = useMemo(() => {
-		return createMultiLangKeyValueMap(
-			projectCategoryData?.data || [],
-			"pct_id",
-			{
-				en: "pct_name_en",
-				am: "pct_name_am",
-				or: "pct_name_or",
-			},
-			lang,
-			(item) => item.pct_owner_type_id === 2
-		);
-	}, [projectCategoryData, lang]);
+    return createMultiLangKeyValueMap(
+      projectCategoryData?.data || [],
+      "pct_id",
+      {
+        en: "pct_name_en",
+        am: "pct_name_am",
+        or: "pct_name_or",
+      },
+      lang,
+      (item) => item.pct_owner_type_id === 2,
+    );
+  }, [projectCategoryData, lang]);
 
-	const {
-		data: sectorCategories,
-		isLoading: isSectorCatLoading,
-		isError: isSectorCatError,
-	} = useFetchSectorCategorys();
-	const sectorCategoryMap = useMemo(() => {
-		return createKeyValueMap(
-			sectorCategories?.data || [],
-			"psc_id",
-			"psc_name",
-			(item) => item.psc_cso_active === 1
-		);
-	}, [sectorCategories]);
+  const {
+    data: sectorCategories,
+    isLoading: isSectorCatLoading,
+    isError: isSectorCatError,
+  } = useFetchSectorCategorys();
+  const sectorCategoryMap = useMemo(() => {
+    return createKeyValueMap(
+      sectorCategories?.data || [],
+      "psc_id",
+      "psc_name",
+      (item) => item.psc_cso_active === 1,
+    );
+  }, [sectorCategories]);
 
   const rawStartDate = validation.values.prj_start_date_plan_gc;
   const startDate = rawStartDate
@@ -111,15 +127,13 @@ const ProjectForm = ({ isOpen, toggle, isEdit, activeTabName, validation, isPend
                 onBlur={validation.handleBlur}
                 value={validation.values.prj_name || ""}
                 invalid={
-                  validation.touched.prj_name &&
-                    validation.errors.prj_name
+                  validation.touched.prj_name && validation.errors.prj_name
                     ? true
                     : false
                 }
                 maxLength={200}
               />
-              {validation.touched.prj_name &&
-                validation.errors.prj_name ? (
+              {validation.touched.prj_name && validation.errors.prj_name ? (
                 <FormFeedback type="invalid">
                   {validation.errors.prj_name}
                 </FormFeedback>
@@ -195,7 +209,6 @@ const ProjectForm = ({ isOpen, toggle, isEdit, activeTabName, validation, isPend
                 validation={validation}
                 minDate={minEndDate}
                 maxDate={maxEndDate}
-
               />
             </Col>
             <Row>
@@ -266,10 +279,7 @@ const ProjectForm = ({ isOpen, toggle, isEdit, activeTabName, validation, isPend
                   color="success"
                   type="submit"
                   className="save-user"
-                  disabled={
-                    isPending ||
-                    !validation.dirty
-                  }
+                  disabled={isPending || !validation.dirty}
                 >
                   {isPending && (
                     <Spinner size="sm" color="light" className="me-2" />
@@ -282,7 +292,7 @@ const ProjectForm = ({ isOpen, toggle, isEdit, activeTabName, validation, isPend
         </Form>
       </ModalBody>
     </Modal>
-  )
-}
+  );
+};
 
-export default ProjectForm
+export default ProjectForm;

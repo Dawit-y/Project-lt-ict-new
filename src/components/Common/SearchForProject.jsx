@@ -78,7 +78,7 @@ const SearchForProject = ({
         .map(([key, value]) => [
           key,
           /^\d+$/.test(value) ? parseInt(value, 10) : value,
-        ])
+        ]),
     );
 
     const combinedParams = {
@@ -134,7 +134,8 @@ const SearchForProject = ({
         }
 
         return keys.some(
-          (key) => additionalParams[key] != null && additionalParams[key] !== ""
+          (key) =>
+            additionalParams[key] != null && additionalParams[key] !== "",
         );
       }
       return false;
@@ -179,7 +180,7 @@ const SearchForProject = ({
                               onChange={(e) => {
                                 handleSearchKey(
                                   `${key}Start`,
-                                  formatDateHyphen(e[0])
+                                  formatDateHyphen(e[0]),
                                 );
                               }}
                             />
@@ -201,7 +202,7 @@ const SearchForProject = ({
                               onChange={(date) => {
                                 handleSearchKey(
                                   `${key}End`,
-                                  formatDateHyphen(date[0])
+                                  formatDateHyphen(date[0]),
                                 );
                               }}
                             />
@@ -240,7 +241,7 @@ const SearchForProject = ({
                             options={options}
                             value={
                               options.find(
-                                (option) => option.value === params[key]
+                                (option) => option.value === params[key],
                               ) || null
                             }
                             onChange={(option) =>
@@ -360,13 +361,13 @@ const SearchForProject = ({
                                 id={`inlineCheckbox${index}`}
                                 value={item.value}
                                 checked={(params[key] || []).includes(
-                                  item.value
+                                  item.value,
                                 )} // Controlled checkbox
                                 onChange={(e) =>
                                   handleSearchKey(
                                     key,
                                     e.target.checked ? item.value : null,
-                                    "checkbox"
+                                    "checkbox",
                                   )
                                 }
                               />

@@ -1,6 +1,6 @@
-import usFlag from "../assets/images/flags/us.jpg"
-import eth from "../assets/images/flags/eth.png"
-import oro from "../assets/images/flags/oromia.png"
+import usFlag from "../assets/images/flags/us.jpg";
+import eth from "../assets/images/flags/eth.png";
+import oro from "../assets/images/flags/oromia.png";
 const languages = {
   en: {
     label: "English",
@@ -14,7 +14,6 @@ const languages = {
     label: "Amharic",
     flag: eth,
   },
- 
-}
+};
 
-export default languages
+export default languages;

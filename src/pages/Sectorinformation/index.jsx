@@ -78,7 +78,7 @@ const SectorInformationModel = () => {
   const sectorCategoryOptions = createSelectOptions(
     sectorCategoryData?.data || [],
     "psc_id",
-    "psc_name"
+    "psc_name",
   );
 
   const sectorCategoryMap = useMemo(() => {
@@ -175,9 +175,9 @@ const SectorInformationModel = () => {
           return !data?.data.some(
             (item) =>
               item.sci_name_or == value &&
-              item.sci_id !== sectorInformation?.sci_id
+              item.sci_id !== sectorInformation?.sci_id,
           );
-        }
+        },
       ),
       sci_sector_category_id: numberValidation(1, 10, true),
       sci_name_am: Yup.string().required(t("sci_name_am")),
@@ -354,7 +354,7 @@ const SectorInformationModel = () => {
                 sectorCategoryMap[
                   cellProps.row.original.sci_sector_category_id
                 ],
-                30
+                30,
               ) || "-"}
             </span>
           );

@@ -21,7 +21,7 @@ const NotificationDropdown = (props) => {
   useEffect(() => {
     if (notifications) {
       const unreadCount = notifications.filter(
-        (notification) => notification.not_is_read == 0
+        (notification) => notification.not_is_read == 0,
       ).length;
       setUnreadNotifications(unreadCount);
     }
@@ -42,7 +42,7 @@ const NotificationDropdown = (props) => {
   const handleMarkUnreadAsRead = () => {
     const unreadNotificationIds = notifications
       .filter(
-        (notification) => notification.not_is_read === "0000-00-00 00:00:00"
+        (notification) => notification.not_is_read === "0000-00-00 00:00:00",
       )
       .map((notification) => notification.not_id);
     if (unreadNotificationIds.length > 0) {

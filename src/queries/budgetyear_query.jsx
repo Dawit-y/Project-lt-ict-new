@@ -51,7 +51,7 @@ export const useAddBudgetYear = () => {
   return useMutation({
     mutationFn: addBudgetYear,
     onSuccess: (newDataResponse) => {
-      queryClient.invalidateQueries({ queryKey: BUDGET_YEAR_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: BUDGET_YEAR_QUERY_KEY });
     },
   });
 };
@@ -62,7 +62,7 @@ export const useUpdateBudgetYear = () => {
   return useMutation({
     mutationFn: updateBudgetYear,
     onSuccess: (updatedBudgetYear) => {
-      queryClient.invalidateQueries({ queryKey: BUDGET_YEAR_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: BUDGET_YEAR_QUERY_KEY });
     },
   });
 };
@@ -73,7 +73,7 @@ export const useDeleteBudgetYear = () => {
   return useMutation({
     mutationFn: deleteBudgetYear,
     onSuccess: (deletedData) => {
-      queryClient.invalidateQueries({ queryKey: BUDGET_YEAR_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: BUDGET_YEAR_QUERY_KEY });
     },
   });
 };

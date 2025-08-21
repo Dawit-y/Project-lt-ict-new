@@ -105,8 +105,8 @@ const DepartmentTreeNode = ({
           {lang === "en" && node.dep_name_en
             ? node.dep_name_en
             : lang === "am" && node.dep_name_am
-            ? node.dep_name_am
-            : node.name}
+              ? node.dep_name_am
+              : node.name}
         </span>
       </div>
 

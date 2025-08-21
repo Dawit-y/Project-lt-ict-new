@@ -156,9 +156,9 @@ const BudgetSourceModel = () => {
         (value) => {
           return !data?.data.some(
             (item) =>
-              item.pbs_name_or == value && item.pbs_id !== budgetSource?.pbs_id
+              item.pbs_name_or == value && item.pbs_id !== budgetSource?.pbs_id,
           );
-        }
+        },
       ),
       pbs_name_am: Yup.string().required(t("pbs_name_am")),
       pbs_name_en: alphanumericValidation(2, 100, true),

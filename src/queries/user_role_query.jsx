@@ -80,7 +80,7 @@ export const useUpdateUserRoles = () => {
             data: oldData.data.map((data) =>
               data.url_id === updatedData.data.url_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -104,7 +104,7 @@ export const useDeleteUserRoles = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.url_id !== parseInt(variable)
+              (dept) => dept.url_id !== parseInt(variable),
             ),
           };
         });

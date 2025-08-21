@@ -68,7 +68,7 @@ export const useUpdateEmailInformation = () => {
           data: oldData.data.map((EmailInformationData) =>
             EmailInformationData.emi_id === updatedEmailInformation.data.emi_id
               ? { ...EmailInformationData, ...updatedEmailInformation.data }
-              : EmailInformationData
+              : EmailInformationData,
           ),
         };
       });
@@ -87,7 +87,8 @@ export const useDeleteEmailInformation = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (EmailInformationData) => EmailInformationData.emi_id !== parseInt(deletedData.deleted_id)
+            (EmailInformationData) =>
+              EmailInformationData.emi_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

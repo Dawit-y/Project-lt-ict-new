@@ -76,7 +76,7 @@ export const useUpdateMonitoringEvaluationType = () => {
             data: oldData.data.map((data) =>
               data.met_id === updatedData.data.met_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -100,7 +100,8 @@ export const useDeleteMonitoringEvaluationType = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (deletedData) => deletedData.met_id !== parseInt(deletedData.deleted_id)
+              (deletedData) =>
+                deletedData.met_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

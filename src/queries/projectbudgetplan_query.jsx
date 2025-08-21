@@ -68,9 +68,9 @@ export const useUpdateProjectBudgetPlan = () => {
           ...oldData,
           data: oldData.data.map((ProjectBudgetPlanData) =>
             ProjectBudgetPlanData.bpl_id ===
-              updatedProjectBudgetPlan.data.bpl_id
+            updatedProjectBudgetPlan.data.bpl_id
               ? { ...ProjectBudgetPlanData, ...updatedProjectBudgetPlan.data }
-              : ProjectBudgetPlanData
+              : ProjectBudgetPlanData,
           ),
         };
       });
@@ -90,7 +90,7 @@ export const useDeleteProjectBudgetPlan = () => {
           ...oldData,
           data: oldData.data.filter(
             (ProjectBudgetPlanData) =>
-              ProjectBudgetPlanData.bpl_id !== parseInt(deletedData.deleted_id)
+              ProjectBudgetPlanData.bpl_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

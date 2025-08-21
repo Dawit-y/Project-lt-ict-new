@@ -5,7 +5,7 @@ import {
   updateBudgetRequest,
   deleteBudgetRequest,
   getBudgetRequestforApproval,
-  updateBudgetRequestApproval
+  updateBudgetRequestApproval,
 } from "../helpers/cso_budget_request_helper";
 
 const BUDGET_REQUESTS_QUERY_KEY = ["csobudgetrequest"];
@@ -69,7 +69,7 @@ export const useUpdateBudgetRequestApproval = () => {
             data: oldData.data.map((BudgetRequestData) =>
               BudgetRequestData.bdr_id === updatedBudgetRequest.data.bdr_id
                 ? { ...BudgetRequestData, ...updatedBudgetRequest.data }
-                : BudgetRequestData
+                : BudgetRequestData,
             ),
           };
         });
@@ -148,7 +148,7 @@ export const useUpdateBudgetRequest = () => {
             data: oldData.data.map((BudgetRequestData) =>
               BudgetRequestData.bdr_id === updatedBudgetRequest.data.bdr_id
                 ? { ...BudgetRequestData, ...updatedBudgetRequest.data }
-                : BudgetRequestData
+                : BudgetRequestData,
             ),
           };
         });

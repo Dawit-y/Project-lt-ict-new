@@ -80,7 +80,7 @@ export const useUpdateProjectEmployee = () => {
             data: oldData.data.map((data) =>
               data.emp_id === updatedData.data.emp_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -105,7 +105,7 @@ export const useDeleteProjectEmployee = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.emp_id !== parseInt(variable)
+              (dept) => dept.emp_id !== parseInt(variable),
             ),
           };
         });

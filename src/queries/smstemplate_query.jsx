@@ -68,7 +68,7 @@ export const useUpdateSmsTemplate = () => {
           data: oldData.data.map((SmsTemplateData) =>
             SmsTemplateData.smt_id === updatedSmsTemplate.data.smt_id
               ? { ...SmsTemplateData, ...updatedSmsTemplate.data }
-              : SmsTemplateData
+              : SmsTemplateData,
           ),
         };
       });
@@ -87,7 +87,8 @@ export const useDeleteSmsTemplate = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (SmsTemplateData) => SmsTemplateData.smt_id !== parseInt(deletedData.deleted_id)
+            (SmsTemplateData) =>
+              SmsTemplateData.smt_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

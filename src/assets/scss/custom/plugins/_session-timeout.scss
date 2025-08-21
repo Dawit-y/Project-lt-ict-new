@@ -3,18 +3,18 @@
 //
 
 #session-timeout-dialog {
-    .close {
-        display: none;
-    }
+  .close {
+    display: none;
+  }
 
-    .countdown-holder {
-        color: $danger;
-        font-weight: $font-weight-medium;
-    }
+  .countdown-holder {
+    color: $danger;
+    font-weight: $font-weight-medium;
+  }
 
-    .btn-default {
-        background-color: $white;
-        color: $danger;
-        box-shadow: none;
-    }
+  .btn-default {
+    background-color: $white;
+    color: $danger;
+    box-shadow: none;
+  }
 }

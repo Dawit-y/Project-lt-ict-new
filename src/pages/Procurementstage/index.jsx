@@ -145,9 +145,9 @@ const ProcurementStageModel = () => {
           return !data?.data.some(
             (item) =>
               item.pst_name_or == value &&
-              item.pst_id !== procurementStage?.pst_id
+              item.pst_id !== procurementStage?.pst_id,
           );
-        }
+        },
       ),
       pst_name_am: onlyAmharicValidation(2, 100, true),
       pst_name_en: alphanumericValidation(2, 100, true),
@@ -385,247 +385,247 @@ const ProcurementStageModel = () => {
     return baseColumns;
   }, [handleProcurementStageClick, toggleViewModal, onClickDelete]);
   return (
-		<React.Fragment>
-			<ProcurementStageModal
-				isOpen={modal1}
-				toggle={toggleViewModal}
-				transaction={transaction}
-			/>
-			<DeleteModal
-				show={deleteModal}
-				onDeleteClick={handleDeleteProcurementStage}
-				onCloseClick={() => setDeleteModal(false)}
-				isLoading={deleteProcurementStage.isPending}
-			/>
-			<div className="page-content">
-				<div className="container-fluid">
-					<Breadcrumbs
-						title={t("procurement_stage")}
-						breadcrumbItem={t("procurement_stage")}
-					/>
-					{isLoading || isSearchLoading ? (
-						<Spinners />
-					) : (
-						<Row>
-							<Col xs="12">
-								<Card>
-									<CardBody>
-										<TableContainer
-											columns={columns}
-											data={
-												showSearchResult
-													? searchResults?.data
-													: data?.data || []
-											}
-											isGlobalFilter={true}
-											isAddButton={data?.previledge?.is_role_can_add == 1}
-											isCustomPageSize={true}
-											handleUserClick={handleProcurementStageClicks}
-											isPagination={true}
-											SearchPlaceholder={t("Results") + "..."}
-											buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-											buttonName={t("add")}
-											tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-											theadClass="table-light"
-											pagination="pagination"
-											paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-											refetch={refetch}
-											isFetching={isFetching}
-											isExcelExport={true}
-											isPdfExport={true}
-											isPrint={true}
-											tableName="Procurement Stage"
-											exportColumns={procurementStageExportColumns}
-										/>
-									</CardBody>
-								</Card>
-							</Col>
-						</Row>
-					)}
-					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
-						<ModalHeader toggle={toggle} tag="h4">
-							{!!isEdit
-								? t("edit") + " " + t("procurement_stage")
-								: t("add") + " " + t("procurement_stage")}
-						</ModalHeader>
-						<ModalBody>
-							<Form
-								onSubmit={(e) => {
-									e.preventDefault();
-									validation.handleSubmit();
-									return false;
-								}}
-							>
-								<Row>
-									<Col className="col-md-6 mb-3">
-										<Label>
-											{t("pst_name_or")} <span className="text-danger">*</span>
-										</Label>
-										<Input
-											name="pst_name_or"
-											type="text"
-											placeholder={t("pst_name_or")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.pst_name_or || ""}
-											invalid={
-												validation.touched.pst_name_or &&
-												validation.errors.pst_name_or
-													? true
-													: false
-											}
-											maxLength={50}
-										/>
-										{validation.touched.pst_name_or &&
-										validation.errors.pst_name_or ? (
-											<FormFeedback type="invalid">
-												{validation.errors.pst_name_or}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>
-											{t("pst_name_en")}
-											<span className="text-danger">*</span>
-										</Label>
-										<Input
-											name="pst_name_en"
-											type="text"
-											placeholder={t("pst_name_en")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.pst_name_en || ""}
-											invalid={
-												validation.touched.pst_name_en &&
-												validation.errors.pst_name_en
-													? true
-													: false
-											}
-											maxLength={50}
-										/>
-										{validation.touched.pst_name_en &&
-										validation.errors.pst_name_en ? (
-											<FormFeedback type="invalid">
-												{validation.errors.pst_name_en}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>
-											{t("pst_name_am")}
-											<span className="text-danger">*</span>
-										</Label>
-										<Input
-											name="pst_name_am"
-											type="text"
-											placeholder={t("pst_name_am")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.pst_name_am || ""}
-											invalid={
-												validation.touched.pst_name_am &&
-												validation.errors.pst_name_am
-													? true
-													: false
-											}
-											maxLength={50}
-										/>
-										{validation.touched.pst_name_am &&
-										validation.errors.pst_name_am ? (
-											<FormFeedback type="invalid">
-												{validation.errors.pst_name_am}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("pst_description")}</Label>
-										<Input
-											name="pst_description"
-											type="textarea"
-											placeholder={t("pst_description")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.pst_description || ""}
-											invalid={
-												validation.touched.pst_description &&
-												validation.errors.pst_description
-													? true
-													: false
-											}
-											maxLength={425}
-										/>
-										{validation.touched.pst_description &&
-										validation.errors.pst_description ? (
-											<FormFeedback type="invalid">
-												{validation.errors.pst_description}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3 mr-2">
-										<Label className="me-1">{t("is_inactive")}</Label>
+    <React.Fragment>
+      <ProcurementStageModal
+        isOpen={modal1}
+        toggle={toggleViewModal}
+        transaction={transaction}
+      />
+      <DeleteModal
+        show={deleteModal}
+        onDeleteClick={handleDeleteProcurementStage}
+        onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteProcurementStage.isPending}
+      />
+      <div className="page-content">
+        <div className="container-fluid">
+          <Breadcrumbs
+            title={t("procurement_stage")}
+            breadcrumbItem={t("procurement_stage")}
+          />
+          {isLoading || isSearchLoading ? (
+            <Spinners />
+          ) : (
+            <Row>
+              <Col xs="12">
+                <Card>
+                  <CardBody>
+                    <TableContainer
+                      columns={columns}
+                      data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
+                      isGlobalFilter={true}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
+                      isCustomPageSize={true}
+                      handleUserClick={handleProcurementStageClicks}
+                      isPagination={true}
+                      SearchPlaceholder={t("Results") + "..."}
+                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                      buttonName={t("add")}
+                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                      theadClass="table-light"
+                      pagination="pagination"
+                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                      refetch={refetch}
+                      isFetching={isFetching}
+                      isExcelExport={true}
+                      isPdfExport={true}
+                      isPrint={true}
+                      tableName="Procurement Stage"
+                      exportColumns={procurementStageExportColumns}
+                    />
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          )}
+          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
+            <ModalHeader toggle={toggle} tag="h4">
+              {!!isEdit
+                ? t("edit") + " " + t("procurement_stage")
+                : t("add") + " " + t("procurement_stage")}
+            </ModalHeader>
+            <ModalBody>
+              <Form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  validation.handleSubmit();
+                  return false;
+                }}
+              >
+                <Row>
+                  <Col className="col-md-6 mb-3">
+                    <Label>
+                      {t("pst_name_or")} <span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      name="pst_name_or"
+                      type="text"
+                      placeholder={t("pst_name_or")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pst_name_or || ""}
+                      invalid={
+                        validation.touched.pst_name_or &&
+                        validation.errors.pst_name_or
+                          ? true
+                          : false
+                      }
+                      maxLength={50}
+                    />
+                    {validation.touched.pst_name_or &&
+                    validation.errors.pst_name_or ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pst_name_or}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>
+                      {t("pst_name_en")}
+                      <span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      name="pst_name_en"
+                      type="text"
+                      placeholder={t("pst_name_en")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pst_name_en || ""}
+                      invalid={
+                        validation.touched.pst_name_en &&
+                        validation.errors.pst_name_en
+                          ? true
+                          : false
+                      }
+                      maxLength={50}
+                    />
+                    {validation.touched.pst_name_en &&
+                    validation.errors.pst_name_en ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pst_name_en}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>
+                      {t("pst_name_am")}
+                      <span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      name="pst_name_am"
+                      type="text"
+                      placeholder={t("pst_name_am")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pst_name_am || ""}
+                      invalid={
+                        validation.touched.pst_name_am &&
+                        validation.errors.pst_name_am
+                          ? true
+                          : false
+                      }
+                      maxLength={50}
+                    />
+                    {validation.touched.pst_name_am &&
+                    validation.errors.pst_name_am ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pst_name_am}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("pst_description")}</Label>
+                    <Input
+                      name="pst_description"
+                      type="textarea"
+                      placeholder={t("pst_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.pst_description || ""}
+                      invalid={
+                        validation.touched.pst_description &&
+                        validation.errors.pst_description
+                          ? true
+                          : false
+                      }
+                      maxLength={425}
+                    />
+                    {validation.touched.pst_description &&
+                    validation.errors.pst_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pst_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3 mr-2">
+                    <Label className="me-1">{t("is_inactive")}</Label>
 
-										<Input
-											name="pst_status"
-											type="checkbox"
-											placeholder={t("pst_status")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											checked={validation.values.pst_status}
-											invalid={
-												validation.touched.pst_status &&
-												validation.errors.pst_status
-											}
-										/>
-										{validation.touched.pst_status &&
-										validation.errors.pst_status ? (
-											<FormFeedback type="invalid">
-												{validation.errors.pst_status}
-											</FormFeedback>
-										) : null}
-									</Col>
-								</Row>
-								<Row>
-									<Col>
-										<div className="text-end">
-											{addProcurementStage.isPending ||
-											updateProcurementStage.isPending ? (
-												<Button
-													color="success"
-													type="submit"
-													className="save-user"
-													disabled={
-														addProcurementStage.isPending ||
-														updateProcurementStage.isPending ||
-														!validation.dirty
-													}
-												>
-													<Spinner size={"sm"} color="light" className="me-2" />
-													{t("Save")}
-												</Button>
-											) : (
-												<Button
-													color="success"
-													type="submit"
-													className="save-user"
-													disabled={
-														addProcurementStage.isPending ||
-														updateProcurementStage.isPending ||
-														!validation.dirty
-													}
-												>
-													{t("Save")}
-												</Button>
-											)}
-										</div>
-									</Col>
-								</Row>
-							</Form>
-						</ModalBody>
-					</Modal>
-				</div>
-			</div>
-		</React.Fragment>
-	);
+                    <Input
+                      name="pst_status"
+                      type="checkbox"
+                      placeholder={t("pst_status")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      checked={validation.values.pst_status}
+                      invalid={
+                        validation.touched.pst_status &&
+                        validation.errors.pst_status
+                      }
+                    />
+                    {validation.touched.pst_status &&
+                    validation.errors.pst_status ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.pst_status}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <div className="text-end">
+                      {addProcurementStage.isPending ||
+                      updateProcurementStage.isPending ? (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addProcurementStage.isPending ||
+                            updateProcurementStage.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          <Spinner size={"sm"} color="light" className="me-2" />
+                          {t("Save")}
+                        </Button>
+                      ) : (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addProcurementStage.isPending ||
+                            updateProcurementStage.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          {t("Save")}
+                        </Button>
+                      )}
+                    </div>
+                  </Col>
+                </Row>
+              </Form>
+            </ModalBody>
+          </Modal>
+        </div>
+      </div>
+    </React.Fragment>
+  );
 };
 ProcurementStageModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

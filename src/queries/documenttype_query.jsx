@@ -68,7 +68,7 @@ export const useUpdateDocumentType = () => {
           data: oldData.data.map((DocumentTypeData) =>
             DocumentTypeData.pdt_id === updatedDocumentType.data.pdt_id
               ? { ...DocumentTypeData, ...updatedDocumentType.data }
-              : DocumentTypeData
+              : DocumentTypeData,
           ),
         };
       });
@@ -87,7 +87,8 @@ export const useDeleteDocumentType = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (DocumentTypeData) => DocumentTypeData.pdt_id !== parseInt(deletedData.deleted_id)
+            (DocumentTypeData) =>
+              DocumentTypeData.pdt_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

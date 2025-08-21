@@ -68,7 +68,7 @@ export const useUpdateCsoInfo = () => {
           data: oldData.data.map((CsoInfoData) =>
             CsoInfoData.cso_id === updatedCsoInfo.data.cso_id
               ? { ...CsoInfoData, ...updatedCsoInfo.data }
-              : CsoInfoData
+              : CsoInfoData,
           ),
         };
       });
@@ -86,7 +86,8 @@ export const useDeleteCsoInfo = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (CsoInfoData) => CsoInfoData.cso_id !== parseInt(deletedData.deleted_id)
+            (CsoInfoData) =>
+              CsoInfoData.cso_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

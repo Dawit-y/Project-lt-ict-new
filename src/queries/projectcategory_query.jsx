@@ -28,7 +28,7 @@ export const useSearchProjectCategorys = (searchParams = {}) => {
     meta: { persist: false },
     refetchOnWindowFocus: true,
     refetchOnMount: true,
-    enabled: Object.keys(searchParams).length > 0
+    enabled: Object.keys(searchParams).length > 0,
   });
 };
 
@@ -68,7 +68,7 @@ export const useUpdateProjectCategory = () => {
           data: oldData.data.map((ProjectCategoryData) =>
             ProjectCategoryData.pct_id === updatedProjectCategory.data.pct_id
               ? { ...ProjectCategoryData, ...updatedProjectCategory.data }
-              : ProjectCategoryData
+              : ProjectCategoryData,
           ),
         };
       });
@@ -87,7 +87,8 @@ export const useDeleteProjectCategory = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (ProjectCategoryData) => ProjectCategoryData.pct_id !== parseInt(deletedData.deleted_id)
+            (ProjectCategoryData) =>
+              ProjectCategoryData.pct_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

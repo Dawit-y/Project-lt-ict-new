@@ -77,7 +77,7 @@ export const useUpdateProjectBudgetExpenditure = () => {
             data: oldData.data.map((data) =>
               data.pbe_id === updatedProjectBudgetExpenditure.data.pbe_id
                 ? { ...data, ...updatedProjectBudgetExpenditure.data }
-                : data
+                : data,
             ),
           };
         });
@@ -102,7 +102,7 @@ export const useDeleteProjectBudgetExpenditure = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.pbe_id !== parseInt(variable)
+              (dept) => dept.pbe_id !== parseInt(variable),
             ),
           };
         });

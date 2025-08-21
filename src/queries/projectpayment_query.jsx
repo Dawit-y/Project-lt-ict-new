@@ -80,7 +80,7 @@ export const useUpdateProjectPayment = () => {
             data: oldData.data.map((data) =>
               data.prp_id === updatedData.data.prp_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -105,7 +105,7 @@ export const useDeleteProjectPayment = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.prp_id !== parseInt(deletedData.deleted_id)
+              (dept) => dept.prp_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

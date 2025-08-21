@@ -65,14 +65,14 @@ const ProposalRequestModel = (props) => {
 
   const { data, isLoading, error, isError, refetch } = useFetchProposalRequests(
     param,
-    isActive
+    isActive,
   );
 
   const { data: statusData } = useFetchRequestStatuss();
   const statusOptions = createSelectOptions(
     statusData?.data || [],
     "rqs_id",
-    "rqs_name_or"
+    "rqs_name_or",
   );
   const statusMap = useMemo(() => {
     return (
@@ -87,7 +87,7 @@ const ProposalRequestModel = (props) => {
   const categoryOptions = createSelectOptions(
     categoryData?.data || [],
     "rqc_id",
-    "rqc_name_or"
+    "rqc_name_or",
   );
 
   const categoryMap = useMemo(() => {
@@ -173,7 +173,7 @@ const ProposalRequestModel = (props) => {
       prr_title: alphanumericValidation(2, 100, true),
       prr_request_status_id: Yup.string().required(t("prr_request_status_id")),
       prr_request_category_id: Yup.string().required(
-        t("prr_request_category_id")
+        t("prr_request_category_id"),
       ),
       prr_request_date_gc: Yup.string().required(t("prr_request_date_gc")),
     }),
@@ -500,7 +500,7 @@ const ProposalRequestModel = (props) => {
                   value={validation.values.prr_request_status_id || ""}
                   invalid={
                     validation.touched.prr_request_status_id &&
-                      validation.errors.prr_request_status_id
+                    validation.errors.prr_request_status_id
                       ? true
                       : false
                   }
@@ -513,7 +513,7 @@ const ProposalRequestModel = (props) => {
                   ))}
                 </Input>
                 {validation.touched.prr_request_status_id &&
-                  validation.errors.prr_request_status_id ? (
+                validation.errors.prr_request_status_id ? (
                   <FormFeedback type="invalid">
                     {validation.errors.prr_request_status_id}
                   </FormFeedback>
@@ -533,7 +533,7 @@ const ProposalRequestModel = (props) => {
                   value={validation.values.prr_request_category_id || ""}
                   invalid={
                     validation.touched.prr_request_category_id &&
-                      validation.errors.prr_request_category_id
+                    validation.errors.prr_request_category_id
                       ? true
                       : false
                   }
@@ -546,7 +546,7 @@ const ProposalRequestModel = (props) => {
                   ))}
                 </Input>
                 {validation.touched.prr_request_category_id &&
-                  validation.errors.prr_request_category_id ? (
+                validation.errors.prr_request_category_id ? (
                   <FormFeedback type="invalid">
                     {validation.errors.prr_request_category_id}
                   </FormFeedback>
@@ -596,13 +596,13 @@ const ProposalRequestModel = (props) => {
                   value={validation.values.prr_description || ""}
                   invalid={
                     validation.touched.prr_description &&
-                      validation.errors.prr_description
+                    validation.errors.prr_description
                       ? true
                       : false
                   }
                 />
                 {validation.touched.prr_description &&
-                  validation.errors.prr_description ? (
+                validation.errors.prr_description ? (
                   <FormFeedback type="invalid">
                     {validation.errors.prr_description}
                   </FormFeedback>
@@ -613,7 +613,7 @@ const ProposalRequestModel = (props) => {
               <Col>
                 <div className="text-end">
                   {addProposalRequest.isPending ||
-                    updateProposalRequest.isPending ? (
+                  updateProposalRequest.isPending ? (
                     <Button
                       color="success"
                       type="submit"

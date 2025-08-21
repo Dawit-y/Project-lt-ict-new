@@ -72,7 +72,7 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
   const expenditureCodeOptions = createSelectOptions(
     expenditureCodeData?.data || [],
     "pec_id",
-    "pec_name"
+    "pec_name",
   );
 
   const expenditureCodeMap = useMemo(() => {
@@ -153,9 +153,9 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
           return !data?.data.some(
             (item) =>
               item.bed_budget_expenditure_code_id == value &&
-              item.bed_id !== budgetExipDetail?.bed_id
+              item.bed_id !== budgetExipDetail?.bed_id,
           );
-        }
+        },
       ),
       bed_amount: amountValidation(1000, 1000000000, true),
       bed_description: alphanumericValidation(3, 425, false),
@@ -260,7 +260,7 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
             <span>
               {
                 expenditureCodeMap[
-                cellProps.row.original.bed_budget_expenditure_code_id
+                  cellProps.row.original.bed_budget_expenditure_code_id
                 ]
               }
             </span>
@@ -361,196 +361,196 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
   }
 
   return (
-		<React.Fragment>
-			<BudgetExipDetailModal
-				isOpen={modal1}
-				toggle={toggleViewModal}
-				transaction={transaction}
-			/>
-			<DeleteModal
-				show={deleteModal}
-				onDeleteClick={handleDeleteBudgetExipDetail}
-				onCloseClick={() => setDeleteModal(false)}
-				isLoading={deleteBudgetExipDetail.isPending}
-			/>
-			<div className="">
-				<div className="container-fluid1">
-					{isLoading || isSearchLoading ? (
-						<Spinners />
-					) : (
-						<Row>
-							<Col xs="12">
-								<Card>
-									<CardBody>
-										<TableContainer
-											columns={columns}
-											data={
-												showSearchResult
-													? searchResults?.data
-													: data?.data || []
-											}
-											isGlobalFilter={true}
-											isAddButton={true}
-											isCustomPageSize={true}
-											handleUserClick={handleBudgetExipDetailClicks}
-											isPagination={true}
-											// SearchPlaceholder="26 records..."
-											SearchPlaceholder={t("filter_placeholder")}
-											buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-											buttonName={t("add")}
-											tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-											theadClass="table-light"
-											pagination="pagination"
-											paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-										/>
-									</CardBody>
-								</Card>
-							</Col>
-						</Row>
-					)}
-					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
-						<ModalHeader toggle={toggle} tag="h4">
-							{!!isEdit
-								? t("edit") + " " + t("budget_exip_detail")
-								: t("add") + " " + t("budget_exip_detail")}
-						</ModalHeader>
-						<ModalBody>
-							<Form
-								onSubmit={(e) => {
-									e.preventDefault();
-									validation.handleSubmit();
-									return false;
-								}}
-							>
-								<Row>
-									<Col className="col-md-6 mb-3">
-										<Label>
-											{t("bed_budget_expenditure_code_id")}{" "}
-											<span className="text-danger">*</span>
-										</Label>
-										<Input
-											name="bed_budget_expenditure_code_id"
-											id="bed_budget_expenditure_code_id"
-											type="select"
-											className="form-select"
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={
-												validation.values.bed_budget_expenditure_code_id || ""
-											}
-											invalid={
-												validation.touched.bed_budget_expenditure_code_id &&
-												validation.errors.bed_budget_expenditure_code_id
-													? true
-													: false
-											}
-										>
-											<option value={null}>{t("select_one")}</option>
-											{expenditureCodeOptions.map((option) => (
-												<option key={option.value} value={option.value}>
-													{t(`${option.label}`)}
-												</option>
-											))}
-										</Input>
-										{validation.touched.bed_budget_expenditure_code_id &&
-										validation.errors.bed_budget_expenditure_code_id ? (
-											<FormFeedback type="invalid">
-												{validation.errors.bed_budget_expenditure_code_id}
-											</FormFeedback>
-										) : null}
-									</Col>
+    <React.Fragment>
+      <BudgetExipDetailModal
+        isOpen={modal1}
+        toggle={toggleViewModal}
+        transaction={transaction}
+      />
+      <DeleteModal
+        show={deleteModal}
+        onDeleteClick={handleDeleteBudgetExipDetail}
+        onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteBudgetExipDetail.isPending}
+      />
+      <div className="">
+        <div className="container-fluid1">
+          {isLoading || isSearchLoading ? (
+            <Spinners />
+          ) : (
+            <Row>
+              <Col xs="12">
+                <Card>
+                  <CardBody>
+                    <TableContainer
+                      columns={columns}
+                      data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
+                      isGlobalFilter={true}
+                      isAddButton={true}
+                      isCustomPageSize={true}
+                      handleUserClick={handleBudgetExipDetailClicks}
+                      isPagination={true}
+                      // SearchPlaceholder="26 records..."
+                      SearchPlaceholder={t("filter_placeholder")}
+                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                      buttonName={t("add")}
+                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                      theadClass="table-light"
+                      pagination="pagination"
+                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                    />
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          )}
+          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
+            <ModalHeader toggle={toggle} tag="h4">
+              {!!isEdit
+                ? t("edit") + " " + t("budget_exip_detail")
+                : t("add") + " " + t("budget_exip_detail")}
+            </ModalHeader>
+            <ModalBody>
+              <Form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  validation.handleSubmit();
+                  return false;
+                }}
+              >
+                <Row>
+                  <Col className="col-md-6 mb-3">
+                    <Label>
+                      {t("bed_budget_expenditure_code_id")}{" "}
+                      <span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      name="bed_budget_expenditure_code_id"
+                      id="bed_budget_expenditure_code_id"
+                      type="select"
+                      className="form-select"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={
+                        validation.values.bed_budget_expenditure_code_id || ""
+                      }
+                      invalid={
+                        validation.touched.bed_budget_expenditure_code_id &&
+                        validation.errors.bed_budget_expenditure_code_id
+                          ? true
+                          : false
+                      }
+                    >
+                      <option value={null}>{t("select_one")}</option>
+                      {expenditureCodeOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {t(`${option.label}`)}
+                        </option>
+                      ))}
+                    </Input>
+                    {validation.touched.bed_budget_expenditure_code_id &&
+                    validation.errors.bed_budget_expenditure_code_id ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.bed_budget_expenditure_code_id}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
 
-									<Col className="col-md-6 mb-3">
-										<Label>{t("bed_amount")}</Label>
-										<Input
-											name="bed_amount"
-											type="text"
-											placeholder={t("bed_amount")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.bed_amount || ""}
-											invalid={
-												validation.touched.bed_amount &&
-												validation.errors.bed_amount
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.bed_amount &&
-										validation.errors.bed_amount ? (
-											<FormFeedback type="invalid">
-												{validation.errors.bed_amount}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("bed_description")}</Label>
-										<Input
-											name="bed_description"
-											type="textarea"
-											placeholder={t("bed_description")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.bed_description || ""}
-											invalid={
-												validation.touched.bed_description &&
-												validation.errors.bed_description
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.bed_description &&
-										validation.errors.bed_description ? (
-											<FormFeedback type="invalid">
-												{validation.errors.bed_description}
-											</FormFeedback>
-										) : null}
-									</Col>
-								</Row>
-								<Row>
-									<Col>
-										<div className="text-end">
-											{addBudgetExipDetail.isPending ||
-											updateBudgetExipDetail.isPending ? (
-												<Button
-													color="success"
-													type="submit"
-													className="save-user"
-													disabled={
-														addBudgetExipDetail.isPending ||
-														updateBudgetExipDetail.isPending ||
-														!validation.dirty
-													}
-												>
-													<Spinner size={"sm"} color="light" className="me-2" />
-													{t("Save")}
-												</Button>
-											) : (
-												<Button
-													color="success"
-													type="submit"
-													className="save-user"
-													disabled={
-														addBudgetExipDetail.isPending ||
-														updateBudgetExipDetail.isPending ||
-														!validation.dirty
-													}
-												>
-													{t("Save")}
-												</Button>
-											)}
-										</div>
-									</Col>
-								</Row>
-							</Form>
-						</ModalBody>
-					</Modal>
-				</div>
-			</div>
-		</React.Fragment>
-	);
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("bed_amount")}</Label>
+                    <Input
+                      name="bed_amount"
+                      type="text"
+                      placeholder={t("bed_amount")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bed_amount || ""}
+                      invalid={
+                        validation.touched.bed_amount &&
+                        validation.errors.bed_amount
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bed_amount &&
+                    validation.errors.bed_amount ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.bed_amount}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("bed_description")}</Label>
+                    <Input
+                      name="bed_description"
+                      type="textarea"
+                      placeholder={t("bed_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bed_description || ""}
+                      invalid={
+                        validation.touched.bed_description &&
+                        validation.errors.bed_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.bed_description &&
+                    validation.errors.bed_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.bed_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <div className="text-end">
+                      {addBudgetExipDetail.isPending ||
+                      updateBudgetExipDetail.isPending ? (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addBudgetExipDetail.isPending ||
+                            updateBudgetExipDetail.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          <Spinner size={"sm"} color="light" className="me-2" />
+                          {t("Save")}
+                        </Button>
+                      ) : (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addBudgetExipDetail.isPending ||
+                            updateBudgetExipDetail.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          {t("Save")}
+                        </Button>
+                      )}
+                    </div>
+                  </Col>
+                </Row>
+              </Form>
+            </ModalBody>
+          </Modal>
+        </div>
+      </div>
+    </React.Fragment>
+  );
 };
 BudgetExipDetailModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

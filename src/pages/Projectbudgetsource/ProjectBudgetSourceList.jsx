@@ -92,7 +92,7 @@ const ProjectBudgetSourceList = () => {
   const budgetSourceOptions = createSelectOptions(
     budgetSourceData?.data || [],
     "pbs_id",
-    "pbs_name_or"
+    "pbs_name_or",
   );
 
   // When selection changes, update selectedRows

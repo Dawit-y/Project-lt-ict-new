@@ -77,7 +77,7 @@ export const useUpdateProcurementParticipant = () => {
             data: oldData.data.map((data) =>
               data.ppp_id === updatedData.data.ppp_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -101,7 +101,8 @@ export const useDeleteProcurementParticipant = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (deletedData) => deletedData.ppp_id !== parseInt(deletedData.deleted_id)
+              (deletedData) =>
+                deletedData.ppp_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

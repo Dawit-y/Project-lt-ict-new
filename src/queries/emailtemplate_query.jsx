@@ -68,7 +68,7 @@ export const useUpdateEmailTemplate = () => {
           data: oldData.data.map((EmailTemplateData) =>
             EmailTemplateData.emt_id === updatedEmailTemplate.data.emt_id
               ? { ...EmailTemplateData, ...updatedEmailTemplate.data }
-              : EmailTemplateData
+              : EmailTemplateData,
           ),
         };
       });
@@ -87,7 +87,8 @@ export const useDeleteEmailTemplate = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (EmailTemplateData) => EmailTemplateData.emt_id !== parseInt(deletedData.deleted_id)
+            (EmailTemplateData) =>
+              EmailTemplateData.emt_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

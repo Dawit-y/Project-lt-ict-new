@@ -6,7 +6,7 @@ import {
   addProject,
   deleteProject,
   getSearchProject,
-  getChildProjects
+  getChildProjects,
 } from "../helpers/project_backend_helper";
 
 export const PROJECT_QUERY_KEY = ["project"];
@@ -30,7 +30,7 @@ export const useSearchOnlyProjects = (param = {}) => {
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     refetchOnMount: true,
-    enabled: false
+    enabled: false,
   });
 };
 

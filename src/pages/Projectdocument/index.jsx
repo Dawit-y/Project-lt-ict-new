@@ -43,7 +43,7 @@ const truncateText = (text, maxLength) => {
 
 const ProjectDocumentModel = (props) => {
   const { passedId, isActive } = props;
-  const param = { project_id: passedId ,request_type: "single" };
+  const param = { project_id: passedId, request_type: "single" };
 
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
@@ -56,7 +56,7 @@ const ProjectDocumentModel = (props) => {
 
   const { data, isLoading, isError, error, refetch } = useFetchProjectDocuments(
     param,
-    isActive
+    isActive,
   );
   const addProjectDocument = useAddProjectDocument();
   const updateProjectDocument = useUpdateProjectDocument();
@@ -89,7 +89,7 @@ const ProjectDocumentModel = (props) => {
     }
     toggle();
   };
-  
+
   const handleDeleteProjectDocument = async () => {
     if (projectDocument && projectDocument.prd_id) {
       try {
@@ -449,7 +449,6 @@ const ProjectDocumentModel = (props) => {
             theadClass="table-light"
             pagination="pagination"
             paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-
           />
         )}
 
@@ -480,7 +479,7 @@ const ProjectDocumentModel = (props) => {
                     onChange={(e) => {
                       validation.setFieldValue(
                         "prd_status",
-                        Number(e.target.value)
+                        Number(e.target.value),
                       );
                     }}
                     onBlur={validation.handleBlur}

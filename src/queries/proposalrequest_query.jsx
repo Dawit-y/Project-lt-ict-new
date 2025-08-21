@@ -85,7 +85,7 @@ export const useUpdateProposalRequest = () => {
             data: oldData.data.map((ProposalRequestData) =>
               ProposalRequestData.prr_id === updatedProposalRequest.data.prr_id
                 ? { ...ProposalRequestData, ...updatedProposalRequest.data }
-                : ProposalRequestData
+                : ProposalRequestData,
             ),
           };
         });
@@ -112,7 +112,7 @@ export const useDeleteProposalRequest = () => {
             ...oldData,
             data: oldData.data.filter(
               (ProposalRequestData) =>
-                ProposalRequestData.prr_id !== parseInt(variable)
+                ProposalRequestData.prr_id !== parseInt(variable),
             ),
           };
         });

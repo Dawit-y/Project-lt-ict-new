@@ -80,7 +80,7 @@ export const useUpdateProjectPlan = () => {
             data: oldData.data.map((data) =>
               data.pld_id === updatedData.data.pld_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -105,7 +105,7 @@ export const useDeleteProjectPlan = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.pld_id !== parseInt(variable)
+              (dept) => dept.pld_id !== parseInt(variable),
             ),
           };
         });

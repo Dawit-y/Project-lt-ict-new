@@ -171,7 +171,7 @@ const GeoLocation = ({ passedId, isActive }) => {
         }
       },
     }),
-    []
+    [],
   );
 
   const updateProject = useUpdateProject();

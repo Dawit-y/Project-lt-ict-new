@@ -28,7 +28,7 @@ const ExportToDOCX = ({
     if (!tableData || tableData.length === 0) return;
 
     const filteredKeys = Object.keys(tableData[0]).filter((key) =>
-      includeKey.includes(key)
+      includeKey.includes(key),
     );
 
     // Build the table header row
@@ -43,7 +43,7 @@ const ExportToDOCX = ({
             new TableCell({
               children: [new Paragraph(t(key))],
               width: { size: 2000, type: WidthType.DXA },
-            })
+            }),
         ),
       ],
     });
@@ -59,7 +59,7 @@ const ExportToDOCX = ({
             (key) =>
               new TableCell({
                 children: [new Paragraph(row[key]?.toString() || "")],
-              })
+              }),
           ),
         ],
       });

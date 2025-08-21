@@ -1,7 +1,6 @@
 import { del, get, post, put } from "./api_Lists";
 //import * as url from "./url_Lists";
 
-const apiUrl = import.meta.env.VITE_BASE_API_URL;
 const GET_USER_ROLE = "user_role/listgrid";
 const ADD_USER_ROLE = "user_role/insertgrid";
 const UPDATE_USER_ROLE = "user_role/updategrid";
@@ -14,7 +13,7 @@ export const getUserRole = async (param = {}) => {
     const response = await post(url);
     return response;
   } catch (error) {
-    console.log("Error in fetching data:", error);
+    throw error;
   }
 };
 // add Projects
@@ -22,8 +21,8 @@ export const addUserRole = async (objectName) =>
   await post(ADD_USER_ROLE, objectName);
 // update objectNames
 export const updateUserRole = (objectName) =>
-	post(UPDATE_USER_ROLE + `?url_id=${objectName?.url_id}`, objectName);
+  post(UPDATE_USER_ROLE + `?url_id=${objectName?.url_id}`, objectName);
 
 // delete objectNames
 export const deleteUserRole = (objectName) =>
-	post(DELETE_USER_ROLE + `?url_id=${objectName}`);
+  post(DELETE_USER_ROLE + `?url_id=${objectName}`);

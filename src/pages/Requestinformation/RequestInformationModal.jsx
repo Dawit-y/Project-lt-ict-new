@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useTransition } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,11 +8,11 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+} from "reactstrap";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+  width: "100%",
+  height: "100%",
 };
 
 const RequestInformationModal = (props) => {
@@ -35,49 +35,74 @@ const RequestInformationModal = (props) => {
         <ModalBody>
           <tr>
             <p className="mb-2">
-              {t('rqi_title')}: <span className="text-primary">{transaction.rqi_title}</span>
+              {t("rqi_title")}:{" "}
+              <span className="text-primary">{transaction.rqi_title}</span>
             </p>
-          </tr><tr>
+          </tr>
+          <tr>
             <p className="mb-2">
-              {t('rqi_object_id')}: <span className="text-primary">{transaction.rqi_object_id}</span>
+              {t("rqi_object_id")}:{" "}
+              <span className="text-primary">{transaction.rqi_object_id}</span>
             </p>
-          </tr><tr>
+          </tr>
+          <tr>
             <p className="mb-2">
-              {t('rqi_request_status_id')}: <span className="text-primary">{transaction.rqi_request_status_id}</span>
+              {t("rqi_request_status_id")}:{" "}
+              <span className="text-primary">
+                {transaction.rqi_request_status_id}
+              </span>
             </p>
-          </tr><tr>
+          </tr>
+          <tr>
             <p className="mb-2">
-              {t('rqi_request_category_id')}: <span className="text-primary">{transaction.rqi_request_category_id}</span>
+              {t("rqi_request_category_id")}:{" "}
+              <span className="text-primary">
+                {transaction.rqi_request_category_id}
+              </span>
             </p>
-          </tr><tr>
+          </tr>
+          <tr>
             <p className="mb-2">
-              {t('rqi_request_date_et')}: <span className="text-primary">{transaction.rqi_request_date_et}</span>
+              {t("rqi_request_date_et")}:{" "}
+              <span className="text-primary">
+                {transaction.rqi_request_date_et}
+              </span>
             </p>
-          </tr><tr>
+          </tr>
+          <tr>
             <p className="mb-2">
-              {t('rqi_request_date_gc')}: <span className="text-primary">{transaction.rqi_request_date_gc}</span>
+              {t("rqi_request_date_gc")}:{" "}
+              <span className="text-primary">
+                {transaction.rqi_request_date_gc}
+              </span>
             </p>
-          </tr><tr>
+          </tr>
+          <tr>
             <p className="mb-2">
-              {t('rqi_description')}: <span className="text-primary">{transaction.rqi_description}</span>
+              {t("rqi_description")}:{" "}
+              <span className="text-primary">
+                {transaction.rqi_description}
+              </span>
             </p>
-          </tr><tr>
+          </tr>
+          <tr>
             <p className="mb-2">
-              {t('rqi_status')}: <span className="text-primary">{transaction.rqi_status}</span>
+              {t("rqi_status")}:{" "}
+              <span className="text-primary">{transaction.rqi_status}</span>
             </p>
           </tr>
 
           {transaction.is_deletable === 1 && (
-            <p className="text-danger">{t('data_is_deletable')}</p>
+            <p className="text-danger">{t("data_is_deletable")}</p>
           )}
 
           {transaction.is_editable === 1 && (
-            <p className="text-success">{t('editable')}</p>
+            <p className="text-success">{t("editable")}</p>
           )}
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

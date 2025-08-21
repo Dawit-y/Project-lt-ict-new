@@ -80,7 +80,7 @@ export const useUpdateProjectHandover = () => {
             data: oldData.data.map((data) =>
               data.prh_id === updatedData.data.prh_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -105,7 +105,7 @@ export const useDeleteProjectHandover = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.prh_id !== parseInt(deletedData.deleted_id)
+              (dept) => dept.prh_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

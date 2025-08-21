@@ -1,7 +1,7 @@
 import React, { useEffect, lazy, useMemo, useState, useRef } from "react";
 import Spinners from "../../components/Common/Spinner";
-const AgGridContainer = lazy(() =>
-  import("../../components/Common/AgGridContainer")
+const AgGridContainer = lazy(
+  () => import("../../components/Common/AgGridContainer"),
 );
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";

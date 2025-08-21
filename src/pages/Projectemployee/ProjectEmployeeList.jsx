@@ -9,8 +9,8 @@ import TreeForLists from "../../components/Common/TreeForLists2";
 import SearchTableContainer from "../../components/Common/SearchTableContainer";
 import { projectEmployeeExportColumns } from "../../utils/exportColumnsForLists";
 
-const AgGridContainer = lazy(() =>
-  import("../../components/Common/AgGridContainer")
+const AgGridContainer = lazy(
+  () => import("../../components/Common/AgGridContainer"),
 );
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {

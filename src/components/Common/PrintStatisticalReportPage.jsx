@@ -20,7 +20,7 @@ const PrintStatisticalReportPage = ({
     const printWindow = window.open(
       "",
       "_blank",
-      `width=${window.screen.width},height=${window.screen.height}`
+      `width=${window.screen.width},height=${window.screen.height}`,
     );
 
     if (printWindow) {

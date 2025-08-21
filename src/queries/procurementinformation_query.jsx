@@ -6,14 +6,13 @@ import {
   deleteProcurementInformation,
 } from "../helpers/procurementinformation_backend_helper";
 
-
 const PROCUREMENT_INFORMATION_QUERY_KEY = ["procurementinformation"];
 
 export const useFetchProcurementInformations = (param = {}, isActive) => {
   return useQuery({
     queryKey: [...PROCUREMENT_INFORMATION_QUERY_KEY, "fetch", param],
     queryFn: () => getProcurementInformation(param),
-   staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
     meta: { persist: false },
     refetchOnWindowFocus: false,
@@ -78,7 +77,7 @@ export const useUpdateProcurementInformation = () => {
             data: oldData.data.map((data) =>
               data.pri_id === updatedData.data.pri_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -102,7 +101,8 @@ export const useDeleteProcurementInformation = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (deletedData) => deletedData.pri_id !== parseInt(deletedData.deleted_id)
+              (deletedData) =>
+                deletedData.pri_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

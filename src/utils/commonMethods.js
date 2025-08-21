@@ -1,26 +1,26 @@
 import { convertToEthiopian } from "react-ethiopian-calendar";
 
 export const formatDate = (date) => {
-	if (!date || !(date instanceof Date) || isNaN(date)) return "";
-	const year = date.getFullYear();
-	const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-indexed
-	const day = String(date.getDate()).padStart(2, "0");
-	return `${year}/${month}/${day}`;
+  if (!date || !(date instanceof Date) || isNaN(date)) return "";
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-indexed
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}/${month}/${day}`;
 };
 
 // Converts "yyyy/mm/dd" → JS Date
 export function parseDateString(dateStr) {
-	if (!dateStr) return null;
-	if (typeof dateStr === "object" && dateStr instanceof Date) {
-		return dateStr;
-	}
-	const clean = dateStr.replace(/\//g, "-");
-	const parsed = new Date(clean);
-	if (isNaN(parsed)) {
-		console.log("Parsed date is invalid:", parsed);
-		return null;
-	}
-	return parsed;
+  if (!dateStr) return null;
+  if (typeof dateStr === "object" && dateStr instanceof Date) {
+    return dateStr;
+  }
+  const clean = dateStr.replace(/\//g, "-");
+  const parsed = new Date(clean);
+  if (isNaN(parsed)) {
+    console.log("Parsed date is invalid:", parsed);
+    return null;
+  }
+  return parsed;
 }
 
 // Converts "yyyy/mm/dd" GC → dd/mm/yyyy" EC
@@ -32,24 +32,24 @@ export function parseDateString(dateStr) {
 // };
 
 export const toEthiopian = (date) => {
-	if (!date) return "";
-	if (typeof date !== "string") return "";
+  if (!date) return "";
+  if (typeof date !== "string") return "";
 
-	const clean = date.replace(/\//g, "-"); 
-	const ethiopian = convertToEthiopian(clean);
-	return `${ethiopian.day}/${ethiopian.month}/${ethiopian.year}`;
+  const clean = date.replace(/\//g, "-");
+  const ethiopian = convertToEthiopian(clean);
+  return `${ethiopian.day}/${ethiopian.month}/${ethiopian.year}`;
 };
 
 export const addMonths = (date, months) => {
-	const newDate = new Date(date);
-	newDate.setMonth(newDate.getMonth() + months);
-	return newDate;
+  const newDate = new Date(date);
+  newDate.setMonth(newDate.getMonth() + months);
+  return newDate;
 };
 
 export const addYears = (date, years) => {
-	const newDate = new Date(date);
-	newDate.setFullYear(newDate.getFullYear() + years);
-	return newDate;
+  const newDate = new Date(date);
+  newDate.setFullYear(newDate.getFullYear() + years);
+  return newDate;
 };
 
 /**
@@ -62,17 +62,17 @@ export const addYears = (date, years) => {
  * @returns {Array} - An array of objects with "value" and "label" keys.
  */
 export function createSelectOptions(data, value_key, label_key, filterFn) {
-	if (!Array.isArray(data)) {
-		throw new Error("The first argument must be an array.");
-	}
+  if (!Array.isArray(data)) {
+    throw new Error("The first argument must be an array.");
+  }
 
-	const filteredData =
-		typeof filterFn === "function" ? data.filter(filterFn) : data;
+  const filteredData =
+    typeof filterFn === "function" ? data.filter(filterFn) : data;
 
-	return filteredData.map((item) => ({
-		value: item[value_key],
-		label: item[label_key],
-	}));
+  return filteredData.map((item) => ({
+    value: item[value_key],
+    label: item[label_key],
+  }));
 }
 
 /**
@@ -85,20 +85,20 @@ export function createSelectOptions(data, value_key, label_key, filterFn) {
  * @returns {Object} - An object with keys from labelKeys containing option arrays.
  */
 export function createMultiSelectOptions(data, valueKey, labelKeys, filterFn) {
-	if (!Array.isArray(data)) {
-		throw new Error("The first argument must be an array.");
-	}
+  if (!Array.isArray(data)) {
+    throw new Error("The first argument must be an array.");
+  }
 
-	const filteredData =
-		typeof filterFn === "function" ? data.filter(filterFn) : data;
+  const filteredData =
+    typeof filterFn === "function" ? data.filter(filterFn) : data;
 
-	return labelKeys.reduce((acc, labelKey) => {
-		acc[labelKey] = filteredData.map((item) => ({
-			value: item[valueKey],
-			label: item[labelKey],
-		}));
-		return acc;
-	}, {});
+  return labelKeys.reduce((acc, labelKey) => {
+    acc[labelKey] = filteredData.map((item) => ({
+      value: item[valueKey],
+      label: item[labelKey],
+    }));
+    return acc;
+  }, {});
 }
 
 /**
@@ -110,19 +110,23 @@ export function createMultiSelectOptions(data, valueKey, labelKeys, filterFn) {
  * @param {Function} [filterFn] - Optional function to filter items before mapping.
  * @returns {Object} - A key-value map.
  */
-export function createKeyValueMap(data, keyProp, valueProp, filterFn = () => true) {
-	if (!Array.isArray(data)) {
-		throw new Error("The first argument must be an array.");
-	}
+export function createKeyValueMap(
+  data,
+  keyProp,
+  valueProp,
+  filterFn = () => true,
+) {
+  if (!Array.isArray(data)) {
+    throw new Error("The first argument must be an array.");
+  }
 
-	return data.reduce((acc, item) => {
-		if (filterFn(item)) {
-			acc[item[keyProp]] = item[valueProp];
-		}
-		return acc;
-	}, {});
+  return data.reduce((acc, item) => {
+    if (filterFn(item)) {
+      acc[item[keyProp]] = item[valueProp];
+    }
+    return acc;
+  }, {});
 }
-
 
 /**
  * Creates a key-value map from an array of objects, supporting multilingual value selection.
@@ -135,35 +139,35 @@ export function createKeyValueMap(data, keyProp, valueProp, filterFn = () => tru
  * @returns {Object} - A key-value map with localized labels.
  */
 export function createMultiLangKeyValueMap(
-	data,
-	keyProp,
-	valuePropsByLang,
-	lang,
-	filterFn = () => true
+  data,
+  keyProp,
+  valuePropsByLang,
+  lang,
+  filterFn = () => true,
 ) {
-	if (!Array.isArray(data)) {
-		throw new Error("The first argument must be an array.");
-	}
+  if (!Array.isArray(data)) {
+    throw new Error("The first argument must be an array.");
+  }
 
-	const valueKey = valuePropsByLang[lang] || Object.values(valuePropsByLang)[0]; // fallback to first lang key
+  const valueKey = valuePropsByLang[lang] || Object.values(valuePropsByLang)[0]; // fallback to first lang key
 
-	return data.reduce((acc, item) => {
-		if (filterFn(item)) {
-			acc[item[keyProp]] = item[valueKey];
-		}
-		return acc;
-	}, {});
+  return data.reduce((acc, item) => {
+    if (filterFn(item)) {
+      acc[item[keyProp]] = item[valueKey];
+    }
+    return acc;
+  }, {});
 }
 
 export const formatDateHyphen = (date) => {
-	if (!date || !(date instanceof Date) || isNaN(date)) {
-		return "";
-	}
+  if (!date || !(date instanceof Date) || isNaN(date)) {
+    return "";
+  }
 
-	const year = date.getFullYear();
-	const month = String(date.getMonth() + 1).padStart(2, "0");
-	const day = String(date.getDate()).padStart(2, "0");
-	return `${year}-${month}-${day}`;
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 };
 
 // export const convertToNumericValue = (amount) => {
@@ -182,15 +186,15 @@ export const formatDateHyphen = (date) => {
 // };
 
 export const convertToNumericValue = (value) => {
-	if (value === null || value === undefined || value === "") return 0;
-	// Remove any formatting (commas, currency symbols, etc.)
-	const numericString = String(value).replace(/[^0-9.-]/g, "");
-	return parseFloat(numericString) || 0;
+  if (value === null || value === undefined || value === "") return 0;
+  // Remove any formatting (commas, currency symbols, etc.)
+  const numericString = String(value).replace(/[^0-9.-]/g, "");
+  return parseFloat(numericString) || 0;
 };
 
 export const calculatePercentage = (value, total) => {
-	if (!total || total === 0) return 0;
-	return ((value - total) / total) * 100;
+  if (!total || total === 0) return 0;
+  return ((value - total) / total) * 100;
 };
 
 /**
@@ -200,34 +204,34 @@ export const calculatePercentage = (value, total) => {
  * @returns {string} Formatted number string
  */
 export const formatNumber = (num, decimals = 2) => {
-	if (num === null || num === undefined) return "0.00";
+  if (num === null || num === undefined) return "0.00";
 
-	// Convert to number if it's a string
-	const number = typeof num === "string" ? parseFloat(num) : num;
+  // Convert to number if it's a string
+  const number = typeof num === "string" ? parseFloat(num) : num;
 
-	// Handle NaN cases
-	if (isNaN(number)) return "0.00";
+  // Handle NaN cases
+  if (isNaN(number)) return "0.00";
 
-	// Format the number
-	return number.toLocaleString("en-US", {
-		minimumFractionDigits: decimals,
-		maximumFractionDigits: decimals,
-	});
+  // Format the number
+  return number.toLocaleString("en-US", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
 };
 
 export function formatLargeNumber(num) {
-	if (typeof num !== "number" && typeof num !== "string") return "0";
+  if (typeof num !== "number" && typeof num !== "string") return "0";
 
-	// Convert string to number if needed
-	const number = typeof num === "string" ? parseFloat(num) : num;
+  // Convert string to number if needed
+  const number = typeof num === "string" ? parseFloat(num) : num;
 
-	if (isNaN(number)) return "0";
+  if (isNaN(number)) return "0";
 
-	// Format based on size
-	if (number >= 1e12) return (number / 1e12).toFixed(1) + "T";
-	if (number >= 1e9) return (number / 1e9).toFixed(1) + "B";
-	if (number >= 1e6) return (number / 1e6).toFixed(1) + "M";
-	if (number >= 1e3) return (number / 1e3).toFixed(1) + "K";
+  // Format based on size
+  if (number >= 1e12) return (number / 1e12).toFixed(1) + "T";
+  if (number >= 1e9) return (number / 1e9).toFixed(1) + "B";
+  if (number >= 1e6) return (number / 1e6).toFixed(1) + "M";
+  if (number >= 1e3) return (number / 1e3).toFixed(1) + "K";
 
-	return number.toString();
+  return number.toString();
 }

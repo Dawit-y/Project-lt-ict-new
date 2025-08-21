@@ -156,9 +156,9 @@ const DocumentTypeModel = () => {
           return !data?.data.some(
             (item) =>
               item.pdt_doc_name_or == value &&
-              item.pdt_id !== documentType?.pdt_id
+              item.pdt_id !== documentType?.pdt_id,
           );
-        }
+        },
       ),
       pdt_doc_name_am: Yup.string().required(t("pdt_doc_name_am")),
       pdt_doc_name_en: alphanumericValidation(2, 100, true),

@@ -6,7 +6,7 @@ import {
   ModalHeader,
   Table,
   ModalFooter,
-  Button
+  Button,
 } from "reactstrap";
 
 const modalStyle = {
@@ -18,13 +18,17 @@ const DetailModal = (props) => {
   const { isOpen, toggle, details, excludeKey = [] } = props;
 
   const filteredDetails = Object.entries(details).filter(
-    ([key]) => !excludeKey.includes(key)
+    ([key]) => !excludeKey.includes(key),
   );
 
   const printDetail = () => {
     console.log(details);
     const modalContent = document.getElementById("printable-content").innerHTML;
-    const printWindow = window.open("", "_blank", `width=${window.screen.width},height=${window.screen.height}`);
+    const printWindow = window.open(
+      "",
+      "_blank",
+      `width=${window.screen.width},height=${window.screen.height}`,
+    );
     printWindow.document.open();
     printWindow.document.write(`
       <html>

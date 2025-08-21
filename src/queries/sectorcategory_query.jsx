@@ -68,7 +68,7 @@ export const useUpdateSectorCategory = () => {
           data: oldData.data.map((SectorCategoryData) =>
             SectorCategoryData.psc_id === updatedSectorCategory.data.psc_id
               ? { ...SectorCategoryData, ...updatedSectorCategory.data }
-              : SectorCategoryData
+              : SectorCategoryData,
           ),
         };
       });
@@ -87,7 +87,8 @@ export const useDeleteSectorCategory = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (SectorCategoryData) => SectorCategoryData.psc_id !== parseInt(deletedData.deleted_id)
+            (SectorCategoryData) =>
+              SectorCategoryData.psc_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

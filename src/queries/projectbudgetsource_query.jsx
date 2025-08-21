@@ -80,7 +80,7 @@ export const useUpdateProjectBudgetSource = () => {
             data: oldData.data.map((data) =>
               data.bsr_id === updatedProjectBudgetSource.data.bsr_id
                 ? { ...data, ...updatedProjectBudgetSource.data }
-                : data
+                : data,
             ),
           };
         });
@@ -105,7 +105,7 @@ export const useDeleteProjectBudgetSource = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (projectBSource) => projectBSource.bsr_id !== parseInt(variable)
+              (projectBSource) => projectBSource.bsr_id !== parseInt(variable),
             ),
           };
         });

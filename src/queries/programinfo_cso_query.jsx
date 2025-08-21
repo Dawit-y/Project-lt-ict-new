@@ -53,7 +53,7 @@ export const useAddProgramInfo = () => {
   return useMutation({
     mutationFn: addProgramInfo,
     onSuccess: (newDataResponse) => {
-      queryClient.invalidateQueries({ queryKey: PROGRAM_INFO_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: PROGRAM_INFO_QUERY_KEY });
     },
   });
 };
@@ -64,7 +64,7 @@ export const useUpdateProgramInfo = () => {
   return useMutation({
     mutationFn: updateProgramInfo,
     onSuccess: (updatedData) => {
-      queryClient.invalidateQueries({ queryKey: PROGRAM_INFO_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: PROGRAM_INFO_QUERY_KEY });
     },
   });
 };
@@ -75,7 +75,7 @@ export const useDeleteProgramInfo = () => {
   return useMutation({
     mutationFn: deleteProgramInfo,
     onSuccess: (deletedData) => {
-      queryClient.invalidateQueries({ queryKey: PROGRAM_INFO_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: PROGRAM_INFO_QUERY_KEY });
     },
   });
 };

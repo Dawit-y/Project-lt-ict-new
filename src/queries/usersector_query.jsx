@@ -4,7 +4,7 @@ import {
   updateUserSector,
   addUserSector,
   deleteUserSector,
-  getUserSectorTree
+  getUserSectorTree,
 } from "../helpers/usersector_backend_helper";
 
 const USER_SECTOR_QUERY_KEY = ["usersector"];
@@ -17,7 +17,7 @@ export const useFetchUserSectors = (params = {}, isActive) => {
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     refetchOnMount: true,
-    enabled: isActive
+    enabled: isActive,
   });
 };
 
@@ -36,15 +36,15 @@ export const useSearchUserSectors = (searchParams = {}) => {
 //search user_sector
 export const getUserSectorList = (searchParams = {}) => {
   return useQuery({
-		queryKey: [...USER_SECTOR_QUERY_KEY, "search", searchParams],
-		queryFn: () => getUserSectorTree(searchParams),
-		staleTime: 1000 * 60 * 2,
-		gcTime: 1000 * 60 * 5,
-		refetchOnMount: true,
-		refetchOnWindowFocus: false,
-		refetchOnReconnect: false,
-		keepPreviousData: false, // Don't keep any previous results
-	});
+    queryKey: [...USER_SECTOR_QUERY_KEY, "search", searchParams],
+    queryFn: () => getUserSectorTree(searchParams),
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 5,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    keepPreviousData: false, // Don't keep any previous results
+  });
 };
 export const getUserSectorListTree = (userId) => {
   return useQuery({
@@ -65,7 +65,7 @@ export const useAddUserSector = () => {
   return useMutation({
     mutationFn: addUserSector,
     onSuccess: (newDataResponse) => {
-      queryClient.invalidateQueries({ queryKey: USER_SECTOR_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: USER_SECTOR_QUERY_KEY });
     },
   });
 };
@@ -75,7 +75,7 @@ export const useUpdateUserSector = () => {
   return useMutation({
     mutationFn: updateUserSector,
     onSuccess: (updatedUserSector) => {
-      queryClient.invalidateQueries({ queryKey: USER_SECTOR_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: USER_SECTOR_QUERY_KEY });
     },
   });
 };
@@ -85,32 +85,32 @@ export const useDeleteUserSector = () => {
   return useMutation({
     mutationFn: deleteUserSector,
     onSuccess: (deletedData) => {
-      queryClient.invalidateQueries({ queryKey: USER_SECTOR_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: USER_SECTOR_QUERY_KEY });
     },
   });
 };
 
-
 function buildTree(data) {
   const clusterMap = {};
 
-  data.forEach(({ psc_id, psc_name, sci_id, sci_name_or, sci_name_am, sci_name_en }) => {
-    if (!clusterMap[psc_id]) {
-      clusterMap[psc_id] = {
-        psc_id: psc_id,
-        psc_name: psc_name,
-        children: []
-      };
-    }
+  data.forEach(
+    ({ psc_id, psc_name, sci_id, sci_name_or, sci_name_am, sci_name_en }) => {
+      if (!clusterMap[psc_id]) {
+        clusterMap[psc_id] = {
+          psc_id: psc_id,
+          psc_name: psc_name,
+          children: [],
+        };
+      }
 
-    clusterMap[psc_id].children.push({
-      sci_id: sci_id,
-      sci_name_or: sci_name_or,
-      sci_name_am: sci_name_am,
-      sci_name_en: sci_name_en
-    });
-  });
+      clusterMap[psc_id].children.push({
+        sci_id: sci_id,
+        sci_name_or: sci_name_or,
+        sci_name_am: sci_name_am,
+        sci_name_en: sci_name_en,
+      });
+    },
+  );
 
   return Object.values(clusterMap);
 }
-

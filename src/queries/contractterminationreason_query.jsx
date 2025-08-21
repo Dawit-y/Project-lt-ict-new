@@ -39,17 +39,20 @@ export const useAddContractTerminationReason = () => {
   return useMutation({
     mutationFn: addContractTerminationReason,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData(CONTRACT_TERMINATION_REASON_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
-      });
+      queryClient.setQueryData(
+        CONTRACT_TERMINATION_REASON_QUERY_KEY,
+        (oldData) => {
+          if (!oldData) return;
+          const newData = {
+            ...newDataResponse.data,
+            ...newDataResponse.previledge,
+          };
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        },
+      );
     },
   });
 };
@@ -60,18 +63,25 @@ export const useUpdateContractTerminationReason = () => {
   return useMutation({
     mutationFn: updateContractTerminationReason,
     onSuccess: (updatedContractTerminationReason) => {
-      queryClient.setQueryData(CONTRACT_TERMINATION_REASON_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
+      queryClient.setQueryData(
+        CONTRACT_TERMINATION_REASON_QUERY_KEY,
+        (oldData) => {
+          if (!oldData) return;
 
-        return {
-          ...oldData,
-          data: oldData.data.map((ContractTerminationReasonData) =>
-            ContractTerminationReasonData.ctr_id === updatedContractTerminationReason.data.ctr_id
-              ? { ...ContractTerminationReasonData, ...updatedContractTerminationReason.data }
-              : ContractTerminationReasonData
-          ),
-        };
-      });
+          return {
+            ...oldData,
+            data: oldData.data.map((ContractTerminationReasonData) =>
+              ContractTerminationReasonData.ctr_id ===
+              updatedContractTerminationReason.data.ctr_id
+                ? {
+                    ...ContractTerminationReasonData,
+                    ...updatedContractTerminationReason.data,
+                  }
+                : ContractTerminationReasonData,
+            ),
+          };
+        },
+      );
     },
   });
 };
@@ -82,15 +92,20 @@ export const useDeleteContractTerminationReason = () => {
   return useMutation({
     mutationFn: deleteContractTerminationReason,
     onSuccess: (deletedData) => {
-      queryClient.setQueryData(CONTRACT_TERMINATION_REASON_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (ContractTerminationReasonData) => ContractTerminationReasonData.ctr_id !== parseInt(deletedData.deleted_id)
-          ),
-        };
-      });
+      queryClient.setQueryData(
+        CONTRACT_TERMINATION_REASON_QUERY_KEY,
+        (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (ContractTerminationReasonData) =>
+                ContractTerminationReasonData.ctr_id !==
+                parseInt(deletedData.deleted_id),
+            ),
+          };
+        },
+      );
     },
   });
 };

@@ -10,7 +10,7 @@ export const getStakeholderType = async () => {
     const response = await post(GET_STAKEHOLDER_TYPE);
     return response;
   } catch (error) {
-    throw error
+    throw error;
   }
 };
 

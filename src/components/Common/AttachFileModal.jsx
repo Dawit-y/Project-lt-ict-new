@@ -55,7 +55,7 @@ const AttachFileModal = ({
   accept,
   canAdd = true,
   canEdit = true,
-  canDelete = true
+  canDelete = true,
 }) => {
   const [projectDocument, setProjectDocument] = useState(null);
   const [modal, setModal] = useState(false);
@@ -66,10 +66,8 @@ const AttachFileModal = ({
     prd_owner_type_id: ownerTypeId,
     prd_owner_id: ownerId,
   };
-  const { data, isLoading, isFetching, isError, error, refetch } = useFetchProjectDocuments(
-    param,
-    isOpen
-  );
+  const { data, isLoading, isFetching, isError, error, refetch } =
+    useFetchProjectDocuments(param, isOpen);
   const addProjectDocument = useAddProjectDocument();
   const updateProjectDocument = useUpdateProjectDocument();
   const deleteProjectDocument = useDeleteProjectDocument();
@@ -352,7 +350,8 @@ const AttachFileModal = ({
           return (
             <div className="d-flex gap-3">
               {(cellProps.row.original?.is_editable ||
-                cellProps.row.original?.is_role_editable) && canEdit && (
+                cellProps.row.original?.is_role_editable) &&
+                canEdit && (
                   <Link
                     className="text-success"
                     onClick={() => {
@@ -360,7 +359,10 @@ const AttachFileModal = ({
                       handleProjectDocumentClick(data);
                     }}
                   >
-                    <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                    <i
+                      className="mdi mdi-pencil font-size-18"
+                      id="edittooltip"
+                    />
                     <UncontrolledTooltip placement="top" target="edittooltip">
                       Edit
                     </UncontrolledTooltip>
@@ -368,7 +370,8 @@ const AttachFileModal = ({
                 )}
 
               {(cellProps.row.original?.is_deletable ||
-                cellProps.row.original?.is_role_deletable) && canDelete && (
+                cellProps.row.original?.is_role_deletable) &&
+                canDelete && (
                   <Link
                     className="text-danger"
                     onClick={() => {
@@ -421,7 +424,9 @@ const AttachFileModal = ({
         toggle={toggle}
       >
         <div className="modal-xl">
-          <ModalHeader toggle={toggle}>{title ? title : t("attach_files")}</ModalHeader>
+          <ModalHeader toggle={toggle}>
+            {title ? title : t("attach_files")}
+          </ModalHeader>
           <ModalBody>
             {isLoading ? (
               <Spinners />
@@ -467,7 +472,7 @@ const AttachFileModal = ({
                       <Col>
                         <div className="text-end">
                           {addProjectDocument.isPending ||
-                            updateProjectDocument.isPending ? (
+                          updateProjectDocument.isPending ? (
                             <Button
                               color="success"
                               type="submit"

@@ -1,5 +1,5 @@
-import React, { useState, useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useState, useTransition } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -11,23 +11,31 @@ import {
   Row,
   Col,
   Container,
-  Spinner
-} from "reactstrap"
+  Spinner,
+} from "reactstrap";
 import { PAGE_ID } from "../../constants/constantFile";
 import { useFetchProjectDocuments } from "../../queries/projectdocument_query";
 import { useUpdateCsoInfo } from "../../queries/csoinfo_query";
 import FileList from "../Projectdocument/FileManager/FileList";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import Spinners from "../../components/Common/Spinner";
-import { toast } from "react-toastify"
+import { toast } from "react-toastify";
 
 const FileModal = (props) => {
   const { t } = useTranslation();
   const { isOpen, toggle, transaction } = props;
 
-  const param = { prd_owner_type_id: PAGE_ID.CSO, prd_owner_id: transaction?.cso_id };
-  const isQueryEnabled = Object.values(param).every(value => value !== null && value !== undefined);
-  const { data, isLoading, isError, error, refetch } = useFetchProjectDocuments(param, isQueryEnabled);
+  const param = {
+    prd_owner_type_id: PAGE_ID.CSO,
+    prd_owner_id: transaction?.cso_id,
+  };
+  const isQueryEnabled = Object.values(param).every(
+    (value) => value !== null && value !== undefined,
+  );
+  const { data, isLoading, isError, error, refetch } = useFetchProjectDocuments(
+    param,
+    isQueryEnabled,
+  );
 
   const updateCsoInfo = useUpdateCsoInfo();
   const [clickedButton, setClickedButton] = useState(null);
@@ -35,9 +43,9 @@ const FileModal = (props) => {
   const handleUpdateCsoInfo = async (data) => {
     try {
       await updateCsoInfo.mutateAsync(data);
-      toast.success(t('update_success'), { autoClose: 2000 });
+      toast.success(t("update_success"), { autoClose: 2000 });
     } catch (error) {
-      toast.error(t('update_failure'), { autoClose: 2000 });
+      toast.error(t("update_failure"), { autoClose: 2000 });
     } finally {
       setClickedButton(null);
       toggle();
@@ -50,7 +58,7 @@ const FileModal = (props) => {
 
     const data = {
       cso_id: transaction?.cso_id,
-      cso_status: name === "approve" ? 1 : 0
+      cso_status: name === "approve" ? 1 : 0,
     };
 
     handleUpdateCsoInfo(data);
@@ -73,51 +81,56 @@ const FileModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("Files")}</ModalHeader>
         <ModalBody>
-          <Row className='w-50 mx-auto p-2 mb-3'>
-            <Col className='d-flex align-items-center justify-content-center'>
+          <Row className="w-50 mx-auto p-2 mb-3">
+            <Col className="d-flex align-items-center justify-content-center">
               <Button
-                color='success'
-                className='w-100'
-                name='approve'
+                color="success"
+                className="w-100"
+                name="approve"
                 onClick={handleClick}
                 disabled={data?.data?.length === 0 || updateCsoInfo.isPending}
               >
-                {updateCsoInfo.isPending && clickedButton === "approve" ?
+                {updateCsoInfo.isPending && clickedButton === "approve" ? (
                   <>
-                    <Spinner size={"sm"} color="light" className="me-2" /> {"Approve"}
-                  </> : "Approve"
-                }
+                    <Spinner size={"sm"} color="light" className="me-2" />{" "}
+                    {"Approve"}
+                  </>
+                ) : (
+                  "Approve"
+                )}
               </Button>
             </Col>
-            <Col className='d-flex align-items-center justify-content-center'>
+            <Col className="d-flex align-items-center justify-content-center">
               <Button
-                color='danger'
-                className='w-100'
-                name='reject'
+                color="danger"
+                className="w-100"
+                name="reject"
                 onClick={handleClick}
                 disabled={data?.data?.length === 0 || updateCsoInfo.isPending}
               >
-                {updateCsoInfo.isPending && clickedButton === "reject" ?
+                {updateCsoInfo.isPending && clickedButton === "reject" ? (
                   <>
-                    <Spinner size={"sm"} color="light" className="me-2" /> {"Reject"}
-                  </> : "Reject"
-                }
+                    <Spinner size={"sm"} color="light" className="me-2" />{" "}
+                    {"Reject"}
+                  </>
+                ) : (
+                  "Reject"
+                )}
               </Button>
             </Col>
           </Row>
           <hr />
           <Container>
-            {isLoading ? <Spinners /> :
-              <FileList
-                files={data?.data || []}
-                actions={false}
-              />
-            }
+            {isLoading ? (
+              <Spinners />
+            ) : (
+              <FileList files={data?.data || []} actions={false} />
+            )}
           </Container>
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

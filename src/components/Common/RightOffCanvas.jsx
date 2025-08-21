@@ -128,7 +128,7 @@ const RightOffCanvas = ({
                         isActive: activeTab1 === navItem,
                         projectName: name,
                         status: status,
-                        startDate: startDate
+                        startDate: startDate,
                       })}
                     </TabPane>
                   ))}

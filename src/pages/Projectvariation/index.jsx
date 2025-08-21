@@ -14,11 +14,18 @@ import {
   useDeleteProjectVariation,
   useUpdateProjectVariation,
 } from "../../queries/projectvariation_query";
-import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
+import {
+  useFetchBudgetYears,
+  usePopulateBudgetYears,
+} from "../../queries/budgetyear_query";
 import ProjectVariationModal from "./ProjectVariationModal";
 import { useTranslation } from "react-i18next";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
-import { alphanumericValidation, amountValidation, numberValidation } from '../../utils/Validation/validation';
+import {
+  alphanumericValidation,
+  amountValidation,
+  numberValidation,
+} from "../../utils/Validation/validation";
 import {
   Button,
   Col,
@@ -81,12 +88,12 @@ const ProjectVariationModel = (props) => {
   const handleAddProjectVariation = async (data) => {
     try {
       await addProjectVariation.mutateAsync(data);
-      toast.success(t('add_success'), {
+      toast.success(t("add_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('add_failure'), {
+      toast.success(t("add_failure"), {
         autoClose: 2000,
       });
     }
@@ -95,12 +102,12 @@ const ProjectVariationModel = (props) => {
   const handleUpdateProjectVariation = async (data) => {
     try {
       await updateProjectVariation.mutateAsync(data);
-      toast.success(t('update_success'), {
+      toast.success(t("update_success"), {
         autoClose: 2000,
       });
       validation.resetForm();
     } catch (error) {
-      toast.success(t('update_failure'), {
+      toast.success(t("update_failure"), {
         autoClose: 2000,
       });
     }
@@ -111,11 +118,11 @@ const ProjectVariationModel = (props) => {
       try {
         const id = projectVariation.prv_id;
         await deleteProjectVariation.mutateAsync(id);
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       } catch (error) {
-        toast.success(t('delete_success'), {
+        toast.success(t("delete_success"), {
           autoClose: 2000,
         });
       }
@@ -157,14 +164,20 @@ const ProjectVariationModel = (props) => {
       prv_budget_year_id: numberValidation(1, 20, true),
       // prv_project_id: Yup.string().required(t("prv_project_id")),
       //prv_requested_date_ec: Yup.string().required(t("prv_requested_date_ec")),
-      prv_requested_date_gc: Yup.string().required(t("prv_requested_date_gc"))
+      prv_requested_date_gc: Yup.string()
+        .required(t("prv_requested_date_gc"))
         .test(
-          'is-before-end-date',
-          'request date must be earlier than or equal to the released date',
+          "is-before-end-date",
+          "request date must be earlier than or equal to the released date",
           function (value) {
             const { prv_released_date_gc } = this.parent; // Access other fields in the form
-            return !prv_released_date_gc || !value || new Date(value) <= new Date(prv_released_date_gc);
-          }),
+            return (
+              !prv_released_date_gc ||
+              !value ||
+              new Date(value) <= new Date(prv_released_date_gc)
+            );
+          },
+        ),
       prv_released_date_gc: Yup.string().required(t("prv_released_date_gc")),
       prv_description: alphanumericValidation(3, 425, false),
       //prv_status: Yup.string().required(t("prv_status")),
@@ -377,9 +390,9 @@ const ProjectVariationModel = (props) => {
         },
       },
     ];
-       if (
-     data?.previledge?.is_role_editable==1 ||
-     data?.previledge?.is_role_deletable==1
+    if (
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -389,7 +402,8 @@ const ProjectVariationModel = (props) => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-             {(data?.previledge?.is_role_editable == 1 && cellProps.row.original?.is_editable == 1) && (
+              {data?.previledge?.is_role_editable == 1 &&
+                cellProps.row.original?.is_editable == 1 && (
                   <Link
                     to="#"
                     className="text-success"
@@ -398,13 +412,17 @@ const ProjectVariationModel = (props) => {
                       handleProjectVariationClick(data);
                     }}
                   >
-                    <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                    <i
+                      className="mdi mdi-pencil font-size-18"
+                      id="edittooltip"
+                    />
                     <UncontrolledTooltip placement="top" target="edittooltip">
                       Edit
                     </UncontrolledTooltip>
                   </Link>
                 )}
- {(data?.previledge?.is_role_deletable == 9 && cellProps.row.original?.is_deletable == 9) && (
+              {data?.previledge?.is_role_deletable == 9 &&
+                cellProps.row.original?.is_deletable == 9 && (
                   <Link
                     to="#"
                     className="text-danger"
@@ -441,15 +459,15 @@ const ProjectVariationModel = (props) => {
         isOpen={modal1}
         toggle={toggleViewModal} // Function to close the modal
         data={transaction} // Pass transaction as data to the modal
-        title={t('project_variation')}
+        title={t("project_variation")}
         description={transaction.prv_description}
         fields={[
-          { label: t('prv_requested_date_gc'), key: "prv_requested_date_gc" },
-          { label: t('prv_released_date_gc'), key: "prv_released_date_gc" },
-          { label: t('prv_requested_amount'), key: "prv_requested_amount" },
-          { label: t('prv_released_amount'), key: "prv_released_amount" }
+          { label: t("prv_requested_date_gc"), key: "prv_requested_date_gc" },
+          { label: t("prv_released_date_gc"), key: "prv_released_date_gc" },
+          { label: t("prv_requested_amount"), key: "prv_requested_amount" },
+          { label: t("prv_released_amount"), key: "prv_released_amount" },
         ]}
-        footerText={t('close')}
+        footerText={t("close")}
       />
       <DeleteModal
         show={deleteModal}
@@ -507,7 +525,10 @@ const ProjectVariationModel = (props) => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prv_budget_year_id")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prv_budget_year_id")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prv_budget_year_id"
                       type="select"
@@ -516,13 +537,13 @@ const ProjectVariationModel = (props) => {
                       value={validation.values.prv_budget_year_id || ""}
                       invalid={
                         validation.touched.prv_budget_year_id &&
-                          validation.errors.prv_budget_year_id
+                        validation.errors.prv_budget_year_id
                           ? true
                           : false
                       }
                       maxLength={20}
                     >
-                      <option value="">{t('select_one')}</option>
+                      <option value="">{t("select_one")}</option>
                       {budgetYearData?.data?.map((data) => (
                         <option key={data.bdy_id} value={data.bdy_id}>
                           {data.bdy_name}
@@ -530,14 +551,17 @@ const ProjectVariationModel = (props) => {
                       ))}
                     </Input>
                     {validation.touched.prv_budget_year_id &&
-                      validation.errors.prv_budget_year_id ? (
+                    validation.errors.prv_budget_year_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prv_budget_year_id}
                       </FormFeedback>
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prv_requested_amount")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prv_requested_amount")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prv_requested_amount"
                       type="number"
@@ -547,21 +571,24 @@ const ProjectVariationModel = (props) => {
                       value={validation.values.prv_requested_amount || ""}
                       invalid={
                         validation.touched.prv_requested_amount &&
-                          validation.errors.prv_requested_amount
+                        validation.errors.prv_requested_amount
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prv_requested_amount &&
-                      validation.errors.prv_requested_amount ? (
+                    validation.errors.prv_requested_amount ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prv_requested_amount}
                       </FormFeedback>
                     ) : null}
                   </Col>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prv_released_amount")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prv_released_amount")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prv_released_amount"
                       type="number"
@@ -571,14 +598,14 @@ const ProjectVariationModel = (props) => {
                       value={validation.values.prv_released_amount || ""}
                       invalid={
                         validation.touched.prv_released_amount &&
-                          validation.errors.prv_released_amount
+                        validation.errors.prv_released_amount
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prv_released_amount &&
-                      validation.errors.prv_released_amount ? (
+                    validation.errors.prv_released_amount ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prv_released_amount}
                       </FormFeedback>
@@ -611,14 +638,14 @@ const ProjectVariationModel = (props) => {
                       value={validation.values.prv_description || ""}
                       invalid={
                         validation.touched.prv_description &&
-                          validation.errors.prv_description
+                        validation.errors.prv_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.prv_description &&
-                      validation.errors.prv_description ? (
+                    validation.errors.prv_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prv_description}
                       </FormFeedback>
@@ -629,7 +656,7 @@ const ProjectVariationModel = (props) => {
                   <Col>
                     <div className="text-end">
                       {addProjectVariation.isPending ||
-                        updateProjectVariation.isPending ? (
+                      updateProjectVariation.isPending ? (
                         <Button
                           color="success"
                           type="submit"

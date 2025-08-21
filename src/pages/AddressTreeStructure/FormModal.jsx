@@ -1,14 +1,38 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { Modal, ModalBody, ModalHeader, Form, Label, Input, Button, FormFeedback, Row, Col, Spinner } from "reactstrap";
+import {
+  Modal,
+  ModalBody,
+  ModalHeader,
+  Form,
+  Label,
+  Input,
+  Button,
+  FormFeedback,
+  Row,
+  Col,
+  Spinner,
+} from "reactstrap";
 import { useTranslation } from "react-i18next";
 import DeleteModal from "../../components/Common/DeleteModal";
-import { useAddAddressStructures, useUpdateAddressStructures, useDeleteAddressStructures } from "../../queries/address_structure_query";
+import {
+  useAddAddressStructures,
+  useUpdateAddressStructures,
+  useDeleteAddressStructures,
+} from "../../queries/address_structure_query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 
-const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggleDelete }) => {
+const FormModal = ({
+  show,
+  toggle,
+  action,
+  selectedRow,
+  data,
+  deleteModal,
+  toggleDelete,
+}) => {
   const { t } = useTranslation();
   const addFolder = useAddAddressStructures();
   const updateFolder = useUpdateAddressStructures();
@@ -20,15 +44,15 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
       add_name_or: values.add_name_or,
       add_name_am: values.add_name_am,
       add_name_en: values.add_name_en,
-    }
+    };
     try {
       await addFolder.mutateAsync(newData);
       toast.success(t("Data added successfully"), { autoClose: 2000 });
     } catch (error) {
       toast.error(t("Failed to add data"), { autoClose: 2000 });
     } finally {
-      toggle()
-      formik.resetForm()
+      toggle();
+      formik.resetForm();
     }
   };
 
@@ -44,8 +68,8 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
     } catch (error) {
       toast.error(t("Failed to update data"), { autoClose: 2000 });
     } finally {
-      toggle()
-      formik.resetForm()
+      toggle();
+      formik.resetForm();
     }
   };
 
@@ -57,7 +81,7 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
     } catch (error) {
       toast.error(t("Failed to delete data"), { autoClose: 2000 });
     } finally {
-      toggleDelete()
+      toggleDelete();
     }
   };
 
@@ -102,19 +126,19 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
     validationSchema,
     onSubmit: (values) => {
       if (action === "add") {
-        handleAddFolder(values)
+        handleAddFolder(values);
       } else if (action === "edit") {
-        handleUpdateFolder(values)
+        handleUpdateFolder(values);
       }
     },
   });
 
-  let nextLevel
-  const level = String(selectedRow?.level).trim().toLowerCase()
+  let nextLevel;
+  const level = String(selectedRow?.level).trim().toLowerCase();
   if (level === "region") {
-    nextLevel = "Zone"
+    nextLevel = "Zone";
   } else if (level === "zone") {
-    nextLevel = "Woreda"
+    nextLevel = "Woreda";
   }
 
   return (
@@ -143,7 +167,9 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
                     value={formik.values.add_name_or}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    invalid={formik.touched.add_name_or && !!formik.errors.add_name_or}
+                    invalid={
+                      formik.touched.add_name_or && !!formik.errors.add_name_or
+                    }
                   />
                   {formik.touched.add_name_or && formik.errors.add_name_or && (
                     <FormFeedback>{formik.errors.add_name_or}</FormFeedback>
@@ -158,7 +184,9 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
                     value={formik.values.add_name_am}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    invalid={formik.touched.add_name_am && !!formik.errors.add_name_am}
+                    invalid={
+                      formik.touched.add_name_am && !!formik.errors.add_name_am
+                    }
                   />
                   {formik.touched.add_name_am && formik.errors.add_name_am && (
                     <FormFeedback>{formik.errors.add_name_am}</FormFeedback>
@@ -173,7 +201,9 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
                     value={formik.values.add_name_en}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    invalid={formik.touched.add_name_en && !!formik.errors.add_name_en}
+                    invalid={
+                      formik.touched.add_name_en && !!formik.errors.add_name_en
+                    }
                   />
                   {formik.touched.add_name_en && formik.errors.add_name_en && (
                     <FormFeedback>{formik.errors.add_name_en}</FormFeedback>
@@ -187,8 +217,12 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
                 disabled={addFolder.isPending || updateFolder.isPending}
               >
                 <div className="d-flex gap-2 align-items-center justify-content-center">
-                  {addFolder.isPending || updateFolder.isPending ? <Spinner size={"sm"} /> : ""}
-                  <span>  {action === "add" ? t("add") : t("edit")}</span>
+                  {addFolder.isPending || updateFolder.isPending ? (
+                    <Spinner size={"sm"} />
+                  ) : (
+                    ""
+                  )}
+                  <span> {action === "add" ? t("add") : t("edit")}</span>
                 </div>
               </Button>
             </Form>
@@ -196,7 +230,6 @@ const FormModal = ({ show, toggle, action, selectedRow, data, deleteModal, toggl
         </div>
       </Modal>
     </>
-
   );
 };
 

@@ -11,12 +11,16 @@ import { useAuthUser } from "../../../hooks/useAuthUser";
 
 // Lazy Load Components
 const LazyComponents = {
-  ProjectDocument: lazy(() => import("../../../pages/Projectdocument/FileManager/index")),
+  ProjectDocument: lazy(
+    () => import("../../../pages/Projectdocument/FileManager/index"),
+  ),
   ProjectPayment: lazy(() => import("../../../pages/Projectpayment")),
   ProjectStakeholder: lazy(() => import("../../../pages/Projectstakeholder")),
   Projectcontractor: lazy(() => import("../../../pages/Projectcontractor")),
   GeoLocation: lazy(() => import("../../../pages/GeoLocation")),
-  ProjectBudgetExpenditureModel: lazy(() => import("../../Projectbudgetexpenditure")),
+  ProjectBudgetExpenditureModel: lazy(
+    () => import("../../Projectbudgetexpenditure"),
+  ),
   ProjectEmployeeModel: lazy(() => import("../../../pages/Projectemployee")),
   ProjectHandoverModel: lazy(() => import("../../Projecthandover")),
   ProjectPerformanceModel: lazy(() => import("../../Projectperformance")),
@@ -24,10 +28,18 @@ const LazyComponents = {
   ProjectVariationModel: lazy(() => import("../../Projectvariation")),
   ProposalRequestModel: lazy(() => import("../../../pages/Proposalrequest")),
   Conversation: lazy(() => import("../../Conversationinformation/index1")),
-  RequestInformationModel: lazy(() => import("../../../pages/Requestinformation")),
-  BudgetRequestModel: lazy(() => import("../../../pages/Budgetrequest/BudgetRequestRegistration")),
-  ProjectPlanModel: lazy(() => import("../../../pages/Projectplan/ProjectPlanRegistration")),
-  ProjectMonitoringEvaluationModel: lazy(() => import("../../Projectmonitoringevaluation/index")),
+  RequestInformationModel: lazy(
+    () => import("../../../pages/Requestinformation"),
+  ),
+  BudgetRequestModel: lazy(
+    () => import("../../../pages/Budgetrequest/BudgetRequestRegistration"),
+  ),
+  ProjectPlanModel: lazy(
+    () => import("../../../pages/Projectplan/ProjectPlanRegistration"),
+  ),
+  ProjectMonitoringEvaluationModel: lazy(
+    () => import("../../Projectmonitoringevaluation/index"),
+  ),
   ImplementingAreaModel: lazy(() => import("../../Implementingarea")),
   ProjectBudgetSourceModel: lazy(() => import("../../Projectbudgetsource")),
 };
@@ -35,7 +47,7 @@ const LazyComponents = {
 const ProjectsOverview = () => {
   document.title = "Overview | Project";
 
-  const location = useLocation()
+  const location = useLocation();
   const projectId = Number(location.pathname.split("/")[2].split("#")[0]);
 
   const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
@@ -46,40 +58,102 @@ const ProjectsOverview = () => {
   // Memoized project name
   const projectName = useMemo(() => data?.data?.prj_name || "", [data]);
   // Tab configuration
-  const tabMapping = useMemo(() => ({
-    54: { label: t("project_document"), component: LazyComponents.ProjectDocument, path: "documents" },
-    44: { label: t("project_contractor"), component: LazyComponents.Projectcontractor, path: "contractors" },
-    26: { label: t("project_payment"), component: LazyComponents.ProjectPayment, path: "payments" },
-    53: { label: t("project_stakeholder"), component: LazyComponents.ProjectStakeholder, path: "stakeholders" },
-    33: { label: t("prj_geo_location"), component: LazyComponents.GeoLocation, path: "location" },
-    43: { label: t("project_employee"), component: LazyComponents.ProjectEmployeeModel, path: "employees" },
-    38: { label: t("project_handover"), component: LazyComponents.ProjectHandoverModel, path: "handover" },
-    37: { label: t("project_performance"), component: LazyComponents.ProjectPerformanceModel, path: "performance" },
-    41: { label: t("project_supplimentary"), component: LazyComponents.ProjectSupplimentaryModel, path: "supplimentary" },
-    42: {
-      label: t("project_budget_source"),
-      component: LazyComponents.ProjectBudgetSourceModel,
-      path: "project_budget_source",
-    },
-    40: { label: t("project_variation"), component: LazyComponents.ProjectVariationModel, path: "variation" },
-    58: { label: t("proposal_request"), component: LazyComponents.ProposalRequestModel, path: "proposal-request" },
-    57: { label: t("conversation_information"), component: LazyComponents.Conversation, path: "conversations" },
-    59: { label: t("request_information"), component: LazyComponents.RequestInformationModel, path: "requests" },
-    //70: { label: t("proposal_request"), component: LazyComponents.BudgetRequestModel, path: "proposal_request" },
-    61: { label: t("project_plan"), component: LazyComponents.ProjectPlanModel, path: "project_plan" },
-    59: { label: t("request_information"), component: LazyComponents.RequestInformationModel, path: "information" },
-    72: {
-      label: t("project_monitoring_evaluation"),
-      component: LazyComponents.ProjectMonitoringEvaluationModel,
-      path: "project_monitoring_evaluation",
-    },
-    81: {
-      label: t("implementing_area"),
-      component: LazyComponents.ImplementingAreaModel,
-      path: "implementing_area",
-    },
-
-  }), [t]);
+  const tabMapping = useMemo(
+    () => ({
+      54: {
+        label: t("project_document"),
+        component: LazyComponents.ProjectDocument,
+        path: "documents",
+      },
+      44: {
+        label: t("project_contractor"),
+        component: LazyComponents.Projectcontractor,
+        path: "contractors",
+      },
+      26: {
+        label: t("project_payment"),
+        component: LazyComponents.ProjectPayment,
+        path: "payments",
+      },
+      53: {
+        label: t("project_stakeholder"),
+        component: LazyComponents.ProjectStakeholder,
+        path: "stakeholders",
+      },
+      33: {
+        label: t("prj_geo_location"),
+        component: LazyComponents.GeoLocation,
+        path: "location",
+      },
+      43: {
+        label: t("project_employee"),
+        component: LazyComponents.ProjectEmployeeModel,
+        path: "employees",
+      },
+      38: {
+        label: t("project_handover"),
+        component: LazyComponents.ProjectHandoverModel,
+        path: "handover",
+      },
+      37: {
+        label: t("project_performance"),
+        component: LazyComponents.ProjectPerformanceModel,
+        path: "performance",
+      },
+      41: {
+        label: t("project_supplimentary"),
+        component: LazyComponents.ProjectSupplimentaryModel,
+        path: "supplimentary",
+      },
+      42: {
+        label: t("project_budget_source"),
+        component: LazyComponents.ProjectBudgetSourceModel,
+        path: "project_budget_source",
+      },
+      40: {
+        label: t("project_variation"),
+        component: LazyComponents.ProjectVariationModel,
+        path: "variation",
+      },
+      58: {
+        label: t("proposal_request"),
+        component: LazyComponents.ProposalRequestModel,
+        path: "proposal-request",
+      },
+      57: {
+        label: t("conversation_information"),
+        component: LazyComponents.Conversation,
+        path: "conversations",
+      },
+      59: {
+        label: t("request_information"),
+        component: LazyComponents.RequestInformationModel,
+        path: "requests",
+      },
+      //70: { label: t("proposal_request"), component: LazyComponents.BudgetRequestModel, path: "proposal_request" },
+      61: {
+        label: t("project_plan"),
+        component: LazyComponents.ProjectPlanModel,
+        path: "project_plan",
+      },
+      59: {
+        label: t("request_information"),
+        component: LazyComponents.RequestInformationModel,
+        path: "information",
+      },
+      72: {
+        label: t("project_monitoring_evaluation"),
+        component: LazyComponents.ProjectMonitoringEvaluationModel,
+        path: "project_monitoring_evaluation",
+      },
+      81: {
+        label: t("implementing_area"),
+        component: LazyComponents.ImplementingAreaModel,
+        path: "implementing_area",
+      },
+    }),
+    [t],
+  );
 
   // Allowed tabs based on project data
   //const allowedTabs = useMemo(() => data?.allowedTabs || [], [data]);
@@ -102,7 +176,7 @@ const ProjectsOverview = () => {
         }
         return acc;
       }, {}),
-    [allowedTabs, tabMapping]
+    [allowedTabs, tabMapping],
   );
 
   return (

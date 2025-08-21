@@ -67,7 +67,7 @@ export const useUpdateDateSetting = () => {
           data: oldData.data.map((DateSettingData) =>
             DateSettingData.dts_id === updatedDateSetting.data.dts_id
               ? { ...DateSettingData, ...updatedDateSetting.data }
-              : DateSettingData
+              : DateSettingData,
           ),
         };
       });
@@ -85,7 +85,8 @@ export const useDeleteDateSetting = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (DateSettingData) => DateSettingData.dts_id !== parseInt(deletedData.deleted_id)
+            (DateSettingData) =>
+              DateSettingData.dts_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

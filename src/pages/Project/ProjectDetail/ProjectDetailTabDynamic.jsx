@@ -13,94 +13,94 @@ import { useLocation } from "react-router-dom";
 import Spinners from "../../../components/Common/Spinner";
 
 const ProjectDetailTabDynamic = ({
-	canvasWidth,
-	name,
-	id,
-	totalActualBudget,
-	status = null,
-	startDate = null,
-	endDate = null,
-	components,
+  canvasWidth,
+  name,
+  id,
+  totalActualBudget,
+  status = null,
+  startDate = null,
+  endDate = null,
+  components,
 }) => {
-	const location = useLocation();
-	const [activeTab1, setActiveTab1] = useState("");
+  const location = useLocation();
+  const [activeTab1, setActiveTab1] = useState("");
 
-	const navItems = Object.keys(components);
+  const navItems = Object.keys(components);
 
-	const toggleTab = (tab) => {
-		if (activeTab1 !== tab) {
-			setActiveTab1(tab);
-		}
-	};
+  const toggleTab = (tab) => {
+    if (activeTab1 !== tab) {
+      setActiveTab1(tab);
+    }
+  };
 
-	useEffect(() => {
-		if (navItems.length > 0) {
-			const tabKey = location.hash.slice(1); // Get key from hash (removes '#')
-			const defaultTab = components[navItems[0]]?.path;
-			setActiveTab1(tabKey || defaultTab);
-		}
-	}, [location.hash, navItems, components]);
+  useEffect(() => {
+    if (navItems.length > 0) {
+      const tabKey = location.hash.slice(1); // Get key from hash (removes '#')
+      const defaultTab = components[navItems[0]]?.path;
+      setActiveTab1(tabKey || defaultTab);
+    }
+  }, [location.hash, navItems, components]);
 
-	const renderTabComponent = () => {
-		const matchedItem = Object.values(components).find(
-			(item) => item.path === activeTab1
-		);
-		if (!matchedItem?.component) return null;
+  const renderTabComponent = () => {
+    const matchedItem = Object.values(components).find(
+      (item) => item.path === activeTab1,
+    );
+    if (!matchedItem?.component) return null;
 
-		const { component: Component } = matchedItem;
+    const { component: Component } = matchedItem;
 
-		return (
-			<Suspense fallback={<Spinners top={"top-50"} />}>
-				<Component
-					passedId={id}
-					isActive={true}
-					projectName={name}
-					totalActualBudget={totalActualBudget}
-					status={status}
+    return (
+      <Suspense fallback={<Spinners top={"top-50"} />}>
+        <Component
+          passedId={id}
+          isActive={true}
+          projectName={name}
+          totalActualBudget={totalActualBudget}
+          status={status}
           startDate={startDate}
           endDate={endDate}
-				/>
-			</Suspense>
-		);
-	};
+        />
+      </Suspense>
+    );
+  };
 
-	return (
-		<React.Fragment>
-			{navItems.length > 0 && (
-				<Nav className="navtab-bg nav-justified">
-					{navItems.map((navItem) => (
-						<NavItem
-							key={navItem}
-							className="me-3 mb-3"
-							style={{ whiteSpace: "nowrap", textOverflow: "ellipsis" }}
-						>
-							<NavLink
-								href={`#${components[navItem].path}`}
-								onClick={() => toggleTab(components[navItem].path)}
-								style={{ cursor: "pointer" }}
-								className={classnames("text-nowrap rounded", {
-									"active bg-primary text-light border-primary":
-										activeTab1 === components[navItem].path,
-									"bg-light text-dark border-secondary":
-										activeTab1 !== components[navItem].path,
-									"w-25": navItems.length === 1,
-								})}
-							>
-								<span className="d-none d-sm-block">{navItem}</span>
-							</NavLink>
-						</NavItem>
-					))}
-				</Nav>
-			)}
-			<TabContent
-				activeTab={activeTab1}
-				className="p-3 text-muted mt-4"
-				style={{ minHeight: "300px" }}
-			>
-				{renderTabComponent()}
-			</TabContent>
-		</React.Fragment>
-	);
+  return (
+    <React.Fragment>
+      {navItems.length > 0 && (
+        <Nav className="navtab-bg nav-justified">
+          {navItems.map((navItem) => (
+            <NavItem
+              key={navItem}
+              className="me-3 mb-3"
+              style={{ whiteSpace: "nowrap", textOverflow: "ellipsis" }}
+            >
+              <NavLink
+                href={`#${components[navItem].path}`}
+                onClick={() => toggleTab(components[navItem].path)}
+                style={{ cursor: "pointer" }}
+                className={classnames("text-nowrap rounded", {
+                  "active bg-primary text-light border-primary":
+                    activeTab1 === components[navItem].path,
+                  "bg-light text-dark border-secondary":
+                    activeTab1 !== components[navItem].path,
+                  "w-25": navItems.length === 1,
+                })}
+              >
+                <span className="d-none d-sm-block">{navItem}</span>
+              </NavLink>
+            </NavItem>
+          ))}
+        </Nav>
+      )}
+      <TabContent
+        activeTab={activeTab1}
+        className="p-3 text-muted mt-4"
+        style={{ minHeight: "300px" }}
+      >
+        {renderTabComponent()}
+      </TabContent>
+    </React.Fragment>
+  );
 };
 
 export default ProjectDetailTabDynamic;

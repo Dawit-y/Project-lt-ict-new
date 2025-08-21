@@ -74,7 +74,7 @@ export const useUpdateRoles = () => {
           data: oldData.data.map((data) =>
             data.rol_id === updatedData.data.rol_id
               ? { ...data, ...updatedData.data }
-              : data
+              : data,
           ),
         };
       });
@@ -93,7 +93,7 @@ export const useDeleteRoles = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (data) => data.rol_id !== parseInt(variable)
+            (data) => data.rol_id !== parseInt(variable),
           ),
         };
       });

@@ -99,7 +99,7 @@ const Conversation = (props) => {
     return formatDistanceToNow(parseISO(timestamp), { addSuffix: true });
   };
 
-  const comments = data?.data || []
+  const comments = data?.data || [];
 
   return (
     <React.Fragment>
@@ -132,13 +132,13 @@ const Conversation = (props) => {
                               value={validation.values.cvi_title || ""}
                               invalid={
                                 validation.touched.cvi_title &&
-                                  validation.errors.cvi_title
+                                validation.errors.cvi_title
                                   ? true
                                   : false
                               }
                             />
                             {validation.touched.cvi_title &&
-                              validation.errors.cvi_title ? (
+                            validation.errors.cvi_title ? (
                               <FormFeedback type="invalid">
                                 {validation.errors.cvi_title}
                               </FormFeedback>
@@ -159,13 +159,13 @@ const Conversation = (props) => {
                               value={validation.values.cvi_description || ""}
                               invalid={
                                 validation.touched.cvi_description &&
-                                  validation.errors.cvi_description
+                                validation.errors.cvi_description
                                   ? true
                                   : false
                               }
                             ></textarea>
                             {validation.touched.cvi_description &&
-                              validation.errors.cvi_description ? (
+                            validation.errors.cvi_description ? (
                               <FormFeedback type="invalid">
                                 {validation.errors.cvi_description}
                               </FormFeedback>

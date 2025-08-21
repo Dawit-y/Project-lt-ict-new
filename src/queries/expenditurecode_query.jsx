@@ -68,7 +68,7 @@ export const useUpdateExpenditureCode = () => {
           data: oldData.data.map((ExpenditureCodeData) =>
             ExpenditureCodeData.pec_id === updatedExpenditureCode.data.pec_id
               ? { ...ExpenditureCodeData, ...updatedExpenditureCode.data }
-              : ExpenditureCodeData
+              : ExpenditureCodeData,
           ),
         };
       });
@@ -87,7 +87,8 @@ export const useDeleteExpenditureCode = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (ExpenditureCodeData) => ExpenditureCodeData.pec_id !== parseInt(deletedData.deleted_id)
+            (ExpenditureCodeData) =>
+              ExpenditureCodeData.pec_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

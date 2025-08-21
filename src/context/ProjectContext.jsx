@@ -51,16 +51,27 @@ const ProjectProvider = ({ children }) => {
 
   useEffect(() => {
     setProjectParams({
-      ...(selectedLocations.region && { prj_location_region_id: selectedLocations.region }),
-      ...(selectedLocations.zone && { prj_location_zone_id: selectedLocations.zone }),
-      ...(selectedLocations.woreda && { prj_location_woreda_id: selectedLocations.woreda }),
-      ...(selectedLocations.cluster && { prj_location_cluster_id: selectedLocations.cluster }),
-      ...(selectedLocations.sector && { prj_location_sector_id: selectedLocations.sector }),
-      ...(selectedLocations.program && { prj_location_program_id: selectedLocations.program }),
+      ...(selectedLocations.region && {
+        prj_location_region_id: selectedLocations.region,
+      }),
+      ...(selectedLocations.zone && {
+        prj_location_zone_id: selectedLocations.zone,
+      }),
+      ...(selectedLocations.woreda && {
+        prj_location_woreda_id: selectedLocations.woreda,
+      }),
+      ...(selectedLocations.cluster && {
+        prj_location_cluster_id: selectedLocations.cluster,
+      }),
+      ...(selectedLocations.sector && {
+        prj_location_sector_id: selectedLocations.sector,
+      }),
+      ...(selectedLocations.program && {
+        prj_location_program_id: selectedLocations.program,
+      }),
       ...(include === 1 && { include }),
     });
   }, [selectedLocations, include]);
-
 
   if (isSrError) {
     return <FetchErrorHandler error={srError} refetch={search} />;

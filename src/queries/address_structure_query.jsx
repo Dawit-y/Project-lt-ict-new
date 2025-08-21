@@ -78,7 +78,7 @@ const buildTree = (data) => {
       node.level = "woreda";
     } else {
       const hasGrandChildren = node.children.some(
-        (child) => child.children.length > 0
+        (child) => child.children.length > 0,
       );
 
       if (hasGrandChildren) {

@@ -33,14 +33,14 @@ const RolesModal = (props) => {
 
   return (
     <Modal
-    isOpen={isOpen}
-    role="dialog"
-    autoFocus={true}
-    centered={true}
-    className="modal-xl"
-    tabIndex="-1"
-    toggle={toggle}
-    style={modalStyle}
+      isOpen={isOpen}
+      role="dialog"
+      autoFocus={true}
+      centered={true}
+      className="modal-xl"
+      tabIndex="-1"
+      toggle={toggle}
+      style={modalStyle}
     >
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
@@ -65,7 +65,7 @@ const RolesModal = (props) => {
         </ModalFooter>
       </div>
     </Modal>
-    );
+  );
 };
 RolesModal.propTypes = {
   toggle: PropTypes.func,

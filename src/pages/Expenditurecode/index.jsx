@@ -152,9 +152,9 @@ const ExpenditureCodeModel = () => {
         (value) => {
           return !data?.data.some(
             (item) =>
-              item.pec_name == value && item.pec_id !== expenditureCode?.pec_id
+              item.pec_name == value && item.pec_id !== expenditureCode?.pec_id,
           );
-        }
+        },
       ),
       pec_code: alphanumericValidation(2, 100, true).test(
         "unique-pec_code",
@@ -162,9 +162,9 @@ const ExpenditureCodeModel = () => {
         (value) => {
           return !data?.data.some(
             (item) =>
-              item.pec_code == value && item.pec_id !== expenditureCode?.pec_id
+              item.pec_code == value && item.pec_id !== expenditureCode?.pec_id,
           );
-        }
+        },
       ),
       pec_description: alphanumericValidation(3, 425, false),
     }),

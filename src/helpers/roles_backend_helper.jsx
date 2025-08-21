@@ -12,7 +12,7 @@ export const getRoles = async (params = {}) => {
     const response = await post(url);
     return response;
   } catch (error) {
-    console.log("Error in fetching data:", error);
+    throw error;
   }
 };
 // add Role

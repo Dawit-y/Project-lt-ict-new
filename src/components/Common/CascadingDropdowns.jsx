@@ -21,7 +21,7 @@ const CascadingDropdowns = () => {
         .post(
           `${
             import.meta.env.VITE_BASE_API_URL
-          }addressbyparent?parent_id=${firstDropdown}`
+          }addressbyparent?parent_id=${firstDropdown}`,
         )
         .then((response) => {
           console.log(response);
@@ -45,7 +45,7 @@ const CascadingDropdowns = () => {
         .post(
           `${
             import.meta.env.VITE_BASE_API_URL
-          }addressbyparent?parent_id=${secondDropdown}`
+          }addressbyparent?parent_id=${secondDropdown}`,
         )
         .then((response) => {
           setThirdOptions(response.data.data || []); // Safeguard against undefined

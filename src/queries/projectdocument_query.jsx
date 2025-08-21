@@ -28,7 +28,10 @@ const createQueryKey = (searchParams) => {
 };
 
 // Search project documents
-export const useSearchProjectDocuments = (searchParams = null, isActive = false) => {
+export const useSearchProjectDocuments = (
+  searchParams = null,
+  isActive = false,
+) => {
   return useQuery({
     queryKey: [...PROJECT_DOCUMENT_QUERY_KEY, "search", searchParams],
     queryFn: () => getProjectDocument(searchParams),
@@ -86,7 +89,7 @@ export const useUpdateProjectDocument = () => {
             data: oldData.data.map((data) =>
               data.prd_id === updatedData.data.prd_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -111,7 +114,7 @@ export const useDeleteProjectDocument = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.prd_id !== parseInt(variable)
+              (dept) => dept.prd_id !== parseInt(variable),
             ),
           };
         });

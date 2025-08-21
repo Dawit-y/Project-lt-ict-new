@@ -6,22 +6,21 @@ import { createSelector } from "reselect";
 import { changeLayoutMode } from "../store/actions";
 
 const NonAuthLayout = (props) => {
-
   const dispatch = useDispatch();
 
   const selectProperty = createSelector(
     (state) => state.Layout,
     (layout) => ({
       layoutModeType: layout.layoutModeType,
-    })
-  )
+    }),
+  );
   const { layoutModeType } = useSelector(selectProperty);
 
   useEffect(() => {
     if (layoutModeType) {
-      dispatch(changeLayoutMode(layoutModeType))
+      dispatch(changeLayoutMode(layoutModeType));
     }
-  }, [layoutModeType,])
+  }, [layoutModeType]);
 
   return <React.Fragment>{props.children}</React.Fragment>;
 };

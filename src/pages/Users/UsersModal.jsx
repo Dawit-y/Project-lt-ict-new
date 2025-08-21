@@ -110,7 +110,7 @@ const UsersModal = (props) => {
         autoClose: 2000,
       });
     } finally {
-      setModal_backdrop(false)
+      setModal_backdrop(false);
     }
   };
 
@@ -185,8 +185,9 @@ const UsersModal = (props) => {
                   <Row>
                     <Col className="md-6">
                       <img
-                        src={`${import.meta.env.VITE_BASE_API_FILE
-                          }/public/uploads/userfiles/${transaction.usr_picture}`}
+                        src={`${
+                          import.meta.env.VITE_BASE_API_FILE
+                        }/public/uploads/userfiles/${transaction.usr_picture}`}
                         alt="User Profile"
                         className="img-thumbnail"
                         style={{
@@ -334,7 +335,6 @@ const UsersModal = (props) => {
                   </Col>
                 </CardBody>
               </Card>
-
             </Col>
           </Row>
         </ModalBody>
@@ -381,8 +381,9 @@ const UsersModal = (props) => {
                     onChange={handlePasswordInput}
                   />
                   <i
-                    className={`mdi ${passwordShown ? "mdi-eye-off" : "mdi-eye"
-                      } font-size-16`}
+                    className={`mdi ${
+                      passwordShown ? "mdi-eye-off" : "mdi-eye"
+                    } font-size-16`}
                     onClick={togglePasswordVisibility}
                     style={{
                       position: "absolute",
@@ -426,11 +427,20 @@ const UsersModal = (props) => {
               type="button"
               color="success"
               onClick={handlePasswordChange}
-              disabled={passwordStrength === "Weak" || !newPassword || changeUserPassword.isPending}
+              disabled={
+                passwordStrength === "Weak" ||
+                !newPassword ||
+                changeUserPassword.isPending
+              }
             >
-              {changeUserPassword.isPending ?
-                <span> <Spinner size={"sm"} />  {" Change Password"}</span>
-                : "Change Password"}
+              {changeUserPassword.isPending ? (
+                <span>
+                  {" "}
+                  <Spinner size={"sm"} /> {" Change Password"}
+                </span>
+              ) : (
+                "Change Password"
+              )}
             </Button>
           </ModalFooter>
         </Modal>

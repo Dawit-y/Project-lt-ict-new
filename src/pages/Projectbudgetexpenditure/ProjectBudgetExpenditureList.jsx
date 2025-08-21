@@ -18,8 +18,8 @@ import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForLists from "../../components/Common/TreeForLists2";
 import SearchTableContainer from "../../components/Common/SearchTableContainer";
-const AgGridContainer = lazy(() =>
-  import("../../components/Common/AgGridContainer")
+const AgGridContainer = lazy(
+  () => import("../../components/Common/AgGridContainer"),
 );
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
@@ -51,12 +51,12 @@ const ProjectBudgetExpenditureList = () => {
   const budgetYearOptions = createSelectOptions(
     budgetYearData?.data || [],
     "bdy_id",
-    "bdy_name"
+    "bdy_name",
   );
   const budgetMonthOptions = createSelectOptions(
     budgetMonthData?.data || [],
     "bdm_id",
-    "bdm_month"
+    "bdm_month",
   );
 
   //START FOREIGN CALLS

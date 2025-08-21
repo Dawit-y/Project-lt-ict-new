@@ -158,9 +158,9 @@ const StakeholderTypeModel = () => {
           return !data?.data.some(
             (item) =>
               item.sht_type_name_or == value &&
-              item.sht_id !== stakeholderType?.sht_id
+              item.sht_id !== stakeholderType?.sht_id,
           );
-        }
+        },
       ),
       sht_type_name_am: Yup.string().required(t("sht_type_name_am")),
       sht_type_name_en: alphanumericValidation(2, 100, true),

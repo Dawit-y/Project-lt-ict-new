@@ -1,5 +1,3 @@
-
-
 /* Timepicker */
 .bootstrap-timepicker-widget {
   table {
@@ -21,43 +19,40 @@
         color: var(--#{$prefix}body-color);
         border: 1px solid var(--#{$prefix}border-color);
         background-color: $input-bg;
-
       }
     }
   }
 
-  &.dropdown-menu:after{
+  &.dropdown-menu:after {
     border-bottom-color: var(--#{$prefix}gray-200);
   }
-  &.timepicker-orient-bottom:after{
+  &.timepicker-orient-bottom:after {
     border-top-color: var(--#{$prefix}gray-200);
   }
 }
 
-
-.timepicker-orient-top{
+.timepicker-orient-top {
   top: $input-height !important;
 }
 
-.timepicker-orient-bottom{
+.timepicker-orient-bottom {
   top: auto !important;
   bottom: $input-height !important;
 }
 
-.bootstrap-timepicker-widget{
+.bootstrap-timepicker-widget {
   left: 0 !important;
   right: auto !important;
 }
 
-
-.bootstrap-timepicker-widget{
-  &.timepicker-orient-left{
-    &:before{
+.bootstrap-timepicker-widget {
+  &.timepicker-orient-left {
+    &:before {
       left: 6px;
       right: auto;
     }
 
-    &::after{
+    &::after {
       left: 7px;
       right: auto;
     }

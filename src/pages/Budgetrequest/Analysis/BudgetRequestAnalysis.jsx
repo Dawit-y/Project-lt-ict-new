@@ -40,13 +40,13 @@ const BudgetRequestAnalysis = ({
   // Toggle functions
   const toggleChartExport = useCallback(
     () => setChartExportOpen((prev) => !prev),
-    []
+    [],
   );
   const toggleTab = useCallback(
     (tab) => {
       if (activeTab !== tab) setActiveTab(tab);
     },
-    [activeTab]
+    [activeTab],
   );
 
   // Helper functions
@@ -74,7 +74,7 @@ const BudgetRequestAnalysis = ({
           (data?.bdr_released_amount || 0) - (data?.bdr_requested_amount || 0),
         variancePercentage: calculatePercentage(
           data?.bdr_released_amount || 0,
-          data?.bdr_requested_amount || 0
+          data?.bdr_requested_amount || 0,
         ),
       },
       baseline: {
@@ -88,7 +88,7 @@ const BudgetRequestAnalysis = ({
         requested: data?.status_name === "Requested" ? 1 : 0,
       },
     }),
-    [calculatePercentage]
+    [calculatePercentage],
   );
 
   const calculateOverallTotals = useCallback(
@@ -120,7 +120,7 @@ const BudgetRequestAnalysis = ({
         totals.financial.released - totals.financial.requested;
       totals.financial.variancePercentage = calculatePercentage(
         totals.financial.released,
-        totals.financial.requested
+        totals.financial.requested,
       );
 
       totals.baseline.financial = totals.baseline.financial / data.length;
@@ -130,7 +130,7 @@ const BudgetRequestAnalysis = ({
 
       return totals;
     },
-    [calculatePercentage]
+    [calculatePercentage],
   );
 
   // Memoized totals calculation
@@ -138,18 +138,18 @@ const BudgetRequestAnalysis = ({
     return isOverallView
       ? calculateOverallTotals(allData)
       : budgetRequestData
-      ? calculateSingleRequestTotals(budgetRequestData)
-      : {
-          financial: {
-            requested: 0,
-            released: 0,
-            variance: 0,
-            variancePercentage: 0,
-          },
-          baseline: { financial: 0, physical: 0 },
-          status: { approved: 0, rejected: 0, recommended: 0, requested: 0 },
-          requestCount: 0,
-        };
+        ? calculateSingleRequestTotals(budgetRequestData)
+        : {
+            financial: {
+              requested: 0,
+              released: 0,
+              variance: 0,
+              variancePercentage: 0,
+            },
+            baseline: { financial: 0, physical: 0 },
+            status: { approved: 0, rejected: 0, recommended: 0, requested: 0 },
+            requestCount: 0,
+          };
   }, [
     budgetRequestData,
     allData,
@@ -208,7 +208,7 @@ const BudgetRequestAnalysis = ({
           (budgetRequestData.bdr_requested_amount || 0),
         variancePercentage: calculatePercentage(
           budgetRequestData.bdr_released_amount || 0,
-          budgetRequestData.bdr_requested_amount || 0
+          budgetRequestData.bdr_requested_amount || 0,
         ),
         physicalPlanned: budgetRequestData.bdr_physical_planned || 0,
         physicalApproved: budgetRequestData.bdr_physical_approved || 0,
@@ -273,11 +273,11 @@ const BudgetRequestAnalysis = ({
       if (isOverallView) {
         const totalRequested = allData.reduce(
           (sum, req) => sum + (req.bdr_requested_amount || 0),
-          0
+          0,
         );
         const totalReleased = allData.reduce(
           (sum, req) => sum + (req.bdr_released_amount || 0),
-          0
+          0,
         );
         series = [totalRequested, totalReleased];
       } else {
@@ -382,7 +382,7 @@ const BudgetRequestAnalysis = ({
   const utilizationPercentage = useMemo(() => {
     return totals?.financial?.requested > 0
       ? Math.round(
-          (totals?.financial?.released / totals?.financial?.requested) * 100
+          (totals?.financial?.released / totals?.financial?.requested) * 100,
         )
       : 0;
   }, [totals?.financial]);
@@ -391,8 +391,8 @@ const BudgetRequestAnalysis = ({
     return utilizationPercentage > 75
       ? "success"
       : utilizationPercentage > 50
-      ? "info"
-      : "warning";
+        ? "info"
+        : "warning";
   }, [utilizationPercentage]);
 
   const statusItems = useMemo(
@@ -410,7 +410,7 @@ const BudgetRequestAnalysis = ({
         color: "warning",
       },
     ],
-    [totals?.status]
+    [totals?.status],
   );
 
   // Event handlers
@@ -424,7 +424,7 @@ const BudgetRequestAnalysis = ({
 
   const exportChart = useCallback((type) => {
     const chartElement = document.querySelector(
-      "#budget-request-chart .apexcharts-canvas"
+      "#budget-request-chart .apexcharts-canvas",
     );
     if (chartElement) {
       const canvas = chartElement.querySelector("canvas");
@@ -452,7 +452,7 @@ const BudgetRequestAnalysis = ({
                 {isOverallView
                   ? t("overall_budget_requests")
                   : `${budgetRequestData?.prj_name || t("budget_request")} ${t(
-                      "analysis"
+                      "analysis",
                     )}`}
                 {isOverallView && (
                   <Badge color="primary" className="ms-2">
@@ -554,12 +554,12 @@ const BudgetRequestAnalysis = ({
                                 budgetRequestData?.status_name === "Approved"
                                   ? "success"
                                   : budgetRequestData?.status_name ===
-                                    "Rejected"
-                                  ? "danger"
-                                  : budgetRequestData?.status_name ===
-                                    "Recommended"
-                                  ? "info"
-                                  : "warning"
+                                      "Rejected"
+                                    ? "danger"
+                                    : budgetRequestData?.status_name ===
+                                        "Recommended"
+                                      ? "info"
+                                      : "warning"
                               }
                             >
                               {budgetRequestData?.status_name || "-"}
@@ -576,7 +576,7 @@ const BudgetRequestAnalysis = ({
                             </p>
                             <h5 className="text-primary">
                               {memoizedFormatNumber(
-                                totals?.financial?.requested || 0
+                                totals?.financial?.requested || 0,
                               )}{" "}
                               {t("birr")}
                             </h5>
@@ -589,7 +589,7 @@ const BudgetRequestAnalysis = ({
                             </p>
                             <h5 className="text-success">
                               {memoizedFormatNumber(
-                                totals?.financial?.released || 0
+                                totals?.financial?.released || 0,
                               )}{" "}
                               {t("birr")}
                             </h5>
@@ -607,14 +607,14 @@ const BudgetRequestAnalysis = ({
                           }
                         >
                           {memoizedFormatLargeNumber(
-                            Math.abs(totals?.financial?.variance || 0)
+                            Math.abs(totals?.financial?.variance || 0),
                           )}{" "}
                           {t("birr")}
                           {getStatusIndicator(totals?.financial?.variance || 0)}
                           <span className="text-muted font-size-14 ms-2">
                             (
                             {memoizedFormatNumber(
-                              totals?.financial?.variancePercentage || 0
+                              totals?.financial?.variancePercentage || 0,
                             )}
                             %)
                           </span>
@@ -637,11 +637,11 @@ const BudgetRequestAnalysis = ({
                         </div>
                         <small className="text-muted">
                           {memoizedFormatNumber(
-                            totals?.financial?.released || 0
+                            totals?.financial?.released || 0,
                           )}{" "}
                           {t("of")}{" "}
                           {memoizedFormatNumber(
-                            totals?.financial?.requested || 0
+                            totals?.financial?.requested || 0,
                           )}{" "}
                           {t("birr")}
                         </small>
@@ -655,7 +655,7 @@ const BudgetRequestAnalysis = ({
                               </p>
                               <h4 className="text-primary">
                                 {memoizedFormatNumber(
-                                  totals?.physical?.planned || 0
+                                  totals?.physical?.planned || 0,
                                 )}
                                 %
                               </h4>
@@ -669,7 +669,7 @@ const BudgetRequestAnalysis = ({
                               </p>
                               <h4 className="text-primary">
                                 {memoizedFormatNumber(
-                                  totals?.physical?.approved || 0
+                                  totals?.physical?.approved || 0,
                                 )}
                                 %
                               </h4>
@@ -779,7 +779,7 @@ const BudgetRequestAnalysis = ({
                             </p>
                             <h4>
                               {memoizedFormatNumber(
-                                totals?.baseline?.financial || 0
+                                totals?.baseline?.financial || 0,
                               )}{" "}
                               {t("birr")}
                             </h4>
@@ -790,7 +790,7 @@ const BudgetRequestAnalysis = ({
                             </p>
                             <h4>
                               {memoizedFormatNumber(
-                                totals?.baseline?.physical || 0
+                                totals?.baseline?.physical || 0,
                               )}
                               %
                             </h4>
@@ -834,7 +834,7 @@ const BudgetRequestAnalysis = ({
                             />
                             <span className="ms-2">
                               {memoizedFormatNumber(
-                                totals?.baseline?.physical || 0
+                                totals?.baseline?.physical || 0,
                               )}
                               %
                             </span>
@@ -907,8 +907,8 @@ const BudgetRequestAnalysis = ({
                                 {budgetRequestData?.bdr_priority_level === 1
                                   ? "High"
                                   : budgetRequestData?.bdr_priority_level === 2
-                                  ? "Medium"
-                                  : "Low"}
+                                    ? "Medium"
+                                    : "Low"}
                               </p>
                             </Col>
                           </Row>

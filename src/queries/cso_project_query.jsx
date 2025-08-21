@@ -5,7 +5,7 @@ import {
   updateProject,
   addProject,
   deleteProject,
-  getSearchProject
+  getSearchProject,
 } from "../helpers/cso_project_backend_helpers";
 
 export const PROJECT_QUERY_KEY = ["project_cso"];

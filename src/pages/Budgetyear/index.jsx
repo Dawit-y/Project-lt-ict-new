@@ -96,7 +96,7 @@ const BudgetYearModel = React.memo(() => {
       }
       toggle();
     },
-    [addBudgetYear, t, toggle]
+    [addBudgetYear, t, toggle],
   );
 
   const handleUpdateBudgetYear = useCallback(
@@ -109,7 +109,7 @@ const BudgetYearModel = React.memo(() => {
       }
       toggle();
     },
-    [updateBudgetYear, t, toggle]
+    [updateBudgetYear, t, toggle],
   );
 
   const handleDeleteBudgetYear = useCallback(async () => {
@@ -135,7 +135,7 @@ const BudgetYearModel = React.memo(() => {
       .test(
         "len",
         "Budget year must be a 4-digit number",
-        (val) => String(val).length === 4
+        (val) => String(val).length === 4,
       )
       .min(minYear, `Budget year must be >= ${minYear}`)
       .max(maxYear, `Budget year must not be beyond ${maxYear}`)
@@ -144,7 +144,7 @@ const BudgetYearModel = React.memo(() => {
         return !existing.some(
           (item) =>
             item.bdy_name === value &&
-            (!isEdit || item.bdy_id !== budgetYear?.bdy_id)
+            (!isEdit || item.bdy_id !== budgetYear?.bdy_id),
         );
       }),
 
@@ -156,7 +156,7 @@ const BudgetYearModel = React.memo(() => {
         return !existing.some(
           (item) =>
             item.bdy_code === value &&
-            (!isEdit || item.bdy_id !== budgetYear?.bdy_id)
+            (!isEdit || item.bdy_id !== budgetYear?.bdy_id),
         );
       }),
 
@@ -214,7 +214,7 @@ const BudgetYearModel = React.memo(() => {
       setIsEdit(true);
       toggle();
     },
-    [toggle]
+    [toggle],
   );
 
   const [deleteModal, setDeleteModal] = useState(false);

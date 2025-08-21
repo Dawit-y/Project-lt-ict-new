@@ -20,7 +20,10 @@ import {
   useDeleteProjectSupplimentary,
   useUpdateProjectSupplimentary,
 } from "../../queries/projectsupplimentary_query";
-import { useFetchBudgetYears, usePopulateBudgetYears } from "../../queries/budgetyear_query";
+import {
+  useFetchBudgetYears,
+  usePopulateBudgetYears,
+} from "../../queries/budgetyear_query";
 import { useTranslation } from "react-i18next";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import {
@@ -178,21 +181,27 @@ const ProjectSupplimentaryModel = (props) => {
       prs_budget_year_id: numberValidation(1, 20, true),
       //prs_project_id: Yup.string().required(t("prs_project_id")),
       //prs_requested_date_ec: Yup.string().required(t("prs_requested_date_ec")),
-      prs_requested_date_gc: Yup.string().required(t("prs_requested_date_gc"))
+      prs_requested_date_gc: Yup.string()
+        .required(t("prs_requested_date_gc"))
         .test(
-          'is-before-end-date',
-          'request date must be earlier than or equal to the released date',
+          "is-before-end-date",
+          "request date must be earlier than or equal to the released date",
           function (value) {
             const { prs_released_date_gc } = this.parent; // Access other fields in the form
-            return !prs_released_date_gc || !value || new Date(value) <= new Date(prs_released_date_gc);
-          }),
+            return (
+              !prs_released_date_gc ||
+              !value ||
+              new Date(value) <= new Date(prs_released_date_gc)
+            );
+          },
+        ),
       prs_released_date_gc: Yup.string()
         .required(t("prs_released_date_gc"))
         .test("unique-prj_name", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
               item.prs_requested_date_gc == value &&
-              item.prs_id !== projectSupplimentary?.prs_id
+              item.prs_id !== projectSupplimentary?.prs_id,
           );
         }),
       //prs_released_date_ec: Yup.string().required(t("prs_released_date_ec")),
@@ -411,8 +420,8 @@ const ProjectSupplimentaryModel = (props) => {
       },
     ];
     if (
-     data?.previledge?.is_role_editable==1 ||
-     data?.previledge?.is_role_deletable==1
+      data?.previledge?.is_role_editable == 1 ||
+      data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
         header: t("Action"),
@@ -422,7 +431,8 @@ const ProjectSupplimentaryModel = (props) => {
         cell: (cellProps) => {
           return (
             <div className="d-flex gap-3">
-              {(data?.previledge?.is_role_editable == 1 && cellProps.row.original?.is_editable == 1) && (
+              {data?.previledge?.is_role_editable == 1 &&
+                cellProps.row.original?.is_editable == 1 && (
                   <Link
                     to="#"
                     className="text-success"
@@ -431,13 +441,17 @@ const ProjectSupplimentaryModel = (props) => {
                       handleProjectSupplimentaryClick(data);
                     }}
                   >
-                    <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+                    <i
+                      className="mdi mdi-pencil font-size-18"
+                      id="edittooltip"
+                    />
                     <UncontrolledTooltip placement="top" target="edittooltip">
                       Edit
                     </UncontrolledTooltip>
                   </Link>
                 )}
- {(data?.previledge?.is_role_deletable == 9 && cellProps.row.original?.is_deletable == 9) && (
+              {data?.previledge?.is_role_deletable == 9 &&
+                cellProps.row.original?.is_deletable == 9 && (
                   <Link
                     to="#"
                     className="text-danger"
@@ -541,7 +555,10 @@ const ProjectSupplimentaryModel = (props) => {
               >
                 <Row>
                   <Col className="col-md-6 mb-3">
-                    <Label>{t("prs_budget_year_id")}<span className="text-danger">*</span></Label>
+                    <Label>
+                      {t("prs_budget_year_id")}
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       name="prs_budget_year_id"
                       type="select"
@@ -550,13 +567,13 @@ const ProjectSupplimentaryModel = (props) => {
                       value={validation.values.prs_budget_year_id || ""}
                       invalid={
                         validation.touched.prs_budget_year_id &&
-                          validation.errors.prs_budget_year_id
+                        validation.errors.prs_budget_year_id
                           ? true
                           : false
                       }
                       maxLength={20}
                     >
-                      <option value="">{t('select_one')}</option>
+                      <option value="">{t("select_one")}</option>
                       {budgetYearData?.data?.map((data) => (
                         <option key={data.bdy_id} value={data.bdy_id}>
                           {data.bdy_name}
@@ -564,7 +581,7 @@ const ProjectSupplimentaryModel = (props) => {
                       ))}
                     </Input>
                     {validation.touched.prs_budget_year_id &&
-                      validation.errors.prs_budget_year_id ? (
+                    validation.errors.prs_budget_year_id ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_budget_year_id}
                       </FormFeedback>
@@ -584,14 +601,14 @@ const ProjectSupplimentaryModel = (props) => {
                       value={validation.values.prs_requested_amount || ""}
                       invalid={
                         validation.touched.prs_requested_amount &&
-                          validation.errors.prs_requested_amount
+                        validation.errors.prs_requested_amount
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prs_requested_amount &&
-                      validation.errors.prs_requested_amount ? (
+                    validation.errors.prs_requested_amount ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_requested_amount}
                       </FormFeedback>
@@ -611,14 +628,14 @@ const ProjectSupplimentaryModel = (props) => {
                       value={validation.values.prs_released_amount || ""}
                       invalid={
                         validation.touched.prs_released_amount &&
-                          validation.errors.prs_released_amount
+                        validation.errors.prs_released_amount
                           ? true
                           : false
                       }
                       maxLength={20}
                     />
                     {validation.touched.prs_released_amount &&
-                      validation.errors.prs_released_amount ? (
+                    validation.errors.prs_released_amount ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_released_amount}
                       </FormFeedback>
@@ -651,14 +668,14 @@ const ProjectSupplimentaryModel = (props) => {
                       value={validation.values.prs_description || ""}
                       invalid={
                         validation.touched.prs_description &&
-                          validation.errors.prs_description
+                        validation.errors.prs_description
                           ? true
                           : false
                       }
                       maxLength={425}
                     />
                     {validation.touched.prs_description &&
-                      validation.errors.prs_description ? (
+                    validation.errors.prs_description ? (
                       <FormFeedback type="invalid">
                         {validation.errors.prs_description}
                       </FormFeedback>
@@ -669,7 +686,7 @@ const ProjectSupplimentaryModel = (props) => {
                   <Col>
                     <div className="text-end">
                       {addProjectSupplimentary.isPending ||
-                        updateProjectSupplimentary.isPending ? (
+                      updateProjectSupplimentary.isPending ? (
                         <Button
                           color="success"
                           type="submit"

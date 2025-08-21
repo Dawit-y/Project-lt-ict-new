@@ -129,7 +129,7 @@ const PaymentAnalysis = ({ data }) => {
 
   const memoizedSeries = useMemo(
     () => paymentDatas.series,
-    [paymentDatas.series]
+    [paymentDatas.series],
   );
   const memoizedOptions = useMemo(() => GraphOptions, [GraphOptions]);
 
@@ -170,7 +170,7 @@ const PaymentAnalysis = ({ data }) => {
                               paymentDatas.Final.cost +
                               paymentDatas.other.cost)) *
                           100
-                        ).toFixed(2)
+                        ).toFixed(2),
                       )}
                       %)
                       <i className="mdi mdi-arrow-up ms-1 text-success" />{" "}

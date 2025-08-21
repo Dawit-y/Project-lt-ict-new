@@ -8,18 +8,23 @@ const PrintMultipleTables = ({ tables = [], columnsToIgnore = 2, title }) => {
   const { t } = useTranslation();
 
   const printPage = () => {
-    const printWindow = window.open("", "_blank", `width=${window.screen.width},height=${window.screen.height}`);
+    const printWindow = window.open(
+      "",
+      "_blank",
+      `width=${window.screen.width},height=${window.screen.height}`,
+    );
     printWindow.document.open();
 
-    let tableContent = tables.map(({ tablename, data, excludeKey = [] }) => {
-      if (!data || data.length === 0) return "";
+    let tableContent = tables
+      .map(({ tablename, data, excludeKey = [] }) => {
+        if (!data || data.length === 0) return "";
 
-      // Get table headers excluding specified keys and translate them
-      const headers = Object.keys(data[0])
-        .filter((key) => !excludeKey.includes(key))
-        .map((key) => t(key));
+        // Get table headers excluding specified keys and translate them
+        const headers = Object.keys(data[0])
+          .filter((key) => !excludeKey.includes(key))
+          .map((key) => t(key));
 
-      return `
+        return `
         <div style="margin-bottom: 20px;">
           <h2 style="text-align: start; font-size: 16px; font-weight: 900; font-family: 'Arial Black', sans-serif;">${t(tablename)}</h2>
           <table class="print-table">
@@ -27,19 +32,24 @@ const PrintMultipleTables = ({ tables = [], columnsToIgnore = 2, title }) => {
               <tr>${headers.map((header) => `<th>${header}</th>`).join("")}</tr>
             </thead>
             <tbody>
-              ${data.map(row => `
+              ${data
+                .map(
+                  (row) => `
                 <tr>
                   ${Object.keys(row)
-          .filter((key) => !excludeKey.includes(key))
-          .map(key => `<td>${row[key] || ""}</td>`)
-          .join("")}
+                    .filter((key) => !excludeKey.includes(key))
+                    .map((key) => `<td>${row[key] || ""}</td>`)
+                    .join("")}
                 </tr>
-              `).join("")}
+              `,
+                )
+                .join("")}
             </tbody>
           </table>
         </div>
       `;
-    }).join("");
+      })
+      .join("");
 
     printWindow.document.write(`
       <html>

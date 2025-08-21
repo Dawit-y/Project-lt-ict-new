@@ -75,7 +75,7 @@ export const useUpdateProcurementMethod = () => {
             data: oldData.data.map((data) =>
               data.prm_id === updatedData.data.prm_id
                 ? { ...data, ...updatedData.data }
-                : data
+                : data,
             ),
           };
         });
@@ -99,7 +99,8 @@ export const useDeleteProcurementMethod = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (deletedData) => deletedData.prm_id !== parseInt(deletedData.deleted_id)
+              (deletedData) =>
+                deletedData.prm_id !== parseInt(deletedData.deleted_id),
             ),
           };
         });

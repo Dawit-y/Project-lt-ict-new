@@ -337,245 +337,245 @@ const EmailTemplateModel = () => {
     return baseColumns;
   }, [handleEmailTemplateClick, toggleViewModal, onClickDelete]);
   return (
-		<React.Fragment>
-			<EmailTemplateModal
-				isOpen={modal1}
-				toggle={toggleViewModal}
-				transaction={transaction}
-			/>
-			<DeleteModal
-				show={deleteModal}
-				onDeleteClick={handleDeleteEmailTemplate}
-				onCloseClick={() => setDeleteModal(false)}
-				isLoading={deleteEmailTemplate.isPending}
-			/>
-			<div className="page-content">
-				<div className="container-fluid">
-					<Breadcrumbs
-						title={t("email_template")}
-						breadcrumbItem={t("email_template")}
-					/>
-					<AdvancedSearch
-						searchHook={useSearchEmailTemplates}
-						textSearchKeys={["emt_template_name"]}
-						dropdownSearchKeys={[]}
-						checkboxSearchKeys={[]}
-						onSearchResult={handleSearchResults}
-						setIsSearchLoading={setIsSearchLoading}
-						setSearchResults={setSearchResults}
-						setShowSearchResult={setShowSearchResult}
-					/>
-					{isLoading || isSearchLoading ? (
-						<Spinners />
-					) : (
-						<Row>
-							<Col xs="12">
-								<Card>
-									<CardBody>
-										<TableContainer
-											columns={columns}
-											data={
-												showSearchResult
-													? searchResults?.data
-													: data?.data || []
-											}
-											isGlobalFilter={true}
-											isAddButton={data?.previledge?.is_role_can_add == 1}
-											isCustomPageSize={true}
-											handleUserClick={handleEmailTemplateClicks}
-											isPagination={true}
-											// SearchPlaceholder="26 records..."
-											SearchPlaceholder={t("filter_placeholder")}
-											buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-											buttonName={t("add") + " " + t("email_template")}
-											tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-											theadClass="table-light"
-											pagination="pagination"
-											paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-										/>
-									</CardBody>
-								</Card>
-							</Col>
-						</Row>
-					)}
-					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
-						<ModalHeader toggle={toggle} tag="h4">
-							{!!isEdit
-								? t("edit") + " " + t("email_template")
-								: t("add") + " " + t("email_template")}
-						</ModalHeader>
-						<ModalBody>
-							<Form
-								onSubmit={(e) => {
-									e.preventDefault();
-									validation.handleSubmit();
-									return false;
-								}}
-							>
-								<Row>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("emt_template_name")}</Label>
-										<Input
-											name="emt_template_name"
-											type="text"
-											placeholder={t("emt_template_name")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.emt_template_name || ""}
-											invalid={
-												validation.touched.emt_template_name &&
-												validation.errors.emt_template_name
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.emt_template_name &&
-										validation.errors.emt_template_name ? (
-											<FormFeedback type="invalid">
-												{validation.errors.emt_template_name}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("emt_template_content")}</Label>
-										<Input
-											name="emt_template_content"
-											type="textarea"
-											placeholder={t("emt_template_content")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.emt_template_content || ""}
-											invalid={
-												validation.touched.emt_template_content &&
-												validation.errors.emt_template_content
-													? true
-													: false
-											}
-											maxLength={200}
-										/>
-										{validation.touched.emt_template_content &&
-										validation.errors.emt_template_content ? (
-											<FormFeedback type="invalid">
-												{validation.errors.emt_template_content}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("emt_template_content_am")}</Label>
-										<Input
-											name="emt_template_content_am"
-											type="textarea"
-											placeholder={t("emt_template_content_am")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.emt_template_content_am || ""}
-											invalid={
-												validation.touched.emt_template_content_am &&
-												validation.errors.emt_template_content_am
-													? true
-													: false
-											}
-											maxLength={200}
-										/>
-										{validation.touched.emt_template_content_am &&
-										validation.errors.emt_template_content_am ? (
-											<FormFeedback type="invalid">
-												{validation.errors.emt_template_content_am}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("emt_template_content_en")}</Label>
-										<Input
-											name="emt_template_content_en"
-											type="textarea"
-											placeholder={t("emt_template_content_en")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.emt_template_content_en || ""}
-											invalid={
-												validation.touched.emt_template_content_en &&
-												validation.errors.emt_template_content_en
-													? true
-													: false
-											}
-											maxLength={200}
-										/>
-										{validation.touched.emt_template_content_en &&
-										validation.errors.emt_template_content_en ? (
-											<FormFeedback type="invalid">
-												{validation.errors.emt_template_content_en}
-											</FormFeedback>
-										) : null}
-									</Col>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("emt_description")}</Label>
-										<Input
-											name="emt_description"
-											type="textarea"
-											placeholder={t("emt_description")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.emt_description || ""}
-											invalid={
-												validation.touched.emt_description &&
-												validation.errors.emt_description
-													? true
-													: false
-											}
-											maxLength={20}
-										/>
-										{validation.touched.emt_description &&
-										validation.errors.emt_description ? (
-											<FormFeedback type="invalid">
-												{validation.errors.emt_description}
-											</FormFeedback>
-										) : null}
-									</Col>
-								</Row>
-								<Row>
-									<Col>
-										<div className="text-end">
-											{addEmailTemplate.isPending ||
-											updateEmailTemplate.isPending ? (
-												<Button
-													color="success"
-													type="submit"
-													className="save-user"
-													disabled={
-														addEmailTemplate.isPending ||
-														updateEmailTemplate.isPending ||
-														!validation.dirty
-													}
-												>
-													<Spinner size={"sm"} color="light" className="me-2" />
-													{t("Save")}
-												</Button>
-											) : (
-												<Button
-													color="success"
-													type="submit"
-													className="save-user"
-													disabled={
-														addEmailTemplate.isPending ||
-														updateEmailTemplate.isPending ||
-														!validation.dirty
-													}
-												>
-													{t("Save")}
-												</Button>
-											)}
-										</div>
-									</Col>
-								</Row>
-							</Form>
-						</ModalBody>
-					</Modal>
-				</div>
-			</div>
-		</React.Fragment>
-	);
+    <React.Fragment>
+      <EmailTemplateModal
+        isOpen={modal1}
+        toggle={toggleViewModal}
+        transaction={transaction}
+      />
+      <DeleteModal
+        show={deleteModal}
+        onDeleteClick={handleDeleteEmailTemplate}
+        onCloseClick={() => setDeleteModal(false)}
+        isLoading={deleteEmailTemplate.isPending}
+      />
+      <div className="page-content">
+        <div className="container-fluid">
+          <Breadcrumbs
+            title={t("email_template")}
+            breadcrumbItem={t("email_template")}
+          />
+          <AdvancedSearch
+            searchHook={useSearchEmailTemplates}
+            textSearchKeys={["emt_template_name"]}
+            dropdownSearchKeys={[]}
+            checkboxSearchKeys={[]}
+            onSearchResult={handleSearchResults}
+            setIsSearchLoading={setIsSearchLoading}
+            setSearchResults={setSearchResults}
+            setShowSearchResult={setShowSearchResult}
+          />
+          {isLoading || isSearchLoading ? (
+            <Spinners />
+          ) : (
+            <Row>
+              <Col xs="12">
+                <Card>
+                  <CardBody>
+                    <TableContainer
+                      columns={columns}
+                      data={
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
+                      }
+                      isGlobalFilter={true}
+                      isAddButton={data?.previledge?.is_role_can_add == 1}
+                      isCustomPageSize={true}
+                      handleUserClick={handleEmailTemplateClicks}
+                      isPagination={true}
+                      // SearchPlaceholder="26 records..."
+                      SearchPlaceholder={t("filter_placeholder")}
+                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+                      buttonName={t("add") + " " + t("email_template")}
+                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+                      theadClass="table-light"
+                      pagination="pagination"
+                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+                    />
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          )}
+          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
+            <ModalHeader toggle={toggle} tag="h4">
+              {!!isEdit
+                ? t("edit") + " " + t("email_template")
+                : t("add") + " " + t("email_template")}
+            </ModalHeader>
+            <ModalBody>
+              <Form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  validation.handleSubmit();
+                  return false;
+                }}
+              >
+                <Row>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("emt_template_name")}</Label>
+                    <Input
+                      name="emt_template_name"
+                      type="text"
+                      placeholder={t("emt_template_name")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.emt_template_name || ""}
+                      invalid={
+                        validation.touched.emt_template_name &&
+                        validation.errors.emt_template_name
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.emt_template_name &&
+                    validation.errors.emt_template_name ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.emt_template_name}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("emt_template_content")}</Label>
+                    <Input
+                      name="emt_template_content"
+                      type="textarea"
+                      placeholder={t("emt_template_content")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.emt_template_content || ""}
+                      invalid={
+                        validation.touched.emt_template_content &&
+                        validation.errors.emt_template_content
+                          ? true
+                          : false
+                      }
+                      maxLength={200}
+                    />
+                    {validation.touched.emt_template_content &&
+                    validation.errors.emt_template_content ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.emt_template_content}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("emt_template_content_am")}</Label>
+                    <Input
+                      name="emt_template_content_am"
+                      type="textarea"
+                      placeholder={t("emt_template_content_am")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.emt_template_content_am || ""}
+                      invalid={
+                        validation.touched.emt_template_content_am &&
+                        validation.errors.emt_template_content_am
+                          ? true
+                          : false
+                      }
+                      maxLength={200}
+                    />
+                    {validation.touched.emt_template_content_am &&
+                    validation.errors.emt_template_content_am ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.emt_template_content_am}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("emt_template_content_en")}</Label>
+                    <Input
+                      name="emt_template_content_en"
+                      type="textarea"
+                      placeholder={t("emt_template_content_en")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.emt_template_content_en || ""}
+                      invalid={
+                        validation.touched.emt_template_content_en &&
+                        validation.errors.emt_template_content_en
+                          ? true
+                          : false
+                      }
+                      maxLength={200}
+                    />
+                    {validation.touched.emt_template_content_en &&
+                    validation.errors.emt_template_content_en ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.emt_template_content_en}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                  <Col className="col-md-6 mb-3">
+                    <Label>{t("emt_description")}</Label>
+                    <Input
+                      name="emt_description"
+                      type="textarea"
+                      placeholder={t("emt_description")}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.emt_description || ""}
+                      invalid={
+                        validation.touched.emt_description &&
+                        validation.errors.emt_description
+                          ? true
+                          : false
+                      }
+                      maxLength={20}
+                    />
+                    {validation.touched.emt_description &&
+                    validation.errors.emt_description ? (
+                      <FormFeedback type="invalid">
+                        {validation.errors.emt_description}
+                      </FormFeedback>
+                    ) : null}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <div className="text-end">
+                      {addEmailTemplate.isPending ||
+                      updateEmailTemplate.isPending ? (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addEmailTemplate.isPending ||
+                            updateEmailTemplate.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          <Spinner size={"sm"} color="light" className="me-2" />
+                          {t("Save")}
+                        </Button>
+                      ) : (
+                        <Button
+                          color="success"
+                          type="submit"
+                          className="save-user"
+                          disabled={
+                            addEmailTemplate.isPending ||
+                            updateEmailTemplate.isPending ||
+                            !validation.dirty
+                          }
+                        >
+                          {t("Save")}
+                        </Button>
+                      )}
+                    </div>
+                  </Col>
+                </Row>
+              </Form>
+            </ModalBody>
+          </Modal>
+        </div>
+      </div>
+    </React.Fragment>
+  );
 };
 EmailTemplateModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

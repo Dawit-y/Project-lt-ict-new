@@ -13,10 +13,10 @@ export const useFetchStakeholderTypes = () => {
   return useQuery({
     queryKey: STAKEHOLDER_TYPE_QUERY_KEY,
     queryFn: () => getStakeholderType(),
-   staleTime: 0,
+    staleTime: 0,
     meta: { persist: false },
     refetchOnWindowFocus: false,
-    refetchOnMount: false
+    refetchOnMount: false,
   });
 };
 
@@ -40,7 +40,7 @@ export const useAddStakeholderType = () => {
   return useMutation({
     mutationFn: addStakeholderType,
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData( STAKEHOLDER_TYPE_QUERY_KEY, (oldData) => {
+      queryClient.setQueryData(STAKEHOLDER_TYPE_QUERY_KEY, (oldData) => {
         if (!oldData) return;
         const newData = {
           ...newDataResponse.data,
@@ -69,7 +69,7 @@ export const useUpdateStakeholderType = () => {
           data: oldData.data.map((StakeholderTypeData) =>
             StakeholderTypeData.sht_id === updatedStakeholderType.data.sht_id
               ? { ...StakeholderTypeData, ...updatedStakeholderType.data }
-              : StakeholderTypeData
+              : StakeholderTypeData,
           ),
         };
       });
@@ -88,7 +88,8 @@ export const useDeleteStakeholderType = () => {
         return {
           ...oldData,
           data: oldData.data.filter(
-            (StakeholderTypeData) => StakeholderTypeData.sht_id !== parseInt(deletedData.deleted_id)
+            (StakeholderTypeData) =>
+              StakeholderTypeData.sht_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

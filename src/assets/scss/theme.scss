@@ -37,7 +37,7 @@ body {
   z-index: 1;
 }
 
-svg>rect:first-child {
+svg > rect:first-child {
   fill-opacity: 0 !important;
 }
 
@@ -61,13 +61,13 @@ svg>rect:first-child {
     padding: 1.25rem;
 
     [data-rbd-draggable-context-id] {
-      >div {
+      > div {
         display: block !important;
       }
     }
   }
 
-  >div {
+  > div {
     display: flex;
     justify-content: center;
     gap: 25px;
@@ -86,7 +86,7 @@ svg>rect:first-child {
   width: 33.33%;
 }
 
-.react-kanban-column>div {
+.react-kanban-column > div {
   display: block !important;
 }
 
@@ -286,8 +286,8 @@ span.flatpickr-weekday {
 
   .fc {
     .fc-toolbar {
-      >* {
-        >* {
+      > * {
+        > * {
           float: none;
         }
       }
@@ -309,7 +309,8 @@ span.flatpickr-weekday {
   border: 0;
   font-size: 10px;
   padding: 1.35rem 1.25rem;
-  background: transparent escape-svg($btn-close-bg) center / $btn-close-width auto no-repeat;
+  background: transparent escape-svg($btn-close-bg) center / $btn-close-width
+    auto no-repeat;
   position: absolute;
   top: 0;
   right: 0;
@@ -535,7 +536,6 @@ span.flatpickr-weekday {
   color: $white !important;
 }
 
-
 // rdw-editor
 
 .rdw-editor-toolbar,
@@ -561,7 +561,6 @@ span.flatpickr-weekday {
 }
 
 [data-layout-mode="dark"] {
-
   .rdw-option-wrapper,
   .rdw-dropdown-selectedtext {
     img {
@@ -582,13 +581,13 @@ span.flatpickr-weekday {
   color: var(--#{$prefix}body-color) !important;
 }
 
-.ck.ck-editor__main>.ck-editor__editable {
+.ck.ck-editor__main > .ck-editor__editable {
   background-color: var(--#{$prefix}custom-white) !important;
   color: var(--#{$prefix}body-color) !important;
   height: 300px !important;
 }
 
-.ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
+.ck.ck-editor__main > .ck-editor__editable:not(.ck-focused) {
   border-color: $input-border-color !important;
 }
 
@@ -624,8 +623,6 @@ input:-webkit-autofill:active {
   -webkit-text-fill-color: var(--#{$prefix}body-color) !important;
 }
 
-
-
 // Select2
 
 .select2-selection__control,
@@ -640,8 +637,9 @@ input:-webkit-autofill:active {
 .select__menu,
 .css-1nmdiq5-menu {
   background-color: var(--#{$prefix}card-bg) !important;
-  box-shadow: 0 0 0 1px var(--#{$prefix}border-color),
-  0 4px 11px var(--#{$prefix}border-color) !important;
+  box-shadow:
+    0 0 0 1px var(--#{$prefix}border-color),
+    0 4px 11px var(--#{$prefix}border-color) !important;
 }
 
 .select2-selection__option--is-focused,
@@ -666,7 +664,6 @@ input:-webkit-autofill:active {
     &:hover,
     &:focus {
       border-color: var(--#{$prefix}primary);
-
     }
 
     .css-1p3m7a8-multiValue {
@@ -694,11 +691,11 @@ input:-webkit-autofill:active {
 }
 
 .css-13cymwt-control {
-  border-color: hsl(0, 0%, 80%) !important
+  border-color: hsl(0, 0%, 80%) !important;
 }
 
-[data-bs-theme=light] .css-13cymwt-control {
-  border-color: hsl(0, 0%, 80%) !important
+[data-bs-theme="light"] .css-13cymwt-control {
+  border-color: hsl(0, 0%, 80%) !important;
 }
 
 .select__multi-value__label,
@@ -762,9 +759,8 @@ input:-webkit-autofill:active {
   box-shadow: none !important;
 }
 
-
 // table container
-// pagination 
+// pagination
 
 .dataTables_info {
   justify-content: flex-start;
@@ -784,7 +780,6 @@ ul.pagination {
     justify-content: center;
     display: flex;
     margin-bottom: 7px;
-
   }
 }
 
@@ -827,12 +822,11 @@ ul.pagination {
   }
 }
 
-// chartjs 
+// chartjs
 @media screen and (max-width: 374px) {
   .chartjs-render-monitor {
     height: 230px !important;
     width: 230px !important;
-
   }
 }
 
@@ -851,7 +845,10 @@ form .tox :not(svg):not(rect) {
   // background: var(--bs-light) !important;
   background-attachment: local;
   background-color: #fff !important;
-  background-image: repeating-linear-gradient(#e3e3e3 0 1px, transparent 1px 39px);
+  background-image: repeating-linear-gradient(
+    #e3e3e3 0 1px,
+    transparent 1px 39px
+  );
   background-position: center top 40px;
   background-repeat: no-repeat;
   background-size: calc(100% - 11px * 2) calc(100% - 41px);
@@ -871,7 +868,7 @@ form .tox :not(svg):not(rect) {
   align-items: center;
   background-color: #fff !important;
   border-top: 1px solid #e3e3e3;
-  color: rgba(34, 47, 62, .7) !important;
+  color: rgba(34, 47, 62, 0.7) !important;
   display: flex;
   flex: 0 0 auto;
   font-size: 14px;
@@ -906,18 +903,18 @@ aside.EmojiPickerReact.epr-main {
   text-align: left;
   border-left: 2px solid rgba(var(--tb-success-rgb), 1);
   border-radius: 4px;
-  background-color: rgba(29, 207, 122, .1);
+  background-color: rgba(29, 207, 122, 0.1);
 }
 
 // dark moda
-[data-layout-mode=dark] .form-select {
+[data-layout-mode="dark"] .form-select {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ced4da' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
 }
 
-[data-bs-theme=dark] .card {
+[data-bs-theme="dark"] .card {
   --bs-card-bg: #2a3042;
 }
 
-[data-bs-theme=dark] .btn-close-white {
+[data-bs-theme="dark"] .btn-close-white {
   filter: invert(1) grayscale(100%) brightness(0);
 }
