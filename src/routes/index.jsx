@@ -8,19 +8,19 @@ import ResetPasswordForm from "../pages/Authentication/ResetPasswordForm.jsx";
 
 const UsersProfile = lazy(() => import("../pages/Profile"));
 const ProjectPaymentList = lazy(() =>
-  import("../pages/Projectpayment/ProjectPaymentList")
+	import("../pages/Projectpayment/ProjectPaymentList")
 );
 const ProjectsTreeView = lazy(() => import("../pages/ProjectStatusTree/index"));
 const Logout = lazy(() => import("../pages/Authentication/Logout"));
 
 const AddressStructure = lazy(() =>
-  import("../pages/AddressTreeStructure/index.jsx")
+	import("../pages/AddressTreeStructure/index.jsx")
 );
 const DocumentType = lazy(() => import("../pages/Documenttype/index"));
 const Project = lazy(() => import("../pages/Project/index"));
 const ProjectCategory = lazy(() => import("../pages/Projectcategory/index"));
 const ProjectContractor = lazy(() =>
-  import("../pages/Projectcontractor/index")
+	import("../pages/Projectcontractor/index")
 );
 const ProjectDocument = lazy(() => import("../pages/Projectdocument/index"));
 const ProjectPayment = lazy(() => import("../pages/Projectpayment/index"));
@@ -39,10 +39,10 @@ const CSOProjectDetail = lazy(() =>
 	import("../pages/Csoproject/ProjectDetail/index.jsx")
 );
 const CSOBudgetRequestListModel = lazy(() =>
-  import("../pages/Csobudgetrequest/BudgetRequestList.jsx")
+	import("../pages/Csobudgetrequest/BudgetRequestList.jsx")
 );
 const CSOApproverBudgetRequestList = lazy(() =>
-  import("../pages/Csobudgetrequest/ApproverBudgetRequestList.jsx")
+	import("../pages/Csobudgetrequest/ApproverBudgetRequestList.jsx")
 );
 const CsoProposalRequestList = lazy(() =>
 	import("../pages/Csobudgetrequest/ProposalRequestList.jsx")
@@ -63,7 +63,7 @@ const ApproverBudgetRequestList = lazy(() =>
 	import("../pages/Budgetrequest/ApproverSide/ApproverBudgetRequestList.jsx")
 );
 const ApproverBudgetRequestDetail = lazy(() =>
-	import("../pages/Budgetrequest/ApproverSide/Detail/index2.jsx")
+	import("../pages/Budgetrequest/ApproverSide/Detail/index.jsx")
 );
 const RecommendedApprovalList = lazy(() =>
 	import("../pages/Budgetrequest/ApproverSide/RecommendedApprovalList.jsx")
@@ -370,10 +370,10 @@ const authProtectedRoutes = [
 ];
 
 const publicRoutes = [
-  { path: "/logout", component: <Logout /> },
-  { path: "/login", component: <Login /> },
-  { path: "/forgot_password", component: <ResetPassword /> },
-  { path: "/reset_password", component: <ResetPasswordForm /> },
+	{ path: "/logout", component: <Logout /> },
+	{ path: "/login", component: <Login /> },
+	{ path: "/forgot_password", component: <ResetPassword /> },
+	{ path: "/reset_password", component: <ResetPasswordForm /> },
 ];
 
 export { authProtectedRoutes, publicRoutes };
