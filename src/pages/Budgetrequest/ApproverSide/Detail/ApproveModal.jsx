@@ -15,16 +15,25 @@ import {
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useUpdateBudgetRequestApproval } from "../../../../queries/budget_request_query";
+import { useUpdateProject } from "../../../../queries/project_query";
 import { toast } from "react-toastify";
 import DatePicker from "../../../../components/Common/DatePicker";
 import FormattedAmountField from "../../../../components/Common/FormattedAmountField";
+import InputField from "../../../../components/Common/InputField";
 
 const ApproveModal = ({ isOpen, toggle, request, toggleParent, action }) => {
 	const { t } = useTranslation();
 	const { mutateAsync, isPending } = useUpdateBudgetRequestApproval();
+	const { mutateAsync: updateProject } = useUpdateProject();
 	const handleUpdateBudgetRequest = async (data) => {
+		const projectData = {
+			prj_id: request.bdr_project_id,
+			prj_total_actual_budget: data.prj_total_actual_budget,
+			prj_code: data.prj_code,
+		};
 		try {
 			await mutateAsync(data);
+			await updateProject(projectData);
 			toast.success(t("update_success"), {
 				autoClose: 2000,
 			});
@@ -81,6 +90,16 @@ const ApproveModal = ({ isOpen, toggle, request, toggleParent, action }) => {
 
 		bdr_released_date_gc: Yup.date().required("Action date is required"),
 		bdr_action_remark: Yup.string().required("Action remark is required"),
+		prj_total_actual_budget:
+			action === "approve"
+				? Yup.number()
+						.required("Total actual budget is required")
+						.min(0, "Total actual budget must be greater or equal to 0")
+				: Yup.number().optional(),
+		prj_code:
+			action === "approve"
+				? Yup.string().required("Project code is required")
+				: Yup.string().optional(),
 	});
 
 	const formik = useFormik({
@@ -98,6 +117,8 @@ const ApproveModal = ({ isOpen, toggle, request, toggleParent, action }) => {
 				action === "recommend" ? request.bdr_physical_recommended || "" : "",
 			bdr_released_date_gc: request.bdr_released_date_gc || "",
 			bdr_action_remark: request.bdr_action_remark || "",
+			prj_total_actual_budget: "",
+			prj_code: "",
 		},
 		validationSchema,
 		enableReinitialize: true,
@@ -120,6 +141,27 @@ const ApproveModal = ({ isOpen, toggle, request, toggleParent, action }) => {
 			<ModalBody>
 				<Form onSubmit={formik.handleSubmit}>
 					<Row>
+						{action === "approve" && (
+							<Col md={6}>
+								<FormattedAmountField
+									validation={formik}
+									fieldId={"prj_total_actual_budget"}
+									isRequired={true}
+									className="col-md-12 mb-3"
+									allowDecimal={true}
+								/>
+							</Col>
+						)}
+						{action === "approve" && (
+							<Col md={6}>
+								<InputField
+									validation={formik}
+									fieldId={"prj_code"}
+									isRequired={true}
+									className="col-md-12 mb-3"
+								/>
+							</Col>
+						)}
 						{action === "approve" && (
 							<Col md={6}>
 								<FormattedAmountField

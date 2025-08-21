@@ -84,7 +84,8 @@ const TableContainer = ({
 	theadClass,
 	divClassName,
 	isLoading = false,
-	isBordered,
+	isBordered = true,
+	size = "sm",
 	isPagination,
 	isGlobalFilter,
 	paginationWrapper,
@@ -323,7 +324,8 @@ const TableContainer = ({
 					<div id="printable-table">
 						<Table
 							hover
-							className={`${tableClass} table-sm table-bordered table-striped`}
+							className={`${tableClass} table-striped`}
+							size={size}
 							bordered={isBordered}
 						>
 							<thead className={theadClass}>

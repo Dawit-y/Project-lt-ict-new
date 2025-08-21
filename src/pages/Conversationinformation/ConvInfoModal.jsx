@@ -1,31 +1,31 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
-  Form,
-  Label,
-  Input,
-  Button,
-  Card,
-  CardBody,
-  CardTitle,
-  FormFeedback,
-  Col,
-  Row,
-  Spinner,
-  Modal,
-  ModalBody,
-  ModalHeader,
-  ModalFooter,
-  UncontrolledTooltip,
-  Alert
+	Form,
+	Label,
+	Input,
+	Button,
+	Card,
+	CardBody,
+	CardTitle,
+	FormFeedback,
+	Col,
+	Row,
+	Spinner,
+	Modal,
+	ModalBody,
+	ModalHeader,
+	ModalFooter,
+	UncontrolledTooltip,
+	Alert,
 } from "reactstrap";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import {
-  useAddConversationInformation,
-  useFetchConversationInformations,
+	useAddConversationInformation,
+	useFetchConversationInformations,
 } from "../../queries/conversationinformation_query";
 import { useTranslation } from "react-i18next";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -207,6 +207,7 @@ const Conversation = ({
 																	? true
 																	: false
 															}
+															maxLength={425}
 														/>
 														{validation.touched.cvi_description &&
 														validation.errors.cvi_description ? (
@@ -329,13 +330,13 @@ const Conversation = ({
 };
 
 Conversation.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  toggle: PropTypes.func.isRequired,
-  ownerId: PropTypes.number.isRequired,
-  ownerTypeId: PropTypes.number.isRequired,
-  canAdd: PropTypes.bool,
-  canEdit: PropTypes.bool,
-  canDelete: PropTypes.bool,
-}
+	isOpen: PropTypes.bool.isRequired,
+	toggle: PropTypes.func.isRequired,
+	ownerId: PropTypes.number.isRequired,
+	ownerTypeId: PropTypes.number.isRequired,
+	canAdd: PropTypes.bool,
+	canEdit: PropTypes.bool,
+	canDelete: PropTypes.bool,
+};
 
 export default Conversation;

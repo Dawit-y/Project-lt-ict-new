@@ -318,7 +318,6 @@
 	"prp_payment_amount": "Payment Amount",
 	"prp_payment_percentage": "Payment Percentage",
 	"prp_delete_time": "Delete Time",
-
 	"project_document": "Project Document",
 	"project_document_list": "Project Document List",
 	"prd_id": "Id",
@@ -1944,5 +1943,7 @@
 	"completion_date": "Completion Date",
 	"general": "General",
 	"procurement": "Procurement",
-	"dates": "Dates"
+	"dates": "Dates",
+	"approved": "Approved",
+	"requested": "Requested"
 }

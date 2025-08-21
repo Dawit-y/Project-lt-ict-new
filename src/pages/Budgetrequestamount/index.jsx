@@ -47,13 +47,7 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import AsyncSelectField from "../../components/Common/AsyncSelectField";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import InputField from "../../components/Common/InputField";
-
-const truncateText = (text, maxLength) => {
-	if (typeof text !== "string") {
-		return text;
-	}
-	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
-};
+import { useBudgetRequestColumns } from "../../hooks/useBdrAmountsColumn";
 
 const BudgetRequestAmountModel = ({ passedId, isActive }) => {
 	const param = { budget_request_id: passedId };
@@ -316,210 +310,14 @@ const BudgetRequestAmountModel = ({ passedId, isActive }) => {
 		toggle();
 	};
 
-	const columnHelper = createColumnHelper();
-	const columns = useMemo(() => {
-		return [
-			columnHelper.accessor("bra_expenditure_code_id", {
-				id: "bra_expenditure_code_id",
-				header: () => t("expenditure_code"),
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (info) => (
-					<span>
-						{expendCodeMap[info.row.original.bra_expenditure_code_id] || "-"}
-					</span>
-				),
-			}),
-			columnHelper.accessor("bra_current_year_expense", {
-				id: "bra_current_year_expense",
-				header: () => t("current_year_expense"),
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (info) => (
-					<span>{parseFloat(info.getValue() || 0).toLocaleString()}</span>
-				),
-			}),
-			columnHelper.accessor("bra_requested_amount", {
-				id: "bra_requested_amount",
-				header: () => t("requested_amount"),
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (info) => (
-					<span>{parseFloat(info.getValue() || 0).toLocaleString()}</span>
-				),
-			}),
-			columnHelper.group({
-				id: "source_of_finance",
-				header: () => t("source_of_finance"),
-				columns: [
-					columnHelper.accessor("bra_source_government_requested", {
-						id: "bra_source_government_requested",
-						header: () => t("government"),
-						enableColumnFilter: false,
-						enableSorting: true,
-						cell: (info) => (
-							<span>{parseFloat(info.getValue() || 0).toLocaleString()}</span>
-						),
-					}),
-					columnHelper.accessor("bra_source_internal_requested", {
-						id: "bra_source_internal_requested",
-						header: () => t("internal"),
-						enableColumnFilter: false,
-						enableSorting: true,
-						cell: (info) => (
-							<span>{parseFloat(info.getValue() || 0).toLocaleString()}</span>
-						),
-					}),
-					columnHelper.group({
-						id: "external_assistance",
-						header: () => t("external_assistance"),
-						columns: [
-							columnHelper.accessor("bra_source_support_requested", {
-								id: "bra_source_support_requested",
-								header: () => t("support_requested"),
-								enableColumnFilter: false,
-								enableSorting: true,
-								cell: (info) => (
-									<span>
-										{parseFloat(info.getValue() || 0).toLocaleString()}
-									</span>
-								),
-							}),
-							columnHelper.accessor("bra_source_support_code", {
-								id: "bra_source_support_code",
-								header: () => t("support_code"),
-								enableColumnFilter: false,
-								enableSorting: true,
-								cell: (info) => (
-									<span>
-										{truncateText(
-											info.row.original.bra_source_support_code,
-											30
-										) || "-"}
-									</span>
-								),
-							}),
-						],
-					}),
-					columnHelper.group({
-						id: "foreign_debt",
-						header: () => t("foreign_debt"),
-						columns: [
-							columnHelper.accessor("bra_source_credit_requested", {
-								id: "bra_source_credit_requested",
-								header: () => t("credit_requested"),
-								enableColumnFilter: false,
-								enableSorting: true,
-								cell: (info) => (
-									<span>
-										{parseFloat(info.getValue() || 0).toLocaleString()}
-									</span>
-								),
-							}),
-							columnHelper.accessor("bra_source_credit_code", {
-								id: "bra_source_credit_code",
-								header: () => t("credit_code"),
-								enableColumnFilter: false,
-								enableSorting: true,
-								cell: (info) => (
-									<span>
-										{truncateText(
-											info.row.original.bra_source_credit_code,
-											30
-										) || "-"}
-									</span>
-								),
-							}),
-						],
-					}),
-				],
-			}),
-			columnHelper.display({
-				id: "view_detail",
-				header: () => t("view_detail"),
-				enableColumnFilter: false,
-				enableSorting: false,
-				cell: (info) => (
-					<Button
-						type="button"
-						color="primary"
-						className="btn-sm"
-						onClick={() => {
-							const data = info.row.original;
-							toggleViewModal(data);
-							setTransaction(data);
-						}}
-					>
-						{t("view_detail")}
-					</Button>
-				),
-			}),
-			...(data?.previledge?.is_role_editable == 1 ||
-			data?.previledge?.is_role_deletable == 1
-				? [
-						columnHelper.display({
-							id: "action",
-							header: () => t("Action"),
-							enableColumnFilter: false,
-							enableSorting: false,
-							cell: (info) => {
-								const row = info.row.original;
-								return (
-									<div className="d-flex gap-3">
-										{row.is_deletable == 1 && (
-											<>
-												<Link
-													to="#"
-													className="text-success"
-													onClick={() => handleBudgetRequestAmountClick(row)}
-												>
-													<i
-														className="mdi mdi-pencil font-size-18"
-														id="edittooltip"
-													/>
-													<UncontrolledTooltip
-														placement="top"
-														target="edittooltip"
-													>
-														{t("Edit")}
-													</UncontrolledTooltip>
-												</Link>
-												<Link
-													to="#"
-													className="text-danger"
-													onClick={() => onClickDelete(row)}
-												>
-													<i
-														className="mdi mdi-delete font-size-18"
-														id="deletetooltip"
-													/>
-													<UncontrolledTooltip
-														placement="top"
-														target="deletetooltip"
-													>
-														{t("Delete")}
-													</UncontrolledTooltip>
-												</Link>
-											</>
-										)}
-									</div>
-								);
-							},
-						}),
-				  ]
-				: []),
-		];
-	}, [
-		expendCodeMap,
-		t,
+	const columns = useBudgetRequestColumns({
 		data,
 		toggleViewModal,
 		setTransaction,
 		handleBudgetRequestAmountClick,
 		onClickDelete,
-	]);
-
-	console.log("columns", columns);
+		showApprove: false,
+	});
 
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;

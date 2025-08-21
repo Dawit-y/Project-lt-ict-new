@@ -63,7 +63,7 @@ const ApproverBudgetRequestList = lazy(() =>
 	import("../pages/Budgetrequest/ApproverSide/ApproverBudgetRequestList.jsx")
 );
 const ApproverBudgetRequestDetail = lazy(() =>
-	import("../pages/Budgetrequest/ApproverSide/Detail/index.jsx")
+	import("../pages/Budgetrequest/ApproverSide/Detail/index2.jsx")
 );
 const RecommendedApprovalList = lazy(() =>
 	import("../pages/Budgetrequest/ApproverSide/RecommendedApprovalList.jsx")
