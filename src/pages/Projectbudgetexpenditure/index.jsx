@@ -102,13 +102,13 @@ const ProjectBudgetExpenditureModel = () => {
     try {
       await addProjectBudgetExpenditure.mutateAsync(data);
       toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.success(t("add_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -116,13 +116,13 @@ const ProjectBudgetExpenditureModel = () => {
     try {
       await updateProjectBudgetExpenditure.mutateAsync(data);
       toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.success(t("update_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -132,12 +132,12 @@ const ProjectBudgetExpenditureModel = () => {
         const id = projectBudgetExpenditure.pbe_id;
         await deleteProjectBudgetExpenditure.mutateAsync(id);
         toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         toast.success(t("delete_failure"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       }
       setDeleteModal(false);
     }

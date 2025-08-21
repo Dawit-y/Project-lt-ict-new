@@ -628,12 +628,12 @@ const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
     try {
       await updateBudgetRequest.mutateAsync(data);
       toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     } catch (error) {
       toast.success(t("update_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
   };
 

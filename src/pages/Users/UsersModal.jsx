@@ -63,13 +63,13 @@ const UsersModal = (props) => {
       await changeUserStatus.mutateAsync(data);
       setSwitch1(!switch1);
       toast.success(`data updated successfully`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     } catch (error) {
       setSwitch1(false);
       toast.error(`Failed to update Data`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
   };
 
@@ -102,13 +102,13 @@ const UsersModal = (props) => {
       await changeUserPassword.mutateAsync(data);
       //setSwitch1(true);
       toast.success(`password changed successfully`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     } catch (error) {
       //setSwitch1(false);
       toast.error(`Failed to change password`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     } finally {
       setModal_backdrop(false);
     }

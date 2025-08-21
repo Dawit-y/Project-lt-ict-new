@@ -212,34 +212,34 @@ const ProjectKpiResultModel = (props) => {
 
   // CRUD Operations
   const handleAddProjectKpiResult = async (data) => {
-    try {
-      await addProjectKpiResult.mutateAsync(data);
-      toast.success(t("add_success"), { autoClose: 2000 });
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), { autoClose: 2000 });
-    }
-    toggle();
-  };
+		try {
+			await addProjectKpiResult.mutateAsync(data);
+			toast.success(t("add_success"), { autoClose: 3000 });
+			validation.resetForm();
+		} catch (error) {
+			toast.error(t("add_failure"), { autoClose: 3000 });
+		}
+		toggle();
+	};
 
-  const handleUpdateProjectKpiResult = async (data) => {
-    try {
-      await updateProjectKpiResult.mutateAsync(data);
-      toast.success(t("update_success"), { autoClose: 2000 });
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), { autoClose: 2000 });
-    }
-    toggle();
-  };
+	const handleUpdateProjectKpiResult = async (data) => {
+		try {
+			await updateProjectKpiResult.mutateAsync(data);
+			toast.success(t("update_success"), { autoClose: 3000 });
+			validation.resetForm();
+		} catch (error) {
+			toast.error(t("update_failure"), { autoClose: 3000 });
+		}
+		toggle();
+	};
 
   const handleDeleteProjectKpiResult = async () => {
     if (projectKpiResult?.kpr_id) {
       try {
         await deleteProjectKpiResult.mutateAsync(projectKpiResult.kpr_id);
-        toast.success(t("delete_success"), { autoClose: 2000 });
+        toast.success(t("delete_success"), { autoClose: 3000 });
       } catch (error) {
-        toast.error(t("delete_failure"), { autoClose: 2000 });
+        toast.error(t("delete_failure"), { autoClose: 3000 });
       }
       setDeleteModal(false);
     }

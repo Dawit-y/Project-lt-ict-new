@@ -28,9 +28,9 @@ const FetchErrorHandler = ({
   const handleRefetch = async () => {
     if (!navigator.onLine) {
       toast.error(
-        t("You are offline. Please check your internet connection."),
-        { autoClose: 2000 },
-      );
+				t("You are offline. Please check your internet connection."),
+				{ autoClose: 3000 }
+			);
       return;
     }
 

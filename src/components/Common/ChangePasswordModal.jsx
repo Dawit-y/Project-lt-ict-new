@@ -36,10 +36,10 @@ const ChangePasswordModal = ({ isOpen, toggle }) => {
         user_id: userId,
         password: values.password,
       });
-      toast.success("Password changed successfully!", { autoClose: 2000 });
+      toast.success("Password changed successfully!", { autoClose: 3000 });
       toggle();
     } catch (error) {
-      toast.error("Failed to change password", { autoClose: 2000 });
+      toast.error("Failed to change password", { autoClose: 3000 });
     }
   };
 

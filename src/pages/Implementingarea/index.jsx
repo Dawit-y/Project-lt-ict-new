@@ -109,13 +109,13 @@ const ImplementingAreaModel = (props) => {
     try {
       await addImplementingArea.mutateAsync(data);
       toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.success(t("add_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -124,13 +124,13 @@ const ImplementingAreaModel = (props) => {
     try {
       await updateImplementingArea.mutateAsync(data);
       toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.success(t("update_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -141,12 +141,12 @@ const ImplementingAreaModel = (props) => {
         const id = implementingArea.pia_id;
         await deleteImplementingArea.mutateAsync(id);
         toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         toast.success(t("delete_failure"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       }
       setDeleteModal(false);
     }

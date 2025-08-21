@@ -85,13 +85,13 @@ const ExpenditureCodeModel = () => {
     try {
       await addExpenditureCode.mutateAsync(data);
       toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.error(t("add_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -100,13 +100,13 @@ const ExpenditureCodeModel = () => {
     try {
       await updateExpenditureCode.mutateAsync(data);
       toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.error(t("update_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -117,12 +117,12 @@ const ExpenditureCodeModel = () => {
         const id = expenditureCode.pec_id;
         await deleteExpenditureCode.mutateAsync(id);
         toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         toast.error(t("delete_failure"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       }
       setDeleteModal(false);
     }

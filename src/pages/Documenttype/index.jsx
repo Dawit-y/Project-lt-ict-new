@@ -86,13 +86,13 @@ const DocumentTypeModel = () => {
     try {
       await addDocumentType.mutateAsync(data);
       toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.error(t("add_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -101,13 +101,13 @@ const DocumentTypeModel = () => {
     try {
       await updateDocumentType.mutateAsync(data);
       toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.error(t("update_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -117,12 +117,12 @@ const DocumentTypeModel = () => {
         const id = documentType.pdt_id;
         await deleteDocumentType.mutateAsync(id);
         toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         toast.error(t("delete_failure"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       }
       setDeleteModal(false);
     }

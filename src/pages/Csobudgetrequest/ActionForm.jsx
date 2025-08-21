@@ -38,13 +38,13 @@ const ActionForm = ({ isOpen, toggle, amount }) => {
       await updateBudgetRequestAmount.mutateAsync(data);
       await updateBudgetRequest.mutateAsync(budgetRequestData);
       toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.success(t("update_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
   };
 

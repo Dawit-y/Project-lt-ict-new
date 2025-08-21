@@ -35,12 +35,12 @@ const ApproveModal = ({ isOpen, toggle, request, toggleParent, action }) => {
       await mutateAsync(data);
       await updateProject(projectData);
       toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     } catch (error) {
       toast.error(t("update_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
     toggleParent();

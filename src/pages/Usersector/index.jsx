@@ -127,9 +127,9 @@ const UserSectorModel = ({ passedId, isActive }) => {
         const allPayloads = [...updates, ...inserts];
         if (allPayloads.length > 0)
           await updateUserSector.mutateAsync(allPayloads);
-        toast.success(t("update_success"), { autoClose: 2000 });
+        toast.success(t("update_success"), { autoClose: 3000 });
       } catch (error) {
-        toast.error(t("update_failure"), { autoClose: 2000 });
+        toast.error(t("update_failure"), { autoClose: 3000 });
       }
     },
   });

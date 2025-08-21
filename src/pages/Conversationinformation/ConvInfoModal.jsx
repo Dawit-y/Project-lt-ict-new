@@ -55,13 +55,13 @@ const Conversation = ({
     try {
       await addConversationInformation.mutateAsync(data);
       toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.success(t("add_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
   };
   const addConversationInformation = useAddConversationInformation();

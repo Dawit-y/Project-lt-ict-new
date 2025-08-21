@@ -74,13 +74,13 @@ const ProjectModel = () => {
     try {
       await addProject.mutateAsync(data);
       toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.error(t("add_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     (isUserType2 && isTab2) || (!isUserType2 && isTab1)
       ? toggle()
@@ -91,13 +91,13 @@ const ProjectModel = () => {
     try {
       await updateProject.mutateAsync(data);
       toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.error(t("update_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     (isUserType2 && isTab2) || (!isUserType2 && isTab1)
       ? toggle()
@@ -109,12 +109,12 @@ const ProjectModel = () => {
         const id = project.prj_id;
         await deleteProject.mutateAsync(id);
         toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         toast.error(t("delete_success"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       }
       setDeleteModal(false);
     }

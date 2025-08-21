@@ -43,9 +43,9 @@ const FileModal = (props) => {
   const handleUpdateCsoInfo = async (data) => {
     try {
       await updateCsoInfo.mutateAsync(data);
-      toast.success(t("update_success"), { autoClose: 2000 });
+      toast.success(t("update_success"), { autoClose: 3000 });
     } catch (error) {
-      toast.error(t("update_failure"), { autoClose: 2000 });
+      toast.error(t("update_failure"), { autoClose: 3000 });
     } finally {
       setClickedButton(null);
       toggle();

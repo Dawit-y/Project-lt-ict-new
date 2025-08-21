@@ -91,13 +91,13 @@ const ProjectSupplimentaryModel = (props) => {
     try {
       await addProjectSupplimentary.mutateAsync(data);
       toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.success(t("add_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -106,13 +106,13 @@ const ProjectSupplimentaryModel = (props) => {
     try {
       await updateProjectSupplimentary.mutateAsync(data);
       toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.success(t("update_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -122,12 +122,12 @@ const ProjectSupplimentaryModel = (props) => {
         const id = projectSupplimentary.prs_id;
         await deleteProjectSupplimentary.mutateAsync(id);
         toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         toast.success(t("delete_failure"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       }
       setDeleteModal(false);
     }

@@ -61,7 +61,7 @@ const queryClient = new QueryClient({
       if (!error.handledByMutationCache && error.response?.status !== 401) {
         error.handledByMutationCache = true;
         const message = <GetErrorMessage error={error} />;
-        toast.error(message, { autoClose: 2000 });
+        toast.error(message, { autoClose: 3000 });
       }
     },
   }),

@@ -27,13 +27,13 @@ const RecommendModal = ({ isOpen, toggle, request, requestedAmount }) => {
     try {
       await updateRequestFollowup.mutateAsync(data);
       toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       formik.resetForm();
     } catch (error) {
       toast.error(t("update_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };

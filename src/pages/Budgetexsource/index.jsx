@@ -74,13 +74,13 @@ const BudgetExSourceModel = ({ passedId, isActive }) => {
     try {
       await addBudgetExSource.mutateAsync(data);
       toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.success(t("add_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -88,13 +88,13 @@ const BudgetExSourceModel = ({ passedId, isActive }) => {
     try {
       await updateBudgetExSource.mutateAsync(data);
       toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.success(t("update_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -104,12 +104,12 @@ const BudgetExSourceModel = ({ passedId, isActive }) => {
         const id = budgetExSource.bes_id;
         await deleteBudgetExSource.mutateAsync(id);
         toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         toast.success(t("delete_failure"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       }
       setDeleteModal(false);
     }

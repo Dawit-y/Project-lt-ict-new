@@ -180,13 +180,13 @@ const GeoLocation = ({ passedId, isActive }) => {
       };
       await updateProject.mutateAsync(data);
       toast.success(`Location updated successfully`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       project.refetch();
     } catch (error) {
       toast.error(`Failed to update location`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
   };
 

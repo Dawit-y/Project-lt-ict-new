@@ -73,13 +73,13 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
     try {
       await addBudgetRequestTask.mutateAsync(data);
       toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.success(t("add_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -87,13 +87,13 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
     try {
       await updateBudgetRequestTask.mutateAsync(data);
       toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.success(t("update_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -103,12 +103,12 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
         const id = budgetRequestTask.brt_id;
         await deleteBudgetRequestTask.mutateAsync(id);
         toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         toast.success(t("delete_failure"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       }
       setDeleteModal(false);
     }

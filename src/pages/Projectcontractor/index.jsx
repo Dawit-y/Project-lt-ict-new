@@ -124,110 +124,110 @@ const ProjectContractorModel = ({ passedId, isActive, startDate }) => {
   }, [contractorTypeData, i18n.language]);
 
   const validation = useFormik({
-    enableReinitialize: true,
-    initialValues: {
-      cni_name: projectContractor?.cni_name || "",
-      cni_tin_num: projectContractor?.cni_tin_num || "",
-      cni_contractor_type_id: projectContractor?.cni_contractor_type_id || "",
-      cni_vat_num: projectContractor?.cni_vat_num || "",
-      cni_total_contract_price:
-        projectContractor?.cni_total_contract_price || "",
-      cni_contract_start_date_gc:
-        projectContractor?.cni_contract_start_date_gc || "",
-      cni_contract_end_date_gc:
-        projectContractor?.cni_contract_end_date_gc || "",
-      cni_contact_person: projectContractor?.cni_contact_person || "",
-      cni_phone_number: projectContractor?.cni_phone_number || "",
-      cni_address: projectContractor?.cni_address || "",
-      cni_email: projectContractor?.cni_email || "",
-      cni_website: projectContractor?.cni_website || "",
-      cni_procrument_method: projectContractor?.cni_procrument_method || "",
-      cni_bid_invitation_date: projectContractor?.cni_bid_invitation_date || "",
-      cni_bid_opening_date: projectContractor?.cni_bid_opening_date || "",
-      cni_bid_evaluation_date: projectContractor?.cni_bid_evaluation_date || "",
-      cni_bid_award_date: projectContractor?.cni_bid_award_date || "",
-      cni_bid_contract_signing_date:
-        projectContractor?.cni_bid_contract_signing_date || "",
-      cni_description: projectContractor?.cni_description || "",
-      cni_status: projectContractor?.cni_status || "",
-      cni_financial_start: projectContractor?.cni_financial_start || "0",
-      cni_physical_start: projectContractor?.cni_physical_start || "0",
-      cni_financial_end: projectContractor?.cni_financial_end || "0",
-      cni_physical_end: projectContractor?.cni_physical_end || "0",
-      cni_project_id: passedId,
-      is_deletable: projectContractor?.is_deletable ?? 1,
-      is_editable: projectContractor?.is_editable ?? 1,
-    },
-    validationSchema: Yup.object({
-      cni_name: Yup.string().required(t("cni_name")),
-      cni_email: Yup.string().email(t("Invalida Email Format")),
-      cni_tin_num: Yup.string().required(t("cni_tin_num")),
-      cni_vat_num: Yup.string().required(t("cni_vat_num")),
-      cni_total_contract_price: Yup.string().required(
-        t("cni_total_contract_price"),
-      ),
-      cni_contractor_type_id: Yup.string().required(
-        t("cni_contractor_type_id"),
-      ),
-      cni_contract_start_date_gc: Yup.string().required(
-        t("cni_contract_start_date_gc"),
-      ),
-      cni_contract_end_date_gc: Yup.string().required(
-        t("cni_contract_end_date_gc"),
-      ),
-      cni_contact_person: Yup.string().required(t("cni_contact_person")),
-      cni_phone_number: Yup.string().required(t("cni_phone_number")),
-      cni_procrument_method: Yup.string().required(t("cni_procrument_method")),
-    }),
-    validateOnBlur: true,
-    validateOnChange: false,
-    onSubmit: async (values) => {
-      const payload = {
-        ...values,
-        cni_id: isEdit ? projectContractor.cni_id : undefined,
-        cni_financial_start: convertToNumericValue(values.cni_financial_start),
-        cni_physical_start: convertToNumericValue(values.cni_physical_start),
-        cni_financial_end: convertToNumericValue(values.cni_financial_end),
-        cni_physical_end: convertToNumericValue(values.cni_physical_end),
-      };
-      try {
-        if (isEdit) {
-          await updateMutation.mutateAsync(payload);
-          toast.success("Data updated successfully", { autoClose: 2000 });
-        } else {
-          await addMutation.mutateAsync(payload);
-          toast.success("Data added successfully", { autoClose: 2000 });
-        }
-        validation.resetForm();
-        setModalOpen(false);
-      } catch {
-        toast.error(isEdit ? "Failed to update data" : "Failed to add data", {
-          autoClose: 2000,
-        });
-      }
-    },
-  });
+		enableReinitialize: true,
+		initialValues: {
+			cni_name: projectContractor?.cni_name || "",
+			cni_tin_num: projectContractor?.cni_tin_num || "",
+			cni_contractor_type_id: projectContractor?.cni_contractor_type_id || "",
+			cni_vat_num: projectContractor?.cni_vat_num || "",
+			cni_total_contract_price:
+				projectContractor?.cni_total_contract_price || "",
+			cni_contract_start_date_gc:
+				projectContractor?.cni_contract_start_date_gc || "",
+			cni_contract_end_date_gc:
+				projectContractor?.cni_contract_end_date_gc || "",
+			cni_contact_person: projectContractor?.cni_contact_person || "",
+			cni_phone_number: projectContractor?.cni_phone_number || "",
+			cni_address: projectContractor?.cni_address || "",
+			cni_email: projectContractor?.cni_email || "",
+			cni_website: projectContractor?.cni_website || "",
+			cni_procrument_method: projectContractor?.cni_procrument_method || "",
+			cni_bid_invitation_date: projectContractor?.cni_bid_invitation_date || "",
+			cni_bid_opening_date: projectContractor?.cni_bid_opening_date || "",
+			cni_bid_evaluation_date: projectContractor?.cni_bid_evaluation_date || "",
+			cni_bid_award_date: projectContractor?.cni_bid_award_date || "",
+			cni_bid_contract_signing_date:
+				projectContractor?.cni_bid_contract_signing_date || "",
+			cni_description: projectContractor?.cni_description || "",
+			cni_status: projectContractor?.cni_status || "",
+			cni_financial_start: projectContractor?.cni_financial_start || "0",
+			cni_physical_start: projectContractor?.cni_physical_start || "0",
+			cni_financial_end: projectContractor?.cni_financial_end || "0",
+			cni_physical_end: projectContractor?.cni_physical_end || "0",
+			cni_project_id: passedId,
+			is_deletable: projectContractor?.is_deletable ?? 1,
+			is_editable: projectContractor?.is_editable ?? 1,
+		},
+		validationSchema: Yup.object({
+			cni_name: Yup.string().required(t("cni_name")),
+			cni_email: Yup.string().email(t("Invalida Email Format")),
+			cni_tin_num: Yup.string().required(t("cni_tin_num")),
+			cni_vat_num: Yup.string().required(t("cni_vat_num")),
+			cni_total_contract_price: Yup.string().required(
+				t("cni_total_contract_price")
+			),
+			cni_contractor_type_id: Yup.string().required(
+				t("cni_contractor_type_id")
+			),
+			cni_contract_start_date_gc: Yup.string().required(
+				t("cni_contract_start_date_gc")
+			),
+			cni_contract_end_date_gc: Yup.string().required(
+				t("cni_contract_end_date_gc")
+			),
+			cni_contact_person: Yup.string().required(t("cni_contact_person")),
+			cni_phone_number: Yup.string().required(t("cni_phone_number")),
+			cni_procrument_method: Yup.string().required(t("cni_procrument_method")),
+		}),
+		validateOnBlur: true,
+		validateOnChange: false,
+		onSubmit: async (values) => {
+			const payload = {
+				...values,
+				cni_id: isEdit ? projectContractor.cni_id : undefined,
+				cni_financial_start: convertToNumericValue(values.cni_financial_start),
+				cni_physical_start: convertToNumericValue(values.cni_physical_start),
+				cni_financial_end: convertToNumericValue(values.cni_financial_end),
+				cni_physical_end: convertToNumericValue(values.cni_physical_end),
+			};
+			try {
+				if (isEdit) {
+					await updateMutation.mutateAsync(payload);
+					toast.success("Data updated successfully", { autoClose: 3000 });
+				} else {
+					await addMutation.mutateAsync(payload);
+					toast.success("Data added successfully", { autoClose: 3000 });
+				}
+				validation.resetForm();
+				setModalOpen(false);
+			} catch {
+				toast.error(isEdit ? "Failed to update data" : "Failed to add data", {
+					autoClose: 3000,
+				});
+			}
+		},
+	});
 
-  const openModal = (row, edit) => {
-    setIsEdit(edit);
-    setProjectContractor(row || null);
-    setModalOpen(true);
-    setActiveTab("general"); // reset to first tab
-  };
-  const openDeleteModal = (row) => {
-    setProjectContractor(row);
-    setDeleteModalOpen(true);
-  };
-  const handleDelete = async () => {
-    if (!projectContractor?.cni_id) return;
-    try {
-      await deleteMutation.mutateAsync(projectContractor.cni_id);
-      toast.success("Data deleted successfully", { autoClose: 2000 });
-    } catch {
-      toast.error("Failed to delete data", { autoClose: 2000 });
-    }
-    setDeleteModalOpen(false);
-  };
+	const openModal = (row, edit) => {
+		setIsEdit(edit);
+		setProjectContractor(row || null);
+		setModalOpen(true);
+		setActiveTab("general"); // reset to first tab
+	};
+	const openDeleteModal = (row) => {
+		setProjectContractor(row);
+		setDeleteModalOpen(true);
+	};
+	const handleDelete = async () => {
+		if (!projectContractor?.cni_id) return;
+		try {
+			await deleteMutation.mutateAsync(projectContractor.cni_id);
+			toast.success("Data deleted successfully", { autoClose: 3000 });
+		} catch {
+			toast.error("Failed to delete data", { autoClose: 3000 });
+		}
+		setDeleteModalOpen(false);
+	};
 
   const columns = useMemo(() => {
     const base = [

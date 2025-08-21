@@ -103,10 +103,10 @@ const TreeTableContainer = ({ data, columns, setData, refetch }) => {
   const handleUpdateFolder = async (values) => {
     try {
       const response = await updateFolder.mutateAsync(values);
-      toast.success(t("Data updated successfully"), { autoClose: 2000 });
+      toast.success(t("Data updated successfully"), { autoClose: 3000 });
       return response;
     } catch (error) {
-      toast.error(t("Failed to update data"), { autoClose: 2000 });
+      toast.error(t("Failed to update data"), { autoClose: 3000 });
       throw error; // Re-throw to allow handling in confirmMove
     }
   };

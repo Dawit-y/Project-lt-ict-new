@@ -101,12 +101,12 @@ const ProjectBudgetSourceModel = (props) => {
     try {
       await addProjectBudgetSource.mutateAsync(data);
       toast.success(`Data added successfully`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     } catch (error) {
       toast.error("Failed to add data", {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -115,12 +115,12 @@ const ProjectBudgetSourceModel = (props) => {
     try {
       await updateProjectBudgetSource.mutateAsync(data);
       toast.success(`data updated successfully`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     } catch (error) {
       toast.error(`Failed to update Data`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -130,12 +130,12 @@ const ProjectBudgetSourceModel = (props) => {
         const id = projectBudgetSource.bsr_id;
         await deleteProjectBudgetSource.mutateAsync(id);
         toast.success(`Data deleted successfully`, {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         toast.error(`Failed to delete Data`, {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       }
       setDeleteModal(false);
     }

@@ -91,23 +91,23 @@ const ProjectHandoverModel = (props) => {
     try {
       await addProjectHandover.mutateAsync(newProjectHandover);
       toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.error(t("add_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
   const handleUpdateProjectHandover = async (updateData) => {
     try {
       (await updateProjectHandover.mutateAsync(updateData),
-        toast.success(t("update_success"), { autoClose: 2000 }));
+				toast.success(t("update_success"), { autoClose: 3000 }));
       validation.resetForm();
     } catch (error) {
-      toast.error(t("update_failure"), { autoClose: 2000 });
+      toast.error(t("update_failure"), { autoClose: 3000 });
     } finally {
       toggle();
     }
@@ -119,12 +119,12 @@ const ProjectHandoverModel = (props) => {
         const id = projectHandover.prh_id;
         await deleteProjectHandover.mutateAsync(id);
         toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         toast.error(t("delete_failure"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       }
       setDeleteModal(false);
     }

@@ -39,47 +39,47 @@ const FormModal = ({
   const deleteFolder = useDeleteAddressStructures();
 
   const handleAddFolder = async (values) => {
-    const newData = {
-      add_parent_id: values.id,
-      add_name_or: values.add_name_or,
-      add_name_am: values.add_name_am,
-      add_name_en: values.add_name_en,
-    };
-    try {
-      await addFolder.mutateAsync(newData);
-      toast.success(t("Data added successfully"), { autoClose: 2000 });
-    } catch (error) {
-      toast.error(t("Failed to add data"), { autoClose: 2000 });
-    } finally {
-      toggle();
-      formik.resetForm();
-    }
-  };
+		const newData = {
+			add_parent_id: values.id,
+			add_name_or: values.add_name_or,
+			add_name_am: values.add_name_am,
+			add_name_en: values.add_name_en,
+		};
+		try {
+			await addFolder.mutateAsync(newData);
+			toast.success(t("Data added successfully"), { autoClose: 3000 });
+		} catch (error) {
+			toast.error(t("Failed to add data"), { autoClose: 3000 });
+		} finally {
+			toggle();
+			formik.resetForm();
+		}
+	};
 
-  const handleUpdateFolder = async (values) => {
-    try {
-      await updateFolder.mutateAsync({
-        add_id: values.id,
-        add_name_or: values.add_name_or,
-        add_name_am: values.add_name_am,
-        add_name_en: values.add_name_en,
-      });
-      toast.success(t("Data updated successfully"), { autoClose: 2000 });
-    } catch (error) {
-      toast.error(t("Failed to update data"), { autoClose: 2000 });
-    } finally {
-      toggle();
-      formik.resetForm();
-    }
-  };
+	const handleUpdateFolder = async (values) => {
+		try {
+			await updateFolder.mutateAsync({
+				add_id: values.id,
+				add_name_or: values.add_name_or,
+				add_name_am: values.add_name_am,
+				add_name_en: values.add_name_en,
+			});
+			toast.success(t("Data updated successfully"), { autoClose: 3000 });
+		} catch (error) {
+			toast.error(t("Failed to update data"), { autoClose: 3000 });
+		} finally {
+			toggle();
+			formik.resetForm();
+		}
+	};
 
   const handleDeleteFolder = async () => {
     if (!selectedRow) return;
     try {
       await deleteFolder.mutateAsync(selectedRow?.id);
-      toast.success(t("Data deleted successfully"), { autoClose: 2000 });
+      toast.success(t("Data deleted successfully"), { autoClose: 3000 });
     } catch (error) {
-      toast.error(t("Failed to delete data"), { autoClose: 2000 });
+      toast.error(t("Failed to delete data"), { autoClose: 3000 });
     } finally {
       toggleDelete();
     }

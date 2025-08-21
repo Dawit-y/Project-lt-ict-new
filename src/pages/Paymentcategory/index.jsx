@@ -72,44 +72,44 @@ const PaymentCategoryModel = () => {
   const deletePaymentCategory = useDeletePaymentCategory();
   //START CRUD
   const handleAddPaymentCategory = async (data) => {
-    try {
-      await addPaymentCategory.mutateAsync(data);
-      toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      if (!error.handledByMutationCache) {
-        toast.error(t("add_failure"), { autoClose: 2000 });
-      }
-    }
-    toggle();
-  };
-  const handleUpdatePaymentCategory = async (data) => {
-    try {
-      await updatePaymentCategory.mutateAsync(data);
-      toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      if (!error.handledByMutationCache) {
-        toast.error(t("update_failure"), { autoClose: 2000 });
-      }
-    }
-    toggle();
-  };
+		try {
+			await addPaymentCategory.mutateAsync(data);
+			toast.success(t("add_success"), {
+				autoClose: 3000,
+			});
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+		toggle();
+	};
+	const handleUpdatePaymentCategory = async (data) => {
+		try {
+			await updatePaymentCategory.mutateAsync(data);
+			toast.success(t("update_success"), {
+				autoClose: 3000,
+			});
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+		toggle();
+	};
   const handleDeletePaymentCategory = async () => {
     if (paymentCategory && paymentCategory.pyc_id) {
       try {
         const id = paymentCategory.pyc_id;
         await deletePaymentCategory.mutateAsync(id);
         toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         if (!error.handledByMutationCache) {
-          toast.error(t("delete_failure"), { autoClose: 2000 });
+          toast.error(t("delete_failure"), { autoClose: 3000 });
         }
       }
       setDeleteModal(false);

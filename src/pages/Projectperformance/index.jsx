@@ -482,40 +482,40 @@ const ProjectPerformanceModel = (props) => {
   };
   // CRUD Operations
   const handleAddProjectPerformance = async (data) => {
-    try {
-      await addProjectPerformance.mutateAsync(data);
-      if (entryMode === "actual") {
-        await updateProject.mutateAsync(projectData);
-      }
-      toast.success(t("add_success"), { autoClose: 2000 });
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), { autoClose: 2000 });
-    }
-    toggle();
-  };
+		try {
+			await addProjectPerformance.mutateAsync(data);
+			if (entryMode === "actual") {
+				await updateProject.mutateAsync(projectData);
+			}
+			toast.success(t("add_success"), { autoClose: 3000 });
+			validation.resetForm();
+		} catch (error) {
+			toast.error(t("add_failure"), { autoClose: 3000 });
+		}
+		toggle();
+	};
 
-  const handleUpdateProjectPerformance = async (data, projectData) => {
-    try {
-      await updateProjectPerformance.mutateAsync(data);
-      if (entryMode === "actual") {
-        await updateProject.mutateAsync(projectData);
-      }
-      toast.success(t("update_success"), { autoClose: 2000 });
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), { autoClose: 2000 });
-    }
-    toggle();
-  };
+	const handleUpdateProjectPerformance = async (data, projectData) => {
+		try {
+			await updateProjectPerformance.mutateAsync(data);
+			if (entryMode === "actual") {
+				await updateProject.mutateAsync(projectData);
+			}
+			toast.success(t("update_success"), { autoClose: 3000 });
+			validation.resetForm();
+		} catch (error) {
+			toast.error(t("update_failure"), { autoClose: 3000 });
+		}
+		toggle();
+	};
 
   const handleDeleteProjectPerformance = async () => {
     if (projectPerformance?.prp_id) {
       try {
         await deleteProjectPerformance.mutateAsync(projectPerformance.prp_id);
-        toast.success(t("delete_success"), { autoClose: 2000 });
+        toast.success(t("delete_success"), { autoClose: 3000 });
       } catch (error) {
-        toast.error(t("delete_failure"), { autoClose: 2000 });
+        toast.error(t("delete_failure"), { autoClose: 3000 });
       }
       setDeleteModal(false);
     }

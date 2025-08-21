@@ -88,13 +88,13 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
     try {
       await addBudgetExipDetail.mutateAsync(data);
       toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.success(t("add_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -102,13 +102,13 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
     try {
       await updateBudgetExipDetail.mutateAsync(data);
       toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.success(t("update_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -118,12 +118,12 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
         const id = budgetExipDetail.bed_id;
         await deleteBudgetExipDetail.mutateAsync(id);
         toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         toast.success(t("delete_failure"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       }
       setDeleteModal(false);
     }

@@ -68,13 +68,13 @@ const PermissionModel = (props) => {
     try {
       await addPermission.mutateAsync(newPermission);
       toast.success(`Data added successfully`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.error("Failed to add data", {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -82,12 +82,12 @@ const PermissionModel = (props) => {
     try {
       await updatePermission.mutateAsync(data);
       toast.success(`data updated successfully`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     } catch (error) {
       toast.error(`Failed to update Data`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     }
     toggle();
@@ -98,12 +98,12 @@ const PermissionModel = (props) => {
         const id = permission.pem_id;
         await deletePermission.mutateAsync(id);
         toast.success(`Data deleted successfully`, {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         toast.error(`Failed to delete Data`, {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       }
       setDeleteModal(false);
     }

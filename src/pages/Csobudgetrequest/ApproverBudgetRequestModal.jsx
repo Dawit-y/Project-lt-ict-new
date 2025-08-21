@@ -61,9 +61,9 @@ const ApproverBudgetRequestListModal = ({
   const handleUpdateBudgetRequest = async (data) => {
     try {
       await mutateAsync(data);
-      toast.success(t("update_success"), { autoClose: 2000 });
+      toast.success(t("update_success"), { autoClose: 3000 });
     } catch (error) {
-      toast.error(t("update_failure"), { autoClose: 2000 });
+      toast.error(t("update_failure"), { autoClose: 3000 });
     }
     toggle();
   };

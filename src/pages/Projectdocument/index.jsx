@@ -66,12 +66,12 @@ const ProjectDocumentModel = (props) => {
     try {
       await addProjectDocument.mutateAsync(data);
       toast.success(`Data added successfully`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     } catch (error) {
       toast.error("Failed to add data", {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -80,12 +80,12 @@ const ProjectDocumentModel = (props) => {
     try {
       await updateProjectDocument.mutateAsync(data);
       toast.success(`data updated successfully`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     } catch (error) {
       toast.error(`Failed to update Data`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -96,12 +96,12 @@ const ProjectDocumentModel = (props) => {
         const id = projectDocument.prd_id;
         await deleteProjectDocument.mutateAsync(id);
         toast.success(`Data deleted successfully`, {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         toast.error(`Failed to delete Data`, {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       }
       setDeleteModal(false);
     }

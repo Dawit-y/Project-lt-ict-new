@@ -87,38 +87,38 @@ const BudgetYearModel = React.memo(() => {
   const deleteBudgetYear = useDeleteBudgetYear();
 
   const handleAddBudgetYear = useCallback(
-    async (data) => {
-      try {
-        await addBudgetYear.mutateAsync(data);
-        toast.success(t("add_success"), { autoClose: 2000 });
-      } catch {
-        toast.error(t("add_failure"), { autoClose: 2000 });
-      }
-      toggle();
-    },
-    [addBudgetYear, t, toggle],
-  );
+		async (data) => {
+			try {
+				await addBudgetYear.mutateAsync(data);
+				toast.success(t("add_success"), { autoClose: 3000 });
+			} catch {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+			toggle();
+		},
+		[addBudgetYear, t, toggle]
+	);
 
-  const handleUpdateBudgetYear = useCallback(
-    async (data) => {
-      try {
-        await updateBudgetYear.mutateAsync(data);
-        toast.success(t("update_success"), { autoClose: 2000 });
-      } catch {
-        toast.error(t("update_failure"), { autoClose: 2000 });
-      }
-      toggle();
-    },
-    [updateBudgetYear, t, toggle],
-  );
+	const handleUpdateBudgetYear = useCallback(
+		async (data) => {
+			try {
+				await updateBudgetYear.mutateAsync(data);
+				toast.success(t("update_success"), { autoClose: 3000 });
+			} catch {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+			toggle();
+		},
+		[updateBudgetYear, t, toggle]
+	);
 
   const handleDeleteBudgetYear = useCallback(async () => {
     if (budgetYear?.bdy_id) {
       try {
         await deleteBudgetYear.mutateAsync(budgetYear.bdy_id);
-        toast.success(t("delete_success"), { autoClose: 2000 });
+        toast.success(t("delete_success"), { autoClose: 3000 });
       } catch {
-        toast.error(t("delete_failure"), { autoClose: 2000 });
+        toast.error(t("delete_failure"), { autoClose: 3000 });
       }
       setDeleteModal(false);
     }

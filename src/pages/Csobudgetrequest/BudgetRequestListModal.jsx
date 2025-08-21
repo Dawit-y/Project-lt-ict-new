@@ -48,12 +48,12 @@ const BudgetRequestListModal = (props) => {
     try {
       await mutateAsync(data);
       toast.success(`data updated successfully`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     } catch (error) {
       toast.error(`Failed to update Data`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };

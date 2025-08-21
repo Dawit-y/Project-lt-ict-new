@@ -141,59 +141,59 @@ const DepartmentTree = () => {
   };
 
   const handleAddFolder = async () => {
-    if (!validateForm()) return;
+		if (!validateForm()) return;
 
-    if (checkNameExistsAdd(data, formInputs.dep_name_or)) {
-      setErrors((prev) => ({
-        ...prev,
-        dep_name_or: t("Already exists"),
-      }));
-      return;
-    }
+		if (checkNameExistsAdd(data, formInputs.dep_name_or)) {
+			setErrors((prev) => ({
+				...prev,
+				dep_name_or: t("Already exists"),
+			}));
+			return;
+		}
 
-    const rootId = selectedNode ? selectedNode.id : null;
-    try {
-      await addFolder.mutateAsync({ dep_parent_id: rootId, ...formInputs });
-      toast.success(t("Data added successfully"), { autoClose: 2000 });
-      resetForm();
-    } catch (error) {
-      toast.error(t("Failed to add data"), { autoClose: 2000 });
-    }
-  };
+		const rootId = selectedNode ? selectedNode.id : null;
+		try {
+			await addFolder.mutateAsync({ dep_parent_id: rootId, ...formInputs });
+			toast.success(t("Data added successfully"), { autoClose: 3000 });
+			resetForm();
+		} catch (error) {
+			toast.error(t("Failed to add data"), { autoClose: 3000 });
+		}
+	};
 
-  const handleUpdateFolder = async () => {
-    // if (!validateForm()) return;
+	const handleUpdateFolder = async () => {
+		// if (!validateForm()) return;
 
-    if (checkNameExistsUpdate(data, renameValue)) {
-      setErrors((prev) => ({
-        ...prev,
-        dep_name_or: t("Already exists"),
-      }));
-      return;
-    }
-    try {
-      await updateFolder.mutateAsync({
-        dep_id: selectedNode.id,
-        dep_name_or: renameValue.dep_name_or,
-        dep_name_am: renameValue.dep_name_am,
-        dep_name_en: renameValue.dep_name_en,
-      });
-      toast.success(t("Data updated successfully"), { autoClose: 2000 });
-      resetForm();
-    } catch (error) {
-      toast.error(t("Failed to update data"), { autoClose: 2000 });
-    }
-  };
+		if (checkNameExistsUpdate(data, renameValue)) {
+			setErrors((prev) => ({
+				...prev,
+				dep_name_or: t("Already exists"),
+			}));
+			return;
+		}
+		try {
+			await updateFolder.mutateAsync({
+				dep_id: selectedNode.id,
+				dep_name_or: renameValue.dep_name_or,
+				dep_name_am: renameValue.dep_name_am,
+				dep_name_en: renameValue.dep_name_en,
+			});
+			toast.success(t("Data updated successfully"), { autoClose: 3000 });
+			resetForm();
+		} catch (error) {
+			toast.error(t("Failed to update data"), { autoClose: 3000 });
+		}
+	};
 
   const handleDeleteFolder = async () => {
     if (!selectedNode) return;
     try {
       await deleteFolder.mutateAsync(selectedNode.id);
-      toast.success(t("Data deleted successfully"), { autoClose: 2000 });
+      toast.success(t("Data deleted successfully"), { autoClose: 3000 });
       setSelectedNode(null);
       setDeleteModal(false);
     } catch (error) {
-      toast.error(t("Failed to delete data"), { autoClose: 2000 });
+      toast.error(t("Failed to delete data"), { autoClose: 3000 });
     }
   };
 

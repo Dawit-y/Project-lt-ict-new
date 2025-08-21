@@ -15,14 +15,14 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.Fragment>
-    <DndProvider backend={HTML5Backend}>
-      <Provider store={store}>
-        <QueryProvider>
-          <App />
-        </QueryProvider>
-      </Provider>
-      <ToastContainer />
-    </DndProvider>
-  </React.Fragment>,
+	<React.Fragment>
+		<DndProvider backend={HTML5Backend}>
+			<Provider store={store}>
+				<QueryProvider>
+					<App />
+				</QueryProvider>
+			</Provider>
+			<ToastContainer position="top-center" />
+		</DndProvider>
+	</React.Fragment>
 );

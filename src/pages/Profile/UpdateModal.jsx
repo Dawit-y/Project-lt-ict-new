@@ -35,13 +35,13 @@ const UpdateModal = ({ modal, toggle, profile, refetch }) => {
       await updateUsers.mutateAsync(data);
       await refetch();
       toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
       validation.resetForm();
     } catch (error) {
       toast.error(t("update_failure"), {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };

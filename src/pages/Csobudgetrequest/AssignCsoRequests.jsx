@@ -80,10 +80,10 @@ const AssignCsoRequests = ({ request, isActive, budgetYearMap }) => {
           prj_assigned_sectors: JSON.stringify(values.prj_assigned_sectors), // stringify array
         };
         await mutateAsync(payload);
-        toast.success(t("add_success"), { autoClose: 2000 });
+        toast.success(t("add_success"), { autoClose: 3000 });
         formik.resetForm();
       } catch (error) {
-        toast.error(t("add_failure"), { autoClose: 2000 });
+        toast.error(t("add_failure"), { autoClose: 3000 });
       }
     },
   });
