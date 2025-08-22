@@ -1945,5 +1945,6 @@
   "procurement": "Procurement",
   "dates": "Dates",
   "approved": "Approved",
-  "requested": "Requested"
+  "requested": "Requested",
+  "prj_sector_category_id": "Sector Category"
 }
