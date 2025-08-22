@@ -137,6 +137,7 @@ const RecommendModal = ({ isOpen, toggle, request, requestedAmount }) => {
                 isRequired={true}
                 className="col-md-6 mb-3"
                 allowDecimal={true}
+                infoText={`${t("bdr_requested_amount")} ${parseInt(requestedAmount).toLocaleString()}`}
               />
               <FormattedAmountField
                 validation={formik}

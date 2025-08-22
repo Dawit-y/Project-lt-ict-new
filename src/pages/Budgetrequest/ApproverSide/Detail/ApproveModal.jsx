@@ -200,6 +200,7 @@ const ApproveModal = ({ isOpen, toggle, request, toggleParent, action }) => {
                 isRequired={true}
                 className="col-md-6 mb-3"
                 allowDecimal={true}
+                infoText={`${t("bdr_requested_amount")}: ${parseInt(request.bdr_requested_amount).toLocaleString()}`}
               />
             )}
             {action === "recommend" && (
