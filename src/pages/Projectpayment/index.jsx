@@ -125,17 +125,17 @@ const ProjectPaymentModel = (props) => {
 
   const handleUpdateProjectPayment = async (data) => {
     try {
-      await updateProjectPayment.mutateAsync(data);
-      toast.success(t("update_success"), {
+			await updateProjectPayment.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
   };
 
   const handleDeleteProjectPayment = async () => {

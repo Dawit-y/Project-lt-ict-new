@@ -76,33 +76,33 @@ const ProcurementStageModel = () => {
   const deleteProcurementStage = useDeleteProcurementStage();
   //START CRUD
   const handleAddProcurementStage = async (data) => {
-    try {
-      await addProcurementStage.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addProcurementStage.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateProcurementStage = async (data) => {
+		try {
+			await updateProcurementStage.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateProcurementStage = async (data) => {
-    try {
-      await updateProcurementStage.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteProcurementStage = async () => {
     if (procurementStage && procurementStage.pst_id) {
       try {

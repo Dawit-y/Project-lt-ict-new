@@ -91,33 +91,33 @@ const CsoInfoModel = () => {
   const deleteCsoInfo = useDeleteCsoInfo();
   //START CRUD
   const handleAddCsoInfo = async (data) => {
-    try {
-      await addCsoInfo.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addCsoInfo.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateCsoInfo = async (data) => {
+		try {
+			await updateCsoInfo.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateCsoInfo = async (data) => {
-    try {
-      await updateCsoInfo.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteCsoInfo = async () => {
     if (csoInfo && csoInfo.cso_id) {
       try {

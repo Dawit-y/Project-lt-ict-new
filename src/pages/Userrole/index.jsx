@@ -73,33 +73,33 @@ const UserRoleModel = (props) => {
   const deleteUserRole = useDeleteUserRoles();
   //START CRUD
   const handleAddUserRole = async (data) => {
-    try {
-      await addUserRole.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addUserRole.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateUserRole = async (data) => {
+		try {
+			await updateUserRole.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateUserRole = async (data) => {
-    try {
-      await updateUserRole.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteUserRole = async () => {
     if (userRole && userRole.url_id) {
       try {

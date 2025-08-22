@@ -157,7 +157,9 @@ const DepartmentTree = () => {
 			toast.success(t("Data added successfully"), { autoClose: 3000 });
 			resetForm();
 		} catch (error) {
-			toast.error(t("Failed to add data"), { autoClose: 3000 });
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
 		}
 	};
 
@@ -181,7 +183,9 @@ const DepartmentTree = () => {
 			toast.success(t("Data updated successfully"), { autoClose: 3000 });
 			resetForm();
 		} catch (error) {
-			toast.error(t("Failed to update data"), { autoClose: 3000 });
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
 		}
 	};
 

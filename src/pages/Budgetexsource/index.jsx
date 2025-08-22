@@ -71,33 +71,33 @@ const BudgetExSourceModel = ({ passedId, isActive }) => {
   const deleteBudgetExSource = useDeleteBudgetExSource();
   //START CRUD
   const handleAddBudgetExSource = async (data) => {
-    try {
-      await addBudgetExSource.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addBudgetExSource.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateBudgetExSource = async (data) => {
+		try {
+			await updateBudgetExSource.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateBudgetExSource = async (data) => {
-    try {
-      await updateBudgetExSource.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteBudgetExSource = async () => {
     if (budgetExSource && budgetExSource.bes_id) {
       try {

@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -36,8 +35,7 @@ import {
   FormGroup,
   Badge,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import {  toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { useFetchExpenditureCodes } from "../../queries/expenditurecode_query";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
@@ -90,13 +88,14 @@ const ProjectBudgetPlanModel = (props) => {
       await addProjectBudgetPlan.mutateAsync(data);
       toast.success(`Data added successfully`, {
 				autoClose: 3000,
-			});
+      });
+      toggle()
+      validation.resetForm();
     } catch (error) {
       toast.error("Failed to add data", {
 				autoClose: 3000,
 			});
     }
-    toggle();
   };
 
   const handleUpdateProjectBudgetPlan = async (data) => {
@@ -104,13 +103,14 @@ const ProjectBudgetPlanModel = (props) => {
       await updateProjectBudgetPlan.mutateAsync(data);
       toast.success(`data updated successfully`, {
 				autoClose: 3000,
-			});
+      });
+      toggle()
+      validation.resetForm()
     } catch (error) {
       toast.error(`Failed to update Data`, {
 				autoClose: 3000,
 			});
     }
-    toggle();
   };
   const handleDeleteProjectBudgetPlan = async () => {
     if (projectBudgetPlan && projectBudgetPlan.bpl_id) {

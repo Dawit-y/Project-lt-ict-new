@@ -76,34 +76,34 @@ const ProjectEmployeeModel = (props) => {
   const deleteProjectEmployee = useDeleteProjectEmployee();
   //START CRUD
   const handleAddProjectEmployee = async (data) => {
-    try {
-      await addProjectEmployee.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addProjectEmployee.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateProjectEmployee = async (data) => {
-    try {
-      await updateProjectEmployee.mutateAsync(data);
-      toast.success(t("update_success"), {
+	const handleUpdateProjectEmployee = async (data) => {
+		try {
+			await updateProjectEmployee.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteProjectEmployee = async () => {
     if (projectEmployee && projectEmployee.emp_id) {
       try {

@@ -76,34 +76,34 @@ const ProjectStakeholderModel = (props) => {
   const deleteProjectStakeholder = useDeleteProjectStakeholder();
   //START CRUD
   const handleAddProjectStakeholder = async (data) => {
-    try {
-      await addProjectStakeholder.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addProjectStakeholder.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateProjectStakeholder = async (data) => {
-    try {
-      await updateProjectStakeholder.mutateAsync(data);
-      toast.success(t("update_success"), {
+	const handleUpdateProjectStakeholder = async (data) => {
+		try {
+			await updateProjectStakeholder.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteProjectStakeholder = async () => {
     if (projectStakeholder && projectStakeholder.emp_id) {
       try {

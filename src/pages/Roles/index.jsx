@@ -67,34 +67,34 @@ const RolesModel = () => {
   const deleteRoles = useDeleteRoles();
 
   const handleAddRoles = async (data) => {
-    try {
-      await addRoles.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addRoles.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateRoles = async (data) => {
-    try {
-      await updateRoles.mutateAsync(data);
-      toast.success(t("update_success"), {
+	const handleUpdateRoles = async (data) => {
+		try {
+			await updateRoles.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteRoles = async () => {
     if (roles && roles.rol_id) {
       try {

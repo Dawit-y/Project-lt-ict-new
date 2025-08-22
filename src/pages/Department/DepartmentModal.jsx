@@ -12,7 +12,6 @@ import {
 
 const modalStyle = {
   width: "100%",
-  height: "100%",
 };
 
 const DepartmentModal = (props) => {

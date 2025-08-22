@@ -91,34 +91,34 @@ const ProjectStatusModel = () => {
   const deleteProjectStatus = useDeleteProjectStatus();
   //START CRUD
   const handleAddProjectStatus = async (data) => {
-    try {
-      await addProjectStatus.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addProjectStatus.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateProjectStatus = async (data) => {
-    try {
-      await updateProjectStatus.mutateAsync(data);
-      toast.success(t("update_success"), {
+	const handleUpdateProjectStatus = async (data) => {
+		try {
+			await updateProjectStatus.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteProjectStatus = async () => {
     if (projectStatus && projectStatus.prs_id) {
       try {

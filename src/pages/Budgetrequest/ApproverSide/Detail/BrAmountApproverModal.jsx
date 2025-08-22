@@ -25,17 +25,17 @@ const BrAmountApproverModal = ({ isOpen, toggle, budgetRequestAmount }) => {
   const updateBudgetRequestAmount = useUpdateBudgetRequestAmount();
   const handleUpdateBudgetRequestAmount = async (data) => {
     try {
-      await updateBudgetRequestAmount.mutateAsync(data);
-      toast.success(t("update_success"), {
+			await updateBudgetRequestAmount.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
   };
   const validation = useFormik({
     enableReinitialize: true,

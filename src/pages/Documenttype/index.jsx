@@ -83,34 +83,34 @@ const DocumentTypeModel = () => {
   const deleteDocumentType = useDeleteDocumentType();
   //START CRUD
   const handleAddDocumentType = async (data) => {
-    try {
-      await addDocumentType.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addDocumentType.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateDocumentType = async (data) => {
-    try {
-      await updateDocumentType.mutateAsync(data);
-      toast.success(t("update_success"), {
+	const handleUpdateDocumentType = async (data) => {
+		try {
+			await updateDocumentType.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteDocumentType = async () => {
     if (documentType && documentType.pdt_id) {
       try {

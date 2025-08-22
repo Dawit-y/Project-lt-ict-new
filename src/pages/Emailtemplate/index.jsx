@@ -69,33 +69,33 @@ const EmailTemplateModel = () => {
   const deleteEmailTemplate = useDeleteEmailTemplate();
   //START CRUD
   const handleAddEmailTemplate = async (data) => {
-    try {
-      await addEmailTemplate.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addEmailTemplate.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateEmailTemplate = async (data) => {
+		try {
+			await updateEmailTemplate.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateEmailTemplate = async (data) => {
-    try {
-      await updateEmailTemplate.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteEmailTemplate = async () => {
     if (emailTemplate && emailTemplate.emt_id) {
       try {

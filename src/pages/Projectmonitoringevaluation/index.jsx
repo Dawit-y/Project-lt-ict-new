@@ -124,33 +124,33 @@ const ProjectMonitoringEvaluationModel = (props) => {
     useDeleteProjectMonitoringEvaluation();
 
   const handleAddProjectMonitoringEvaluation = async (data) => {
-    try {
-      await addProjectMonitoringEvaluation.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addProjectMonitoringEvaluation.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateProjectMonitoringEvaluation = async (data) => {
+		try {
+			await updateProjectMonitoringEvaluation.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateProjectMonitoringEvaluation = async (data) => {
-    try {
-      await updateProjectMonitoringEvaluation.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteProjectMonitoringEvaluation = async () => {
     if (projectMonitoringEvaluation && projectMonitoringEvaluation.mne_id) {
       try {

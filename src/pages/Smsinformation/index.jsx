@@ -68,33 +68,33 @@ const SmsInformationModel = () => {
   const deleteSmsInformation = useDeleteSmsInformation();
   //START CRUD
   const handleAddSmsInformation = async (data) => {
-    try {
-      await addSmsInformation.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addSmsInformation.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateSmsInformation = async (data) => {
+		try {
+			await updateSmsInformation.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateSmsInformation = async (data) => {
-    try {
-      await updateSmsInformation.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteSmsInformation = async () => {
     if (smsInformation && smsInformation.smi_id) {
       try {

@@ -82,33 +82,33 @@ const BudgetMonthModel = () => {
   const deleteBudgetMonth = useDeleteBudgetMonth();
   //START CRUD
   const handleAddBudgetMonth = async (data) => {
-    try {
-      await addBudgetMonth.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addBudgetMonth.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateBudgetMonth = async (data) => {
+		try {
+			await updateBudgetMonth.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateBudgetMonth = async (data) => {
-    try {
-      await updateBudgetMonth.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteBudgetMonth = async () => {
     if (budgetMonth && budgetMonth.bdm_id) {
       try {

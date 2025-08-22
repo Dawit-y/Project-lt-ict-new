@@ -82,34 +82,34 @@ const ExpenditureCodeModel = () => {
   const deleteExpenditureCode = useDeleteExpenditureCode();
   //START CRUD
   const handleAddExpenditureCode = async (data) => {
-    try {
-      await addExpenditureCode.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addExpenditureCode.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateExpenditureCode = async (data) => {
-    try {
-      await updateExpenditureCode.mutateAsync(data);
-      toast.success(t("update_success"), {
+	const handleUpdateExpenditureCode = async (data) => {
+		try {
+			await updateExpenditureCode.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
   const handleDeleteExpenditureCode = async () => {
     if (expenditureCode && expenditureCode.pec_id) {

@@ -84,34 +84,34 @@ const BudgetSourceModel = () => {
   const deleteBudgetSource = useDeleteBudgetSource();
   //START CRUD
   const handleAddBudgetSource = async (data) => {
-    try {
-      await addBudgetSource.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addBudgetSource.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateBudgetSource = async (data) => {
-    try {
-      await updateBudgetSource.mutateAsync(data);
-      toast.success(t("update_success"), {
+	const handleUpdateBudgetSource = async (data) => {
+		try {
+			await updateBudgetSource.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteBudgetSource = async () => {
     if (budgetSource && budgetSource.pbs_id) {
       try {

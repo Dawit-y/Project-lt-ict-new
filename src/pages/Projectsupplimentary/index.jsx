@@ -88,34 +88,34 @@ const ProjectSupplimentaryModel = (props) => {
   }, [bgYearsOptionsData]);
   //START CRUD
   const handleAddProjectSupplimentary = async (data) => {
-    try {
-      await addProjectSupplimentary.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addProjectSupplimentary.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateProjectSupplimentary = async (data) => {
-    try {
-      await updateProjectSupplimentary.mutateAsync(data);
-      toast.success(t("update_success"), {
+	const handleUpdateProjectSupplimentary = async (data) => {
+		try {
+			await updateProjectSupplimentary.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteProjectSupplimentary = async () => {
     if (projectSupplimentary && projectSupplimentary.prs_id) {
       try {

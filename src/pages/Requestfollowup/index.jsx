@@ -109,33 +109,33 @@ const RequestFollowupModel = ({ request, isActive }) => {
   const deleteRequestFollowup = useDeleteRequestFollowup();
   //START CRUD
   const handleAddRequestFollowup = async (data) => {
-    try {
-      await addRequestFollowup.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addRequestFollowup.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateRequestFollowup = async (data) => {
+		try {
+			await updateRequestFollowup.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateRequestFollowup = async (data) => {
-    try {
-      await updateRequestFollowup.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteRequestFollowup = async () => {
     if (requestFollowup && requestFollowup.rqf_id) {
       try {

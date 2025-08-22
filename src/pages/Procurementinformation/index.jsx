@@ -98,33 +98,33 @@ const ProcurementInformationModel = (props) => {
   const deleteProcurementInformation = useDeleteProcurementInformation();
   //START CRUD
   const handleAddProcurementInformation = async (data) => {
-    try {
-      await addProcurementInformation.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addProcurementInformation.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateProcurementInformation = async (data) => {
+		try {
+			await updateProcurementInformation.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateProcurementInformation = async (data) => {
-    try {
-      await updateProcurementInformation.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteProcurementInformation = async () => {
     if (procurementInformation && procurementInformation.pri_id) {
       try {

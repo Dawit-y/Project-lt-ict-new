@@ -86,33 +86,33 @@ const BudgetRequestAmountModel = ({ passedId, isActive }) => {
   }, [exCodesData]);
 
   const handleAddBudgetRequestAmount = async (data) => {
-    try {
-      await addBudgetRequestAmount.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addBudgetRequestAmount.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateBudgetRequestAmount = async (data) => {
+		try {
+			await updateBudgetRequestAmount.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateBudgetRequestAmount = async (data) => {
-    try {
-      await updateBudgetRequestAmount.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteBudgetRequestAmount = async () => {
     if (budgetRequestAmount && budgetRequestAmount.bra_id) {
       try {

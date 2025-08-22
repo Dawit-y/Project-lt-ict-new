@@ -56,8 +56,6 @@ const ProjectsLocation = () => {
     "pct_name_am",
   ]);
 
-  console.log("projectCategoryOptions", projectCategoryData);
-
   const { data, isLoading, error, isError, refetch } =
     useSearchOnlyProjects(projectParams);
   const { t } = useTranslation();

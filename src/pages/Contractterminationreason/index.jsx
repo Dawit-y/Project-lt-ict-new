@@ -83,34 +83,34 @@ const ContractTerminationReasonModel = () => {
   const deleteContractTerminationReason = useDeleteContractTerminationReason();
   //START CRUD
   const handleAddContractTerminationReason = async (data) => {
-    try {
-      await addContractTerminationReason.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addContractTerminationReason.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateContractTerminationReason = async (data) => {
-    try {
-      await updateContractTerminationReason.mutateAsync(data);
-      toast.success(t("update_success"), {
+	const handleUpdateContractTerminationReason = async (data) => {
+		try {
+			await updateContractTerminationReason.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteContractTerminationReason = async () => {
     if (contractTerminationReason && contractTerminationReason.ctr_id) {
       try {

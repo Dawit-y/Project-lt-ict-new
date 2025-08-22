@@ -103,33 +103,33 @@ const RequestInformationModel = (props) => {
   const deleteRequestInformation = useDeleteRequestInformation();
   //START CRUD
   const handleAddRequestInformation = async (data) => {
-    try {
-      await addRequestInformation.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addRequestInformation.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateRequestInformation = async (data) => {
+		try {
+			await updateRequestInformation.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateRequestInformation = async (data) => {
-    try {
-      await updateRequestInformation.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteRequestInformation = async () => {
     if (requestInformation && requestInformation.rqi_id) {
       try {

@@ -104,33 +104,33 @@ const ProposalRequestModel = (props) => {
   const deleteProposalRequest = useDeleteProposalRequest();
   //START CRUD
   const handleAddProposalRequest = async (data) => {
-    try {
-      await addProposalRequest.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addProposalRequest.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateProposalRequest = async (data) => {
+		try {
+			await updateProposalRequest.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateProposalRequest = async (data) => {
-    try {
-      await updateProposalRequest.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteProposalRequest = async () => {
     if (proposalRequest && proposalRequest.prr_id) {
       try {

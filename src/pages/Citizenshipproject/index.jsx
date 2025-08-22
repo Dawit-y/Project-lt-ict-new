@@ -199,34 +199,34 @@ const ProjectModel = () => {
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
 
   const handleAddProject = async (data) => {
-    try {
-      await addProject.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addProject.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateProject = async (data) => {
-    try {
-      await updateProject.mutateAsync(data);
-      toast.success(t("update_success"), {
+	const handleUpdateProject = async (data) => {
+		try {
+			await updateProject.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteProject = async () => {
     if (project && project.prj_id) {
       try {

@@ -71,33 +71,33 @@ const RequestCategoryModel = () => {
   const deleteRequestCategory = useDeleteRequestCategory();
   //START CRUD
   const handleAddRequestCategory = async (data) => {
-    try {
-      await addRequestCategory.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addRequestCategory.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateRequestCategory = async (data) => {
+		try {
+			await updateRequestCategory.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateRequestCategory = async (data) => {
-    try {
-      await updateRequestCategory.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteRequestCategory = async () => {
     if (requestCategory && requestCategory.rqc_id) {
       try {

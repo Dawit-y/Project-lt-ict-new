@@ -106,34 +106,34 @@ const ImplementingAreaModel = (props) => {
 
   // START CRUD operations
   const handleAddImplementingArea = async (data) => {
-    try {
-      await addImplementingArea.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addImplementingArea.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateImplementingArea = async (data) => {
-    try {
-      await updateImplementingArea.mutateAsync(data);
-      toast.success(t("update_success"), {
+	const handleUpdateImplementingArea = async (data) => {
+		try {
+			await updateImplementingArea.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
   const handleDeleteImplementingArea = async () => {
     if (implementingArea && implementingArea.pia_id) {

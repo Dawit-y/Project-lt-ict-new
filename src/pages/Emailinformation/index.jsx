@@ -65,33 +65,33 @@ const EmailInformationModel = () => {
   const deleteEmailInformation = useDeleteEmailInformation();
   //START CRUD
   const handleAddEmailInformation = async (data) => {
-    try {
-      await addEmailInformation.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addEmailInformation.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateEmailInformation = async (data) => {
+		try {
+			await updateEmailInformation.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateEmailInformation = async (data) => {
-    try {
-      await updateEmailInformation.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteEmailInformation = async () => {
     if (emailInformation && emailInformation.emi_id) {
       try {

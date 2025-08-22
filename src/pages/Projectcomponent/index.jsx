@@ -64,34 +64,34 @@ const ProjectComponentModel = (props) => {
 
   //START CRUD
   const handleAddProjectComponent = async (data) => {
-    try {
-      await addProjectComponent.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addProjectComponent.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateProjectComponent = async (data) => {
-    try {
-      await updateProjectComponent.mutateAsync(data);
-      toast.success(t("update_success"), {
+	const handleUpdateProjectComponent = async (data) => {
+		try {
+			await updateProjectComponent.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
   const handleDeleteProjectComponent = async () => {
     if (projectComponent && projectComponent.pcm_id) {

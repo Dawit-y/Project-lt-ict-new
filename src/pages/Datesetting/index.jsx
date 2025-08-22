@@ -74,33 +74,33 @@ const DateSettingModel = () => {
   const deleteDateSetting = useDeleteDateSetting();
   //START CRUD
   const handleAddDateSetting = async (data) => {
-    try {
-      await addDateSetting.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addDateSetting.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateDateSetting = async (data) => {
+		try {
+			await updateDateSetting.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateDateSetting = async (data) => {
-    try {
-      await updateDateSetting.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteDateSetting = async () => {
     if (dateSetting && dateSetting.dts_id) {
       try {

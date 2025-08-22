@@ -64,33 +64,33 @@ const MonitoringEvaluationTypeModel = () => {
   const deleteMonitoringEvaluationType = useDeleteMonitoringEvaluationType();
 
   const handleAddMonitoringEvaluationType = async (data) => {
-    try {
-      await addMonitoringEvaluationType.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addMonitoringEvaluationType.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateMonitoringEvaluationType = async (data) => {
+		try {
+			await updateMonitoringEvaluationType.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateMonitoringEvaluationType = async (data) => {
-    try {
-      await updateMonitoringEvaluationType.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
   const validation = useFormik({
     enableReinitialize: true,

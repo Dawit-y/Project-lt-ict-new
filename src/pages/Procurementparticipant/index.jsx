@@ -79,33 +79,33 @@ const ProcurementParticipantModel = (props) => {
   const deleteProcurementParticipant = useDeleteProcurementParticipant();
   //START CRUD
   const handleAddProcurementParticipant = async (data) => {
-    try {
-      await addProcurementParticipant.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addProcurementParticipant.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateProcurementParticipant = async (data) => {
+		try {
+			await updateProcurementParticipant.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateProcurementParticipant = async (data) => {
-    try {
-      await updateProcurementParticipant.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteProcurementParticipant = async () => {
     if (procurementParticipant && procurementParticipant.ppp_id) {
       try {

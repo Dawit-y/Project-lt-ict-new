@@ -87,34 +87,34 @@ const ProjectCategoryModel = () => {
 
   //START CRUD
   const handleAddProjectCategory = async (data) => {
-    try {
-      await addProjectCategory.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addProjectCategory.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateProjectCategory = async (data) => {
-    try {
-      await updateProjectCategory.mutateAsync(data);
-      toast.success(t("update_success"), {
+	const handleUpdateProjectCategory = async (data) => {
+		try {
+			await updateProjectCategory.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteProjectCategory = async () => {
     if (projectCategory && projectCategory.pct_id) {
       try {

@@ -78,33 +78,33 @@ const ProgramInfoModel = ({ node }) => {
   const deleteProgramInfo = useDeleteProgramInfo();
   //START CRUD
   const handleAddProgramInfo = async (data) => {
-    try {
-      await addProgramInfo.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addProgramInfo.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateProgramInfo = async (data) => {
+		try {
+			await updateProgramInfo.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateProgramInfo = async (data) => {
-    try {
-      await updateProgramInfo.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteProgramInfo = async () => {
     if (programInfo && programInfo.pri_id) {
       try {

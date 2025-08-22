@@ -71,33 +71,33 @@ const RequestStatusModel = () => {
   const deleteRequestStatus = useDeleteRequestStatus();
   //START CRUD
   const handleAddRequestStatus = async (data) => {
-    try {
-      await addRequestStatus.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addRequestStatus.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateRequestStatus = async (data) => {
+		try {
+			await updateRequestStatus.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateRequestStatus = async (data) => {
-    try {
-      await updateRequestStatus.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteRequestStatus = async () => {
     if (requestStatus && requestStatus.rqs_id) {
       try {

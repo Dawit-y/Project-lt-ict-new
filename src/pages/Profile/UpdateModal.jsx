@@ -32,18 +32,18 @@ const UpdateModal = ({ modal, toggle, profile, refetch }) => {
   const updateUsers = useUpdateProfile();
   const handleUpdateUsers = async (data) => {
     try {
-      await updateUsers.mutateAsync(data);
-      await refetch();
-      toast.success(t("update_success"), {
+			await updateUsers.mutateAsync(data);
+			await refetch();
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
   };
   // validation
   const validation = useFormik({

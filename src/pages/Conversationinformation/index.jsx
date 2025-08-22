@@ -69,33 +69,33 @@ const ConversationInformationModel = () => {
   const deleteConversationInformation = useDeleteConversationInformation();
   //START CRUD
   const handleAddConversationInformation = async (data) => {
-    try {
-      await addConversationInformation.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addConversationInformation.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateConversationInformation = async (data) => {
+		try {
+			await updateConversationInformation.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateConversationInformation = async (data) => {
-    try {
-      await updateConversationInformation.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteConversationInformation = async () => {
     if (conversationInformation && conversationInformation.cvi_id) {
       try {

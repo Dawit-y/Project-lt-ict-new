@@ -89,34 +89,34 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
   const { data: bgCategoryOptionsData } = useFetchRequestCategorys();
 
   const handleAddBudgetRequest = async (data) => {
-    try {
-      await addBudgetRequest.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addBudgetRequest.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateBudgetRequest = async (data) => {
-    try {
-      await updateBudgetRequest.mutateAsync(data);
-      toast.success(t("update_success"), {
+	const handleUpdateBudgetRequest = async (data) => {
+		try {
+			await updateBudgetRequest.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
   // validation
   const validation = useFormik({

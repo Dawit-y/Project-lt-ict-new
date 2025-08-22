@@ -69,28 +69,29 @@ const PermissionModel = (props) => {
       await addPermission.mutateAsync(newPermission);
       toast.success(`Data added successfully`, {
 				autoClose: 3000,
-			});
+      });
+      toggle();
       validation.resetForm();
     } catch (error) {
       toast.error("Failed to add data", {
 				autoClose: 3000,
 			});
     }
-    toggle();
   };
   const handleUpdatePermission = async (data) => {
     try {
       await updatePermission.mutateAsync(data);
       toast.success(`data updated successfully`, {
 				autoClose: 3000,
-			});
+      });
+      toggle();
+      validation.resetForm();
     } catch (error) {
       toast.error(`Failed to update Data`, {
 				autoClose: 3000,
 			});
       validation.resetForm();
     }
-    toggle();
   };
   const handleDeletePermission = async () => {
     if (permission && permission.pem_id) {

@@ -77,33 +77,33 @@ const ProcurementMethodModel = () => {
   const deleteProcurementMethod = useDeleteProcurementMethod();
   //START CRUD
   const handleAddProcurementMethod = async (data) => {
-    try {
-      await addProcurementMethod.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addProcurementMethod.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateProcurementMethod = async (data) => {
+		try {
+			await updateProcurementMethod.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateProcurementMethod = async (data) => {
-    try {
-      await updateProcurementMethod.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteProcurementMethod = async () => {
     if (procurementMethod && procurementMethod.prm_id) {
       try {

@@ -10,7 +10,6 @@ const UsersProfile = lazy(() => import("../pages/Profile"));
 const ProjectPaymentList = lazy(
   () => import("../pages/Projectpayment/ProjectPaymentList"),
 );
-const ProjectsTreeView = lazy(() => import("../pages/ProjectStatusTree/index"));
 const Logout = lazy(() => import("../pages/Authentication/Logout"));
 
 const AddressStructure = lazy(
@@ -297,7 +296,6 @@ const authProtectedRoutes = [
   { path: "/project_supplimentary", component: <ProjectSupplimentary /> },
   { path: "/project_variation", component: <ProjectVariation /> },
   { path: "/dashboard", component: <Dashboard /> },
-  { path: "/Project-Tree", component: <ProjectsTreeView /> },
   { path: "/address_structure", component: <AddressStructure /> },
   { path: "/department", component: <Department /> },
   { path: "/budget_request", component: <BudgetRequestListModel /> },

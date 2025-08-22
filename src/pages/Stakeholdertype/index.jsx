@@ -83,34 +83,34 @@ const StakeholderTypeModel = () => {
   const deleteStakeholderType = useDeleteStakeholderType();
   //START CRUD
   const handleAddStakeholderType = async (data) => {
-    try {
-      await addStakeholderType.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addStakeholderType.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateStakeholderType = async (data) => {
-    try {
-      await updateStakeholderType.mutateAsync(data);
-      toast.success(t("update_success"), {
+	const handleUpdateStakeholderType = async (data) => {
+		try {
+			await updateStakeholderType.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
   const handleDeleteStakeholderType = async () => {
     if (stakeholderType && stakeholderType.sht_id) {

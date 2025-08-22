@@ -86,33 +86,33 @@ const ProjectVariationModel = (props) => {
   }, [bgYearsOptionsData]);
   //START CRUD
   const handleAddProjectVariation = async (data) => {
-    try {
-      await addProjectVariation.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addProjectVariation.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateProjectVariation = async (data) => {
+		try {
+			await updateProjectVariation.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateProjectVariation = async (data) => {
-    try {
-      await updateProjectVariation.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteProjectVariation = async () => {
     if (projectVariation && projectVariation.prv_id) {
       try {

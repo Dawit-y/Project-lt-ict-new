@@ -70,33 +70,33 @@ const BudgetRequestTaskModel = ({ passedId, isActive }) => {
   const deleteBudgetRequestTask = useDeleteBudgetRequestTask();
   //START CRUD
   const handleAddBudgetRequestTask = async (data) => {
-    try {
-      await addBudgetRequestTask.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addBudgetRequestTask.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateBudgetRequestTask = async (data) => {
+		try {
+			await updateBudgetRequestTask.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-    }
-    toggle();
-  };
-  const handleUpdateBudgetRequestTask = async (data) => {
-    try {
-      await updateBudgetRequestTask.mutateAsync(data);
-      toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteBudgetRequestTask = async () => {
     if (budgetRequestTask && budgetRequestTask.brt_id) {
       try {

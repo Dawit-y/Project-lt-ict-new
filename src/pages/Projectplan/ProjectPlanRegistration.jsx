@@ -112,34 +112,34 @@ const ProjectPlanModel = () => {
   }, [budgetYearData]);
   //START CRUD
   const handleAddProjectPlan = async (data) => {
-    try {
-      await addProjectPlan.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addProjectPlan.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateProjectPlan = async (data) => {
-    try {
-      await updateProjectPlan.mutateAsync(data);
-      toast.success(t("update_success"), {
+	const handleUpdateProjectPlan = async (data) => {
+		try {
+			await updateProjectPlan.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteProjectPlan = async () => {
     if (projectPlan && projectPlan.pld_id) {
       try {

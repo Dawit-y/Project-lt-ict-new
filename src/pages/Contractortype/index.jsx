@@ -77,34 +77,34 @@ const ContractorTypeModel = () => {
   const deleteContractorType = useDeleteContractorType();
   //START CRUD
   const handleAddContractorType = async (data) => {
-    try {
-      await addContractorType.mutateAsync(data);
-      toast.success(t("add_success"), {
+		try {
+			await addContractorType.mutateAsync(data);
+			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateContractorType = async (data) => {
-    try {
-      await updateContractorType.mutateAsync(data);
-      toast.success(t("update_success"), {
+	const handleUpdateContractorType = async (data) => {
+		try {
+			await updateContractorType.mutateAsync(data);
+			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
-    }
-    toggle();
-  };
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteContractorType = async () => {
     if (contractorType && contractorType.cnt_id) {
       try {
