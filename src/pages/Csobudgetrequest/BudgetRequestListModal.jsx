@@ -27,8 +27,7 @@ import { useUpdateBudgetRequest } from "../../queries/budget_request_query";
 import { toast } from "react-toastify";
 
 const modalStyle = {
-  width: "100%",
-  height: "100%",
+	width: "100%",
 };
 
 const BudgetRequestListModal = (props) => {

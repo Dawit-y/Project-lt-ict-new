@@ -115,9 +115,9 @@ const ProjectBudgetSourceModel = (props) => {
 			await updateProjectBudgetSource.mutateAsync(data);
 			toast.success(`data updated successfully`, {
 				autoClose: 3000,
-      });
-      toggle()
-      validation.resetForm()
+			});
+			toggle();
+			validation.resetForm();
 		} catch (error) {
 			toast.error(`Failed to update Data`, {
 				autoClose: 3000,
@@ -184,7 +184,7 @@ const ProjectBudgetSourceModel = (props) => {
 		},
 
 		validationSchema: Yup.object({
-			bsr_name: Yup.string().required(t("bsr_name")),
+			bsr_name: Yup.string(),
 			bsr_budget_source_id: Yup.string().required(t("bsr_budget_source_id")),
 			bsr_amount: Yup.number()
 				.required(t("bsr_amount"))
@@ -440,6 +440,7 @@ const ProjectBudgetSourceModel = (props) => {
 				isOpen={modal1}
 				toggle={toggleViewModal}
 				transaction={transaction}
+				budgetSourceMap={budgetSourceMap}
 			/>
 			<DeleteModal
 				show={deleteModal}
@@ -460,10 +461,9 @@ const ProjectBudgetSourceModel = (props) => {
 							isCustomPageSize={true}
 							handleUserClick={handleProjectBudgetSourceClicks}
 							isPagination={true}
-							// SearchPlaceholder="26 records..."
 							SearchPlaceholder={t("filter_placeholder")}
 							buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-							buttonName={t("add") + " " + t("project_budget_source")}
+							buttonName={t("add")}
 							tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
 							theadClass="table-light"
 							pagination="pagination"
@@ -539,7 +539,6 @@ const ProjectBudgetSourceModel = (props) => {
 								<Row>
 									<Col className="col-md-6 mb-3">
 										<Label>{t("bsr_name")}</Label>
-										<span className="text-danger">*</span>
 										<Input
 											name="bsr_name"
 											type="text"
@@ -553,7 +552,7 @@ const ProjectBudgetSourceModel = (props) => {
 													? true
 													: false
 											}
-											maxLength={20}
+											maxLength={100}
 										/>
 										{validation.touched.bsr_name &&
 										validation.errors.bsr_name ? (
