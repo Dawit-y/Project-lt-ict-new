@@ -69,7 +69,7 @@ const LazyLoader = ({ children }) => (
 
 const ProjectPerformanceModel = (props) => {
 	document.title = "Project Performance";
-	const { passedId, isActive, endDate, totalActualBudget } = props;
+	const { passedId, isActive, endDate, totalActualBudget, unit, value } = props;
 	const param = {
 		prp_project_id: passedId,
 		request_type: "single",
@@ -623,6 +623,45 @@ const ProjectPerformanceModel = (props) => {
 			populateForm(projectPerformance);
 		}
 	}, [projectPerformance]);
+
+	const calculatePercentage = (fieldId) => {
+		const fieldValue = validation.values[fieldId];
+
+		if (
+			fieldValue === null ||
+			fieldValue === undefined ||
+			fieldValue === "" ||
+			isNaN(fieldValue)
+		) {
+			return "";
+		}
+
+		const numericFieldValue = Number(fieldValue);
+
+		if (numericFieldValue > 100 || numericFieldValue < 0) {
+			return "";
+		}
+
+		if (!value || value <= 0 || isNaN(value)) {
+			return "";
+		}
+
+		const numericValue = Number(value);
+		const percentValue = (numericFieldValue / 100) * numericValue;
+
+		let formattedValue;
+		if (Number.isInteger(percentValue)) {
+			formattedValue = percentValue.toString();
+		} else {
+			formattedValue = percentValue.toFixed(2);
+		}
+
+		if (unit && unit.trim() !== "") {
+			return `${formattedValue} ${unit}`;
+		} else {
+			return `${formattedValue} (no unit)`;
+		}
+	};
 
 	const columns = useMemo(() => {
 		const baseColumns = [
@@ -1182,6 +1221,7 @@ const ProjectPerformanceModel = (props) => {
 																					label={t("physical_planned_%")}
 																					isRequired={true}
 																					className={"col-md-12 mb-3"}
+																					infoText={`${t("Value")}: ${calculatePercentage(`prp_pyhsical_planned_month_${month}`)}`}
 																				/>
 																				<FormattedAmountField
 																					validation={validation}
@@ -1199,7 +1239,7 @@ const ProjectPerformanceModel = (props) => {
 																					label={t("physical_actual_%")}
 																					isRequired={true}
 																					className={"col-md-12 mb-3"}
-																					infoText={`${t("physical_planned")}: ${projectPerformance[`prp_pyhsical_planned_month_${month}`]}%`}
+																					infoText={`${t("Value")}: ${calculatePercentage(`prp_pyhsical_actual_month_${month}`)} , ${t("physical_planned")}: ${projectPerformance[`prp_pyhsical_planned_month_${month}`]}%`}
 																				/>
 																				<FormattedAmountField
 																					validation={validation}
@@ -1207,7 +1247,7 @@ const ProjectPerformanceModel = (props) => {
 																					label={t("financial_actual")}
 																					isRequired={true}
 																					className={"col-md-12 mb-3"}
-																					infoText={`${t("financial_planned")}: ${projectPerformance[`prp_finan_planned_month_${month}`]}`}
+																					infoText={`${t("financial_planned")}: ${parseFloat(projectPerformance[`prp_finan_planned_month_${month}`]).toLocaleString()}`}
 																				/>
 
 																				<div className="mb-3">

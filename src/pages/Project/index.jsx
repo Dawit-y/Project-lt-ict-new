@@ -277,6 +277,7 @@ const ProjectModel = () => {
       //prj_department_id: Yup.string().required(t("prj_department_id")),
       prj_urban_ben_number: numberValidation(0, 10000000, false),
       prj_rural_ben_number: numberValidation(0, 10000000, false),
+      prj_measured_figure: formattedAmountValidation(1, 100000000000, false),
       prj_location_description: alphanumericValidation(3, 425, false),
       //prj_outcome: alphanumericValidation(3, 425, true),
       prj_remark: alphanumericValidation(3, 425, false),
@@ -286,56 +287,54 @@ const ProjectModel = () => {
     onSubmit: (values) => {
       if (isEdit) {
         const updateProject = {
-          prj_id: project.prj_id,
-          prj_name: values.prj_name,
-          prj_name_am: values.prj_name_am,
-          prj_name_en: values.prj_name_en,
-          prj_code: values.prj_code,
-          prj_project_status_id: values.prj_project_status_id,
-          prj_project_category_id: values.prj_project_category_id,
-          prj_project_budget_source_id: values.prj_project_budget_source_id,
-          prj_total_estimate_budget: parseFloat(
-            values.prj_total_estimate_budget,
-          ),
-          prj_total_actual_budget: parseFloat(values.prj_total_actual_budget),
-          prj_geo_location: values.prj_geo_location,
-          prj_sector_id: Number(selectedNode?.data?.sector_id),
-          prj_location_region_id: Number(values.prj_location_region_id),
-          prj_location_zone_id: Number(values.prj_location_zone_id),
-          prj_location_woreda_id: Number(values.prj_location_woreda_id),
-          prj_location_kebele_id: values.prj_location_kebele_id,
-          prj_location_description: values.prj_location_description,
-          prj_owner_region_id: Number(selectedNode.data.region_id),
-          prj_owner_zone_id: Number(selectedNode.data.zone_id),
-          prj_owner_woreda_id: Number(selectedNode.data.woreda_id),
-          prj_owner_kebele_id: values.prj_owner_kebele_id,
-          prj_owner_description: values.prj_owner_description,
-          prj_start_date_et: values.prj_start_date_et,
-          prj_start_date_gc: values.prj_start_date_gc,
-          prj_start_date_plan_et: values.prj_start_date_plan_et,
-          prj_start_date_plan_gc: values.prj_start_date_plan_gc,
-          prj_end_date_actual_et: values.prj_end_date_actual_et,
-          prj_end_date_actual_gc: values.prj_end_date_actual_gc,
-          prj_end_date_plan_gc: values.prj_end_date_plan_gc,
-          prj_end_date_plan_et: values.prj_end_date_plan_et,
-          prj_outcome: values.prj_outcome,
-          prj_deleted: values.prj_deleted,
-          prj_remark: values.prj_remark,
-          prj_created_date: values.prj_created_date,
-          prj_owner_id: values.prj_owner_id,
-          prj_urban_ben_number: values.prj_urban_ben_number,
-          prj_rural_ben_number: values.prj_rural_ben_number,
-          //prj_department_id: Number(values.prj_department_id),
-          prj_program_id: 1,
-          is_deletable: values.is_deletable,
-          is_editable: values.is_editable,
-          parent_id: Number(selectedNode.data.pri_id),
-          object_type_id: 5,
-          prj_measurement_unit: values.prj_measurement_unit,
-          prj_measured_figure: convertToNumericValue(
-            values.prj_measured_figure,
-          ),
-        };
+					prj_id: project.prj_id,
+					prj_name: values.prj_name,
+					prj_name_am: values.prj_name_am,
+					prj_name_en: values.prj_name_en,
+					prj_code: values.prj_code,
+					prj_project_status_id: values.prj_project_status_id,
+					prj_project_category_id: values.prj_project_category_id,
+					prj_project_budget_source_id: values.prj_project_budget_source_id,
+					prj_total_estimate_budget: parseFloat(
+						values.prj_total_estimate_budget
+					),
+					prj_total_actual_budget: parseFloat(values.prj_total_actual_budget),
+					prj_geo_location: values.prj_geo_location,
+					prj_sector_id: Number(selectedNode?.data?.sector_id),
+					prj_location_region_id: Number(values.prj_location_region_id),
+					prj_location_zone_id: Number(values.prj_location_zone_id),
+					prj_location_woreda_id: Number(values.prj_location_woreda_id),
+					prj_location_kebele_id: values.prj_location_kebele_id,
+					prj_location_description: values.prj_location_description,
+					prj_owner_region_id: Number(selectedNode.data.region_id),
+					prj_owner_zone_id: Number(selectedNode.data.zone_id),
+					prj_owner_woreda_id: Number(selectedNode.data.woreda_id),
+					prj_owner_kebele_id: values.prj_owner_kebele_id,
+					prj_owner_description: values.prj_owner_description,
+					prj_start_date_et: values.prj_start_date_et,
+					prj_start_date_gc: values.prj_start_date_gc,
+					prj_start_date_plan_et: values.prj_start_date_plan_et,
+					prj_start_date_plan_gc: values.prj_start_date_plan_gc,
+					prj_end_date_actual_et: values.prj_end_date_actual_et,
+					prj_end_date_actual_gc: values.prj_end_date_actual_gc,
+					prj_end_date_plan_gc: values.prj_end_date_plan_gc,
+					prj_end_date_plan_et: values.prj_end_date_plan_et,
+					prj_outcome: values.prj_outcome,
+					prj_deleted: values.prj_deleted,
+					prj_remark: values.prj_remark,
+					prj_created_date: values.prj_created_date,
+					prj_owner_id: values.prj_owner_id,
+					prj_urban_ben_number: values.prj_urban_ben_number,
+					prj_rural_ben_number: values.prj_rural_ben_number,
+					//prj_department_id: Number(values.prj_department_id),
+					prj_program_id: 1,
+					is_deletable: values.is_deletable,
+					is_editable: values.is_editable,
+					parent_id: Number(selectedNode.data.pri_id),
+					object_type_id: 5,
+					prj_measurement_unit: values.prj_measurement_unit,
+					prj_measured_figure: values.prj_measured_figure,
+				};
         // update Project
         handleUpdateProject(updateProject);
       } else {
@@ -383,25 +382,13 @@ const ProjectModel = () => {
           parent_id: Number(selectedNode.data.pri_id),
           object_type_id: 5,
           prj_measurement_unit: values.prj_measurement_unit,
-          prj_measured_figure: convertToNumericValue(
-            values.prj_measured_figure,
-          ),
+          prj_measured_figure: values.prj_measured_figure,
         };
         // save new Project
         handleAddProject(newProject);
       }
     },
   });
-  useEffect(() => {
-    setProject(data);
-  }, [data]);
-
-  useEffect(() => {
-    if (!isEmpty(data) && !!isEdit) {
-      setProject(data);
-      setIsEdit(false);
-    }
-  }, [data]);
 
   const toggle = () => {
     if (modal) {
@@ -449,6 +436,7 @@ const ProjectModel = () => {
   }, [projectStatusData]);
   const handleProjectClick = (arg) => {
     const project = arg;
+    console.log("ms", project);
     setProject({
       prj_id: project.prj_id,
       prj_name: project.prj_name,
