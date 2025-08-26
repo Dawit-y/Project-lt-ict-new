@@ -290,70 +290,70 @@ const RolesModel = () => {
       data?.previledge?.is_role_deletable
     ) {
       baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <div className="d-flex gap-3">
-              {(cellProps.row.original?.is_editable ||
-                cellProps.row.original?.is_role_editable) && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleRolesClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+				header: t("Action"),
+				accessorKey: t("Action"),
+				enableColumnFilter: false,
+				enableSorting: false,
+				cell: (cellProps) => {
+					return (
+						<div className="d-flex gap-3">
+							{(cellProps.row.original?.is_editable ||
+								cellProps.row.original?.is_role_editable) && (
+								<Link
+									to="#"
+									className="text-success"
+									onClick={() => {
+										const data = cellProps.row.original;
+										handleRolesClick(data);
+									}}
+								>
+									<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+									<UncontrolledTooltip placement="top" target="edittooltip">
+										Edit
+									</UncontrolledTooltip>
+								</Link>
+							)}
 
-              {(cellProps.row.original?.is_deletable ||
-                cellProps.row.original?.is_role_deletable) && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-              {/* side slider */}
-              {cellProps.row.original.is_editable && (
-                <Link
-                  to="#"
-                  className="text-secondary"
-                  onClick={() => {
-                    const roledata = cellProps.row.original;
-                    handleClick(roledata);
-                  }}
-                >
-                  <i className="mdi mdi-eye font-size-18" id="viewtooltip" />
+							{(cellProps.row.original?.is_deletable ||
+								cellProps.row.original?.is_role_deletable) && (
+								<Link
+									to="#"
+									className="text-danger"
+									onClick={() => {
+										const data = cellProps.row.original;
+										onClickDelete(data);
+									}}
+								>
+									<i
+										className="mdi mdi-delete font-size-18"
+										id="deletetooltip"
+									/>
+									<UncontrolledTooltip placement="top" target="deletetooltip">
+										Delete
+									</UncontrolledTooltip>
+								</Link>
+							)}
+							{/* side slider */}
+							{cellProps.row.original.is_editable && (
+								<Link
+									to="#"
+									className="text-secondary"
+									onClick={() => {
+										const roledata = cellProps.row.original;
+										handleClick(roledata);
+									}}
+								>
+									<i className="mdi mdi-eye font-size-18" id="viewtooltip" />
 
-                  <UncontrolledTooltip placement="top" target="viewtooltip">
-                    View
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-            </div>
-          );
-        },
-      });
+									<UncontrolledTooltip placement="top" target="viewtooltip">
+										View
+									</UncontrolledTooltip>
+								</Link>
+							)}
+						</div>
+					);
+				},
+			});
     }
 
     return baseColumns;

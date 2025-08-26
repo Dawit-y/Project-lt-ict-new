@@ -410,59 +410,59 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
     ];
     if (1 == 1) {
       baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <div className="d-flex gap-1">
-              {data?.previledge?.is_role_editable == 1 &&
-                cellProps.row.original?.is_editable == 1 && (
-                  <Button
-                    size="sm"
-                    color="none"
-                    className="text-success"
-                    onClick={() => {
-                      const data = cellProps.row.original;
-                      handleBudgetRequestClick(data);
-                    }}
-                  >
-                    <i
-                      className="mdi mdi-pencil font-size-18"
-                      id="edittooltip"
-                    />
-                    <UncontrolledTooltip placement="top" target="edittooltip">
-                      Edit
-                    </UncontrolledTooltip>
-                  </Button>
-                )}
-              {data?.previledge?.is_role_deletable == 1 &&
-                cellProps.row.original?.is_deletable == 1 && (
-                  <div>
-                    <Button
-                      size="sm"
-                      color="none"
-                      className="text-danger"
-                      onClick={() => {
-                        const data = cellProps.row.original;
-                        onClickDelete(data);
-                      }}
-                    >
-                      <i
-                        className="mdi mdi-delete font-size-18"
-                        id="deletetooltip"
-                      />
-                      <UncontrolledTooltip
-                        placement="top"
-                        target="deletetooltip"
-                      >
-                        Delete
-                      </UncontrolledTooltip>
-                    </Button>
-                  </div>
-                )}
-              {/* <Button
+				header: t("Action"),
+				accessorKey: t("Action"),
+				enableColumnFilter: false,
+				enableSorting: false,
+				cell: (cellProps) => {
+					return (
+						<div className="d-flex gap-1">
+							{data?.previledge?.is_role_editable == 1 &&
+								cellProps.row.original?.is_editable == 1 && (
+									<Button
+										size="sm"
+										color="none"
+										className="text-success"
+										onClick={() => {
+											const data = cellProps.row.original;
+											handleBudgetRequestClick(data);
+										}}
+									>
+										<i
+											className="mdi mdi-pencil font-size-18"
+											id="edittooltip"
+										/>
+										<UncontrolledTooltip placement="top" target="edittooltip">
+											Edit
+										</UncontrolledTooltip>
+									</Button>
+								)}
+							{data?.previledge?.is_role_deletable == 1 &&
+								cellProps.row.original?.is_deletable == 1 && (
+									<div>
+										<Button
+											size="sm"
+											color="none"
+											className="text-danger"
+											onClick={() => {
+												const data = cellProps.row.original;
+												onClickDelete(data);
+											}}
+										>
+											<i
+												className="mdi mdi-delete font-size-18"
+												id="deletetooltip"
+											/>
+											<UncontrolledTooltip
+												placement="top"
+												target="deletetooltip"
+											>
+												Delete
+											</UncontrolledTooltip>
+										</Button>
+									</div>
+								)}
+							{/* <Button
                 size="sm"
                 color="none"
                 className="text-secondary me-2"
@@ -473,10 +473,10 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
                   Budget Request Detail
                 </UncontrolledTooltip>
               </Button> */}
-            </div>
-          );
-        },
-      });
+						</div>
+					);
+				},
+			});
     }
     return baseColumns;
   }, [handleBudgetRequestClick, toggleViewModal, onClickDelete]);

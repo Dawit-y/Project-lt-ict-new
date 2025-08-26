@@ -439,7 +439,7 @@ const PagesModel = () => {
 				header: t("Action"),
 				accessorKey: t("Action"),
 				enableColumnFilter: false,
-				enableSorting: true,
+				enableSorting: false,
 				cell: (cellProps) => {
 					return (
 						<div className="d-flex gap-3">

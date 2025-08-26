@@ -614,36 +614,36 @@ const ProjectModel = () => {
       data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <div className="d-flex gap-3">
-              {data?.previledge?.is_role_editable == 1 &&
-                cellProps.row.original?.is_editable == 1 && (
-                  <Link
-                    to="#"
-                    className="text-success"
-                    onClick={() => {
-                      const data = cellProps.row.original;
-                      handleProjectClick(data);
-                    }}
-                  >
-                    <i
-                      className="mdi mdi-pencil font-size-18"
-                      id="edittooltip"
-                    />
-                    <UncontrolledTooltip placement="top" target="edittooltip">
-                      Edit
-                    </UncontrolledTooltip>
-                  </Link>
-                )}
-            </div>
-          );
-        },
-      });
+				header: t("Action"),
+				accessorKey: t("Action"),
+				enableColumnFilter: false,
+				enableSorting: false,
+				cell: (cellProps) => {
+					return (
+						<div className="d-flex gap-3">
+							{data?.previledge?.is_role_editable == 1 &&
+								cellProps.row.original?.is_editable == 1 && (
+									<Link
+										to="#"
+										className="text-success"
+										onClick={() => {
+											const data = cellProps.row.original;
+											handleProjectClick(data);
+										}}
+									>
+										<i
+											className="mdi mdi-pencil font-size-18"
+											id="edittooltip"
+										/>
+										<UncontrolledTooltip placement="top" target="edittooltip">
+											Edit
+										</UncontrolledTooltip>
+									</Link>
+								)}
+						</div>
+					);
+				},
+			});
     }
     return baseColumns;
   }, [data, handleProjectClick, onClickDelete, t]);
