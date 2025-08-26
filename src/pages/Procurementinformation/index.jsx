@@ -44,16 +44,9 @@ import {
 } from "../../utils/Validation/validation";
 import { procurementExportColumns } from "../../utils/exportColumnsForDetails";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
-
-const truncateText = (text, maxLength) => {
-  if (typeof text !== "string") {
-    return text;
-  }
-  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
-};
+import { toEthiopian } from "../../utils/commonMethods";
 
 const ProcurementInformationModel = (props) => {
-  //meta title
   document.title = "Procurement Information";
   const { t } = useTranslation();
   const { passedId, isActive, startDate } = props;

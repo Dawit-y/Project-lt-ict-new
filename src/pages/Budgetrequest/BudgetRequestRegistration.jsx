@@ -717,236 +717,238 @@ const BudgetRequestModel = (props) => {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
-    <React.Fragment>
-      <LazyLoader>
-        {modal1 && (
-          <BudgetRequestModal
-            isOpen={modal1}
-            toggle={toggleViewModal}
-            transaction={transaction}
-          />
-        )}
-        {fileModal && (
-          <AttachFileModal
-            isOpen={fileModal}
-            toggle={toggleFileModal}
-            projectId={id}
-            ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-            ownerId={transaction?.bdr_id}
-          />
-        )}
-        {convModal && (
-          <ConvInfoModal
-            isOpen={convModal}
-            toggle={toggleConvModal}
-            ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-            ownerId={transaction?.bdr_id}
-          />
-        )}
-      </LazyLoader>
-      <DeleteModal
-        show={deleteModal}
-        onDeleteClick={handleDeleteBudgetRequest}
-        onCloseClick={() => setDeleteModal(false)}
-        isLoading={deleteBudgetRequest.isPending}
-      />
-      {isLoading || project.isLoading ? (
-        <Spinners />
-      ) : (
-        <TableContainer
-          columns={columns}
-          data={data?.data}
-          isGlobalFilter={true}
-          isAddButton={data?.previledge?.is_role_can_add == 1}
-          isCustomPageSize={true}
-          handleUserClick={handleBudgetRequestClicks}
-          isPagination={true}
-          SearchPlaceholder={t("filter_placeholder")}
-          buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-          buttonName={t("add")}
-          tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-          theadClass="table-light"
-          pagination="pagination"
-          paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-          infoIcon={true}
-          refetch={refetch}
-          isFetching={isFetching}
-        />
-      )}
-      <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-        <ModalHeader toggle={toggle} tag="h4">
-          {!!isEdit
-            ? t("edit") + " " + t("budget_request")
-            : t("add") + " " + t("budget_request")}
-        </ModalHeader>
-        <ModalBody>
-          <Form
-            onSubmit={(e) => {
-              e.preventDefault();
-              validation.handleSubmit();
-              return false;
-            }}
-          >
-            <Row>
-              <Col className="col-12 mb-3">
-                <Card>
-                  <CardBody>
-                    <div className="d-flex justify-content-between">
-                      <div>
-                        <strong>{t("Total_Project_Budget")} : </strong>{" "}
-                        {totalActualBudget
-                          ? totalActualBudget.toLocaleString()
-                          : "0"}
-                      </div>
-                      <div>
-                        <strong>{t("Allocated")} : </strong>{" "}
-                        {calculateBudgetAllocated(data).toLocaleString()}
-                      </div>
-                      <div
-                        className={
-                          calculateBudgetAllocated(data) > totalActualBudget
-                            ? "text-danger"
-                            : "text-success"
-                        }
-                      >
-                        <strong>{t("Remaining")} : </strong>{" "}
-                        {(
-                          totalActualBudget - calculateBudgetAllocated(data)
-                        ).toLocaleString()}
-                      </div>
-                    </div>
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
-            <Row>
-              <AsyncSelectField
-                fieldId="bdr_budget_year_id"
-                validation={validation}
-                isRequired
-                className="col-md-4 mb-3"
-                optionMap={budgetYearMap}
-                isLoading={bdyLoading}
-                isError={bdyIsError}
-              />
-              <AsyncSelectField
-                fieldId="bdr_request_type"
-                validation={validation}
-                isRequired
-                className="col-md-4 mb-3"
-                optionMap={projectStatusMap}
-                isLoading={isPrsLoading}
-                isError={isPrsError}
-              />
-              <AsyncSelectField
-                fieldId="bdr_request_category_id"
-                validation={validation}
-                isRequired
-                className="col-md-4 mb-3"
-                optionMap={RequestCatagoryMap}
-                isLoading={isBcLoading}
-                isError={isBcError}
-              />
-              <FormattedAmountField
-                validation={validation}
-                fieldId={"bdr_requested_amount"}
-                isRequired={true}
-                className="col-md-4 mb-3"
-                allowDecimal={true}
-              />
-              <FormattedAmountField
-                validation={validation}
-                fieldId={"bdr_physical_planned"}
-                label={t("bdr_physical_planned") + " " + t("in_percent")}
-                isRequired={true}
-                className="col-md-4 mb-3"
-                allowDecimal={true}
-              />
-              <FormattedAmountField
-                validation={validation}
-                fieldId={"bdr_physical_baseline"}
-                label={t("bdr_physical_baseline") + " " + t("in_percent")}
-                isRequired={true}
-                className="col-md-4 mb-3"
-                allowDecimal={true}
-              />
-              <FormattedAmountField
-                validation={validation}
-                fieldId={"bdr_financial_baseline"}
-                isRequired={true}
-                className="col-md-4 mb-3"
-                allowDecimal={true}
-              />
-              <Col className="col-md-4 mb-3">
-                <DatePicker
-                  isRequired={true}
-                  validation={validation}
-                  componentId="bdr_requested_date_gc"
-                />
-              </Col>
-              <InputField
-                type="textarea"
-                validation={validation}
-                fieldId={"bdr_description"}
-                isRequired={false}
-                className="col-md-12 mb-3"
-                maxLength={400}
-              />
-            </Row>
-            <Row>
-              <Col>
-                <div className="text-end">
-                  {addBudgetRequest.isPending ||
-                  updateBudgetRequest.isPending ? (
-                    <Button
-                      color="success"
-                      type="submit"
-                      className="save-user"
-                      disabled={
-                        addBudgetRequest.isPending ||
-                        updateBudgetRequest.isPending ||
-                        !validation.dirty
-                      }
-                    >
-                      <Spinner size={"sm"} color="#fff" className="me-2" />
-                      {t("Save")}
-                    </Button>
-                  ) : (
-                    <Button
-                      color="success"
-                      type="submit"
-                      className="save-user"
-                      disabled={
-                        addBudgetRequest.isPending ||
-                        updateBudgetRequest.isPending ||
-                        !validation.dirty
-                      }
-                    >
-                      {t("Save")}
-                    </Button>
-                  )}
-                </div>
-              </Col>
-            </Row>
-          </Form>
-        </ModalBody>
-      </Modal>
-      {showCanvas && (
-        <RightOffCanvas
-          handleClick={handleClick}
-          showCanvas={showCanvas}
-          canvasWidth={84}
-          name={t("budget_request")}
-          id={budgetRequestMetaData.bdr_id}
-          components={{
-            [t("budget_request_amount")]: BudgetRequestAmount,
-            [t("budget_request_task")]: BudgetRequestTask,
-            [t("budget_ex_source")]: BudgetExSource,
-          }}
-        />
-      )}
-    </React.Fragment>
-  );
+		<React.Fragment>
+			<LazyLoader>
+				{modal1 && (
+					<BudgetRequestModal
+						isOpen={modal1}
+						toggle={toggleViewModal}
+						transaction={transaction}
+					/>
+				)}
+				{fileModal && (
+					<AttachFileModal
+						isOpen={fileModal}
+						toggle={toggleFileModal}
+						projectId={id}
+						ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+						ownerId={transaction?.bdr_id}
+					/>
+				)}
+				{convModal && (
+					<ConvInfoModal
+						isOpen={convModal}
+						toggle={toggleConvModal}
+						ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+						ownerId={transaction?.bdr_id}
+					/>
+				)}
+			</LazyLoader>
+			<DeleteModal
+				show={deleteModal}
+				onDeleteClick={handleDeleteBudgetRequest}
+				onCloseClick={() => setDeleteModal(false)}
+				isLoading={deleteBudgetRequest.isPending}
+			/>
+			{isLoading || project.isLoading ? (
+				<Spinners />
+			) : (
+				<TableContainer
+					columns={columns}
+					data={data?.data}
+					isGlobalFilter={true}
+					isAddButton={data?.previledge?.is_role_can_add == 1}
+					isCustomPageSize={true}
+					handleUserClick={handleBudgetRequestClicks}
+					isPagination={true}
+					SearchPlaceholder={t("filter_placeholder")}
+					buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+					buttonName={t("add")}
+					tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+					theadClass="table-light"
+					pagination="pagination"
+					paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+					infoIcon={true}
+					refetch={refetch}
+					isFetching={isFetching}
+					isSummaryRow={true}
+					summaryColumns={["bdr_requested_amount", "bdr_released_amount"]}
+				/>
+			)}
+			<Modal isOpen={modal} toggle={toggle} className="modal-xl">
+				<ModalHeader toggle={toggle} tag="h4">
+					{!!isEdit
+						? t("edit") + " " + t("budget_request")
+						: t("add") + " " + t("budget_request")}
+				</ModalHeader>
+				<ModalBody>
+					<Form
+						onSubmit={(e) => {
+							e.preventDefault();
+							validation.handleSubmit();
+							return false;
+						}}
+					>
+						<Row>
+							<Col className="col-12 mb-3">
+								<Card>
+									<CardBody>
+										<div className="d-flex justify-content-between">
+											<div>
+												<strong>{t("Total_Project_Budget")} : </strong>{" "}
+												{totalActualBudget
+													? totalActualBudget.toLocaleString()
+													: "0"}
+											</div>
+											<div>
+												<strong>{t("Allocated")} : </strong>{" "}
+												{calculateBudgetAllocated(data).toLocaleString()}
+											</div>
+											<div
+												className={
+													calculateBudgetAllocated(data) > totalActualBudget
+														? "text-danger"
+														: "text-success"
+												}
+											>
+												<strong>{t("Remaining")} : </strong>{" "}
+												{(
+													totalActualBudget - calculateBudgetAllocated(data)
+												).toLocaleString()}
+											</div>
+										</div>
+									</CardBody>
+								</Card>
+							</Col>
+						</Row>
+						<Row>
+							<AsyncSelectField
+								fieldId="bdr_budget_year_id"
+								validation={validation}
+								isRequired
+								className="col-md-4 mb-3"
+								optionMap={budgetYearMap}
+								isLoading={bdyLoading}
+								isError={bdyIsError}
+							/>
+							<AsyncSelectField
+								fieldId="bdr_request_type"
+								validation={validation}
+								isRequired
+								className="col-md-4 mb-3"
+								optionMap={projectStatusMap}
+								isLoading={isPrsLoading}
+								isError={isPrsError}
+							/>
+							<AsyncSelectField
+								fieldId="bdr_request_category_id"
+								validation={validation}
+								isRequired
+								className="col-md-4 mb-3"
+								optionMap={RequestCatagoryMap}
+								isLoading={isBcLoading}
+								isError={isBcError}
+							/>
+							<FormattedAmountField
+								validation={validation}
+								fieldId={"bdr_requested_amount"}
+								isRequired={true}
+								className="col-md-4 mb-3"
+								allowDecimal={true}
+							/>
+							<FormattedAmountField
+								validation={validation}
+								fieldId={"bdr_physical_planned"}
+								label={t("bdr_physical_planned") + " " + t("in_percent")}
+								isRequired={true}
+								className="col-md-4 mb-3"
+								allowDecimal={true}
+							/>
+							<FormattedAmountField
+								validation={validation}
+								fieldId={"bdr_physical_baseline"}
+								label={t("bdr_physical_baseline") + " " + t("in_percent")}
+								isRequired={true}
+								className="col-md-4 mb-3"
+								allowDecimal={true}
+							/>
+							<FormattedAmountField
+								validation={validation}
+								fieldId={"bdr_financial_baseline"}
+								isRequired={true}
+								className="col-md-4 mb-3"
+								allowDecimal={true}
+							/>
+							<Col className="col-md-4 mb-3">
+								<DatePicker
+									isRequired={true}
+									validation={validation}
+									componentId="bdr_requested_date_gc"
+								/>
+							</Col>
+							<InputField
+								type="textarea"
+								validation={validation}
+								fieldId={"bdr_description"}
+								isRequired={false}
+								className="col-md-12 mb-3"
+								maxLength={400}
+							/>
+						</Row>
+						<Row>
+							<Col>
+								<div className="text-end">
+									{addBudgetRequest.isPending ||
+									updateBudgetRequest.isPending ? (
+										<Button
+											color="success"
+											type="submit"
+											className="save-user"
+											disabled={
+												addBudgetRequest.isPending ||
+												updateBudgetRequest.isPending ||
+												!validation.dirty
+											}
+										>
+											<Spinner size={"sm"} color="#fff" className="me-2" />
+											{t("Save")}
+										</Button>
+									) : (
+										<Button
+											color="success"
+											type="submit"
+											className="save-user"
+											disabled={
+												addBudgetRequest.isPending ||
+												updateBudgetRequest.isPending ||
+												!validation.dirty
+											}
+										>
+											{t("Save")}
+										</Button>
+									)}
+								</div>
+							</Col>
+						</Row>
+					</Form>
+				</ModalBody>
+			</Modal>
+			{showCanvas && (
+				<RightOffCanvas
+					handleClick={handleClick}
+					showCanvas={showCanvas}
+					canvasWidth={84}
+					name={t("budget_request")}
+					id={budgetRequestMetaData.bdr_id}
+					components={{
+						[t("budget_request_amount")]: BudgetRequestAmount,
+						[t("budget_request_task")]: BudgetRequestTask,
+						[t("budget_ex_source")]: BudgetExSource,
+					}}
+				/>
+			)}
+		</React.Fragment>
+	);
 };
 BudgetRequestModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

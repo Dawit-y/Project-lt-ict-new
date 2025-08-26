@@ -91,22 +91,24 @@ const TableContainer = ({
 	paginationWrapper,
 	SearchPlaceholder,
 	pagination,
-	buttonClass,
 	buttonName,
 	isAddButton,
 	isCustomPageSize,
 	handleUserClick,
-	isJobListGlobalFilter,
 	isExcelExport = false,
 	isPdfExport = false,
 	isPrint = true,
-	excludeKey = [],
 	exportColumns = [],
 	tableName = "",
 	infoIcon = false,
 	refetch,
 	isFetching,
 	resetPageIndexTrigger,
+	isSummaryRow = false,
+	summaryColumns = [],
+	summaryLabel = "Total",
+	summaryPosition = "bottom",
+	customSummaryFunction,
 }) => {
 	const [columnFilters, setColumnFilters] = useState([]);
 	const [globalFilter, setGlobalFilter] = useState("");
@@ -190,6 +192,28 @@ const TableContainer = ({
 			table.setPageIndex(0);
 		}
 	}, [resetPageIndexTrigger]);
+
+	const calculateSummary = (data, summaryColumns, customSummaryFunction) => {
+		if (customSummaryFunction) {
+			return customSummaryFunction(data);
+		}
+
+		const summary = {};
+
+		summaryColumns.forEach((column) => {
+			summary[column] = data.reduce((total, row) => {
+				const value = parseFloat(row[column]) || 0;
+				return total + value;
+			}, 0);
+		});
+
+		return summary;
+	};
+
+	const summaryData =
+		isSummaryRow && data.length > 0
+			? calculateSummary(data, summaryColumns, customSummaryFunction)
+			: null;
 
 	return (
 		<Fragment>
@@ -389,6 +413,30 @@ const TableContainer = ({
 								))}
 							</thead>
 							<tbody style={{ height: "auto" }}>
+								{/* Summary row at top */}
+								{isSummaryRow && summaryPosition === "top" && summaryData && (
+									<tr className="summary-row">
+										<td colSpan={1}>
+											<strong>{summaryLabel}</strong>
+										</td>
+										{columns.map((column, index) => {
+											const columnKey = column.accessorKey || column.id;
+											if (summaryColumns.includes(columnKey)) {
+												return (
+													<td key={`summary-${columnKey}`}>
+														<strong>
+															{typeof summaryData[columnKey] === "number"
+																? summaryData[columnKey].toLocaleString()
+																: summaryData[columnKey]}
+														</strong>
+													</td>
+												);
+											}
+											return <td key={`empty-${index}`}></td>;
+										})}
+									</tr>
+								)}
+
 								{data.length === 0 ? (
 									<tr>
 										<td
@@ -413,6 +461,32 @@ const TableContainer = ({
 										</tr>
 									))
 								)}
+
+								{/* Summary row at bottom */}
+								{isSummaryRow &&
+									summaryPosition === "bottom" &&
+									summaryData && (
+										<tr className="summary-row bg-light">
+											<td colSpan={1}>
+												<strong>{summaryLabel}</strong>
+											</td>
+											{columns.map((column, index) => {
+												const columnKey = column.accessorKey || column.id;
+												if (summaryColumns.includes(columnKey)) {
+													return (
+														<td key={`summary-${columnKey}`}>
+															<strong>
+																{typeof summaryData[columnKey] === "number"
+																	? summaryData[columnKey].toLocaleString()
+																	: summaryData[columnKey]}
+															</strong>
+														</td>
+													);
+												}
+												return <td key={`empty-${index}`}></td>;
+											})}
+										</tr>
+									)}
 							</tbody>
 						</Table>
 					</div>

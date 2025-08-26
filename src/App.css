@@ -87,3 +87,12 @@ div::-webkit-scrollbar-track {
     opacity: 1;
   }
 }
+
+.summary-row {
+  background-color: #f8f9fa !important;
+  font-weight: bold;
+}
+
+.summary-row td {
+  border-top: 2px solid #dee2e6 !important;
+}
