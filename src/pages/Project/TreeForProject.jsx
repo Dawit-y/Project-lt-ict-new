@@ -121,8 +121,13 @@ const AddressTree = ({ onNodeSelect }) => {
 	const dndManager = useDragDropManager();
 	const treeRef = useRef();
 	const { userId } = useAuthUser();
-	const { data, isLoading, isError, error, refetch } =
-		useFetchAddressStructures(userId);
+	const {
+		tree: data,
+		isLoading,
+		isError,
+		error,
+		refetch,
+	} = useFetchAddressStructures(userId);
 	const [treeData, setTreeData] = useState([]);
 	const [projectParams, setProjectParams] = useState({});
 	const [loadingNodes, setLoadingNodes] = useState(new Set());
@@ -151,15 +156,12 @@ const AddressTree = ({ onNodeSelect }) => {
 			const transformData = (regions) =>
 				regions.map((region) => ({
 					...region,
-					id: region.id?.toString() || uuidv4(),
 					children: region.children
 						? region.children.map((zone) => ({
 								...zone,
-								id: zone.id?.toString() || uuidv4(),
 								children: zone.children
 									? zone.children.map((woreda) => ({
 											...woreda,
-											id: woreda.id?.toString() || uuidv4(),
 											children: [
 												...woreda.children,
 												...clusters.map((c) => ({
