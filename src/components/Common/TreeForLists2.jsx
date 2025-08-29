@@ -38,10 +38,14 @@ const TreeForLists = ({
 	const treeRef = useRef();
 	const searchInputRef = useRef();
 	const { userId } = useAuthUser();
-	const { tree: treeData, isLoading, isError, error, refetch } =
-		useFetchAddressStructures(userId);
+	const {
+		tree: treeData,
+		isLoading,
+		isError,
+		error,
+		refetch,
+	} = useFetchAddressStructures(userId);
 
-	// const [treeData, setTreeData] = useState([]);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedNode, setSelectedNode] = useState({});
 	const [includeChecked, setIncludeChecked] = useState(false);

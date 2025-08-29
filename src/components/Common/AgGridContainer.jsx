@@ -45,6 +45,7 @@ const AgGridContainer = ({
   tableName = "",
   includeKey = [],
   exportColumns = [],
+  exportSearchParams = {},
   buttonChildren = null,
   onButtonClick = () => {},
   disabled,
@@ -108,6 +109,7 @@ const AgGridContainer = ({
                       tableName={tableName}
                       dropdownItem={true}
                       exportColumns={exportColumns}
+                      exportSearchParams={exportSearchParams}
                     />
                   )}
                   {isPdfExport && (

@@ -1946,5 +1946,14 @@
   "dates": "Dates",
   "approved": "Approved",
   "requested": "Requested",
-  "prj_sector_category_id": "Sector Category"
+  "prj_sector_category_id": "Sector Category",
+  "organization_name": "OROMIA REGION BUREAU OF FINANCE",
+  "report": "Report",
+  "generated_on": "Generated on",
+  "search_criteria": "SEARCH CRITERIA",
+  "data_summary": "DATA SUMMARY",
+  "total_records": "Total Records",
+  "prepared_by": "Prepared By",
+  "approved_by": "Approved By"
+
 }
