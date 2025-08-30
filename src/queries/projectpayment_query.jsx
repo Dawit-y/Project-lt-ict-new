@@ -5,6 +5,7 @@ import {
   addProjectPayment,
   deleteProjectPayment,
 } from "../helpers/projectpayment_new_backend_helper";
+import { PROJECT_QUERY_KEY } from "./project_query";
 
 const PROJECT_PAYMENT_QUERY_KEY = ["projectpayment"];
 
@@ -39,17 +40,15 @@ export const useAddProjectPayment = () => {
 
   return useMutation({
     mutationFn: addProjectPayment,
-    onSuccess: (newDataResponse) => {
-      const queries = queryClient.getQueriesData({
+
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries(PROJECT_PAYMENT_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
         queryKey: PROJECT_PAYMENT_QUERY_KEY,
       });
 
-      const newData = {
-        ...newDataResponse.data,
-        ...newDataResponse.previledge,
-      };
-
-      queries.forEach(([queryKey, oldData]) => {
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
         queryClient.setQueryData(queryKey, (oldData) => {
           if (!oldData) return;
           return {
@@ -57,7 +56,46 @@ export const useAddProjectPayment = () => {
             data: [newData, ...oldData.data],
           };
         });
+        return [queryKey, oldData];
       });
+
+      return { previousData };
+    },
+
+    onError: (_err, _newData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (newDataResponse) => {
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_PAYMENT_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.tempId === newData.tempId ? newData : d,
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_PAYMENT_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };
@@ -65,8 +103,39 @@ export const useAddProjectPayment = () => {
 // Update project_payment
 export const useUpdateProjectPayment = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updateProjectPayment,
+
+    onMutate: async (updatedData) => {
+      await queryClient.cancelQueries(PROJECT_PAYMENT_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_PAYMENT_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.prp_id === updatedData.data.prp_id ? { ...d, ...updatedData.data } : d,
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _updatedData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (updatedData) => {
       const queries = queryClient.getQueriesData({
         queryKey: PROJECT_PAYMENT_QUERY_KEY,
@@ -86,14 +155,52 @@ export const useUpdateProjectPayment = () => {
         });
       });
     },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_PAYMENT_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
+    },
   });
 };
 
 // Delete project_payment
 export const useDeleteProjectPayment = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteProjectPayment,
+
+    onMutate: async (id) => {
+      await queryClient.cancelQueries(PROJECT_PAYMENT_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_PAYMENT_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (dept) => dept.prp_id !== parseInt(id),
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _id, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (deletedData, variable) => {
       const queries = queryClient.getQueriesData({
         queryKey: PROJECT_PAYMENT_QUERY_KEY,
@@ -105,11 +212,18 @@ export const useDeleteProjectPayment = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.prp_id !== parseInt(deletedData.deleted_id),
+              (dept) => dept.prp_id !== parseInt(variable),
             ),
           };
         });
       });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_PAYMENT_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };

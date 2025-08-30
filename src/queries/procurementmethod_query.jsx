@@ -33,78 +33,188 @@ export const useSearchProcurementMethods = (searchParams = {}) => {
 // Add procurement_method
 export const useAddProcurementMethod = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: addProcurementMethod,
-    onSuccess: (newDataResponse) => {
-      const queries = queryClient.getQueriesData({
-        queryKey: PROCUREMENT_METHOD_QUERY_KEY,
-      });
+		mutationFn: addProcurementMethod,
 
-      const newData = {
-        ...newDataResponse.data,
-        ...newDataResponse.previledge,
-      };
+		onMutate: async (newData) => {
+			await queryClient.cancelQueries(PROCUREMENT_METHOD_QUERY_KEY);
 
-      queries.forEach(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: [newData, ...oldData.data],
-          };
-        });
-      });
-    },
-  });
+			const previousQueries = queryClient.getQueriesData({
+				queryKey: PROCUREMENT_METHOD_QUERY_KEY,
+			});
+
+			const previousData = previousQueries.map(([queryKey, oldData]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: [newData, ...oldData.data],
+					};
+				});
+				return [queryKey, oldData];
+			});
+
+			return { previousData };
+		},
+
+		onError: (_err, _newData, context) => {
+			context?.previousData?.forEach(([queryKey, oldData]) => {
+				queryClient.setQueryData(queryKey, oldData);
+			});
+		},
+
+		onSuccess: (newDataResponse) => {
+			const newData = {
+				...newDataResponse.data,
+				...newDataResponse.previledge,
+			};
+
+			const queries = queryClient.getQueriesData({
+				queryKey: PROCUREMENT_METHOD_QUERY_KEY,
+			});
+
+			queries.forEach(([queryKey, oldData]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: oldData.data.map((d) =>
+							d.tempId === newData.tempId ? newData : d
+						),
+					};
+				});
+			});
+		},
+
+		onSettled: () => {
+			queryClient.invalidateQueries({
+				queryKey: PROCUREMENT_METHOD_QUERY_KEY,
+			});
+		},
+	});
 };
+
 // Update procurement_method
 export const useUpdateProcurementMethod = () => {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: updateProcurementMethod,
-    onSuccess: (updatedData) => {
-      const queries = queryClient.getQueriesData({
-        queryKey: PROCUREMENT_METHOD_QUERY_KEY,
-      });
 
-      queries.forEach(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: oldData.data.map((data) =>
-              data.prm_id === updatedData.data.prm_id
-                ? { ...data, ...updatedData.data }
-                : data,
-            ),
-          };
-        });
-      });
-    },
-  });
+  return useMutation({
+		mutationFn: updateProcurementMethod,
+
+		onMutate: async (updatedData) => {
+			await queryClient.cancelQueries(PROCUREMENT_METHOD_QUERY_KEY);
+
+			const previousQueries = queryClient.getQueriesData({
+				queryKey: PROCUREMENT_METHOD_QUERY_KEY,
+			});
+
+			const previousData = previousQueries.map(([queryKey, oldData]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: oldData.data.map((d) =>
+							d.prm_id === updatedData.data.prm_id
+								? { ...d, ...updatedData.data }
+								: d
+						),
+					};
+				});
+				return [queryKey, oldData];
+			});
+
+			return { previousData };
+		},
+
+		onError: (_err, _updatedData, context) => {
+			context?.previousData?.forEach(([queryKey, oldData]) => {
+				queryClient.setQueryData(queryKey, oldData);
+			});
+		},
+
+		onSuccess: (updatedData) => {
+			const queries = queryClient.getQueriesData({
+				queryKey: PROCUREMENT_METHOD_QUERY_KEY,
+			});
+
+			queries.forEach(([queryKey, oldData]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: oldData.data.map((data) =>
+							data.prm_id === updatedData.data.prm_id
+								? { ...data, ...updatedData.data }
+								: data
+						),
+					};
+				});
+			});
+		},
+
+		onSettled: () => {
+			queryClient.invalidateQueries({
+				queryKey: PROCUREMENT_METHOD_QUERY_KEY,
+			});
+		},
+	});
 };
+
 // Delete procurement_method
 export const useDeleteProcurementMethod = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: deleteProcurementMethod,
-    onSuccess: (deletedData, variable) => {
-      const queries = queryClient.getQueriesData({
-        queryKey: PROCUREMENT_METHOD_QUERY_KEY,
-      });
+	const queryClient = useQueryClient();
 
-      queries.forEach(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: oldData.data.filter(
-              (deletedData) =>
-                deletedData.prm_id !== parseInt(deletedData.deleted_id),
-            ),
-          };
-        });
-      });
-    },
-  });
+	return useMutation({
+		mutationFn: deleteProcurementMethod,
+
+		onMutate: async (id) => {
+			await queryClient.cancelQueries(PROCUREMENT_METHOD_QUERY_KEY);
+
+			const previousQueries = queryClient.getQueriesData({
+				queryKey: PROCUREMENT_METHOD_QUERY_KEY,
+			});
+
+			const previousData = previousQueries.map(([queryKey, oldData]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: oldData.data.filter((d) => d.prm_id !== parseInt(id)),
+					};
+				});
+				return [queryKey, oldData];
+			});
+
+			return { previousData };
+		},
+
+		onError: (_err, _id, context) => {
+			context?.previousData?.forEach(([queryKey, oldData]) => {
+				queryClient.setQueryData(queryKey, oldData);
+			});
+		},
+
+		onSuccess: (deletedData, variable) => {
+			const queries = queryClient.getQueriesData({
+				queryKey: PROCUREMENT_METHOD_QUERY_KEY,
+			});
+
+			queries.forEach(([queryKey, oldData]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: oldData.data.filter((d) => d.prm_id !== parseInt(variable)),
+					};
+				});
+			});
+		},
+
+		onSettled: () => {
+			queryClient.invalidateQueries({
+				queryKey: PROCUREMENT_METHOD_QUERY_KEY,
+			});
+		},
+	});
 };

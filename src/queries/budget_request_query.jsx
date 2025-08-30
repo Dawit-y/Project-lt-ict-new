@@ -81,54 +81,66 @@ export const useUpdateBudgetRequestApproval = () => {
   });
 };
 // Add budget_year
-// export const useAddBudgetRequest = () => {
-//   const queryClient = useQueryClient();
-//   return useMutation({
-//     mutationFn: addBudgetRequest,
-//     onSuccess: (newDataResponse) => {
-//       queryClient.setQueryData(BUDGET_REQUESTS_QUERY_KEY, (oldData) => {
-//         if (!oldData) return;
-//         const newData = {
-//           ...newDataResponse.data,
-//           ...newDataResponse.previledge,
-//         };
-//         return {
-//           ...oldData,
-//           data: [newData, ...oldData.data],
-//         };
-//       });
-//     },
-//   });
-// };
-
-//update budget request
-// export const useUpdateBudgetRequest = () => {
-//   const queryClient = useQueryClient();
-//   return useMutation({
-//     mutationFn: updateBudgetRequest,
-//     onSuccess: (updatedBudgetRequest) => {
-//       queryClient.setQueryData(BUDGET_REQUESTS_QUERY_KEY, (oldData) => {
-//         if (!oldData) return;
-//         return {
-//           ...oldData,
-//           data: oldData.data.map((BudgetRequestData) =>
-//             BudgetRequestData.bdr_id === updatedBudgetRequest.data.bdr_id
-//               ? { ...BudgetRequestData, ...updatedBudgetRequest.data }
-//               : BudgetRequestData
-//           ),
-//         };
-//       });
-//     },
-//   });
-// };
-
 export const useAddBudgetRequest = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: addBudgetRequest,
+
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries(BUDGET_REQUESTS_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: BUDGET_REQUESTS_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _newData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (newDataResponse) => {
-      queryClient.invalidateQueries({ queryKey: BUDGET_REQUESTS_QUERY_KEY });
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      const queries = queryClient.getQueriesData({
+        queryKey: BUDGET_REQUESTS_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.tempId === newData.tempId ? newData : d,
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: BUDGET_REQUESTS_QUERY_KEY,
+      });
     },
   });
 };
@@ -138,6 +150,36 @@ export const useUpdateBudgetRequest = () => {
 
   return useMutation({
     mutationFn: updateBudgetRequest,
+
+    onMutate: async (updatedData) => {
+      await queryClient.cancelQueries(BUDGET_REQUESTS_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: BUDGET_REQUESTS_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.bdr_id === updatedData.bdr_id ? { ...d, ...updatedData } : d,
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _updatedData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (updatedBudgetRequest, variables) => {
       const allQueries = queryClient
         .getQueriesData({ queryKey: BUDGET_REQUESTS_QUERY_KEY })
@@ -157,36 +199,75 @@ export const useUpdateBudgetRequest = () => {
         });
       });
     },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: BUDGET_REQUESTS_QUERY_KEY,
+      });
+    },
   });
 };
 
 // Delete budget_year
-// export const useDeleteBudgetRequest = () => {
-//   const queryClient = useQueryClient();
-//   return useMutation({
-//     mutationFn: deleteBudgetRequest,
-//     onSuccess: (deletedData) => {
-//       queryClient.setQueryData(BUDGET_REQUESTS_QUERY_KEY, (oldData) => {
-//         if (!oldData) return;
-//         return {
-//           ...oldData,
-//           data: oldData.data.filter(
-//             (BudgetRequestData) =>
-//               BudgetRequestData.bdr_id !== parseInt(deletedData.deleted_id)
-//           ),
-//         };
-//       });
-//     },
-//   });
-// };
-
 export const useDeleteBudgetRequest = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: deleteBudgetRequest,
+
+    onMutate: async (id) => {
+      await queryClient.cancelQueries(BUDGET_REQUESTS_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: BUDGET_REQUESTS_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (BudgetRequestData) =>
+                BudgetRequestData.bdr_id !== parseInt(id),
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _id, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (deletedData) => {
-      queryClient.invalidateQueries({ queryKey: BUDGET_REQUESTS_QUERY_KEY });
+      const queries = queryClient.getQueriesData({
+        queryKey: BUDGET_REQUESTS_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (BudgetRequestData) =>
+                BudgetRequestData.bdr_id !== parseInt(deletedData.deleted_id),
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: BUDGET_REQUESTS_QUERY_KEY,
+      });
     },
   });
 };

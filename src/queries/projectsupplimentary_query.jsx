@@ -5,6 +5,7 @@ import {
   addProjectSupplimentary,
   deleteProjectSupplimentary,
 } from "../helpers/projectsupplimentary_backend_helper";
+import { PROJECT_QUERY_KEY } from "./project_query";
 
 const PROJECT_SUPPLIMENTARY_QUERY_KEY = ["projectsupplimentary"];
 
@@ -36,19 +37,18 @@ export const useSearchProjectSupplimentarys = (searchParams = {}) => {
 // Add project_supplimentary
 export const useAddProjectSupplimentary = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: addProjectSupplimentary,
-    onSuccess: (newDataResponse) => {
-      const queries = queryClient.getQueriesData({
+
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries(PROJECT_SUPPLIMENTARY_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
         queryKey: PROJECT_SUPPLIMENTARY_QUERY_KEY,
       });
 
-      const newData = {
-        ...newDataResponse.data,
-        ...newDataResponse.previledge,
-      };
-
-      queries.forEach(([queryKey, oldData]) => {
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
         queryClient.setQueryData(queryKey, (oldData) => {
           if (!oldData) return;
           return {
@@ -56,7 +56,46 @@ export const useAddProjectSupplimentary = () => {
             data: [newData, ...oldData.data],
           };
         });
+        return [queryKey, oldData];
       });
+
+      return { previousData };
+    },
+
+    onError: (_err, _newData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (newDataResponse) => {
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_SUPPLIMENTARY_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.tempId === newData.tempId ? newData : d,
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_SUPPLIMENTARY_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };
@@ -64,8 +103,39 @@ export const useAddProjectSupplimentary = () => {
 // Update project_supplimentary
 export const useUpdateProjectSupplimentary = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updateProjectSupplimentary,
+
+    onMutate: async (updatedData) => {
+      await queryClient.cancelQueries(PROJECT_SUPPLIMENTARY_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_SUPPLIMENTARY_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.prs_id === updatedData.data.prs_id ? { ...d, ...updatedData.data } : d,
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _updatedData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (updatedProjectSupplimentary) => {
       const queries = queryClient.getQueriesData({
         queryKey: PROJECT_SUPPLIMENTARY_QUERY_KEY,
@@ -85,14 +155,52 @@ export const useUpdateProjectSupplimentary = () => {
         });
       });
     },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_SUPPLIMENTARY_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
+    },
   });
 };
 
 // Delete project_supplimentary
 export const useDeleteProjectSupplimentary = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteProjectSupplimentary,
+
+    onMutate: async (id) => {
+      await queryClient.cancelQueries(PROJECT_SUPPLIMENTARY_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_SUPPLIMENTARY_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (dept) => dept.prs_id !== parseInt(id),
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _id, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (deletedData, variable) => {
       const queries = queryClient.getQueriesData({
         queryKey: PROJECT_SUPPLIMENTARY_QUERY_KEY,
@@ -104,11 +212,18 @@ export const useDeleteProjectSupplimentary = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.prs_id !== parseInt(deletedData.deleted_id),
+              (dept) => dept.prs_id !== parseInt(variable),
             ),
           };
         });
       });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_SUPPLIMENTARY_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };

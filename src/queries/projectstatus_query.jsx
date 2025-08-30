@@ -5,6 +5,7 @@ import {
   addProjectStatus,
   deleteProjectStatus,
 } from "../helpers/projectstatus_backend_helper";
+import { PROJECT_QUERY_KEY } from "./project_query";
 
 const PROJECT_STATUS_QUERY_KEY = ["projectstatus"];
 
@@ -36,18 +37,62 @@ export const useAddProjectStatus = () => {
 
   return useMutation({
     mutationFn: addProjectStatus,
-    onSuccess: (newDataResponse) => {
-      queryClient.setQueryData(PROJECT_STATUS_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
+
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries(PROJECT_STATUS_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_STATUS_QUERY_KEY,
       });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _newData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (newDataResponse) => {
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_STATUS_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.tempId === newData.tempId ? newData : d,
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_STATUS_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };
@@ -55,21 +100,64 @@ export const useAddProjectStatus = () => {
 // Update project_status
 export const useUpdateProjectStatus = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updateProjectStatus,
-    onSuccess: (updatedProjectStatus) => {
-      queryClient.setQueryData(PROJECT_STATUS_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
 
-        return {
-          ...oldData,
-          data: oldData.data.map((ProjectStatusData) =>
-            ProjectStatusData.prs_id === updatedProjectStatus.data.prs_id
-              ? { ...ProjectStatusData, ...updatedProjectStatus.data }
-              : ProjectStatusData,
-          ),
-        };
+    onMutate: async (updatedData) => {
+      await queryClient.cancelQueries(PROJECT_STATUS_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_STATUS_QUERY_KEY,
       });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.prs_id === updatedData.data.prs_id ? { ...d, ...updatedData.data } : d,
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _updatedData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (updatedProjectStatus) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_STATUS_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((ProjectStatusData) =>
+              ProjectStatusData.prs_id === updatedProjectStatus.data.prs_id
+                ? { ...ProjectStatusData, ...updatedProjectStatus.data }
+                : ProjectStatusData,
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_STATUS_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };
@@ -77,19 +165,64 @@ export const useUpdateProjectStatus = () => {
 // Delete project_status
 export const useDeleteProjectStatus = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteProjectStatus,
-    onSuccess: (deletedData) => {
-      queryClient.setQueryData(PROJECT_STATUS_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (ProjectStatusData) =>
-              ProjectStatusData.prs_id !== parseInt(deletedData.deleted_id),
-          ),
-        };
+
+    onMutate: async (id) => {
+      await queryClient.cancelQueries(PROJECT_STATUS_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_STATUS_QUERY_KEY,
       });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (ProjectStatusData) =>
+                ProjectStatusData.prs_id !== parseInt(id),
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _id, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (deletedData) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_STATUS_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (ProjectStatusData) =>
+                ProjectStatusData.prs_id !== parseInt(deletedData.deleted_id),
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_STATUS_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };

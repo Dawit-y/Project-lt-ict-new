@@ -1,25 +1,25 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import {
-  Card,
-  CardBody,
-  CardHeader,
-  Button,
-  Badge,
-  Nav,
-  NavItem,
-  NavLink,
-  TabContent,
-  TabPane,
-  Spinner,
+	Card,
+	CardBody,
+	CardHeader,
+	Button,
+	Badge,
+	Nav,
+	NavItem,
+	NavLink,
+	TabContent,
+	TabPane,
+	Spinner,
 } from "reactstrap";
 import {
-  FaCheckCircle,
-  FaTimesCircle,
-  FaClock,
-  FaDollarSign,
-  FaCalendarAlt,
-  FaPaperPlane,
+	FaCheckCircle,
+	FaTimesCircle,
+	FaClock,
+	FaDollarSign,
+	FaCalendarAlt,
+	FaPaperPlane,
 } from "react-icons/fa";
 import classnames from "classnames";
 
@@ -33,47 +33,55 @@ import { useFetchBudgetRequest } from "../../../../queries/budget_request_query"
 import { useFetchProject } from "../../../../queries/project_query";
 import { useAuthUser } from "../../../../hooks/useAuthUser";
 import Breadcrumb from "../../../../components/Common/Breadcrumb";
-import Spinners from "../../../../components/Common/Spinner";
+import FetchErrorHandler from "../../../../components/Common/FetchErrorHandler";
 import ApproveModal from "./ApproveModal";
 
 export default function BudgetApprovalPage() {
-  const [activeTab, setActiveTab] = useState("budget");
-  const [approvalStatus, setApprovalStatus] = useState("pending");
-  const [approveModal, setApproveModal] = useState(false);
-  const [action, setAction] = useState("approve");
+	const [activeTab, setActiveTab] = useState("budget");
+	const [approvalStatus, setApprovalStatus] = useState("pending");
+	const [approveModal, setApproveModal] = useState(false);
+	const [action, setAction] = useState("approve");
 
-  const toggleApproveModal = () => setApproveModal(!approveModal);
+	const toggleApproveModal = () => setApproveModal(!approveModal);
 
-  const { departmentType } = useAuthUser();
+	const { departmentType } = useAuthUser();
 
-  const { id } = useParams();
-  const { userId } = useAuthUser();
-  const { data, isLoading } = useFetchBudgetRequest(id, userId, true);
-  const projectId = data?.data?.bdr_project_id;
+	const { id } = useParams();
+	const { userId } = useAuthUser();
+	const { data, isLoading, isError, error, refetch } = useFetchBudgetRequest(
+		id,
+		userId,
+		true
+	);
+	const projectId = data?.data?.bdr_project_id;
 
-  const { data: project, isLoading: isProjectLoading } = useFetchProject(
-    projectId,
-    userId,
-    !!projectId,
-  );
+	const { data: project, isLoading: isProjectLoading } = useFetchProject(
+		projectId,
+		userId,
+		!!projectId
+	);
 
-  const isDirector = departmentType === "directorate";
-  const isDepartment = departmentType === "department";
-  const isDepartmentLevel =
-    departmentType === "department" || departmentType === "directorate";
-  const isOfficerLevel =
-    departmentType === "officer" || departmentType === "team";
+	const isDirector = departmentType === "directorate";
+	const isDepartment = departmentType === "department";
+	const isDepartmentLevel =
+		departmentType === "department" || departmentType === "directorate";
+	const isOfficerLevel =
+		departmentType === "officer" || departmentType === "team";
 
-  const isApproved = parseInt(data?.data?.bdr_request_status) === 3;
-  const isRejected = parseInt(data?.data?.bdr_request_status) === 4;
-  const isRequested = parseInt(data?.data?.bdr_request_status) === 1;
+	const isApproved = parseInt(data?.data?.bdr_request_status) === 3;
+	const isRejected = parseInt(data?.data?.bdr_request_status) === 4;
+	const isRequested = parseInt(data?.data?.bdr_request_status) === 1;
 
-  const handleApproval = (event) => {
-    setAction(event.target.name);
-    toggleApproveModal();
-  };
+	const handleApproval = (event) => {
+		setAction(event.target.name);
+		toggleApproveModal();
+	};
 
-  return (
+	if (isError) {
+		return <FetchErrorHandler error={error} refetch={refetch} />;
+	}
+
+	return (
 		<>
 			<ApproveModal
 				isOpen={approveModal}

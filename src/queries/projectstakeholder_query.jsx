@@ -5,6 +5,7 @@ import {
   addProjectStakeholder,
   deleteProjectStakeholder,
 } from "../helpers/projectstakeholder_backend_helper";
+import { PROJECT_QUERY_KEY } from "./project_query";
 
 const PROJECT_STAKEHOLDER_QUERY_KEY = ["projectstakeholder"];
 
@@ -39,16 +40,15 @@ export const useAddProjectStakeholder = () => {
 
   return useMutation({
     mutationFn: addProjectStakeholder,
-    onSuccess: (newDataResponse) => {
-      const queries = queryClient.getQueriesData({
+
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries(PROJECT_STAKEHOLDER_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
         queryKey: PROJECT_STAKEHOLDER_QUERY_KEY,
       });
-      const newData = {
-        ...newDataResponse.data,
-        ...newDataResponse.previledge,
-      };
 
-      queries.forEach(([queryKey, oldData]) => {
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
         queryClient.setQueryData(queryKey, (oldData) => {
           if (!oldData) return;
           return {
@@ -56,7 +56,46 @@ export const useAddProjectStakeholder = () => {
             data: [newData, ...oldData.data],
           };
         });
+        return [queryKey, oldData];
       });
+
+      return { previousData };
+    },
+
+    onError: (_err, _newData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (newDataResponse) => {
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_STAKEHOLDER_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.tempId === newData.tempId ? newData : d,
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_STAKEHOLDER_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };
@@ -64,8 +103,39 @@ export const useAddProjectStakeholder = () => {
 // Update project_stakeholder
 export const useUpdateProjectStakeholder = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updateProjectStakeholder,
+
+    onMutate: async (updatedData) => {
+      await queryClient.cancelQueries(PROJECT_STAKEHOLDER_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_STAKEHOLDER_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.psh_id === updatedData.data.psh_id ? { ...d, ...updatedData.data } : d,
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _updatedData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (updatedData) => {
       const queries = queryClient.getQueriesData({
         queryKey: PROJECT_STAKEHOLDER_QUERY_KEY,
@@ -85,14 +155,52 @@ export const useUpdateProjectStakeholder = () => {
         });
       });
     },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_STAKEHOLDER_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
+    },
   });
 };
 
 // Delete project_stakeholder
 export const useDeleteProjectStakeholder = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteProjectStakeholder,
+
+    onMutate: async (id) => {
+      await queryClient.cancelQueries(PROJECT_STAKEHOLDER_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_STAKEHOLDER_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (dept) => dept.psh_id !== parseInt(id),
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _id, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (deletedData, variable) => {
       const queries = queryClient.getQueriesData({
         queryKey: PROJECT_STAKEHOLDER_QUERY_KEY,
@@ -109,6 +217,13 @@ export const useDeleteProjectStakeholder = () => {
           };
         });
       });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_STAKEHOLDER_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };

@@ -5,6 +5,7 @@ import {
   addProjectComponent,
   deleteProjectComponent,
 } from "../helpers/projectcomponent_backend_helper";
+import { PROJECT_QUERY_KEY } from "./project_query";
 
 const PROJECT_COMPONENT_QUERY_KEY = ["projectcomponent"];
 // Fetch project_component
@@ -33,19 +34,18 @@ export const useSearchProjectComponents = (searchParams = {}) => {
 // Add project_component
 export const useAddProjectComponent = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: addProjectComponent,
-    onSuccess: (newDataResponse) => {
-      const queries = queryClient.getQueriesData({
+
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries(PROJECT_COMPONENT_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
         queryKey: PROJECT_COMPONENT_QUERY_KEY,
       });
 
-      const newData = {
-        ...newDataResponse.data,
-        ...newDataResponse.previledge,
-      };
-
-      queries.forEach(([queryKey, oldData]) => {
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
         queryClient.setQueryData(queryKey, (oldData) => {
           if (!oldData) return;
           return {
@@ -53,15 +53,85 @@ export const useAddProjectComponent = () => {
             data: [newData, ...oldData.data],
           };
         });
+        return [queryKey, oldData];
       });
+
+      return { previousData };
+    },
+
+    onError: (_err, _newData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (newDataResponse) => {
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_COMPONENT_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.tempId === newData.tempId ? newData : d,
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_COMPONENT_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };
 // Update project_component
 export const useUpdateProjectComponent = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updateProjectComponent,
+
+    onMutate: async (updatedData) => {
+      await queryClient.cancelQueries(PROJECT_COMPONENT_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_COMPONENT_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.pcm_id === updatedData.data.pcm_id ? { ...d, ...updatedData.data } : d,
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _updatedData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (updatedData) => {
       const queries = queryClient.getQueriesData({
         queryKey: PROJECT_COMPONENT_QUERY_KEY,
@@ -81,13 +151,52 @@ export const useUpdateProjectComponent = () => {
         });
       });
     },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_COMPONENT_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
+    },
   });
 };
 // Delete project_component
 export const useDeleteProjectComponent = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteProjectComponent,
+
+    onMutate: async (id) => {
+      await queryClient.cancelQueries(PROJECT_COMPONENT_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_COMPONENT_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (deletedData) =>
+                deletedData.pcm_id !== parseInt(id),
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _id, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (deletedData, variable) => {
       const queries = queryClient.getQueriesData({
         queryKey: PROJECT_COMPONENT_QUERY_KEY,
@@ -100,11 +209,18 @@ export const useDeleteProjectComponent = () => {
             ...oldData,
             data: oldData.data.filter(
               (deletedData) =>
-                deletedData.pcm_id !== parseInt(deletedData.deleted_id),
+                deletedData.pcm_id !== parseInt(variable),
             ),
           };
         });
       });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_COMPONENT_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };

@@ -100,18 +100,15 @@ const UsersModal = (props) => {
     };
     try {
       await changeUserPassword.mutateAsync(data);
-      //setSwitch1(true);
       toast.success(`password changed successfully`, {
 				autoClose: 3000,
-			});
+      });
+      setModal_backdrop(false);
     } catch (error) {
-      //setSwitch1(false);
       toast.error(`Failed to change password`, {
 				autoClose: 3000,
 			});
-    } finally {
-      setModal_backdrop(false);
-    }
+    } 
   };
 
   const handlePasswordInput = (e) => {
@@ -272,7 +269,7 @@ const UsersModal = (props) => {
                           style={{
                             fontSize: "16px",
                             fontWeight: "bold",
-                            color: !switch1 ? "#d9534f" : "#28a745", // Green for Active, Red for Inactive
+                            color: !switch1 ? "#d9534f" : "#28a745",
                           }}
                         >
                           {switch1 == 1 ? "Active" : "Inactive"}

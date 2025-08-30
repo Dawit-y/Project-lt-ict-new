@@ -32,34 +32,66 @@ export const useSearchConversationInformations = (searchParams = {}) => {
     enabled: searchParams.length > 0,
   });
 };
-
 // Add conversation_information
 export const useAddConversationInformation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: addConversationInformation,
-    onSuccess: (newDataResponse) => {
-      // Get all queries matching the CONVERSATION_INFORMATION_QUERY_KEY
-      const queries = queryClient.getQueriesData({
+
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries(CONVERSATION_INFORMATION_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
         queryKey: CONVERSATION_INFORMATION_QUERY_KEY,
       });
 
-      // Prepare the new data to be added
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data], // optimistic insert
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _newData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (newDataResponse) => {
       const newData = {
         ...newDataResponse.data,
         ...newDataResponse.previledge,
       };
 
-      // Update each query's cached data
-      queries.forEach(([queryKey, oldData]) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: CONVERSATION_INFORMATION_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey]) => {
         queryClient.setQueryData(queryKey, (oldData) => {
           if (!oldData) return;
           return {
             ...oldData,
-            data: [newData, ...oldData.data],
+            data: oldData.data.map((d) =>
+              d.tempId === newData.tempId ? newData : d
+            ),
           };
         });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: CONVERSATION_INFORMATION_QUERY_KEY,
       });
     },
   });
@@ -71,29 +103,61 @@ export const useUpdateConversationInformation = () => {
 
   return useMutation({
     mutationFn: updateConversationInformation,
-    onSuccess: (updatedConversationInformation) => {
-      // Get all queries matching the CONVERSATION_INFORMATION_QUERY_KEY
-      const queries = queryClient.getQueriesData({
+
+    onMutate: async (updatedData) => {
+      await queryClient.cancelQueries(CONVERSATION_INFORMATION_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
         queryKey: CONVERSATION_INFORMATION_QUERY_KEY,
       });
 
-      // Update each query's cached data
-      queries.forEach(([queryKey, oldData]) => {
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
         queryClient.setQueryData(queryKey, (oldData) => {
           if (!oldData) return;
           return {
             ...oldData,
-            data: oldData.data.map((ConversationInformationData) =>
-              ConversationInformationData.cvi_id ===
-              updatedConversationInformation.data.cvi_id
-                ? {
-                    ...ConversationInformationData,
-                    ...updatedConversationInformation.data,
-                  }
-                : ConversationInformationData,
+            data: oldData.data.map((d) =>
+              d.cvi_id === updatedData.data.cvi_id
+                ? { ...d, ...updatedData.data }
+                : d
             ),
           };
         });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _updatedData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (updatedData) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: CONVERSATION_INFORMATION_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.cvi_id === updatedData.data.cvi_id
+                ? { ...d, ...updatedData.data }
+                : d
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: CONVERSATION_INFORMATION_QUERY_KEY,
       });
     },
   });
@@ -105,25 +169,53 @@ export const useDeleteConversationInformation = () => {
 
   return useMutation({
     mutationFn: deleteConversationInformation,
-    onSuccess: (deletedData) => {
-      // Get all queries matching the CONVERSATION_INFORMATION_QUERY_KEY
-      const queries = queryClient.getQueriesData({
+
+    onMutate: async (id) => {
+      await queryClient.cancelQueries(CONVERSATION_INFORMATION_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
         queryKey: CONVERSATION_INFORMATION_QUERY_KEY,
       });
 
-      // Update each query's cached data
-      queries.forEach(([queryKey, oldData]) => {
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
         queryClient.setQueryData(queryKey, (oldData) => {
           if (!oldData) return;
           return {
             ...oldData,
-            data: oldData.data.filter(
-              (ConversationInformationData) =>
-                ConversationInformationData.cvi_id !==
-                parseInt(deletedData.deleted_id),
-            ),
+            data: oldData.data.filter((d) => d.cvi_id !== parseInt(id)),
           };
         });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _id, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (_deletedData, variable) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: CONVERSATION_INFORMATION_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter((d) => d.cvi_id !== parseInt(variable)),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: CONVERSATION_INFORMATION_QUERY_KEY,
       });
     },
   });

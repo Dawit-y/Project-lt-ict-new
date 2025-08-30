@@ -5,6 +5,7 @@ import {
   addProjectContractor,
   deleteProjectContractor,
 } from "../helpers/projectcontractor_backend_helper";
+import { PROJECT_QUERY_KEY } from "./project_query";
 
 const PROJECT_CONTRACTOR_QUERY_KEY = ["projectcontractor"];
 
@@ -93,6 +94,7 @@ export const useAddProjectContractor = () => {
       queryClient.invalidateQueries({
         queryKey: PROJECT_CONTRACTOR_QUERY_KEY,
       });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };
@@ -137,6 +139,7 @@ export const useUpdateProjectContractor = () => {
       queryClient.invalidateQueries({
         queryKey: PROJECT_CONTRACTOR_QUERY_KEY,
       });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };
@@ -179,6 +182,7 @@ export const useDeleteProjectContractor = () => {
       queryClient.invalidateQueries({
         queryKey: PROJECT_CONTRACTOR_QUERY_KEY,
       });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };

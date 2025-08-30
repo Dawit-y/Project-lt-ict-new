@@ -279,46 +279,48 @@ const UserRoleModel = (props) => {
         header: t("Action"),
         accessorKey: t("Action"),
         enableColumnFilter: false,
-        enableSorting: true,
+        enableSorting: false,
         cell: (cellProps) => {
           return (
-            <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleUserRoleClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+						<div className="d-flex gap-1">
+							{cellProps.row.original.is_editable && (
+                <Button
+                  size="sm"
+									color="Link"
+									className="text-success"
+									onClick={() => {
+										const data = cellProps.row.original;
+										handleUserRoleClick(data);
+									}}
+								>
+									<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+									<UncontrolledTooltip placement="top" target="edittooltip">
+										Edit
+									</UncontrolledTooltip>
+								</Button>
+							)}
 
-              {cellProps.row.original.is_deletable && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-            </div>
-          );
+							{cellProps.row.original.is_deletable && (
+                <Button
+                  size="sm"
+									color="Link"
+									className="text-danger"
+									onClick={() => {
+										const data = cellProps.row.original;
+										onClickDelete(data);
+									}}
+								>
+									<i
+										className="mdi mdi-delete font-size-18"
+										id="deletetooltip"
+									/>
+									<UncontrolledTooltip placement="top" target="deletetooltip">
+										Delete
+									</UncontrolledTooltip>
+								</Button>
+							)}
+						</div>
+					);
         },
       });
     }

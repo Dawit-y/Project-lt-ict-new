@@ -5,6 +5,7 @@ import {
   addProjectBudgetPlan,
   deleteProjectBudgetPlan,
 } from "../helpers/projectbudgetplan_backend_helper";
+import { PROJECT_QUERY_KEY } from "./project_query";
 
 const PROJECT_BUDGET_PLAN_QUERY_KEY = ["projectbudgetplan"];
 
@@ -39,18 +40,62 @@ export const useAddProjectBudgetPlan = () => {
 
   return useMutation({
     mutationFn: addProjectBudgetPlan,
-    onSuccess: (newDataResponse) => {
-      queryClient.setQueryData(PROJECT_BUDGET_PLAN_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
+
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries(PROJECT_BUDGET_PLAN_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_BUDGET_PLAN_QUERY_KEY,
       });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _newData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (newDataResponse) => {
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_BUDGET_PLAN_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.tempId === newData.tempId ? newData : d,
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_BUDGET_PLAN_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };
@@ -58,22 +103,65 @@ export const useAddProjectBudgetPlan = () => {
 // Update project_budget_plan
 export const useUpdateProjectBudgetPlan = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updateProjectBudgetPlan,
-    onSuccess: (updatedProjectBudgetPlan) => {
-      queryClient.setQueryData(PROJECT_BUDGET_PLAN_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
 
-        return {
-          ...oldData,
-          data: oldData.data.map((ProjectBudgetPlanData) =>
-            ProjectBudgetPlanData.bpl_id ===
-            updatedProjectBudgetPlan.data.bpl_id
-              ? { ...ProjectBudgetPlanData, ...updatedProjectBudgetPlan.data }
-              : ProjectBudgetPlanData,
-          ),
-        };
+    onMutate: async (updatedData) => {
+      await queryClient.cancelQueries(PROJECT_BUDGET_PLAN_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_BUDGET_PLAN_QUERY_KEY,
       });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.bpl_id === updatedData.bpl_id ? { ...d, ...updatedData } : d,
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _updatedData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (updatedProjectBudgetPlan) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_BUDGET_PLAN_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((ProjectBudgetPlanData) =>
+              ProjectBudgetPlanData.bpl_id ===
+                updatedProjectBudgetPlan.data.bpl_id
+                ? { ...ProjectBudgetPlanData, ...updatedProjectBudgetPlan.data }
+                : ProjectBudgetPlanData,
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_BUDGET_PLAN_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };
@@ -81,19 +169,64 @@ export const useUpdateProjectBudgetPlan = () => {
 // Delete project_budget_plan
 export const useDeleteProjectBudgetPlan = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteProjectBudgetPlan,
-    onSuccess: (deletedData) => {
-      queryClient.setQueryData(PROJECT_BUDGET_PLAN_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (ProjectBudgetPlanData) =>
-              ProjectBudgetPlanData.bpl_id !== parseInt(deletedData.deleted_id),
-          ),
-        };
+
+    onMutate: async (id) => {
+      await queryClient.cancelQueries(PROJECT_BUDGET_PLAN_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_BUDGET_PLAN_QUERY_KEY,
       });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (ProjectBudgetPlanData) =>
+                ProjectBudgetPlanData.bpl_id !== parseInt(id),
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _id, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (deletedData) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_BUDGET_PLAN_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (ProjectBudgetPlanData) =>
+                ProjectBudgetPlanData.bpl_id !== parseInt(deletedData.deleted_id),
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_BUDGET_PLAN_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };

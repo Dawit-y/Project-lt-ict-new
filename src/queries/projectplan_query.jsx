@@ -5,6 +5,7 @@ import {
   addProjectPlan,
   deleteProjectPlan,
 } from "../helpers/projectplan_backend_helper";
+import { PROJECT_QUERY_KEY } from "./project_query";
 
 const PROJECT_PLAN_QUERY_KEY = ["projectplan"];
 
@@ -39,17 +40,15 @@ export const useAddProjectPlan = () => {
 
   return useMutation({
     mutationFn: addProjectPlan,
-    onSuccess: (newDataResponse) => {
-      const queries = queryClient.getQueriesData({
+
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries(PROJECT_PLAN_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
         queryKey: PROJECT_PLAN_QUERY_KEY,
       });
 
-      const newData = {
-        ...newDataResponse.data,
-        ...newDataResponse.previledge,
-      };
-
-      queries.forEach(([queryKey, oldData]) => {
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
         queryClient.setQueryData(queryKey, (oldData) => {
           if (!oldData) return;
           return {
@@ -57,7 +56,46 @@ export const useAddProjectPlan = () => {
             data: [newData, ...oldData.data],
           };
         });
+        return [queryKey, oldData];
       });
+
+      return { previousData };
+    },
+
+    onError: (_err, _newData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (newDataResponse) => {
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_PLAN_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.tempId === newData.tempId ? newData : d,
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_PLAN_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };
@@ -65,8 +103,39 @@ export const useAddProjectPlan = () => {
 // Update project_plan
 export const useUpdateProjectPlan = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updateProjectPlan,
+
+    onMutate: async (updatedData) => {
+      await queryClient.cancelQueries(PROJECT_PLAN_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_PLAN_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.pld_id === updatedData.data.pld_id ? { ...d, ...updatedData.data } : d,
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _updatedData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (updatedData) => {
       const queries = queryClient.getQueriesData({
         queryKey: PROJECT_PLAN_QUERY_KEY,
@@ -86,14 +155,52 @@ export const useUpdateProjectPlan = () => {
         });
       });
     },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_PLAN_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
+    },
   });
 };
 
 // Delete project_plan
 export const useDeleteProjectPlan = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteProjectPlan,
+
+    onMutate: async (id) => {
+      await queryClient.cancelQueries(PROJECT_PLAN_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_PLAN_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (dept) => dept.pld_id !== parseInt(id),
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _id, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (deletedData, variable) => {
       const queries = queryClient.getQueriesData({
         queryKey: PROJECT_PLAN_QUERY_KEY,
@@ -110,6 +217,13 @@ export const useDeleteProjectPlan = () => {
           };
         });
       });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_PLAN_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };

@@ -5,6 +5,7 @@ import {
   addProjectCategory,
   deleteProjectCategory,
 } from "../helpers/projectcategory_backend_helper";
+import { PROJECT_QUERY_KEY } from "./project_query";
 
 const PROJECT_CATEGORY_QUERY_KEY = ["projectcategory"];
 
@@ -38,18 +39,62 @@ export const useAddProjectCategory = () => {
 
   return useMutation({
     mutationFn: addProjectCategory,
-    onSuccess: (newDataResponse) => {
-      queryClient.setQueryData(PROJECT_CATEGORY_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
+
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries(PROJECT_CATEGORY_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_CATEGORY_QUERY_KEY,
       });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _newData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (newDataResponse) => {
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_CATEGORY_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.tempId === newData.tempId ? newData : d,
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_CATEGORY_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };
@@ -57,21 +102,64 @@ export const useAddProjectCategory = () => {
 // Update project_category
 export const useUpdateProjectCategory = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updateProjectCategory,
-    onSuccess: (updatedProjectCategory) => {
-      queryClient.setQueryData(PROJECT_CATEGORY_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
 
-        return {
-          ...oldData,
-          data: oldData.data.map((ProjectCategoryData) =>
-            ProjectCategoryData.pct_id === updatedProjectCategory.data.pct_id
-              ? { ...ProjectCategoryData, ...updatedProjectCategory.data }
-              : ProjectCategoryData,
-          ),
-        };
+    onMutate: async (updatedData) => {
+      await queryClient.cancelQueries(PROJECT_CATEGORY_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_CATEGORY_QUERY_KEY,
       });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.pct_id === updatedData.pct_id ? { ...d, ...updatedData } : d,
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _updatedData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (updatedProjectCategory) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_CATEGORY_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((ProjectCategoryData) =>
+              ProjectCategoryData.pct_id === updatedProjectCategory.data.pct_id
+                ? { ...ProjectCategoryData, ...updatedProjectCategory.data }
+                : ProjectCategoryData,
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_CATEGORY_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };
@@ -79,19 +167,64 @@ export const useUpdateProjectCategory = () => {
 // Delete project_category
 export const useDeleteProjectCategory = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteProjectCategory,
-    onSuccess: (deletedData) => {
-      queryClient.setQueryData(PROJECT_CATEGORY_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (ProjectCategoryData) =>
-              ProjectCategoryData.pct_id !== parseInt(deletedData.deleted_id),
-          ),
-        };
+
+    onMutate: async (id) => {
+      await queryClient.cancelQueries(PROJECT_CATEGORY_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_CATEGORY_QUERY_KEY,
       });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (ProjectCategoryData) =>
+                ProjectCategoryData.pct_id !== parseInt(id),
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _id, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (deletedData) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_CATEGORY_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (ProjectCategoryData) =>
+                ProjectCategoryData.pct_id !== parseInt(deletedData.deleted_id),
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_CATEGORY_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };

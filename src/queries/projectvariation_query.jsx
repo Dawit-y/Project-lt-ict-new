@@ -5,6 +5,7 @@ import {
   addProjectVariation,
   deleteProjectVariation,
 } from "../helpers/projectvariation_backend_helper";
+import { PROJECT_QUERY_KEY } from "./project_query";
 
 const PROJECT_VARIATION_QUERY_KEY = ["projectvariation"];
 
@@ -39,17 +40,15 @@ export const useAddProjectVariation = () => {
 
   return useMutation({
     mutationFn: addProjectVariation,
-    onSuccess: (newDataResponse) => {
-      const queries = queryClient.getQueriesData({
+
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries(PROJECT_VARIATION_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
         queryKey: PROJECT_VARIATION_QUERY_KEY,
       });
 
-      const newData = {
-        ...newDataResponse.data,
-        ...newDataResponse.previledge,
-      };
-
-      queries.forEach(([queryKey, oldData]) => {
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
         queryClient.setQueryData(queryKey, (oldData) => {
           if (!oldData) return;
           return {
@@ -57,7 +56,46 @@ export const useAddProjectVariation = () => {
             data: [newData, ...oldData.data],
           };
         });
+        return [queryKey, oldData];
       });
+
+      return { previousData };
+    },
+
+    onError: (_err, _newData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (newDataResponse) => {
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      const queries = queryClient.getQueriesData({
+        queryKey: PROJECT_VARIATION_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.tempId === newData.tempId ? newData : d,
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_VARIATION_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };
@@ -65,8 +103,39 @@ export const useAddProjectVariation = () => {
 // Update project_variation
 export const useUpdateProjectVariation = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updateProjectVariation,
+
+    onMutate: async (updatedData) => {
+      await queryClient.cancelQueries(PROJECT_VARIATION_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_VARIATION_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.prv_id === updatedData.data.prv_id ? { ...d, ...updatedData.data } : d,
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _updatedData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (updatedData) => {
       const queries = queryClient.getQueriesData({
         queryKey: PROJECT_VARIATION_QUERY_KEY,
@@ -86,14 +155,52 @@ export const useUpdateProjectVariation = () => {
         });
       });
     },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_VARIATION_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
+    },
   });
 };
 
 // Delete project_variation
 export const useDeleteProjectVariation = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteProjectVariation,
+
+    onMutate: async (id) => {
+      await queryClient.cancelQueries(PROJECT_VARIATION_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: PROJECT_VARIATION_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (dept) => dept.prv_id !== parseInt(id),
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _id, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (deletedData, variable) => {
       const queries = queryClient.getQueriesData({
         queryKey: PROJECT_VARIATION_QUERY_KEY,
@@ -105,11 +212,18 @@ export const useDeleteProjectVariation = () => {
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.prv_id !== parseInt(deletedData.deleted_id),
+              (dept) => dept.prv_id !== parseInt(variable),
             ),
           };
         });
       });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_VARIATION_QUERY_KEY,
+      });
+      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
     },
   });
 };

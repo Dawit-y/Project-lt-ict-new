@@ -36,17 +36,18 @@ export const useSearchBudgetExipDetails = (searchParams = {}) => {
 // Add budget_exip_detail
 export const useAddBudgetExipDetail = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: addBudgetExipDetail,
-    onSuccess: (newDataResponse) => {
-      const queries = queryClient.getQueriesData({
+
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries(BUDGET_EXIP_DETAIL_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
         queryKey: BUDGET_EXIP_DETAIL_QUERY_KEY,
       });
-      const newData = {
-        ...newDataResponse.data,
-        ...newDataResponse.previledge,
-      };
-      queries.forEach(([queryKey, oldData]) => {
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
         queryClient.setQueryData(queryKey, (oldData) => {
           if (!oldData) return;
           return {
@@ -54,6 +55,44 @@ export const useAddBudgetExipDetail = () => {
             data: [newData, ...oldData.data],
           };
         });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _newData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (newDataResponse) => {
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      const queries = queryClient.getQueriesData({
+        queryKey: BUDGET_EXIP_DETAIL_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.tempId === newData.tempId ? newData : d,
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: BUDGET_EXIP_DETAIL_QUERY_KEY,
       });
     },
   });
@@ -62,12 +101,44 @@ export const useAddBudgetExipDetail = () => {
 // Update budget_exip_detail
 export const useUpdateBudgetExipDetail = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updateBudgetExipDetail,
+
+    onMutate: async (updatedData) => {
+      await queryClient.cancelQueries(BUDGET_EXIP_DETAIL_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: BUDGET_EXIP_DETAIL_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.bed_id === updatedData.data.bed_id ? { ...d, ...updatedData.data } : d,
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _updatedData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (updatedBudgetExipDetail) => {
       const queries = queryClient.getQueriesData({
         queryKey: BUDGET_EXIP_DETAIL_QUERY_KEY,
       });
+
       queries.forEach(([queryKey, oldData]) => {
         queryClient.setQueryData(queryKey, (oldData) => {
           if (!oldData) return;
@@ -82,27 +153,72 @@ export const useUpdateBudgetExipDetail = () => {
         });
       });
     },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: BUDGET_EXIP_DETAIL_QUERY_KEY,
+      });
+    },
   });
 };
+
 // Delete budget_exip_detail
 export const useDeleteBudgetExipDetail = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteBudgetExipDetail,
+
+    onMutate: async (id) => {
+      await queryClient.cancelQueries(BUDGET_EXIP_DETAIL_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: BUDGET_EXIP_DETAIL_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (dept) => dept.bed_id !== parseInt(id),
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _id, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (deletedData, variable) => {
       const queries = queryClient.getQueriesData({
         queryKey: BUDGET_EXIP_DETAIL_QUERY_KEY,
       });
+
       queries.forEach(([queryKey, oldData]) => {
         queryClient.setQueryData(queryKey, (oldData) => {
           if (!oldData) return;
           return {
             ...oldData,
             data: oldData.data.filter(
-              (dept) => dept.bed_id !== parseInt(deletedData.deleted_id),
+              (dept) => dept.bed_id !== parseInt(variable),
             ),
           };
         });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: BUDGET_EXIP_DETAIL_QUERY_KEY,
       });
     },
   });

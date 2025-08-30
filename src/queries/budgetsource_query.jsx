@@ -38,17 +38,60 @@ export const useAddBudgetSource = () => {
 
   return useMutation({
     mutationFn: addBudgetSource,
+
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries(BUDGET_SOURCE_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: BUDGET_SOURCE_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: [newData, ...oldData.data],
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _newData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (newDataResponse) => {
-      queryClient.setQueryData(BUDGET_SOURCE_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        const newData = {
-          ...newDataResponse.data,
-          ...newDataResponse.previledge,
-        };
-        return {
-          ...oldData,
-          data: [newData, ...oldData.data],
-        };
+      const newData = {
+        ...newDataResponse.data,
+        ...newDataResponse.previledge,
+      };
+
+      const queries = queryClient.getQueriesData({
+        queryKey: BUDGET_SOURCE_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.tempId === newData.tempId ? newData : d,
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: BUDGET_SOURCE_QUERY_KEY,
       });
     },
   });
@@ -57,20 +100,62 @@ export const useAddBudgetSource = () => {
 // Update budget_source
 export const useUpdateBudgetSource = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updateBudgetSource,
-    onSuccess: (updatedBudgetSource) => {
-      queryClient.setQueryData(BUDGET_SOURCE_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
 
-        return {
-          ...oldData,
-          data: oldData.data.map((BudgetSourceData) =>
-            BudgetSourceData.pbs_id === updatedBudgetSource.data.pbs_id
-              ? { ...BudgetSourceData, ...updatedBudgetSource.data }
-              : BudgetSourceData,
-          ),
-        };
+    onMutate: async (updatedData) => {
+      await queryClient.cancelQueries(BUDGET_SOURCE_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: BUDGET_SOURCE_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((d) =>
+              d.pbs_id === updatedData.data.pbs_id ? { ...d, ...updatedData.data } : d,
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _updatedData, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
+    onSuccess: (updatedBudgetSource) => {
+      const queries = queryClient.getQueriesData({
+        queryKey: BUDGET_SOURCE_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.map((BudgetSourceData) =>
+              BudgetSourceData.pbs_id === updatedBudgetSource.data.pbs_id
+                ? { ...BudgetSourceData, ...updatedBudgetSource.data }
+                : BudgetSourceData,
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: BUDGET_SOURCE_QUERY_KEY,
       });
     },
   });
@@ -79,18 +164,62 @@ export const useUpdateBudgetSource = () => {
 // Delete budget_source
 export const useDeleteBudgetSource = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteBudgetSource,
+
+    onMutate: async (id) => {
+      await queryClient.cancelQueries(BUDGET_SOURCE_QUERY_KEY);
+
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: BUDGET_SOURCE_QUERY_KEY,
+      });
+
+      const previousData = previousQueries.map(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (BudgetSourceData) =>
+                BudgetSourceData.pbs_id !== parseInt(id),
+            ),
+          };
+        });
+        return [queryKey, oldData];
+      });
+
+      return { previousData };
+    },
+
+    onError: (_err, _id, context) => {
+      context?.previousData?.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, oldData);
+      });
+    },
+
     onSuccess: (deletedData) => {
-      queryClient.setQueryData(BUDGET_SOURCE_QUERY_KEY, (oldData) => {
-        if (!oldData) return;
-        return {
-          ...oldData,
-          data: oldData.data.filter(
-            (BudgetSourceData) =>
-              BudgetSourceData.pbs_id !== parseInt(deletedData.deleted_id),
-          ),
-        };
+      const queries = queryClient.getQueriesData({
+        queryKey: BUDGET_SOURCE_QUERY_KEY,
+      });
+
+      queries.forEach(([queryKey, oldData]) => {
+        queryClient.setQueryData(queryKey, (oldData) => {
+          if (!oldData) return;
+          return {
+            ...oldData,
+            data: oldData.data.filter(
+              (BudgetSourceData) =>
+                BudgetSourceData.pbs_id !== parseInt(deletedData.deleted_id),
+            ),
+          };
+        });
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: BUDGET_SOURCE_QUERY_KEY,
       });
     },
   });
