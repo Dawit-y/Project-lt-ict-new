@@ -411,255 +411,254 @@ const ContractTerminationReasonModel = () => {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
-    <React.Fragment>
-      <ContractTerminationReasonModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      />
-      <DeleteModal
-        show={deleteModal}
-        onDeleteClick={handleDeleteContractTerminationReason}
-        onCloseClick={() => setDeleteModal(false)}
-        isLoading={deleteContractTerminationReason.isPending}
-      />
-      <div className="page-content">
-        <div className="container-fluid">
-          <Breadcrumbs
-            title={t("contract_termination_reason")}
-            breadcrumbItem={t("contract_termination_reason")}
-          />
-          {isLoading || isSearchLoading ? (
-            <Spinners />
-          ) : (
-            <Row>
-              <Col xs="12">
-                <Card>
-                  <CardBody>
-                    <TableContainer
-                      columns={columns}
-                      data={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add == 1}
-                      isCustomPageSize={true}
-                      handleUserClick={handleContractTerminationReasonClicks}
-                      isPagination={true}
-                      SearchPlaceholder={t("filter_placeholder")}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={
-                        t("add") + " " + t("contract_termination_reason")
-                      }
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                      divClassName="-"
-                      refetch={refetch}
-                      isFetching={isFetching}
-                      isExcelExport={true}
-                      isPdfExport={true}
-                      isPrint={true}
-                      tableName="Contract Termination Reason"
-                      exportColumns={contractTerminationReasonExportColumns}
-                    />
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
-          )}
-          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-            <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit
-                ? t("edit") + " " + t("contract_termination_reason")
-                : t("add") + " " + t("contract_termination_reason")}
-            </ModalHeader>
-            <ModalBody>
-              <Form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  validation.handleSubmit();
-                  return false;
-                }}
-              >
-                <Row>
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("ctr_reason_name_or")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="ctr_reason_name_or"
-                      type="text"
-                      placeholder={t("ctr_reason_name_or")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.ctr_reason_name_or || ""}
-                      invalid={
-                        validation.touched.ctr_reason_name_or &&
-                        validation.errors.ctr_reason_name_or
-                          ? true
-                          : false
-                      }
-                      maxLength={100}
-                    />
-                    {validation.touched.ctr_reason_name_or &&
-                    validation.errors.ctr_reason_name_or ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.ctr_reason_name_or}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("ctr_reason_name_am")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="ctr_reason_name_am"
-                      type="text"
-                      placeholder={t("ctr_reason_name_am")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.ctr_reason_name_am || ""}
-                      invalid={
-                        validation.touched.ctr_reason_name_am &&
-                        validation.errors.ctr_reason_name_am
-                          ? true
-                          : false
-                      }
-                      maxLength={100}
-                    />
-                    {validation.touched.ctr_reason_name_am &&
-                    validation.errors.ctr_reason_name_am ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.ctr_reason_name_am}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("ctr_reason_name_en")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="ctr_reason_name_en"
-                      type="text"
-                      placeholder={t("ctr_reason_name_en")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.ctr_reason_name_en || ""}
-                      invalid={
-                        validation.touched.ctr_reason_name_en &&
-                        validation.errors.ctr_reason_name_en
-                          ? true
-                          : false
-                      }
-                      maxLength={100}
-                    />
-                    {validation.touched.ctr_reason_name_en &&
-                    validation.errors.ctr_reason_name_en ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.ctr_reason_name_en}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("ctr_description")}</Label>
-                    <Input
-                      name="ctr_description"
-                      type="textarea"
-                      placeholder={t("ctr_description")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.ctr_description || ""}
-                      invalid={
-                        validation.touched.ctr_description &&
-                        validation.errors.ctr_description
-                          ? true
-                          : false
-                      }
-                      maxLength={425}
-                    />
-                    {validation.touched.ctr_description &&
-                    validation.errors.ctr_description ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.ctr_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <div className="form-check mb-4">
-                      <Label className="me-1" for="ctr_status">
-                        {t("is_inactive")}
-                      </Label>
-                      <Input
-                        id="ctr_status"
-                        name="ctr_status"
-                        type="checkbox"
-                        placeholder={t("ctr_status")}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        checked={validation.values.ctr_status}
-                        invalid={
-                          validation.touched.ctr_status &&
-                          validation.errors.ctr_status
-                        }
-                      />
-                      {validation.touched.ctr_status &&
-                        validation.errors.ctr_status && (
-                          <FormFeedback type="invalid">
-                            {validation.errors.ctr_status}
-                          </FormFeedback>
-                        )}
-                    </div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <div className="text-end">
-                      {addContractTerminationReason.isPending ||
-                      updateContractTerminationReason.isPending ? (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addContractTerminationReason.isPending ||
-                            updateContractTerminationReason.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          <Spinner size={"sm"} color="light" className="me-2" />
-                          {t("Save")}
-                        </Button>
-                      ) : (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addContractTerminationReason.isPending ||
-                            updateContractTerminationReason.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          {t("Save")}
-                        </Button>
-                      )}
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
-            </ModalBody>
-          </Modal>
-        </div>
-      </div>
-    </React.Fragment>
-  );
+		<React.Fragment>
+			<ContractTerminationReasonModal
+				isOpen={modal1}
+				toggle={toggleViewModal}
+				transaction={transaction}
+			/>
+			<DeleteModal
+				show={deleteModal}
+				onDeleteClick={handleDeleteContractTerminationReason}
+				onCloseClick={() => setDeleteModal(false)}
+				isLoading={deleteContractTerminationReason.isPending}
+			/>
+			<div className="page-content">
+				<div className="container-fluid">
+					<Breadcrumbs
+						title={t("contract_termination_reason")}
+						breadcrumbItem={t("contract_termination_reason")}
+					/>
+					{isLoading || isSearchLoading ? (
+						<Spinners />
+					) : (
+						<Row>
+							<Col xs="12">
+								<Card>
+									<CardBody>
+										<TableContainer
+											columns={columns}
+											data={
+												showSearchResult
+													? searchResults?.data
+													: data?.data || []
+											}
+											isGlobalFilter={true}
+											isAddButton={data?.previledge?.is_role_can_add == 1}
+											isCustomPageSize={true}
+											handleUserClick={handleContractTerminationReasonClicks}
+											isPagination={true}
+											SearchPlaceholder={t("filter_placeholder")}
+											buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+											buttonName={
+												t("add") + " " + t("contract_termination_reason")
+											}
+											tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+											theadClass="table-light"
+											pagination="pagination"
+											paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+											refetch={refetch}
+											isFetching={isFetching}
+											isExcelExport={true}
+											isPdfExport={true}
+											isPrint={true}
+											tableName="Contract Termination Reason"
+											exportColumns={contractTerminationReasonExportColumns}
+										/>
+									</CardBody>
+								</Card>
+							</Col>
+						</Row>
+					)}
+					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
+						<ModalHeader toggle={toggle} tag="h4">
+							{!!isEdit
+								? t("edit") + " " + t("contract_termination_reason")
+								: t("add") + " " + t("contract_termination_reason")}
+						</ModalHeader>
+						<ModalBody>
+							<Form
+								onSubmit={(e) => {
+									e.preventDefault();
+									validation.handleSubmit();
+									return false;
+								}}
+							>
+								<Row>
+									<Col className="col-md-4 mb-3">
+										<Label>
+											{t("ctr_reason_name_or")}
+											<span className="text-danger">*</span>
+										</Label>
+										<Input
+											name="ctr_reason_name_or"
+											type="text"
+											placeholder={t("ctr_reason_name_or")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.ctr_reason_name_or || ""}
+											invalid={
+												validation.touched.ctr_reason_name_or &&
+												validation.errors.ctr_reason_name_or
+													? true
+													: false
+											}
+											maxLength={100}
+										/>
+										{validation.touched.ctr_reason_name_or &&
+										validation.errors.ctr_reason_name_or ? (
+											<FormFeedback type="invalid">
+												{validation.errors.ctr_reason_name_or}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-4 mb-3">
+										<Label>
+											{t("ctr_reason_name_am")}
+											<span className="text-danger">*</span>
+										</Label>
+										<Input
+											name="ctr_reason_name_am"
+											type="text"
+											placeholder={t("ctr_reason_name_am")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.ctr_reason_name_am || ""}
+											invalid={
+												validation.touched.ctr_reason_name_am &&
+												validation.errors.ctr_reason_name_am
+													? true
+													: false
+											}
+											maxLength={100}
+										/>
+										{validation.touched.ctr_reason_name_am &&
+										validation.errors.ctr_reason_name_am ? (
+											<FormFeedback type="invalid">
+												{validation.errors.ctr_reason_name_am}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-4 mb-3">
+										<Label>
+											{t("ctr_reason_name_en")}
+											<span className="text-danger">*</span>
+										</Label>
+										<Input
+											name="ctr_reason_name_en"
+											type="text"
+											placeholder={t("ctr_reason_name_en")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.ctr_reason_name_en || ""}
+											invalid={
+												validation.touched.ctr_reason_name_en &&
+												validation.errors.ctr_reason_name_en
+													? true
+													: false
+											}
+											maxLength={100}
+										/>
+										{validation.touched.ctr_reason_name_en &&
+										validation.errors.ctr_reason_name_en ? (
+											<FormFeedback type="invalid">
+												{validation.errors.ctr_reason_name_en}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-6 mb-3">
+										<Label>{t("ctr_description")}</Label>
+										<Input
+											name="ctr_description"
+											type="textarea"
+											placeholder={t("ctr_description")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.ctr_description || ""}
+											invalid={
+												validation.touched.ctr_description &&
+												validation.errors.ctr_description
+													? true
+													: false
+											}
+											maxLength={425}
+										/>
+										{validation.touched.ctr_description &&
+										validation.errors.ctr_description ? (
+											<FormFeedback type="invalid">
+												{validation.errors.ctr_description}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-4 mb-3">
+										<div className="form-check mb-4">
+											<Label className="me-1" for="ctr_status">
+												{t("is_inactive")}
+											</Label>
+											<Input
+												id="ctr_status"
+												name="ctr_status"
+												type="checkbox"
+												placeholder={t("ctr_status")}
+												onChange={validation.handleChange}
+												onBlur={validation.handleBlur}
+												checked={validation.values.ctr_status}
+												invalid={
+													validation.touched.ctr_status &&
+													validation.errors.ctr_status
+												}
+											/>
+											{validation.touched.ctr_status &&
+												validation.errors.ctr_status && (
+													<FormFeedback type="invalid">
+														{validation.errors.ctr_status}
+													</FormFeedback>
+												)}
+										</div>
+									</Col>
+								</Row>
+								<Row>
+									<Col>
+										<div className="text-end">
+											{addContractTerminationReason.isPending ||
+											updateContractTerminationReason.isPending ? (
+												<Button
+													color="success"
+													type="submit"
+													className="save-user"
+													disabled={
+														addContractTerminationReason.isPending ||
+														updateContractTerminationReason.isPending ||
+														!validation.dirty
+													}
+												>
+													<Spinner size={"sm"} color="light" className="me-2" />
+													{t("Save")}
+												</Button>
+											) : (
+												<Button
+													color="success"
+													type="submit"
+													className="save-user"
+													disabled={
+														addContractTerminationReason.isPending ||
+														updateContractTerminationReason.isPending ||
+														!validation.dirty
+													}
+												>
+													{t("Save")}
+												</Button>
+											)}
+										</div>
+									</Col>
+								</Row>
+							</Form>
+						</ModalBody>
+					</Modal>
+				</div>
+			</div>
+		</React.Fragment>
+	);
 };
 ContractTerminationReasonModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

@@ -420,278 +420,277 @@ const DocumentTypeModel = () => {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
-    <React.Fragment>
-      <DocumentTypeModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      />
-      <DeleteModal
-        show={deleteModal}
-        onDeleteClick={handleDeleteDocumentType}
-        onCloseClick={() => setDeleteModal(false)}
-        isLoading={deleteDocumentType.isPending}
-      />
-      <div className="page-content">
-        <div className="container-fluid">
-          <Breadcrumbs
-            title={t("document_type")}
-            breadcrumbItem={t("document_type")}
-          />
-          {isLoading || isSearchLoading ? (
-            <Spinners />
-          ) : (
-            <Row>
-              <Col xs="12">
-                <Card>
-                  <CardBody>
-                    <TableContainer
-                      columns={columns}
-                      data={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add == 1}
-                      isCustomPageSize={true}
-                      handleUserClick={handleDocumentTypeClicks}
-                      isPagination={true}
-                      SearchPlaceholder={t("filter_placeholder")}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add") + " " + t("document_type")}
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                      divClassName="-"
-                      refetch={refetch}
-                      isFetching={isFetching}
-                      isExcelExport={true}
-                      isPdfExport={true}
-                      isPrint={true}
-                      tableName="Document Type"
-                      exportColumns={documentTypeExportColumns}
-                    />
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
-          )}
-          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-            <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit
-                ? t("edit") + " " + t("document_type")
-                : t("add") + " " + t("document_type")}
-            </ModalHeader>
-            <ModalBody>
-              <Form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  validation.handleSubmit();
-                  return false;
-                }}
-              >
-                <Row>
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pdt_doc_name_or")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="pdt_doc_name_or"
-                      type="text"
-                      placeholder={t("pdt_doc_name_or")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pdt_doc_name_or || ""}
-                      invalid={
-                        validation.touched.pdt_doc_name_or &&
-                        validation.errors.pdt_doc_name_or
-                          ? true
-                          : false
-                      }
-                      maxLength={100}
-                    />
-                    {validation.touched.pdt_doc_name_or &&
-                    validation.errors.pdt_doc_name_or ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pdt_doc_name_or}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pdt_doc_name_am")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="pdt_doc_name_am"
-                      type="text"
-                      placeholder={t("pdt_doc_name_am")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pdt_doc_name_am || ""}
-                      invalid={
-                        validation.touched.pdt_doc_name_am &&
-                        validation.errors.pdt_doc_name_am
-                          ? true
-                          : false
-                      }
-                      maxLength={100}
-                    />
-                    {validation.touched.pdt_doc_name_am &&
-                    validation.errors.pdt_doc_name_am ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pdt_doc_name_am}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>
-                      {t("pdt_doc_name_en")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="pdt_doc_name_en"
-                      type="text"
-                      placeholder={t("pdt_doc_name_en")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pdt_doc_name_en || ""}
-                      invalid={
-                        validation.touched.pdt_doc_name_en &&
-                        validation.errors.pdt_doc_name_en
-                          ? true
-                          : false
-                      }
-                      maxLength={100}
-                    />
-                    {validation.touched.pdt_doc_name_en &&
-                    validation.errors.pdt_doc_name_en ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pdt_doc_name_en}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pdt_code")}</Label>
-                    <Input
-                      name="pdt_code"
-                      type="text"
-                      placeholder={t("pdt_code")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pdt_code || ""}
-                      invalid={
-                        validation.touched.pdt_code &&
-                        validation.errors.pdt_code
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.pdt_code &&
-                    validation.errors.pdt_code ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pdt_code}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-6 mb-3">
-                    <Label>{t("pdt_description")}</Label>
-                    <Input
-                      name="pdt_description"
-                      type="textarea"
-                      placeholder={t("pdt_description")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.pdt_description || ""}
-                      invalid={
-                        validation.touched.pdt_description &&
-                        validation.errors.pdt_description
-                          ? true
-                          : false
-                      }
-                      maxLength={425}
-                    />
-                    {validation.touched.pdt_description &&
-                    validation.errors.pdt_description ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.pdt_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
+		<React.Fragment>
+			<DocumentTypeModal
+				isOpen={modal1}
+				toggle={toggleViewModal}
+				transaction={transaction}
+			/>
+			<DeleteModal
+				show={deleteModal}
+				onDeleteClick={handleDeleteDocumentType}
+				onCloseClick={() => setDeleteModal(false)}
+				isLoading={deleteDocumentType.isPending}
+			/>
+			<div className="page-content">
+				<div className="container-fluid">
+					<Breadcrumbs
+						title={t("document_type")}
+						breadcrumbItem={t("document_type")}
+					/>
+					{isLoading || isSearchLoading ? (
+						<Spinners />
+					) : (
+						<Row>
+							<Col xs="12">
+								<Card>
+									<CardBody>
+										<TableContainer
+											columns={columns}
+											data={
+												showSearchResult
+													? searchResults?.data
+													: data?.data || []
+											}
+											isGlobalFilter={true}
+											isAddButton={data?.previledge?.is_role_can_add == 1}
+											isCustomPageSize={true}
+											handleUserClick={handleDocumentTypeClicks}
+											isPagination={true}
+											SearchPlaceholder={t("filter_placeholder")}
+											buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+											buttonName={t("add") + " " + t("document_type")}
+											tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+											theadClass="table-light"
+											pagination="pagination"
+											paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+											refetch={refetch}
+											isFetching={isFetching}
+											isExcelExport={true}
+											isPdfExport={true}
+											isPrint={true}
+											tableName="Document Type"
+											exportColumns={documentTypeExportColumns}
+										/>
+									</CardBody>
+								</Card>
+							</Col>
+						</Row>
+					)}
+					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
+						<ModalHeader toggle={toggle} tag="h4">
+							{!!isEdit
+								? t("edit") + " " + t("document_type")
+								: t("add") + " " + t("document_type")}
+						</ModalHeader>
+						<ModalBody>
+							<Form
+								onSubmit={(e) => {
+									e.preventDefault();
+									validation.handleSubmit();
+									return false;
+								}}
+							>
+								<Row>
+									<Col className="col-md-6 mb-3">
+										<Label>
+											{t("pdt_doc_name_or")}
+											<span className="text-danger">*</span>
+										</Label>
+										<Input
+											name="pdt_doc_name_or"
+											type="text"
+											placeholder={t("pdt_doc_name_or")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.pdt_doc_name_or || ""}
+											invalid={
+												validation.touched.pdt_doc_name_or &&
+												validation.errors.pdt_doc_name_or
+													? true
+													: false
+											}
+											maxLength={100}
+										/>
+										{validation.touched.pdt_doc_name_or &&
+										validation.errors.pdt_doc_name_or ? (
+											<FormFeedback type="invalid">
+												{validation.errors.pdt_doc_name_or}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-6 mb-3">
+										<Label>
+											{t("pdt_doc_name_am")}
+											<span className="text-danger">*</span>
+										</Label>
+										<Input
+											name="pdt_doc_name_am"
+											type="text"
+											placeholder={t("pdt_doc_name_am")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.pdt_doc_name_am || ""}
+											invalid={
+												validation.touched.pdt_doc_name_am &&
+												validation.errors.pdt_doc_name_am
+													? true
+													: false
+											}
+											maxLength={100}
+										/>
+										{validation.touched.pdt_doc_name_am &&
+										validation.errors.pdt_doc_name_am ? (
+											<FormFeedback type="invalid">
+												{validation.errors.pdt_doc_name_am}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-6 mb-3">
+										<Label>
+											{t("pdt_doc_name_en")}
+											<span className="text-danger">*</span>
+										</Label>
+										<Input
+											name="pdt_doc_name_en"
+											type="text"
+											placeholder={t("pdt_doc_name_en")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.pdt_doc_name_en || ""}
+											invalid={
+												validation.touched.pdt_doc_name_en &&
+												validation.errors.pdt_doc_name_en
+													? true
+													: false
+											}
+											maxLength={100}
+										/>
+										{validation.touched.pdt_doc_name_en &&
+										validation.errors.pdt_doc_name_en ? (
+											<FormFeedback type="invalid">
+												{validation.errors.pdt_doc_name_en}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-6 mb-3">
+										<Label>{t("pdt_code")}</Label>
+										<Input
+											name="pdt_code"
+											type="text"
+											placeholder={t("pdt_code")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.pdt_code || ""}
+											invalid={
+												validation.touched.pdt_code &&
+												validation.errors.pdt_code
+													? true
+													: false
+											}
+											maxLength={20}
+										/>
+										{validation.touched.pdt_code &&
+										validation.errors.pdt_code ? (
+											<FormFeedback type="invalid">
+												{validation.errors.pdt_code}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-6 mb-3">
+										<Label>{t("pdt_description")}</Label>
+										<Input
+											name="pdt_description"
+											type="textarea"
+											placeholder={t("pdt_description")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.pdt_description || ""}
+											invalid={
+												validation.touched.pdt_description &&
+												validation.errors.pdt_description
+													? true
+													: false
+											}
+											maxLength={425}
+										/>
+										{validation.touched.pdt_description &&
+										validation.errors.pdt_description ? (
+											<FormFeedback type="invalid">
+												{validation.errors.pdt_description}
+											</FormFeedback>
+										) : null}
+									</Col>
 
-                  <Col className="col-md-4 mb-3">
-                    <div className="form-check mb-4">
-                      <Label className="me-1" for="pdt_status">
-                        {t("is_inactive")}
-                      </Label>
-                      <Input
-                        id="pdt_status"
-                        name="pdt_status"
-                        type="checkbox"
-                        placeholder={t("pdt_status")}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        checked={validation.values.pdt_status}
-                        invalid={
-                          validation.touched.pdt_status &&
-                          validation.errors.pdt_status
-                        }
-                      />
-                      {validation.touched.pdt_status &&
-                        validation.errors.pdt_status && (
-                          <FormFeedback type="invalid">
-                            {validation.errors.pdt_status}
-                          </FormFeedback>
-                        )}
-                    </div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <div className="text-end">
-                      {addDocumentType.isPending ||
-                      updateDocumentType.isPending ? (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addDocumentType.isPending ||
-                            updateDocumentType.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          <Spinner size={"sm"} color="light" className="me-2" />
-                          {t("Save")}
-                        </Button>
-                      ) : (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addDocumentType.isPending ||
-                            updateDocumentType.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          {t("Save")}
-                        </Button>
-                      )}
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
-            </ModalBody>
-          </Modal>
-        </div>
-      </div>
-    </React.Fragment>
-  );
+									<Col className="col-md-4 mb-3">
+										<div className="form-check mb-4">
+											<Label className="me-1" for="pdt_status">
+												{t("is_inactive")}
+											</Label>
+											<Input
+												id="pdt_status"
+												name="pdt_status"
+												type="checkbox"
+												placeholder={t("pdt_status")}
+												onChange={validation.handleChange}
+												onBlur={validation.handleBlur}
+												checked={validation.values.pdt_status}
+												invalid={
+													validation.touched.pdt_status &&
+													validation.errors.pdt_status
+												}
+											/>
+											{validation.touched.pdt_status &&
+												validation.errors.pdt_status && (
+													<FormFeedback type="invalid">
+														{validation.errors.pdt_status}
+													</FormFeedback>
+												)}
+										</div>
+									</Col>
+								</Row>
+								<Row>
+									<Col>
+										<div className="text-end">
+											{addDocumentType.isPending ||
+											updateDocumentType.isPending ? (
+												<Button
+													color="success"
+													type="submit"
+													className="save-user"
+													disabled={
+														addDocumentType.isPending ||
+														updateDocumentType.isPending ||
+														!validation.dirty
+													}
+												>
+													<Spinner size={"sm"} color="light" className="me-2" />
+													{t("Save")}
+												</Button>
+											) : (
+												<Button
+													color="success"
+													type="submit"
+													className="save-user"
+													disabled={
+														addDocumentType.isPending ||
+														updateDocumentType.isPending ||
+														!validation.dirty
+													}
+												>
+													{t("Save")}
+												</Button>
+											)}
+										</div>
+									</Col>
+								</Row>
+							</Form>
+						</ModalBody>
+					</Modal>
+				</div>
+			</div>
+		</React.Fragment>
+	);
 };
 DocumentTypeModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

@@ -402,120 +402,119 @@ const AttachFileModal = ({
   }
 
   return (
-    <>
-      <ProjectDocumentModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={details}
-      />
-      <DeleteModal
-        show={deleteModal}
-        onDeleteClick={handleDeleteProjectDocument}
-        onCloseClick={() => setDeleteModal(false)}
-        isLoading={deleteProjectDocument.isPending}
-      />
-      <Modal
-        isOpen={isOpen}
-        role="dialog"
-        autoFocus={true}
-        centered={true}
-        className="modal-xl"
-        tabIndex="-1"
-        toggle={toggle}
-      >
-        <div className="modal-xl">
-          <ModalHeader toggle={toggle}>
-            {title ? title : t("attach_files")}
-          </ModalHeader>
-          <ModalBody>
-            {isLoading ? (
-              <Spinners />
-            ) : (
-              <TableContainer
-                columns={columns}
-                data={data?.data || []}
-                isGlobalFilter={true}
-                isAddButton={canAdd}
-                isCustomPageSize={true}
-                handleUserClick={handleProjectDocumentClicks}
-                isPagination={true}
-                SearchPlaceholder={t("filter_placeholder")}
-                buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                buttonName={t("add")}
-                tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                theadClass="table-light"
-                pagination="pagination"
-                paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                divClassName="-"
-                refetch={refetch}
-                isFetching={isFetching}
-              />
-            )}
-            <Modal isOpen={modal} toggle={toggleForm} className="modal-xl">
-              <ModalHeader toggle={toggleForm} tag="h4">
-                {isEdit
-                  ? `${t("edit")} ${title || t("attach_files")}`
-                  : `${t("add")} ${title || t("attach_files")}`}
-              </ModalHeader>
-              <ModalBody>
-                <Form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    validation.handleSubmit();
-                    return false;
-                  }}
-                >
-                  <Row>
-                    {/* PDF File Picker */}
-                    <FileUploadField validation={validation} accept={accept} />
-                    <Row>
-                      <Col>
-                        <div className="text-end">
-                          {addProjectDocument.isPending ||
-                          updateProjectDocument.isPending ? (
-                            <Button
-                              color="success"
-                              type="submit"
-                              className="save-user"
-                              disabled={
-                                addProjectDocument.isPending ||
-                                updateProjectDocument.isPending ||
-                                !validation.dirty
-                              }
-                            >
-                              <Spinner
-                                size={"sm"}
-                                color="light"
-                                className="me-2"
-                              />
-                              {t("Save")}
-                            </Button>
-                          ) : (
-                            <Button
-                              color="success"
-                              type="submit"
-                              className="save-user"
-                              disabled={
-                                addProjectDocument.isPending ||
-                                updateProjectDocument.isPending ||
-                                !validation.dirty
-                              }
-                            >
-                              {t("Save")}
-                            </Button>
-                          )}
-                        </div>
-                      </Col>
-                    </Row>
-                  </Row>
-                </Form>
-              </ModalBody>
-            </Modal>
-          </ModalBody>
-        </div>
-      </Modal>
-    </>
-  );
+		<>
+			<ProjectDocumentModal
+				isOpen={modal1}
+				toggle={toggleViewModal}
+				transaction={details}
+			/>
+			<DeleteModal
+				show={deleteModal}
+				onDeleteClick={handleDeleteProjectDocument}
+				onCloseClick={() => setDeleteModal(false)}
+				isLoading={deleteProjectDocument.isPending}
+			/>
+			<Modal
+				isOpen={isOpen}
+				role="dialog"
+				autoFocus={true}
+				centered={true}
+				className="modal-xl"
+				tabIndex="-1"
+				toggle={toggle}
+			>
+				<div className="modal-xl">
+					<ModalHeader toggle={toggle}>
+						{title ? title : t("attach_files")}
+					</ModalHeader>
+					<ModalBody>
+						{isLoading ? (
+							<Spinners />
+						) : (
+							<TableContainer
+								columns={columns}
+								data={data?.data || []}
+								isGlobalFilter={true}
+								isAddButton={canAdd}
+								isCustomPageSize={true}
+								handleUserClick={handleProjectDocumentClicks}
+								isPagination={true}
+								SearchPlaceholder={t("filter_placeholder")}
+								buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+								buttonName={t("add")}
+								tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+								theadClass="table-light"
+								pagination="pagination"
+								paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+								refetch={refetch}
+								isFetching={isFetching}
+							/>
+						)}
+						<Modal isOpen={modal} toggle={toggleForm} className="modal-xl">
+							<ModalHeader toggle={toggleForm} tag="h4">
+								{isEdit
+									? `${t("edit")} ${title || t("attach_files")}`
+									: `${t("add")} ${title || t("attach_files")}`}
+							</ModalHeader>
+							<ModalBody>
+								<Form
+									onSubmit={(e) => {
+										e.preventDefault();
+										validation.handleSubmit();
+										return false;
+									}}
+								>
+									<Row>
+										{/* PDF File Picker */}
+										<FileUploadField validation={validation} accept={accept} />
+										<Row>
+											<Col>
+												<div className="text-end">
+													{addProjectDocument.isPending ||
+													updateProjectDocument.isPending ? (
+														<Button
+															color="success"
+															type="submit"
+															className="save-user"
+															disabled={
+																addProjectDocument.isPending ||
+																updateProjectDocument.isPending ||
+																!validation.dirty
+															}
+														>
+															<Spinner
+																size={"sm"}
+																color="light"
+																className="me-2"
+															/>
+															{t("Save")}
+														</Button>
+													) : (
+														<Button
+															color="success"
+															type="submit"
+															className="save-user"
+															disabled={
+																addProjectDocument.isPending ||
+																updateProjectDocument.isPending ||
+																!validation.dirty
+															}
+														>
+															{t("Save")}
+														</Button>
+													)}
+												</div>
+											</Col>
+										</Row>
+									</Row>
+								</Form>
+							</ModalBody>
+						</Modal>
+					</ModalBody>
+				</div>
+			</Modal>
+		</>
+	);
 };
 
 export default AttachFileModal;

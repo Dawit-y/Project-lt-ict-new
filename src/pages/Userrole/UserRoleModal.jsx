@@ -131,62 +131,61 @@ const UserRoleModal = (props) => {
   }
 
   return (
-    <Modal
-      isOpen={isOpen}
-      role="dialog"
-      autoFocus={true}
-      centered={true}
-      className="modal-xl"
-      tabIndex="-1"
-      toggle={toggle}
-      style={modalStyle}
-    >
-      <div className="modal-xl">
-        <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
-        <ModalBody>
-          <DetailsView
-            details={updatedTransaction}
-            keysToRemove={[
-              "url_id",
-              "url_role_id",
-              "url_user_id",
-              "url_delete_time",
-              "url_created_by",
-              "url_status",
-              "is_editable",
-              "is_deletable",
-              "total_count",
-            ]}
-          />
-          <h4>{t("permission")}</h4>
-          <hr />
-          {isLoading ? (
-            <Spinners top={"top-70"} />
-          ) : (
-            <TableContainer
-              columns={columns}
-              data={data?.data || []}
-              isGlobalFilter={false}
-              isAddButton={false}
-              isCustomPageSize={true}
-              isPagination={true}
-              isPrint={false}
-              tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-              theadClass="table-light"
-              pagination="pagination"
-              paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-              divClassName="-"
-            />
-          )}
-        </ModalBody>
-        <ModalFooter>
-          <Button type="button" color="secondary" onClick={toggle}>
-            {t("Close")}
-          </Button>
-        </ModalFooter>
-      </div>
-    </Modal>
-  );
+		<Modal
+			isOpen={isOpen}
+			role="dialog"
+			autoFocus={true}
+			centered={true}
+			className="modal-xl"
+			tabIndex="-1"
+			toggle={toggle}
+			style={modalStyle}
+		>
+			<div className="modal-xl">
+				<ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
+				<ModalBody>
+					<DetailsView
+						details={updatedTransaction}
+						keysToRemove={[
+							"url_id",
+							"url_role_id",
+							"url_user_id",
+							"url_delete_time",
+							"url_created_by",
+							"url_status",
+							"is_editable",
+							"is_deletable",
+							"total_count",
+						]}
+					/>
+					<h4>{t("permission")}</h4>
+					<hr />
+					{isLoading ? (
+						<Spinners top={"top-70"} />
+					) : (
+						<TableContainer
+							columns={columns}
+							data={data?.data || []}
+							isGlobalFilter={false}
+							isAddButton={false}
+							isCustomPageSize={true}
+							isPagination={true}
+							isPrint={false}
+							tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+							theadClass="table-light"
+							pagination="pagination"
+							paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+						/>
+					)}
+				</ModalBody>
+				<ModalFooter>
+					<Button type="button" color="secondary" onClick={toggle}>
+						{t("Close")}
+					</Button>
+				</ModalFooter>
+			</div>
+		</Modal>
+	);
 };
 UserRoleModal.propTypes = {
   toggle: PropTypes.func,

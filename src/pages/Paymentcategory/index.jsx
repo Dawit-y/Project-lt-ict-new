@@ -414,7 +414,6 @@ const PaymentCategoryModel = () => {
 											theadClass="table-light"
 											pagination="pagination"
 											paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-											divClassName="-"
 											refetch={refetch}
 											isFetching={isFetching}
 											isExcelExport={true}

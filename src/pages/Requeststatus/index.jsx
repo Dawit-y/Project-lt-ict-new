@@ -359,254 +359,253 @@ const RequestStatusModel = () => {
   }
 
   return (
-    <React.Fragment>
-      <RequestStatusModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      />
-      <DeleteModal
-        show={deleteModal}
-        onDeleteClick={handleDeleteRequestStatus}
-        onCloseClick={() => setDeleteModal(false)}
-        isLoading={deleteRequestStatus.isPending}
-      />
-      <div className="page-content">
-        <div className="container-fluid">
-          <Breadcrumbs
-            title={t("request_status")}
-            breadcrumbItem={t("request_status")}
-          />
-          {isLoading || isSearchLoading ? (
-            <Spinners />
-          ) : (
-            <Row>
-              <Col xs="12">
-                <Card>
-                  <CardBody>
-                    <TableContainer
-                      columns={columns}
-                      data={
-                        showSearchResult
-                          ? searchResults?.data
-                          : data?.data || []
-                      }
-                      isGlobalFilter={true}
-                      isAddButton={data?.previledge?.is_role_can_add == 1}
-                      isCustomPageSize={true}
-                      handleUserClick={handleRequestStatusClicks}
-                      isPagination={true}
-                      // SearchPlaceholder="26 records..."
-                      SearchPlaceholder={26 + " " + t("Results") + "..."}
-                      buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                      buttonName={t("add")}
-                      tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                      theadClass="table-light"
-                      pagination="pagination"
-                      paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                      divClassName="-"
-                      refetch={refetch}
-                      isFetching={isFetching}
-                      isExcelExport={true}
-                      isPdfExport={true}
-                      isPrint={true}
-                      tableName="Request Status"
-                      exportColumns={requestStatusExportColumns}
-                    />
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
-          )}
-          <Modal isOpen={modal} toggle={toggle} className="modal-xl">
-            <ModalHeader toggle={toggle} tag="h4">
-              {!!isEdit
-                ? t("edit") + " " + t("request_status")
-                : t("add") + " " + t("request_status")}
-            </ModalHeader>
-            <ModalBody>
-              <Form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  validation.handleSubmit();
-                  return false;
-                }}
-              >
-                <Row>
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("rqs_name_or")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="rqs_name_or"
-                      type="text"
-                      placeholder={t("rqs_name_or")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.rqs_name_or || ""}
-                      invalid={
-                        validation.touched.rqs_name_or &&
-                        validation.errors.rqs_name_or
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.rqs_name_or &&
-                    validation.errors.rqs_name_or ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.rqs_name_or}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("rqs_name_am")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="rqs_name_am"
-                      type="text"
-                      placeholder={t("rqs_name_am")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.rqs_name_am || ""}
-                      invalid={
-                        validation.touched.rqs_name_am &&
-                        validation.errors.rqs_name_am
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.rqs_name_am &&
-                    validation.errors.rqs_name_am ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.rqs_name_am}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <Label>
-                      {t("rqs_name_en")}
-                      <span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      name="rqs_name_en"
-                      type="text"
-                      placeholder={t("rqs_name_en")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.rqs_name_en || ""}
-                      invalid={
-                        validation.touched.rqs_name_en &&
-                        validation.errors.rqs_name_en
-                          ? true
-                          : false
-                      }
-                      maxLength={20}
-                    />
-                    {validation.touched.rqs_name_en &&
-                    validation.errors.rqs_name_en ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.rqs_name_en}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-8 mb-3">
-                    <Label>{t("rqs_description")}</Label>
-                    <Input
-                      name="rqs_description"
-                      rows={5}
-                      type="textarea"
-                      placeholder={t("rqs_description")}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.rqs_description || ""}
-                      invalid={
-                        validation.touched.rqs_description &&
-                        validation.errors.rqs_description
-                          ? true
-                          : false
-                      }
-                    />
-                    {validation.touched.rqs_description &&
-                    validation.errors.rqs_description ? (
-                      <FormFeedback type="invalid">
-                        {validation.errors.rqs_description}
-                      </FormFeedback>
-                    ) : null}
-                  </Col>
-                  <Col className="col-md-4 mb-3">
-                    <div className="form-check mb-4">
-                      <Label className="me-1" for="rqs_status">
-                        {t("is_inactive")}
-                      </Label>
-                      <Input
-                        id="rqs_status"
-                        name="rqs_status"
-                        type="checkbox"
-                        placeholder={t("rqs_status")}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        checked={validation.values.rqs_status}
-                        invalid={
-                          validation.touched.rqs_status &&
-                          validation.errors.rqs_status
-                        }
-                      />
-                      {validation.touched.rqs_status &&
-                        validation.errors.rqs_status && (
-                          <FormFeedback type="invalid">
-                            {validation.errors.rqs_status}
-                          </FormFeedback>
-                        )}
-                    </div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <div className="text-end">
-                      {addRequestStatus.isPending ||
-                      updateRequestStatus.isPending ? (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addRequestStatus.isPending ||
-                            updateRequestStatus.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          <Spinner size={"sm"} color="light" className="me-2" />
-                          {t("Save")}
-                        </Button>
-                      ) : (
-                        <Button
-                          color="success"
-                          type="submit"
-                          className="save-user"
-                          disabled={
-                            addRequestStatus.isPending ||
-                            updateRequestStatus.isPending ||
-                            !validation.dirty
-                          }
-                        >
-                          {t("Save")}
-                        </Button>
-                      )}
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
-            </ModalBody>
-          </Modal>
-        </div>
-      </div>
-    </React.Fragment>
-  );
+		<React.Fragment>
+			<RequestStatusModal
+				isOpen={modal1}
+				toggle={toggleViewModal}
+				transaction={transaction}
+			/>
+			<DeleteModal
+				show={deleteModal}
+				onDeleteClick={handleDeleteRequestStatus}
+				onCloseClick={() => setDeleteModal(false)}
+				isLoading={deleteRequestStatus.isPending}
+			/>
+			<div className="page-content">
+				<div className="container-fluid">
+					<Breadcrumbs
+						title={t("request_status")}
+						breadcrumbItem={t("request_status")}
+					/>
+					{isLoading || isSearchLoading ? (
+						<Spinners />
+					) : (
+						<Row>
+							<Col xs="12">
+								<Card>
+									<CardBody>
+										<TableContainer
+											columns={columns}
+											data={
+												showSearchResult
+													? searchResults?.data
+													: data?.data || []
+											}
+											isGlobalFilter={true}
+											isAddButton={data?.previledge?.is_role_can_add == 1}
+											isCustomPageSize={true}
+											handleUserClick={handleRequestStatusClicks}
+											isPagination={true}
+											// SearchPlaceholder="26 records..."
+											SearchPlaceholder={26 + " " + t("Results") + "..."}
+											buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+											buttonName={t("add")}
+											tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+											theadClass="table-light"
+											pagination="pagination"
+											paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+											refetch={refetch}
+											isFetching={isFetching}
+											isExcelExport={true}
+											isPdfExport={true}
+											isPrint={true}
+											tableName="Request Status"
+											exportColumns={requestStatusExportColumns}
+										/>
+									</CardBody>
+								</Card>
+							</Col>
+						</Row>
+					)}
+					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
+						<ModalHeader toggle={toggle} tag="h4">
+							{!!isEdit
+								? t("edit") + " " + t("request_status")
+								: t("add") + " " + t("request_status")}
+						</ModalHeader>
+						<ModalBody>
+							<Form
+								onSubmit={(e) => {
+									e.preventDefault();
+									validation.handleSubmit();
+									return false;
+								}}
+							>
+								<Row>
+									<Col className="col-md-4 mb-3">
+										<Label>
+											{t("rqs_name_or")}
+											<span className="text-danger">*</span>
+										</Label>
+										<Input
+											name="rqs_name_or"
+											type="text"
+											placeholder={t("rqs_name_or")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.rqs_name_or || ""}
+											invalid={
+												validation.touched.rqs_name_or &&
+												validation.errors.rqs_name_or
+													? true
+													: false
+											}
+											maxLength={20}
+										/>
+										{validation.touched.rqs_name_or &&
+										validation.errors.rqs_name_or ? (
+											<FormFeedback type="invalid">
+												{validation.errors.rqs_name_or}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-4 mb-3">
+										<Label>
+											{t("rqs_name_am")}
+											<span className="text-danger">*</span>
+										</Label>
+										<Input
+											name="rqs_name_am"
+											type="text"
+											placeholder={t("rqs_name_am")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.rqs_name_am || ""}
+											invalid={
+												validation.touched.rqs_name_am &&
+												validation.errors.rqs_name_am
+													? true
+													: false
+											}
+											maxLength={20}
+										/>
+										{validation.touched.rqs_name_am &&
+										validation.errors.rqs_name_am ? (
+											<FormFeedback type="invalid">
+												{validation.errors.rqs_name_am}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-4 mb-3">
+										<Label>
+											{t("rqs_name_en")}
+											<span className="text-danger">*</span>
+										</Label>
+										<Input
+											name="rqs_name_en"
+											type="text"
+											placeholder={t("rqs_name_en")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.rqs_name_en || ""}
+											invalid={
+												validation.touched.rqs_name_en &&
+												validation.errors.rqs_name_en
+													? true
+													: false
+											}
+											maxLength={20}
+										/>
+										{validation.touched.rqs_name_en &&
+										validation.errors.rqs_name_en ? (
+											<FormFeedback type="invalid">
+												{validation.errors.rqs_name_en}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-8 mb-3">
+										<Label>{t("rqs_description")}</Label>
+										<Input
+											name="rqs_description"
+											rows={5}
+											type="textarea"
+											placeholder={t("rqs_description")}
+											onChange={validation.handleChange}
+											onBlur={validation.handleBlur}
+											value={validation.values.rqs_description || ""}
+											invalid={
+												validation.touched.rqs_description &&
+												validation.errors.rqs_description
+													? true
+													: false
+											}
+										/>
+										{validation.touched.rqs_description &&
+										validation.errors.rqs_description ? (
+											<FormFeedback type="invalid">
+												{validation.errors.rqs_description}
+											</FormFeedback>
+										) : null}
+									</Col>
+									<Col className="col-md-4 mb-3">
+										<div className="form-check mb-4">
+											<Label className="me-1" for="rqs_status">
+												{t("is_inactive")}
+											</Label>
+											<Input
+												id="rqs_status"
+												name="rqs_status"
+												type="checkbox"
+												placeholder={t("rqs_status")}
+												onChange={validation.handleChange}
+												onBlur={validation.handleBlur}
+												checked={validation.values.rqs_status}
+												invalid={
+													validation.touched.rqs_status &&
+													validation.errors.rqs_status
+												}
+											/>
+											{validation.touched.rqs_status &&
+												validation.errors.rqs_status && (
+													<FormFeedback type="invalid">
+														{validation.errors.rqs_status}
+													</FormFeedback>
+												)}
+										</div>
+									</Col>
+								</Row>
+								<Row>
+									<Col>
+										<div className="text-end">
+											{addRequestStatus.isPending ||
+											updateRequestStatus.isPending ? (
+												<Button
+													color="success"
+													type="submit"
+													className="save-user"
+													disabled={
+														addRequestStatus.isPending ||
+														updateRequestStatus.isPending ||
+														!validation.dirty
+													}
+												>
+													<Spinner size={"sm"} color="light" className="me-2" />
+													{t("Save")}
+												</Button>
+											) : (
+												<Button
+													color="success"
+													type="submit"
+													className="save-user"
+													disabled={
+														addRequestStatus.isPending ||
+														updateRequestStatus.isPending ||
+														!validation.dirty
+													}
+												>
+													{t("Save")}
+												</Button>
+											)}
+										</div>
+									</Col>
+								</Row>
+							</Form>
+						</ModalBody>
+					</Modal>
+				</div>
+			</div>
+		</React.Fragment>
+	);
 };
 RequestStatusModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,
