@@ -117,8 +117,8 @@ export const useUpdateImplementingArea = () => {
 					return {
 						...oldData,
 						data: oldData.data.map((d) =>
-							d.pia_id === updatedData.data.pia_id
-								? { ...d, ...updatedData.data }
+							d.pia_id === updatedData.pia_id // Changed from updatedData.data.pia_id
+								? { ...d, ...updatedData } // Changed from updatedData.data
 								: d
 						),
 					};
@@ -146,8 +146,8 @@ export const useUpdateImplementingArea = () => {
 					return {
 						...oldData,
 						data: oldData.data.map((data) =>
-							data.pia_id === updatedData.data.pia_id
-								? { ...data, ...updatedData.data }
+							data.pia_id === updatedData.pia_id // Changed from updatedData.data.pia_id
+								? { ...data, ...updatedData } // Changed from updatedData.data
 								: data
 						),
 					};
