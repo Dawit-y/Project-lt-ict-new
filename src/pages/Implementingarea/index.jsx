@@ -120,7 +120,12 @@ const ImplementingAreaModel = (props) => {
 	}, [sectorInformationData, lang]);
 
 	const { userId } = useAuthUser();
-	const { regions, zones, woredas } = useFetchAddressStructures(userId);
+	const {
+		regions,
+		zones,
+		woredas,
+		isLoading: isAddressLoading,
+	} = useFetchAddressStructures(userId);
 
 	const regionMap = useMemo(() => {
 		return createMultiLangKeyValueMap(
@@ -422,28 +427,40 @@ const ImplementingAreaModel = (props) => {
 				accessorKey: "pia_region_id",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: ({ getValue }) => regionMap[getValue()] ?? "-",
+				cell: ({ getValue }) => {
+					const value = getValue();
+					return regionMap[value] || value || "-";
+				},
 			},
 			{
 				header: t("zone"),
 				accessorKey: "pia_zone_id_id",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: ({ getValue }) => zoneMap[getValue()] ?? "-",
+				cell: ({ getValue }) => {
+					const value = getValue();
+					return zoneMap[value] || value || "-";
+				},
 			},
 			{
 				header: t("woreda"),
 				accessorKey: "pia_woreda_id",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: ({ getValue }) => woredaMap[getValue()] ?? "-",
+				cell: ({ getValue }) => {
+					const value = getValue();
+					return woredaMap[value] || value || "-";
+				},
 			},
 			{
 				header: t("sector"),
 				accessorKey: "pia_sector_id",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: ({ getValue }) => sectorInformationMap[getValue()] ?? "-",
+				cell: ({ getValue }) => {
+					const value = getValue();
+					return sectorInformationMap[value] || value || "-";
+				},
 			},
 			{
 				header: t("pia_budget_amount"),
@@ -499,7 +516,7 @@ const ImplementingAreaModel = (props) => {
 				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{cellProps.row.original.is_editable == 1 && (
 								<Button
 									size="sm"
@@ -541,7 +558,17 @@ const ImplementingAreaModel = (props) => {
 			});
 		}
 		return baseColumns;
-	}, [handleImplementingAreaClick, toggleViewModal, onClickDelete, t]);
+	}, [
+		handleImplementingAreaClick,
+		toggleViewModal,
+		onClickDelete,
+		t,
+		regionMap,
+		zoneMap,
+		woredaMap,
+		sectorInformationMap,
+		data,
+	]);
 
 	if (isError) return <FetchErrorHandler error={error} refetch={refetch} />;
 
@@ -551,6 +578,10 @@ const ImplementingAreaModel = (props) => {
 				isOpen={modal1}
 				toggle={toggleViewModal}
 				transaction={transaction}
+				regionMap={regionMap}
+				zoneMap={zoneMap}
+				woredaMap={woredaMap}
+				sectorInformationMap={sectorInformationMap}
 			/>
 			<DeleteModal
 				show={deleteModal}
@@ -558,8 +589,7 @@ const ImplementingAreaModel = (props) => {
 				onCloseClick={() => setDeleteModal(false)}
 				isLoading={deleteImplementingArea.isPending}
 			/>
-
-			{isLoading ? (
+			{isLoading || isSectorLoading || isAddressLoading ? (
 				<Spinners />
 			) : (
 				<Row>
@@ -705,7 +735,7 @@ const ImplementingAreaModel = (props) => {
 							{/* Geo Location Fields - Split into Latitude and Longitude */}
 							<Col className="col-md-4 mb-3">
 								<Label htmlFor="latitude" className="form-label">
-									{t("latitude")} <span className="text-danger">*</span>
+									{t("Latitude")} <span className="text-danger">*</span>
 								</Label>
 								<Input
 									id="latitude"
@@ -738,7 +768,7 @@ const ImplementingAreaModel = (props) => {
 
 							<Col className="col-md-4 mb-3">
 								<Label htmlFor="longitude" className="form-label">
-									{t("longitude")} <span className="text-danger">*</span>
+									{t("Longitude")} <span className="text-danger">*</span>
 								</Label>
 								<Input
 									id="longitude"
