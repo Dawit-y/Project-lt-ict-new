@@ -29,6 +29,7 @@ import {
 	FormFeedback,
 	Label,
 	Input,
+	FormGroup,
 } from "reactstrap";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -247,14 +248,43 @@ const ImplementingAreaModel = (props) => {
 				(implementingArea && implementingArea.pia_geo_location) || "",
 			pia_description:
 				(implementingArea && implementingArea.pia_description) || "",
-			pia_status: (implementingArea && implementingArea.pia_status) || "",
-			is_deletable: (implementingArea && implementingArea.is_deletable) || 1,
-			is_editable: (implementingArea && implementingArea.is_editable) || 1,
+			pia_is_other_region:
+				(implementingArea && implementingArea.pia_is_other_region) || 0,
 		},
 		validationSchema: Yup.object({
-			pia_region_id: Yup.string().required(t("pia_region_id")),
-			pia_zone_id_id: Yup.string().required(t("pia_zone_id_id")),
-			pia_woreda_id: Yup.string().required(t("pia_woreda_id")),
+			pia_region_id: Yup.string().test(
+				"region-required",
+				t("pia_region_id"),
+				function (value) {
+					const { pia_is_other_region } = this.parent;
+					if (pia_is_other_region === 0 || pia_is_other_region === "0") {
+						return !!value && value.trim() !== "";
+					}
+					return true;
+				}
+			),
+			pia_zone_id_id: Yup.string().test(
+				"zone-required",
+				t("pia_zone_id_id"),
+				function (value) {
+					const { pia_is_other_region } = this.parent;
+					if (pia_is_other_region === 0 || pia_is_other_region === "0") {
+						return !!value && value.trim() !== "";
+					}
+					return true;
+				}
+			),
+			pia_woreda_id: Yup.string().test(
+				"woreda-required",
+				t("pia_woreda_id"),
+				function (value) {
+					const { pia_is_other_region } = this.parent;
+					if (pia_is_other_region === 0 || pia_is_other_region === "0") {
+						return !!value && value.trim() !== "";
+					}
+					return true;
+				}
+			),
 			pia_sector_id: Yup.string().required(t("pia_sector_id")),
 			pia_site: Yup.string().required(t("pia_site")),
 			pia_geo_location: Yup.string()
@@ -286,7 +316,6 @@ const ImplementingAreaModel = (props) => {
 						return !isNaN(lat) && !isNaN(lng);
 					}
 				),
-
 			pia_budget_amount: Yup.number()
 				.required(t("pia_budget_amount"))
 				.positive("Amount must be positive")
@@ -312,6 +341,18 @@ const ImplementingAreaModel = (props) => {
 						return newTotal <= totalActualBudget;
 					}
 				),
+			pia_is_other_region: Yup.number().required(),
+			pia_description: Yup.string().test(
+				"description-required",
+				"Please specify the region name in the description when project is outside Oromia",
+				function (value) {
+					const { pia_is_other_region } = this.parent;
+					if (pia_is_other_region === 1 || pia_is_other_region === "1") {
+						return !!value && value.trim() !== "";
+					}
+					return true;
+				}
+			),
 		}),
 		validateOnBlur: true,
 		validateOnChange: true,
@@ -320,31 +361,41 @@ const ImplementingAreaModel = (props) => {
 				const updateImplementingArea = {
 					pia_id: implementingArea?.pia_id,
 					pia_project_id: passedId,
-					pia_region_id: values.pia_region_id,
-					pia_zone_id_id: values.pia_zone_id_id,
-					pia_woreda_id: values.pia_woreda_id,
+					pia_region_id: values.pia_is_other_region
+						? null
+						: values.pia_region_id,
+					pia_zone_id_id: values.pia_is_other_region
+						? null
+						: values.pia_zone_id_id,
+					pia_woreda_id: values.pia_is_other_region
+						? null
+						: values.pia_woreda_id,
 					pia_sector_id: values.pia_sector_id,
 					pia_budget_amount: values.pia_budget_amount,
 					pia_site: values.pia_site,
 					pia_geo_location: values.pia_geo_location,
 					pia_description: values.pia_description,
-					pia_status: values.pia_status,
-					is_deletable: values.is_deletable,
-					is_editable: values.is_editable,
+					pia_is_other_region: values.pia_is_other_region,
 				};
 				handleUpdateImplementingArea(updateImplementingArea);
 			} else {
 				const newImplementingArea = {
 					pia_project_id: passedId,
-					pia_region_id: values.pia_region_id,
-					pia_zone_id_id: values.pia_zone_id_id,
-					pia_woreda_id: values.pia_woreda_id,
+					pia_region_id: values.pia_is_other_region
+						? null
+						: values.pia_region_id,
+					pia_zone_id_id: values.pia_is_other_region
+						? null
+						: values.pia_zone_id_id,
+					pia_woreda_id: values.pia_is_other_region
+						? null
+						: values.pia_woreda_id,
 					pia_sector_id: values.pia_sector_id,
 					pia_budget_amount: values.pia_budget_amount,
 					pia_site: values.pia_site,
 					pia_geo_location: values.pia_geo_location,
 					pia_description: values.pia_description,
-					pia_status: values.pia_status,
+					pia_is_other_region: values.pia_is_other_region,
 				};
 				handleAddImplementingArea(newImplementingArea);
 			}
@@ -384,9 +435,7 @@ const ImplementingAreaModel = (props) => {
 			pia_site: implementingArea.pia_site,
 			pia_geo_location: implementingArea.pia_geo_location,
 			pia_description: implementingArea.pia_description,
-			pia_status: implementingArea.pia_status,
-			is_deletable: implementingArea.is_deletable,
-			is_editable: implementingArea.is_editable,
+			pia_is_other_region: implementingArea.pia_is_other_region,
 		});
 		setIsEdit(true);
 		toggle();
@@ -420,6 +469,19 @@ const ImplementingAreaModel = (props) => {
 		validation.setFieldTouched("pia_geo_location", true);
 	};
 
+	// Handle checkbox change
+	const handleCheckboxChange = (e) => {
+		const isChecked = e.target.checked ? 1 : 0;
+		validation.setFieldValue("pia_is_other_region", isChecked);
+
+		// Clear region fields when checked
+		if (isChecked) {
+			validation.setFieldValue("pia_region_id", "");
+			validation.setFieldValue("pia_zone_id_id", "");
+			validation.setFieldValue("pia_woreda_id", "");
+		}
+	};
+
 	const columns = useMemo(() => {
 		const baseColumns = [
 			{
@@ -427,8 +489,11 @@ const ImplementingAreaModel = (props) => {
 				accessorKey: "pia_region_id",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: ({ getValue }) => {
+				cell: ({ getValue, row }) => {
 					const value = getValue();
+					if (row.original.pia_is_other_region === 1) {
+						return "Outside Oromia";
+					}
 					return regionMap[value] || value || "-";
 				},
 			},
@@ -437,8 +502,11 @@ const ImplementingAreaModel = (props) => {
 				accessorKey: "pia_zone_id_id",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: ({ getValue }) => {
+				cell: ({ getValue, row }) => {
 					const value = getValue();
+					if (row.original.pia_is_other_region === 1) {
+						return "-";
+					}
 					return zoneMap[value] || value || "-";
 				},
 			},
@@ -447,8 +515,11 @@ const ImplementingAreaModel = (props) => {
 				accessorKey: "pia_woreda_id",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: ({ getValue }) => {
+				cell: ({ getValue, row }) => {
 					const value = getValue();
+					if (row.original.pia_is_other_region === 1) {
+						return "-";
+					}
 					return woredaMap[value] || value || "-";
 				},
 			},
@@ -482,6 +553,13 @@ const ImplementingAreaModel = (props) => {
 				enableColumnFilter: false,
 				enableSorting: true,
 				cell: ({ getValue }) => getValue() ?? "-",
+			},
+			{
+				header: t("Outside Oromia"),
+				accessorKey: "pia_is_other_region",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: ({ getValue }) => (getValue() === 1 ? "Yes" : "No"),
 			},
 			{
 				header: t("view_detail"),
@@ -615,19 +693,35 @@ const ImplementingAreaModel = (props) => {
 								{
 									key: "pia_region_id",
 									label: "region",
-									format: (val) => (val === 1 ? "Oromia" : `Region ID: ${val}`),
+									format: (val, row) =>
+										row.pia_is_other_region === 1
+											? "Outside Oromia"
+											: val === 1
+												? "Oromia"
+												: `Region ID: ${val}`,
 								},
 								{
 									key: "pia_zone_id_id",
 									label: "zone",
-									format: (val) => zoneMap[val] ?? `Zone ID: ${val}`,
+									format: (val, row) =>
+										row.pia_is_other_region === 1
+											? "-"
+											: (zoneMap[val] ?? `Zone ID: ${val}`),
 								},
 								{
 									key: "pia_woreda_id",
 									label: "woreda",
-									format: (val) => woredaMap[val] ?? `Woreda ID: ${val}`,
+									format: (val, row) =>
+										row.pia_is_other_region === 1
+											? "-"
+											: (woredaMap[val] ?? `Woreda ID: ${val}`),
 								},
 								...implementingAreaExportColumns,
+								{
+									key: "pia_is_other_region",
+									label: "Outside Oromia",
+									format: (val) => (val === 1 ? "Yes" : "No"),
+								},
 							]}
 						/>
 					</Col>
@@ -682,18 +776,45 @@ const ImplementingAreaModel = (props) => {
 								</Card>
 							</Col>
 						</Row>
+
+						{/* Outside Oromia Checkbox */}
 						<Row>
 							<Col xl={12} className="mb-3">
-								<CascadingDropdowns
-									validation={validation}
-									dropdown1name="pia_region_id"
-									dropdown2name="pia_zone_id_id"
-									dropdown3name="pia_woreda_id"
-									required={true}
-									layout="horizontal"
-									colSizes={{ md: 6, sm: 12, lg: 4 }}
-								/>
+								<FormGroup check>
+									<Input
+										type="checkbox"
+										id="pia_is_other_region"
+										name="pia_is_other_region"
+										checked={validation.values.pia_is_other_region === 1}
+										onChange={handleCheckboxChange}
+									/>
+									<Label check for="pia_is_other_region" className="ms-2">
+										{t("Outside Oromia Region")}
+									</Label>
+								</FormGroup>
+								<small className="text-muted">
+									{t("project_outside_oromia")}
+								</small>
 							</Col>
+						</Row>
+
+						{validation.values.pia_is_other_region === 0 && (
+							<Row>
+								<Col xl={12} className="mb-3">
+									<CascadingDropdowns
+										validation={validation}
+										dropdown1name="pia_region_id"
+										dropdown2name="pia_zone_id_id"
+										dropdown3name="pia_woreda_id"
+										required={true}
+										layout="horizontal"
+										colSizes={{ md: 6, sm: 12, lg: 4 }}
+									/>
+								</Col>
+							</Row>
+						)}
+
+						<Row>
 							<AsyncSelectField
 								fieldId="pia_sector_id"
 								validation={validation}
@@ -803,9 +924,14 @@ const ImplementingAreaModel = (props) => {
 								type="textarea"
 								validation={validation}
 								fieldId={"pia_description"}
-								isRequired={true}
+								isRequired={validation.values.pia_is_other_region === 1}
 								className="col-md-12 mb-3"
 								maxLength={1000}
+								placeholder={
+									validation.values.pia_is_other_region === 1
+										? t("specify_region_details")
+										: "Description"
+								}
 							/>
 						</Row>
 						<Row>
