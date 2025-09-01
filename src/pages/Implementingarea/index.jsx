@@ -81,7 +81,6 @@ const ImplementingAreaModel = (props) => {
 	const param = {
 		pia_project_id: passedId,
 		request_type: "single",
-		prj_total_actual_budget: totalActualBudget,
 	};
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
@@ -830,7 +829,6 @@ const ImplementingAreaModel = (props) => {
 									fieldId="pia_budget_amount"
 									label={t("pia_budget_amount")}
 									isRequired={true}
-									max={totalActualBudget}
 								/>
 
 								<small className="text-muted">

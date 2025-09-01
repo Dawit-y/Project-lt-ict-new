@@ -1956,5 +1956,6 @@
 	"prepared_by": "Prepared By",
 	"approved_by": "Approved By",
 	"project_outside_oromia": "Check this box if the project is outside Oromia region. When checked, the region dropdowns will be hidden and you should specify the region name in the description field.",
-	"specify_region_details": "Please specify the region name and other details (required when project is outside Oromia)"
+	"specify_region_details": "Please specify the region name and other details (required when project is outside Oromia)",
+	"pcm_budget_amount": "Budget Amount"
 }

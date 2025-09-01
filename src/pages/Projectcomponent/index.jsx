@@ -28,6 +28,8 @@ import {
 	Input,
 	FormFeedback,
 	Label,
+	Card,
+	CardBody,
 } from "reactstrap";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -45,22 +47,36 @@ const truncateText = (text, maxLength) => {
 
 const ProjectComponentModel = (props) => {
 	document.title = "Project Component";
-	const { passedId, isActive } = props;
+	const { passedId, isActive, totalActualBudget } = props;
 	const param = { project_id: passedId, request_type: "single" };
 	const { t } = useTranslation();
 	const [modal, setModal] = useState(false);
 	const [modal1, setModal1] = useState(false);
 	const [isEdit, setIsEdit] = useState(false);
 	const [projectComponent, setProjectComponent] = useState(null);
-	const [searchResults, setSearchResults] = useState(null);
-	const [isSearchLoading, setIsSearchLoading] = useState(false);
-	const [searcherror, setSearchError] = useState(null);
-	const [showSearchResult, setShowSearchResult] = useState(false);
+
 	const { data, isLoading, isFetching, error, isError, refetch } =
 		useFetchProjectComponents(param, isActive);
 	const addProjectComponent = useAddProjectComponent();
 	const updateProjectComponent = useUpdateProjectComponent();
 	const deleteProjectComponent = useDeleteProjectComponent();
+
+	// Calculate current total allocated budget
+	const calculateCurrentTotal = (
+		currentData,
+		editingId = null,
+		newAmount = 0
+	) => {
+		if (!currentData || !currentData.data) return 0;
+
+		return currentData.data.reduce((total, item) => {
+			// If editing, exclude the item being edited from the total
+			if (editingId && item.pcm_id === editingId) {
+				return total + Number(newAmount || 0);
+			}
+			return total + Number(item.pcm_budget_amount || 0);
+		}, 0);
+	};
 
 	//START CRUD
 	const handleAddProjectComponent = async (data) => {
@@ -122,16 +138,41 @@ const ProjectComponentModel = (props) => {
 			pcm_unit_measurement:
 				(projectComponent && projectComponent.pcm_unit_measurement) || "",
 			pcm_amount: (projectComponent && projectComponent.pcm_amount) || "",
+			pcm_budget_amount:
+				(projectComponent && projectComponent.pcm_budget_amount) || "",
 			pcm_description:
 				(projectComponent && projectComponent.pcm_description) || "",
-			is_deletable: (projectComponent && projectComponent.is_deletable) || 1,
-			is_editable: (projectComponent && projectComponent.is_editable) || 1,
 		},
 		validationSchema: Yup.object({
 			pcm_project_id: Yup.string().required(t("pcm_project_id")),
 			pcm_component_name: Yup.string().required(t("pcm_component_name")),
 			pcm_unit_measurement: Yup.string().required(t("pcm_unit_measurement")),
 			pcm_amount: Yup.string().required(t("pcm_amount")),
+			pcm_budget_amount: Yup.number()
+				.required(t("pcm_budget_amount"))
+				.positive("Amount must be positive")
+				.test(
+					"total-budget",
+					"Amount exceeds remaining project budget",
+					function (value) {
+						if (!value || isNaN(value)) return true;
+
+						const currentData = data;
+						const editingId = isEdit ? projectComponent?.pcm_id : null;
+
+						// Calculate total without the current edited item
+						const currentTotalWithoutThis =
+							currentData?.data?.reduce((total, item) => {
+								if (editingId && item.pcm_id === editingId) return total;
+								return total + Number(item.pcm_budget_amount || 0);
+							}, 0) || 0;
+
+						// Calculate new total if this amount is added/updated
+						const newTotal = currentTotalWithoutThis + Number(value);
+
+						return newTotal <= totalActualBudget;
+					}
+				),
 		}),
 		validateOnBlur: true,
 		validateOnChange: false,
@@ -143,9 +184,8 @@ const ProjectComponentModel = (props) => {
 					pcm_component_name: values.pcm_component_name,
 					pcm_unit_measurement: values.pcm_unit_measurement,
 					pcm_amount: values.pcm_amount,
+					pcm_budget_amount: values.pcm_budget_amount,
 					pcm_description: values.pcm_description,
-					is_deletable: values.is_deletable,
-					is_editable: values.is_editable,
 				};
 				// update ProjectComponent
 				handleUpdateProjectComponent(updateProjectComponent);
@@ -155,6 +195,7 @@ const ProjectComponentModel = (props) => {
 					pcm_component_name: values.pcm_component_name,
 					pcm_unit_measurement: values.pcm_unit_measurement,
 					pcm_amount: values.pcm_amount,
+					pcm_budget_amount: values.pcm_budget_amount,
 					pcm_description: values.pcm_description,
 				};
 				// save new ProjectComponent
@@ -165,18 +206,6 @@ const ProjectComponentModel = (props) => {
 
 	const [transaction, setTransaction] = useState({});
 	const toggleViewModal = () => setModal1(!modal1);
-
-	// Fetch ProjectComponent on component mount
-	useEffect(() => {
-		setProjectComponent(data);
-	}, [data]);
-
-	useEffect(() => {
-		if (!isEmpty(data) && !!isEdit) {
-			setProjectComponent(data);
-			setIsEdit(false);
-		}
-	}, [data]);
 
 	const toggle = () => {
 		if (modal) {
@@ -195,15 +224,13 @@ const ProjectComponentModel = (props) => {
 			pcm_component_name: projectComponent.pcm_component_name,
 			pcm_unit_measurement: projectComponent.pcm_unit_measurement,
 			pcm_amount: projectComponent.pcm_amount,
+			pcm_budget_amount: projectComponent.pcm_budget_amount,
 			pcm_description: projectComponent.pcm_description,
-			is_deletable: projectComponent.is_deletable,
-			is_editable: projectComponent.is_editable,
 		});
 		setIsEdit(true);
 		toggle();
 	};
 
-	//delete projects
 	const [deleteModal, setDeleteModal] = useState(false);
 	const onClickDelete = (projectComponent) => {
 		setProjectComponent(projectComponent);
@@ -254,6 +281,13 @@ const ProjectComponentModel = (props) => {
 				cell: ({ getValue }) => parseFloat(getValue()).toLocaleString() ?? "-",
 			},
 			{
+				header: "",
+				accessorKey: "pcm_budget_amount",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: ({ getValue }) => parseFloat(getValue()).toLocaleString() ?? "-",
+			},
+			{
 				header: t("view_detail"),
 				enableColumnFilter: false,
 				enableSorting: true,
@@ -285,9 +319,11 @@ const ProjectComponentModel = (props) => {
 				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{cellProps.row.original.is_editable == 1 && (
-								<Link
+								<Button
+									size="sm"
+									color="None"
 									className="text-success"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -298,10 +334,12 @@ const ProjectComponentModel = (props) => {
 									<UncontrolledTooltip placement="top" target="edittooltip">
 										Edit
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 							{cellProps.row.original.is_deletable == 1 && (
-								<Link
+								<Button
+									size="sm"
+									color="None"
 									className="text-danger"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -315,7 +353,7 @@ const ProjectComponentModel = (props) => {
 									<UncontrolledTooltip placement="top" target="deletetooltip">
 										Delete
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 						</div>
 					);
@@ -340,12 +378,12 @@ const ProjectComponentModel = (props) => {
 				onCloseClick={() => setDeleteModal(false)}
 				isLoading={deleteProjectComponent.isPending}
 			/>
-			{isLoading || isSearchLoading ? (
+			{isLoading ? (
 				<Spinners />
 			) : (
 				<TableContainer
 					columns={columns}
-					data={showSearchResult ? searchResults?.data : data?.data || []}
+					data={data?.data || []}
 					isGlobalFilter={true}
 					isAddButton={data?.previledge?.is_role_can_add == 1}
 					isCustomPageSize={true}
@@ -377,6 +415,43 @@ const ProjectComponentModel = (props) => {
 							return false;
 						}}
 					>
+						{/* Budget Summary Card */}
+						<Row>
+							<Col className="col-12 mb-3">
+								<Card>
+									<CardBody>
+										<div className="d-flex justify-content-between">
+											<div>
+												<strong>{t("Total_Project_Budget")} : </strong>{" "}
+												{totalActualBudget
+													? totalActualBudget.toLocaleString()
+													: "0"}
+											</div>
+											<div>
+												<strong>{t("Allocated")} : </strong>{" "}
+												{calculateCurrentTotal(data)
+													? calculateCurrentTotal(data).toLocaleString()
+													: "0"}
+											</div>
+											<div
+												className={
+													calculateCurrentTotal(data) > (totalActualBudget || 0)
+														? "text-danger"
+														: "text-success"
+												}
+											>
+												<strong>{t("Remaining")} : </strong>{" "}
+												{(
+													(totalActualBudget || 0) -
+													(calculateCurrentTotal(data) || 0)
+												).toLocaleString()}
+											</div>
+										</div>
+									</CardBody>
+								</Card>
+							</Col>
+						</Row>
+
 						<Row>
 							<Col className="col-md-6 mb-3">
 								<Label>
@@ -434,7 +509,14 @@ const ProjectComponentModel = (props) => {
 								isRequired
 								className={"col-md-6 mb-3"}
 							/>
-							<Col className="col-md-6 mb-3">
+							<FormattedAmountField
+								validation={validation}
+								fieldId="pcm_budget_amount"
+								label={t("pcm_budget_amount")}
+								className={"col-md-6 mb-3"}
+								isRequired={true}
+							/>
+							<Col className="col-md-12 mb-3">
 								<Label>{t("pcm_description")}</Label>
 								<Input
 									name="pcm_description"
