@@ -27,31 +27,28 @@ export const useUserExportColumns = () => {
 				key: "usr_email",
 				label: t("usr_email"),
 				format: (val) => (val ? val : "-"),
-				type: "string",
 			},
 			{
 				key: "usr_full_name",
 				label: t("usr_full_name"),
 				format: (val) => (val ? val : "-"),
-				type: "string",
 			},
 			{
 				key: "usr_phone_number",
 				label: t("usr_phone_number"),
 				format: (val) => (val ? val : "-"),
-				type: "string",
 			},
 			{
 				key: "usr_sector_id",
 				label: t("usr_sector_id"),
 				format: (val) => sectorInformationMap[val] || "-",
-				type: "string",
+				width: 40,
 			},
 			{
 				key: "dep_name",
 				label: t("department"),
 				format: (val) => (val ? val : "-"),
-				type: "string",
+				width: 60,
 			},
 		],
 		[t, sectorInformationMap]
@@ -128,6 +125,7 @@ export const citizenshipProjectExportColumns = [
 	{
 		key: "sector_name",
 		label: "prj_sector_id",
+		width: 40,
 	},
 	{
 		key: "status_name",
@@ -157,6 +155,7 @@ export const projectExportColumns = [
 	{
 		key: "sector_name",
 		label: "prj_sector_id",
+		width: 40,
 	},
 	{
 		key: "status_name",

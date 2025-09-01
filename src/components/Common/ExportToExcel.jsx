@@ -1,4 +1,3 @@
-import React from "react";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { useTranslation } from "react-i18next";
@@ -25,103 +24,137 @@ const ExportToExcel = ({
 
 		const dateStr = new Date().toLocaleDateString();
 		const currentDate = new Date().toLocaleString();
+		const dataColumnsCount = exportColumns.length;
 
 		// Add company/organization header
 		const orgRow = worksheet.addRow([t("organization_name")]);
 		orgRow.font = { bold: true, size: 16, color: { argb: "1F4E78" } };
 		orgRow.alignment = { horizontal: "center" };
-		worksheet.mergeCells(1, 1, 1, exportColumns.length);
+		// Only merge the actual data columns
+		worksheet.mergeCells(1, 1, 1, dataColumnsCount);
 
 		// Add report title
 		const titleRow = worksheet.addRow([`${tableName} ${t("report")}`]);
 		titleRow.font = { bold: true, size: 14, color: { argb: "2F5496" } };
 		titleRow.alignment = { horizontal: "center" };
-		worksheet.mergeCells(2, 1, 2, exportColumns.length);
+		// Only merge the actual data columns
+		worksheet.mergeCells(2, 1, 2, dataColumnsCount);
 
 		// Add export timestamp
 		const dateRow = worksheet.addRow([`${t("generated_on")}: ${currentDate}`]);
 		dateRow.font = { italic: true, size: 10 };
 		dateRow.alignment = { horizontal: "center" };
-		worksheet.mergeCells(3, 1, 3, exportColumns.length);
+		// Only merge the actual data columns
+		worksheet.mergeCells(3, 1, 3, dataColumnsCount);
 
 		// Add spacer
 		worksheet.addRow([]);
+
+		// Track the current row number for proper merging
+		let currentRow = 5;
 
 		// Add search criteria section if search params exist
 		if (Object.keys(exportSearchParams).length > 0) {
 			// Search Criteria Header
 			const criteriaHeader = worksheet.addRow([t("search_criteria")]);
 			criteriaHeader.font = { bold: true, size: 12, color: { argb: "44546A" } };
-			criteriaHeader.fill = {
-				type: "pattern",
-				pattern: "solid",
-				fgColor: { argb: "D9E1F2" },
-			};
-			worksheet.mergeCells(5, 1, 5, exportColumns.length);
+			// Apply background color only to data columns
+			for (let i = 1; i <= dataColumnsCount; i++) {
+				criteriaHeader.getCell(i).fill = {
+					type: "pattern",
+					pattern: "solid",
+					fgColor: { argb: "D9E1F2" },
+				};
+			}
+			// Only merge the actual data columns
+			worksheet.mergeCells(currentRow, 1, currentRow, dataColumnsCount);
+			currentRow++;
 
 			// Add search parameters dynamically based on keys
-			let rowNumber = 6;
-
 			Object.entries(exportSearchParams).forEach(([key, value]) => {
 				if (value !== undefined && value !== null && value !== "") {
 					// Try to get translation for the key, fallback to the key itself
 					const displayKey = t(key, { defaultValue: key });
-					worksheet.addRow([`${displayKey}: ${value}`]);
-					rowNumber++;
+					const paramRow = worksheet.addRow([`${displayKey}: ${value}`]);
+					// Apply background color only to data columns
+					for (let i = 1; i <= dataColumnsCount; i++) {
+						paramRow.getCell(i).fill = {
+							type: "pattern",
+							pattern: "solid",
+							fgColor: { argb: "FFFFFF" }, // White background for criteria rows
+						};
+					}
+					// Only merge the actual data columns
+					worksheet.mergeCells(currentRow, 1, currentRow, dataColumnsCount);
+					currentRow++;
 				}
 			});
 
 			// Format search criteria rows
-			for (let i = 6; i < rowNumber; i++) {
+			for (let i = 6; i < currentRow; i++) {
 				const row = worksheet.getRow(i);
 				row.font = { size: 11 };
-				row.getCell(1).value = `• ${row.getCell(1).value}`; // Add bullet points
+				const cell = row.getCell(1);
+				cell.value = `• ${cell.value}`; // Add bullet points
 			}
 
 			// Add spacer after search criteria
 			worksheet.addRow([]);
-			rowNumber++;
+			currentRow++;
 
 			// Add data summary header
 			const dataHeader = worksheet.addRow([t("data_summary")]);
 			dataHeader.font = { bold: true, size: 12, color: { argb: "44546A" } };
-			dataHeader.fill = {
-				type: "pattern",
-				pattern: "solid",
-				fgColor: { argb: "E2EFDA" },
-			};
-			worksheet.mergeCells(rowNumber, 1, rowNumber, exportColumns.length);
-			rowNumber++;
+			// Apply background color only to data columns
+			for (let i = 1; i <= dataColumnsCount; i++) {
+				dataHeader.getCell(i).fill = {
+					type: "pattern",
+					pattern: "solid",
+					fgColor: { argb: "E2EFDA" },
+				};
+			}
+			// Only merge the actual data columns
+			worksheet.mergeCells(currentRow, 1, currentRow, dataColumnsCount);
+			currentRow++;
 
 			// Add record count
 			const countRow = worksheet.addRow([
 				`${t("total_records")}: ${tableData.length}`,
 			]);
 			countRow.font = { bold: true };
-			worksheet.mergeCells(rowNumber, 1, rowNumber, exportColumns.length);
-			rowNumber++;
+			// Only merge the actual data columns
+			worksheet.mergeCells(currentRow, 1, currentRow, dataColumnsCount);
+			currentRow++;
 
 			// Add spacer before table
 			worksheet.addRow([]);
-			rowNumber++;
+			currentRow++;
+		} else {
+			// If no search params, set currentRow to where the table starts
+			currentRow = 5;
 		}
 
 		// Add table headers with styling
 		const headerLabels = exportColumns.map((col) => t(col.label));
 		const headerRow = worksheet.addRow(headerLabels);
 		headerRow.font = { bold: true, size: 12, color: { argb: "FFFFFF" } };
-		headerRow.fill = {
-			type: "pattern",
-			pattern: "solid",
-			fgColor: { argb: "4472C4" }, // Professional blue
-		};
-		headerRow.alignment = { vertical: "middle", horizontal: "center" };
-		headerRow.border = {
-			top: { style: "thin", color: { argb: "000000" } },
-			left: { style: "thin", color: { argb: "000000" } },
-			bottom: { style: "thin", color: { argb: "000000" } },
-			right: { style: "thin", color: { argb: "000000" } },
-		};
+
+		// Apply styling only to data columns
+		for (let i = 1; i <= dataColumnsCount; i++) {
+			const cell = headerRow.getCell(i);
+			cell.fill = {
+				type: "pattern",
+				pattern: "solid",
+				fgColor: { argb: "4472C4" }, // Professional blue
+			};
+			cell.alignment = { vertical: "middle", horizontal: "center" };
+			cell.border = {
+				top: { style: "thin", color: { argb: "000000" } },
+				left: { style: "thin", color: { argb: "000000" } },
+				bottom: { style: "thin", color: { argb: "000000" } },
+				right: { style: "thin", color: { argb: "000000" } },
+			};
+		}
 
 		// Add table rows with alternating colors
 		tableData.forEach((row, index) => {
@@ -146,26 +179,16 @@ const ExportToExcel = ({
 			const addedRow = worksheet.addRow(rowData);
 
 			// Alternate row colors for better readability
-			if (index % 2 === 0) {
-				addedRow.fill = {
+			const rowColor = index % 2 === 0 ? "D9E1F2" : "FFFFFF";
+
+			// Apply background color and borders only to data columns
+			for (let i = 1; i <= dataColumnsCount; i++) {
+				const cell = addedRow.getCell(i);
+				cell.fill = {
 					type: "pattern",
 					pattern: "solid",
-					fgColor: { argb: "D9E1F2" }, // Light blue
+					fgColor: { argb: rowColor },
 				};
-			}
-
-			exportColumns.forEach((col, colIdx) => {
-				const cell = addedRow.getCell(colIdx + 1);
-
-				if (col.type === "number") {
-					cell.numFmt = "#,##0.00";
-					cell.alignment = { horizontal: "right" };
-				}
-
-				if (col.type === "percentage") {
-					cell.numFmt = "0.00%";
-					cell.alignment = { horizontal: "right" };
-				}
 
 				// Add borders to all cells
 				cell.border = {
@@ -174,11 +197,22 @@ const ExportToExcel = ({
 					bottom: { style: "thin", color: { argb: "B4C6E7" } },
 					right: { style: "thin", color: { argb: "B4C6E7" } },
 				};
-			});
+
+				// Apply formatting based on column type
+				const col = exportColumns[i - 1];
+				if (col && col.type === "number") {
+					cell.numFmt = "#,##0.00";
+					cell.alignment = { horizontal: "right" };
+				}
+
+				if (col && col.type === "percentage") {
+					cell.numFmt = "0.00%";
+					cell.alignment = { horizontal: "right" };
+				}
+			}
 		});
 
 		// Add footer section
-		const lastRow = worksheet.lastRow.number;
 		worksheet.addRow([]);
 
 		// Add totals row if there are numeric columns
@@ -209,13 +243,16 @@ const ExportToExcel = ({
 			});
 
 			const totalsRow = worksheet.addRow(totals);
-
 			totalsRow.font = { bold: true };
-			totalsRow.fill = {
-				type: "pattern",
-				pattern: "solid",
-				fgColor: { argb: "FCE4D6" }, // Light orange
-			};
+
+			// Apply background color only to data columns
+			for (let i = 1; i <= dataColumnsCount; i++) {
+				totalsRow.getCell(i).fill = {
+					type: "pattern",
+					pattern: "solid",
+					fgColor: { argb: "FCE4D6" }, // Light orange
+				};
+			}
 
 			// Apply number formatting to the numeric cells in totals row
 			exportColumns.forEach((col, colIdx) => {
@@ -232,41 +269,75 @@ const ExportToExcel = ({
 		worksheet.addRow([]);
 		const preparedByRow = worksheet.addRow([
 			`${t("prepared_by")}: ________________________`,
+			"", // Empty cell for the rest of the columns
 		]);
 		preparedByRow.font = { italic: true };
-		worksheet.mergeCells(
-			preparedByRow.number,
-			1,
-			preparedByRow.number,
-			Math.floor(exportColumns.length / 2)
-		);
+		// Only merge the first half of data columns
+		const preparedByEndCol = Math.floor(dataColumnsCount / 2);
+		if (preparedByEndCol > 1) {
+			worksheet.mergeCells(
+				preparedByRow.number,
+				1,
+				preparedByRow.number,
+				preparedByEndCol
+			);
+		}
 
 		const approvedByRow = worksheet.addRow([
 			`${t("approved_by")}: ________________________`,
+			"", // Empty cell for the rest of the columns
 		]);
 		approvedByRow.font = { italic: true };
-		worksheet.mergeCells(
-			approvedByRow.number,
-			Math.ceil(exportColumns.length / 2) + 1,
-			approvedByRow.number,
-			exportColumns.length
-		);
+		// Only merge the second half of data columns
+		const approvedByEndCol = Math.floor(dataColumnsCount / 2);
+		if (approvedByEndCol > 1) {
+			worksheet.mergeCells(
+				approvedByRow.number,
+				1,
+				approvedByRow.number,
+				approvedByEndCol
+			);
+		}
 
 		// Add confidentiality notice
 		const confidentialRow = worksheet.addRow([t("confidential_notice")]);
 		confidentialRow.font = { italic: true, size: 9, color: { argb: "FF0000" } };
 		confidentialRow.alignment = { horizontal: "center" };
+		// Only merge the actual data columns
 		worksheet.mergeCells(
 			confidentialRow.number,
 			1,
 			confidentialRow.number,
-			exportColumns.length
+			dataColumnsCount
 		);
 
-		// Set column widths based on content
+		// Set column widths based on content or custom width
 		exportColumns.forEach((col, idx) => {
 			const column = worksheet.getColumn(idx + 1);
-			column.width = Math.max(15, col.label.length + 5); // Minimum width 15, adjust based on label length
+
+			// Use custom width if provided, otherwise calculate based on content
+			if (col.width) {
+				column.width = col.width;
+			} else {
+				// Calculate width based on header and data content
+				const headerWidth = col.label.length * 1.5;
+				let maxDataWidth = 0;
+
+				// Check data values for this column
+				tableData.forEach((row) => {
+					const value = row[col.key];
+					if (value !== null && value !== undefined) {
+						const strValue = String(value);
+						maxDataWidth = Math.max(maxDataWidth, strValue.length);
+					}
+				});
+
+				// Set width with some padding (minimum 15, maximum 50)
+				column.width = Math.min(
+					50,
+					Math.max(15, Math.max(headerWidth, maxDataWidth) + 2)
+				);
+			}
 		});
 
 		// Generate and save file
