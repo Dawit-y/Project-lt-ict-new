@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState, useRef } from "react";
+import React, { Fragment, useEffect, useState, useRef , useMemo} from "react";
 import { Row, Table, Button, Col, Spinner } from "reactstrap";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -214,6 +214,20 @@ const TableContainer = ({
 		isSummaryRow && data.length > 0
 			? calculateSummary(data, summaryColumns, customSummaryFunction)
 			: null;
+	
+	const flattenedColumns = useMemo(() => {
+		const flatten = (cols) => {
+			return cols.reduce((acc, column) => {
+				if (column.columns) {
+					return [...acc, ...flatten(column.columns)];
+				} else {
+					return [...acc, column];
+				}
+			}, []);
+		};
+
+		return flatten(columns);
+	}, [columns]);
 
 	return (
 		<Fragment>
@@ -419,7 +433,7 @@ const TableContainer = ({
 										<td colSpan={1}>
 											<strong>{summaryLabel}</strong>
 										</td>
-										{columns.map((column, index) => {
+										{flattenedColumns.map((column, index) => {
 											const columnKey = column.accessorKey || column.id;
 											if (summaryColumns.includes(columnKey)) {
 												return (
@@ -470,7 +484,7 @@ const TableContainer = ({
 											<td colSpan={1}>
 												<strong>{summaryLabel}</strong>
 											</td>
-											{columns.map((column, index) => {
+											{flattenedColumns.map((column, index) => {
 												const columnKey = column.accessorKey || column.id;
 												if (summaryColumns.includes(columnKey)) {
 													return (

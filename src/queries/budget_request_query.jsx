@@ -12,7 +12,6 @@ import {
 
 const BUDGET_REQUESTS_QUERY_KEY = ["budgetrequest"];
 
-// Fetch budget_year
 export const useFetchBudgetRequests = (params = {}) => {
   return useQuery({
     queryKey: [...BUDGET_REQUESTS_QUERY_KEY, params],
@@ -35,7 +34,6 @@ export const useFetchBudgetRequest = (id, userId, isActive = false) => {
   });
 };
 
-//search budget_year
 export const useSearchBudgetRequests = (searchParams = {}) => {
   return useQuery({
     queryKey: [...BUDGET_REQUESTS_QUERY_KEY, searchParams],
@@ -80,7 +78,6 @@ export const useUpdateBudgetRequestApproval = () => {
     },
   });
 };
-// Add budget_year
 export const useAddBudgetRequest = () => {
   const queryClient = useQueryClient();
 
@@ -208,7 +205,6 @@ export const useUpdateBudgetRequest = () => {
   });
 };
 
-// Delete budget_year
 export const useDeleteBudgetRequest = () => {
   const queryClient = useQueryClient();
 

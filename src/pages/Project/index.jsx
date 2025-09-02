@@ -2,12 +2,10 @@ import React, {
   useEffect,
   useMemo,
   useState,
-  useRef,
   useCallback,
 } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { isEmpty } from "lodash";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { CardBody, Spinner } from "reactstrap";
@@ -33,14 +31,12 @@ import {
   ModalBody,
   Form,
   Input,
-  FormFeedback,
   Label,
   Card,
   Badge,
 } from "reactstrap";
 import {
   alphanumericValidation,
-  amountValidation,
   numberValidation,
   onlyAmharicValidation,
   formattedAmountValidation,
@@ -48,14 +44,12 @@ import {
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import { toast } from "react-toastify";
 import {
-  convertToNumericValue,
   createMultiLangKeyValueMap,
 } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForProject from "./TreeForProject";
 import DatePicker from "../../components/Common/DatePicker";
 import AsyncSelectField from "../../components/Common/AsyncSelectField";
-import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 import InputField from "../../components/Common/InputField";
 
 const ProjectModel = () => {
@@ -66,7 +60,6 @@ const ProjectModel = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [project, setProject] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null);
-  const { data: projectStatusData } = useFetchProjectStatuss();
 
   const { param, isValidParam } = useMemo(() => {
     const param = {
@@ -210,9 +203,6 @@ const ProjectModel = () => {
       prj_owner_id: (project && project.prj_owner_id) || "",
       prj_urban_ben_number: (project && project.prj_urban_ben_number) || "",
       prj_rural_ben_number: (project && project.prj_rural_ben_number) || "",
-      // prj_department_id: (project && project.prj_department_id) || "",
-      is_deletable: (project && project.is_deletable) || 1,
-      is_editable: (project && project.is_editable) || 1,
       prj_measurement_unit: (project && project.prj_measurement_unit) || "",
       prj_measured_figure: (project && project.prj_measured_figure) || "",
     },
@@ -239,18 +229,7 @@ const ProjectModel = () => {
         },
       ),
       prj_code: Yup.string(),
-      /*test(
-        "unique-prj_code",
-        t("Already exists"),
-        (value) => {
-          return !data?.data.some(
-            (item) => item.prj_code == value && item.prj_id !== project?.prj_id
-          );
-        }
-      ),*/
-      //prj_project_status_id: Yup.string().required(t('prj_project_status_id')),
       prj_project_category_id: numberValidation(1, 200, true),
-      //prj_project_budget_source_id: Yup.string().required(t('prj_project_budget_source_id')),
       prj_total_estimate_budget: formattedAmountValidation(
         1000,
         1000000000000,
@@ -261,8 +240,6 @@ const ProjectModel = () => {
         1000000000000,
         false,
       ),
-      //prj_geo_location: Yup.string().required(t('prj_geo_location')),
-      //prj_sector_id: Yup.string().required(t("prj_sector_id")),
       prj_location_region_id: Yup.string().required(
         t("prj_location_region_id"),
       ),
@@ -274,12 +251,10 @@ const ProjectModel = () => {
       prj_location_woreda_id: Yup.string().required(
         t("prj_location_woreda_id"),
       ),
-      //prj_department_id: Yup.string().required(t("prj_department_id")),
       prj_urban_ben_number: numberValidation(0, 10000000, false),
       prj_rural_ben_number: numberValidation(0, 10000000, false),
       prj_measured_figure: formattedAmountValidation(1, 100000000000, false),
       prj_location_description: alphanumericValidation(3, 425, false),
-      //prj_outcome: alphanumericValidation(3, 425, true),
       prj_remark: alphanumericValidation(3, 425, false),
     }),
     validateOnBlur: true,
@@ -326,10 +301,7 @@ const ProjectModel = () => {
 					prj_owner_id: values.prj_owner_id,
 					prj_urban_ben_number: values.prj_urban_ben_number,
 					prj_rural_ben_number: values.prj_rural_ben_number,
-					//prj_department_id: Number(values.prj_department_id),
 					prj_program_id: 1,
-					is_deletable: values.is_deletable,
-					is_editable: values.is_editable,
 					parent_id: Number(selectedNode.data.pri_id),
 					object_type_id: 5,
 					prj_measurement_unit: values.prj_measurement_unit,
@@ -377,7 +349,6 @@ const ProjectModel = () => {
           prj_owner_id: values.prj_owner_id,
           prj_urban_ben_number: values.prj_urban_ben_number,
           prj_rural_ben_number: values.prj_rural_ben_number,
-          //prj_department_id: Number(values.prj_department_id),
           prj_program_id: 1,
           parent_id: Number(selectedNode.data.pri_id),
           object_type_id: 5,
@@ -424,19 +395,9 @@ const ProjectModel = () => {
     setSelectedNode(node);
     getBreadcrumbPath(node);
   }, []);
-  const projectStatusOptions = useMemo(() => {
-    return (
-      projectStatusData?.data
-        ?.filter((type) => type.prs_id === 5 || type.prs_id === 6)
-        .map((type) => ({
-          label: type.prs_status_name_or,
-          value: type.prs_id,
-        })) || []
-    );
-  }, [projectStatusData]);
+
   const handleProjectClick = (arg) => {
     const project = arg;
-    console.log("ms", project);
     setProject({
       prj_id: project.prj_id,
       prj_name: project.prj_name,
@@ -475,9 +436,6 @@ const ProjectModel = () => {
       prj_owner_id: project.prj_owner_id,
       prj_urban_ben_number: project.prj_urban_ben_number,
       prj_rural_ben_number: project.prj_rural_ben_number,
-      //prj_department_id: project.prj_department_id,
-      is_deletable: project.is_deletable,
-      is_editable: project.is_editable,
       prj_measurement_unit: project.prj_measurement_unit,
       prj_measured_figure: project.prj_measured_figure,
     });
@@ -662,7 +620,7 @@ const ProjectModel = () => {
       />
       <div className="page-content">
         <div className="w-100 h-100">
-          <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
+          <Breadcrumbs  />
           <div
             className="d-flex gap-2"
             style={{ display: "flex", flexWrap: "nowrap", height: "100%" }}

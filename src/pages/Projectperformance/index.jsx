@@ -73,7 +73,6 @@ const ProjectPerformanceModel = (props) => {
 	const param = {
 		prp_project_id: passedId,
 		request_type: "single",
-		prj_total_actual_budget: totalActualBudget,
 	};
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
@@ -663,6 +662,73 @@ const ProjectPerformanceModel = (props) => {
 		}
 	};
 
+	const customSummaryFunction = (tableData) => {
+		const summary = {
+			// Planned financial values
+			q1_planned_financial: 0,
+			q2_planned_financial: 0,
+			q3_planned_financial: 0,
+			q4_planned_financial: 0,
+
+			// Actual financial values
+			q1_actual_financial: 0,
+			q2_actual_financial: 0,
+			q3_actual_financial: 0,
+			q4_actual_financial: 0,
+		};
+
+		// Define quarter month mappings for both planned and actual
+		const quarterMappings = {
+			// Planned financial mappings
+			q1_planned_financial: {
+				months: [11, 12, 1],
+				field: "prp_finan_planned_month_",
+			},
+			q2_planned_financial: {
+				months: [2, 3, 4],
+				field: "prp_finan_planned_month_",
+			},
+			q3_planned_financial: {
+				months: [5, 6, 7],
+				field: "prp_finan_planned_month_",
+			},
+			q4_planned_financial: {
+				months: [8, 9, 10],
+				field: "prp_finan_planned_month_",
+			},
+
+			// Actual financial mappings
+			q1_actual_financial: {
+				months: [11, 12, 1],
+				field: "prp_finan_actual_month_",
+			},
+			q2_actual_financial: {
+				months: [2, 3, 4],
+				field: "prp_finan_actual_month_",
+			},
+			q3_actual_financial: {
+				months: [5, 6, 7],
+				field: "prp_finan_actual_month_",
+			},
+			q4_actual_financial: {
+				months: [8, 9, 10],
+				field: "prp_finan_actual_month_",
+			},
+		};
+
+		// Calculate sums for each quarter
+		tableData.forEach((item) => {
+			Object.entries(quarterMappings).forEach(([quarterKey, mapping]) => {
+				const quarterSum = mapping.months.reduce((total, month) => {
+					return total + (Number(item[`${mapping.field}${month}`]) || 0);
+				}, 0);
+				summary[quarterKey] += quarterSum;
+			});
+		});
+
+		return summary;
+	};
+
 	const columns = useMemo(() => {
 		const baseColumns = [
 			{
@@ -696,6 +762,7 @@ const ProjectPerformanceModel = (props) => {
 						{
 							header: t("physical"),
 							enableColumnFilter: false,
+							id: `q${qIndex + 1}_planned_physical`,
 							accessorKey: `q${qIndex + 1}_planned_physical`,
 							cell: ({ row }) => {
 								const sum = months.reduce(
@@ -710,6 +777,7 @@ const ProjectPerformanceModel = (props) => {
 							},
 						},
 						{
+							id: `q${qIndex + 1}_planned_financial`,
 							header: t("financial"),
 							enableColumnFilter: false,
 							accessorKey: `q${qIndex + 1}_planned_financial`,
@@ -903,7 +971,7 @@ const ProjectPerformanceModel = (props) => {
 		onClickDelete,
 		handleEditPlanned,
 	]);
-
+	
 	if (isError) return <FetchErrorHandler error={error} refetch={refetch} />;
 
 	return (
@@ -935,14 +1003,12 @@ const ProjectPerformanceModel = (props) => {
 				budgetMonthMap={budgetMonthMap}
 				projectStatusMap={projectStatusMap}
 			/>
-
 			<DeleteModal
 				show={deleteModal}
 				onDeleteClick={handleDeleteProjectPerformance}
 				onCloseClick={() => setDeleteModal(false)}
 				isLoading={deleteProjectPerformance.isPending}
 			/>
-
 			{isLoading ? (
 				<Spinners />
 			) : (
@@ -964,9 +1030,20 @@ const ProjectPerformanceModel = (props) => {
 					refetch={refetch}
 					isFetching={isFetching}
 					exportColumns={projectPerformanceExportColumns}
+					isSummaryRow={true}
+					summaryColumns={[
+						"q1_planned_financial",
+						"q2_planned_financial",
+						"q3_planned_financial",
+						"q4_planned_financial",
+						"q1_actual_financial",
+						"q2_actual_financial",
+						"q3_actual_financial",
+						"q4_actual_financial",
+					]}
+					customSummaryFunction={customSummaryFunction}
 				/>
 			)}
-
 			<Modal isOpen={modal} toggle={toggle} size="xl">
 				<ModalHeader toggle={toggle} className="border-0 pb-0">
 					<h4 className="mb-0">

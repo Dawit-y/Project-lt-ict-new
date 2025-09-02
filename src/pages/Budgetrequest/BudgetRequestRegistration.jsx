@@ -83,7 +83,6 @@ const BudgetRequestModel = (props) => {
   const param = {
     project_id: id,
     request_type: "single",
-    prj_total_actual_budget: totalActualBudget,
   };
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
@@ -177,34 +176,15 @@ const BudgetRequestModel = (props) => {
       bdr_financial_baseline:
         (budgetRequest && budgetRequest.bdr_financial_baseline) || "",
       bdr_description: (budgetRequest && budgetRequest.bdr_description) || "",
-      bdr_status: (budgetRequest && budgetRequest.bdr_status) || "",
       bdr_request_status:
         (budgetRequest && budgetRequest.bdr_request_status) || "",
       bdr_request_category_id:
         (budgetRequest && budgetRequest.bdr_request_category_id) || "",
-
-      is_deletable: (budgetRequest && budgetRequest.is_deletable) || 1,
-      is_editable: (budgetRequest && budgetRequest.is_editable) || 1,
     },
 
     validationSchema: Yup.object({
       bdr_budget_year_id: Yup.string().required(t("bdr_budget_year_id")),
       bdr_request_type: Yup.string().required(t("bdr_request_type")),
-      // bdr_request_category_id: Yup.string()
-      //   .required(t("bdr_request_category_id"))
-      //   .test(
-      //     "unique-year-category-combination",
-      //     t("This category already exists for the selected budget year."),
-      //     function (value) {
-      //       const { bdr_budget_year_id } = this.parent;
-      //       return !data?.data.some(
-      //         (item) =>
-      //           parseInt(item.bdr_budget_year_id) ==
-      //             parseInt(bdr_budget_year_id) &&
-      //           parseInt(item.bdr_request_category_id) == parseInt(value)
-      //       );
-      //     }
-      //   ),
       bdr_request_category_id: Yup.string()
         .required(t("bdr_request_category_id"))
         .test(
@@ -297,8 +277,6 @@ const BudgetRequestModel = (props) => {
           bdr_physical_planned: parseInt(values.bdr_physical_planned),
           bdr_financial_baseline: parseFloat(values.bdr_financial_baseline),
           bdr_request_category_id: values.bdr_request_category_id,
-          is_deletable: values.is_deletable,
-          is_editable: values.is_editable,
         };
         handleUpdateBudgetRequest(updatedBudgetRequest);
       } else {

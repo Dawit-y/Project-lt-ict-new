@@ -80,33 +80,6 @@ export const useAddProject = () => {
 	return useMutation({
 		mutationFn: addProject,
 
-		onMutate: async (newData) => {
-			await queryClient.cancelQueries(PROJECT_QUERY_KEY);
-
-			const previousQueries = queryClient.getQueriesData({
-				queryKey: PROJECT_QUERY_KEY,
-			});
-
-			const previousData = previousQueries.map(([queryKey, oldData]) => {
-				queryClient.setQueryData(queryKey, (oldData) => {
-					if (!oldData) return;
-					return {
-						...oldData,
-						data: [newData, ...oldData.data],
-					};
-				});
-				return [queryKey, oldData];
-			});
-
-			return { previousData };
-		},
-
-		onError: (_err, _newData, context) => {
-			context?.previousData?.forEach(([queryKey, oldData]) => {
-				queryClient.setQueryData(queryKey, oldData);
-			});
-		},
-
 		onSettled: () => {
 			queryClient.invalidateQueries({
 				queryKey: PROJECT_QUERY_KEY,
@@ -122,35 +95,6 @@ export const useUpdateProject = () => {
 	return useMutation({
 		mutationFn: updateProject,
 
-		onMutate: async (updatedData) => {
-			await queryClient.cancelQueries(PROJECT_QUERY_KEY);
-
-			const previousQueries = queryClient.getQueriesData({
-				queryKey: PROJECT_QUERY_KEY,
-			});
-
-			const previousData = previousQueries.map(([queryKey, oldData]) => {
-				queryClient.setQueryData(queryKey, (oldData) => {
-					if (!oldData) return;
-					return {
-						...oldData,
-						data: oldData.data.map((d) =>
-							d.prj_id === updatedData.prj_id ? { ...d, ...updatedData } : d
-						),
-					};
-				});
-				return [queryKey, oldData];
-			});
-
-			return { previousData };
-		},
-
-		onError: (_err, _updatedData, context) => {
-			context?.previousData?.forEach(([queryKey, oldData]) => {
-				queryClient.setQueryData(queryKey, oldData);
-			});
-		},
-
 		onSettled: () => {
 			queryClient.invalidateQueries({
 				queryKey: PROJECT_QUERY_KEY,
@@ -165,33 +109,6 @@ export const useDeleteProject = () => {
 
 	return useMutation({
 		mutationFn: deleteProject,
-
-		onMutate: async (id) => {
-			await queryClient.cancelQueries(PROJECT_QUERY_KEY);
-
-			const previousQueries = queryClient.getQueriesData({
-				queryKey: PROJECT_QUERY_KEY,
-			});
-
-			const previousData = previousQueries.map(([queryKey, oldData]) => {
-				queryClient.setQueryData(queryKey, (oldData) => {
-					if (!oldData) return;
-					return {
-						...oldData,
-						data: oldData.data.filter((item) => item.prj_id !== parseInt(id)),
-					};
-				});
-				return [queryKey, oldData];
-			});
-
-			return { previousData };
-		},
-
-		onError: (_err, _id, context) => {
-			context?.previousData?.forEach(([queryKey, oldData]) => {
-				queryClient.setQueryData(queryKey, oldData);
-			});
-		},
 
 		onSettled: () => {
 			queryClient.invalidateQueries({
