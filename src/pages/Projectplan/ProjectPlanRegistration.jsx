@@ -451,7 +451,7 @@ const ProjectPlanModel = () => {
 				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{data?.previledge?.is_role_editable == 1 &&
 								cellProps.row.original?.is_editable == 1 && (
 									<Button
@@ -497,7 +497,14 @@ const ProjectPlanModel = () => {
 		}
 
 		return baseColumns;
-	}, [handleProjectPlanClick, toggleViewModal, onClickDelete]);
+	}, [
+		handleProjectPlanClick,
+		toggleViewModal,
+		onClickDelete,
+		data,
+		t,
+		budgetYearMap,
+	]);
 
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;

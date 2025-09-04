@@ -8,12 +8,12 @@ import {
 	updateBudgetRequestApproval,
 } from "../helpers/cso_budget_request_helper";
 
-const BUDGET_REQUESTS_QUERY_KEY = ["csobudgetrequest"];
+const CSO_BUDGET_REQUESTS_QUERY_KEY = ["csobudgetrequest"];
 
 // Fetch budget_year
 export const useFetchBudgetRequests = (params = {}) => {
 	return useQuery({
-		queryKey: [...BUDGET_REQUESTS_QUERY_KEY, params],
+		queryKey: [...CSO_BUDGET_REQUESTS_QUERY_KEY, params],
 		queryFn: () => getBudgetRequest(params),
 		staleTime: 1000 * 60 * 5,
 		gcTime: 100 * 60 * 6,
@@ -25,7 +25,7 @@ export const useFetchBudgetRequests = (params = {}) => {
 //search budget_year
 export const useSearchBudgetRequests = (searchParams = {}, isActive) => {
 	return useQuery({
-		queryKey: [...BUDGET_REQUESTS_QUERY_KEY, searchParams],
+		queryKey: [...CSO_BUDGET_REQUESTS_QUERY_KEY, searchParams],
 		queryFn: () => {
 			if (Object.keys(searchParams).length === 0) {
 				return Promise.resolve([]);
@@ -39,30 +39,32 @@ export const useSearchBudgetRequests = (searchParams = {}, isActive) => {
 		enabled: isActive,
 	});
 };
+
 export const useSearchBudgetRequestforApproval = (searchParams = {}) => {
 	return useQuery({
-		queryKey: [...BUDGET_REQUESTS_QUERY_KEY, searchParams],
+		queryKey: [...CSO_BUDGET_REQUESTS_QUERY_KEY, searchParams],
 		queryFn: () => getBudgetRequestforApproval(searchParams),
 		staleTime: 1000 * 60 * 2,
 		gcTime: 1000 * 60 * 5,
 		refetchOnWindowFocus: false,
 		refetchOnMount: false,
-		enabled: searchParams.length > 0,
+		enabled: Object.keys(searchParams).length > 0,
 	});
 };
+
 export const useUpdateBudgetRequestApproval = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
 		mutationFn: updateBudgetRequestApproval,
 		onMutate: async (updatedData) => {
-			await queryClient.cancelQueries(BUDGET_REQUESTS_QUERY_KEY);
+			await queryClient.cancelQueries(CSO_BUDGET_REQUESTS_QUERY_KEY);
 
 			const previousQueries = queryClient.getQueriesData({
-				queryKey: BUDGET_REQUESTS_QUERY_KEY,
+				queryKey: CSO_BUDGET_REQUESTS_QUERY_KEY,
 			});
 
-			const previousData = previousQueries.map(([queryKey, oldData]) => {
+			previousQueries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
@@ -72,35 +74,28 @@ export const useUpdateBudgetRequestApproval = () => {
 						),
 					};
 				});
-				return [queryKey, oldData];
 			});
 
-			return { previousData };
+			return { previousQueries };
 		},
 		onError: (_err, _updatedData, context) => {
-			context?.previousData?.forEach(([queryKey, oldData]) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, oldData);
 			});
 		},
-		onSuccess: (updatedBudgetRequest, variables) => {
-			const allQueries = queryClient
-				.getQueriesData({
-					queryKey: BUDGET_REQUESTS_QUERY_KEY,
-				})
-				.map(([key, data]) => ({
-					key,
-					data,
-				}));
+		onSuccess: (response) => {
+			const serverData = response.data;
+			const allQueries = queryClient.getQueriesData({
+				queryKey: CSO_BUDGET_REQUESTS_QUERY_KEY,
+			});
 
-			allQueries.forEach(({ key }) => {
-				queryClient.setQueryData(key, (oldData) => {
+			allQueries.forEach(([queryKey]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
 						...oldData,
-						data: oldData.data.map((BudgetRequestData) =>
-							BudgetRequestData.bdr_id === updatedBudgetRequest.data.bdr_id
-								? { ...BudgetRequestData, ...updatedBudgetRequest.data }
-								: BudgetRequestData
+						data: oldData.data.map((d) =>
+							d.bdr_id === serverData.bdr_id ? serverData : d
 						),
 					};
 				});
@@ -108,7 +103,7 @@ export const useUpdateBudgetRequestApproval = () => {
 		},
 		onSettled: () => {
 			queryClient.invalidateQueries({
-				queryKey: BUDGET_REQUESTS_QUERY_KEY,
+				queryKey: CSO_BUDGET_REQUESTS_QUERY_KEY,
 			});
 		},
 	});
@@ -120,40 +115,52 @@ export const useAddBudgetRequest = () => {
 	return useMutation({
 		mutationFn: addBudgetRequest,
 		onMutate: async (newData) => {
-			await queryClient.cancelQueries(BUDGET_REQUESTS_QUERY_KEY);
+			await queryClient.cancelQueries(CSO_BUDGET_REQUESTS_QUERY_KEY);
 
 			const previousQueries = queryClient.getQueriesData({
-				queryKey: BUDGET_REQUESTS_QUERY_KEY,
+				queryKey: CSO_BUDGET_REQUESTS_QUERY_KEY,
 			});
 
-			const previousData = previousQueries.map(([queryKey, oldData]) => {
+			const tempId = Date.now();
+			const optimisticData = { ...newData, bdr_id: tempId };
+
+			previousQueries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
 						...oldData,
-						data: [
-							{
-								...newData,
-								tempId: Date.now(),
-							},
-							...oldData.data,
-						],
+						data: [optimisticData, ...oldData.data],
 					};
 				});
-				return [queryKey, oldData];
 			});
-			return {
-				previousData,
-			};
+			return { previousQueries, tempId };
 		},
 		onError: (_err, _newData, context) => {
-			context?.previousData?.forEach(([queryKey, oldData]) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, oldData);
 			});
 		},
-		onSuccess: () => {
+		onSuccess: (response, _newData, context) => {
+			const serverData = response.data;
+			const queries = queryClient.getQueriesData({
+				queryKey: CSO_BUDGET_REQUESTS_QUERY_KEY,
+			});
+
+			queries.forEach(([queryKey]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: oldData.data.map((d) =>
+							d.bdr_id === context.tempId ? serverData : d
+						),
+					};
+				});
+			});
+		},
+		onSettled: () => {
 			queryClient.invalidateQueries({
-				queryKey: BUDGET_REQUESTS_QUERY_KEY,
+				queryKey: CSO_BUDGET_REQUESTS_QUERY_KEY,
 			});
 		},
 	});
@@ -165,13 +172,13 @@ export const useUpdateBudgetRequest = () => {
 	return useMutation({
 		mutationFn: updateBudgetRequest,
 		onMutate: async (updatedData) => {
-			await queryClient.cancelQueries(BUDGET_REQUESTS_QUERY_KEY);
+			await queryClient.cancelQueries(CSO_BUDGET_REQUESTS_QUERY_KEY);
 
 			const previousQueries = queryClient.getQueriesData({
-				queryKey: BUDGET_REQUESTS_QUERY_KEY,
+				queryKey: CSO_BUDGET_REQUESTS_QUERY_KEY,
 			});
 
-			const previousData = previousQueries.map(([queryKey, oldData]) => {
+			previousQueries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
@@ -181,37 +188,28 @@ export const useUpdateBudgetRequest = () => {
 						),
 					};
 				});
-				return [queryKey, oldData];
 			});
 
-			return {
-				previousData,
-			};
+			return { previousQueries };
 		},
 		onError: (_err, _updatedData, context) => {
-			context?.previousData?.forEach(([queryKey, oldData]) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, oldData);
 			});
 		},
-		onSuccess: (updatedBudgetRequest, variables) => {
-			const allQueries = queryClient
-				.getQueriesData({
-					queryKey: BUDGET_REQUESTS_QUERY_KEY,
-				})
-				.map(([key, data]) => ({
-					key,
-					data,
-				}));
+		onSuccess: (response) => {
+			const serverData = response.data;
+			const allQueries = queryClient.getQueriesData({
+				queryKey: CSO_BUDGET_REQUESTS_QUERY_KEY,
+			});
 
 			allQueries.forEach(({ key }) => {
 				queryClient.setQueryData(key, (oldData) => {
 					if (!oldData) return;
 					return {
 						...oldData,
-						data: oldData.data.map((BudgetRequestData) =>
-							BudgetRequestData.bdr_id === updatedBudgetRequest.data.bdr_id
-								? { ...BudgetRequestData, ...updatedBudgetRequest.data }
-								: BudgetRequestData
+						data: oldData.data.map((d) =>
+							d.bdr_id === serverData.bdr_id ? serverData : d
 						),
 					};
 				});
@@ -219,7 +217,7 @@ export const useUpdateBudgetRequest = () => {
 		},
 		onSettled: () => {
 			queryClient.invalidateQueries({
-				queryKey: BUDGET_REQUESTS_QUERY_KEY,
+				queryKey: CSO_BUDGET_REQUESTS_QUERY_KEY,
 			});
 		},
 	});
@@ -231,13 +229,13 @@ export const useDeleteBudgetRequest = () => {
 	return useMutation({
 		mutationFn: deleteBudgetRequest,
 		onMutate: async (id) => {
-			await queryClient.cancelQueries(BUDGET_REQUESTS_QUERY_KEY);
+			await queryClient.cancelQueries(CSO_BUDGET_REQUESTS_QUERY_KEY);
 
 			const previousQueries = queryClient.getQueriesData({
-				queryKey: BUDGET_REQUESTS_QUERY_KEY,
+				queryKey: CSO_BUDGET_REQUESTS_QUERY_KEY,
 			});
 
-			const previousData = previousQueries.map(([queryKey, oldData]) => {
+			previousQueries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
@@ -245,21 +243,18 @@ export const useDeleteBudgetRequest = () => {
 						data: oldData.data.filter((d) => d.bdr_id !== parseInt(id)),
 					};
 				});
-				return [queryKey, oldData];
 			});
 
-			return {
-				previousData,
-			};
+			return { previousQueries };
 		},
 		onError: (_err, _id, context) => {
-			context?.previousData?.forEach(([queryKey, oldData]) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, oldData);
 			});
 		},
-		onSuccess: (deletedData) => {
+		onSettled: () => {
 			queryClient.invalidateQueries({
-				queryKey: BUDGET_REQUESTS_QUERY_KEY,
+				queryKey: CSO_BUDGET_REQUESTS_QUERY_KEY,
 			});
 		},
 	});

@@ -13,32 +13,32 @@ import Spinners from "../../components/Common/Spinner";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
-  useFetchRequestStatuss,
-  useSearchRequestStatuss,
-  useAddRequestStatus,
-  useDeleteRequestStatus,
-  useUpdateRequestStatus,
+	useFetchRequestStatuss,
+	useSearchRequestStatuss,
+	useAddRequestStatus,
+	useDeleteRequestStatus,
+	useUpdateRequestStatus,
 } from "../../queries/requeststatus_query";
 import RequestStatusModal from "./RequestStatusModal";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
 import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
+	Button,
+	Col,
+	Row,
+	UncontrolledTooltip,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	Form,
+	Input,
+	FormFeedback,
+	Label,
+	Card,
+	CardBody,
+	FormGroup,
+	Badge,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -46,31 +46,31 @@ import { alphanumericValidation } from "../../utils/Validation/validation";
 import { requestStatusExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
-  if (typeof text !== "string") {
-    return text;
-  }
-  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+	if (typeof text !== "string") {
+		return text;
+	}
+	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
 const RequestStatusModel = () => {
-  document.title = "Request Status";
-  const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [requestStatus, setRequestStatus] = useState(null);
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
+	document.title = "Request Status";
+	const { t } = useTranslation();
+	const [modal, setModal] = useState(false);
+	const [modal1, setModal1] = useState(false);
+	const [isEdit, setIsEdit] = useState(false);
+	const [requestStatus, setRequestStatus] = useState(null);
+	const [searchResults, setSearchResults] = useState(null);
+	const [isSearchLoading, setIsSearchLoading] = useState(false);
+	const [searcherror, setSearchError] = useState(null);
+	const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, isFetching, error, isError, refetch } =
-    useFetchRequestStatuss();
-  const addRequestStatus = useAddRequestStatus();
-  const updateRequestStatus = useUpdateRequestStatus();
-  const deleteRequestStatus = useDeleteRequestStatus();
-  //START CRUD
-  const handleAddRequestStatus = async (data) => {
+	const { data, isLoading, isFetching, error, isError, refetch } =
+		useFetchRequestStatuss();
+	const addRequestStatus = useAddRequestStatus();
+	const updateRequestStatus = useUpdateRequestStatus();
+	const deleteRequestStatus = useDeleteRequestStatus();
+	//START CRUD
+	const handleAddRequestStatus = async (data) => {
 		try {
 			await addRequestStatus.mutateAsync(data);
 			toast.success(t("add_success"), {
@@ -98,224 +98,225 @@ const RequestStatusModel = () => {
 			}
 		}
 	};
-  const handleDeleteRequestStatus = async () => {
-    if (requestStatus && requestStatus.rqs_id) {
-      try {
-        const id = requestStatus.rqs_id;
-        await deleteRequestStatus.mutateAsync(id);
-        toast.success(t("delete_success"), {
+	const handleDeleteRequestStatus = async () => {
+		if (requestStatus && requestStatus.rqs_id) {
+			try {
+				const id = requestStatus.rqs_id;
+				await deleteRequestStatus.mutateAsync(id);
+				toast.success(t("delete_success"), {
 					autoClose: 3000,
 				});
-      } catch (error) {
-        toast.success(t("delete_failure"), {
+			} catch (error) {
+				toast.success(t("delete_failure"), {
 					autoClose: 3000,
 				});
-      }
-      setDeleteModal(false);
-    }
-  };
-  //END CRUD
-  //START FOREIGN CALLS
+			}
+			setDeleteModal(false);
+		}
+	};
+	//END CRUD
+	//START FOREIGN CALLS
 
-  // validation
-  const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
-    enableReinitialize: true,
-    initialValues: {
-      rqs_name_or: (requestStatus && requestStatus.rqs_name_or) || "",
-      rqs_name_am: (requestStatus && requestStatus.rqs_name_am) || "",
-      rqs_name_en: (requestStatus && requestStatus.rqs_name_en) || "",
-      rqs_description: (requestStatus && requestStatus.rqs_description) || "",
-      rqs_status: (requestStatus && requestStatus.rqs_status) || false,
-      is_deletable: (requestStatus && requestStatus.is_deletable) || 1,
-      is_editable: (requestStatus && requestStatus.is_editable) || 1,
-    },
-    validationSchema: Yup.object({
-      rqs_name_or: alphanumericValidation(2, 100, true),
-      rqs_name_am: alphanumericValidation(2, 100, true),
-      rqs_name_en: alphanumericValidation(2, 100, true),
-    }),
-    validateOnBlur: true,
-    validateOnChange: false,
-    onSubmit: (values) => {
-      if (isEdit) {
-        const updateRequestStatus = {
-          rqs_id: requestStatus?.rqs_id,
-          rqs_name_or: values.rqs_name_or,
-          rqs_name_am: values.rqs_name_am,
-          rqs_name_en: values.rqs_name_en,
-          rqs_description: values.rqs_description,
-          rqs_status: values.rqs_status ? 1 : 0,
-          is_deletable: values.is_deletable,
-          is_editable: values.is_editable,
-        };
-        // update RequestStatus
-        handleUpdateRequestStatus(updateRequestStatus);
-      } else {
-        const newRequestStatus = {
-          rqs_name_or: values.rqs_name_or,
-          rqs_name_am: values.rqs_name_am,
-          rqs_name_en: values.rqs_name_en,
-          rqs_description: values.rqs_description,
-          rqs_status: values.rqs_status ? 1 : 0,
-        };
-        // save new RequestStatus
-        handleAddRequestStatus(newRequestStatus);
-      }
-    },
-  });
-  const [transaction, setTransaction] = useState({});
-  const toggleViewModal = () => setModal1(!modal1);
-  // Fetch RequestStatus on component mount
-  useEffect(() => {
-    setRequestStatus(data);
-  }, [data]);
-  useEffect(() => {
-    if (!isEmpty(data) && !!isEdit) {
-      setRequestStatus(data);
-      setIsEdit(false);
-    }
-  }, [data]);
-  const toggle = () => {
-    if (modal) {
-      setModal(false);
-      setRequestStatus(null);
-    } else {
-      setModal(true);
-    }
-  };
-  const handleRequestStatusClick = (arg) => {
-    const requestStatus = arg;
-    setRequestStatus({
-      rqs_id: requestStatus.rqs_id,
-      rqs_name_or: requestStatus.rqs_name_or,
-      rqs_name_am: requestStatus.rqs_name_am,
-      rqs_name_en: requestStatus.rqs_name_en,
-      rqs_description: requestStatus.rqs_description,
-      rqs_status: requestStatus.rqs_status === 1,
+	// validation
+	const validation = useFormik({
+		// enableReinitialize: use this flag when initial values need to be changed
+		enableReinitialize: true,
+		initialValues: {
+			rqs_name_or: (requestStatus && requestStatus.rqs_name_or) || "",
+			rqs_name_am: (requestStatus && requestStatus.rqs_name_am) || "",
+			rqs_name_en: (requestStatus && requestStatus.rqs_name_en) || "",
+			rqs_description: (requestStatus && requestStatus.rqs_description) || "",
+			rqs_status: (requestStatus && requestStatus.rqs_status) || false,
+			is_deletable: (requestStatus && requestStatus.is_deletable) || 1,
+			is_editable: (requestStatus && requestStatus.is_editable) || 1,
+		},
+		validationSchema: Yup.object({
+			rqs_name_or: alphanumericValidation(2, 100, true),
+			rqs_name_am: alphanumericValidation(2, 100, true),
+			rqs_name_en: alphanumericValidation(2, 100, true),
+		}),
+		validateOnBlur: true,
+		validateOnChange: false,
+		onSubmit: (values) => {
+			if (isEdit) {
+				const updateRequestStatus = {
+					rqs_id: requestStatus?.rqs_id,
+					rqs_name_or: values.rqs_name_or,
+					rqs_name_am: values.rqs_name_am,
+					rqs_name_en: values.rqs_name_en,
+					rqs_description: values.rqs_description,
+					rqs_status: values.rqs_status ? 1 : 0,
+					is_deletable: values.is_deletable,
+					is_editable: values.is_editable,
+				};
+				// update RequestStatus
+				handleUpdateRequestStatus(updateRequestStatus);
+			} else {
+				const newRequestStatus = {
+					rqs_name_or: values.rqs_name_or,
+					rqs_name_am: values.rqs_name_am,
+					rqs_name_en: values.rqs_name_en,
+					rqs_description: values.rqs_description,
+					rqs_status: values.rqs_status ? 1 : 0,
+				};
+				// save new RequestStatus
+				handleAddRequestStatus(newRequestStatus);
+			}
+		},
+	});
+	const [transaction, setTransaction] = useState({});
+	const toggleViewModal = () => setModal1(!modal1);
+	// Fetch RequestStatus on component mount
+	useEffect(() => {
+		setRequestStatus(data);
+	}, [data]);
+	useEffect(() => {
+		if (!isEmpty(data) && !!isEdit) {
+			setRequestStatus(data);
+			setIsEdit(false);
+		}
+	}, [data]);
+	const toggle = () => {
+		if (modal) {
+			setModal(false);
+			setRequestStatus(null);
+		} else {
+			setModal(true);
+		}
+	};
+	const handleRequestStatusClick = (arg) => {
+		const requestStatus = arg;
+		setRequestStatus({
+			rqs_id: requestStatus.rqs_id,
+			rqs_name_or: requestStatus.rqs_name_or,
+			rqs_name_am: requestStatus.rqs_name_am,
+			rqs_name_en: requestStatus.rqs_name_en,
+			rqs_description: requestStatus.rqs_description,
+			rqs_status: requestStatus.rqs_status === 1,
 
-      is_deletable: requestStatus.is_deletable,
-      is_editable: requestStatus.is_editable,
-    });
-    setIsEdit(true);
-    toggle();
-  };
-  //delete projects
-  const [deleteModal, setDeleteModal] = useState(false);
-  const onClickDelete = (requestStatus) => {
-    setRequestStatus(requestStatus);
-    setDeleteModal(true);
-  };
-  const handleRequestStatusClicks = () => {
-    setIsEdit(false);
-    setRequestStatus("");
-    toggle();
-  };
-  const handleSearchResults = ({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
-  };
-  //START UNCHANGED
-  const columns = useMemo(() => {
-    const baseColumns = [
-      {
-        header: "",
-        accessorKey: "rqs_name_or",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rqs_name_or, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "rqs_name_am",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rqs_name_am, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "rqs_name_en",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rqs_name_en, 30) || "-"}
-            </span>
-          );
-        },
-      },
+			is_deletable: requestStatus.is_deletable,
+			is_editable: requestStatus.is_editable,
+		});
+		setIsEdit(true);
+		toggle();
+	};
+	//delete projects
+	const [deleteModal, setDeleteModal] = useState(false);
+	const onClickDelete = (requestStatus) => {
+		setRequestStatus(requestStatus);
+		setDeleteModal(true);
+	};
+	const handleRequestStatusClicks = () => {
+		setIsEdit(false);
+		setRequestStatus("");
+		toggle();
+	};
+	const handleSearchResults = ({ data, error }) => {
+		setSearchResults(data);
+		setSearchError(error);
+		setShowSearchResult(true);
+	};
+	//START UNCHANGED
+	const columns = useMemo(() => {
+		const baseColumns = [
+			{
+				header: "",
+				accessorKey: "rqs_name_or",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.rqs_name_or, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "rqs_name_am",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.rqs_name_am, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "rqs_name_en",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.rqs_name_en, 30) || "-"}
+						</span>
+					);
+				},
+			},
 
-      {
-        header: "",
-        accessorKey: t("is_inactive"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span
-              className={
-                cellProps.row.original.rqs_status === 1
-                  ? "btn btn-sm btn-soft-danger"
-                  : ""
-              }
-            >
-              {cellProps.row.original.rqs_status === 1 ? t("yes") : t("no")}
-            </span>
-          );
-        },
-      },
+			{
+				header: "",
+				accessorKey: t("is_inactive"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span
+							className={
+								cellProps.row.original.rqs_status === 1
+									? "btn btn-sm btn-soft-danger"
+									: ""
+							}
+						>
+							{cellProps.row.original.rqs_status === 1 ? t("yes") : t("no")}
+						</span>
+					);
+				},
+			},
 
-      {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
-    ];
-    if (
-      data?.previledge?.is_role_editable == 1 ||
-      data?.previledge?.is_role_deletable == 1
-    ) {
-      baseColumns.push({
+			{
+				header: t("view_detail"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								const data = cellProps.row.original;
+								toggleViewModal(data);
+								setTransaction(cellProps.row.original);
+							}}
+						>
+							{t("view_detail")}
+						</Button>
+					);
+				},
+			},
+		];
+		if (
+			data?.previledge?.is_role_editable == 1 ||
+			data?.previledge?.is_role_deletable == 1
+		) {
+			baseColumns.push({
 				header: t("Action"),
 				accessorKey: t("Action"),
 				enableColumnFilter: false,
 				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{cellProps.row.original.is_editable == 1 && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-success"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -326,11 +327,12 @@ const RequestStatusModel = () => {
 									<UncontrolledTooltip placement="top" target="edittooltip">
 										Edit
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 							{cellProps.row.original.is_deletable == 9 && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-danger"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -344,21 +346,21 @@ const RequestStatusModel = () => {
 									<UncontrolledTooltip placement="top" target="deletetooltip">
 										Delete
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 						</div>
 					);
 				},
 			});
-    }
-    return baseColumns;
-  }, [handleRequestStatusClick, toggleViewModal, onClickDelete]);
+		}
+		return baseColumns;
+	}, [handleRequestStatusClick, toggleViewModal, onClickDelete, data, t]);
 
-  if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
-  }
+	if (isError) {
+		return <FetchErrorHandler error={error} refetch={refetch} />;
+	}
 
-  return (
+	return (
 		<React.Fragment>
 			<RequestStatusModal
 				isOpen={modal1}
@@ -608,6 +610,6 @@ const RequestStatusModel = () => {
 	);
 };
 RequestStatusModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+	preGlobalFilteredRows: PropTypes.any,
 };
 export default RequestStatusModel;

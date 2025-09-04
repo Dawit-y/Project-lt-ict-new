@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -59,11 +57,6 @@ const ProjectEmployeeModel = (props) => {
 	const [modal1, setModal1] = useState(false);
 	const [isEdit, setIsEdit] = useState(false);
 	const [projectEmployee, setProjectEmployee] = useState(null);
-
-	const [searchResults, setSearchResults] = useState(null);
-	const [isSearchLoading, setIsSearchLoading] = useState(false);
-	const [searcherror, setSearchError] = useState(null);
-	const [showSearchResult, setShowSearchResult] = useState(false);
 
 	const { data, isLoading, isFetching, error, isError, refetch } =
 		useFetchProjectEmployees(param, isActive);
@@ -162,7 +155,7 @@ const ProjectEmployeeModel = (props) => {
 				"Must be a valid email"
 			),
 			emp_phone_num: phoneValidation(true),
-			emp_role: alphanumericValidation(3, 425, true),
+			emp_role: alphanumericValidation(2, 425, true),
 			emp_nationality: alphanumericValidation(3, 100, false),
 			emp_sex: Yup.string().required(t("Sex is required")),
 			//emp_project_id: Yup.string().required(t("emp_project_id")),
@@ -240,17 +233,6 @@ const ProjectEmployeeModel = (props) => {
 	const [transaction, setTransaction] = useState({});
 	const toggleViewModal = () => setModal1(!modal1);
 
-	useEffect(() => {
-		setProjectEmployee(data);
-	}, [data]);
-
-	useEffect(() => {
-		if (!isEmpty(data) && !!isEdit) {
-			setProjectEmployee(data);
-			setIsEdit(false);
-		}
-	}, [data]);
-
 	const toggle = () => {
 		if (modal) {
 			setModal(false);
@@ -262,7 +244,6 @@ const ProjectEmployeeModel = (props) => {
 
 	const handleProjectEmployeeClick = (arg) => {
 		const projectEmployee = arg;
-		// console.log("handleProjectEmployeeClick", projectEmployee);
 		setProjectEmployee({
 			emp_id: projectEmployee.emp_id,
 			emp_id_no: projectEmployee.emp_id_no,
@@ -439,7 +420,7 @@ const ProjectEmployeeModel = (props) => {
 				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{data?.previledge?.is_role_editable == 1 &&
 								cellProps.row.original?.is_editable == 1 && (
 									<Button
@@ -460,10 +441,11 @@ const ProjectEmployeeModel = (props) => {
 										</UncontrolledTooltip>
 									</Button>
 								)}
-							{data?.previledge?.is_role_deletable == 9 &&
-								cellProps.row.original?.is_deletable == 9 && (
-									<Link
-										to="#"
+							{data?.previledge?.is_role_deletable == 1 &&
+								cellProps.row.original?.is_deletable == 1 && (
+									<Button
+										size="sm"
+										color="none"
 										className="text-danger"
 										onClick={() => {
 											const data = cellProps.row.original;
@@ -477,7 +459,7 @@ const ProjectEmployeeModel = (props) => {
 										<UncontrolledTooltip placement="top" target="deletetooltip">
 											Delete
 										</UncontrolledTooltip>
-									</Link>
+									</Button>
 								)}
 						</div>
 					);
@@ -486,7 +468,7 @@ const ProjectEmployeeModel = (props) => {
 		}
 
 		return baseColumns;
-	}, [handleProjectEmployeeClick, toggleViewModal, onClickDelete]);
+	}, [handleProjectEmployeeClick, toggleViewModal, onClickDelete, data, t]);
 
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -523,7 +505,7 @@ const ProjectEmployeeModel = (props) => {
 			/>
 			<>
 				<div className="container-fluid1">
-					{isLoading || isSearchLoading ? (
+					{isLoading ? (
 						<Spinners top={isActive ? "top-70" : ""} />
 					) : (
 						<Row>
@@ -532,11 +514,7 @@ const ProjectEmployeeModel = (props) => {
 									<CardBody>
 										<TableContainer
 											columns={columns}
-											data={
-												showSearchResult
-													? searchResults?.data
-													: data?.data || []
-											}
+											data={data?.data || []}
 											isGlobalFilter={true}
 											isAddButton={data?.previledge?.is_role_can_add == 1}
 											isCustomPageSize={true}

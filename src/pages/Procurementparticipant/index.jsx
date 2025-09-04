@@ -285,126 +285,127 @@ const ProcurementParticipantModel = (props) => {
   };
   //START UNCHANGED
   const columns = useMemo(() => {
-    const baseColumns = [
-      {
-        header: "",
-        accessorKey: "ppp_name_or",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.ppp_name_or, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "ppp_name_en",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.ppp_name_en, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "ppp_name_am",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.ppp_name_am, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "ppp_tin_number",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.ppp_tin_number, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "ppp_participant_phone_number",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(
-                cellProps.row.original.ppp_participant_phone_number,
-                30,
-              ) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "ppp_participant_email",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.ppp_participant_email, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
-    ];
-    if (
-      data?.previledge?.is_role_editable == 1 ||
-      data?.previledge?.is_role_deletable == 1
-    ) {
-      baseColumns.push({
+		const baseColumns = [
+			{
+				header: "",
+				accessorKey: "ppp_name_or",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.ppp_name_or, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "ppp_name_en",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.ppp_name_en, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "ppp_name_am",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.ppp_name_am, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "ppp_tin_number",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.ppp_tin_number, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "ppp_participant_phone_number",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(
+								cellProps.row.original.ppp_participant_phone_number,
+								30
+							) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "ppp_participant_email",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.ppp_participant_email, 30) ||
+								"-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: t("view_detail"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								const data = cellProps.row.original;
+								toggleViewModal(data);
+								setTransaction(cellProps.row.original);
+							}}
+						>
+							{t("view_detail")}
+						</Button>
+					);
+				},
+			},
+		];
+		if (
+			data?.previledge?.is_role_editable == 1 ||
+			data?.previledge?.is_role_deletable == 1
+		) {
+			baseColumns.push({
 				header: t("Action"),
 				accessorKey: t("Action"),
 				enableColumnFilter: false,
 				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{cellProps.row.original.is_editable == 1 && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-success"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -415,11 +416,12 @@ const ProcurementParticipantModel = (props) => {
 									<UncontrolledTooltip placement="top" target="edittooltip">
 										Edit
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 							{cellProps.row.original.is_deletable == 1 && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-danger"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -433,15 +435,26 @@ const ProcurementParticipantModel = (props) => {
 									<UncontrolledTooltip placement="top" target="deletetooltip">
 										Delete
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 						</div>
 					);
 				},
 			});
-    }
-    return baseColumns;
-  }, [handleProcurementParticipantClick, toggleViewModal, onClickDelete]);
+		}
+		return baseColumns;
+	}, [
+		handleProcurementParticipantClick,
+		toggleViewModal,
+		onClickDelete,
+		data,
+		t,
+  ]);
+  
+  if (isError) {
+    return <FetchErrorHandler error={error} refetch={refetch} />;
+  }
+
   return (
     <React.Fragment>
       <ProcurementParticipantModal

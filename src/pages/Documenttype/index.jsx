@@ -1,88 +1,64 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-
-//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+import { alphanumericValidation } from "../../utils/Validation/validation";
 import {
-  alphanumericValidation,
-  amountValidation,
-  numberValidation,
-} from "../../utils/Validation/validation";
-
-import {
-  useFetchDocumentTypes,
-  useSearchDocumentTypes,
-  useAddDocumentType,
-  useDeleteDocumentType,
-  useUpdateDocumentType,
+	useFetchDocumentTypes,
+	useAddDocumentType,
+	useDeleteDocumentType,
+	useUpdateDocumentType,
 } from "../../queries/documenttype_query";
 import DocumentTypeModal from "./DocumentTypeModal";
 import { useTranslation } from "react-i18next";
-
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
 import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
+	Button,
+	Col,
+	Row,
+	UncontrolledTooltip,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	Form,
+	Input,
+	FormFeedback,
+	Label,
+	Card,
+	CardBody,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { documentTypeExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
-  if (typeof text !== "string") {
-    return text;
-  }
-  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+	if (typeof text !== "string") {
+		return text;
+	}
+	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
 const DocumentTypeModel = () => {
-  //meta title
-  document.title = " DocumentType";
-  const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [documentType, setDocumentType] = useState(null);
+	//meta title
+	document.title = " DocumentType";
+	const { t } = useTranslation();
+	const [modal, setModal] = useState(false);
+	const [modal1, setModal1] = useState(false);
+	const [isEdit, setIsEdit] = useState(false);
+	const [documentType, setDocumentType] = useState(null);
 
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
+	const { data, isLoading, isFetching, error, isError, refetch } =
+		useFetchDocumentTypes();
 
-  const { data, isLoading, isFetching, error, isError, refetch } =
-    useFetchDocumentTypes();
-
-  const addDocumentType = useAddDocumentType();
-  const updateDocumentType = useUpdateDocumentType();
-  const deleteDocumentType = useDeleteDocumentType();
-  //START CRUD
-  const handleAddDocumentType = async (data) => {
+	const addDocumentType = useAddDocumentType();
+	const updateDocumentType = useUpdateDocumentType();
+	const deleteDocumentType = useDeleteDocumentType();
+	//START CRUD
+	const handleAddDocumentType = async (data) => {
 		try {
 			await addDocumentType.mutateAsync(data);
 			toast.success(t("add_success"), {
@@ -111,272 +87,251 @@ const DocumentTypeModel = () => {
 			}
 		}
 	};
-  const handleDeleteDocumentType = async () => {
-    if (documentType && documentType.pdt_id) {
-      try {
-        const id = documentType.pdt_id;
-        await deleteDocumentType.mutateAsync(id);
-        toast.success(t("delete_success"), {
+	const handleDeleteDocumentType = async () => {
+		if (documentType && documentType.pdt_id) {
+			try {
+				const id = documentType.pdt_id;
+				await deleteDocumentType.mutateAsync(id);
+				toast.success(t("delete_success"), {
 					autoClose: 3000,
 				});
-      } catch (error) {
-        toast.error(t("delete_failure"), {
+			} catch (error) {
+				toast.error(t("delete_failure"), {
 					autoClose: 3000,
 				});
-      }
-      setDeleteModal(false);
-    }
-  };
+			}
+			setDeleteModal(false);
+		}
+	};
 
-  //END CRUD
-  //START FOREIGN CALLS
+	const validation = useFormik({
+		enableReinitialize: true,
+		initialValues: {
+			pdt_doc_name_or: (documentType && documentType.pdt_doc_name_or) || "",
+			pdt_doc_name_am: (documentType && documentType.pdt_doc_name_am) || "",
+			pdt_doc_name_en: (documentType && documentType.pdt_doc_name_en) || "",
+			pdt_code: (documentType && documentType.pdt_code) || "",
+			pdt_description: (documentType && documentType.pdt_description) || "",
+			pdt_status: (documentType && documentType.pdt_status) || false,
 
-  // validation
-  const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
-    enableReinitialize: true,
+			is_deletable: (documentType && documentType.is_deletable) || 1,
+			is_editable: (documentType && documentType.is_editable) || 1,
+		},
 
-    initialValues: {
-      pdt_doc_name_or: (documentType && documentType.pdt_doc_name_or) || "",
-      pdt_doc_name_am: (documentType && documentType.pdt_doc_name_am) || "",
-      pdt_doc_name_en: (documentType && documentType.pdt_doc_name_en) || "",
-      pdt_code: (documentType && documentType.pdt_code) || "",
-      pdt_description: (documentType && documentType.pdt_description) || "",
-      pdt_status: (documentType && documentType.pdt_status) || false,
+		validationSchema: Yup.object({
+			pdt_doc_name_or: alphanumericValidation(2, 100, true).test(
+				"unique-pdt_doc_name_or",
+				t("Already exists"),
+				(value) => {
+					return !data?.data.some(
+						(item) =>
+							item.pdt_doc_name_or == value &&
+							item.pdt_id !== documentType?.pdt_id
+					);
+				}
+			),
+			pdt_doc_name_am: Yup.string().required(t("pdt_doc_name_am")),
+			pdt_doc_name_en: alphanumericValidation(2, 100, true),
+			pdt_description: alphanumericValidation(3, 425, false),
+		}),
+		validateOnBlur: true,
+		validateOnChange: false,
+		onSubmit: (values) => {
+			if (isEdit) {
+				const updateDocumentType = {
+					pdt_id: documentType?.pdt_id,
+					pdt_doc_name_or: values.pdt_doc_name_or,
+					pdt_doc_name_am: values.pdt_doc_name_am,
+					pdt_doc_name_en: values.pdt_doc_name_en,
+					pdt_code: values.pdt_code,
+					pdt_description: values.pdt_description,
+					pdt_status: values.pdt_status ? 1 : 0,
 
-      is_deletable: (documentType && documentType.is_deletable) || 1,
-      is_editable: (documentType && documentType.is_editable) || 1,
-    },
+					is_deletable: values.is_deletable,
+					is_editable: values.is_editable,
+				};
+				// update DocumentType
+				handleUpdateDocumentType(updateDocumentType);
+			} else {
+				const newDocumentType = {
+					pdt_doc_name_or: values.pdt_doc_name_or,
+					pdt_doc_name_am: values.pdt_doc_name_am,
+					pdt_doc_name_en: values.pdt_doc_name_en,
+					pdt_code: values.pdt_code,
+					pdt_description: values.pdt_description,
+					pdt_status: values.pdt_status ? 1 : 0,
+				};
+				// save new DocumentType
+				handleAddDocumentType(newDocumentType);
+			}
+		},
+	});
+	const [transaction, setTransaction] = useState({});
+	const toggleViewModal = () => setModal1(!modal1);
 
-    validationSchema: Yup.object({
-      pdt_doc_name_or: alphanumericValidation(2, 100, true).test(
-        "unique-pdt_doc_name_or",
-        t("Already exists"),
-        (value) => {
-          return !data?.data.some(
-            (item) =>
-              item.pdt_doc_name_or == value &&
-              item.pdt_id !== documentType?.pdt_id,
-          );
-        },
-      ),
-      pdt_doc_name_am: Yup.string().required(t("pdt_doc_name_am")),
-      pdt_doc_name_en: alphanumericValidation(2, 100, true),
-      pdt_description: alphanumericValidation(3, 425, false),
-    }),
-    validateOnBlur: true,
-    validateOnChange: false,
-    onSubmit: (values) => {
-      if (isEdit) {
-        const updateDocumentType = {
-          pdt_id: documentType?.pdt_id,
-          pdt_doc_name_or: values.pdt_doc_name_or,
-          pdt_doc_name_am: values.pdt_doc_name_am,
-          pdt_doc_name_en: values.pdt_doc_name_en,
-          pdt_code: values.pdt_code,
-          pdt_description: values.pdt_description,
-          pdt_status: values.pdt_status ? 1 : 0,
+	const toggle = () => {
+		if (modal) {
+			setModal(false);
+			setDocumentType(null);
+		} else {
+			setModal(true);
+		}
+	};
 
-          is_deletable: values.is_deletable,
-          is_editable: values.is_editable,
-        };
-        // update DocumentType
-        handleUpdateDocumentType(updateDocumentType);
-      } else {
-        const newDocumentType = {
-          pdt_doc_name_or: values.pdt_doc_name_or,
-          pdt_doc_name_am: values.pdt_doc_name_am,
-          pdt_doc_name_en: values.pdt_doc_name_en,
-          pdt_code: values.pdt_code,
-          pdt_description: values.pdt_description,
-          pdt_status: values.pdt_status ? 1 : 0,
-        };
-        // save new DocumentType
-        handleAddDocumentType(newDocumentType);
-      }
-    },
-  });
-  const [transaction, setTransaction] = useState({});
-  const toggleViewModal = () => setModal1(!modal1);
+	const handleDocumentTypeClick = (arg) => {
+		const documentType = arg;
+		setDocumentType({
+			pdt_id: documentType.pdt_id,
+			pdt_doc_name_or: documentType.pdt_doc_name_or,
+			pdt_doc_name_am: documentType.pdt_doc_name_am,
+			pdt_doc_name_en: documentType.pdt_doc_name_en,
+			pdt_code: documentType.pdt_code,
+			pdt_description: documentType.pdt_description,
+			pdt_status: documentType.pdt_status === 1,
+			is_deletable: documentType.is_deletable,
+			is_editable: documentType.is_editable,
+		});
+		setIsEdit(true);
+		toggle();
+	};
 
-  // Fetch DocumentType on component mount
-  useEffect(() => {
-    setDocumentType(data);
-  }, [data]);
-  useEffect(() => {
-    if (!isEmpty(data) && !!isEdit) {
-      setDocumentType(data);
-      setIsEdit(false);
-    }
-  }, [data]);
-  const toggle = () => {
-    if (modal) {
-      setModal(false);
-      setDocumentType(null);
-    } else {
-      setModal(true);
-    }
-  };
+	//delete projects
+	const [deleteModal, setDeleteModal] = useState(false);
+	const onClickDelete = (documentType) => {
+		setDocumentType(documentType);
+		setDeleteModal(true);
+	};
 
-  const handleDocumentTypeClick = (arg) => {
-    const documentType = arg;
-    // console.log("handleDocumentTypeClick", documentType);
-    setDocumentType({
-      pdt_id: documentType.pdt_id,
-      pdt_doc_name_or: documentType.pdt_doc_name_or,
-      pdt_doc_name_am: documentType.pdt_doc_name_am,
-      pdt_doc_name_en: documentType.pdt_doc_name_en,
-      pdt_code: documentType.pdt_code,
-      pdt_description: documentType.pdt_description,
-      pdt_status: documentType.pdt_status === 1,
-      is_deletable: documentType.is_deletable,
-      is_editable: documentType.is_editable,
-    });
-    setIsEdit(true);
-    toggle();
-  };
+	const handleDocumentTypeClicks = () => {
+		setIsEdit(false);
+		setDocumentType("");
+		toggle();
+	};
 
-  //delete projects
-  const [deleteModal, setDeleteModal] = useState(false);
-  const onClickDelete = (documentType) => {
-    setDocumentType(documentType);
-    setDeleteModal(true);
-  };
-
-  const handleDocumentTypeClicks = () => {
-    setIsEdit(false);
-    setDocumentType("");
-    toggle();
-  };
-  const handleSearchResults = ({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
-  };
-  //START UNCHANGED
-  const columns = useMemo(() => {
-    const baseColumns = [
-      {
-        header: "",
-        accessorKey: "pdt_doc_name_or",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pdt_doc_name_or, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "pdt_doc_name_am",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pdt_doc_name_am, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "pdt_doc_name_en",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pdt_doc_name_en, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "pdt_code",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pdt_code, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "pdt_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.pdt_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: t("is_inactive"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span
-              className={
-                cellProps.row.original.pdt_status === 1
-                  ? "btn btn-sm btn-soft-danger"
-                  : ""
-              }
-            >
-              {cellProps.row.original.pdt_status === 1 ? t("yes") : t("no")}
-            </span>
-          );
-        },
-      },
-      {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
-    ];
-    if (
-      data?.previledge?.is_role_editable == 1 ||
-      data?.previledge?.is_role_deletable == 1
-    ) {
-      baseColumns.push({
+	const columns = useMemo(() => {
+		const baseColumns = [
+			{
+				header: "",
+				accessorKey: "pdt_doc_name_or",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.pdt_doc_name_or, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "pdt_doc_name_am",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.pdt_doc_name_am, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "pdt_doc_name_en",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.pdt_doc_name_en, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "pdt_code",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.pdt_code, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "pdt_description",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.pdt_description, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: t("is_inactive"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span
+							className={
+								cellProps.row.original.pdt_status === 1
+									? "btn btn-sm btn-soft-danger"
+									: ""
+							}
+						>
+							{cellProps.row.original.pdt_status === 1 ? t("yes") : t("no")}
+						</span>
+					);
+				},
+			},
+			{
+				header: t("view_detail"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								const data = cellProps.row.original;
+								toggleViewModal(data);
+								setTransaction(cellProps.row.original);
+							}}
+						>
+							{t("view_detail")}
+						</Button>
+					);
+				},
+			},
+		];
+		if (
+			data?.previledge?.is_role_editable == 1 ||
+			data?.previledge?.is_role_deletable == 1
+		) {
+			baseColumns.push({
 				header: t("Action"),
 				accessorKey: t("Action"),
 				enableColumnFilter: false,
 				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{cellProps.row.original.is_editable == 1 && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-success"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -387,12 +342,13 @@ const DocumentTypeModel = () => {
 									<UncontrolledTooltip placement="top" target="edittooltip">
 										Edit
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 
 							{cellProps.row.original.is_deletable == 9 && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-danger"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -406,20 +362,21 @@ const DocumentTypeModel = () => {
 									<UncontrolledTooltip placement="top" target="deletetooltip">
 										Delete
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 						</div>
 					);
 				},
 			});
-    }
+		}
 
-    return baseColumns;
-  }, [handleDocumentTypeClick, toggleViewModal, onClickDelete]);
-  if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
-  }
-  return (
+		return baseColumns;
+	}, [handleDocumentTypeClick, toggleViewModal, onClickDelete, data]);
+
+	if (isError) {
+		return <FetchErrorHandler error={error} refetch={refetch} />;
+	}
+	return (
 		<React.Fragment>
 			<DocumentTypeModal
 				isOpen={modal1}
@@ -434,11 +391,8 @@ const DocumentTypeModel = () => {
 			/>
 			<div className="page-content">
 				<div className="container-fluid">
-					<Breadcrumbs
-						title={t("document_type")}
-						breadcrumbItem={t("document_type")}
-					/>
-					{isLoading || isSearchLoading ? (
+					<Breadcrumbs />
+					{isLoading ? (
 						<Spinners />
 					) : (
 						<Row>
@@ -447,11 +401,7 @@ const DocumentTypeModel = () => {
 									<CardBody>
 										<TableContainer
 											columns={columns}
-											data={
-												showSearchResult
-													? searchResults?.data
-													: data?.data || []
-											}
+											data={data?.data || []}
 											isGlobalFilter={true}
 											isAddButton={data?.previledge?.is_role_can_add == 1}
 											isCustomPageSize={true}
@@ -693,7 +643,7 @@ const DocumentTypeModel = () => {
 	);
 };
 DocumentTypeModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+	preGlobalFilteredRows: PropTypes.any,
 };
 
 export default DocumentTypeModel;

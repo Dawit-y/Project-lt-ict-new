@@ -48,14 +48,26 @@ export const useAddStakeholderType = () => {
 			});
 
 			const previousData = previousQueries.map(([queryKey, oldData]) => {
+				// Store original data for rollback
+				const originalData = oldData;
+
 				queryClient.setQueryData(queryKey, (oldData) => {
-					if (!oldData) return;
+					if (!oldData || !Array.isArray(oldData.data)) return oldData;
+
+					// Create a temporary ID for optimistic update
+					const tempData = {
+						...newData,
+						tempId: Date.now(), // Add temporary ID for later matching
+						sht_id: `temp-${Date.now()}`, // Temporary ID since we don't have real ID yet
+					};
+
 					return {
 						...oldData,
-						data: [newData, ...oldData.data],
+						data: [tempData, ...oldData.data], // Add to beginning of array
 					};
 				});
-				return [queryKey, oldData];
+
+				return [queryKey, originalData];
 			});
 
 			return { previousData };
@@ -79,12 +91,19 @@ export const useAddStakeholderType = () => {
 
 			queries.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
-					if (!oldData) return;
+					if (!oldData || !Array.isArray(oldData.data)) return oldData;
+
+					// Replace temporary item with real data from server
 					return {
 						...oldData,
-						data: oldData.data.map((d) =>
-							d.tempId === newData.tempId ? newData : d
-						),
+						data: oldData.data
+							.map((item) => (item.tempId ? newData : item))
+							.filter(
+								(item, index, array) =>
+									// Remove duplicates in case of multiple temp items
+									!item.tempId ||
+									array.findIndex((i) => i.sht_id === item.sht_id) === index
+							),
 					};
 				});
 			});
@@ -113,18 +132,23 @@ export const useUpdateStakeholderType = () => {
 			});
 
 			const previousData = previousQueries.map(([queryKey, oldData]) => {
+				// Store original data for rollback
+				const originalData = oldData;
+
 				queryClient.setQueryData(queryKey, (oldData) => {
-					if (!oldData) return;
+					if (!oldData || !Array.isArray(oldData.data)) return oldData;
+
 					return {
 						...oldData,
-						data: oldData.data.map((d) =>
-							d.sht_id === updatedData.data.sht_id
-								? { ...d, ...updatedData.data }
-								: d
+						data: oldData.data.map((item) =>
+							item.sht_id === updatedData.sht_id
+								? { ...item, ...updatedData, isOptimistic: true }
+								: item
 						),
 					};
 				});
-				return [queryKey, oldData];
+
+				return [queryKey, originalData];
 			});
 
 			return { previousData };
@@ -136,20 +160,24 @@ export const useUpdateStakeholderType = () => {
 			});
 		},
 
-		onSuccess: (updatedData) => {
+		onSuccess: (updatedDataResponse) => {
+			const updatedData = {
+				...updatedDataResponse.data,
+				...updatedDataResponse.previledge,
+			};
+
 			const queries = queryClient.getQueriesData({
 				queryKey: STAKEHOLDER_TYPE_QUERY_KEY,
 			});
 
 			queries.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
-					if (!oldData) return;
+					if (!oldData || !Array.isArray(oldData.data)) return oldData;
+
 					return {
 						...oldData,
-						data: oldData.data.map((data) =>
-							data.sht_id === updatedData.data.sht_id
-								? { ...data, ...updatedData.data }
-								: data
+						data: oldData.data.map((item) =>
+							item.sht_id === updatedData.sht_id ? updatedData : item
 						),
 					};
 				});
@@ -164,7 +192,7 @@ export const useUpdateStakeholderType = () => {
 	});
 };
 
-// Delete stakeholder_type
+// Delete stakeholder_type 
 export const useDeleteStakeholderType = () => {
 	const queryClient = useQueryClient();
 
@@ -179,14 +207,19 @@ export const useDeleteStakeholderType = () => {
 			});
 
 			const previousData = previousQueries.map(([queryKey, oldData]) => {
+				// Store original data for rollback
+				const originalData = oldData;
+
 				queryClient.setQueryData(queryKey, (oldData) => {
-					if (!oldData) return;
+					if (!oldData || !Array.isArray(oldData.data)) return oldData;
+
 					return {
 						...oldData,
-						data: oldData.data.filter((d) => d.sht_id !== parseInt(id)),
+						data: oldData.data.filter((item) => item.sht_id !== parseInt(id)),
 					};
 				});
-				return [queryKey, oldData];
+
+				return [queryKey, originalData];
 			});
 
 			return { previousData };
@@ -198,17 +231,21 @@ export const useDeleteStakeholderType = () => {
 			});
 		},
 
-		onSuccess: (deletedData, variable) => {
+		onSuccess: (_deletedData, variable) => {
 			const queries = queryClient.getQueriesData({
 				queryKey: STAKEHOLDER_TYPE_QUERY_KEY,
 			});
 
 			queries.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
-					if (!oldData) return;
+					if (!oldData || !Array.isArray(oldData.data)) return oldData;
+
+					// This ensures the item is removed after successful deletion
 					return {
 						...oldData,
-						data: oldData.data.filter((d) => d.sht_id !== parseInt(variable)),
+						data: oldData.data.filter(
+							(item) => item.sht_id !== parseInt(variable)
+						),
 					};
 				});
 			});

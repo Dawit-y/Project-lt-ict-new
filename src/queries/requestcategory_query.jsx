@@ -32,7 +32,6 @@ export const useSearchRequestCategorys = (searchParams = {}) => {
 	});
 };
 
-// Add request_category
 export const useAddRequestCategory = () => {
 	const queryClient = useQueryClient();
 
@@ -47,14 +46,26 @@ export const useAddRequestCategory = () => {
 			});
 
 			const previousData = previousQueries.map(([queryKey, oldData]) => {
+				// Store original data for rollback
+				const originalData = oldData;
+
 				queryClient.setQueryData(queryKey, (oldData) => {
-					if (!oldData) return;
+					if (!oldData || !Array.isArray(oldData.data)) return oldData;
+
+					// Create a temporary ID for optimistic update
+					const tempData = {
+						...newData,
+						tempId: Date.now(), // Add temporary ID for later matching
+						rqc_id: `temp-${Date.now()}`, // Temporary ID since we don't have real ID yet
+					};
+
 					return {
 						...oldData,
-						data: [newData, ...oldData.data],
+						data: [tempData, ...oldData.data], // Add to beginning of array
 					};
 				});
-				return [queryKey, oldData];
+
+				return [queryKey, originalData];
 			});
 
 			return { previousData };
@@ -78,12 +89,19 @@ export const useAddRequestCategory = () => {
 
 			queries.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
-					if (!oldData) return;
+					if (!oldData || !Array.isArray(oldData.data)) return oldData;
+
+					// Replace temporary item with real data from server
 					return {
 						...oldData,
-						data: oldData.data.map((d) =>
-							d.tempId === newData.tempId ? newData : d
-						),
+						data: oldData.data
+							.map((item) => (item.tempId ? newData : item))
+							.filter(
+								(item, index, array) =>
+									// Remove duplicates in case of multiple temp items
+									!item.tempId ||
+									array.findIndex((i) => i.rqc_id === item.rqc_id) === index
+							),
 					};
 				});
 			});
@@ -105,25 +123,30 @@ export const useUpdateRequestCategory = () => {
 		mutationFn: updateRequestCategory,
 
 		onMutate: async (updatedData) => {
-			await queryClient.cancelQueries(REQUEST_CATEGORY_QUERY_KEY);
+			await queryClient.cancelQueries({ queryKey: REQUEST_CATEGORY_QUERY_KEY });
 
 			const previousQueries = queryClient.getQueriesData({
 				queryKey: REQUEST_CATEGORY_QUERY_KEY,
 			});
 
 			const previousData = previousQueries.map(([queryKey, oldData]) => {
+				// Store original data for rollback
+				const originalData = oldData;
+
 				queryClient.setQueryData(queryKey, (oldData) => {
-					if (!oldData) return;
+					if (!oldData || !Array.isArray(oldData.data)) return oldData;
+
 					return {
 						...oldData,
-						data: oldData.data.map((d) =>
-							d.rqc_id === updatedData.data.rqc_id
-								? { ...d, ...updatedData.data }
-								: d
+						data: oldData.data.map((item) =>
+							item.rqc_id === updatedData.rqc_id
+								? { ...item, ...updatedData, isOptimistic: true }
+								: item
 						),
 					};
 				});
-				return [queryKey, oldData];
+
+				return [queryKey, originalData];
 			});
 
 			return { previousData };
@@ -135,20 +158,24 @@ export const useUpdateRequestCategory = () => {
 			});
 		},
 
-		onSuccess: (updatedData) => {
+		onSuccess: (updatedDataResponse) => {
+			const updatedData = {
+				...updatedDataResponse.data,
+				...updatedDataResponse.previledge,
+			};
+
 			const queries = queryClient.getQueriesData({
 				queryKey: REQUEST_CATEGORY_QUERY_KEY,
 			});
 
 			queries.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
-					if (!oldData) return;
+					if (!oldData || !Array.isArray(oldData.data)) return oldData;
+
 					return {
 						...oldData,
-						data: oldData.data.map((data) =>
-							data.rqc_id === updatedData.data.rqc_id
-								? { ...data, ...updatedData.data }
-								: data
+						data: oldData.data.map((item) =>
+							item.rqc_id === updatedData.rqc_id ? updatedData : item
 						),
 					};
 				});
@@ -162,7 +189,6 @@ export const useUpdateRequestCategory = () => {
 		},
 	});
 };
-
 // Delete request_category
 export const useDeleteRequestCategory = () => {
 	const queryClient = useQueryClient();
@@ -178,14 +204,19 @@ export const useDeleteRequestCategory = () => {
 			});
 
 			const previousData = previousQueries.map(([queryKey, oldData]) => {
+				// Store original data for rollback
+				const originalData = oldData;
+
 				queryClient.setQueryData(queryKey, (oldData) => {
-					if (!oldData) return;
+					if (!oldData || !Array.isArray(oldData.data)) return oldData;
+
 					return {
 						...oldData,
-						data: oldData.data.filter((d) => d.rqc_id !== parseInt(id)),
+						data: oldData.data.filter((item) => item.rqc_id !== parseInt(id)),
 					};
 				});
-				return [queryKey, oldData];
+
+				return [queryKey, originalData];
 			});
 
 			return { previousData };
@@ -197,17 +228,21 @@ export const useDeleteRequestCategory = () => {
 			});
 		},
 
-		onSuccess: (deletedData, variable) => {
+		onSuccess: (_deletedData, variable) => {
 			const queries = queryClient.getQueriesData({
 				queryKey: REQUEST_CATEGORY_QUERY_KEY,
 			});
 
 			queries.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
-					if (!oldData) return;
+					if (!oldData || !Array.isArray(oldData.data)) return oldData;
+
+					// This ensures the item is removed after successful deletion
 					return {
 						...oldData,
-						data: oldData.data.filter((d) => d.rqc_id !== parseInt(variable)),
+						data: oldData.data.filter(
+							(item) => item.rqc_id !== parseInt(variable)
+						),
 					};
 				});
 			});

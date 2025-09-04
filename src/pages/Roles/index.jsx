@@ -222,86 +222,86 @@ const RolesModel = () => {
   };
 
   const columns = useMemo(() => {
-    const baseColumns = [
-      {
-        header: "",
-        accessorKey: "rol_name",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rol_name, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "rol_create_time",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rol_create_time, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "rol_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rol_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                // onSelectItem(data);
-                setTransaction(data);
-                toggleViewModal(data);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
-    ];
-    if (
-      data?.previledge?.is_role_editable ||
-      data?.previledge?.is_role_deletable
-    ) {
-      baseColumns.push({
+		const baseColumns = [
+			{
+				header: "",
+				accessorKey: "rol_name",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.rol_name, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "rol_create_time",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.rol_create_time, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "rol_description",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.rol_description, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: t("view_detail"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								const data = cellProps.row.original;
+								// onSelectItem(data);
+								setTransaction(data);
+								toggleViewModal(data);
+							}}
+						>
+							{t("view_detail")}
+						</Button>
+					);
+				},
+			},
+		];
+		if (
+			data?.previledge?.is_role_editable ||
+			data?.previledge?.is_role_deletable
+		) {
+			baseColumns.push({
 				header: t("Action"),
 				accessorKey: t("Action"),
 				enableColumnFilter: false,
 				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{(cellProps.row.original?.is_editable ||
 								cellProps.row.original?.is_role_editable) && (
-								<Link
-									to="#"
-									className="text-success"
+								<Button
+									color="None"
+									size="sm"
 									onClick={() => {
 										const data = cellProps.row.original;
 										handleRolesClick(data);
@@ -311,13 +311,14 @@ const RolesModel = () => {
 									<UncontrolledTooltip placement="top" target="edittooltip">
 										Edit
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 
 							{(cellProps.row.original?.is_deletable ||
 								cellProps.row.original?.is_role_deletable) && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-danger"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -331,12 +332,13 @@ const RolesModel = () => {
 									<UncontrolledTooltip placement="top" target="deletetooltip">
 										Delete
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 							{/* side slider */}
 							{cellProps.row.original.is_editable && (
-								<Link
-									to="#"
+								<Button
+									color="none"
+									size="sm"
 									className="text-secondary"
 									onClick={() => {
 										const roledata = cellProps.row.original;
@@ -348,16 +350,16 @@ const RolesModel = () => {
 									<UncontrolledTooltip placement="top" target="viewtooltip">
 										View
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 						</div>
 					);
 				},
 			});
-    }
+		}
 
-    return baseColumns;
-  }, [handleRolesClick, toggleViewModal, onClickDelete]);
+		return baseColumns;
+	}, [handleRolesClick, toggleViewModal, onClickDelete, data, t]);
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;

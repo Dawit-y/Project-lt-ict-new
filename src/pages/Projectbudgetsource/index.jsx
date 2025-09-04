@@ -8,11 +8,7 @@ import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
-
-//import components
-import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
-
 import {
 	useFetchProjectBudgetSources,
 	useSearchProjectBudgetSources,
@@ -59,7 +55,6 @@ const ProjectBudgetSourceModel = (props) => {
 	const param = {
 		project_id: passedId,
 		request_type: "single",
-		prj_total_actual_budget: totalActualBudget,
 	};
 	const { t } = useTranslation();
 	const [modal, setModal] = useState(false);
@@ -388,9 +383,11 @@ const ProjectBudgetSourceModel = (props) => {
 				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{cellProps.row.original.is_editable && (
-								<Link
+								<Button
+									color="None"
+									size="sm"
 									className="text-success"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -401,11 +398,13 @@ const ProjectBudgetSourceModel = (props) => {
 									<UncontrolledTooltip placement="top" target="edittooltip">
 										Edit
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 
 							{cellProps.row.original.is_deletable && (
-								<Link
+								<Button
+									color="None"
+									size="sm"
 									className="text-danger"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -419,7 +418,7 @@ const ProjectBudgetSourceModel = (props) => {
 									<UncontrolledTooltip placement="top" target="deletetooltip">
 										Delete
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 						</div>
 					);
@@ -428,7 +427,7 @@ const ProjectBudgetSourceModel = (props) => {
 		}
 
 		return baseColumns;
-	}, [handleProjectBudgetSourceClick, toggleViewModal, onClickDelete]);
+	}, [handleProjectBudgetSourceClick, toggleViewModal, onClickDelete, data, t]);
 
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;

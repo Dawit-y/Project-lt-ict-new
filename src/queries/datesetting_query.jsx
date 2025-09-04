@@ -31,6 +31,7 @@ export const useSearchDateSettings = (searchParams = {}) => {
 		enabled: searchParams.length > 0,
 	});
 };
+
 // Add date_setting
 export const useAddDateSetting = () => {
 	const queryClient = useQueryClient();
@@ -45,43 +46,42 @@ export const useAddDateSetting = () => {
 				queryKey: DATE_SETTING_QUERY_KEY,
 			});
 
-			const previousData = previousQueries.map(([queryKey, oldData]) => {
+			const tempId = Date.now();
+			const optimisticData = { ...newData, dts_id: tempId };
+
+			previousQueries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
 						...oldData,
-						data: [newData, ...oldData.data],
+						data: [optimisticData, ...oldData.data],
 					};
 				});
-				return [queryKey, oldData];
 			});
 
-			return { previousData };
+			return { previousQueries, tempId };
 		},
 
 		onError: (_err, _newData, context) => {
-			context?.previousData?.forEach(([queryKey, oldData]) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, oldData);
 			});
 		},
 
-		onSuccess: (newDataResponse) => {
-			const newData = {
-				...newDataResponse.data,
-				...newDataResponse.previledge,
-			};
+		onSuccess: (response, _newData, context) => {
+			const serverData = response.data;
 
 			const queries = queryClient.getQueriesData({
 				queryKey: DATE_SETTING_QUERY_KEY,
 			});
 
-			queries.forEach(([queryKey, oldData]) => {
+			queries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
 						...oldData,
 						data: oldData.data.map((d) =>
-							d.tempId === newData.tempId ? newData : d
+							d.dts_id === context.tempId ? serverData : d
 						),
 					};
 				});
@@ -110,44 +110,41 @@ export const useUpdateDateSetting = () => {
 				queryKey: DATE_SETTING_QUERY_KEY,
 			});
 
-			const previousData = previousQueries.map(([queryKey, oldData]) => {
+			previousQueries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
 						...oldData,
 						data: oldData.data.map((d) =>
-							d.dts_id === updatedData.data.dts_id
-								? { ...d, ...updatedData.data }
-								: d
+							d.dts_id === updatedData.dts_id ? { ...d, ...updatedData } : d
 						),
 					};
 				});
-				return [queryKey, oldData];
 			});
 
-			return { previousData };
+			return { previousQueries };
 		},
 
 		onError: (_err, _updatedData, context) => {
-			context?.previousData?.forEach(([queryKey, oldData]) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, oldData);
 			});
 		},
 
-		onSuccess: (updatedDateSetting) => {
+		onSuccess: (response) => {
+			const serverData = response.data;
+
 			const queries = queryClient.getQueriesData({
 				queryKey: DATE_SETTING_QUERY_KEY,
 			});
 
-			queries.forEach(([queryKey, oldData]) => {
+			queries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
 						...oldData,
-						data: oldData.data.map((DateSettingData) =>
-							DateSettingData.dts_id === updatedDateSetting.data.dts_id
-								? { ...DateSettingData, ...updatedDateSetting.data }
-								: DateSettingData
+						data: oldData.data.map((d) =>
+							d.dts_id === serverData.dts_id ? serverData : d
 						),
 					};
 				});
@@ -176,7 +173,7 @@ export const useDeleteDateSetting = () => {
 				queryKey: DATE_SETTING_QUERY_KEY,
 			});
 
-			const previousData = previousQueries.map(([queryKey, oldData]) => {
+			previousQueries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
@@ -184,34 +181,14 @@ export const useDeleteDateSetting = () => {
 						data: oldData.data.filter((d) => d.dts_id !== parseInt(id)),
 					};
 				});
-				return [queryKey, oldData];
 			});
 
-			return { previousData };
+			return { previousQueries };
 		},
 
 		onError: (_err, _id, context) => {
-			context?.previousData?.forEach(([queryKey, oldData]) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, oldData);
-			});
-		},
-
-		onSuccess: (deletedData) => {
-			const queries = queryClient.getQueriesData({
-				queryKey: DATE_SETTING_QUERY_KEY,
-			});
-
-			queries.forEach(([queryKey, oldData]) => {
-				queryClient.setQueryData(queryKey, (oldData) => {
-					if (!oldData) return;
-					return {
-						...oldData,
-						data: oldData.data.filter(
-							(DateSettingData) =>
-								DateSettingData.dts_id !== parseInt(deletedData.deleted_id)
-						),
-					};
-				});
 			});
 		},
 

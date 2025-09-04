@@ -14,17 +14,17 @@ import Spinners from "../../components/Common/Spinner";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
-  alphanumericValidation,
-  amountValidation,
-  numberValidation,
+	alphanumericValidation,
+	amountValidation,
+	numberValidation,
 } from "../../utils/Validation/validation";
 
 import {
-  useFetchStakeholderTypes,
-  useSearchStakeholderTypes,
-  useAddStakeholderType,
-  useDeleteStakeholderType,
-  useUpdateStakeholderType,
+	useFetchStakeholderTypes,
+	useSearchStakeholderTypes,
+	useAddStakeholderType,
+	useDeleteStakeholderType,
+	useUpdateStakeholderType,
 } from "../../queries/stakeholdertype_query";
 import StakeholderTypeModal from "./StakeholderTypeModal";
 import { useTranslation } from "react-i18next";
@@ -33,21 +33,21 @@ import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
 
 import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
+	Button,
+	Col,
+	Row,
+	UncontrolledTooltip,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	Form,
+	Input,
+	FormFeedback,
+	Label,
+	Card,
+	CardBody,
+	FormGroup,
+	Badge,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -55,34 +55,34 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { stakeholderTypeExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
-  if (typeof text !== "string") {
-    return text;
-  }
-  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+	if (typeof text !== "string") {
+		return text;
+	}
+	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
 const StakeholderTypeModel = () => {
-  //meta title
-  document.title = " StakeholderType";
-  const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [stakeholderType, setStakeholderType] = useState(null);
+	//meta title
+	document.title = " StakeholderType";
+	const { t } = useTranslation();
+	const [modal, setModal] = useState(false);
+	const [modal1, setModal1] = useState(false);
+	const [isEdit, setIsEdit] = useState(false);
+	const [stakeholderType, setStakeholderType] = useState(null);
 
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
+	const [searchResults, setSearchResults] = useState(null);
+	const [isSearchLoading, setIsSearchLoading] = useState(false);
+	const [searcherror, setSearchError] = useState(null);
+	const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const { data, isLoading, isFetching, error, isError, refetch } =
-    useFetchStakeholderTypes();
+	const { data, isLoading, isFetching, error, isError, refetch } =
+		useFetchStakeholderTypes();
 
-  const addStakeholderType = useAddStakeholderType();
-  const updateStakeholderType = useUpdateStakeholderType();
-  const deleteStakeholderType = useDeleteStakeholderType();
-  //START CRUD
-  const handleAddStakeholderType = async (data) => {
+	const addStakeholderType = useAddStakeholderType();
+	const updateStakeholderType = useUpdateStakeholderType();
+	const deleteStakeholderType = useDeleteStakeholderType();
+	//START CRUD
+	const handleAddStakeholderType = async (data) => {
 		try {
 			await addStakeholderType.mutateAsync(data);
 			toast.success(t("add_success"), {
@@ -112,244 +112,245 @@ const StakeholderTypeModel = () => {
 		}
 	};
 
-  const handleDeleteStakeholderType = async () => {
-    if (stakeholderType && stakeholderType.sht_id) {
-      try {
-        const id = stakeholderType.sht_id;
-        await deleteStakeholderType.mutateAsync(id);
-        toast.success(t("delete_success"), {
+	const handleDeleteStakeholderType = async () => {
+		if (stakeholderType && stakeholderType.sht_id) {
+			try {
+				const id = stakeholderType.sht_id;
+				await deleteStakeholderType.mutateAsync(id);
+				toast.success(t("delete_success"), {
 					autoClose: 3000,
 				});
-      } catch (error) {
-        toast.error(t("delete_failure"), {
+			} catch (error) {
+				toast.error(t("delete_failure"), {
 					autoClose: 3000,
 				});
-      }
-      setDeleteModal(false);
-    }
-  };
-  //END CRUD
-  //START FOREIGN CALLS
+			}
+			setDeleteModal(false);
+		}
+	};
+	//END CRUD
+	//START FOREIGN CALLS
 
-  // validation
-  const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
-    enableReinitialize: true,
+	// validation
+	const validation = useFormik({
+		// enableReinitialize: use this flag when initial values need to be changed
+		enableReinitialize: true,
 
-    initialValues: {
-      sht_type_name_or:
-        (stakeholderType && stakeholderType.sht_type_name_or) || "",
-      sht_type_name_am:
-        (stakeholderType && stakeholderType.sht_type_name_am) || "",
-      sht_type_name_en:
-        (stakeholderType && stakeholderType.sht_type_name_en) || "",
-      sht_description:
-        (stakeholderType && stakeholderType.sht_description) || "",
-      sht_status: (stakeholderType && stakeholderType.sht_status) || false,
-      is_deletable: (stakeholderType && stakeholderType.is_deletable) || 1,
-      is_editable: (stakeholderType && stakeholderType.is_editable) || 1,
-    },
+		initialValues: {
+			sht_type_name_or:
+				(stakeholderType && stakeholderType.sht_type_name_or) || "",
+			sht_type_name_am:
+				(stakeholderType && stakeholderType.sht_type_name_am) || "",
+			sht_type_name_en:
+				(stakeholderType && stakeholderType.sht_type_name_en) || "",
+			sht_description:
+				(stakeholderType && stakeholderType.sht_description) || "",
+			sht_status: (stakeholderType && stakeholderType.sht_status) || false,
+			is_deletable: (stakeholderType && stakeholderType.is_deletable) || 1,
+			is_editable: (stakeholderType && stakeholderType.is_editable) || 1,
+		},
 
-    validationSchema: Yup.object({
-      sht_type_name_or: alphanumericValidation(2, 100, true).test(
-        "unique-sht_type_name_or",
-        t("Already exists"),
-        (value) => {
-          return !data?.data.some(
-            (item) =>
-              item.sht_type_name_or == value &&
-              item.sht_id !== stakeholderType?.sht_id,
-          );
-        },
-      ),
-      sht_type_name_am: Yup.string().required(t("sht_type_name_am")),
-      sht_type_name_en: alphanumericValidation(2, 100, true),
-      sht_description: alphanumericValidation(3, 425, true),
-    }),
-    validateOnBlur: true,
-    validateOnChange: false,
-    onSubmit: (values) => {
-      if (isEdit) {
-        const updateStakeholderType = {
-          sht_id: stakeholderType?.sht_id,
-          sht_type_name_or: values.sht_type_name_or,
-          sht_type_name_am: values.sht_type_name_am,
-          sht_type_name_en: values.sht_type_name_en,
-          sht_description: values.sht_description,
-          sht_status: values.sht_status ? 1 : 0,
-          is_deletable: values.is_deletable,
-          is_editable: values.is_editable,
-        };
-        // update StakeholderType
-        handleUpdateStakeholderType(updateStakeholderType);
-      } else {
-        const newStakeholderType = {
-          sht_type_name_or: values.sht_type_name_or,
-          sht_type_name_am: values.sht_type_name_am,
-          sht_type_name_en: values.sht_type_name_en,
-          sht_description: values.sht_description,
-          sht_status: values.sht_status ? 1 : 0,
-        };
-        // save new StakeholderType
-        handleAddStakeholderType(newStakeholderType);
-      }
-    },
-  });
-  const [transaction, setTransaction] = useState({});
-  const toggleViewModal = () => setModal1(!modal1);
+		validationSchema: Yup.object({
+			sht_type_name_or: alphanumericValidation(2, 100, true).test(
+				"unique-sht_type_name_or",
+				t("Already exists"),
+				(value) => {
+					return !data?.data.some(
+						(item) =>
+							item.sht_type_name_or == value &&
+							item.sht_id !== stakeholderType?.sht_id
+					);
+				}
+			),
+			sht_type_name_am: Yup.string().required(t("sht_type_name_am")),
+			sht_type_name_en: alphanumericValidation(2, 100, true),
+			sht_description: alphanumericValidation(3, 425, true),
+		}),
+		validateOnBlur: true,
+		validateOnChange: false,
+		onSubmit: (values) => {
+			if (isEdit) {
+				const updateStakeholderType = {
+					sht_id: stakeholderType?.sht_id,
+					sht_type_name_or: values.sht_type_name_or,
+					sht_type_name_am: values.sht_type_name_am,
+					sht_type_name_en: values.sht_type_name_en,
+					sht_description: values.sht_description,
+					sht_status: values.sht_status ? 1 : 0,
+					is_deletable: values.is_deletable,
+					is_editable: values.is_editable,
+				};
+				// update StakeholderType
+				handleUpdateStakeholderType(updateStakeholderType);
+			} else {
+				const newStakeholderType = {
+					sht_type_name_or: values.sht_type_name_or,
+					sht_type_name_am: values.sht_type_name_am,
+					sht_type_name_en: values.sht_type_name_en,
+					sht_description: values.sht_description,
+					sht_status: values.sht_status ? 1 : 0,
+				};
+				// save new StakeholderType
+				handleAddStakeholderType(newStakeholderType);
+			}
+		},
+	});
+	const [transaction, setTransaction] = useState({});
+	const toggleViewModal = () => setModal1(!modal1);
 
-  // Fetch StakeholderType on component mount
-  useEffect(() => {
-    setStakeholderType(data);
-  }, [data]);
-  useEffect(() => {
-    if (!isEmpty(data) && !!isEdit) {
-      setStakeholderType(data);
-      setIsEdit(false);
-    }
-  }, [data]);
-  const toggle = () => {
-    if (modal) {
-      setModal(false);
-      setStakeholderType(null);
-    } else {
-      setModal(true);
-    }
-  };
+	// Fetch StakeholderType on component mount
+	useEffect(() => {
+		setStakeholderType(data);
+	}, [data]);
+	useEffect(() => {
+		if (!isEmpty(data) && !!isEdit) {
+			setStakeholderType(data);
+			setIsEdit(false);
+		}
+	}, [data]);
+	const toggle = () => {
+		if (modal) {
+			setModal(false);
+			setStakeholderType(null);
+		} else {
+			setModal(true);
+		}
+	};
 
-  const handleStakeholderTypeClick = (arg) => {
-    const stakeholderType = arg;
-    // console.log("handleStakeholderTypeClick", stakeholderType);
-    setStakeholderType({
-      sht_id: stakeholderType.sht_id,
-      sht_type_name_or: stakeholderType.sht_type_name_or,
-      sht_type_name_am: stakeholderType.sht_type_name_am,
-      sht_type_name_en: stakeholderType.sht_type_name_en,
-      sht_description: stakeholderType.sht_description,
-      sht_status: stakeholderType.sht_status === 1,
-      is_deletable: stakeholderType.is_deletable,
-      is_editable: stakeholderType.is_editable,
-    });
-    setIsEdit(true);
-    toggle();
-  };
+	const handleStakeholderTypeClick = (arg) => {
+		const stakeholderType = arg;
+		// console.log("handleStakeholderTypeClick", stakeholderType);
+		setStakeholderType({
+			sht_id: stakeholderType.sht_id,
+			sht_type_name_or: stakeholderType.sht_type_name_or,
+			sht_type_name_am: stakeholderType.sht_type_name_am,
+			sht_type_name_en: stakeholderType.sht_type_name_en,
+			sht_description: stakeholderType.sht_description,
+			sht_status: stakeholderType.sht_status === 1,
+			is_deletable: stakeholderType.is_deletable,
+			is_editable: stakeholderType.is_editable,
+		});
+		setIsEdit(true);
+		toggle();
+	};
 
-  //delete projects
-  const [deleteModal, setDeleteModal] = useState(false);
-  const onClickDelete = (stakeholderType) => {
-    setStakeholderType(stakeholderType);
-    setDeleteModal(true);
-  };
+	//delete projects
+	const [deleteModal, setDeleteModal] = useState(false);
+	const onClickDelete = (stakeholderType) => {
+		setStakeholderType(stakeholderType);
+		setDeleteModal(true);
+	};
 
-  const handleStakeholderTypeClicks = () => {
-    setIsEdit(false);
-    setStakeholderType("");
-    toggle();
-  };
-  const handleSearchResults = ({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
-  };
-  //START UNCHANGED
-  const columns = useMemo(() => {
-    const baseColumns = [
-      {
-        header: "",
-        accessorKey: "sht_type_name_or",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.sht_type_name_or, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "sht_type_name_am",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.sht_type_name_am, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "sht_type_name_en",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.sht_type_name_en, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: t("is_inactive"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span
-              className={
-                cellProps.row.original.sht_status === 1
-                  ? "btn btn-sm btn-soft-danger"
-                  : ""
-              }
-            >
-              {cellProps.row.original.sht_status === 1 ? t("yes") : t("no")}
-            </span>
-          );
-        },
-      },
-      {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
-    ];
-    if (
-      data?.previledge?.is_role_editable == 1 ||
-      data?.previledge?.is_role_deletable == 1
-    ) {
-      baseColumns.push({
+	const handleStakeholderTypeClicks = () => {
+		setIsEdit(false);
+		setStakeholderType("");
+		toggle();
+	};
+	const handleSearchResults = ({ data, error }) => {
+		setSearchResults(data);
+		setSearchError(error);
+		setShowSearchResult(true);
+	};
+	//START UNCHANGED
+	const columns = useMemo(() => {
+		const baseColumns = [
+			{
+				header: "",
+				accessorKey: "sht_type_name_or",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.sht_type_name_or, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "sht_type_name_am",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.sht_type_name_am, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "sht_type_name_en",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.sht_type_name_en, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: t("is_inactive"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span
+							className={
+								cellProps.row.original.sht_status === 1
+									? "btn btn-sm btn-soft-danger"
+									: ""
+							}
+						>
+							{cellProps.row.original.sht_status === 1 ? t("yes") : t("no")}
+						</span>
+					);
+				},
+			},
+			{
+				header: t("view_detail"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								const data = cellProps.row.original;
+								toggleViewModal(data);
+								setTransaction(cellProps.row.original);
+							}}
+						>
+							{t("view_detail")}
+						</Button>
+					);
+				},
+			},
+		];
+		if (
+			data?.previledge?.is_role_editable == 1 ||
+			data?.previledge?.is_role_deletable == 1
+		) {
+			baseColumns.push({
 				header: t("Action"),
 				accessorKey: t("Action"),
 				enableColumnFilter: false,
 				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{data?.previledge?.is_role_editable == 1 &&
 								cellProps.row.original?.is_editable == 1 && (
-									<Link
-										to="#"
+									<Button
+										color="none"
+										size="sm"
 										className="text-success"
 										onClick={() => {
 											const data = cellProps.row.original;
@@ -363,12 +364,13 @@ const StakeholderTypeModel = () => {
 										<UncontrolledTooltip placement="top" target="edittooltip">
 											Edit
 										</UncontrolledTooltip>
-									</Link>
+									</Button>
 								)}
 							{data?.previledge?.is_role_deletable == 9 &&
 								cellProps.row.original?.is_deletable == 9 && (
-									<Link
-										to="#"
+									<Button
+										color="none"
+										size="sm"
 										className="text-danger"
 										onClick={() => {
 											const data = cellProps.row.original;
@@ -382,20 +384,21 @@ const StakeholderTypeModel = () => {
 										<UncontrolledTooltip placement="top" target="deletetooltip">
 											Delete
 										</UncontrolledTooltip>
-									</Link>
+									</Button>
 								)}
 						</div>
 					);
 				},
 			});
-    }
+		}
 
-    return baseColumns;
-  }, [handleStakeholderTypeClick, toggleViewModal, onClickDelete]);
-  if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
-  }
-  return (
+		return baseColumns;
+	}, [handleStakeholderTypeClick, toggleViewModal, onClickDelete, data, t]);
+	
+	if (isError) {
+		return <FetchErrorHandler error={error} refetch={refetch} />;
+	}
+	return (
 		<React.Fragment>
 			<StakeholderTypeModal
 				isOpen={modal1}
@@ -644,7 +647,7 @@ const StakeholderTypeModel = () => {
 	);
 };
 StakeholderTypeModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+	preGlobalFilteredRows: PropTypes.any,
 };
 
 export default StakeholderTypeModel;

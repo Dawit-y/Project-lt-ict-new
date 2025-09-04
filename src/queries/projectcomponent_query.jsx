@@ -1,226 +1,221 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  getProjectComponent,
-  updateProjectComponent,
-  addProjectComponent,
-  deleteProjectComponent,
+	getProjectComponent,
+	updateProjectComponent,
+	addProjectComponent,
+	deleteProjectComponent,
 } from "../helpers/projectcomponent_backend_helper";
 import { PROJECT_QUERY_KEY } from "./project_query";
 
 const PROJECT_COMPONENT_QUERY_KEY = ["projectcomponent"];
 // Fetch project_component
 export const useFetchProjectComponents = (param = {}, isActive) => {
-  return useQuery({
-    queryKey: [...PROJECT_COMPONENT_QUERY_KEY, "fetch", param],
-    queryFn: () => getProjectComponent(param),
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-    refetchOnMount: true,
-  });
+	return useQuery({
+		queryKey: [...PROJECT_COMPONENT_QUERY_KEY, "fetch", param],
+		queryFn: () => getProjectComponent(param),
+		staleTime: 1000 * 60 * 5,
+		refetchOnWindowFocus: false,
+		refetchOnMount: true,
+	});
 };
 
 //search project_component
 export const useSearchProjectComponents = (searchParams = {}) => {
-  return useQuery({
-    queryKey: [...PROJECT_COMPONENT_QUERY_KEY, searchParams],
-    queryFn: () => getProjectComponent(searchParams),
-    staleTime: 1000 * 60 * 2,
-    gcTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    enabled: searchParams.length > 0,
-  });
+	return useQuery({
+		queryKey: [...PROJECT_COMPONENT_QUERY_KEY, searchParams],
+		queryFn: () => getProjectComponent(searchParams),
+		staleTime: 1000 * 60 * 2,
+		gcTime: 1000 * 60 * 5,
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		enabled: searchParams.length > 0,
+	});
 };
 // Add project_component
 export const useAddProjectComponent = () => {
-  const queryClient = useQueryClient();
+	const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: addProjectComponent,
+	return useMutation({
+		mutationFn: addProjectComponent,
 
-    onMutate: async (newData) => {
-      await queryClient.cancelQueries(PROJECT_COMPONENT_QUERY_KEY);
+		onMutate: async (newData) => {
+			await queryClient.cancelQueries(PROJECT_COMPONENT_QUERY_KEY);
 
-      const previousQueries = queryClient.getQueriesData({
-        queryKey: PROJECT_COMPONENT_QUERY_KEY,
-      });
+			const previousQueries = queryClient.getQueriesData({
+				queryKey: PROJECT_COMPONENT_QUERY_KEY,
+			});
 
-      const previousData = previousQueries.map(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: [newData, ...oldData.data],
-          };
-        });
-        return [queryKey, oldData];
-      });
+			const tempId = Date.now();
+			const optimisticData = { ...newData, pcm_id: tempId };
 
-      return { previousData };
-    },
+			previousQueries.forEach(([queryKey]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: [optimisticData, ...oldData.data],
+					};
+				});
+			});
 
-    onError: (_err, _newData, context) => {
-      context?.previousData?.forEach(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, oldData);
-      });
-    },
+			return { previousQueries, tempId };
+		},
 
-    onSuccess: (newDataResponse) => {
-      const newData = {
-        ...newDataResponse.data,
-        ...newDataResponse.previledge,
-      };
+		onError: (_err, _newData, context) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
+				queryClient.setQueryData(queryKey, oldData);
+			});
+		},
 
-      const queries = queryClient.getQueriesData({
-        queryKey: PROJECT_COMPONENT_QUERY_KEY,
-      });
+		onSuccess: (response, _newData, context) => {
+			const serverData = response.data;
 
-      queries.forEach(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: oldData.data.map((d) =>
-              d.tempId === newData.tempId ? newData : d,
-            ),
-          };
-        });
-      });
-    },
+			const queries = queryClient.getQueriesData({
+				queryKey: PROJECT_COMPONENT_QUERY_KEY,
+			});
 
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: PROJECT_COMPONENT_QUERY_KEY,
-      });
-      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
-    },
-  });
+			queries.forEach(([queryKey]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: oldData.data.map((d) =>
+							d.pcm_id === context.tempId ? serverData : d
+						),
+					};
+				});
+			});
+		},
+
+		onSettled: () => {
+			queryClient.invalidateQueries({
+				queryKey: PROJECT_COMPONENT_QUERY_KEY,
+			});
+			queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
+		},
+	});
 };
+
 // Update project_component
 export const useUpdateProjectComponent = () => {
-  const queryClient = useQueryClient();
+	const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: updateProjectComponent,
+	return useMutation({
+		mutationFn: updateProjectComponent,
 
-    onMutate: async (updatedData) => {
-      await queryClient.cancelQueries(PROJECT_COMPONENT_QUERY_KEY);
+		onMutate: async (updatedData) => {
+			await queryClient.cancelQueries(PROJECT_COMPONENT_QUERY_KEY);
 
-      const previousQueries = queryClient.getQueriesData({
-        queryKey: PROJECT_COMPONENT_QUERY_KEY,
-      });
+			const previousQueries = queryClient.getQueriesData({
+				queryKey: PROJECT_COMPONENT_QUERY_KEY,
+			});
 
-      const previousData = previousQueries.map(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: oldData.data.map((d) =>
-              d.pcm_id === updatedData.data.pcm_id ? { ...d, ...updatedData.data } : d,
-            ),
-          };
-        });
-        return [queryKey, oldData];
-      });
+			previousQueries.forEach(([queryKey]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: oldData.data.map((d) =>
+							d.pcm_id === updatedData.pcm_id ? { ...d, ...updatedData } : d
+						),
+					};
+				});
+			});
 
-      return { previousData };
-    },
+			return { previousQueries };
+		},
 
-    onError: (_err, _updatedData, context) => {
-      context?.previousData?.forEach(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, oldData);
-      });
-    },
+		onError: (_err, _updatedData, context) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
+				queryClient.setQueryData(queryKey, oldData);
+			});
+		},
 
-    onSuccess: (updatedData) => {
-      const queries = queryClient.getQueriesData({
-        queryKey: PROJECT_COMPONENT_QUERY_KEY,
-      });
+		onSuccess: (response) => {
+			const serverData = response.data;
 
-      queries.forEach(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: oldData.data.map((data) =>
-              data.pcm_id === updatedData.data.pcm_id
-                ? { ...data, ...updatedData.data }
-                : data,
-            ),
-          };
-        });
-      });
-    },
+			const queries = queryClient.getQueriesData({
+				queryKey: PROJECT_COMPONENT_QUERY_KEY,
+			});
 
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: PROJECT_COMPONENT_QUERY_KEY,
-      });
-      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
-    },
-  });
+			queries.forEach(([queryKey]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: oldData.data.map((d) =>
+							d.pcm_id === serverData.pcm_id ? serverData : d
+						),
+					};
+				});
+			});
+		},
+
+		onSettled: () => {
+			queryClient.invalidateQueries({
+				queryKey: PROJECT_COMPONENT_QUERY_KEY,
+			});
+			queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
+		},
+	});
 };
+
 // Delete project_component
 export const useDeleteProjectComponent = () => {
-  const queryClient = useQueryClient();
+	const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: deleteProjectComponent,
+	return useMutation({
+		mutationFn: deleteProjectComponent,
 
-    onMutate: async (id) => {
-      await queryClient.cancelQueries(PROJECT_COMPONENT_QUERY_KEY);
+		onMutate: async (id) => {
+			await queryClient.cancelQueries(PROJECT_COMPONENT_QUERY_KEY);
 
-      const previousQueries = queryClient.getQueriesData({
-        queryKey: PROJECT_COMPONENT_QUERY_KEY,
-      });
+			const previousQueries = queryClient.getQueriesData({
+				queryKey: PROJECT_COMPONENT_QUERY_KEY,
+			});
 
-      const previousData = previousQueries.map(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: oldData.data.filter(
-              (deletedData) =>
-                deletedData.pcm_id !== parseInt(id),
-            ),
-          };
-        });
-        return [queryKey, oldData];
-      });
+			previousQueries.forEach(([queryKey]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: oldData.data.filter((d) => d.pcm_id !== parseInt(id)),
+					};
+				});
+			});
 
-      return { previousData };
-    },
+			return { previousQueries };
+		},
 
-    onError: (_err, _id, context) => {
-      context?.previousData?.forEach(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, oldData);
-      });
-    },
+		onError: (_err, _id, context) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
+				queryClient.setQueryData(queryKey, oldData);
+			});
+		},
 
-    onSuccess: (deletedData, variable) => {
-      const queries = queryClient.getQueriesData({
-        queryKey: PROJECT_COMPONENT_QUERY_KEY,
-      });
+		onSuccess: (response) => {
+			const deletedId = parseInt(response.deleted_id);
 
-      queries.forEach(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: oldData.data.filter(
-              (deletedData) =>
-                deletedData.pcm_id !== parseInt(variable),
-            ),
-          };
-        });
-      });
-    },
+			const queries = queryClient.getQueriesData({
+				queryKey: PROJECT_COMPONENT_QUERY_KEY,
+			});
 
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: PROJECT_COMPONENT_QUERY_KEY,
-      });
-      queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
-    },
-  });
+			queries.forEach(([queryKey]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: oldData.data.filter((d) => d.pcm_id !== deletedId),
+					};
+				});
+			});
+		},
+
+		onSettled: () => {
+			queryClient.invalidateQueries({
+				queryKey: PROJECT_COMPONENT_QUERY_KEY,
+			});
+			queryClient.invalidateQueries({ queryKey: PROJECT_QUERY_KEY });
+		},
+	});
 };

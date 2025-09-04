@@ -421,10 +421,11 @@ const SectorInformationModel = () => {
 				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{cellProps.row.original.is_editable == 1 && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-success"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -435,12 +436,13 @@ const SectorInformationModel = () => {
 									<UncontrolledTooltip placement="top" target="edittooltip">
 										Edit
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 
 							{cellProps.row.original.is_deletable == 9 && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-danger"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -454,7 +456,7 @@ const SectorInformationModel = () => {
 									<UncontrolledTooltip placement="top" target="deletetooltip">
 										Delete
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 						</div>
 					);
@@ -463,7 +465,7 @@ const SectorInformationModel = () => {
 		}
 
 		return baseColumns;
-	}, [handleSectorInformationClick, toggleViewModal, onClickDelete]);
+	}, [handleSectorInformationClick, toggleViewModal, onClickDelete, data, t, sectorCategoryMap]);
 
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;

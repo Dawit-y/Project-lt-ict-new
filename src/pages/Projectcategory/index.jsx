@@ -41,6 +41,7 @@ import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import Filter from "./Filter";
 import { projectCategoryExportColumns } from "../../utils/exportColumnsForLookups";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -55,8 +56,7 @@ export const OwnerTypeLabels = {
 };
 
 const ProjectCategoryModel = () => {
-  //meta title
-  document.title = " ProjectCategory";
+  document.title = "Project Category";
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -79,13 +79,6 @@ const ProjectCategoryModel = () => {
   const updateProjectCategory = useUpdateProjectCategory();
   const deleteProjectCategory = useDeleteProjectCategory();
 
-  // const sectorCategoryOptions = createSelectOptions(
-  //   sectorCategoryData?.data || [],
-  //   "psc_id",
-  //   "psc_name"
-  // );
-
-  //START CRUD
   const handleAddProjectCategory = async (data) => {
 		try {
 			await addProjectCategory.mutateAsync(data);
@@ -416,10 +409,11 @@ const ProjectCategoryModel = () => {
 				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{cellProps.row.original.is_editable == 1 && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-success"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -430,12 +424,13 @@ const ProjectCategoryModel = () => {
 									<UncontrolledTooltip placement="top" target="edittooltip">
 										Edit
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 
 							{cellProps.row.original.is_deletable === 1 && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-danger"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -449,7 +444,7 @@ const ProjectCategoryModel = () => {
 									<UncontrolledTooltip placement="top" target="deletetooltip">
 										Delete
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 						</div>
 					);
@@ -458,7 +453,7 @@ const ProjectCategoryModel = () => {
     }
 
     return baseColumns;
-  }, [handleProjectCategoryClick, toggleViewModal, onClickDelete]);
+  }, [handleProjectCategoryClick, toggleViewModal, onClickDelete, data, t]);
 
   // Filter the data based on filter state
 

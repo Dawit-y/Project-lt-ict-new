@@ -1,8 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -11,7 +8,6 @@ import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
 	useFetchBudgetExipDetails,
-	useSearchBudgetExipDetails,
 	useAddBudgetExipDetail,
 	useDeleteBudgetExipDetail,
 	useUpdateBudgetExipDetail,
@@ -34,18 +30,15 @@ import {
 	Label,
 	Card,
 	CardBody,
-	FormGroup,
-	Badge,
 } from "reactstrap";
 import {
 	alphanumericValidation,
 	amountValidation,
 	numberValidation,
 } from "../../utils/Validation/validation";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
 		return text;
@@ -59,10 +52,7 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
 	const [modal1, setModal1] = useState(false);
 	const [isEdit, setIsEdit] = useState(false);
 	const [budgetExipDetail, setBudgetExipDetail] = useState(null);
-	const [searchResults, setSearchResults] = useState(null);
-	const [isSearchLoading, setIsSearchLoading] = useState(false);
-	const [searcherror, setSearchError] = useState(null);
-	const [showSearchResult, setShowSearchResult] = useState(false);
+
 	const { data, isLoading, error, isError, refetch } =
 		useFetchBudgetExipDetails(param, isActive);
 	const addBudgetExipDetail = useAddBudgetExipDetail();
@@ -171,7 +161,6 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
 					bed_amount: values.bed_amount,
 					bed_description: values.bed_description,
 					bed_status: values.bed_status,
-
 					is_deletable: values.is_deletable,
 					is_editable: values.is_editable,
 				};
@@ -193,16 +182,6 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
 	const [transaction, setTransaction] = useState({});
 	const toggleViewModal = () => setModal1(!modal1);
 
-	// Fetch BudgetExipDetail on component mount
-	useEffect(() => {
-		setBudgetExipDetail(data);
-	}, [data]);
-	useEffect(() => {
-		if (!isEmpty(data) && !!isEdit) {
-			setBudgetExipDetail(data);
-			setIsEdit(false);
-		}
-	}, [data]);
 	const toggle = () => {
 		if (modal) {
 			setModal(false);
@@ -242,12 +221,7 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
 		setBudgetExipDetail("");
 		toggle();
 	};
-	const handleSearchResults = ({ data, error }) => {
-		setSearchResults(data);
-		setSearchError(error);
-		setShowSearchResult(true);
-	};
-	//START UNCHANGED
+
 	const columns = useMemo(() => {
 		const baseColumns = [
 			{
@@ -313,10 +287,11 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
 				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{cellProps.row.original.is_editable == 1 && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-success"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -327,12 +302,13 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
 									<UncontrolledTooltip placement="top" target="edittooltip">
 										Edit
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 
 							{cellProps.row.original.is_deletable == 1 && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-danger"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -346,7 +322,7 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
 									<UncontrolledTooltip placement="top" target="deletetooltip">
 										Delete
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 						</div>
 					);
@@ -354,7 +330,14 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
 			});
 		}
 		return baseColumns;
-	}, [handleBudgetExipDetailClick, toggleViewModal, onClickDelete]);
+	}, [
+		handleBudgetExipDetailClick,
+		toggleViewModal,
+		onClickDelete,
+		data,
+		expenditureCodeMap,
+		t,
+	]);
 
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -375,7 +358,7 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
 			/>
 			<div className="">
 				<div className="container-fluid1">
-					{isLoading || isSearchLoading ? (
+					{isLoading ? (
 						<Spinners />
 					) : (
 						<Row>
@@ -384,17 +367,12 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
 									<CardBody>
 										<TableContainer
 											columns={columns}
-											data={
-												showSearchResult
-													? searchResults?.data
-													: data?.data || []
-											}
+											data={data?.data || []}
 											isGlobalFilter={true}
 											isAddButton={true}
 											isCustomPageSize={true}
 											handleUserClick={handleBudgetExipDetailClicks}
 											isPagination={true}
-											// SearchPlaceholder="26 records..."
 											SearchPlaceholder={t("filter_placeholder")}
 											buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
 											buttonName={t("add")}

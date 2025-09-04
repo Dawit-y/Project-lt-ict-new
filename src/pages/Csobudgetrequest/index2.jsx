@@ -448,12 +448,12 @@ const BudgetRequestModel = () => {
 				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{(cellProps.row.original?.is_editable == 5 ||
 								cellProps.row.original?.is_role_editable) && (
-								<Link
-									to="#"
-									className="text-success"
+								<Button
+									color="None"
+									size="sm"
 									onClick={() => {
 										const data = cellProps.row.original;
 										handleBudgetRequestClick(data);
@@ -463,7 +463,7 @@ const BudgetRequestModel = () => {
 									<UncontrolledTooltip placement="top" target="edittooltip">
 										Edit
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 							{(cellProps.row.original?.is_deletable == 9 ||
 								cellProps.row.original?.is_role_deletable == 9) && (

@@ -44,33 +44,36 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import { alphanumericValidation } from "../../utils/Validation/validation";
+import {
+	alphanumericValidation,
+	onlyAmharicValidation,
+} from "../../utils/Validation/validation";
 import { requestCategoryExportColumns } from "../../utils/exportColumnsForLookups";
 const truncateText = (text, maxLength) => {
-  if (typeof text !== "string") {
-    return text;
-  }
-  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+	if (typeof text !== "string") {
+		return text;
+	}
+	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 const RequestCategoryModel = () => {
-  //meta title
-  document.title = " RequestCategory";
-  const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [requestCategory, setRequestCategory] = useState(null);
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, isFetching, error, isError, refetch } =
-    useFetchRequestCategorys();
-  const addRequestCategory = useAddRequestCategory();
-  const updateRequestCategory = useUpdateRequestCategory();
-  const deleteRequestCategory = useDeleteRequestCategory();
-  //START CRUD
-  const handleAddRequestCategory = async (data) => {
+	//meta title
+	document.title = " RequestCategory";
+	const { t } = useTranslation();
+	const [modal, setModal] = useState(false);
+	const [modal1, setModal1] = useState(false);
+	const [isEdit, setIsEdit] = useState(false);
+	const [requestCategory, setRequestCategory] = useState(null);
+	const [searchResults, setSearchResults] = useState(null);
+	const [isSearchLoading, setIsSearchLoading] = useState(false);
+	const [searcherror, setSearchError] = useState(null);
+	const [showSearchResult, setShowSearchResult] = useState(false);
+	const { data, isLoading, isFetching, error, isError, refetch } =
+		useFetchRequestCategorys();
+	const addRequestCategory = useAddRequestCategory();
+	const updateRequestCategory = useUpdateRequestCategory();
+	const deleteRequestCategory = useDeleteRequestCategory();
+	//START CRUD
+	const handleAddRequestCategory = async (data) => {
 		try {
 			await addRequestCategory.mutateAsync(data);
 			toast.success(t("add_success"), {
@@ -98,264 +101,265 @@ const RequestCategoryModel = () => {
 			}
 		}
 	};
-  const handleDeleteRequestCategory = async () => {
-    if (requestCategory && requestCategory.rqc_id) {
-      try {
-        const id = requestCategory.rqc_id;
-        await deleteRequestCategory.mutateAsync(id);
-        toast.success(t("delete_success"), {
+	const handleDeleteRequestCategory = async () => {
+		if (requestCategory && requestCategory.rqc_id) {
+			try {
+				const id = requestCategory.rqc_id;
+				await deleteRequestCategory.mutateAsync(id);
+				toast.success(t("delete_success"), {
 					autoClose: 3000,
 				});
-      } catch (error) {
-        toast.success(t("delete_failure"), {
+			} catch (error) {
+				toast.success(t("delete_failure"), {
 					autoClose: 3000,
 				});
-      }
-      setDeleteModal(false);
-    }
-  };
-  //END CRUD
-  //START FOREIGN CALLS
+			}
+			setDeleteModal(false);
+		}
+	};
+	//END CRUD
+	//START FOREIGN CALLS
 
-  // validation
-  const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
-    enableReinitialize: true,
-    initialValues: {
-      rqc_name_or: (requestCategory && requestCategory.rqc_name_or) || "",
-      rqc_name_am: (requestCategory && requestCategory.rqc_name_am) || "",
-      rqc_name_en: (requestCategory && requestCategory.rqc_name_en) || "",
-      rqc_description:
-        (requestCategory && requestCategory.rqc_description) || "",
-      rqc_status: requestCategory?.rqc_status || false,
-      rqc_gov_active: requestCategory?.rqc_gov_active || false,
-      rqc_cso_active: requestCategory?.rqc_cso_active || false,
-      is_deletable: (requestCategory && requestCategory.is_deletable) || 1,
-      is_editable: (requestCategory && requestCategory.is_editable) || 1,
-    },
-    validationSchema: Yup.object({
-      rqc_name_or: alphanumericValidation(2, 100, true),
-      rqc_name_am: alphanumericValidation(2, 100, true),
-      rqc_name_en: alphanumericValidation(2, 100, true),
-    }),
-    validateOnBlur: true,
-    validateOnChange: false,
-    onSubmit: (values) => {
-      if (isEdit) {
-        const updateRequestCategory = {
-          rqc_id: requestCategory?.rqc_id,
-          rqc_name_or: values.rqc_name_or,
-          rqc_name_am: values.rqc_name_am,
-          rqc_name_en: values.rqc_name_en,
-          rqc_description: values.rqc_description,
-          rqc_status: values?.rqc_status ? 1 : 0,
-          rqc_gov_active: values?.rqc_gov_active ? 1 : 0,
-          rqc_cso_active: values?.rqc_cso_active ? 1 : 0,
-          is_deletable: values.is_deletable,
-          is_editable: values.is_editable,
-        };
-        // update RequestCategory
-        handleUpdateRequestCategory(updateRequestCategory);
-      } else {
-        const newRequestCategory = {
-          rqc_name_or: values.rqc_name_or,
-          rqc_name_am: values.rqc_name_am,
-          rqc_name_en: values.rqc_name_en,
-          rqc_description: values.rqc_description,
-          rqc_status: values?.rqc_status ? 1 : 0,
-          rqc_gov_active: values?.rqc_gov_active ? 1 : 0,
-          rqc_cso_active: values?.rqc_cso_active ? 1 : 0,
-        };
-        // save new RequestCategory
-        handleAddRequestCategory(newRequestCategory);
-      }
-    },
-  });
-  const [transaction, setTransaction] = useState({});
-  const toggleViewModal = () => setModal1(!modal1);
-  // Fetch RequestCategory on component mount
-  useEffect(() => {
-    setRequestCategory(data);
-  }, [data]);
-  useEffect(() => {
-    if (!isEmpty(data) && !!isEdit) {
-      setRequestCategory(data);
-      setIsEdit(false);
-    }
-  }, [data]);
-  const toggle = () => {
-    if (modal) {
-      setModal(false);
-      setRequestCategory(null);
-    } else {
-      setModal(true);
-    }
-  };
-  const handleRequestCategoryClick = (arg) => {
-    const requestCategory = arg;
-    // console.log("handleRequestCategoryClick", requestCategory);
-    setRequestCategory({
-      rqc_id: requestCategory.rqc_id,
-      rqc_name_or: requestCategory.rqc_name_or,
-      rqc_name_am: requestCategory.rqc_name_am,
-      rqc_name_en: requestCategory.rqc_name_en,
-      rqc_description: requestCategory.rqc_description,
-      rqc_status: requestCategory.rqc_status === 1,
-      rqc_gov_active: requestCategory.rqc_gov_active === 1,
-      rqc_cso_active: requestCategory.rqc_cso_active === 1,
-      is_deletable: requestCategory.is_deletable,
-      is_editable: requestCategory.is_editable,
-    });
-    setIsEdit(true);
-    toggle();
-  };
-  //delete projects
-  const [deleteModal, setDeleteModal] = useState(false);
-  const onClickDelete = (requestCategory) => {
-    setRequestCategory(requestCategory);
-    setDeleteModal(true);
-  };
-  const handleRequestCategoryClicks = () => {
-    setIsEdit(false);
-    setRequestCategory("");
-    toggle();
-  };
-  const handleSearchResults = ({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
-  };
-  //START UNCHANGED
-  const columns = useMemo(() => {
-    const baseColumns = [
-      {
-        header: "",
-        accessorKey: "rqc_name_or",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rqc_name_or, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "rqc_name_am",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rqc_name_am, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "rqc_name_en",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.rqc_name_en, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: t("rqc_gov_active"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => (
-          <span
-            className={
-              cellProps.row.original.rqc_gov_active === 1
-                ? "btn btn-sm btn-soft-success"
-                : ""
-            }
-          >
-            {cellProps.row.original.rqc_gov_active === 1 ? t("yes") : t("no")}
-          </span>
-        ),
-      },
-      {
-        header: t("rqc_cso_active"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => (
-          <span
-            className={
-              cellProps.row.original.rqc_cso_active === 1
-                ? "btn btn-sm btn-soft-success"
-                : ""
-            }
-          >
-            {cellProps.row.original.rqc_cso_active === 1 ? t("yes") : t("no")}
-          </span>
-        ),
-      },
+	// validation
+	const validation = useFormik({
+		// enableReinitialize: use this flag when initial values need to be changed
+		enableReinitialize: true,
+		initialValues: {
+			rqc_name_or: (requestCategory && requestCategory.rqc_name_or) || "",
+			rqc_name_am: (requestCategory && requestCategory.rqc_name_am) || "",
+			rqc_name_en: (requestCategory && requestCategory.rqc_name_en) || "",
+			rqc_description:
+				(requestCategory && requestCategory.rqc_description) || "",
+			rqc_status: requestCategory?.rqc_status || false,
+			rqc_gov_active: requestCategory?.rqc_gov_active || false,
+			rqc_cso_active: requestCategory?.rqc_cso_active || false,
+			is_deletable: (requestCategory && requestCategory.is_deletable) || 1,
+			is_editable: (requestCategory && requestCategory.is_editable) || 1,
+		},
+		validationSchema: Yup.object({
+			rqc_name_or: alphanumericValidation(2, 100, true),
+			rqc_name_am: onlyAmharicValidation(2, 100, true),
+			rqc_name_en: alphanumericValidation(2, 100, true),
+		}),
+		validateOnBlur: true,
+		validateOnChange: false,
+		onSubmit: (values) => {
+			if (isEdit) {
+				const updateRequestCategory = {
+					rqc_id: requestCategory?.rqc_id,
+					rqc_name_or: values.rqc_name_or,
+					rqc_name_am: values.rqc_name_am,
+					rqc_name_en: values.rqc_name_en,
+					rqc_description: values.rqc_description,
+					rqc_status: values?.rqc_status ? 1 : 0,
+					rqc_gov_active: values?.rqc_gov_active ? 1 : 0,
+					rqc_cso_active: values?.rqc_cso_active ? 1 : 0,
+					is_deletable: values.is_deletable,
+					is_editable: values.is_editable,
+				};
+				// update RequestCategory
+				handleUpdateRequestCategory(updateRequestCategory);
+			} else {
+				const newRequestCategory = {
+					rqc_name_or: values.rqc_name_or,
+					rqc_name_am: values.rqc_name_am,
+					rqc_name_en: values.rqc_name_en,
+					rqc_description: values.rqc_description,
+					rqc_status: values?.rqc_status ? 1 : 0,
+					rqc_gov_active: values?.rqc_gov_active ? 1 : 0,
+					rqc_cso_active: values?.rqc_cso_active ? 1 : 0,
+				};
+				// save new RequestCategory
+				handleAddRequestCategory(newRequestCategory);
+			}
+		},
+	});
+	const [transaction, setTransaction] = useState({});
+	const toggleViewModal = () => setModal1(!modal1);
+	// Fetch RequestCategory on component mount
+	useEffect(() => {
+		setRequestCategory(data);
+	}, [data]);
+	useEffect(() => {
+		if (!isEmpty(data) && !!isEdit) {
+			setRequestCategory(data);
+			setIsEdit(false);
+		}
+	}, [data]);
+	const toggle = () => {
+		if (modal) {
+			setModal(false);
+			setRequestCategory(null);
+		} else {
+			setModal(true);
+		}
+	};
+	const handleRequestCategoryClick = (arg) => {
+		const requestCategory = arg;
+		// console.log("handleRequestCategoryClick", requestCategory);
+		setRequestCategory({
+			rqc_id: requestCategory.rqc_id,
+			rqc_name_or: requestCategory.rqc_name_or,
+			rqc_name_am: requestCategory.rqc_name_am,
+			rqc_name_en: requestCategory.rqc_name_en,
+			rqc_description: requestCategory.rqc_description,
+			rqc_status: requestCategory.rqc_status === 1,
+			rqc_gov_active: requestCategory.rqc_gov_active === 1,
+			rqc_cso_active: requestCategory.rqc_cso_active === 1,
+			is_deletable: requestCategory.is_deletable,
+			is_editable: requestCategory.is_editable,
+		});
+		setIsEdit(true);
+		toggle();
+	};
+	//delete projects
+	const [deleteModal, setDeleteModal] = useState(false);
+	const onClickDelete = (requestCategory) => {
+		setRequestCategory(requestCategory);
+		setDeleteModal(true);
+	};
+	const handleRequestCategoryClicks = () => {
+		setIsEdit(false);
+		setRequestCategory("");
+		toggle();
+	};
+	const handleSearchResults = ({ data, error }) => {
+		setSearchResults(data);
+		setSearchError(error);
+		setShowSearchResult(true);
+	};
+	//START UNCHANGED
+	const columns = useMemo(() => {
+		const baseColumns = [
+			{
+				header: "",
+				accessorKey: "rqc_name_or",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.rqc_name_or, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "rqc_name_am",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.rqc_name_am, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "rqc_name_en",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.rqc_name_en, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: t("rqc_gov_active"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => (
+					<span
+						className={
+							cellProps.row.original.rqc_gov_active === 1
+								? "btn btn-sm btn-soft-success"
+								: ""
+						}
+					>
+						{cellProps.row.original.rqc_gov_active === 1 ? t("yes") : t("no")}
+					</span>
+				),
+			},
+			{
+				header: t("rqc_cso_active"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => (
+					<span
+						className={
+							cellProps.row.original.rqc_cso_active === 1
+								? "btn btn-sm btn-soft-success"
+								: ""
+						}
+					>
+						{cellProps.row.original.rqc_cso_active === 1 ? t("yes") : t("no")}
+					</span>
+				),
+			},
 
-      {
-        header: "",
-        accessorKey: t("is_inactive"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span
-              className={
-                cellProps.row.original.rqc_status === 1
-                  ? "btn btn-sm btn-soft-danger"
-                  : ""
-              }
-            >
-              {cellProps.row.original.rqc_status === 1 ? t("yes") : t("no")}
-            </span>
-          );
-        },
-      },
-      {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
-    ];
-    if (
-      data?.previledge?.is_role_editable == 1 ||
-      data?.previledge?.is_role_deletable == 1
-    ) {
-      baseColumns.push({
+			{
+				header: "",
+				accessorKey: t("is_inactive"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span
+							className={
+								cellProps.row.original.rqc_status === 1
+									? "btn btn-sm btn-soft-danger"
+									: ""
+							}
+						>
+							{cellProps.row.original.rqc_status === 1 ? t("yes") : t("no")}
+						</span>
+					);
+				},
+			},
+			{
+				header: t("view_detail"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								const data = cellProps.row.original;
+								toggleViewModal(data);
+								setTransaction(cellProps.row.original);
+							}}
+						>
+							{t("view_detail")}
+						</Button>
+					);
+				},
+			},
+		];
+		if (
+			data?.previledge?.is_role_editable == 1 ||
+			data?.previledge?.is_role_deletable == 1
+		) {
+			baseColumns.push({
 				header: t("Action"),
 				accessorKey: t("Action"),
 				enableColumnFilter: false,
 				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{cellProps.row.original.is_editable == 1 && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-success"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -366,11 +370,12 @@ const RequestCategoryModel = () => {
 									<UncontrolledTooltip placement="top" target="edittooltip">
 										Edit
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 							{cellProps.row.original.is_deletable == 9 && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-danger"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -384,21 +389,21 @@ const RequestCategoryModel = () => {
 									<UncontrolledTooltip placement="top" target="deletetooltip">
 										Delete
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 						</div>
 					);
 				},
 			});
-    }
-    return baseColumns;
-  }, [handleRequestCategoryClick, toggleViewModal, onClickDelete]);
+		}
+		return baseColumns;
+	}, [handleRequestCategoryClick, toggleViewModal, onClickDelete, data, t]);
 
-  if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
-  }
+	if (isError) {
+		return <FetchErrorHandler error={error} refetch={refetch} />;
+	}
 
-  return (
+	return (
 		<React.Fragment>
 			<RequestCategoryModal
 				isOpen={modal1}

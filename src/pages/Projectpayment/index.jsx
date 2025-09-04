@@ -1,6 +1,5 @@
-import React, { useEffect, useMemo, useState, Suspense, lazy } from "react";
+import React, { useMemo, useState, Suspense, lazy } from "react";
 import PropTypes from "prop-types";
-import { isEmpty } from "lodash";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
@@ -27,7 +26,6 @@ import {
 import { useTranslation } from "react-i18next";
 import DatePicker from "../../components/Common/DatePicker";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
-
 import {
 	Button,
 	Col,
@@ -47,7 +45,6 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { PAGE_ID } from "../../constants/constantFile";
 import { useStatusCheck } from "../../hooks/useStatusCheck";
 import TableContainer from "../../components/Common/TableContainer";
-import { convertToNumericValue } from "../../utils/commonMethods";
 const AttachFileModal = lazy(
 	() => import("../../components/Common/AttachFileModal")
 );
@@ -81,10 +78,7 @@ const ProjectPaymentModel = (props) => {
 
 	const [fileModal, setFileModal] = useState(false);
 	const [convModal, setConvModal] = useState(false);
-
 	const [projectPayment, setProjectPayment] = useState(null);
-	const [searchLoading, setSearchLoading] = useState(false);
-	const [showSearchResults, setShowSearchResults] = useState(false);
 
 	const performStatusCheck = useStatusCheck(PAGE_ID.PROJ_PAYMENT, status);
 	const { data, isLoading, isFetching, error, isError, refetch } =
@@ -192,7 +186,6 @@ const ProjectPaymentModel = (props) => {
 		},
 
 		validationSchema: Yup.object({
-			// prp_project_id: Yup.string().required(t("prp_project_id")),
 			prp_type: numberValidation(1, 10, true).test(
 				"unique-role-id",
 				t("Already exists"),
@@ -204,12 +197,10 @@ const ProjectPaymentModel = (props) => {
 				}
 			),
 			prp_budget_year_id: numberValidation(1, 20, true),
-			// prp_payment_date_et: Yup.string().required(t("prp_payment_date_et")),
 			prp_payment_date_gc: Yup.string().required(t("prp_payment_date_gc")),
 			prp_payment_amount: formattedAmountValidation(1, 10000000000, true),
 			prp_payment_percentage: amountValidation(1, 100, true),
 			prp_description: alphanumericValidation(3, 425, false),
-			//prp_status: Yup.string().required(t("prp_status")),
 		}),
 		validateOnBlur: true,
 		validateOnChange: false,
@@ -229,7 +220,6 @@ const ProjectPaymentModel = (props) => {
 					is_deletable: values.is_deletable,
 					is_editable: values.is_editable,
 				};
-				// update ProjectPayment
 				handleUpdateProjectPayment(updateProjectPayment);
 			} else {
 				const newProjectPayment = {
@@ -243,24 +233,12 @@ const ProjectPaymentModel = (props) => {
 					prp_description: values.prp_description,
 					prp_status: values.prp_status,
 				};
-				// save new ProjectPayments
 				handleAddProjectPayment(newProjectPayment);
 			}
 		},
 	});
 	const [transaction, setTransaction] = useState({});
 	const toggleViewModal = () => setModal1(!modal1);
-
-	useEffect(() => {
-		setProjectPayment(data);
-	}, [data]);
-
-	useEffect(() => {
-		if (!isEmpty(data) && !!isEdit) {
-			setProjectPayment(data);
-			setIsEdit(false);
-		}
-	}, [data]);
 
 	const toggle = () => {
 		if (modal) {
@@ -439,10 +417,11 @@ const ProjectPaymentModel = (props) => {
 				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{data?.previledge?.is_role_editable == 1 &&
 								cellProps.row.original?.is_editable == 1 && (
 									<Button
+										size="sm"
 										color="none"
 										className="text-success"
 										onClick={() => {
@@ -459,9 +438,10 @@ const ProjectPaymentModel = (props) => {
 										</UncontrolledTooltip>
 									</Button>
 								)}
-							{data?.previledge?.is_role_deletable == 9 &&
-								cellProps.row.original?.is_deletable == 9 && (
+							{data?.previledge?.is_role_deletable == 1 &&
+								cellProps.row.original?.is_deletable == 1 && (
 									<Button
+										size="sm"
 										color="none"
 										className="text-danger"
 										onClick={() => {
@@ -484,7 +464,15 @@ const ProjectPaymentModel = (props) => {
 			});
 		}
 		return baseColumns;
-	}, [handleProjectPaymentClick, toggleViewModal, onClickDelete]);
+	}, [
+		handleProjectPaymentClick,
+		toggleViewModal,
+		onClickDelete,
+		data,
+		t,
+		budgetYearMap,
+		paymentCategoryMap,
+	]);
 
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -546,12 +534,12 @@ const ProjectPaymentModel = (props) => {
 						/>
 					)}
 
-					{isLoading || searchLoading ? (
+					{isLoading ? (
 						<Spinners top={"top-70"} />
 					) : (
 						<TableContainer
 							columns={columns}
-							data={showSearchResults ? results : data?.data || []}
+							data={data?.data || []}
 							isGlobalFilter={true}
 							isAddButton={data?.previledge?.is_role_can_add == 1}
 							isCustomPageSize={true}
@@ -669,8 +657,8 @@ const ProjectPaymentModel = (props) => {
 										<FormattedAmountField
 											validation={validation}
 											fieldId={"prp_payment_amount"}
-                      isRequired={true}
-                      allowDecimal={true}
+											isRequired={true}
+											allowDecimal={true}
 										/>
 									</Col>
 

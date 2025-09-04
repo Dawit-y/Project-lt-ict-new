@@ -1,88 +1,64 @@
-import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import React, { useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
+import { alphanumericValidation } from "../../utils/Validation/validation";
 import {
-  alphanumericValidation,
-  amountValidation,
-  numberValidation,
-} from "../../utils/Validation/validation";
-
-import {
-  useFetchContractTerminationReasons,
-  useSearchContractTerminationReasons,
-  useAddContractTerminationReason,
-  useDeleteContractTerminationReason,
-  useUpdateContractTerminationReason,
+	useFetchContractTerminationReasons,
+	useAddContractTerminationReason,
+	useDeleteContractTerminationReason,
+	useUpdateContractTerminationReason,
 } from "../../queries/contractterminationreason_query";
 import ContractTerminationReasonModal from "./ContractTerminationReasonModal";
 import { useTranslation } from "react-i18next";
-
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
 import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
+	Button,
+	Col,
+	Row,
+	UncontrolledTooltip,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	Form,
+	Input,
+	FormFeedback,
+	Label,
+	Card,
+	CardBody,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { contractTerminationReasonExportColumns } from "../../utils/exportColumnsForLookups";
 
 const truncateText = (text, maxLength) => {
-  if (typeof text !== "string") {
-    return text;
-  }
-  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+	if (typeof text !== "string") {
+		return text;
+	}
+	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
 const ContractTerminationReasonModel = () => {
-  //meta title
-  document.title = " ContractTerminationReason";
-  const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [contractTerminationReason, setContractTerminationReason] =
-    useState(null);
+	document.title = "Contract Termination Reason";
+	const { t } = useTranslation();
+	const [modal, setModal] = useState(false);
+	const [modal1, setModal1] = useState(false);
+	const [isEdit, setIsEdit] = useState(false);
+	const [contractTerminationReason, setContractTerminationReason] =
+		useState(null);
 
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
+	const { data, isLoading, isFetching, error, isError, refetch } =
+		useFetchContractTerminationReasons();
 
-  const { data, isLoading, isFetching, error, isError, refetch } =
-    useFetchContractTerminationReasons();
-
-  const addContractTerminationReason = useAddContractTerminationReason();
-  const updateContractTerminationReason = useUpdateContractTerminationReason();
-  const deleteContractTerminationReason = useDeleteContractTerminationReason();
-  //START CRUD
-  const handleAddContractTerminationReason = async (data) => {
+	const addContractTerminationReason = useAddContractTerminationReason();
+	const updateContractTerminationReason = useUpdateContractTerminationReason();
+	const deleteContractTerminationReason = useDeleteContractTerminationReason();
+	//START CRUD
+	const handleAddContractTerminationReason = async (data) => {
 		try {
 			await addContractTerminationReason.mutateAsync(data);
 			toast.success(t("add_success"), {
@@ -111,263 +87,241 @@ const ContractTerminationReasonModel = () => {
 			}
 		}
 	};
-  const handleDeleteContractTerminationReason = async () => {
-    if (contractTerminationReason && contractTerminationReason.ctr_id) {
-      try {
-        const id = contractTerminationReason.ctr_id;
-        await deleteContractTerminationReason.mutateAsync(id);
-        toast.success(t("delete_success"), {
+	const handleDeleteContractTerminationReason = async () => {
+		if (contractTerminationReason && contractTerminationReason.ctr_id) {
+			try {
+				const id = contractTerminationReason.ctr_id;
+				await deleteContractTerminationReason.mutateAsync(id);
+				toast.success(t("delete_success"), {
 					autoClose: 3000,
 				});
-      } catch (error) {
-        toast.error(t("delete_failure"), {
+			} catch (error) {
+				toast.error(t("delete_failure"), {
 					autoClose: 3000,
 				});
-      }
-      setDeleteModal(false);
-    }
-  };
-  //END CRUD
+			}
+			setDeleteModal(false);
+		}
+	};
 
-  //START FOREIGN CALLS
+	const validation = useFormik({
+		enableReinitialize: true,
+		initialValues: {
+			ctr_reason_name_or:
+				(contractTerminationReason &&
+					contractTerminationReason.ctr_reason_name_or) ||
+				"",
+			ctr_reason_name_am:
+				(contractTerminationReason &&
+					contractTerminationReason.ctr_reason_name_am) ||
+				"",
+			ctr_reason_name_en:
+				(contractTerminationReason &&
+					contractTerminationReason.ctr_reason_name_en) ||
+				"",
+			ctr_description:
+				(contractTerminationReason &&
+					contractTerminationReason.ctr_description) ||
+				"",
+			ctr_status:
+				(contractTerminationReason && contractTerminationReason.ctr_status) ||
+				false,
 
-  // validation
-  const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
-    enableReinitialize: true,
+			is_deletable:
+				(contractTerminationReason && contractTerminationReason.is_deletable) ||
+				1,
+			is_editable:
+				(contractTerminationReason && contractTerminationReason.is_editable) ||
+				1,
+		},
+		validationSchema: Yup.object({
+			ctr_reason_name_or: alphanumericValidation(2, 100, true).test(
+				"unique-ctr_reason_name_or",
+				t("Already exists"),
+				(value) => {
+					return !data?.data.some(
+						(item) =>
+							item.ctr_reason_name_or == value &&
+							item.ctr_id !== contractTerminationReason?.ctr_id
+					);
+				}
+			),
+			ctr_reason_name_am: Yup.string().required(t("ctr_reason_name_am")),
+			ctr_reason_name_en: alphanumericValidation(2, 100, true),
+			ctr_description: alphanumericValidation(3, 425, false),
+		}),
+		validateOnBlur: true,
+		validateOnChange: false,
+		onSubmit: (values) => {
+			if (isEdit) {
+				const updateContractTerminationReason = {
+					ctr_id: contractTerminationReason?.ctr_id,
+					ctr_reason_name_or: values.ctr_reason_name_or,
+					ctr_reason_name_am: values.ctr_reason_name_am,
+					ctr_reason_name_en: values.ctr_reason_name_en,
+					ctr_description: values.ctr_description,
+					ctr_status: values.ctr_status ? 1 : 0,
 
-    initialValues: {
-      ctr_reason_name_or:
-        (contractTerminationReason &&
-          contractTerminationReason.ctr_reason_name_or) ||
-        "",
-      ctr_reason_name_am:
-        (contractTerminationReason &&
-          contractTerminationReason.ctr_reason_name_am) ||
-        "",
-      ctr_reason_name_en:
-        (contractTerminationReason &&
-          contractTerminationReason.ctr_reason_name_en) ||
-        "",
-      ctr_description:
-        (contractTerminationReason &&
-          contractTerminationReason.ctr_description) ||
-        "",
-      ctr_status:
-        (contractTerminationReason && contractTerminationReason.ctr_status) ||
-        false,
+					is_deletable: values.is_deletable,
+					is_editable: values.is_editable,
+				};
+				// update ContractTerminationReason
+				handleUpdateContractTerminationReason(updateContractTerminationReason);
+			} else {
+				const newContractTerminationReason = {
+					ctr_reason_name_or: values.ctr_reason_name_or,
+					ctr_reason_name_am: values.ctr_reason_name_am,
+					ctr_reason_name_en: values.ctr_reason_name_en,
+					ctr_description: values.ctr_description,
+					ctr_status: values.ctr_status ? 1 : 0,
+				};
+				// save new ContractTerminationReason
+				handleAddContractTerminationReason(newContractTerminationReason);
+			}
+		},
+	});
+	const [transaction, setTransaction] = useState({});
+	const toggleViewModal = () => setModal1(!modal1);
 
-      is_deletable:
-        (contractTerminationReason && contractTerminationReason.is_deletable) ||
-        1,
-      is_editable:
-        (contractTerminationReason && contractTerminationReason.is_editable) ||
-        1,
-    },
-    validationSchema: Yup.object({
-      ctr_reason_name_or: alphanumericValidation(2, 100, true).test(
-        "unique-ctr_reason_name_or",
-        t("Already exists"),
-        (value) => {
-          return !data?.data.some(
-            (item) =>
-              item.ctr_reason_name_or == value &&
-              item.ctr_id !== contractTerminationReason?.ctr_id,
-          );
-        },
-      ),
-      ctr_reason_name_am: Yup.string().required(t("ctr_reason_name_am")),
-      ctr_reason_name_en: alphanumericValidation(2, 100, true),
-      ctr_description: alphanumericValidation(3, 425, false),
-    }),
-    validateOnBlur: true,
-    validateOnChange: false,
-    onSubmit: (values) => {
-      if (isEdit) {
-        const updateContractTerminationReason = {
-          ctr_id: contractTerminationReason?.ctr_id,
-          ctr_reason_name_or: values.ctr_reason_name_or,
-          ctr_reason_name_am: values.ctr_reason_name_am,
-          ctr_reason_name_en: values.ctr_reason_name_en,
-          ctr_description: values.ctr_description,
-          ctr_status: values.ctr_status ? 1 : 0,
+	const toggle = () => {
+		if (modal) {
+			setModal(false);
+			setContractTerminationReason(null);
+		} else {
+			setModal(true);
+		}
+	};
 
-          is_deletable: values.is_deletable,
-          is_editable: values.is_editable,
-        };
-        // update ContractTerminationReason
-        handleUpdateContractTerminationReason(updateContractTerminationReason);
-      } else {
-        const newContractTerminationReason = {
-          ctr_reason_name_or: values.ctr_reason_name_or,
-          ctr_reason_name_am: values.ctr_reason_name_am,
-          ctr_reason_name_en: values.ctr_reason_name_en,
-          ctr_description: values.ctr_description,
-          ctr_status: values.ctr_status ? 1 : 0,
-        };
-        // save new ContractTerminationReason
-        handleAddContractTerminationReason(newContractTerminationReason);
-      }
-    },
-  });
-  const [transaction, setTransaction] = useState({});
-  const toggleViewModal = () => setModal1(!modal1);
+	const handleContractTerminationReasonClick = (arg) => {
+		const contractTerminationReason = arg;
+		setContractTerminationReason({
+			ctr_id: contractTerminationReason.ctr_id,
+			ctr_reason_name_or: contractTerminationReason.ctr_reason_name_or,
+			ctr_reason_name_am: contractTerminationReason.ctr_reason_name_am,
+			ctr_reason_name_en: contractTerminationReason.ctr_reason_name_en,
+			ctr_description: contractTerminationReason.ctr_description,
+			ctr_status: contractTerminationReason.ctr_status === 1,
+			is_deletable: contractTerminationReason.is_deletable,
+			is_editable: contractTerminationReason.is_editable,
+		});
+		setIsEdit(true);
+		toggle();
+	};
 
-  // Fetch ContractTerminationReason on component mount
-  useEffect(() => {
-    setContractTerminationReason(data);
-  }, [data]);
-  useEffect(() => {
-    if (!isEmpty(data) && !!isEdit) {
-      setContractTerminationReason(data);
-      setIsEdit(false);
-    }
-  }, [data]);
-  const toggle = () => {
-    if (modal) {
-      setModal(false);
-      setContractTerminationReason(null);
-    } else {
-      setModal(true);
-    }
-  };
+	//delete projects
+	const [deleteModal, setDeleteModal] = useState(false);
+	const onClickDelete = (contractTerminationReason) => {
+		setContractTerminationReason(contractTerminationReason);
+		setDeleteModal(true);
+	};
 
-  const handleContractTerminationReasonClick = (arg) => {
-    const contractTerminationReason = arg;
-    // console.log("handleContractTerminationReasonClick", contractTerminationReason);
-    setContractTerminationReason({
-      ctr_id: contractTerminationReason.ctr_id,
-      ctr_reason_name_or: contractTerminationReason.ctr_reason_name_or,
-      ctr_reason_name_am: contractTerminationReason.ctr_reason_name_am,
-      ctr_reason_name_en: contractTerminationReason.ctr_reason_name_en,
-      ctr_description: contractTerminationReason.ctr_description,
-      ctr_status: contractTerminationReason.ctr_status === 1,
+	const handleContractTerminationReasonClicks = () => {
+		setIsEdit(false);
+		setContractTerminationReason("");
+		toggle();
+	};
 
-      is_deletable: contractTerminationReason.is_deletable,
-      is_editable: contractTerminationReason.is_editable,
-    });
-    setIsEdit(true);
-    toggle();
-  };
-
-  //delete projects
-  const [deleteModal, setDeleteModal] = useState(false);
-  const onClickDelete = (contractTerminationReason) => {
-    setContractTerminationReason(contractTerminationReason);
-    setDeleteModal(true);
-  };
-
-  const handleContractTerminationReasonClicks = () => {
-    setIsEdit(false);
-    setContractTerminationReason("");
-    toggle();
-  };
-  const handleSearchResults = ({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
-  };
-  //START UNCHANGED
-  const columns = useMemo(() => {
-    const baseColumns = [
-      {
-        header: "",
-        accessorKey: "ctr_reason_name_or",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.ctr_reason_name_or, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "ctr_reason_name_am",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.ctr_reason_name_am, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "ctr_reason_name_en",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.ctr_reason_name_en, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: t("is_inactive"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span
-              className={
-                cellProps.row.original.ctr_status === 1
-                  ? "btn btn-sm btn-soft-danger"
-                  : ""
-              }
-            >
-              {cellProps.row.original.ctr_status === 1 ? t("yes") : t("no")}
-            </span>
-          );
-        },
-      },
-      {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
-    ];
-    if (
-      data?.previledge?.is_role_editable == 1 ||
-      data?.previledge?.is_role_deletable == 1
-    ) {
-      baseColumns.push({
+	const columns = useMemo(() => {
+		const baseColumns = [
+			{
+				header: "",
+				accessorKey: "ctr_reason_name_or",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.ctr_reason_name_or, 30) ||
+								"-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "ctr_reason_name_am",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.ctr_reason_name_am, 30) ||
+								"-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "ctr_reason_name_en",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.ctr_reason_name_en, 30) ||
+								"-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: t("is_inactive"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span
+							className={
+								cellProps.row.original.ctr_status === 1
+									? "btn btn-sm btn-soft-danger"
+									: ""
+							}
+						>
+							{cellProps.row.original.ctr_status === 1 ? t("yes") : t("no")}
+						</span>
+					);
+				},
+			},
+			{
+				header: t("view_detail"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								const data = cellProps.row.original;
+								toggleViewModal(data);
+								setTransaction(cellProps.row.original);
+							}}
+						>
+							{t("view_detail")}
+						</Button>
+					);
+				},
+			},
+		];
+		if (
+			data?.previledge?.is_role_editable == 1 ||
+			data?.previledge?.is_role_deletable == 1
+		) {
+			baseColumns.push({
 				header: t("Action"),
 				accessorKey: t("Action"),
 				enableColumnFilter: false,
 				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{cellProps.row.original.is_editable == 1 && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-success"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -378,12 +332,13 @@ const ContractTerminationReasonModel = () => {
 									<UncontrolledTooltip placement="top" target="edittooltip">
 										Edit
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 
 							{cellProps.row.original.is_deletable == 9 && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-danger"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -397,20 +352,27 @@ const ContractTerminationReasonModel = () => {
 									<UncontrolledTooltip placement="top" target="deletetooltip">
 										Delete
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 						</div>
 					);
 				},
 			});
-    }
+		}
 
-    return baseColumns;
-  }, [handleContractTerminationReasonClick, toggleViewModal, onClickDelete]);
-  if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
-  }
-  return (
+		return baseColumns;
+	}, [
+		handleContractTerminationReasonClick,
+		toggleViewModal,
+		onClickDelete,
+		data,
+		t,
+	]);
+
+	if (isError) {
+		return <FetchErrorHandler error={error} refetch={refetch} />;
+	}
+	return (
 		<React.Fragment>
 			<ContractTerminationReasonModal
 				isOpen={modal1}
@@ -429,7 +391,7 @@ const ContractTerminationReasonModel = () => {
 						title={t("contract_termination_reason")}
 						breadcrumbItem={t("contract_termination_reason")}
 					/>
-					{isLoading || isSearchLoading ? (
+					{isLoading ? (
 						<Spinners />
 					) : (
 						<Row>
@@ -438,11 +400,7 @@ const ContractTerminationReasonModel = () => {
 									<CardBody>
 										<TableContainer
 											columns={columns}
-											data={
-												showSearchResult
-													? searchResults?.data
-													: data?.data || []
-											}
+											data={data?.data || []}
 											isGlobalFilter={true}
 											isAddButton={data?.previledge?.is_role_can_add == 1}
 											isCustomPageSize={true}
@@ -661,7 +619,7 @@ const ContractTerminationReasonModel = () => {
 	);
 };
 ContractTerminationReasonModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+	preGlobalFilteredRows: PropTypes.any,
 };
 
 export default ContractTerminationReasonModel;

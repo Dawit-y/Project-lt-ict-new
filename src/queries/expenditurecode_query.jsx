@@ -46,43 +46,42 @@ export const useAddExpenditureCode = () => {
 				queryKey: EXPENDITURE_CODE_QUERY_KEY,
 			});
 
-			const previousData = previousQueries.map(([queryKey, oldData]) => {
+			const tempId = Date.now();
+			const optimisticData = { ...newData, pec_id: tempId };
+
+			previousQueries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
 						...oldData,
-						data: [newData, ...oldData.data],
+						data: [optimisticData, ...oldData.data],
 					};
 				});
-				return [queryKey, oldData];
 			});
 
-			return { previousData };
+			return { previousQueries, tempId };
 		},
 
 		onError: (_err, _newData, context) => {
-			context?.previousData?.forEach(([queryKey, oldData]) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, oldData);
 			});
 		},
 
-		onSuccess: (newDataResponse) => {
-			const newData = {
-				...newDataResponse.data,
-				...newDataResponse.previledge,
-			};
+		onSuccess: (response, _newData, context) => {
+			const serverData = response.data;
 
 			const queries = queryClient.getQueriesData({
 				queryKey: EXPENDITURE_CODE_QUERY_KEY,
 			});
 
-			queries.forEach(([queryKey, oldData]) => {
+			queries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
 						...oldData,
 						data: oldData.data.map((d) =>
-							d.tempId === newData.tempId ? newData : d
+							d.pec_id === context.tempId ? serverData : d
 						),
 					};
 				});
@@ -111,44 +110,41 @@ export const useUpdateExpenditureCode = () => {
 				queryKey: EXPENDITURE_CODE_QUERY_KEY,
 			});
 
-			const previousData = previousQueries.map(([queryKey, oldData]) => {
+			previousQueries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
 						...oldData,
 						data: oldData.data.map((d) =>
-							d.pec_id === updatedData.data.pec_id
-								? { ...d, ...updatedData.data }
-								: d
+							d.pec_id === updatedData.pec_id ? { ...d, ...updatedData } : d
 						),
 					};
 				});
-				return [queryKey, oldData];
 			});
 
-			return { previousData };
+			return { previousQueries };
 		},
 
 		onError: (_err, _updatedData, context) => {
-			context?.previousData?.forEach(([queryKey, oldData]) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, oldData);
 			});
 		},
 
-		onSuccess: (updatedData) => {
+		onSuccess: (response) => {
+			const serverData = response.data;
+
 			const queries = queryClient.getQueriesData({
 				queryKey: EXPENDITURE_CODE_QUERY_KEY,
 			});
 
-			queries.forEach(([queryKey, oldData]) => {
+			queries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
 						...oldData,
-						data: oldData.data.map((data) =>
-							data.pec_id === updatedData.data.pec_id
-								? { ...data, ...updatedData.data }
-								: data
+						data: oldData.data.map((d) =>
+							d.pec_id === serverData.pec_id ? serverData : d
 						),
 					};
 				});
@@ -177,7 +173,7 @@ export const useDeleteExpenditureCode = () => {
 				queryKey: EXPENDITURE_CODE_QUERY_KEY,
 			});
 
-			const previousData = previousQueries.map(([queryKey, oldData]) => {
+			previousQueries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
@@ -185,31 +181,14 @@ export const useDeleteExpenditureCode = () => {
 						data: oldData.data.filter((d) => d.pec_id !== parseInt(id)),
 					};
 				});
-				return [queryKey, oldData];
 			});
 
-			return { previousData };
+			return { previousQueries };
 		},
 
 		onError: (_err, _id, context) => {
-			context?.previousData?.forEach(([queryKey, oldData]) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, oldData);
-			});
-		},
-
-		onSuccess: (deletedData, variable) => {
-			const queries = queryClient.getQueriesData({
-				queryKey: EXPENDITURE_CODE_QUERY_KEY,
-			});
-
-			queries.forEach(([queryKey, oldData]) => {
-				queryClient.setQueryData(queryKey, (oldData) => {
-					if (!oldData) return;
-					return {
-						...oldData,
-						data: oldData.data.filter((d) => d.pec_id !== parseInt(variable)),
-					};
-				});
 			});
 		},
 

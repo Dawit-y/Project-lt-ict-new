@@ -1,224 +1,201 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  getContractTerminationReason,
-  updateContractTerminationReason,
-  addContractTerminationReason,
-  deleteContractTerminationReason,
+	getContractTerminationReason,
+	updateContractTerminationReason,
+	addContractTerminationReason,
+	deleteContractTerminationReason,
 } from "../helpers/contractterminationreason_backend_helper";
 
 const CONTRACT_TERMINATION_REASON_QUERY_KEY = ["contractterminationreason"];
 
 // Fetch contract_termination_reason
 export const useFetchContractTerminationReasons = () => {
-  return useQuery({
-    queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
-    queryFn: () => getContractTerminationReason(),
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-    refetchOnMount: true,
-  });
+	return useQuery({
+		queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
+		queryFn: () => getContractTerminationReason(),
+		staleTime: 1000 * 60 * 5,
+		refetchOnWindowFocus: false,
+		refetchOnMount: true,
+	});
 };
 
 //search contract_termination_reason
 export const useSearchContractTerminationReasons = (searchParams = {}) => {
-  return useQuery({
-    queryKey: [...CONTRACT_TERMINATION_REASON_QUERY_KEY, searchParams],
-    queryFn: () => getContractTerminationReason(searchParams),
-    staleTime: 1000 * 60 * 2,
-    gcTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-    refetchOnMount: true,
-    enabled: searchParams.length > 0,
-  });
+	return useQuery({
+		queryKey: [...CONTRACT_TERMINATION_REASON_QUERY_KEY, searchParams],
+		queryFn: () => getContractTerminationReason(searchParams),
+		staleTime: 1000 * 60 * 2,
+		gcTime: 1000 * 60 * 5,
+		refetchOnWindowFocus: false,
+		refetchOnMount: true,
+		enabled: searchParams.length > 0,
+	});
 };
 
 // Add contract_termination_reason
 export const useAddContractTerminationReason = () => {
-  const queryClient = useQueryClient();
+	const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: addContractTerminationReason,
+	return useMutation({
+		mutationFn: addContractTerminationReason,
 
-    onMutate: async (newData) => {
-      await queryClient.cancelQueries(CONTRACT_TERMINATION_REASON_QUERY_KEY);
+		onMutate: async (newData) => {
+			await queryClient.cancelQueries(CONTRACT_TERMINATION_REASON_QUERY_KEY);
 
-      const previousQueries = queryClient.getQueriesData({
-        queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
-      });
+			const previousQueries = queryClient.getQueriesData({
+				queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
+			});
 
-      const previousData = previousQueries.map(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: [newData, ...oldData.data],
-          };
-        });
-        return [queryKey, oldData];
-      });
+			const tempId = Date.now();
+			const optimisticData = { ...newData, ctr_id: tempId };
 
-      return { previousData };
-    },
+			previousQueries.forEach(([queryKey]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: [optimisticData, ...oldData.data],
+					};
+				});
+			});
 
-    onError: (_err, _newData, context) => {
-      context?.previousData?.forEach(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, oldData);
-      });
-    },
+			return { previousQueries, tempId };
+		},
 
-    onSuccess: (newDataResponse) => {
-      const newData = {
-        ...newDataResponse.data,
-        ...newDataResponse.previledge,
-      };
+		onError: (_err, _newData, context) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
+				queryClient.setQueryData(queryKey, oldData);
+			});
+		},
 
-      const queries = queryClient.getQueriesData({
-        queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
-      });
+		onSuccess: (response, _newData, context) => {
+			const serverData = response.data;
 
-      queries.forEach(([queryKey]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: oldData.data.map((d) =>
-              d.tempId === newData.tempId ? newData : d
-            ),
-          };
-        });
-      });
-    },
+			const queries = queryClient.getQueriesData({
+				queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
+			});
 
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
-      });
-    },
-  });
+			queries.forEach(([queryKey]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: oldData.data.map((d) =>
+							d.ctr_id === context.tempId ? serverData : d
+						),
+					};
+				});
+			});
+		},
+
+		onSettled: () => {
+			queryClient.invalidateQueries({
+				queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
+			});
+		},
+	});
 };
 
 // Update contract_termination_reason
 export const useUpdateContractTerminationReason = () => {
-  const queryClient = useQueryClient();
+	const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: updateContractTerminationReason,
+	return useMutation({
+		mutationFn: updateContractTerminationReason,
 
-    onMutate: async (updatedData) => {
-      await queryClient.cancelQueries(CONTRACT_TERMINATION_REASON_QUERY_KEY);
+		onMutate: async (updatedData) => {
+			await queryClient.cancelQueries(CONTRACT_TERMINATION_REASON_QUERY_KEY);
 
-      const previousQueries = queryClient.getQueriesData({
-        queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
-      });
+			const previousQueries = queryClient.getQueriesData({
+				queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
+			});
 
-      const previousData = previousQueries.map(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: oldData.data.map((d) =>
-              d.ctr_id === updatedData.data.ctr_id
-                ? { ...d, ...updatedData.data }
-                : d
-            ),
-          };
-        });
-        return [queryKey, oldData];
-      });
+			previousQueries.forEach(([queryKey]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: oldData.data.map((d) =>
+							d.ctr_id === updatedData.ctr_id ? { ...d, ...updatedData } : d
+						),
+					};
+				});
+			});
 
-      return { previousData };
-    },
+			return { previousQueries };
+		},
 
-    onError: (_err, _updatedData, context) => {
-      context?.previousData?.forEach(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, oldData);
-      });
-    },
+		onError: (_err, _updatedData, context) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
+				queryClient.setQueryData(queryKey, oldData);
+			});
+		},
 
-    onSuccess: (updatedData) => {
-      const queries = queryClient.getQueriesData({
-        queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
-      });
+		onSuccess: (response) => {
+			const serverData = response.data;
 
-      queries.forEach(([queryKey]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: oldData.data.map((d) =>
-              d.ctr_id === updatedData.data.ctr_id
-                ? { ...d, ...updatedData.data }
-                : d
-            ),
-          };
-        });
-      });
-    },
+			const queries = queryClient.getQueriesData({
+				queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
+			});
 
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
-      });
-    },
-  });
+			queries.forEach(([queryKey]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: oldData.data.map((d) =>
+							d.ctr_id === serverData.ctr_id ? serverData : d
+						),
+					};
+				});
+			});
+		},
+
+		onSettled: () => {
+			queryClient.invalidateQueries({
+				queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
+			});
+		},
+	});
 };
 
 // Delete contract_termination_reason
 export const useDeleteContractTerminationReason = () => {
-  const queryClient = useQueryClient();
+	const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: deleteContractTerminationReason,
+	return useMutation({
+		mutationFn: deleteContractTerminationReason,
 
-    onMutate: async (id) => {
-      await queryClient.cancelQueries(CONTRACT_TERMINATION_REASON_QUERY_KEY);
+		onMutate: async (id) => {
+			await queryClient.cancelQueries(CONTRACT_TERMINATION_REASON_QUERY_KEY);
 
-      const previousQueries = queryClient.getQueriesData({
-        queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
-      });
+			const previousQueries = queryClient.getQueriesData({
+				queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
+			});
 
-      const previousData = previousQueries.map(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: oldData.data.filter((d) => d.ctr_id !== parseInt(id)),
-          };
-        });
-        return [queryKey, oldData];
-      });
+			previousQueries.forEach(([queryKey]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: oldData.data.filter((d) => d.ctr_id !== parseInt(id)),
+					};
+				});
+			});
 
-      return { previousData };
-    },
+			return { previousQueries };
+		},
 
-    onError: (_err, _id, context) => {
-      context?.previousData?.forEach(([queryKey, oldData]) => {
-        queryClient.setQueryData(queryKey, oldData);
-      });
-    },
+		onError: (_err, _id, context) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
+				queryClient.setQueryData(queryKey, oldData);
+			});
+		},
 
-    onSuccess: (_deletedData, variable) => {
-      const queries = queryClient.getQueriesData({
-        queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
-      });
-
-      queries.forEach(([queryKey]) => {
-        queryClient.setQueryData(queryKey, (oldData) => {
-          if (!oldData) return;
-          return {
-            ...oldData,
-            data: oldData.data.filter(
-              (d) => d.ctr_id !== parseInt(variable)
-            ),
-          };
-        });
-      });
-    },
-
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
-      });
-    },
-  });
+		onSettled: () => {
+			queryClient.invalidateQueries({
+				queryKey: CONTRACT_TERMINATION_REASON_QUERY_KEY,
+			});
+		},
+	});
 };
