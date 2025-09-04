@@ -2,7 +2,6 @@ import PropTypes from "prop-types";
 import React, { useState } from "react";
 
 import { connect } from "react-redux";
-import { Row, Col } from "reactstrap";
 import { Link } from "react-router-dom";
 
 // Reactstrap
@@ -12,11 +11,8 @@ import { Dropdown, DropdownToggle, DropdownMenu } from "reactstrap";
 import LanguageDropdown from "../CommonForBoth/TopbarDropdown/LanguageDropdown";
 import NotificationDropdown from "../CommonForBoth/TopbarDropdown/NotificationDropdown";
 import ProfileMenu from "../CommonForBoth/TopbarDropdown/ProfileMenu";
-import megamenuImg from "../../assets/images/megamenu-img.png";
 
 import logo from "../../assets/images/logo.svg";
-import logoLightSvg from "../../assets/images/logo-light.svg";
-import logoLight from "../../assets/images/logo-light.png";
 import logoDark from "../../assets/images/logo-dark.png";
 
 //i18n

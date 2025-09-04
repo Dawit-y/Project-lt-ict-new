@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Card, CardBody, Col, Row, Spinner, Table } from "reactstrap";
-import img1 from "../../../assets/images/companies/img-1.png";
 import { useTranslation } from "react-i18next";
 
 const ProjectDetail = ({ data }) => {
