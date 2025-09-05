@@ -19,7 +19,6 @@ import {
   UncontrolledTooltip,
   Alert,
 } from "reactstrap";
-import { formatDistanceToNow, parseISO } from "date-fns";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -115,10 +114,6 @@ const Conversation = ({
       handleAddConversationInformation(newConversationInformation);
     },
   });
-
-  const formatTimeAgo = (timestamp) => {
-    return formatDistanceToNow(parseISO(timestamp), { addSuffix: true });
-  };
 
   const formatUtcDate = (timestamp) => {
     const date = new Date(timestamp).toUTCString();

@@ -285,110 +285,110 @@ const FileList = ({
                     );
 
                     return (
-                      <tr
-                        key={key}
-                        style={{
-                          height: "30px",
-                        }}
-                        onDoubleClick={() => {
-                          setDetails(file);
-                          toggleViewModal();
-                        }}
-                      >
-                        <td
-                          style={{
-                            height: "30px",
-                            verticalAlign: "middle",
-                            padding: "0.5rem",
-                          }}
-                        >
-                          <Link to="#" className="text-dark fw-medium">
-                            <i className={`${icon} ${color} me-2`}></i>
-                            {file?.prd_name}
-                          </Link>
-                        </td>
-                        <td
-                          style={{
-                            height: "30px",
-                            verticalAlign: "middle",
-                            padding: "0.5rem",
-                          }}
-                        >
-                          {
-                            new Date(file?.prd_update_time)
-                              .toISOString()
-                              .split("T")[0]
-                          }
-                        </td>
-                        <td
-                          style={{
-                            height: "30px",
-                            verticalAlign: "middle",
-                            padding: "0.5rem",
-                          }}
-                        >
-                          {formatFileSize(file?.prd_size)}
-                        </td>
-                        <td
-                          style={{
-                            height: "30px",
-                            verticalAlign: "middle",
-                            padding: "0.5rem",
-                          }}
-                        >
-                          {file?.created_by}
-                        </td>
-                        <td
-                          style={{
-                            height: "30px",
-                            verticalAlign: "middle",
-                            padding: "0.5rem",
-                          }}
-                        >
-                          <UncontrolledDropdown>
-                            <DropdownToggle
-                              tag="a"
-                              className="font-size-16 text-muted"
-                              role="button"
-                            >
-                              <i className="mdi mdi-dots-horizontal"></i>
-                            </DropdownToggle>
-                            <DropdownMenu
-                              className="dropdown-menu-end"
-                              style={{ zIndex: 8000 }}
-                            >
-                              <DropdownItem
-                                to="#"
-                                onClick={() => {
-                                  setDetails(file);
-                                  toggleViewModal();
-                                }}
-                              >
-                                {t("open")}
-                              </DropdownItem>
-                              {actions && (
-                                <>
-                                  <DropdownItem
-                                    to="#"
-                                    onClick={() => edit(file)}
-                                  >
-                                    {t("edit")}
-                                  </DropdownItem>
-                                  <div className="dropdown-divider"></div>
-                                  <DropdownItem
-                                    to="#"
-                                    className="text-danger"
-                                    onClick={() => onClickDelete(file)}
-                                  >
-                                    {t("delete")}
-                                  </DropdownItem>
-                                </>
-                              )}
-                            </DropdownMenu>
-                          </UncontrolledDropdown>
-                        </td>
-                      </tr>
-                    );
+											<tr
+												key={key}
+												style={{
+													height: "30px",
+												}}
+												onDoubleClick={() => {
+													setDetails(file);
+													toggleViewModal();
+												}}
+											>
+												<td
+													style={{
+														height: "30px",
+														verticalAlign: "middle",
+														padding: "0.5rem",
+													}}
+												>
+													<Link to="#" className="text-dark fw-medium">
+														<i className={`${icon} ${color} me-2`}></i>
+														{file?.prd_name}
+													</Link>
+												</td>
+												<td
+													style={{
+														height: "30px",
+														verticalAlign: "middle",
+														padding: "0.5rem",
+													}}
+												>
+													{file?.prd_update_time
+														? new Date(file.prd_update_time)
+																.toISOString()
+																.split("T")[0]
+														: ""}
+												</td>
+												<td
+													style={{
+														height: "30px",
+														verticalAlign: "middle",
+														padding: "0.5rem",
+													}}
+												>
+													{formatFileSize(file?.prd_size)}
+												</td>
+												<td
+													style={{
+														height: "30px",
+														verticalAlign: "middle",
+														padding: "0.5rem",
+													}}
+												>
+													{file?.created_by}
+												</td>
+												<td
+													style={{
+														height: "30px",
+														verticalAlign: "middle",
+														padding: "0.5rem",
+													}}
+												>
+													<UncontrolledDropdown>
+														<DropdownToggle
+															tag="a"
+															className="font-size-16 text-muted"
+															role="button"
+														>
+															<i className="mdi mdi-dots-horizontal"></i>
+														</DropdownToggle>
+														<DropdownMenu
+															className="dropdown-menu-end"
+															style={{ zIndex: 8000 }}
+														>
+															<DropdownItem
+																to="#"
+																onClick={() => {
+																	setDetails(file);
+																	toggleViewModal();
+																}}
+															>
+																{t("open")}
+															</DropdownItem>
+															{actions && (
+																<>
+																	<DropdownItem
+																		to="#"
+																		onClick={() => edit(file)}
+																	>
+																		{t("edit")}
+																	</DropdownItem>
+																	<div className="dropdown-divider"></div>
+																	<DropdownItem
+																		to="#"
+																		className="text-danger"
+																		onClick={() => onClickDelete(file)}
+																	>
+																		{t("delete")}
+																	</DropdownItem>
+																</>
+															)}
+														</DropdownMenu>
+													</UncontrolledDropdown>
+												</td>
+											</tr>
+										);
                   })}
                 </tbody>
               </Table>

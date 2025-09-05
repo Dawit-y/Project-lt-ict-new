@@ -80,7 +80,7 @@ const MAX_PAGE_NUMBERS = 10;
 const TableContainer = ({
 	columns,
 	data,
-	tableClass,
+	tableClass = "align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline",
 	theadClass,
 	divClassName,
 	isLoading = false,
@@ -88,7 +88,7 @@ const TableContainer = ({
 	size = "sm",
 	isPagination,
 	isGlobalFilter,
-	paginationWrapper,
+	paginationWrapper = "dataTables_paginate paging_simple_numbers pagination-rounded",
 	SearchPlaceholder,
 	pagination,
 	buttonName,
@@ -214,7 +214,7 @@ const TableContainer = ({
 		isSummaryRow && data.length > 0
 			? calculateSummary(data, summaryColumns, customSummaryFunction)
 			: null;
-	
+
 	const flattenedColumns = useMemo(() => {
 		const flatten = (cols) => {
 			return cols.reduce((acc, column) => {

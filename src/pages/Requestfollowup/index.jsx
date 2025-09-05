@@ -291,10 +291,6 @@ const RequestFollowupModel = ({ request, isActive }) => {
 				enableColumnFilter: false,
 				enableSorting: true,
 				cell: (cellProps) => {
-					console.log(
-						"cellProps",
-						cellProps.row.original.rqf_forwarding_dep_id
-					);
 					return (
 						<span>
 							{departmentMap[cellProps.row.original.rqf_forwarding_dep_id] ||
