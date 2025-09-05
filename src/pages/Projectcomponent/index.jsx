@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -399,6 +397,8 @@ const ProjectComponentModel = (props) => {
 					refetch={refetch}
 					isFetching={isFetching}
 					exportColumns={projectComponentExportColumns}
+					isSummaryRow={true}
+					summaryColumns={["pcm_budget_amount"]}
 				/>
 			)}
 			<Modal isOpen={modal} toggle={toggle} className="modal-xl">

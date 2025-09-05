@@ -7,10 +7,10 @@ import {
 	CardHeader,
 	Badge,
 	Button,
-	Input,
 	Table,
 	Progress,
 } from "reactstrap";
+import { FaCheckCircle } from "react-icons/fa";
 import Chart from "react-apexcharts";
 import { useFetchBudgetRequestAmounts } from "../../../../queries/budgetrequestamount_query";
 import { useFetchBudgetRequestTasks } from "../../../../queries/budgetrequesttask_query";
@@ -21,6 +21,7 @@ import { useBudgetRequestTaskColumns } from "../../../../hooks/useBdrTasksColumn
 import { useTranslation } from "react-i18next";
 import BrAmountApproverModal from "./BrAmountApproverModal";
 import { createMultiLangKeyValueMap } from "../../../../utils/commonMethods";
+import { statusColorMap } from ".";
 
 export default function BudgetBreakdown({ request: requestData, isActive }) {
 	const { t, i18n } = useTranslation();
@@ -250,7 +251,12 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 										<tr>
 											<td className="fw-bold text-muted">Status:</td>
 											<td>
-												<Badge color={requestData?.color_code}>
+												<Badge
+													color={
+														statusColorMap[requestData?.bdr_request_status]
+													}
+												>
+													<FaCheckCircle className="me-1" />
 													{requestData?.status_name}
 												</Badge>
 											</td>

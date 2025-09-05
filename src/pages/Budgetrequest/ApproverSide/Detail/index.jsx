@@ -36,9 +36,15 @@ import Breadcrumb from "../../../../components/Common/Breadcrumb";
 import FetchErrorHandler from "../../../../components/Common/FetchErrorHandler";
 import ApproveModal from "./ApproveModal";
 
+export const statusColorMap = {
+	1: "primary", // Requested
+	2: "secondary", // Recommended
+	3: "success", // Approved
+	4: "danger", // Rejected
+};
+
 export default function BudgetApprovalPage() {
 	const [activeTab, setActiveTab] = useState("budget");
-	const [approvalStatus, setApprovalStatus] = useState("pending");
 	const [approveModal, setApproveModal] = useState(false);
 	const [action, setAction] = useState("approve");
 
@@ -67,10 +73,13 @@ export default function BudgetApprovalPage() {
 		departmentType === "department" || departmentType === "directorate";
 	const isOfficerLevel =
 		departmentType === "officer" || departmentType === "team";
+	
+	const status = data?.data?.bdr_request_status;
+	const color = statusColorMap[status] || "secondary";
 
-	const isApproved = parseInt(data?.data?.bdr_request_status) === 3;
-	const isRejected = parseInt(data?.data?.bdr_request_status) === 4;
-	const isRequested = parseInt(data?.data?.bdr_request_status) === 1;
+	const isApproved = parseInt(status) === 3;
+	const isRejected = parseInt(status) === 4;
+	const isRequested = parseInt(status) === 1;
 
 	const handleApproval = (event) => {
 		setAction(event.target.name);
@@ -117,7 +126,7 @@ export default function BudgetApprovalPage() {
 							</div>
 							{/* Quick Actions Bar */}
 							<Card
-								className={`border-start border-${data?.data?.color_code} shadow-md`}
+								className={`border-start border-${color} shadow-md`}
 							>
 								<CardBody className="d-flex justify-content-between align-items-center">
 									<div className="d-flex align-items-center gap-3">
@@ -182,7 +191,7 @@ export default function BudgetApprovalPage() {
 											</Button>
 										</div>
 									) : (
-										<Badge color={data?.data?.color_code} pill>
+										<Badge color={color} pill>
 											{isRejected ? (
 												<FaTimesCircle className="me-1" />
 											) : (

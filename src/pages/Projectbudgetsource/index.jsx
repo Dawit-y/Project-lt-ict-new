@@ -1,7 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -11,7 +9,6 @@ import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
 	useFetchProjectBudgetSources,
-	useSearchProjectBudgetSources,
 	useAddProjectBudgetSource,
 	useDeleteProjectBudgetSource,
 	useUpdateProjectBudgetSource,
@@ -33,13 +30,12 @@ import {
 	Label,
 	Card,
 	CardBody,
-	FormGroup,
-	Badge,
 } from "reactstrap";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import { createSelectOptions } from "../../utils/commonMethods";
+import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
 import { budgetSourceExportColumns } from "../../utils/exportColumnsForDetails";
+import AsyncSelectField from "../../components/Common/AsyncSelectField";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -49,47 +45,42 @@ const truncateText = (text, maxLength) => {
 };
 
 const ProjectBudgetSourceModel = (props) => {
-	//meta title
-	document.title = " ProjectBudgetSource";
+	document.title = "Project Budget Source";
 	const { passedId, isActive, totalActualBudget } = props;
 	const param = {
 		project_id: passedId,
 		request_type: "single",
 	};
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const [modal, setModal] = useState(false);
 	const [modal1, setModal1] = useState(false);
 	const [isEdit, setIsEdit] = useState(false);
 	const [projectBudgetSource, setProjectBudgetSource] = useState(null);
 
-	const [searchResults, setSearchResults] = useState(null);
-	const [isSearchLoading, setIsSearchLoading] = useState(false);
-	const [searcherror, setSearchError] = useState(null);
-	const [showSearchResult, setShowSearchResult] = useState(false);
-
 	const { data, isLoading, isFetching, error, isError, refetch } =
 		useFetchProjectBudgetSources(param, isActive);
-	const { data: budgetSourceData } = useFetchBudgetSources();
-
-	const budgetSourceOptions = createSelectOptions(
-		budgetSourceData?.data || [],
-		"pbs_id",
-		"pbs_name_or"
-	);
-	// Mapping
-	const budgetSourceMap = useMemo(() => {
-		return (
-			budgetSourceData?.data?.reduce((acc, source) => {
-				acc[source.pbs_id] = source.pbs_name_or;
-				return acc;
-			}, {}) || {}
-		);
-	}, [budgetSourceData]);
-
 	const addProjectBudgetSource = useAddProjectBudgetSource();
 	const updateProjectBudgetSource = useUpdateProjectBudgetSource();
 	const deleteProjectBudgetSource = useDeleteProjectBudgetSource();
-	//START CRUD
+
+	const {
+		data: budgetSourceData,
+		isLoading: isBsLoading,
+		isError: isBsError,
+	} = useFetchBudgetSources();
+	const budgetSourceMap = useMemo(() => {
+		return createMultiLangKeyValueMap(
+			budgetSourceData?.data || [],
+			"pbs_id",
+			{
+				en: "pbs_name_en",
+				am: "pbs_name_am",
+				or: "pbs_name_or",
+			},
+			i18n.language
+		);
+	}, [budgetSourceData, i18n.language]);
+
 	const handleAddProjectBudgetSource = async (data) => {
 		try {
 			await addProjectBudgetSource.mutateAsync(data);
@@ -151,14 +142,9 @@ const ProjectBudgetSourceModel = (props) => {
 			return total + Number(item.bsr_amount || 0);
 		}, 0);
 	};
-	//END CRUD
-	//START FOREIGN CALLS
 
-	// validation
 	const validation = useFormik({
-		// enableReinitialize: use this flag when initial values need to be changed
 		enableReinitialize: true,
-
 		initialValues: {
 			bsr_name: (projectBudgetSource && projectBudgetSource.bsr_name) || "",
 			bsr_project_id:
@@ -190,12 +176,11 @@ const ProjectBudgetSourceModel = (props) => {
 					function (value) {
 						if (!value || isNaN(value)) return true;
 
-						const currentData = showSearchResult ? searchResults : data;
 						const editingId = isEdit ? projectBudgetSource?.bsr_id : null;
 
 						// Calculate total without the current edited item
 						const currentTotalWithoutThis =
-							currentData?.data?.reduce((total, item) => {
+							data?.data?.reduce((total, item) => {
 								if (editingId && item.bsr_id === editingId) return total;
 								return total + Number(item.bsr_amount || 0);
 							}, 0) || 0;
@@ -246,16 +231,6 @@ const ProjectBudgetSourceModel = (props) => {
 	const [transaction, setTransaction] = useState({});
 	const toggleViewModal = () => setModal1(!modal1);
 
-	// Fetch ProjectBudgetSource on component mount
-	useEffect(() => {
-		setProjectBudgetSource(data);
-	}, [data]);
-	useEffect(() => {
-		if (!isEmpty(data) && !!isEdit) {
-			setProjectBudgetSource(data);
-			setIsEdit(false);
-		}
-	}, [data]);
 	const toggle = () => {
 		if (modal) {
 			setModal(false);
@@ -267,7 +242,6 @@ const ProjectBudgetSourceModel = (props) => {
 
 	const handleProjectBudgetSourceClick = (arg) => {
 		const projectBudgetSource = arg;
-		// console.log("handleProjectBudgetSourceClick", projectBudgetSource);
 		setProjectBudgetSource({
 			bsr_id: projectBudgetSource.bsr_id,
 			bsr_name: projectBudgetSource.bsr_name,
@@ -277,7 +251,6 @@ const ProjectBudgetSourceModel = (props) => {
 			bsr_status: projectBudgetSource.bsr_status,
 			bsr_description: projectBudgetSource.bsr_description,
 			bsr_created_date: projectBudgetSource.bsr_created_date,
-
 			is_deletable: projectBudgetSource.is_deletable,
 			is_editable: projectBudgetSource.is_editable,
 		});
@@ -285,7 +258,6 @@ const ProjectBudgetSourceModel = (props) => {
 		toggle();
 	};
 
-	//delete projects
 	const [deleteModal, setDeleteModal] = useState(false);
 	const onClickDelete = (projectBudgetSource) => {
 		setProjectBudgetSource(projectBudgetSource);
@@ -297,12 +269,7 @@ const ProjectBudgetSourceModel = (props) => {
 		setProjectBudgetSource("");
 		toggle();
 	};
-	const handleSearchResults = ({ data, error }) => {
-		setSearchResults(data);
-		setSearchError(error);
-		setShowSearchResult(true);
-	};
-	//START UNCHANGED
+
 	const columns = useMemo(() => {
 		const baseColumns = [
 			{
@@ -449,12 +416,12 @@ const ProjectBudgetSourceModel = (props) => {
 			/>
 			<div className="page-content1">
 				<div className="container-fluid1">
-					{isLoading || isSearchLoading ? (
+					{isLoading ? (
 						<Spinners top={isActive ? "top-70" : ""} />
 					) : (
 						<TableContainer
 							columns={columns}
-							data={showSearchResult ? searchResults?.data : data?.data || []}
+							data={data?.data || []}
 							isGlobalFilter={true}
 							isAddButton={true}
 							isCustomPageSize={true}
@@ -483,6 +450,8 @@ const ProjectBudgetSourceModel = (props) => {
 								},
 								...budgetSourceExportColumns,
 							]}
+							isSummaryRow={true}
+							summaryColumns={["bsr_amount"]}
 						/>
 					)}
 					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
@@ -560,40 +529,15 @@ const ProjectBudgetSourceModel = (props) => {
 											</FormFeedback>
 										) : null}
 									</Col>
-
-									<Col className="col-md-6 mb-3">
-										<Label>
-											{t("bsr_budget_source_id")}
-											<span className="text-danger">*</span>
-										</Label>
-										<Input
-											name="bsr_budget_source_id"
-											type="select"
-											className="form-select"
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.bsr_budget_source_id || ""}
-											invalid={
-												validation.touched.bsr_budget_source_id &&
-												validation.errors.bsr_budget_source_id
-													? true
-													: false
-											}
-										>
-											<option value={null}>Select Budget Source</option>
-											{budgetSourceOptions.map((option) => (
-												<option key={option.value} value={option.value}>
-													{t(`${option.label}`)}
-												</option>
-											))}
-										</Input>
-										{validation.touched.bsr_budget_source_id &&
-										validation.errors.bsr_budget_source_id ? (
-											<FormFeedback type="invalid">
-												{validation.errors.bsr_budget_source_id}
-											</FormFeedback>
-										) : null}
-									</Col>
+									<AsyncSelectField
+										fieldId="bsr_budget_source_id"
+										validation={validation}
+										isRequired
+										className="col-md-6 mb-3"
+										optionMap={budgetSourceMap}
+										isLoading={isBsLoading}
+										isError={isBsError}
+									/>
 									<Col className="col-md-6 mb-3">
 										<FormattedAmountField
 											validation={validation}

@@ -722,6 +722,8 @@ const ImplementingAreaModel = (props) => {
 									format: (val) => (val === 1 ? "Yes" : "No"),
 								},
 							]}
+							isSummaryRow={true}
+							summaryColumns={["pia_budget_amount"]}
 						/>
 					</Col>
 				</Row>

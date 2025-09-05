@@ -555,6 +555,8 @@ const ProjectPaymentModel = (props) => {
 							refetch={refetch}
 							isFetching={isFetching}
 							exportColumns={projectPaymentExportColumns}
+							isSummaryRow={true}
+							summaryColumns={["prp_payment_amount"]}
 						/>
 					)}
 					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
