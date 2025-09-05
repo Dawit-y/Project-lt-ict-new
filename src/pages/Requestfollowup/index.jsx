@@ -1,11 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
-	useFetchRequestFollowups,
 	useSearchRequestFollowups,
 	useAddRequestFollowup,
 	useDeleteRequestFollowup,
@@ -28,7 +27,6 @@ import {
 	Label,
 	Card,
 	CardBody,
-	FormGroup,
 	Badge,
 } from "reactstrap";
 import { toast } from "react-toastify";
@@ -38,6 +36,8 @@ import { post } from "../../helpers/api_Lists";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import DatePicker from "../../components/Common/DatePicker";
 import RecommendModal from "./RecommendModal";
+import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
+import AsyncSelectField from "../../components/Common/AsyncSelectField";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -60,7 +60,8 @@ const recommendationStatusMap = {
 };
 
 const RequestFollowupModel = ({ request, isActive }) => {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
+	const lang = i18n.language;
 	const [modal, setModal] = useState(false);
 	const [modal1, setModal1] = useState(false);
 	const [recommendModal, setRecommendModal] = useState(false);
@@ -81,13 +82,30 @@ const RequestFollowupModel = ({ request, isActive }) => {
 	const { departmentId, departmentType } = useAuthUser();
 	const isOfficerLevel =
 		departmentType === "officer" || departmentType === "team";
-	const { data: subDepartments = [], isLoading: loadingSub } = useQuery({
+	const {
+		data: subDepartments = [],
+		isLoading: loadingSub,
+		isError: isSubError,
+	} = useQuery({
 		queryKey: ["subDepartments", departmentId],
 		queryFn: () => fetchDepartmentsByParent(departmentId),
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 		enabled: !!departmentId,
 	});
+
+	const subDepartmentMap = useMemo(() => {
+		return createMultiLangKeyValueMap(
+			subDepartments || [],
+			"id",
+			{
+				en: "dep_name_en",
+				am: "dep_name_am",
+				or: "dep_name_or",
+			},
+			lang
+		);
+	}, [subDepartments, lang]);
 
 	const param = { rqf_request_id: request?.bdr_id };
 	const isValidParam =
@@ -102,7 +120,7 @@ const RequestFollowupModel = ({ request, isActive }) => {
 	const addRequestFollowup = useAddRequestFollowup();
 	const updateRequestFollowup = useUpdateRequestFollowup();
 	const deleteRequestFollowup = useDeleteRequestFollowup();
-	//START CRUD
+
 	const handleAddRequestFollowup = async (data) => {
 		try {
 			await addRequestFollowup.mutateAsync(data);
@@ -168,15 +186,11 @@ const RequestFollowupModel = ({ request, isActive }) => {
 			is_editable: (requestFollowup && requestFollowup.is_editable) || 1,
 		},
 		validationSchema: Yup.object({
-			//rqf_request_id: Yup.string().required(t('rqf_request_id')),
-			//rqf_forwarding_dep_id: Yup.string().required(t('rqf_forwarding_dep_id')),
 			rqf_forwarded_to_dep_id: Yup.string().required(
 				t("rqf_forwarded_to_dep_id")
 			),
 			rqf_forwarding_date: Yup.string().required(t("rqf_forwarding_date")),
-			///rqf_received_date: Yup.string().required(t('rqf_received_date')),
 			rqf_description: Yup.string(),
-			//rqf_status: Yup.string().required(t('rqf_status')),
 		}),
 		validateOnBlur: true,
 		validateOnChange: false,
@@ -192,7 +206,6 @@ const RequestFollowupModel = ({ request, isActive }) => {
 					rqf_description: values.rqf_description,
 					rqf_status: values.rqf_status,
 				};
-				// update RequestFollowup
 				handleUpdateRequestFollowup(updateRequestFollowup);
 			} else {
 				const newRequestFollowup = {
@@ -204,7 +217,6 @@ const RequestFollowupModel = ({ request, isActive }) => {
 					rqf_description: values.rqf_description,
 					rqf_status: values.rqf_status,
 				};
-				// save new RequestFollowup
 				handleAddRequestFollowup(newRequestFollowup);
 			}
 		},
@@ -232,7 +244,6 @@ const RequestFollowupModel = ({ request, isActive }) => {
 			rqf_received_date: requestFollowup.rqf_received_date,
 			rqf_description: requestFollowup.rqf_description,
 			rqf_status: requestFollowup.rqf_status,
-
 			is_deletable: requestFollowup.is_deletable,
 			is_editable: requestFollowup.is_editable,
 		});
@@ -250,8 +261,6 @@ const RequestFollowupModel = ({ request, isActive }) => {
 		setRequestFollowup("");
 		toggle();
 	};
-
-	console.log("department id", departmentId);
 
 	const isAddAllowed = () => {
 		if (data?.previledge?.is_role_can_add !== 1) {
@@ -548,37 +557,15 @@ const RequestFollowupModel = ({ request, isActive }) => {
 								}}
 							>
 								<Row>
-									<Col className="col-md-6 mb-3">
-										<Label>{t("rqf_forwarded_to_dep_id")}</Label>
-										<Input
-											name="rqf_forwarded_to_dep_id"
-											type="select"
-											placeholder={t("rqf_forwarded_to_dep_id")}
-											onChange={validation.handleChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.rqf_forwarded_to_dep_id || ""}
-											invalid={
-												validation.touched.rqf_forwarded_to_dep_id &&
-												validation.errors.rqf_forwarded_to_dep_id
-													? true
-													: false
-											}
-											maxLength={20}
-										>
-											<option value="">{t("select_one")}</option>
-											{subDepartments?.map((data) => (
-												<option key={data.id} value={data.id}>
-													{data.name}
-												</option>
-											))}
-										</Input>
-										{validation.touched.rqf_forwarded_to_dep_id &&
-										validation.errors.rqf_forwarded_to_dep_id ? (
-											<FormFeedback type="invalid">
-												{validation.errors.rqf_forwarded_to_dep_id}
-											</FormFeedback>
-										) : null}
-									</Col>
+									<AsyncSelectField
+										fieldId="rqf_forwarded_to_dep_id"
+										validation={validation}
+										isRequired
+										className="col-md-6 mb-3"
+										optionMap={subDepartmentMap}
+										isLoading={loadingSub}
+										isError={isSubError}
+									/>
 									<Col className="col-md-6 mb-3">
 										<DatePicker
 											validation={validation}
