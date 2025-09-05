@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { CardBody, Spinner } from "reactstrap";
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
+import CascadingDropdowns from "../../components/Common/CascadingDropdowns";
 import TableContainer from "../../components/Common/TableContainer";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
@@ -690,7 +690,9 @@ const ProjectModel = () => {
 									dropdown1name="prj_location_region_id"
 									dropdown2name="prj_location_zone_id"
 									dropdown3name="prj_location_woreda_id"
-									isEdit={isEdit}
+									required={true}
+									layout="horizontal"
+									colSizes={{ md: 6, sm: 12, lg: 4 }}
 								/>
 							</Col>
 							<InputField

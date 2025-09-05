@@ -45,7 +45,7 @@ import {
 	onlyAmharicValidation,
 	formattedAmountValidation,
 } from "../../utils/Validation/validation";
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
+import CascadingDropdowns from "../../components/Common/CascadingDropdowns";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 import { useFetchSectorCategorys } from "../../queries/sectorcategory_query";
 import DatePicker from "../../components/Common/DatePicker";
@@ -820,8 +820,9 @@ const ProjectModel = () => {
 														dropdown1name="prj_location_region_id"
 														dropdown2name="prj_location_zone_id"
 														dropdown3name="prj_location_woreda_id"
-														isEdit={isEdit}
-														row
+														required={true}
+														layout="horizontal"
+														colSizes={{ md: 6, sm: 12, lg: 4 }}
 													/>
 												</Col>
 												<Col md={12} className="mb-3">

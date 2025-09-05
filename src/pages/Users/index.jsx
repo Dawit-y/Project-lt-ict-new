@@ -5,8 +5,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns1";
-import CascadingDropdownsearch from "../../components/Common/CascadingDropdowns2";
+import CascadingDropdowns from "../../components/Common/CascadingDropdowns";
 import CascadingDepartmentDropdowns from "./CascadingDepartmentDropdowns";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import UserRoles from "../../pages/Userrole/index";
@@ -43,10 +42,8 @@ import {
 	FormFeedback,
 	Label,
 	ModalFooter,
-	Badge,
 	InputGroup,
 	InputGroupText,
-	FormGroup,
 } from "reactstrap";
 import { toast } from "react-toastify";
 import RightOffCanvas from "../../components/Common/RightOffCanvas";
@@ -60,7 +57,6 @@ import {
 import AsyncSelectField from "../../components/Common/AsyncSelectField";
 import { useUserExportColumns } from "../../utils/exportColumnsForLists";
 
-//import ImageUploader from "../../components/Common/ImageUploader";
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
 		return text;
@@ -461,7 +457,6 @@ const UsersModel = () => {
 		setUsers("");
 		toggle();
 	};
-
 	const columnDefs = useMemo(() => {
 		const baseColumns = [
 			{
@@ -511,88 +506,106 @@ const UsersModel = () => {
 					sectorInformationMap[params.data.usr_sector_id],
 			},
 		];
-		if (
-			/*data?.previledge?.is_role_editable &&
-      data?.previledge?.is_role_deletable*/
-			1 == 1
-		) {
+
+		if (1 == 1) {
 			baseColumns.push({
 				headerName: t("Action"),
 				sortable: true,
 				filter: false,
 				minWidth: 120,
-				cellRenderer: (params) => (
-					<div className="d-flex gap-2">
-						{/* add view project  */}
-						<Button
-							size="sm"
-							color="none"
-							className="text-primary"
-							onClick={() => {
-								const userdata = params.data;
-								toggleViewModal(userdata);
-								setTransaction(userdata);
-							}}
-							type="button"
-						>
-							<i className="mdi mdi-eye font-size-18" id="viewtooltip" />
-							<UncontrolledTooltip placement="top" target="viewtooltip">
-								{t("view_detail")}
-							</UncontrolledTooltip>
-						</Button>
+				cellRenderer: (params) => {
+					const userId = params.data.id || params.data.usr_id || params.node.id;
+					const viewTooltipId = `viewtooltip-${userId}`;
+					const editTooltipId = `edittooltip-${userId}`;
+					const settingsTooltipId = `settingstooltip-${userId}`;
+					const duplicateTooltipId = `duplicatetooltip-${userId}`;
 
-						{(params.data?.is_editable || params.data?.is_role_editable) && (
+					return (
+						<div className="d-flex gap-2">
+							{/* view button */}
 							<Button
 								size="sm"
 								color="none"
-								className="text-success"
-								onClick={() => handleUsersClick(params.data)}
+								className="text-primary"
+								onClick={() => {
+									const userdata = params.data;
+									toggleViewModal(userdata);
+									setTransaction(userdata);
+								}}
 								type="button"
 							>
-								<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-								<UncontrolledTooltip placement="top" target="edittooltip">
-									Edit
+								<i className="mdi mdi-eye font-size-18" id={viewTooltipId} />
+								<UncontrolledTooltip placement="top" target={viewTooltipId}>
+									{t("view_detail")}
 								</UncontrolledTooltip>
 							</Button>
-						)}
-						{/* add view project  */}
-						{params.data?.is_editable || params.data?.is_role_editable ? (
+
+							{(params.data?.is_editable || params.data?.is_role_editable) && (
+								<Button
+									size="sm"
+									color="none"
+									className="text-success"
+									onClick={() => handleUsersClick(params.data)}
+									type="button"
+								>
+									<i
+										className="mdi mdi-pencil font-size-18"
+										id={editTooltipId}
+									/>
+									<UncontrolledTooltip placement="top" target={editTooltipId}>
+										Edit
+									</UncontrolledTooltip>
+								</Button>
+							)}
+
+							{/* settings button */}
+							{params.data?.is_editable || params.data?.is_role_editable ? (
+								<Button
+									size="sm"
+									color="none"
+									className="text-secondary"
+									onClick={() => handleClick(params.data)}
+									type="button"
+								>
+									<i
+										className="mdi mdi-cog font-size-18"
+										id={settingsTooltipId}
+									/>
+									<UncontrolledTooltip
+										placement="top"
+										target={settingsTooltipId}
+									>
+										Setting
+									</UncontrolledTooltip>
+								</Button>
+							) : (
+								""
+							)}
+
+							{/* duplicate button */}
 							<Button
 								size="sm"
 								color="none"
-								className="text-secondary"
-								onClick={() => handleClick(params.data)}
+								className="text-primary"
+								onClick={() => {
+									handleUsersDuplicateClick(params.data);
+								}}
 								type="button"
 							>
-								<i className="mdi mdi-cog font-size-18" id="viewtooltip" />
-								<UncontrolledTooltip placement="top" target="viewtooltip">
-									View
+								<i
+									className="mdi mdi-content-duplicate font-size-18"
+									id={duplicateTooltipId}
+								/>
+								<UncontrolledTooltip
+									placement="top"
+									target={duplicateTooltipId}
+								>
+									Duplicate
 								</UncontrolledTooltip>
 							</Button>
-						) : (
-							""
-						)}
-						{/* added duplicat  */}
-						{/* Add duplicate project icon */}
-						<Button
-							size="sm"
-							color="none"
-							className="text-primary"
-							onClick={() => {
-								handleUsersDuplicateClick(params.data);
-							}}
-							type="button"
-						>
-							<i
-								className="mdi mdi-content-duplicate font-size-18"
-								id="duplicateTooltip"
-							/>
-							<UncontrolledTooltip placement="top" target="duplicateTooltip">
-								Duplicate
-							</UncontrolledTooltip>
-						</Button>
-					</div>
-				),
+						</div>
+					);
+				},
 			});
 		}
 		return baseColumns;
@@ -601,6 +614,8 @@ const UsersModel = () => {
 		toggleViewModal,
 		onClickDelete,
 		handleUsersDuplicateClick,
+		sectorInformationMap,
+		t,
 	]);
 
 	if (isError) {
@@ -631,7 +646,7 @@ const UsersModel = () => {
 							},
 						]}
 						checkboxSearchKeys={[]}
-						Component={CascadingDropdownsearch}
+						Component={CascadingDropdowns}
 						component_params={{
 							dropdown1name: "usr_region_id",
 							dropdown2name: "usr_zone_id",
@@ -894,8 +909,9 @@ const UsersModel = () => {
 												dropdown1name="usr_region_id"
 												dropdown2name="usr_zone_id"
 												dropdown3name="usr_woreda_id"
-												isEdit={isEdit}
+												layout="vertical"
 												required={true}
+												colSizes={{ md: 6, sm: 12, lg: 4 }}
 											/>
 										</Col>
 										<Col className="col-md-6 mb-3">

@@ -77,9 +77,6 @@ const ContractTerminationReason = lazy(
 );
 const ContractorType = lazy(() => import("../pages/Contractortype/index"));
 const AccessLog = lazy(() => import("../pages/Accesslog/index"));
-const CascadingDropdowns = lazy(
-  () => import("../components/Common/CascadingDropdowns"),
-);
 const Notifications = lazy(() => import("../pages/notifications"));
 const ProjectDetail = lazy(() => import("../pages/Project/ProjectDetail"));
 const ProjectsLocation = lazy(() => import("../pages/ProjectsLocation"));

@@ -58,19 +58,54 @@ const AdvancedSearch = forwardRef(
 			error,
 		} = searchHook(searchParams);
 
-		const initialValues = component_params
-			? Object.keys(component_params).reduce((acc, key) => {
-					acc[component_params[key]] = ""; // Default value for form fields
-					return acc;
-				}, {})
-			: {};
-		// Initialize useFormik with dynamically generated initialValues
+		// Create initial values for ALL search fields including component fields
+		const createInitialValues = () => {
+			const values = {};
+
+			// Add component field values
+			if (component_params) {
+				Object.values(component_params).forEach((fieldName) => {
+					values[fieldName] = "";
+				});
+			}
+
+			// Add text search fields
+			if (textSearchKeys) {
+				textSearchKeys.forEach((key) => {
+					values[key] = "";
+				});
+			}
+
+			// Add dropdown search fields
+			if (dropdownSearchKeys) {
+				dropdownSearchKeys.forEach(({ key }) => {
+					values[key] = "";
+				});
+			}
+
+			// Add date search fields
+			if (dateSearchKeys) {
+				dateSearchKeys.forEach((key) => {
+					values[`${key}_start`] = "";
+					values[`${key}_end`] = "";
+				});
+			}
+
+			return values;
+		};
+
 		const validation = useFormik({
-			initialValues,
-			onSubmit: (values) => {},
+			initialValues: createInitialValues(),
+			onSubmit: (values) => {
+				// Handle form submission if needed
+			},
 		});
+
 		// Handle updates for all input types
 		const handleSearchKey = (key, value, type = "text") => {
+			// Also update the formik values
+			validation.setFieldValue(key, value);
+
 			setParams((prevParams) => {
 				if (type === "checkbox") {
 					const currentValues = prevParams[key] || [];
@@ -93,10 +128,13 @@ const AdvancedSearch = forwardRef(
 		};
 
 		const handleSearch = () => {
-			validation.handleSubmit();
+			// Get ALL form values including component values
+			const allValues = validation.values;
+
+			// Filter out empty values and convert numbers
 			const transformedValues = Object.fromEntries(
-				Object.entries(validation.values)
-					.filter(([key, value]) => value !== "") // Exclude entries with empty string values
+				Object.entries(allValues)
+					.filter(([key, value]) => value !== "" && value != null)
 					.map(([key, value]) => [
 						key,
 						/^\d+$/.test(value) ? parseInt(value, 10) : value,
@@ -105,8 +143,8 @@ const AdvancedSearch = forwardRef(
 
 			const combinedParams = {
 				...params,
-				...(additionalParams && additionalParams),
 				...transformedValues,
+				...(additionalParams && additionalParams),
 			};
 
 			setSearchParams(combinedParams);
@@ -138,6 +176,7 @@ const AdvancedSearch = forwardRef(
 				dropdownSearchKeys.forEach(({ key, defaultValue }) => {
 					if (defaultValue !== undefined) {
 						defaultParams[key] = defaultValue;
+						validation.setFieldValue(key, defaultValue);
 					}
 				});
 				setParams((prev) => ({ ...defaultParams, ...prev }));
@@ -164,43 +203,19 @@ const AdvancedSearch = forwardRef(
 		};
 
 		const isButtonDisabled = () => {
-			// Check if params have any valid values
-			const hasParamsValue = Object.values(params).some((value) => {
+			// Check if any search parameter has a value
+			const hasAnyValue = Object.values({
+				...params,
+				...validation.values,
+				...additionalParams,
+			}).some((value) => {
 				if (Array.isArray(value)) {
-					return value?.length > 0;
+					return value.length > 0;
 				}
 				return value != null && value !== "";
 			});
 
-			const hasComponentValue = () => {
-				if (!validation?.values || !component_params) return false;
-				const secondPropKey = Object.values(component_params)[1];
-				if (!secondPropKey) return false;
-				const value = validation.values[secondPropKey];
-				return value != null && value !== "";
-			};
-
-			const hasAdditionalParamsValue = () => {
-				if (additionalParams) {
-					const keys = Object.keys(additionalParams);
-
-					if (keys.length === 1 && keys[0] === "include") {
-						return false;
-					}
-
-					return keys.some(
-						(key) =>
-							additionalParams[key] != null && additionalParams[key] !== ""
-					);
-				}
-				return false;
-			};
-
-			return !(
-				hasParamsValue ||
-				hasComponentValue() ||
-				hasAdditionalParamsValue()
-			);
+			return !hasAnyValue;
 		};
 
 		// Expose method to get search values
@@ -215,6 +230,7 @@ const AdvancedSearch = forwardRef(
 		if (isError) {
 			return <FetchErrorHandler error={error} refetch={refetch} />;
 		}
+
 		return (
 			<React.Fragment>
 				<Card className="p-0 m-0 mb-3">
@@ -399,6 +415,7 @@ const AdvancedSearch = forwardRef(
 										{(checkboxSearchKeys?.length > 0 || Component) && (
 											<div className=" flex-grow-1 mb-2">
 												<button
+													type="button"
 													id="more-filter-icon"
 													onClick={toggle}
 													className="btn btn-secondary h-100 w-100 p-2"
@@ -420,7 +437,7 @@ const AdvancedSearch = forwardRef(
 									<div>
 										<Row className="">
 											<Col>
-												{Component && (
+												{Component && validation && (
 													<Component
 														{...component_params}
 														validation={validation}
@@ -453,7 +470,7 @@ const AdvancedSearch = forwardRef(
 																	value={item.value}
 																	checked={(params[key] || []).includes(
 																		item.value
-																	)} // Controlled checkbox
+																	)}
 																	onChange={(e) =>
 																		handleSearchKey(
 																			key,

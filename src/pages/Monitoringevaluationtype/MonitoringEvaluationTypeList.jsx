@@ -1,58 +1,22 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import axios from "axios";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
-import TableContainer from "../../components/Common/TableContainer";
-import * as Yup from "yup";
-import { useFormik } from "formik";
-import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-//import components
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import DeleteModal from "../../components/Common/DeleteModal";
-
 import {
-  useFetchMonitoringEvaluationTypes,
   useSearchMonitoringEvaluationTypes,
-  useAddMonitoringEvaluationType,
-  useDeleteMonitoringEvaluationType,
-  useUpdateMonitoringEvaluationType,
 } from "../../queries/monitoringevaluationtype_query";
-import MonitoringEvaluationTypeModal from "./MonitoringEvaluationTypeModal";
 import { useTranslation } from "react-i18next";
-
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
 import {
-  Button,
   Col,
   Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
   Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -62,13 +26,8 @@ const truncateText = (text, maxLength) => {
 
 const MonitoringEvaluationTypeList = () => {
   //meta title
-  document.title = " MonitoringEvaluationType";
+  document.title = "MonitoringEvaluationType";
   const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [monitoringEvaluationType, setMonitoringEvaluationType] =
-    useState(null);
 
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -285,24 +244,7 @@ const MonitoringEvaluationTypeList = () => {
               <AdvancedSearch
                 searchHook={useSearchMonitoringEvaluationTypes}
                 textSearchKeys={["prj_name", "prj_code"]}
-                dateSearchKeys={["payment_date"]}
-                dropdownSearchKeys={[
-                  {
-                    key: "prp_type",
-                    options: [
-                      { value: "Advance", label: "Advance" },
-                      { value: "Interim", label: "Interim" },
-                      { value: "Final", label: "Final" },
-                    ],
-                  },
-                ]}
                 checkboxSearchKeys={[]}
-                Component={CascadingDropdowns}
-                component_params={{
-                  dropdown1name: "prj_location_region_id",
-                  dropdown2name: "prj_location_zone_id",
-                  dropdown3name: "prj_location_woreda_id",
-                }}
                 additionalParams={projectParams}
                 setAdditionalParams={setProjectParams}
                 onSearchResult={handleSearchResults}

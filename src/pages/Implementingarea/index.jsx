@@ -33,7 +33,7 @@ import {
 } from "reactstrap";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns1";
+import CascadingDropdowns from "../../components/Common/CascadingDropdowns";
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import InputField from "../../components/Common/InputField";
 import { implementingAreaExportColumns } from "../../utils/exportColumnsForDetails";
