@@ -113,7 +113,12 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 			},
 		},
 		xaxis: {
-			categories: ["Baseline", "Requested", "Released", "Recommended"],
+			categories: [
+				t("baseline"),
+				t("total_requested"),
+				t("released_amount"),
+				t("recommended"),
+			],
 			labels: {
 				formatter: function (val) {
 					return `$${val.toLocaleString()}`;
@@ -132,7 +137,7 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 
 	const chartSeries = [
 		{
-			name: "Amount",
+			name: t("amount"),
 			data: [
 				requestData?.bdr_financial_baseline || 0,
 				requestData?.bdr_requested_amount || 0,
@@ -159,11 +164,13 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 									<div className="h3 text-primary mb-1">
 										${requestData?.bdr_requested_amount?.toLocaleString()}
 									</div>
-									<small className="text-muted">Total Requested Amount</small>
+									<small className="text-muted">
+										{t("total_requested_amount")}
+									</small>
 								</div>
 								<div className="mt-2">
 									<Badge color="primary" outline>
-										Budget Year {requestData?.budget_year}
+										{t("budget_year")} {requestData?.budget_year}
 									</Badge>
 								</div>
 							</CardBody>
@@ -177,7 +184,7 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 									<div className="h3 text-success mb-1">
 										${requestData?.bdr_released_amount?.toLocaleString() ?? 0}
 									</div>
-									<small className="text-muted">Released Amount</small>
+									<small className="text-muted">{t("released_amount")}</small>
 								</div>
 							</CardBody>
 						</Card>
@@ -190,7 +197,7 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 									<div className="h3 text-info mb-1">
 										{requestData?.bdr_physical_baseline}%
 									</div>
-									<small className="text-muted">Physical Baseline</small>
+									<small className="text-muted">{t("physical_baseline")}</small>
 								</div>
 								<div className="mt-2">
 									<Progress
@@ -199,7 +206,8 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 										className="mb-1"
 									/>
 									<small className="text-muted">
-										vs {requestData?.bdr_physical_planned}% planned
+										{t("vs")} {requestData?.bdr_physical_planned}%{" "}
+										{t("planned")}
 									</small>
 								</div>
 							</CardBody>
@@ -213,7 +221,9 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 									<div className="h3 text-warning mb-1">
 										${requestData?.bdr_financial_baseline?.toLocaleString()}
 									</div>
-									<small className="text-muted">Financial Baseline</small>
+									<small className="text-muted">
+										{t("financial_baseline")}
+									</small>
 								</div>
 								<div className="mt-2">
 									<Progress
@@ -222,7 +232,7 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 										className="mb-1"
 									/>
 									<small className="text-muted">
-										{financialProgress.toFixed(1)}% of requested
+										{financialProgress.toFixed(1)}% {t("of_requested")}
 									</small>
 								</div>
 							</CardBody>
@@ -235,7 +245,7 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 					<CardHeader className="bg-light">
 						<div className="d-flex justify-content-between align-items-center">
 							<div>
-								<h5 className="mb-1">Budget Request Information</h5>
+								<h5 className="mb-1">{t("budget_request_information")}</h5>
 							</div>
 						</div>
 					</CardHeader>
@@ -245,11 +255,13 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 								<Table borderless className="mb-0">
 									<tbody>
 										<tr>
-											<td className="fw-bold text-muted">Request Type:</td>
+											<td className="fw-bold text-muted">
+												{t("request_type")}:
+											</td>
 											<td>{requestData?.request_type}</td>
 										</tr>
 										<tr>
-											<td className="fw-bold text-muted">Status:</td>
+											<td className="fw-bold text-muted">{t("status")}:</td>
 											<td>
 												<Badge
 													color={
@@ -262,17 +274,23 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 											</td>
 										</tr>
 										<tr>
-											<td className="fw-bold text-muted">Requested Date:</td>
+											<td className="fw-bold text-muted">
+												{t("requested_date")}:
+											</td>
 											<td>{requestData?.bdr_requested_date_gc}</td>
 										</tr>
 										<tr>
-											<td className="fw-bold text-muted">Released Date:</td>
+											<td className="fw-bold text-muted">
+												{t("released_date")}:
+											</td>
 											<td>
-												{requestData?.bdr_released_date_gc || "Not Released"}
+												{requestData?.bdr_released_date_gc || t("not_released")}
 											</td>
 										</tr>
 										<tr>
-											<td className="fw-bold text-muted">Request Category:</td>
+											<td className="fw-bold text-muted">
+												{t("request_category")}:
+											</td>
 											<td>
 												{bgCategoryMap[requestData?.bdr_request_category_id]}
 											</td>
@@ -284,7 +302,9 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 								<Table borderless className="mb-0">
 									<tbody>
 										<tr>
-											<td className="fw-bold text-muted">Created Time:</td>
+											<td className="fw-bold text-muted">
+												{t("created_time")}:
+											</td>
 											<td>
 												{new Date(
 													requestData?.bdr_create_time
@@ -292,8 +312,12 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 											</td>
 										</tr>
 										<tr>
-											<td className="fw-bold text-muted">Action Remark:</td>
-											<td>{requestData?.bdr_action_remark || "No remarks"}</td>
+											<td className="fw-bold text-muted">
+												{t("action_remark")}:
+											</td>
+											<td>
+												{requestData?.bdr_action_remark || t("no_remarks")}
+											</td>
 										</tr>
 									</tbody>
 								</Table>
@@ -302,12 +326,12 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 					</CardBody>
 				</Card>
 
-				{/* Physical vs Financial Progress Comparison */}
+				{/* Progress Analysis */}
 				<Card className="h-100">
 					<CardHeader>
-						<h5 className="mb-1">Progress Analysis</h5>
+						<h5 className="mb-1">{t("progress_analysis")}</h5>
 						<small className="text-muted">
-							Physical and financial progress comparison
+							{t("physical_and_financial_progress_comparison")}
 						</small>
 					</CardHeader>
 					<CardBody>
@@ -317,11 +341,11 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 								md={6}
 								className="d-flex flex-column justify-content-between h-100"
 							>
-								<h6 className="text-muted mb-3">Physical Progress</h6>
+								<h6 className="text-muted mb-3">{t("physical_progress")}</h6>
 								<div className="d-flex flex-column justify-content-evenly flex-grow-1">
 									<div className="mb-4">
 										<div className="d-flex justify-content-between mb-1">
-											<small>Baseline</small>
+											<small>{t("baseline")}</small>
 											<small>{requestData?.bdr_physical_baseline}%</small>
 										</div>
 										<Progress
@@ -332,7 +356,7 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 
 									<div className="mb-4">
 										<div className="d-flex justify-content-between mb-1">
-											<small>Planned</small>
+											<small>{t("planned")}</small>
 											<small>{requestData?.bdr_physical_planned}%</small>
 										</div>
 										<Progress
@@ -343,7 +367,7 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 
 									<div className="mb-4">
 										<div className="d-flex justify-content-between mb-1">
-											<small>Approved</small>
+											<small>{t("approved")}</small>
 											<small>{requestData?.bdr_physical_approved}%</small>
 										</div>
 										<Progress
@@ -354,7 +378,7 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 
 									<div>
 										<div className="d-flex justify-content-between mb-1">
-											<small>Recommended</small>
+											<small>{t("recommended")}</small>
 											<small>{requestData?.bdr_physical_recommended}%</small>
 										</div>
 										<Progress
@@ -367,7 +391,7 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 
 							{/* Financial Progress */}
 							<Col md={6} className="d-flex flex-column h-100">
-								<h6 className="text-muted mb-3">Financial Progress</h6>
+								<h6 className="text-muted mb-3">{t("financial_progress")}</h6>
 								<Card className="flex-grow-1">
 									<CardBody className="p-2">
 										<Chart
@@ -397,7 +421,7 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 										)
 										?.toLocaleString()}
 								</div>
-								<small className="text-muted">Total Requested</small>
+								<small className="text-muted">{t("total_requested")}</small>
 							</CardBody>
 						</Card>
 					</Col>
@@ -413,7 +437,9 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 										)
 										?.toLocaleString()}
 								</div>
-								<small className="text-muted">Current Year Expense</small>
+								<small className="text-muted">
+									{t("current_year_expense")}
+								</small>
 							</CardBody>
 						</Card>
 					</Col>
@@ -430,7 +456,7 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 										)
 										?.toLocaleString()}
 								</div>
-								<small className="text-muted">Government Source</small>
+								<small className="text-muted">{t("government_source")}</small>
 							</CardBody>
 						</Card>
 					</Col>
@@ -447,7 +473,7 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 										)
 										?.toLocaleString()}
 								</div>
-								<small className="text-muted">Internal Source</small>
+								<small className="text-muted">{t("internal_source")}</small>
 							</CardBody>
 						</Card>
 					</Col>
@@ -464,7 +490,7 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 										)
 										?.toLocaleString()}
 								</div>
-								<small className="text-muted">Support Source</small>
+								<small className="text-muted">{t("support_source")}</small>
 							</CardBody>
 						</Card>
 					</Col>
@@ -481,7 +507,7 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 										)
 										?.toLocaleString()}
 								</div>
-								<small className="text-muted">Credit Source</small>
+								<small className="text-muted">{t("credit_source")}</small>
 							</CardBody>
 						</Card>
 					</Col>
@@ -492,19 +518,19 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 					<CardHeader>
 						<div className="d-flex justify-content-between align-items-center">
 							<div>
-								<h5 className="mb-1">Budget Request Amounts</h5>
+								<h5 className="mb-1">{t("budget_request_amounts")}</h5>
 								<small className="text-muted">
-									Detailed breakdown of requested budget items
+									{t("budget_request_amounts_subtitle")}
 								</small>
 							</div>
 							<div className="d-flex gap-2">
 								<Button color="secondary" size="sm" outline>
 									<i className="bi bi-funnel me-2"></i>
-									Filter
+									{t("filter")}
 								</Button>
 								<Button color="secondary" size="sm" outline>
 									<i className="bi bi-download me-2"></i>
-									Export
+									{t("export")}
 								</Button>
 							</div>
 						</div>
@@ -529,9 +555,9 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 				{/* Budget Request Tasks */}
 				<Card>
 					<CardHeader>
-						<h5 className="mb-1">Budget Request Tasks</h5>
+						<h5 className="mb-1">{t("budget_request_tasks")}</h5>
 						<small className="text-muted">
-							Project tasks and their associated costs
+							{t("budget_request_tasks_subtitle")}
 						</small>
 					</CardHeader>
 					<CardBody>

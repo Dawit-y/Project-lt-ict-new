@@ -3,8 +3,6 @@ import { useParams } from "react-router-dom";
 import {
 	Card,
 	CardBody,
-	CardHeader,
-	Button,
 	Badge,
 	Nav,
 	NavItem,
@@ -12,6 +10,7 @@ import {
 	TabContent,
 	TabPane,
 	Spinner,
+	Button,
 } from "reactstrap";
 import {
 	FaCheckCircle,
@@ -22,6 +21,7 @@ import {
 	FaPaperPlane,
 } from "react-icons/fa";
 import classnames from "classnames";
+import { useTranslation } from "react-i18next";
 
 import ProjectOverview from "../../../Project/ProjectDetail/ProjectSummary";
 import BudgetBreakdown from "./BudgetBreakdown";
@@ -51,6 +51,7 @@ export default function BudgetApprovalPage() {
 	const toggleApproveModal = () => setApproveModal(!approveModal);
 
 	const { departmentType } = useAuthUser();
+	const { t } = useTranslation();
 
 	const { id } = useParams();
 	const { userId } = useAuthUser();
@@ -66,20 +67,18 @@ export default function BudgetApprovalPage() {
 		userId,
 		!!projectId
 	);
-
 	const isDirector = departmentType === "directorate";
 	const isDepartment = departmentType === "department";
 	const isDepartmentLevel =
 		departmentType === "department" || departmentType === "directorate";
 	const isOfficerLevel =
 		departmentType === "officer" || departmentType === "team";
-	
+
 	const status = data?.data?.bdr_request_status;
 	const color = statusColorMap[status] || "secondary";
 
 	const isApproved = parseInt(status) === 3;
 	const isRejected = parseInt(status) === 4;
-	const isRequested = parseInt(status) === 1;
 
 	const handleApproval = (event) => {
 		setAction(event.target.name);
@@ -114,7 +113,7 @@ export default function BudgetApprovalPage() {
 										{project?.data?.prj_name || ""}
 									</h1>
 									<p className="text-muted">
-										{project?.data?.description || "No description provided."}
+										{project?.data?.description || t("no_description")}
 									</p>
 								</div>
 								<div className="d-flex gap-2">
@@ -125,9 +124,7 @@ export default function BudgetApprovalPage() {
 								</div>
 							</div>
 							{/* Quick Actions Bar */}
-							<Card
-								className={`border-start border-${color} shadow-md`}
-							>
+							<Card className={`border-start border-${color} shadow-md`}>
 								<CardBody className="d-flex justify-content-between align-items-center">
 									<div className="d-flex align-items-center gap-3">
 										<div className="d-flex align-items-center gap-2">
@@ -141,53 +138,55 @@ export default function BudgetApprovalPage() {
 										<div className="vr" />
 										<div className="d-flex align-items-center gap-2">
 											<FaCalendarAlt className="text-primary" />
-											<span>Budget Year {data?.data?.budget_year}</span>
+											<span>
+												{t("budget_year")} {data?.data?.budget_year}
+											</span>
 										</div>
 										<div className="vr" />
 										<div className="d-flex align-items-center gap-2">
 											<FaClock className="text-warning" />
 											<span>
-												Requested: {data?.data?.bdr_requested_date_gc}
+												{t("requested_label")}:{" "}
+												{data?.data?.bdr_requested_date_gc}
 											</span>
 										</div>
 									</div>
 									{isDepartmentLevel && !isApproved && !isRejected ? (
 										<div className="d-flex gap-2">
-											{!isDepartment && (
+											{isDirector && (
 												<Button
 													color="success"
 													onClick={handleApproval}
 													name="recommend"
 												>
 													<FaCheckCircle className="me-1" />
-													Recommend
+													{t("recommend")}
 												</Button>
 											)}
-											{!isDirector && (
+											{isDepartment && (
 												<Button
 													color="success"
 													onClick={handleApproval}
 													name="approve"
 												>
 													<FaCheckCircle className="me-1" />
-													Approve
+													{t("approve")}
 												</Button>
 											)}
-
 											<Button
 												color="danger"
 												onClick={handleApproval}
 												name="reject"
 											>
 												<FaTimesCircle className="me-1" />
-												Reject
+												{t("reject")}
 											</Button>
 											<Button
 												color="secondary"
 												onClick={() => setActiveTab("forward")}
 											>
 												<FaPaperPlane className="me-1" />
-												Forward
+												{t("forward")}
 											</Button>
 										</div>
 									) : (
@@ -214,11 +213,11 @@ export default function BudgetApprovalPage() {
 													onClick={() => setActiveTab(tab)}
 													style={{ cursor: "pointer" }}
 												>
-													{tab === "budget" && "Budget Details"}
-													{tab === "overview" && "Project Overview"}
-													{tab === "forward" && "Forward Request"}
-													{tab === "files" && "Attached Files"}
-													{tab === "notes" && "Attached Notes"}
+													{tab === "budget" && t("budget_details")}
+													{tab === "overview" && t("project_overview")}
+													{tab === "forward" && t("forward_request")}
+													{tab === "files" && t("attached_files")}
+													{tab === "notes" && t("attached_notes")}
 												</NavLink>
 											</NavItem>
 										)
