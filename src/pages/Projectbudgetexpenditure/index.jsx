@@ -1,7 +1,5 @@
-import React, { useEffect, useMemo, useState, lazy } from "react";
+import React, { useMemo, useState, lazy } from "react";
 import PropTypes from "prop-types";
-import { Link, useLocation, useParams } from "react-router-dom";
-import { isEmpty, update } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -10,17 +8,14 @@ import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
 	useFetchProjectBudgetExpenditures,
-	useSearchProjectBudgetExpenditures,
 	useAddProjectBudgetExpenditure,
 	useDeleteProjectBudgetExpenditure,
 	useUpdateProjectBudgetExpenditure,
 } from "../../queries/projectbudgetexpenditure_query";
-import { useFetchProject } from "../../queries/project_query";
-import { useFetchBudgetYears } from "../../queries/budgetyear_query";
+import { usePopulateBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchBudgetMonths } from "../../queries/budgetmonth_query";
 import ProjectBudgetExpenditureModal from "./ProjectBudgetExpenditureModal";
 import { useTranslation } from "react-i18next";
-import { useAuthUser } from "../../hooks/useAuthUser";
 import {
 	Button,
 	Col,
@@ -45,12 +40,14 @@ import {
 const FetchErrorHandler = lazy(
 	() => import("../../components/Common/FetchErrorHandler")
 );
-const Flatpickr = lazy(() => import("react-flatpickr"));
 const BudgetExipDetail = lazy(() => import("../Budgetexipdetail/index"));
 const RightOffCanvas = lazy(
 	() => import("../../components/Common/RightOffCanvas")
 );
 import { projectBudgetExpenditureExportColumns } from "../../utils/exportColumnsForDetails";
+import FormattedAmountField from "../../components/Common/FormattedAmountField";
+
+const RequiredIndicator = () => <span className="text-danger">*</span>;
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -59,37 +56,43 @@ const truncateText = (text, maxLength) => {
 	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const ProjectBudgetExpenditureModel = () => {
-	const location = useLocation();
-	const id = Number(location.pathname.split("/")[2]);
-	const param = { project_id: id, request_type: "single" };
+const ProjectBudgetExpenditureModel = (props) => {
+	const { passedId, isActive, totalActualBudget } = props;
+	const param = { project_id: passedId, request_type: "single" };
 	const { t } = useTranslation();
 	const [modal, setModal] = useState(false);
 	const [modal1, setModal1] = useState(false);
 	const [isEdit, setIsEdit] = useState(false);
-	const [isExpanded, setIsExpanded] = useState(true);
 	const [projectBudgetExpenditure, setProjectBudgetExpenditure] =
 		useState(null);
 	const [budgetExMetaData, setbudgetExMetaData] = useState([]);
 	const [showCanvas, setShowCanvas] = useState(false);
 
-	const [searchResults, setSearchResults] = useState(null);
-	const [isSearchLoading, setIsSearchLoading] = useState(false);
-	const [searcherror, setSearchError] = useState(null);
-	const [showSearchResult, setShowSearchResult] = useState(false);
-
 	const { data, isLoading, isFetching, error, isError, refetch } =
-		useFetchProjectBudgetExpenditures(param);
-	const { data: budgetYearData } = useFetchBudgetYears();
+		useFetchProjectBudgetExpenditures(param, isActive);
+	const { data: budgetYearData } = usePopulateBudgetYears();
 	const { data: budgetMonthData } = useFetchBudgetMonths();
 	const addProjectBudgetExpenditure = useAddProjectBudgetExpenditure();
 	const updateProjectBudgetExpenditure = useUpdateProjectBudgetExpenditure();
 	const deleteProjectBudgetExpenditure = useDeleteProjectBudgetExpenditure();
 
-	const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
-	const project = useFetchProject(id, userId, true);
-	const [rowIsSelected, setRowIsSelected] = useState(null);
-	//START CRUD
+	// Calculate current total allocated expenditure
+	const calculateCurrentTotal = (
+		currentData,
+		editingId = null,
+		newAmount = 0
+	) => {
+		if (!currentData || !currentData.data) return 0;
+
+		return currentData.data.reduce((total, item) => {
+			// If editing, exclude the item being edited from the total
+			if (editingId && item.pbe_id === editingId) {
+				return total + Number(newAmount || 0);
+			}
+			return total + Number(item.ppe_amount || 0);
+		}, 0);
+	};
+
 	const handleAddProjectBudgetExpenditure = async (data) => {
 		try {
 			await addProjectBudgetExpenditure.mutateAsync(data);
@@ -138,7 +141,7 @@ const ProjectBudgetExpenditureModel = () => {
 	const validation = useFormik({
 		enableReinitialize: true,
 		initialValues: {
-			pbe_project_id: id,
+			pbe_project_id: passedId,
 			pbe_reason:
 				(projectBudgetExpenditure && projectBudgetExpenditure.pbe_reason) || "",
 
@@ -146,7 +149,6 @@ const ProjectBudgetExpenditureModel = () => {
 				(projectBudgetExpenditure &&
 					projectBudgetExpenditure.pbe_budget_year_id) ||
 				"",
-
 			pbe_budget_month_id:
 				(projectBudgetExpenditure &&
 					projectBudgetExpenditure.pbe_budget_month_id) ||
@@ -162,22 +164,10 @@ const ProjectBudgetExpenditureModel = () => {
 				"",
 			ppe_amount:
 				(projectBudgetExpenditure && projectBudgetExpenditure.ppe_amount) || "",
-			pbe_status:
-				(projectBudgetExpenditure && projectBudgetExpenditure.pbe_status) || "",
 			pbe_description:
 				(projectBudgetExpenditure &&
 					projectBudgetExpenditure.pbe_description) ||
 				"",
-			pbe_created_date:
-				(projectBudgetExpenditure &&
-					projectBudgetExpenditure.pbe_created_date) ||
-				"",
-
-			is_deletable:
-				(projectBudgetExpenditure && projectBudgetExpenditure.is_deletable) ||
-				1,
-			is_editable:
-				(projectBudgetExpenditure && projectBudgetExpenditure.is_editable) || 1,
 		},
 
 		validationSchema: Yup.object({
@@ -194,8 +184,28 @@ const ProjectBudgetExpenditureModel = () => {
 				}
 			),
 			pbe_budget_month_id: numberValidation(1, 12, true),
-			//pbe_used_date_gc: Yup.string().required(t("pbe_used_date_gc")),
-			ppe_amount: amountValidation(1000, 1000000000),
+			ppe_amount: amountValidation(1000, 1000000000).test(
+				"total-budget",
+				"Amount exceeds remaining project budget",
+				function (value) {
+					if (!value || isNaN(value)) return true;
+
+					const currentData = data;
+					const editingId = isEdit ? projectBudgetExpenditure?.pbe_id : null;
+
+					// Calculate total without the current edited item
+					const currentTotalWithoutThis =
+						currentData?.data?.reduce((total, item) => {
+							if (editingId && item.pbe_id === editingId) return total;
+							return total + Number(item.ppe_amount || 0);
+						}, 0) || 0;
+
+					// Calculate new total if this amount is added/updated
+					const newTotal = currentTotalWithoutThis + Number(value);
+
+					return newTotal <= totalActualBudget;
+				}
+			),
 			pbe_description: alphanumericValidation(3, 425, false),
 		}),
 		validateOnBlur: true,
@@ -210,29 +220,20 @@ const ProjectBudgetExpenditureModel = () => {
 					pbe_used_date_ec: values.pbe_used_date_ec,
 					pbe_used_date_gc: values.pbe_used_date_gc,
 					ppe_amount: values.ppe_amount,
-					pbe_status: values.pbe_status,
 					pbe_description: values.pbe_description,
-					pbe_created_date: values.pbe_created_date,
-
-					is_deletable: values.is_deletable,
-					is_editable: values.is_editable,
 				};
-				// update ProjectBudgetExpenditure
 				handleUpdateProjectBudgetExpenditure(updateProjectBudgetExpenditure);
 			} else {
 				const newProjectBudgetExpenditure = {
 					pbe_reason: values.pbe_reason,
-					pbe_project_id: id,
+					pbe_project_id: passedId,
 					pbe_budget_year_id: parseInt(values.pbe_budget_year_id),
 					pbe_budget_month_id: parseInt(values.pbe_budget_month_id),
 					pbe_used_date_ec: values.pbe_used_date_ec,
 					pbe_used_date_gc: values.pbe_used_date_gc,
 					ppe_amount: values.ppe_amount,
-					pbe_status: values.pbe_status,
 					pbe_description: values.pbe_description,
-					pbe_created_date: values.pbe_created_date,
 				};
-				// save new ProjectBudgetExpenditure
 				handleAddProjectBudgetExpenditure(newProjectBudgetExpenditure);
 			}
 		},
@@ -256,16 +257,6 @@ const ProjectBudgetExpenditureModel = () => {
 		);
 	}, [budgetMonthData]);
 
-	// Fetch ProjectBudgetExpenditure on component mount
-	useEffect(() => {
-		setProjectBudgetExpenditure(data);
-	}, [data]);
-	useEffect(() => {
-		if (!isEmpty(data) && !!isEdit) {
-			setProjectBudgetExpenditure(data);
-			setIsEdit(false);
-		}
-	}, [data]);
 	const toggle = () => {
 		if (modal) {
 			setModal(false);
@@ -277,23 +268,16 @@ const ProjectBudgetExpenditureModel = () => {
 
 	const handleProjectBudgetExpenditureClick = (arg) => {
 		const projectBudgetExpenditure = arg;
-		// console.log("handleProjectBudgetExpenditureClick", projectBudgetExpenditure);
 		setProjectBudgetExpenditure({
 			pbe_id: projectBudgetExpenditure.pbe_id,
 			pbe_reason: projectBudgetExpenditure.pbe_reason,
 			pbe_project_id: projectBudgetExpenditure.pbe_project_id,
 			pbe_budget_year_id: projectBudgetExpenditure.pbe_budget_year_id,
 			pbe_budget_month_id: projectBudgetExpenditure.pbe_budget_month_id,
-
 			pbe_used_date_ec: projectBudgetExpenditure.pbe_used_date_ec,
 			pbe_used_date_gc: projectBudgetExpenditure.pbe_used_date_gc,
 			ppe_amount: projectBudgetExpenditure.ppe_amount,
-			pbe_status: projectBudgetExpenditure.pbe_status,
 			pbe_description: projectBudgetExpenditure.pbe_description,
-			pbe_created_date: projectBudgetExpenditure.pbe_created_date,
-
-			is_deletable: projectBudgetExpenditure.is_deletable,
-			is_editable: projectBudgetExpenditure.is_editable,
 		});
 		setIsEdit(true);
 		toggle();
@@ -316,12 +300,7 @@ const ProjectBudgetExpenditureModel = () => {
 		setProjectBudgetExpenditure("");
 		toggle();
 	};
-	const handleSearchResults = ({ data, error }) => {
-		setSearchResults(data);
-		setSearchError(error);
-		setShowSearchResult(true);
-	};
-	//START UNCHANGED
+
 	const columns = useMemo(() => {
 		const baseColumns = [
 			{
@@ -373,7 +352,9 @@ const ProjectBudgetExpenditureModel = () => {
 				cell: (cellProps) => {
 					return (
 						<span>
-							{truncateText(cellProps.row.original.ppe_amount, 30) || "-"}
+							{parseFloat(
+								cellProps.row.original.ppe_amount || 0
+							).toLocaleString()}
 						</span>
 					);
 				},
@@ -412,8 +393,7 @@ const ProjectBudgetExpenditureModel = () => {
 				cell: (cellProps) => {
 					return (
 						<div className="d-flex gap-1">
-							{(cellProps.row.original?.is_editable ||
-								cellProps.row.original?.is_role_editable) && (
+							{cellProps.row.original?.is_editable && (
 								<Button
 									to="#"
 									color="none"
@@ -430,8 +410,7 @@ const ProjectBudgetExpenditureModel = () => {
 								</Button>
 							)}
 
-							{(cellProps.row.original?.is_deletable === 9 ||
-								cellProps.row.original?.is_role_deletable === 9) && (
+							{cellProps.row.original?.is_deletable === 9 && (
 								<Button
 									to="#"
 									color="none"
@@ -468,7 +447,12 @@ const ProjectBudgetExpenditureModel = () => {
 		}
 
 		return baseColumns;
-	}, [handleProjectBudgetExpenditureClick, toggleViewModal, onClickDelete]);
+	}, [
+		handleProjectBudgetExpenditureClick,
+		toggleViewModal,
+		onClickDelete,
+		data,
+	]);
 
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -490,24 +474,18 @@ const ProjectBudgetExpenditureModel = () => {
 			<>
 				<div>
 					<div>
-						{/* <Breadcrumb /> */}
-						{isLoading || isSearchLoading || project.isLoading ? (
+						{isLoading ? (
 							<Spinners />
 						) : (
 							<Row>
-								{/* TableContainer for displaying data */}
 								<Col lg={12}>
 									<Card>
 										<CardBody>
 											<TableContainer
 												columns={columns}
-												data={
-													showSearchResult
-														? searchResults?.data
-														: data?.data || []
-												}
+												data={data?.data || []}
 												isGlobalFilter={true}
-												isAddButton={true}
+												isAddButton={data?.previledge?.is_role_can_add == 1}
 												isCustomPageSize={true}
 												handleUserClick={handleProjectBudgetExpenditureClicks}
 												isPagination={true}
@@ -521,6 +499,8 @@ const ProjectBudgetExpenditureModel = () => {
 												refetch={refetch}
 												isFetching={isFetching}
 												exportColumns={projectBudgetExpenditureExportColumns}
+												isSummaryRow={true}
+												summaryColumns={["ppe_amount"]}
 											/>
 										</CardBody>
 									</Card>
@@ -541,11 +521,48 @@ const ProjectBudgetExpenditureModel = () => {
 										return false;
 									}}
 								>
+									{/* Budget Summary Card */}
+									<Row>
+										<Col className="col-12 mb-3">
+											<Card>
+												<CardBody>
+													<div className="d-flex justify-content-between">
+														<div>
+															<strong>{t("Total_Project_Budget")} : </strong>{" "}
+															{totalActualBudget
+																? totalActualBudget.toLocaleString()
+																: "0"}
+														</div>
+														<div>
+															<strong>{t("Allocated")} : </strong>{" "}
+															{calculateCurrentTotal(data)
+																? calculateCurrentTotal(data).toLocaleString()
+																: "0"}
+														</div>
+														<div
+															className={
+																calculateCurrentTotal(data) >
+																(totalActualBudget || 0)
+																	? "text-danger"
+																	: "text-success"
+															}
+														>
+															<strong>{t("Remaining")} : </strong>{" "}
+															{(
+																(totalActualBudget || 0) -
+																(calculateCurrentTotal(data) || 0)
+															).toLocaleString()}
+														</div>
+													</div>
+												</CardBody>
+											</Card>
+										</Col>
+									</Row>
+
 									<Row>
 										<Col className="col-md-6 mb-3">
 											<Label>
-												{t("pbe_budget_year_id")}{" "}
-												<span className="text-danger">*</span>
+												{t("pbe_budget_year_id")} <RequiredIndicator />
 											</Label>
 											<Input
 												name="pbe_budget_year_id"
@@ -578,8 +595,7 @@ const ProjectBudgetExpenditureModel = () => {
 										</Col>
 										<Col className="col-md-6 mb-3">
 											<Label>
-												{t("pbe_budget_month_id")}{" "}
-												<span className="text-danger">*</span>
+												{t("pbe_budget_month_id")} <RequiredIndicator />
 											</Label>
 											<Input
 												name="pbe_budget_month_id"
@@ -613,7 +629,7 @@ const ProjectBudgetExpenditureModel = () => {
 										<Col className="col-md-6 mb-3">
 											<Label>
 												{t("pbe_reason")}
-												<span className="text-danger">*</span>
+												<RequiredIndicator />
 											</Label>
 											<Input
 												name="pbe_reason"
@@ -637,34 +653,13 @@ const ProjectBudgetExpenditureModel = () => {
 												</FormFeedback>
 											) : null}
 										</Col>
-										<Col className="col-md-6 mb-3">
-											<Label>
-												{t("ppe_amount")}
-												<span className="text-danger">*</span>
-											</Label>
-											<Input
-												name="ppe_amount"
-												type="number"
-												placeholder={t("ppe_amount")}
-												onChange={validation.handleChange}
-												onBlur={validation.handleBlur}
-												value={validation.values.ppe_amount || ""}
-												invalid={
-													validation.touched.ppe_amount &&
-													validation.errors.ppe_amount
-														? true
-														: false
-												}
-												maxLength={20}
-											/>
-											{validation.touched.ppe_amount &&
-											validation.errors.ppe_amount ? (
-												<FormFeedback type="invalid">
-													{validation.errors.ppe_amount}
-												</FormFeedback>
-											) : null}
-										</Col>
-
+										<FormattedAmountField
+											validation={validation}
+											fieldId={"ppe_amount"}
+											isRequired={true}
+											className="col-md-6 mb-3"
+											allowDecimal={true}
+										/>
 										<Col className="col-md-6 mb-3">
 											<Label>{t("pbe_description")}</Label>
 											<Input
@@ -752,6 +747,6 @@ const ProjectBudgetExpenditureModel = () => {
 	);
 };
 ProjectBudgetExpenditureModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+	preGlobalFilteredRows: PropTypes.any,
 };
 export default ProjectBudgetExpenditureModel;
