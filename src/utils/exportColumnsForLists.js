@@ -54,7 +54,7 @@ export const useUserExportColumns = () => {
 		[t, sectorInformationMap]
 	);
 
-	return exportColumns
+	return exportColumns;
 };
 
 export const monitoringExportColumns = [
@@ -489,4 +489,44 @@ export const procurementExportColumns = [
 	{ key: "pri_bid_opening_date", label: "pri_bid_opening_date" },
 	{ key: "pri_bid_closing_date", label: "pri_bid_closing_date" },
 	{ key: "pri_bid_award_date", label: "pri_bid_award_date" },
+];
+
+export const csoExportColumns = [
+	{
+		key: "cso_name",
+		label: "cso_name",
+		format: (val) => val || "-",
+		width: 20,
+	},
+	{
+		key: "cso_contact_person",
+		label: "cso_contact_person",
+		format: (val) => val || "-",
+		width: 20,
+	},
+	{
+		key: "cso_code",
+		label: "cso_code",
+		format: (val) => val || "-",
+	},
+	{
+		key: "cso_address",
+		label: "cso_address",
+		format: (val) => val || "-",
+	},
+	{
+		key: "cso_phone",
+		label: "cso_phone",
+		format: (val) => val || "-",
+	},
+	{
+		key: "cso_email",
+		label: "cso_email",
+		format: (val) => val || "-",
+	},
+	{
+		key: "cso_status",
+		label: "cso_status",
+		format: (val) => (val === 1 ? "Approved" : "Requested"),
+	},
 ];
