@@ -1984,5 +1984,11 @@
 	"forward_request": "Forward Request",
 	"attached_files": "Attached Files",
 	"attached_notes": "Attached Notes",
-	"requested_label": "Requested"
+	"requested_label": "Requested",
+	"errors_valueTooLong": "Value too long",
+	"errors_updateIdNotProvided": "Update ID not provided",
+	"errors_dataNotFoundWithId": "Data not found with provided ID",
+	"errors_notAllowedSave": "Not allowed to save",
+	"errors_notAllowedUpdate": "Not allowed to update",
+	"errors_notAllowedViewList": "Not allowed to view list"
 }

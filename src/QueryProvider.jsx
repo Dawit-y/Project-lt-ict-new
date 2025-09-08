@@ -7,17 +7,24 @@ import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 
 const useErrorMessages = () => {
-  const { t } = useTranslation();
-  return {
-    452: t("errors_duplicateEntry"),
-    453: t("errors_missingField"),
-    454: t("errors_invalidReference"),
-    455: t("errors_genericError"),
-    429: t("Too Many Attempts"),
-    487: t("Incorrect Input"),
-    500: t("Internal Server Error"),
-  };
+	const { t } = useTranslation();
+	return {
+		452: t("errors_duplicateEntry"),
+		453: t("errors_missingField"),
+		454: t("errors_invalidReference"),
+		455: t("errors_genericError"),
+		456: t("errors_valueTooLong"), 
+		457: t("errors_updateIdNotProvided"),
+		458: t("errors_dataNotFoundWithId"), 
+		459: t("errors_notAllowedSave"),
+		460: t("errors_notAllowedUpdate"),
+		461: t("errors_notAllowedViewList"),
+		429: t("Too Many Attempts"),
+		487: t("Incorrect Input"),
+		500: t("Internal Server Error"),
+	};
 };
+
 
 // Function to extract API error message
 const GetErrorMessage = ({ error }) => {
