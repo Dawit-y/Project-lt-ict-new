@@ -294,7 +294,7 @@ const CsoInfoModel = () => {
 
 		const StatusBadge = ({ status }) => {
 			return (
-				<Badge color={status === 1 ? "success" : "danger"}>
+				<Badge color={status === 1 ? "success" : "primary"}>
 					{status === 1 ? t("Approved") : t("Requested")}
 				</Badge>
 			);

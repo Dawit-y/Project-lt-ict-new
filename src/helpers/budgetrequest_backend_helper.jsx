@@ -65,7 +65,7 @@ export const getBudgetRequestforApproval = async (params) => {
     const response = await post(url);
     return response;
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 };
 

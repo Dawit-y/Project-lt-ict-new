@@ -19,13 +19,21 @@ export const getRequestCategory = async (params = {}) => {
 };
 
 // add request_category
-export const addRequestCategory = async (objectName) =>
-  post(ADD_REQUEST_CATEGORY, objectName);
+export const addRequestCategory = async (data) =>
+  post(ADD_REQUEST_CATEGORY, data);
 
 // update request_category
-export const updateRequestCategory = (objectName) =>
-  post(UPDATE_REQUEST_CATEGORY + `?rqc_id=${objectName?.rqc_id}`, objectName);
+export const updateRequestCategory = (data) => {
+  if (!data?.rqc_id) {
+    throw new Error("Update ID not provided");
+  }
+  return post(`${UPDATE_REQUEST_CATEGORY}?rqc_id=${data.rqc_id}`, data);
+};
 
-// delete  request_category
-export const deleteRequestCategory = (objectName) =>
-  post(DELETE_REQUEST_CATEGORY + `?rqc_id=${objectName}`);
+// delete request_category
+export const deleteRequestCategory = (id) => {
+  if (id == null || id === undefined) { 
+    throw new Error("Delete ID not provided");
+  }
+  return post(`${DELETE_REQUEST_CATEGORY}?rqc_id=${id}`);
+};

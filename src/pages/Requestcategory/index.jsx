@@ -1,54 +1,40 @@
-import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import React, { useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
-  useFetchRequestCategorys,
-  useSearchRequestCategorys,
-  useAddRequestCategory,
-  useDeleteRequestCategory,
-  useUpdateRequestCategory,
+	useFetchRequestCategorys,
+	useAddRequestCategory,
+	useDeleteRequestCategory,
+	useUpdateRequestCategory,
 } from "../../queries/requestcategory_query";
 import RequestCategoryModal from "./RequestCategoryModal";
 import { useTranslation } from "react-i18next";
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
 import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
+	Button,
+	Col,
+	Row,
+	UncontrolledTooltip,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	Form,
+	Input,
+	FormFeedback,
+	Label,
+	Card,
+	CardBody,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import {
-	alphanumericValidation,
-	onlyAmharicValidation,
-} from "../../utils/Validation/validation";
+import { alphanumericValidation } from "../../utils/Validation/validation";
 import { requestCategoryExportColumns } from "../../utils/exportColumnsForLookups";
+
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
 		return text;
@@ -56,23 +42,19 @@ const truncateText = (text, maxLength) => {
 	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 const RequestCategoryModel = () => {
-	//meta title
-	document.title = " RequestCategory";
+	document.title = "Request Category";
 	const { t } = useTranslation();
 	const [modal, setModal] = useState(false);
 	const [modal1, setModal1] = useState(false);
 	const [isEdit, setIsEdit] = useState(false);
 	const [requestCategory, setRequestCategory] = useState(null);
-	const [searchResults, setSearchResults] = useState(null);
-	const [isSearchLoading, setIsSearchLoading] = useState(false);
-	const [searcherror, setSearchError] = useState(null);
-	const [showSearchResult, setShowSearchResult] = useState(false);
+
 	const { data, isLoading, isFetching, error, isError, refetch } =
 		useFetchRequestCategorys();
 	const addRequestCategory = useAddRequestCategory();
 	const updateRequestCategory = useUpdateRequestCategory();
 	const deleteRequestCategory = useDeleteRequestCategory();
-	//START CRUD
+
 	const handleAddRequestCategory = async (data) => {
 		try {
 			await addRequestCategory.mutateAsync(data);
@@ -117,12 +99,8 @@ const RequestCategoryModel = () => {
 			setDeleteModal(false);
 		}
 	};
-	//END CRUD
-	//START FOREIGN CALLS
 
-	// validation
 	const validation = useFormik({
-		// enableReinitialize: use this flag when initial values need to be changed
 		enableReinitialize: true,
 		initialValues: {
 			rqc_name_or: (requestCategory && requestCategory.rqc_name_or) || "",
@@ -138,7 +116,7 @@ const RequestCategoryModel = () => {
 		},
 		validationSchema: Yup.object({
 			rqc_name_or: alphanumericValidation(2, 100, true),
-			rqc_name_am: onlyAmharicValidation(2, 100, true),
+			rqc_name_am: alphanumericValidation(2, 100, true),
 			rqc_name_en: alphanumericValidation(2, 100, true),
 		}),
 		validateOnBlur: true,
@@ -157,7 +135,6 @@ const RequestCategoryModel = () => {
 					is_deletable: values.is_deletable,
 					is_editable: values.is_editable,
 				};
-				// update RequestCategory
 				handleUpdateRequestCategory(updateRequestCategory);
 			} else {
 				const newRequestCategory = {
@@ -169,23 +146,13 @@ const RequestCategoryModel = () => {
 					rqc_gov_active: values?.rqc_gov_active ? 1 : 0,
 					rqc_cso_active: values?.rqc_cso_active ? 1 : 0,
 				};
-				// save new RequestCategory
 				handleAddRequestCategory(newRequestCategory);
 			}
 		},
 	});
 	const [transaction, setTransaction] = useState({});
 	const toggleViewModal = () => setModal1(!modal1);
-	// Fetch RequestCategory on component mount
-	useEffect(() => {
-		setRequestCategory(data);
-	}, [data]);
-	useEffect(() => {
-		if (!isEmpty(data) && !!isEdit) {
-			setRequestCategory(data);
-			setIsEdit(false);
-		}
-	}, [data]);
+
 	const toggle = () => {
 		if (modal) {
 			setModal(false);
@@ -196,7 +163,6 @@ const RequestCategoryModel = () => {
 	};
 	const handleRequestCategoryClick = (arg) => {
 		const requestCategory = arg;
-		// console.log("handleRequestCategoryClick", requestCategory);
 		setRequestCategory({
 			rqc_id: requestCategory.rqc_id,
 			rqc_name_or: requestCategory.rqc_name_or,
@@ -223,12 +189,7 @@ const RequestCategoryModel = () => {
 		setRequestCategory("");
 		toggle();
 	};
-	const handleSearchResults = ({ data, error }) => {
-		setSearchResults(data);
-		setSearchError(error);
-		setShowSearchResult(true);
-	};
-	//START UNCHANGED
+
 	const columns = useMemo(() => {
 		const baseColumns = [
 			{
@@ -422,7 +383,7 @@ const RequestCategoryModel = () => {
 						title={t("request_category")}
 						breadcrumbItem={t("request_category")}
 					/>
-					{isLoading || isSearchLoading ? (
+					{isLoading ? (
 						<Spinners />
 					) : (
 						<Row>
@@ -431,17 +392,12 @@ const RequestCategoryModel = () => {
 									<CardBody>
 										<TableContainer
 											columns={columns}
-											data={
-												showSearchResult
-													? searchResults?.data
-													: data?.data || []
-											}
+											data={data?.data || []}
 											isGlobalFilter={true}
 											isAddButton={data?.previledge?.is_role_can_add == 1}
 											isCustomPageSize={true}
 											handleUserClick={handleRequestCategoryClicks}
 											isPagination={true}
-											// SearchPlaceholder="26 records..."
 											SearchPlaceholder={26 + " " + t("Results") + "..."}
 											buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
 											buttonName={t("add")}
@@ -706,6 +662,6 @@ const RequestCategoryModel = () => {
 	);
 };
 RequestCategoryModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+	preGlobalFilteredRows: PropTypes.any,
 };
 export default RequestCategoryModel;

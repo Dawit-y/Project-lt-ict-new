@@ -301,7 +301,8 @@ const RolesModel = () => {
 								cellProps.row.original?.is_role_editable) && (
 								<Button
 									color="None"
-									size="sm"
+                  size="sm"
+                  className="text-success"
 									onClick={() => {
 										const data = cellProps.row.original;
 										handleRolesClick(data);

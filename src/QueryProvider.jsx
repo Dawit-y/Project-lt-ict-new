@@ -13,9 +13,9 @@ const useErrorMessages = () => {
 		453: t("errors_missingField"),
 		454: t("errors_invalidReference"),
 		455: t("errors_genericError"),
-		456: t("errors_valueTooLong"), 
+		456: t("errors_valueTooLong"),
 		457: t("errors_updateIdNotProvided"),
-		458: t("errors_dataNotFoundWithId"), 
+		458: t("errors_dataNotFoundWithId"),
 		459: t("errors_notAllowedSave"),
 		460: t("errors_notAllowedUpdate"),
 		461: t("errors_notAllowedViewList"),
@@ -25,71 +25,69 @@ const useErrorMessages = () => {
 	};
 };
 
-
 // Function to extract API error message
 const GetErrorMessage = ({ error }) => {
-  const statusMessages = useErrorMessages();
+	const statusMessages = useErrorMessages();
+	if (error?.response?.status) {
+		return `${statusMessages[error?.response?.status]}`;
+	} else if (error?.response?.data) {
+		const { status_code, errorMsg, column } = error.response.data;
+		if (statusMessages[status_code]) {
+			return `${statusMessages[status_code]} ${column ? `on ${column}` : ""}`;
+		}
+		return `${errorMsg} ${column ? `on ${column}` : ""}`;
+	}
 
-  if (error?.response?.status) {
-    return `${statusMessages[error?.response?.status]}`;
-  } else if (error?.response?.data) {
-    const { status_code, errorMsg, column } = error.response.data;
-    if (statusMessages[status_code]) {
-      return `${statusMessages[status_code]} ${column ? `on ${column}` : ""}`;
-    }
-    return `${errorMsg} ${column ? `on ${column}` : ""}`;
-  }
-
-  return error.message || "An unexpected error occurred.";
+	return error.message || "An unexpected error occurred.";
 };
 
 // Create a Web Storage Persistor
 const localStoragePersistor = createSyncStoragePersister({
-  storage: window.localStorage,
+	storage: window.localStorage,
 });
 
 // Create the QueryClient
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-      gcTime: 1000 * 60 * 10,
-    },
-  },
-  queryCache: new QueryCache({
-    // onError: (error) => {
-    //   const message = getErrorMessage(error);
-    //   toast.error(message);
-    // },
-  }),
-  mutationCache: new MutationCache({
+	defaultOptions: {
+		queries: {
+			retry: 1,
+			refetchOnWindowFocus: false,
+			gcTime: 1000 * 60 * 10,
+		},
+	},
+	queryCache: new QueryCache({
+		// onError: (error) => {
+		//   const message = getErrorMessage(error);
+		//   toast.error(message);
+		// },
+	}),
+	mutationCache: new MutationCache({
     onError: (error, _, __, mutation) => {
-      if (!error.handledByMutationCache && error.response?.status !== 401) {
-        error.handledByMutationCache = true;
-        const message = <GetErrorMessage error={error} />;
-        toast.error(message, { autoClose: 3000 });
-      }
-    },
-  }),
+			if (!error.handledByMutationCache && error.response?.status !== 401) {
+				error.handledByMutationCache = true;
+				const message = <GetErrorMessage error={error} />;
+				toast.error(message, { autoClose: 3000 });
+			}
+		},
+	}),
 });
 
 const QueryProvider = ({ children }) => {
-  return (
-    <PersistQueryClientProvider
-      client={queryClient}
-      persistOptions={{
-        persister: localStoragePersistor,
-        dehydrateOptions: {
-          shouldDehydrateQuery: (query) => query.meta?.persist === true,
-        },
-        buster: "1",
-      }}
-    >
-      {children}
-      <ReactQueryDevtools initialIsOpen={false} />
-    </PersistQueryClientProvider>
-  );
+	return (
+		<PersistQueryClientProvider
+			client={queryClient}
+			persistOptions={{
+				persister: localStoragePersistor,
+				dehydrateOptions: {
+					shouldDehydrateQuery: (query) => query.meta?.persist === true,
+				},
+				buster: "1",
+			}}
+		>
+			{children}
+			<ReactQueryDevtools initialIsOpen={false} />
+		</PersistQueryClientProvider>
+	);
 };
 
 export default QueryProvider;

@@ -109,12 +109,15 @@ const ProjectPaymentModel = (props) => {
 			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
+			toggle();
+			validation.resetForm();
 		} catch (error) {
-			toast.error(t("add_failure"), {
-				autoClose: 3000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), {
+					autoClose: 3000,
+				});
+			}
 		}
-		toggle();
 	};
 
 	const handleUpdateProjectPayment = async (data) => {

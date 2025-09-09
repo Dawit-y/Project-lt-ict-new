@@ -25,25 +25,28 @@ const ApproveModal = ({ isOpen, toggle, request, action }) => {
 	const { t } = useTranslation();
 	const { mutateAsync, isPending } = useUpdateBudgetRequestApproval();
 	const { mutateAsync: updateProject } = useUpdateProject();
+
 	const handleUpdateBudgetRequest = async (data) => {
-		const projectData = {
-			prj_id: request.bdr_project_id,
-			prj_total_actual_budget: data.prj_total_actual_budget,
-			prj_code: data.prj_code,
-		};
 		try {
 			await mutateAsync(data);
-			await updateProject(projectData);
-			toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
+			if (action === "approve") {
+				const projectData = {
+					prj_id: request.bdr_project_id,
+					prj_total_actual_budget: data.prj_total_actual_budget,
+					prj_code: data.prj_code,
+				};
+				await updateProject(projectData);
+			}
+
+			toast.success(t("update_success"), { autoClose: 3000 });
 			toggle();
 		} catch (error) {
-			toast.error(t("update_failure"), {
-				autoClose: 3000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
 		}
 	};
+
 	const validationSchema = Yup.object().shape({
 		bdr_released_amount:
 			action === "approve"

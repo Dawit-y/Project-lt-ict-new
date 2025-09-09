@@ -301,10 +301,11 @@ const BudgetYearModel = React.memo(() => {
 				enableColumnFilter: false,
 				enableSorting: true,
 				cell: (cellProps) => (
-					<div className="d-flex gap-3">
+					<div className="d-flex gap-1">
 						{cellProps.row.original.is_editable === 1 && (
-							<Link
-								to="#"
+							<Button
+								color="none"
+								size="sm"
 								className="text-success"
 								onClick={() => handleBudgetYearClick(cellProps.row.original)}
 							>
@@ -312,8 +313,24 @@ const BudgetYearModel = React.memo(() => {
 								<UncontrolledTooltip placement="top" target="edittooltip">
 									Edit
 								</UncontrolledTooltip>
-							</Link>
+							</Button>
 						)}
+						{/* {cellProps.row.original.is_deletable == 1 && (
+							<Button
+								color="None"
+								size="sm"
+								className="text-danger"
+								onClick={() => {
+									const data = cellProps.row.original;
+									onClickDelete(data);
+								}}
+							>
+								<i className="mdi mdi-delete font-size-18" id="deletetooltip" />
+								<UncontrolledTooltip placement="top" target="deletetooltip">
+									Delete
+								</UncontrolledTooltip>
+							</Button>
+						)} */}
 					</div>
 				),
 			});
