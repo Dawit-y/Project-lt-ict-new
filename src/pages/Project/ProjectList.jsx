@@ -7,10 +7,13 @@ import React, {
 } from "react";
 import { Link } from "react-router-dom";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { useSearchOnlyProjects } from "../../queries/project_query";
+import {
+	useSearchOnlyProjects,
+	useUpdateProject,
+} from "../../queries/project_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import { useTranslation } from "react-i18next";
-import { Button, Badge } from "reactstrap";
+import { Button, Badge, Spinner } from "reactstrap";
 import { createMultiSelectOptions } from "../../utils/commonMethods";
 import SearchTableContainer from "../../components/Common/SearchTableContainer";
 import TreeForLists from "../../components/Common/TreeForLists2";
@@ -22,30 +25,40 @@ import { getUserSectorList } from "../../queries/usersector_query";
 import { projectExportColumns } from "../../utils/exportColumnsForLists";
 import { useAuthUser } from "../../hooks/useAuthUser";
 import { useSearchParamConverter } from "../../hooks/useSearchParamConverter";
+import ProjectFormModal from "./ProjectFormModal";
+import { toast } from "react-toastify";
 
-const ProjectModel = () => {
+const ProjectList = () => {
 	document.title = "Projects List";
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
+
+	// State variables
 	const [searchResults, setSearchResults] = useState(null);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
 	const [searchError, setSearchError] = useState(null);
 	const [showSearchResult, setShowSearchResult] = useState(false);
-
 	const [projectParams, setProjectParams] = useState({});
 	const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
 	const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
 	const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
 	const [include, setInclude] = useState(0);
 	const [isCollapsed, setIsCollapsed] = useState(false);
-
 	const [params, setParams] = useState({});
 	const [searchParams, setSearchParams] = useState({});
 	const [exportSearchParams, setExportSearchParams] = useState({});
 
+	// Modal state variables
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+	const [selectedProject, setSelectedProject] = useState(null);
+	const [selectedNode, setSelectedNode] = useState(null);
+
 	const advancedSearchRef = useRef(null);
 	const { userId } = useAuthUser();
 	const { regions, zones, woredas } = useFetchAddressStructures(userId);
+
+	// Mutation hook for updating project
+	const updateProject = useUpdateProject();
 
 	useEffect(() => {
 		setProjectParams({
@@ -256,6 +269,101 @@ const ProjectModel = () => {
 		convertSearchParamsToReadable,
 	]);
 
+	// Modal handlers
+	const toggleEditModal = () => {
+		setIsEditModalOpen(!isEditModalOpen);
+		if (isEditModalOpen) {
+			setSelectedProject(null);
+		}
+	};
+
+	const handleEditClick = (projectData) => {
+		setSelectedProject(projectData);
+
+		// Create a mock selectedNode based on the project data
+		const mockNode = {
+			data: {
+				pri_id: projectData.parent_id || 0,
+				woreda_id: projectData.prj_location_woreda_id,
+				region_id: projectData.prj_location_region_id,
+				zone_id: projectData.prj_location_zone_id,
+				sector_id: projectData.prj_sector_id,
+				level: "output",
+			},
+		};
+		setSelectedNode(mockNode);
+
+		setIsEditModalOpen(true);
+	};
+
+	const handleSubmit = async (values, isEdit, project, selectedNode) => {
+		if (isEdit) {
+			try {
+				const updateProjectData = {
+					prj_id: project.prj_id,
+					prj_name: values.prj_name,
+					prj_name_am: values.prj_name_am,
+					prj_name_en: values.prj_name_en,
+					prj_code: values.prj_code,
+					prj_project_status_id: values.prj_project_status_id,
+					prj_project_category_id: values.prj_project_category_id,
+					prj_project_budget_source_id: values.prj_project_budget_source_id,
+					prj_total_estimate_budget: parseFloat(
+						values.prj_total_estimate_budget
+					),
+					prj_total_actual_budget: parseFloat(values.prj_total_actual_budget),
+					prj_geo_location: values.prj_geo_location,
+					prj_sector_id: Number(selectedNode?.data?.sector_id),
+					prj_location_region_id: Number(values.prj_location_region_id),
+					prj_location_zone_id: Number(values.prj_location_zone_id),
+					prj_location_woreda_id: Number(values.prj_location_woreda_id),
+					prj_location_kebele_id: values.prj_location_kebele_id,
+					prj_location_description: values.prj_location_description,
+					prj_owner_region_id: Number(selectedNode.data.region_id),
+					prj_owner_zone_id: Number(selectedNode.data.zone_id),
+					prj_owner_woreda_id: Number(selectedNode.data.woreda_id),
+					prj_owner_kebele_id: values.prj_owner_kebele_id,
+					prj_owner_description: values.prj_owner_description,
+					prj_start_date_et: values.prj_start_date_et,
+					prj_start_date_gc: values.prj_start_date_gc,
+					prj_start_date_plan_et: values.prj_start_date_plan_et,
+					prj_start_date_plan_gc: values.prj_start_date_plan_gc,
+					prj_end_date_actual_et: values.prj_end_date_actual_et,
+					prj_end_date_actual_gc: values.prj_end_date_actual_gc,
+					prj_end_date_plan_gc: values.prj_end_date_plan_gc,
+					prj_end_date_plan_et: values.prj_end_date_plan_et,
+					prj_outcome: values.prj_outcome,
+					prj_deleted: values.prj_deleted,
+					prj_remark: values.prj_remark,
+					prj_created_date: values.prj_created_date,
+					prj_owner_id: values.prj_owner_id,
+					prj_urban_ben_number: values.prj_urban_ben_number,
+					prj_rural_ben_number: values.prj_rural_ben_number,
+					prj_program_id: 1,
+					parent_id: Number(selectedNode.data.pri_id),
+					object_type_id: 5,
+					prj_measurement_unit: values.prj_measurement_unit,
+					prj_measured_figure: values.prj_measured_figure,
+				};
+
+				await updateProject.mutateAsync(updateProjectData);
+				toast.success(t("update_success"), {
+					autoClose: 3000,
+				});
+				toggleEditModal();
+
+				// Refresh the search results if we're in search mode
+				if (showSearchResult && advancedSearchRef.current) {
+					advancedSearchRef.current.refreshSearch();
+				}
+			} catch (error) {
+				if (!error.handledByMutationCache) {
+					toast.error(t("update_failure"), { autoClose: 3000 });
+				}
+			}
+		}
+	};
+
 	const columnDefs = useMemo(() => {
 		const baseColumnDefs = [
 			{
@@ -330,7 +438,7 @@ const ProjectModel = () => {
 				},
 			},
 			{
-				headerName: t("view_details"),
+				headerName: t("Action"),
 				sortable: false,
 				filter: false,
 				width: 120,
@@ -339,13 +447,22 @@ const ProjectModel = () => {
 					if (params.node.footer) {
 						return ""; // Suppress button for footer
 					}
-					const { prj_id } = params.data || {};
 					return (
-						<Link to={`/projectdetail/${prj_id}`}>
-							<Button type="button" className="btn-sm mb-1 default" outline>
-								<i className="fa fa-eye"></i>
+						<div className="d-flex gap-1">
+							<Button
+								color="None"
+								size="sm"
+								className="text-success"
+								onClick={() => handleEditClick(params.data)}
+							>
+								<i className="mdi mdi-pencil font-size-18" />
 							</Button>
-						</Link>
+							<Link to={`/projectdetail/${params.data.prj_id}`}>
+								<Button type="button" className="btn-sm mb-1 default" outline>
+									<i className="fa fa-eye"></i>
+								</Button>
+							</Link>
+						</div>
 					);
 				},
 			},
@@ -358,6 +475,16 @@ const ProjectModel = () => {
 			<div className="page-content">
 				<div className="w-100">
 					<Breadcrumbs />
+					<ProjectFormModal
+						isOpen={isEditModalOpen}
+						toggle={toggleEditModal}
+						isEdit={true}
+						project={selectedProject}
+						selectedNode={selectedNode}
+						onSubmit={handleSubmit}
+						projectsData={searchResults}
+						isLoading={updateProject.isPending}
+					/>
 					<div className="d-flex gap-2 flex-nowrap">
 						{/* Sidebar - Tree */}
 						<TreeForLists
@@ -436,4 +563,4 @@ const ProjectModel = () => {
 	);
 };
 
-export default ProjectModel;
+export default ProjectList;
