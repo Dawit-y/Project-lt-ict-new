@@ -1740,5 +1740,6 @@
   "attached_files": "የተያያዙ ፋይሎች",
   "attached_notes": "የተያያዙ ማስታወሻዎች",
   "requested_label": "ተጠይቋል",
-  "approve": "አጸደቀ"
+  "approve": "አጸደቀ",
+	"bdr_additional_days": "ተጨማሪ ቀናት"
 }

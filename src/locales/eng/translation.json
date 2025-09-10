@@ -1990,5 +1990,6 @@
 	"errors_dataNotFoundWithId": "Data not found with provided ID",
 	"errors_notAllowedSave": "Not allowed to save",
 	"errors_notAllowedUpdate": "Not allowed to update",
-	"errors_notAllowedViewList": "Not allowed to view list"
+	"errors_notAllowedViewList": "Not allowed to view list",
+	"bdr_additional_days": "Additional Days"
 }

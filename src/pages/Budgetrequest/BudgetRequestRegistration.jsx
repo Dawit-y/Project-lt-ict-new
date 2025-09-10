@@ -1,4 +1,4 @@
-import React, { useMemo, useState, Suspense, lazy } from "react";
+import React, { useMemo, useState, Suspense, lazy, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useLocation } from "react-router-dom";
 import TableContainer from "../../components/Common/TableContainer";
@@ -72,7 +72,7 @@ const LazyLoader = ({ children }) => (
 	<Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
 );
 const BudgetRequestModel = (props) => {
-	const { isActive, status, startDate, totalActualBudget } = props;
+	const { isActive, status, totalActualBudget } = props;
 	const location = useLocation();
 	const id = Number(location.pathname.split("/")[2]);
 	const param = {
@@ -175,6 +175,8 @@ const BudgetRequestModel = (props) => {
 				(budgetRequest && budgetRequest.bdr_request_status) || "",
 			bdr_request_category_id:
 				(budgetRequest && budgetRequest.bdr_request_category_id) || "",
+			bdr_additional_days:
+				(budgetRequest && budgetRequest.bdr_additional_days) || "",
 		},
 
 		validationSchema: Yup.object({
@@ -254,6 +256,29 @@ const BudgetRequestModel = (props) => {
 				.required(t("bdr_physical_planned")),
 			bdr_financial_baseline: formattedAmountValidation(0, 10000000000, true),
 			bdr_description: alphanumericValidation(3, 425, false),
+			bdr_additional_days: Yup.number()
+				.min(0, t("min_error", { field: t("bdr_additional_days"), min: 0 }))
+				.max(
+					10000000000,
+					t("max_error", { field: t("bdr_additional_days"), max: 10000000000 })
+				)
+				.test(
+					"conditional-additional-days",
+					t("bdr_additional_days_required"),
+					function (value) {
+						const { bdr_request_category_id } = this.parent;
+						const categoryId = parseInt(bdr_request_category_id);
+
+						// Only require additional days for categories 2, 3, 4
+						if ([2, 3, 4].includes(categoryId)) {
+							return value !== undefined && value !== null && value !== "";
+						}
+
+						// For other categories, the field is optional
+						return true;
+					}
+				)
+				.nullable(),
 		}),
 		validateOnBlur: true,
 		validateOnChange: false,
@@ -272,6 +297,7 @@ const BudgetRequestModel = (props) => {
 					bdr_physical_planned: parseInt(values.bdr_physical_planned),
 					bdr_financial_baseline: parseFloat(values.bdr_financial_baseline),
 					bdr_request_category_id: values.bdr_request_category_id,
+					bdr_additional_days: parseInt(values.bdr_additional_days) || null,
 				};
 				handleUpdateBudgetRequest(updatedBudgetRequest);
 			} else {
@@ -288,11 +314,24 @@ const BudgetRequestModel = (props) => {
 					bdr_description: values.bdr_description,
 					bdr_request_status: 1,
 					bdr_request_category_id: parseInt(values.bdr_request_category_id),
+					bdr_additional_days: parseInt(values.bdr_additional_days) || null,
 				};
 				handleAddBudgetRequest(newBudgetRequest);
 			}
 		},
 	});
+
+	useEffect(() => {
+		if (!modal) return;
+
+		const categoryId = parseInt(validation.values.bdr_request_category_id);
+		const shouldHaveAdditionalDays = [2, 3, 4].includes(categoryId);
+
+		if (!shouldHaveAdditionalDays && validation.values.bdr_additional_days) {
+			validation.setFieldValue("bdr_additional_days", "");
+		}
+	}, [validation.values.bdr_request_category_id, modal]);
+
 	const [transaction, setTransaction] = useState({});
 	const toggleViewModal = () => setModal1(!modal1);
 	const toggleActionModal = () => setActionModal(!actionModal);
@@ -356,8 +395,7 @@ const BudgetRequestModel = (props) => {
 			bdr_description: budgetRequest.bdr_description,
 			bdr_request_status: budgetRequest.bdr_request_status,
 			bdr_request_category_id: budgetRequest.bdr_request_category_id,
-			is_deletable: budgetRequest.is_deletable,
-			is_editable: budgetRequest.is_editable,
+			bdr_additional_days: budgetRequest.bdr_additional_days,
 		});
 		setIsEdit(true);
 		toggle();
@@ -585,7 +623,10 @@ const BudgetRequestModel = (props) => {
 				},
 			},
 		];
-		if (1 == 1) {
+		if (
+			data?.previledge?.is_role_editable == 1 ||
+			data?.previledge?.is_role_deletable == 1
+		) {
 			baseColumns.push({
 				header: t("Action"),
 				accessorKey: t("Action"),
@@ -656,29 +697,6 @@ const BudgetRequestModel = (props) => {
 									</div>
 								)}
 						</div>
-					);
-				},
-			});
-		}
-		if (project?.data?.request_role == "approver") {
-			baseColumns.push({
-				header: t("take_action"),
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<Button
-							type="button"
-							color="primary"
-							className="btn-sm"
-							onClick={() => {
-								const data = cellProps.row.original;
-								toggleActionModal();
-								setTransaction(data);
-							}}
-						>
-							{t("take_action")}
-						</Button>
 					);
 				},
 			});
@@ -822,6 +840,18 @@ const BudgetRequestModel = (props) => {
 								isLoading={isBcLoading}
 								isError={isBcError}
 							/>
+							{[2, 3, 4].includes(
+								parseInt(validation.values.bdr_request_category_id)
+							) && (
+								<FormattedAmountField
+									validation={validation}
+									fieldId={"bdr_additional_days"}
+									label={t("bdr_additional_days")}
+									isRequired={true}
+									className="col-md-4 mb-3"
+									allowDecimal={false}
+								/>
+							)}
 							<FormattedAmountField
 								validation={validation}
 								fieldId={"bdr_requested_amount"}
