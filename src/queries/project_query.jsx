@@ -99,6 +99,7 @@ export const useUpdateProject = () => {
 			queryClient.invalidateQueries({
 				queryKey: PROJECT_QUERY_KEY,
 				refetchType: "all",
+				exact: false,
 			});
 		},
 	});

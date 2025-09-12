@@ -351,10 +351,8 @@ const ProjectList = () => {
 					autoClose: 3000,
 				});
 				toggleEditModal();
-
-				// Refresh the search results if we're in search mode
 				if (showSearchResult && advancedSearchRef.current) {
-					advancedSearchRef.current.refreshSearch();
+					await advancedSearchRef.current.refreshSearch();
 				}
 			} catch (error) {
 				if (!error.handledByMutationCache) {
@@ -540,18 +538,9 @@ const ProjectList = () => {
 								searchParams={searchParams}
 								setSearchParams={setSearchParams}
 							>
-								<AgGridContainer
-									rowData={showSearchResult ? searchResults?.data : []}
+								<TableWrapper
 									columnDefs={columnDefs}
-									isPagination={true}
-									paginationPageSize={20}
-									isGlobalFilter={true}
-									isAddButton={false}
-									isExcelExport={true}
-									isPdfExport={true}
-									isPrint={true}
-									tableName="Projects"
-									exportColumns={projectExportColumns}
+									showSearchResult={showSearchResult}
 									exportSearchParams={exportSearchParams}
 								/>
 							</AdvancedSearch>
@@ -564,3 +553,33 @@ const ProjectList = () => {
 };
 
 export default ProjectList;
+
+const TableWrapper = ({
+	data,
+	isLoading,
+	columnDefs,
+	showSearchResult,
+	exportSearchParams,
+}) => {
+	return (
+		<>
+			<AgGridContainer
+				rowData={showSearchResult ? data?.data || [] : []}
+				columnDefs={columnDefs}
+				isLoading={isLoading}
+				isPagination={true}
+				paginationPageSize={10}
+				isGlobalFilter={true}
+				isAddButton={false}
+				rowHeight={36}
+				addButtonText="Add"
+				isExcelExport={true}
+				isPdfExport={true}
+				isPrint={true}
+				tableName="Projects"
+				exportColumns={projectExportColumns}
+				exportSearchParams={exportSearchParams}
+			/>
+		</>
+	);
+};

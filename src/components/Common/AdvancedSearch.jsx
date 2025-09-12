@@ -223,6 +223,7 @@ const AdvancedSearch = forwardRef(
 			getSearchValues: () => {
 				return searchParams;
 			},
+			refreshSearch: async () => refetch(),
 		}));
 
 		const inputStyles = { width: "100%", maxWidth: "100%" };
