@@ -18,11 +18,12 @@ import {
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import FetchErrorHandler from "./FetchErrorHandler";
-
 import { formatDate } from "./DatePicker";
 import { parseDateString } from "../../utils/commonMethods";
 import { EtCalendar } from "react-ethiopian-calendar";
 import "react-ethiopian-calendar/dist/index.css";
+import { useAuthUser } from "../../hooks/useAuthUser";
+import { useFetchAddressStructures } from "../../queries/address_structure_query";
 
 const AdvancedSearch = forwardRef(
 	(
@@ -49,6 +50,12 @@ const AdvancedSearch = forwardRef(
 		const toggle = () => setIsOpen(!isOpen);
 		const [params, setParams] = useState({});
 		const [searchParams, setSearchParams] = useState({});
+		const [paramsWithLabels, setParamsWithLabels] = useState({});
+		const [searchParamsWithLabels, setSearchParamsWithLabels] = useState({});
+
+		const { userId } = useAuthUser();
+		const { regions, zones, woredas } = useFetchAddressStructures(userId);
+
 		const {
 			data = [],
 			isLoading,
@@ -102,10 +109,11 @@ const AdvancedSearch = forwardRef(
 		});
 
 		// Handle updates for all input types
-		const handleSearchKey = (key, value, type = "text") => {
+		const handleSearchKey = (key, value, type = "text", label = "") => {
 			// Also update the formik values
 			validation.setFieldValue(key, value);
 
+			// Update params (values)
 			setParams((prevParams) => {
 				if (type === "checkbox") {
 					const currentValues = prevParams[key] || [];
@@ -114,6 +122,7 @@ const AdvancedSearch = forwardRef(
 							? currentValues.filter((v) => v !== value)
 							: [...currentValues, value]
 						: [value];
+
 					return { ...prevParams, [key]: updatedValues };
 				}
 
@@ -124,6 +133,16 @@ const AdvancedSearch = forwardRef(
 				}
 
 				return { ...prevParams, [key]: value };
+			});
+
+			// Update labels in a separate state
+			setParamsWithLabels((prevLabels) => {
+				if (value === "") {
+					const updatedLabels = { ...prevLabels };
+					delete updatedLabels[key];
+					return updatedLabels;
+				}
+				return { ...prevLabels, [key]: label };
 			});
 		};
 
@@ -141,13 +160,45 @@ const AdvancedSearch = forwardRef(
 					])
 			);
 
+			// Combine values (IDs)
 			const combinedParams = {
 				...params,
 				...transformedValues,
-				...(additionalParams && additionalParams),
+				...(additionalParams || {}),
 			};
 
+			// Map helper
+			const findLabel = (list, id) => {
+				const match = list?.find((item) => String(item.id) === String(id));
+				return match ? match.name : id; // fallback to ID if not found
+			};
+
+			// Build labels
+			const combinedParamsLabels = {
+				...paramsWithLabels,
+				...(additionalParams?.prj_location_region_id && {
+					prj_location_region_id: findLabel(
+						regions,
+						additionalParams.prj_location_region_id
+					),
+				}),
+				...(additionalParams?.prj_location_zone_id && {
+					prj_location_zone_id: findLabel(
+						zones,
+						additionalParams.prj_location_zone_id
+					),
+				}),
+				...(additionalParams?.prj_location_woreda_id && {
+					prj_location_woreda_id: findLabel(
+						woredas,
+						additionalParams.prj_location_woreda_id
+					),
+				}),
+			};
+
+			// Update states
 			setSearchParams(combinedParams);
+			setSearchParamsWithLabels(combinedParamsLabels);
 		};
 
 		// Refetch whenever searchParams changes
@@ -186,6 +237,8 @@ const AdvancedSearch = forwardRef(
 		const handleClear = () => {
 			setParams({});
 			setSearchParams({});
+			setParamsWithLabels({});
+			setSearchParamsWithLabels({});
 			setSearchResults([]);
 			setShowSearchResult(false);
 			validation.resetForm();
@@ -220,8 +273,8 @@ const AdvancedSearch = forwardRef(
 
 		// Expose method to get search values
 		useImperativeHandle(ref, () => ({
-			getSearchValues: () => {
-				return searchParams;
+			getSearchLabels: () => {
+				return searchParamsWithLabels;
 			},
 			refreshSearch: async () => refetch(),
 		}));
@@ -273,17 +326,35 @@ const AdvancedSearch = forwardRef(
 																			dateRange.startDate &&
 																			dateRange.endDate
 																		) {
+																			const start = formatDate(
+																				dateRange.startDate
+																			);
+																			const end = formatDate(dateRange.endDate);
 																			handleSearchKey(
 																				`${key}_start`,
-																				formatDate(dateRange.startDate)
+																				start,
+																				"date",
+																				start
 																			);
 																			handleSearchKey(
 																				`${key}_end`,
-																				formatDate(dateRange.endDate)
+																				end,
+																				"date",
+																				end
 																			);
 																		} else {
-																			handleSearchKey(`${key}_start`, "");
-																			handleSearchKey(`${key}_end`, "");
+																			handleSearchKey(
+																				`${key}_start`,
+																				"",
+																				"date",
+																				""
+																			);
+																			handleSearchKey(
+																				`${key}_end`,
+																				"",
+																				"date",
+																				""
+																			);
 																		}
 																	}}
 																	value={
@@ -318,7 +389,12 @@ const AdvancedSearch = forwardRef(
 																placeholder={t(key)}
 																value={params[key] || ""}
 																onChange={(e) => {
-																	handleSearchKey(key, e.target.value);
+																	handleSearchKey(
+																		key,
+																		e.target.value,
+																		"text",
+																		e.target.value
+																	);
 																}}
 																style={inputStyles}
 															/>
@@ -335,9 +411,14 @@ const AdvancedSearch = forwardRef(
 																id={key}
 																type="select"
 																className="form-select"
-																onChange={(event) =>
-																	handleSearchKey(key, event.target.value)
-																}
+																onChange={(event) => {
+																	const value = event.target.value;
+																	const label =
+																		event.target.options[
+																			event.target.selectedIndex
+																		].text;
+																	handleSearchKey(key, value, "text", label);
+																}}
 																value={params[key] || ""}
 																style={inputStyles}
 															>
@@ -476,7 +557,8 @@ const AdvancedSearch = forwardRef(
 																		handleSearchKey(
 																			key,
 																			e.target.checked ? item.value : null,
-																			"checkbox"
+																			"checkbox",
+																			item.label
 																		)
 																	}
 																/>

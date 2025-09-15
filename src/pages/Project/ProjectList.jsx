@@ -13,18 +13,15 @@ import {
 } from "../../queries/project_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import { useTranslation } from "react-i18next";
-import { Button, Badge, Spinner } from "reactstrap";
+import { Button, Badge } from "reactstrap";
 import { createMultiSelectOptions } from "../../utils/commonMethods";
 import SearchTableContainer from "../../components/Common/SearchTableContainer";
 import TreeForLists from "../../components/Common/TreeForLists2";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import AgGridContainer from "../../components/Common/AgGridContainer";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
-import { useFetchAddressStructures } from "../../queries/address_structure_query";
 import { getUserSectorList } from "../../queries/usersector_query";
 import { projectExportColumns } from "../../utils/exportColumnsForLists";
-import { useAuthUser } from "../../hooks/useAuthUser";
-import { useSearchParamConverter } from "../../hooks/useSearchParamConverter";
 import ProjectFormModal from "./ProjectFormModal";
 import { toast } from "react-toastify";
 
@@ -54,8 +51,6 @@ const ProjectList = () => {
 	const [selectedNode, setSelectedNode] = useState(null);
 
 	const advancedSearchRef = useRef(null);
-	const { userId } = useAuthUser();
-	const { regions, zones, woredas } = useFetchAddressStructures(userId);
 
 	// Mutation hook for updating project
 	const updateProject = useUpdateProject();
@@ -150,8 +145,8 @@ const ProjectList = () => {
 	// Function to get search parameters from AdvancedSearch
 	const getSearchParams = useCallback(() => {
 		if (advancedSearchRef.current) {
-			return advancedSearchRef.current.getSearchValues
-				? advancedSearchRef.current.getSearchValues()
+			return advancedSearchRef.current.getSearchLabels
+				? advancedSearchRef.current.getSearchLabels()
 				: {};
 		}
 		return {};
@@ -161,113 +156,9 @@ const ProjectList = () => {
 	useEffect(() => {
 		if (showSearchResult) {
 			const searchValues = getSearchParams();
-			setExportSearchParams({
-				...searchValues,
-				...projectParams,
-			});
+			setExportSearchParams(searchValues);
 		}
-	}, [showSearchResult, getSearchParams, projectParams]);
-
-	// Memoize the converter config to prevent unnecessary recreations
-	const converterConfig = useMemo(
-		() => ({
-			lang,
-			dataSources: {
-				prj_project_category_id: {
-					dataSource: filteredCategoryData || [],
-					idKey: "pct_id",
-					nameKey:
-						lang === "en"
-							? "pct_name_en"
-							: lang === "am"
-								? "pct_name_am"
-								: "pct_name_or",
-				},
-				prj_project_status_id: {
-					dataSource:
-						projectStatusData?.data?.filter((type) => type.prs_id >= 1) || [],
-					idKey: "prs_id",
-					nameKey:
-						lang === "en"
-							? "prs_status_name_en"
-							: lang === "am"
-								? "prs_status_name_am"
-								: "prs_status_name_or",
-				},
-				prj_sector_id: {
-					dataSource: sectorInformationData?.data || [],
-					idKey: "sci_id",
-					nameKey:
-						lang === "en"
-							? "sci_name_en"
-							: lang === "am"
-								? "sci_name_am"
-								: "sci_name_or",
-				},
-				prj_location_region_id: {
-					dataSource: regions || [],
-					idKey: "id",
-					nameKey:
-						lang === "en"
-							? "add_name_en"
-							: lang === "am"
-								? "add_name_am"
-								: "add_name",
-				},
-				prj_location_zone_id: {
-					dataSource: zones || [],
-					idKey: "id",
-					nameKey:
-						lang === "en"
-							? "add_name_en"
-							: lang === "am"
-								? "add_name_am"
-								: "add_name",
-				},
-				prj_location_woreda_id: {
-					dataSource: woredas || [],
-					idKey: "id",
-					nameKey:
-						lang === "en"
-							? "add_name_en"
-							: lang === "am"
-								? "add_name_am"
-								: "add_name",
-				},
-			},
-		}),
-		[
-			lang,
-			filteredCategoryData,
-			projectStatusData?.data,
-			sectorInformationData?.data,
-			regions,
-			zones,
-			woredas,
-		]
-	);
-
-	const { convertSearchParamsToReadable } =
-		useSearchParamConverter(converterConfig);
-
-	// Update export search params with readable names
-	useEffect(() => {
-		if (showSearchResult) {
-			const searchValues = getSearchParams();
-			const combinedParams = {
-				...searchValues,
-				...projectParams,
-			};
-
-			const readableParams = convertSearchParamsToReadable(combinedParams);
-			setExportSearchParams(readableParams);
-		}
-	}, [
-		showSearchResult,
-		getSearchParams,
-		projectParams,
-		convertSearchParamsToReadable,
-	]);
+	}, [showSearchResult, getSearchParams]);
 
 	// Modal handlers
 	const toggleEditModal = () => {
