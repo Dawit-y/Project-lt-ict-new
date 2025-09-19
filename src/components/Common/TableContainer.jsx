@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState, useRef , useMemo} from "react";
+import React, { Fragment, useEffect, useState, useRef, useMemo } from "react";
 import { Row, Table, Button, Col, Spinner } from "reactstrap";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -109,6 +109,7 @@ const TableContainer = ({
 	summaryLabel = "Total",
 	summaryPosition = "bottom",
 	customSummaryFunction,
+	exportSearchParams = {},
 }) => {
 	const [columnFilters, setColumnFilters] = useState([]);
 	const [globalFilter, setGlobalFilter] = useState("");
@@ -285,6 +286,7 @@ const TableContainer = ({
 												tableName={tableName}
 												dropdownItem={true}
 												exportColumns={exportColumns}
+												exportSearchParams={exportSearchParams}
 											/>
 										)}
 										{isPdfExport && (
@@ -293,6 +295,7 @@ const TableContainer = ({
 												tableName={tableName}
 												dropdownItem={true}
 												exportColumns={exportColumns}
+												exportSearchParams={exportSearchParams}
 											/>
 										)}
 										{isPrint && (
@@ -301,6 +304,7 @@ const TableContainer = ({
 												tableName={tableName}
 												dropdownItem={true}
 												exportColumns={exportColumns}
+												exportSearchParams={exportSearchParams}
 											/>
 										)}
 									</DropdownMenu>

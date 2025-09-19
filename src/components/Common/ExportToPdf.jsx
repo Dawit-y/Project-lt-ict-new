@@ -1,10 +1,10 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import "../../assets/fonts/NotoSansEthiopic-Regular-normal";
 import { useTranslation } from "react-i18next";
 import { DropdownItem } from "reactstrap";
 import { FaFilePdf } from "react-icons/fa";
 
-// Corporate color scheme
 const COLORS = {
 	primary: [31, 78, 120], // Dark blue: #1F4E78
 	secondary: [47, 84, 150], // Medium blue: #2F5496
@@ -32,14 +32,9 @@ const ExportToPDF = ({
 			return;
 		}
 
-		// Calculate total width to determine orientation
-		const totalWidth =
-			exportColumns.reduce((sum, col) => sum + (col.width || 20), 0) + 15; // +15 for SN column
-		const shouldUseLandscape = totalWidth > 180; // If total width > 180mm, use landscape
-
 		// Create PDF document with appropriate orientation
 		const doc = new jsPDF({
-			orientation: shouldUseLandscape ? "landscape" : "portrait",
+			orientation: "landscape",
 		});
 		const pageWidth = doc.internal.pageSize.getWidth();
 		const margin = 14;
@@ -71,7 +66,7 @@ const ExportToPDF = ({
 		doc.setTextColor(0, 0, 0);
 		doc.setFont(undefined, "italic");
 		drawCenteredText(`${t("generated_on")}: ${currentDate}`, currentY);
-		currentY += 15;
+		currentY += 10;
 
 		// Add search criteria if provided
 		if (Object.keys(exportSearchParams).length > 0) {
@@ -103,7 +98,7 @@ const ExportToPDF = ({
 				}
 			});
 
-			currentY += 15;
+			currentY += 4;
 
 			// Data Summary Header
 			doc.setFillColor(...COLORS.green);
@@ -121,7 +116,7 @@ const ExportToPDF = ({
 				margin + 5,
 				currentY
 			);
-			currentY += 15;
+			currentY += 10;
 		}
 
 		// Prepare table data
@@ -203,17 +198,22 @@ const ExportToPDF = ({
 			startY: currentY,
 			margin: { left: margin, right: margin },
 			styles: {
+				font: "NotoSansEthiopic-Regular",
 				fontSize: 10,
 				cellPadding: 3,
 				lineColor: COLORS.lightGray,
 				lineWidth: 0.5,
 			},
 			headStyles: {
+				font: "NotoSansEthiopic-Regular",
 				fillColor: COLORS.accent,
 				textColor: COLORS.white,
 				fontStyle: "bold",
 				lineWidth: 0.5,
 				lineColor: COLORS.accent,
+			},
+			bodyStyles: {
+				font: "NotoSansEthiopic-Regular",
 			},
 			alternateRowStyles: {
 				fillColor: COLORS.lightBlue,

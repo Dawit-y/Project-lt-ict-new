@@ -27,7 +27,6 @@ export const useUserExportColumns = () => {
 				key: "usr_email",
 				label: t("usr_email"),
 				format: (val) => (val ? val : "-"),
-				width: 40,
 			},
 			{
 				key: "usr_full_name",
@@ -38,7 +37,6 @@ export const useUserExportColumns = () => {
 				key: "usr_phone_number",
 				label: t("usr_phone_number"),
 				format: (val) => (val ? val : "-"),
-				width: 30,
 			},
 			{
 				key: "usr_sector_id",
@@ -145,17 +143,14 @@ export const projectExportColumns = [
 	{
 		key: "prj_name",
 		label: "prj_name",
-		width: 40,
 	},
 	{
 		key: "prj_code",
 		label: "prj_code",
-		width: 20,
 	},
 	{
 		key: "zone_name",
 		label: "prj_owner_zone_id",
-		width: 20,
 	},
 	{
 		key: "sector_name",
@@ -165,7 +160,6 @@ export const projectExportColumns = [
 	{
 		key: "status_name",
 		label: "prs_status",
-		width: 15,
 	},
 	{
 		key: "prj_total_estimate_budget",
