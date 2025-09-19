@@ -764,10 +764,6 @@
 	"emp_created_by": "Created By",
 	"emp_current_status": "Haala Ammaa",
 	"actions": "Gochawwan",
-	"region": "Naannno",
-	"zone": "Godina",
-	"woreda": "Aanaa",
-
 	"page": "Fuula",
 	"more": "Dabalata",
 	"to": "Gahu",
@@ -1418,5 +1414,16 @@
 	"attached_notes": "Yaadannoowwan Dabalaman",
 	"requested_label": "Gaafatame",
 	"approve": "Raggaasi",
-	"bdr_additional_days": "Guyyaa Dabalataa"
+	"bdr_additional_days": "Guyyaa Dabalataa",
+	"table_continued": "Gabatee itti fufe",
+	"part": "Kutaa",
+	"table_continues_next_page": "Gabateen fuula itti aanu irratti itti fufa",
+	"organization_name": "Biiroo Maallaqaa Naannoo Oromiyaa",
+	"report": "Gabaasa",
+	"generated_on": "Kan uumame irratti",
+	"search_criteria": "Kaaroorfama Barbaachisaa",
+	"data_summary": "Gabaasa Xumuraa Daataa",
+	"total_records": "Wanta Galmee Guutuu",
+	"prepared_by": "Kan qopheesse",
+	"approved_by": "Kan eeyyame"
 }

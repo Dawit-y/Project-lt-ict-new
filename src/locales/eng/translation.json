@@ -1991,5 +1991,8 @@
 	"errors_notAllowedSave": "Not allowed to save",
 	"errors_notAllowedUpdate": "Not allowed to update",
 	"errors_notAllowedViewList": "Not allowed to view list",
-	"bdr_additional_days": "Additional Days"
+	"bdr_additional_days": "Additional Days",
+	"table_continued": "Table Continued",
+	"part": "Part",
+	"table_continues_next_page": "Table continues on next page"
 }
