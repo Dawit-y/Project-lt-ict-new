@@ -1,10 +1,8 @@
 import React, { useMemo, useState, Suspense, lazy, useEffect } from "react";
 import PropTypes from "prop-types";
-import { useLocation } from "react-router-dom";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
@@ -31,6 +29,9 @@ import {
 	Card,
 	CardBody,
 	Badge,
+	CardHeader,
+	CardTitle,
+	Spinner,
 } from "reactstrap";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
@@ -72,9 +73,7 @@ const LazyLoader = ({ children }) => (
 	<Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
 );
 const BudgetRequestModel = (props) => {
-	const { isActive, status, totalActualBudget } = props;
-	const location = useLocation();
-	const id = Number(location.pathname.split("/")[2]);
+	const { isActive, status, totalActualBudget, passedId: id } = props;
 	const param = {
 		project_id: id,
 		request_type: "single",
@@ -91,6 +90,12 @@ const BudgetRequestModel = (props) => {
 
 	const [budgetRequestMetaData, setBudgetRequestMetaData] = useState([]);
 	const [showCanvas, setShowCanvas] = useState(false);
+
+	const [yearLabels, setYearLabels] = useState({
+		beforePreviousYear: "",
+		previousYear: "",
+		currentYear: "",
+	});
 
 	const {
 		data: projectStatusData,
@@ -125,13 +130,13 @@ const BudgetRequestModel = (props) => {
 			toast.success(t("add_success"), {
 				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
 			if (!error.handledByMutationCache) {
 				toast.error(t("add_failure"), { autoClose: 3000 });
 			}
 		}
-		toggle();
 	};
 
 	const handleUpdateBudgetRequest = async (data) => {
@@ -140,13 +145,13 @@ const BudgetRequestModel = (props) => {
 			toast.success(t("update_success"), {
 				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
 			if (!error.handledByMutationCache) {
 				toast.error(t("update_failure"), { autoClose: 3000 });
 			}
 		}
-		toggle();
 	};
 
 	// validation
@@ -177,6 +182,30 @@ const BudgetRequestModel = (props) => {
 				(budgetRequest && budgetRequest.bdr_request_category_id) || "",
 			bdr_additional_days:
 				(budgetRequest && budgetRequest.bdr_additional_days) || "",
+
+			// New fields for previous years' performance
+			bdr_before_previous_year_physical:
+				(budgetRequest && budgetRequest.bdr_before_previous_year_physical) ||
+				"",
+			bdr_before_previous_year_financial:
+				(budgetRequest && budgetRequest.bdr_before_previous_year_financial) ||
+				"",
+			bdr_previous_year_physical:
+				(budgetRequest && budgetRequest.bdr_previous_year_physical) || "",
+			bdr_previous_year_financial:
+				(budgetRequest && budgetRequest.bdr_previous_year_financial) || "",
+
+			// New fields for funding sources (requested only)
+			bdr_source_government_requested:
+				(budgetRequest && budgetRequest.bdr_source_government_requested) || "",
+			bdr_source_internal_requested:
+				(budgetRequest && budgetRequest.bdr_source_internal_requested) || "",
+			bdr_source_support_requested:
+				(budgetRequest && budgetRequest.bdr_source_support_requested) || "",
+			bdr_source_credit_requested:
+				(budgetRequest && budgetRequest.bdr_source_credit_requested) || "",
+			bdr_source_other_requested:
+				(budgetRequest && budgetRequest.bdr_source_other_requested) || "",
 		},
 
 		validationSchema: Yup.object({
@@ -264,7 +293,7 @@ const BudgetRequestModel = (props) => {
 				)
 				.test(
 					"conditional-additional-days",
-					t("bdr_additional_days_required"),
+					t("val_required"),
 					function (value) {
 						const { bdr_request_category_id } = this.parent;
 						const categoryId = parseInt(bdr_request_category_id);
@@ -279,6 +308,67 @@ const BudgetRequestModel = (props) => {
 					}
 				)
 				.nullable(),
+
+			// Validation for new fields
+			bdr_before_previous_year_physical: Yup.number()
+				.min(
+					0,
+					t("min_error", {
+						field: t("bdr_before_previous_year_physical"),
+						min: 0,
+					})
+				)
+				.max(
+					100,
+					t("max_error", {
+						field: t("bdr_before_previous_year_physical"),
+						max: 100,
+					})
+				),
+			bdr_before_previous_year_financial: formattedAmountValidation(
+				0,
+				10000000000,
+				true
+			),
+			bdr_previous_year_physical: Yup.number()
+				.min(
+					0,
+					t("min_error", { field: t("bdr_previous_year_physical"), min: 0 })
+				)
+				.max(
+					100,
+					t("max_error", { field: t("bdr_previous_year_physical"), max: 100 })
+				),
+			bdr_previous_year_financial: formattedAmountValidation(
+				0,
+				10000000000,
+				true
+			),
+			bdr_source_government_requested: formattedAmountValidation(
+				0,
+				10000000000,
+				true
+			),
+			bdr_source_internal_requested: formattedAmountValidation(
+				0,
+				10000000000,
+				true
+			),
+			bdr_source_support_requested: formattedAmountValidation(
+				0,
+				10000000000,
+				true
+			),
+			bdr_source_credit_requested: formattedAmountValidation(
+				0,
+				10000000000,
+				true
+			),
+			bdr_source_other_requested: formattedAmountValidation(
+				0,
+				10000000000,
+				true
+			),
 		}),
 		validateOnBlur: true,
 		validateOnChange: false,
@@ -298,6 +388,26 @@ const BudgetRequestModel = (props) => {
 					bdr_financial_baseline: parseFloat(values.bdr_financial_baseline),
 					bdr_request_category_id: values.bdr_request_category_id,
 					bdr_additional_days: parseInt(values.bdr_additional_days) || null,
+
+					// New fields
+					bdr_before_previous_year_physical:
+						parseFloat(values.bdr_before_previous_year_physical) || 0,
+					bdr_before_previous_year_financial:
+						parseFloat(values.bdr_before_previous_year_financial) || 0,
+					bdr_previous_year_physical:
+						parseFloat(values.bdr_previous_year_physical) || 0,
+					bdr_previous_year_financial:
+						parseFloat(values.bdr_previous_year_financial) || 0,
+					bdr_source_government_requested:
+						parseFloat(values.bdr_source_government_requested) || 0,
+					bdr_source_internal_requested:
+						parseFloat(values.bdr_source_internal_requested) || 0,
+					bdr_source_support_requested:
+						parseFloat(values.bdr_source_support_requested) || 0,
+					bdr_source_credit_requested:
+						parseFloat(values.bdr_source_credit_requested) || 0,
+					bdr_source_other_requested:
+						parseFloat(values.bdr_source_other_requested) || 0,
 				};
 				handleUpdateBudgetRequest(updatedBudgetRequest);
 			} else {
@@ -315,6 +425,26 @@ const BudgetRequestModel = (props) => {
 					bdr_request_status: 1,
 					bdr_request_category_id: parseInt(values.bdr_request_category_id),
 					bdr_additional_days: parseInt(values.bdr_additional_days) || null,
+
+					// New fields
+					bdr_before_previous_year_physical:
+						parseFloat(values.bdr_before_previous_year_physical) || 0,
+					bdr_before_previous_year_financial:
+						parseFloat(values.bdr_before_previous_year_financial) || 0,
+					bdr_previous_year_physical:
+						parseFloat(values.bdr_previous_year_physical) || 0,
+					bdr_previous_year_financial:
+						parseFloat(values.bdr_previous_year_financial) || 0,
+					bdr_source_government_requested:
+						parseFloat(values.bdr_source_government_requested) || 0,
+					bdr_source_internal_requested:
+						parseFloat(values.bdr_source_internal_requested) || 0,
+					bdr_source_support_requested:
+						parseFloat(values.bdr_source_support_requested) || 0,
+					bdr_source_credit_requested:
+						parseFloat(values.bdr_source_credit_requested) || 0,
+					bdr_source_other_requested:
+						parseFloat(values.bdr_source_other_requested) || 0,
 				};
 				handleAddBudgetRequest(newBudgetRequest);
 			}
@@ -332,15 +462,33 @@ const BudgetRequestModel = (props) => {
 		}
 	}, [validation.values.bdr_request_category_id, modal]);
 
+	const budgetYearMap = useMemo(() => {
+		return createKeyValueMap(budgetYearData?.data || [], "bdy_id", "bdy_name");
+	}, [budgetYearData]);
+
+	useEffect(() => {
+		if (
+			validation.values.bdr_budget_year_id &&
+			budgetYearMap[validation.values.bdr_budget_year_id]
+		) {
+			const selectedYear = parseInt(
+				budgetYearMap[validation.values.bdr_budget_year_id]
+			);
+			if (!isNaN(selectedYear)) {
+				setYearLabels({
+					beforePreviousYear: (selectedYear - 2).toString(),
+					previousYear: (selectedYear - 1).toString(),
+					currentYear: selectedYear.toString(),
+				});
+			}
+		}
+	}, [validation.values.bdr_budget_year_id, budgetYearMap]);
+
 	const [transaction, setTransaction] = useState({});
 	const toggleViewModal = () => setModal1(!modal1);
 	const toggleActionModal = () => setActionModal(!actionModal);
 	const toggleFileModal = () => setFileModal(!fileModal);
 	const toggleConvModal = () => setConvModal(!convModal);
-
-	const budgetYearMap = useMemo(() => {
-		return createKeyValueMap(budgetYearData?.data || [], "bdy_id", "bdy_name");
-	}, [budgetYearData]);
 
 	const projectStatusMap = useMemo(() => {
 		return createMultiLangKeyValueMap(
@@ -396,6 +544,24 @@ const BudgetRequestModel = (props) => {
 			bdr_request_status: budgetRequest.bdr_request_status,
 			bdr_request_category_id: budgetRequest.bdr_request_category_id,
 			bdr_additional_days: budgetRequest.bdr_additional_days,
+
+			// New fields
+			bdr_before_previous_year_physical:
+				budgetRequest.bdr_before_previous_year_physical || 0,
+			bdr_before_previous_year_financial:
+				budgetRequest.bdr_before_previous_year_financial || 0,
+			bdr_previous_year_physical: budgetRequest.bdr_previous_year_physical || 0,
+			bdr_previous_year_financial:
+				budgetRequest.bdr_previous_year_financial || 0,
+			bdr_source_government_requested:
+				budgetRequest.bdr_source_government_requested || 0,
+			bdr_source_internal_requested:
+				budgetRequest.bdr_source_internal_requested || 0,
+			bdr_source_support_requested:
+				budgetRequest.bdr_source_support_requested || 0,
+			bdr_source_credit_requested:
+				budgetRequest.bdr_source_credit_requested || 0,
+			bdr_source_other_requested: budgetRequest.bdr_source_other_requested || 0,
 		});
 		setIsEdit(true);
 		toggle();
@@ -812,124 +978,255 @@ const BudgetRequestModel = (props) => {
 								</Card>
 							</Col>
 						</Row>
-						<Row>
-							<AsyncSelectField
-								fieldId="bdr_budget_year_id"
-								validation={validation}
-								isRequired
-								className="col-md-4 mb-3"
-								optionMap={budgetYearMap}
-								isLoading={bdyLoading}
-								isError={bdyIsError}
-							/>
-							<AsyncSelectField
-								fieldId="bdr_request_type"
-								validation={validation}
-								isRequired
-								className="col-md-4 mb-3"
-								optionMap={projectStatusMap}
-								isLoading={isPrsLoading}
-								isError={isPrsError}
-							/>
-							<AsyncSelectField
-								fieldId="bdr_request_category_id"
-								validation={validation}
-								isRequired
-								className="col-md-4 mb-3"
-								optionMap={RequestCatagoryMap}
-								isLoading={isBcLoading}
-								isError={isBcError}
-							/>
-							{[2, 3, 4].includes(
-								parseInt(validation.values.bdr_request_category_id)
-							) && (
-								<FormattedAmountField
-									validation={validation}
-									fieldId={"bdr_additional_days"}
-									label={t("bdr_additional_days")}
-									isRequired={true}
-									className="col-md-4 mb-3"
-									allowDecimal={false}
-								/>
-							)}
-							<FormattedAmountField
-								validation={validation}
-								fieldId={"bdr_requested_amount"}
-								isRequired={true}
-								className="col-md-4 mb-3"
-								allowDecimal={true}
-							/>
-							<FormattedAmountField
-								validation={validation}
-								fieldId={"bdr_physical_planned"}
-								label={t("bdr_physical_planned") + " " + t("in_percent")}
-								isRequired={true}
-								className="col-md-4 mb-3"
-								allowDecimal={true}
-							/>
-							<FormattedAmountField
-								validation={validation}
-								fieldId={"bdr_physical_baseline"}
-								label={t("bdr_physical_baseline") + " " + t("in_percent")}
-								isRequired={true}
-								className="col-md-4 mb-3"
-								allowDecimal={true}
-							/>
-							<FormattedAmountField
-								validation={validation}
-								fieldId={"bdr_financial_baseline"}
-								isRequired={true}
-								className="col-md-4 mb-3"
-								allowDecimal={true}
-							/>
-							<Col className="col-md-4 mb-3">
-								<DatePicker
-									isRequired={true}
-									validation={validation}
-									componentId="bdr_requested_date_gc"
-								/>
-							</Col>
-							<InputField
-								type="textarea"
-								validation={validation}
-								fieldId={"bdr_description"}
-								isRequired={false}
-								className="col-md-12 mb-3"
-								maxLength={400}
-							/>
-						</Row>
+
+						{/* Section 1: Basic Information */}
+						<Card>
+							<CardHeader className="col-12 mb-3">
+								<CardTitle>{t("basic_information")}</CardTitle>
+							</CardHeader>
+							<CardBody>
+								<Row>
+									<AsyncSelectField
+										fieldId="bdr_budget_year_id"
+										validation={validation}
+										isRequired
+										className="col-md-4 mb-3"
+										optionMap={budgetYearMap}
+										isLoading={bdyLoading}
+										isError={bdyIsError}
+									/>
+									<AsyncSelectField
+										fieldId="bdr_request_type"
+										validation={validation}
+										isRequired
+										className="col-md-4 mb-3"
+										optionMap={projectStatusMap}
+										isLoading={isPrsLoading}
+										isError={isPrsError}
+									/>
+									<AsyncSelectField
+										fieldId="bdr_request_category_id"
+										validation={validation}
+										isRequired
+										className="col-md-4 mb-3"
+										optionMap={RequestCatagoryMap}
+										isLoading={isBcLoading}
+										isError={isBcError}
+									/>
+									{[2, 3, 4].includes(
+										parseInt(validation.values.bdr_request_category_id)
+									) && (
+										<FormattedAmountField
+											validation={validation}
+											fieldId={"bdr_additional_days"}
+											label={t("bdr_additional_days")}
+											isRequired={true}
+											className="col-md-4 mb-3"
+											allowDecimal={false}
+										/>
+									)}
+								</Row>
+							</CardBody>
+						</Card>
+
+						{/* Section 2: Previous Years Performance */}
+						<Card>
+							<CardHeader className="col-12 mb-3">
+								<CardTitle>{t("previous_years_performance")}</CardTitle>
+							</CardHeader>
+							<>
+								<Row>
+									<Col md={4}>
+										<Card>
+											<CardBody>
+												<FormattedAmountField
+													validation={validation}
+													fieldId={"bdr_before_previous_year_physical"}
+													label={`${t("bdr_before_previous_year_physical")} ${yearLabels.beforePreviousYear} ${t("in_percent")}`}
+													isRequired={false}
+													className="col-md-12 mb-3"
+													allowDecimal={true}
+												/>
+												<FormattedAmountField
+													validation={validation}
+													fieldId={"bdr_before_previous_year_financial"}
+													label={`${t("bdr_before_previous_year_financial")} ${yearLabels.beforePreviousYear}`}
+													isRequired={false}
+													className="col-md-12 mb-3"
+													allowDecimal={true}
+												/>
+											</CardBody>
+										</Card>
+									</Col>
+									<Col md={4}>
+										<Card>
+											<CardBody>
+												<FormattedAmountField
+													validation={validation}
+													fieldId={"bdr_previous_year_physical"}
+													label={`${t("bdr_previous_year_physical")} ${yearLabels.previousYear} ${t("in_percent")}`}
+													isRequired={false}
+													className="col-md-12 mb-3"
+													allowDecimal={true}
+												/>
+												<FormattedAmountField
+													validation={validation}
+													fieldId={"bdr_previous_year_financial"}
+													label={`${t("bdr_previous_year_financial")} ${yearLabels.previousYear}`}
+													isRequired={false}
+													className="col-md-12 mb-3"
+													allowDecimal={true}
+												/>
+											</CardBody>
+										</Card>
+									</Col>
+									<Col md={4}>
+										<Card>
+											<CardBody>
+												<FormattedAmountField
+													validation={validation}
+													fieldId={"bdr_physical_baseline"}
+													label={`${t("bdr_physical_baseline")} ${t("upto")} ${yearLabels.currentYear} ${t("in_percent")}`}
+													isRequired={true}
+													className="col-md-12 mb-3"
+													allowDecimal={true}
+												/>
+												<FormattedAmountField
+													validation={validation}
+													fieldId={"bdr_financial_baseline"}
+													label={`${t("bdr_financial_baseline")} ${t("upto")} ${yearLabels.currentYear}`}
+													isRequired={true}
+													className="col-md-12 mb-3"
+													allowDecimal={true}
+												/>
+											</CardBody>
+										</Card>
+									</Col>
+								</Row>
+							</>
+						</Card>
+
+						{/* Section 3: Request For Current Year*/}
+						<Card>
+							<CardHeader className="col-12 mb-3">
+								<CardTitle>{`${t("request_for_current_year")} ${yearLabels.currentYear}`}</CardTitle>
+							</CardHeader>
+							<CardBody>
+								<Row>
+									<FormattedAmountField
+										validation={validation}
+										fieldId={"bdr_requested_amount"}
+										isRequired={true}
+										className="col-md-4 mb-3"
+										allowDecimal={true}
+									/>
+									<FormattedAmountField
+										validation={validation}
+										fieldId={"bdr_physical_planned"}
+										label={t("bdr_physical_planned") + " " + t("in_percent")}
+										isRequired={true}
+										className="col-md-4 mb-3"
+										allowDecimal={true}
+									/>
+									<Col className="col-md-4 mb-3">
+										<DatePicker
+											isRequired={true}
+											validation={validation}
+											componentId="bdr_requested_date_gc"
+										/>
+									</Col>
+								</Row>
+							</CardBody>
+						</Card>
+
+						{/* Section 4: Funding Sources (Requested) */}
+						<Card>
+							<CardHeader className="col-12 mb-3">
+								<CardTitle>{t("funding_sources_requested")}</CardTitle>
+							</CardHeader>
+							<CardBody>
+								<Row>
+									<FormattedAmountField
+										validation={validation}
+										fieldId={"bdr_source_government_requested"}
+										label={t("bdr_source_government_requested")}
+										isRequired={false}
+										className="col-md-4 mb-3"
+										allowDecimal={true}
+									/>
+									<FormattedAmountField
+										validation={validation}
+										fieldId={"bdr_source_internal_requested"}
+										label={t("bdr_source_internal_requested")}
+										isRequired={false}
+										className="col-md-4 mb-3"
+										allowDecimal={true}
+									/>
+									<FormattedAmountField
+										validation={validation}
+										fieldId={"bdr_source_support_requested"}
+										label={t("bdr_source_support_requested")}
+										isRequired={false}
+										className="col-md-4 mb-3"
+										allowDecimal={true}
+									/>
+									<FormattedAmountField
+										validation={validation}
+										fieldId={"bdr_source_credit_requested"}
+										label={t("bdr_source_credit_requested")}
+										isRequired={false}
+										className="col-md-4 mb-3"
+										allowDecimal={true}
+									/>
+									<FormattedAmountField
+										validation={validation}
+										fieldId={"bdr_source_other_requested"}
+										label={t("bdr_source_other_requested")}
+										isRequired={false}
+										className="col-md-4 mb-3"
+										allowDecimal={true}
+									/>
+								</Row>
+							</CardBody>
+						</Card>
+
+						{/* Section 5: Description */}
+						<Card>
+							<CardHeader className="col-12 mb-3">
+								<CardTitle>{t("additional_information")}</CardTitle>
+							</CardHeader>
+							<CardBody>
+								<Row>
+									<InputField
+										type="textarea"
+										validation={validation}
+										fieldId={"bdr_description"}
+										isRequired={false}
+										className="col-md-12 mb-3"
+										maxLength={400}
+									/>
+								</Row>
+							</CardBody>
+						</Card>
 						<Row>
 							<Col>
 								<div className="text-end">
-									{addBudgetRequest.isPending ||
-									updateBudgetRequest.isPending ? (
-										<Button
-											color="success"
-											type="submit"
-											className="save-user"
-											disabled={
-												addBudgetRequest.isPending ||
-												updateBudgetRequest.isPending ||
-												!validation.dirty
-											}
-										>
-											<Spinner size={"sm"} color="#fff" className="me-2" />
-											{t("Save")}
-										</Button>
-									) : (
-										<Button
-											color="success"
-											type="submit"
-											className="save-user"
-											disabled={
-												addBudgetRequest.isPending ||
-												updateBudgetRequest.isPending ||
-												!validation.dirty
-											}
-										>
-											{t("Save")}
-										</Button>
-									)}
+									<Button
+										color="success"
+										type="submit"
+										className="save-user"
+										disabled={
+											addBudgetRequest.isPending ||
+											updateBudgetRequest.isPending ||
+											!validation.dirty
+										}
+									>
+										{(addBudgetRequest.isPending ||
+											updateBudgetRequest.isPending) && (
+											<Spinner size="sm" color="#fff" className="me-2" />
+										)}
+										{t("Save")}
+									</Button>
 								</div>
 							</Col>
 						</Row>

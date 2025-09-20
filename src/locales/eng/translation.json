@@ -1994,5 +1994,18 @@
 	"bdr_additional_days": "Additional Days",
 	"table_continued": "Table Continued",
 	"part": "Part",
-	"table_continues_next_page": "Table continues on next page"
+	"table_continues_next_page": "Table continues on next page",
+	"bdr_before_previous_year_physical": "Before Previous Year Physical (%)",
+	"bdr_before_previous_year_financial": "Before Previous Year Financial",
+	"bdr_previous_year_physical": "Previous Year Physical (%)",
+	"bdr_previous_year_financial": "Previous Year Financial",
+	"bdr_source_government_requested": "Government Funding Requested",
+	"bdr_source_internal_requested": "Internal Funding Requested",
+	"bdr_source_support_requested": "Support/Grant Funding Requested",
+	"bdr_source_credit_requested": "Credit/Loan Funding Requested",
+	"bdr_source_other_requested": "Other Funding Requested",
+	"previous_years_performance": "Previous Years Performance",
+	"funding_sources_requested": "Funding Sources (Requested)",
+	"performance_indicators": "Performance Indicators",
+	"request_for_current_year": "Request For Current Year"
 }
