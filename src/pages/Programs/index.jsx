@@ -180,120 +180,127 @@ const Programs = () => {
   }, [programs?.data, activeSectorId]);
 
   const columns = React.useMemo(
-    () => [
-      {
-        accessorKey: "sci_name_or",
-        header: "Name",
-        cell: ({ row, getValue }) => {
-          const hasChildren = row.original.level !== "output";
-          const depth = row.depth;
-          const indent = `${depth * 3}rem`;
-          const shouldAddOffset = !hasChildren && depth !== 3;
-          const showSpinner =
-            (isProgramLoading || isFetching) &&
-            row.id === selectedRow?.id &&
-            row.getIsExpanded();
+		() => [
+			{
+				accessorKey: "sci_name_or",
+				header: "Name",
+				cell: ({ row, getValue }) => {
+					const hasChildren = row.original.level !== "output";
+					const depth = row.depth;
+					const indent = `${depth * 3}rem`;
+					const shouldAddOffset = !hasChildren && depth !== 3;
+					const showSpinner =
+						(isProgramLoading || isFetching) &&
+						row.id === selectedRow?.id &&
+						row.getIsExpanded();
 
-          const handleClick = () => {
-            if (row.original.level === "sector") {
-              handleSectorClick(row);
-            } else {
-              row.toggleExpanded();
-            }
-          };
+					const handleClick = () => {
+						if (row.original.level === "sector") {
+							handleSectorClick(row);
+						} else {
+							row.toggleExpanded();
+						}
+					};
 
-          return (
-            <div style={{ paddingLeft: indent }}>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                {hasChildren ? (
-                  <Button
-                    onClick={handleClick}
-                    className="text-secondary"
-                    style={{
-                      background: "none",
-                      border: "none",
-                      padding: 2,
-                      marginRight: "0.5rem",
-                      cursor: "pointer",
-                    }}
-                    disabled={showSpinner}
-                  >
-                    {showSpinner ? (
-                      <Spinner size={"sm"} />
-                    ) : row.getIsExpanded() ? (
-                      <FaChevronDown />
-                    ) : (
-                      <FaChevronRight />
-                    )}
-                  </Button>
-                ) : shouldAddOffset ? (
-                  <span
-                    style={{
-                      display: "inline-block",
-                      width: "1.5rem",
-                      marginRight: "0.5rem",
-                    }}
-                  />
-                ) : null}
-                {getValue()}
-              </div>
-            </div>
-          );
-        },
-        footer: (props) => props.column.id,
-        size: 400,
-      },
-      {
-        accessorKey: "sci_name_am",
-        header: "Name (Amharic)",
-        footer: (props) => props.column.id,
-        size: 200,
-      },
-      {
-        accessorKey: "sci_name_en",
-        header: "Name (English)",
-        footer: (props) => props.column.id,
-        size: 200,
-      },
-      {
-        accessorKey: "level",
-        header: () => <>Level</>,
-        cell: ({ getValue }) => {
-          const value = getValue();
-          if (value === "sub_program") return "Sub Program";
-          return value
-            ? value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()
-            : "";
-        },
-        footer: (props) => props.column.id,
-        enableColumnFilter: false,
-        size: 200,
-      },
-      {
-        id: "actions",
-        header: "Actions",
-        size: 120,
-        cell: (props) => (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "start",
-              alignItems: "center",
-              height: "100%",
-            }}
-          >
-            <RowActions
-              row={props.row}
-              toggleForm={toggleFormModal}
-              toggleDelete={toggleDeleteModal}
-              setSelectedRow={setSelectedRow}
-            />
-          </div>
-        ),
-      },
-    ],
-    [handleSectorClick, isFetching, selectedRow?.id, isProgramLoading],
-  );
+					return (
+						<div style={{ paddingLeft: indent }}>
+							<div style={{ display: "flex", alignItems: "center" }}>
+								{hasChildren ? (
+									<Button
+										onClick={handleClick}
+										className="text-secondary"
+										style={{
+											background: "none",
+											border: "none",
+											padding: 2,
+											marginRight: "0.5rem",
+											cursor: "pointer",
+										}}
+										disabled={showSpinner}
+									>
+										{showSpinner ? (
+											<Spinner size={"sm"} />
+										) : row.getIsExpanded() ? (
+											<FaChevronDown />
+										) : (
+											<FaChevronRight />
+										)}
+									</Button>
+								) : shouldAddOffset ? (
+									<span
+										style={{
+											display: "inline-block",
+											width: "1.5rem",
+											marginRight: "0.5rem",
+										}}
+									/>
+								) : null}
+								{getValue()}
+							</div>
+						</div>
+					);
+				},
+				footer: (props) => props.column.id,
+				size: 400,
+			},
+			{
+				accessorKey: "sci_name_am",
+				header: "Name (Amharic)",
+				footer: (props) => props.column.id,
+				size: 200,
+			},
+			{
+				accessorKey: "sci_name_en",
+				header: "Name (English)",
+				footer: (props) => props.column.id,
+				size: 200,
+			},
+			{
+				accessorKey: "pri_program_code",
+				header: "Code",
+				footer: (props) => props.column.id,
+				size: 200,
+				enableColumnFilter: false,
+			},
+			{
+				accessorKey: "level",
+				header: () => <>Level</>,
+				cell: ({ getValue }) => {
+					const value = getValue();
+					if (value === "sub_program") return "Sub Program";
+					return value
+						? value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()
+						: "";
+				},
+				footer: (props) => props.column.id,
+				enableColumnFilter: false,
+				size: 200,
+			},
+			{
+				id: "actions",
+				header: "Actions",
+				size: 120,
+				cell: (props) => (
+					<div
+						style={{
+							display: "flex",
+							justifyContent: "start",
+							alignItems: "center",
+							height: "100%",
+						}}
+					>
+						<RowActions
+							row={props.row}
+							toggleForm={toggleFormModal}
+							toggleDelete={toggleDeleteModal}
+							setSelectedRow={setSelectedRow}
+						/>
+					</div>
+				),
+			},
+		],
+		[handleSectorClick, isFetching, selectedRow?.id, isProgramLoading]
+	);
 
   if (isError) return <FetchErrorHandler error={error} refetch={refetch} />;
 
@@ -335,56 +342,81 @@ function RowActions({ row, toggleForm, toggleDelete, setSelectedRow }) {
   const safeId = `action-${row.id}`;
 
   return (
-    <div className="d-flex align-items-center justify-content-start gap-1">
-      {row.original.level !== "output" && (
-        <>
-          <Button
-            id={`${safeId}-add`}
-            onClick={() => {
-              setSelectedRow(row.original);
-              toggleForm("add");
-            }}
-            className="text-primary"
-            style={{
-              background: "none",
-              border: "none",
-              padding: 2,
-              marginRight: "0.5rem",
-              cursor: "pointer",
-            }}
-          >
-            <FaPlus />
-          </Button>
-          <UncontrolledTooltip placement="top" target={`${safeId}-add`}>
-            Add
-          </UncontrolledTooltip>
-        </>
-      )}
+		<div className="d-flex align-items-center justify-content-start gap-1">
+			{row.original.level !== "output" && (
+				<>
+					<Button
+						id={`${safeId}-add`}
+						onClick={() => {
+							setSelectedRow(row.original);
+							toggleForm("add");
+						}}
+						className="text-primary"
+						style={{
+							background: "none",
+							border: "none",
+							padding: 2,
+							marginRight: "0.5rem",
+							cursor: "pointer",
+						}}
+					>
+						<FaPlus />
+					</Button>
+					<UncontrolledTooltip placement="top" target={`${safeId}-add`}>
+						Add
+					</UncontrolledTooltip>
+				</>
+			)}
 
-      {row.original.level !== "sector" && (
-        <>
-          <Button
-            id={`${safeId}-edit`}
-            onClick={() => {
-              setSelectedRow(row.original);
-              toggleForm("edit");
-            }}
-            className="text-success"
-            style={{
-              background: "none",
-              border: "none",
-              padding: 2,
-              marginRight: "0.5rem",
-              cursor: "pointer",
-            }}
-          >
-            <FaPen />
-          </Button>
-          <UncontrolledTooltip placement="top" target={`${safeId}-edit`}>
-            Edit
-          </UncontrolledTooltip>
-        </>
-      )}
-    </div>
-  );
+			{row.original.level !== "sector" && (
+				<>
+					<Button
+						id={`${safeId}-edit`}
+						onClick={() => {
+							setSelectedRow(row.original);
+							toggleForm("edit");
+						}}
+						className="text-success"
+						style={{
+							background: "none",
+							border: "none",
+							padding: 2,
+							marginRight: "0.5rem",
+							cursor: "pointer",
+						}}
+					>
+						<FaPen />
+					</Button>
+					<UncontrolledTooltip placement="top" target={`${safeId}-edit`}>
+						Edit
+					</UncontrolledTooltip>
+				</>
+			)}
+			{/* 
+			{row.original.level !== "sector" && (
+				<>
+					<Button
+						id={`${safeId}-delete`}
+						onClick={() => {
+							setSelectedRow(row.original);
+							toggleDelete();
+						}}
+						className="text-danger"
+						style={{
+							background: "none",
+							border: "none",
+							padding: 2,
+							marginRight: "0.5rem",
+							cursor: "pointer",
+						}}
+					>
+						<FaTrash />
+					</Button>
+					<UncontrolledTooltip placement="top" target={`${safeId}-delete`}>
+						Delete
+					</UncontrolledTooltip>
+				</>
+			)} */}
+		</div>
+	);
 }

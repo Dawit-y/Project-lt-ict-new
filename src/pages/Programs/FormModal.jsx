@@ -101,12 +101,13 @@ const FormModal = ({
 				toast.success(t("delete_success"), {
 					autoClose: 3000,
 				});
-			} catch (error) {
-				toast.error(t("delete_failure"), {
-					autoClose: 3000,
-				});
-			} finally {
 				toggleDelete();
+			} catch (error) {
+				if (!error.handledByMutationCache) {
+					toast.error(t("delete_failure"), {
+						autoClose: 3000,
+					});
+				}
 			}
 		}
 	};
@@ -127,15 +128,14 @@ const FormModal = ({
 	};
 
 	const validationSchema = Yup.object({
-		pri_name_or: Yup.string()
-			.required(t("Field is required."))
-			.test("unique", t("Already exists"), function (value) {
-				if (action === "add") {
-					return !checkNameExists(data, value);
-				} else {
-					return !checkNameExists(data, value, selectedRow?.id);
-				}
-			}),
+		pri_name_or: Yup.string().required(t("Field is required.")),
+		// .test("unique", t("Already exists"), function (value) {
+		// 	if (action === "add") {
+		// 		return !checkNameExists(data, value);
+		// 	} else {
+		// 		return !checkNameExists(data, value, selectedRow?.id);
+		// 	}
+		// }),
 		pri_name_am: onlyAmharicValidation(3, 200, false),
 		pri_name_en: Yup.string().required(t("Field is required.")),
 		pri_program_code: Yup.string().required(t("Field is required.")),
