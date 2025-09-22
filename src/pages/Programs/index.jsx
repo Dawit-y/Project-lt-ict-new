@@ -392,7 +392,7 @@ function RowActions({ row, toggleForm, toggleDelete, setSelectedRow }) {
 				</>
 			)}
 
-			{row.original.level !== "sector" && (
+			{/* {row.original.level !== "sector" && (
 				<>
 					<Button
 						id={`${safeId}-delete`}
@@ -415,7 +415,7 @@ function RowActions({ row, toggleForm, toggleDelete, setSelectedRow }) {
 						Delete
 					</UncontrolledTooltip>
 				</>
-			)}
+			)} */}
 		</div>
 	);
 }
