@@ -1,62 +1,50 @@
-import { useMemo } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
-  Button,
-  Modal,
-  ModalBody,
-  Col,
-  Spinner,
-  Alert,
-  Table,
+	Button,
+	Modal,
+	ModalBody,
+	Col,
+	Row,
+	Card,
+	CardBody,
+	Badge,
 } from "reactstrap";
-import { DetailsView } from "../../components/Common/DetailViewWrapper";
-import { useFetchBudgetRequestAmounts } from "../../queries/budgetrequestamount_query";
-import { useFetchBudgetRequestTasks } from "../../queries/budgetrequesttask_query";
-import { useFetchExpenditureCodes } from "../../queries/expenditurecode_query";
-import { createKeyValueMap } from "../../utils/commonMethods";
 import {
-  PrintBudgetRequestTables,
-  ExportBudgetRequestTablesToExcel,
-} from "./Export";
-import { FaWindowClose } from "react-icons/fa";
+	FaWindowClose,
+	FaMoneyBillWave,
+	FaChartLine,
+	FaBuilding,
+	FaCalendar,
+	FaInfoCircle,
+} from "react-icons/fa";
 
 const modalStyle = {
-  width: "100%",
+	width: "100%",
 };
 
 const BudgetRequestModal = ({
-  isOpen,
-  toggle,
-  transaction,
-  showDetail = true,
+	isOpen,
+	toggle,
+	transaction,
+	requestCatagoryMap,
+	projectStatusMap,
 }) => {
-  const { t } = useTranslation();
-  const id = transaction?.bdr_id;
+	const { t } = useTranslation();
 
-  const brAmountsQuery = useFetchBudgetRequestAmounts(
-    { budget_request_id: id },
-    isOpen,
-  );
-  const brTasksQuery = useFetchBudgetRequestTasks(
-    { budget_request_id: id },
-    isOpen,
-  );
+	if (!transaction) return null;
 
-  const {
-    data: exCodesData,
-    isLoading: exCodesLoading,
-    isError: exCodesError,
-  } = useFetchExpenditureCodes();
+	// Format currency values
+	const formatCurrency = (value) => {
+		if (value === null || value === undefined) return "N/A";
+		return new Intl.NumberFormat("en-US", {
+			style: "currency",
+			currency: "ETB",
+			minimumFractionDigits: 2,
+		}).format(value);
+	};
 
-  const expendCodeMap = useMemo(() => {
-    return createKeyValueMap(exCodesData?.data || [], "pec_id", "pec_code");
-  }, [exCodesData]);
-
-  const isLoading = brAmountsQuery.isLoading || brTasksQuery.isLoading;
-  const isError = brAmountsQuery.error || brTasksQuery.error;
-
-  return (
+	return (
 		<Modal
 			isOpen={isOpen}
 			centered
@@ -65,224 +53,324 @@ const BudgetRequestModal = ({
 			style={modalStyle}
 		>
 			<div className="p-3 d-flex justify-content-between align-items-center rounded border-bottom">
-				<h5 className="modal-title">{t("view_detail")}</h5>
+				<div className="d-flex align-items-center gap-3">
+					<FaMoneyBillWave className="fs-3 text-primary" />
+					<div>
+						<h5 className="modal-title mb-0">
+							{t("view_detail") || "Budget Request Details"}
+						</h5>
+						<small className="text-muted">
+							Project Budget Request Information
+						</small>
+					</div>
+				</div>
 				<Col className="d-flex align-items-center justify-content-end gap-2">
-					{!isLoading && !isError && <PrintBudgetRequestTables />}
-					{!isLoading && !isError && (
-						<ExportBudgetRequestTablesToExcel
-							brAmountsData={brAmountsQuery.data?.data || []}
-							brTasksData={brTasksQuery.data?.data || []}
-							expendCodeMap={expendCodeMap}
-						/>
-					)}
-					<Button color="secondary" onClick={toggle}>
+					<Button
+						color="secondary"
+						onClick={toggle}
+						className="d-flex align-items-center gap-2"
+					>
 						<FaWindowClose />
+						Close
 					</Button>
 				</Col>
 			</div>
-			<ModalBody>
-				{isLoading ? (
-					<div className="text-center">
-						<Spinner color="primary" />
-						<p>{t("loading")}</p>
-					</div>
-				) : isError ? (
-					<Alert color="danger">{t("failed_to_load")}</Alert>
-				) : (
-					<>
-						{showDetail && (
-							<DetailsView
-								details={transaction}
-								keysToRemove={[
-									"bdr_id",
-									"bdr_project_id",
-									"bdr_released_date_ec",
-									"bdr_requested_date_ec",
-									"bdr_create_time",
-									"bdr_update_time",
-									"bdr_delete_time",
-									"bdr_action_remark",
-									"bdr_status",
-									"bdr_created_by",
-									"is_editable",
-									"is_deletable",
-									"color_code",
-									"bdr_request_status",
-									"bdr_source_government_approved",
-									"bdr_source_support_approved",
-									"bdr_source_credit_approved",
-									"bdr_source_other_approved",
-								]}
-							/>
-						)}
 
-						<div id="budget-request-amount-table">
-							<h5 className="mt-4 mb-2 text-center">
-								{t("budget_request_amounts")}
-							</h5>
-							<Table striped bordered responsive>
-								<thead>
-									<tr>
-										<th rowSpan={2}>{""}</th>
-										<th rowSpan={2}></th>
-										<th rowSpan={2}></th>
-										<th rowSpan={2}></th>
-										<th colSpan={6} className="text-center">
-											{t("source_of_finance")}
-										</th>
-									</tr>
-									<tr>
-										<th>{""}</th>
-										<th>{""}</th>
-										<th colSpan={2} className="text-center">
-											{t("external_assistance")}
-										</th>
-										<th colSpan={2} className="text-center">
-											{t("foreign_debt")}
-										</th>
-									</tr>
-									<tr>
-										<th>{t("s_n")}</th>
-										<th>{t("expenditure_code")}</th>
-										<th>{t("current_year_expense")}</th>
-										<th>{t("requested_amount")}</th>
-										<th>{t("gov_requested")}</th>
-										<th>{t("internal_requested")}</th>
-										<th>{t("support_requested")}</th>
-										<th>{t("support_code")}</th>
-										<th>{t("credit_requested")}</th>
-										<th>{t("credit_code")}</th>
-									</tr>
-								</thead>
-								<tbody>
-									{brAmountsQuery?.data?.data.map((row, idx) => (
-										<tr key={row.id || idx}>
-											<td>{idx + 1}</td>
-											<td>{expendCodeMap[row.bra_expenditure_code_id]}</td>
-											<td>
-												{parseFloat(
-													row.bra_current_year_expense
-												).toLocaleString() || "-"}
-											</td>
-											<td>
-												{parseFloat(
-													row.bra_requested_amount
-												).toLocaleString() || "-"}
-											</td>
-											<td>
-												{parseFloat(
-													row.bra_source_government_requested
-												).toLocaleString() || "-"}
-											</td>
-											<td>
-												{parseFloat(
-													row.bra_source_internal_requested
-												).toLocaleString() || "-"}
-											</td>
-											<td>
-												{parseFloat(
-													row.bra_source_support_requested
-												).toLocaleString() || "-"}
-											</td>
-											<td>{row.bra_source_support_code || "-"}</td>
-											<td>
-												{parseFloat(
-													row.bra_source_credit_requested
-												).toLocaleString() || "-"}
-											</td>
-											<td>{row.bra_source_credit_code || "-"}</td>
-										</tr>
-									))}
-								</tbody>
-							</Table>
-						</div>
-						<div id="budget-request-task-table">
-							<h5 className="mt-4 mb-2 text-center">
-								{t("budget_request_tasks")}
-							</h5>
-							<Table bordered responsive>
-								<thead>
-									<tr>
-										<th rowSpan={2}>{t("s_n")}</th>
-										<th rowSpan={2}>{t("task_name")}</th>
-										<th rowSpan={2}>{t("measurement")}</th>
-										<th colSpan={2} className="text-center">
-											{t("performance_last_year")}
-										</th>
-										<th colSpan={2} className="text-center">
-											{t("performance_this_year")}
-										</th>
-										<th colSpan={2} className="text-center">
-											{t("plans_coming_year")}
-										</th>
-									</tr>
-									<tr>
-										<th>{t("physical")}</th>
-										<th>{t("financial")}</th>
-										<th>{t("physical")}</th>
-										<th>{t("financial")}</th>
-										<th>{t("physical")}</th>
-										<th>{t("financial")}</th>
-									</tr>
-								</thead>
-								<tbody>
-									{brTasksQuery?.data?.data.map((row, index) => (
-										<tr key={row.id || index}>
-											<td>{index + 1}</td>
-											<td>{row.brt_task_name}</td>
-											<td>{row.brt_measurement}</td>
-											<td>
-												{row.brt_previous_year_physical != null
-													? `${row.brt_previous_year_physical}%`
-													: "-"}
-											</td>
-											<td>
-												{row.brt_previous_year_financial != null
-													? parseFloat(
-															row.brt_previous_year_financial
-														).toLocaleString()
-													: "-"}
-											</td>
-											<td>
-												{row.brt_current_year_physical != null
-													? `${row.brt_current_year_physical}%`
-													: "-"}
-											</td>
-											<td>
-												{row.brt_current_year_financial != null
-													? parseFloat(
-															row.brt_current_year_financial
-														).toLocaleString()
-													: "-"}
-											</td>
-											<td>
-												{row.brt_next_year_physical != null
-													? `${row.brt_next_year_physical}%`
-													: "-"}
-											</td>
-											<td>
-												{row.brt_next_year_financial != null
-													? parseFloat(
-															row.brt_next_year_financial
-														).toLocaleString()
-													: "-"}
-											</td>
-										</tr>
-									))}
-								</tbody>
-							</Table>
-						</div>
-					</>
-				)}
+			<ModalBody className="bg-light">
+				<div className="py-3">
+					{/* Project Information Section */}
+					<Card className="mb-4 shadow-sm">
+						<CardBody>
+							<h6 className="card-title d-flex align-items-center gap-2 text-primary mb-3">
+								<FaBuilding className="fs-5" />
+								Project Information
+							</h6>
+							<Row>
+								<Col md={6} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Project Name
+										</small>
+										<span className="fs-6">
+											{transaction.prj_name || "N/A"}
+										</span>
+									</div>
+								</Col>
+								<Col md={6} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">Sector</small>
+										<span className="fs-6">
+											{transaction.sector_name || "N/A"}
+										</span>
+									</div>
+								</Col>
+								<Col md={6} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Budget Year
+										</small>
+										<span className="fs-6">
+											{transaction.bdy_name || "N/A"}
+										</span>
+									</div>
+								</Col>
+								<Col md={6} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">Status</small>
+										<Badge color="success" className="fs-6">
+											{transaction.status_name || "N/A"}
+										</Badge>
+									</div>
+								</Col>
+							</Row>
+						</CardBody>
+					</Card>
+
+					{/* Performance Metrics Section */}
+					<Card className="mb-4 shadow-sm">
+						<CardBody>
+							<h6 className="card-title d-flex align-items-center gap-2 text-primary mb-3">
+								<FaChartLine className="fs-5" />
+								Performance Metrics
+							</h6>
+							<Row>
+								<Col md={6} lg={4} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Before Previous Year - Physical
+										</small>
+										<span className="fs-6">
+											{transaction.bdr_before_previous_year_physical || 0}
+										</span>
+									</div>
+								</Col>
+								<Col md={6} lg={4} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Before Previous Year - Financial
+										</small>
+										<span className="fs-6">
+											{formatCurrency(
+												transaction.bdr_before_previous_year_financial
+											)}
+										</span>
+									</div>
+								</Col>
+								<Col md={6} lg={4} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Previous Year - Physical
+										</small>
+										<span className="fs-6">
+											{transaction.bdr_previous_year_physical || 0}
+										</span>
+									</div>
+								</Col>
+								<Col md={6} lg={4} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Previous Year - Financial
+										</small>
+										<span className="fs-6">
+											{formatCurrency(transaction.bdr_previous_year_financial)}
+										</span>
+									</div>
+								</Col>
+								<Col md={6} lg={4} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Physical Baseline
+										</small>
+										<span className="fs-6">
+											{transaction.bdr_physical_baseline || 0}
+										</span>
+									</div>
+								</Col>
+								<Col md={6} lg={4} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Financial Baseline
+										</small>
+										<span className="fs-6">
+											{formatCurrency(transaction.bdr_financial_baseline)}
+										</span>
+									</div>
+								</Col>
+								<Col md={6} lg={4} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Physical Planned
+										</small>
+										<span className="fs-6">
+											{transaction.bdr_physical_planned || 0}
+										</span>
+									</div>
+								</Col>
+								<Col md={6} lg={4} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Additional Days
+										</small>
+										<span className="fs-6">
+											{transaction.bdr_additional_days || 0}
+										</span>
+									</div>
+								</Col>
+							</Row>
+						</CardBody>
+					</Card>
+
+					{/* Budget Sources Section */}
+					<Card className="mb-4 shadow-sm">
+						<CardBody>
+							<h6 className="card-title d-flex align-items-center gap-2 text-primary mb-3">
+								<FaInfoCircle className="fs-5" />
+								Budget Sources
+							</h6>
+							<Row>
+								<Col md={6} lg={4} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Government Requested
+										</small>
+										<span className="fs-6">
+											{formatCurrency(
+												transaction.bdr_source_government_requested
+											)}
+										</span>
+									</div>
+								</Col>
+								<Col md={6} lg={4} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Internal Requested
+										</small>
+										<span className="fs-6">
+											{formatCurrency(
+												transaction.bdr_source_internal_requested
+											)}
+										</span>
+									</div>
+								</Col>
+								<Col md={6} lg={4} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Support Requested
+										</small>
+										<span className="fs-6">
+											{formatCurrency(transaction.bdr_source_support_requested)}
+										</span>
+									</div>
+								</Col>
+								<Col md={6} lg={4} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Credit Requested
+										</small>
+										<span className="fs-6">
+											{formatCurrency(transaction.bdr_source_credit_requested)}
+										</span>
+									</div>
+								</Col>
+								<Col md={6} lg={4} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Other Requested
+										</small>
+										<span className="fs-6">
+											{formatCurrency(transaction.bdr_source_other_requested)}
+										</span>
+									</div>
+								</Col>
+							</Row>
+						</CardBody>
+					</Card>
+
+					{/* Financial Summary Section */}
+					<Card className="mb-4 shadow-sm">
+						<CardBody>
+							<h6 className="card-title d-flex align-items-center gap-2 text-primary mb-3">
+								<FaMoneyBillWave className="fs-5" />
+								Financial Summary
+							</h6>
+							<Row>
+								<Col md={4} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Requested Amount
+										</small>
+										<span className="fs-6 text-primary fw-bold">
+											{formatCurrency(transaction.bdr_requested_amount)}
+										</span>
+									</div>
+								</Col>
+								<Col md={4} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Released Amount
+										</small>
+										<span className="fs-6 text-success fw-bold">
+											{formatCurrency(transaction.bdr_released_amount)}
+										</span>
+									</div>
+								</Col>
+							</Row>
+						</CardBody>
+					</Card>
+
+					{/* Request Details Section */}
+					<Card className="mb-4 shadow-sm">
+						<CardBody>
+							<h6 className="card-title d-flex align-items-center gap-2 text-primary mb-3">
+								<FaCalendar className="fs-5" />
+								Request Details
+							</h6>
+							<Row>
+								<Col md={6} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Request Type
+										</small>
+										<span className="fs-6">
+											{projectStatusMap[transaction.bdr_request_type] || "N/A"}
+										</span>
+									</div>
+								</Col>
+								<Col md={6} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Request Category
+										</small>
+										<span className="fs-6">
+											{requestCatagoryMap[
+												transaction.bdr_request_category_id
+											] || "N/A"}
+										</span>
+									</div>
+								</Col>
+								<Col md={12} className="mb-3">
+									<div className="border-bottom pb-2">
+										<small className="text-muted fw-bold d-block">
+											Description
+										</small>
+										<span className="fs-6">
+											{transaction.bdr_description || "No description provided"}
+										</span>
+									</div>
+								</Col>
+							</Row>
+						</CardBody>
+					</Card>
+				</div>
 			</ModalBody>
 		</Modal>
 	);
 };
 
 BudgetRequestModal.propTypes = {
-  toggle: PropTypes.func,
-  isOpen: PropTypes.bool,
-  transaction: PropTypes.object,
+	toggle: PropTypes.func,
+	isOpen: PropTypes.bool,
+	transaction: PropTypes.object,
 };
 
 export default BudgetRequestModal;

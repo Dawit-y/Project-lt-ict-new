@@ -1,11 +1,11 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import TreeTableContainer from "./TreeTable";
 import {
-  FaChevronRight,
-  FaChevronDown,
-  FaPen,
-  FaPlus,
-  FaTrash,
+	FaChevronRight,
+	FaChevronDown,
+	FaPen,
+	FaPlus,
+	FaTrash,
 } from "react-icons/fa";
 import { Button, Card, Spinner, UncontrolledTooltip } from "reactstrap";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
@@ -16,170 +16,170 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import Spinners from "../../components/Common/Spinner";
 
 const transformData = (data) => {
-  return data.map((item) => {
-    return {
-      ...item,
-      p_id: item.sci_id,
-      id: `sector-${item.sci_id}`,
-      level: "sector",
-      children: [],
-    };
-  });
+	return data.map((item) => {
+		return {
+			...item,
+			p_id: item.sci_id,
+			id: `sector-${item.sci_id}`,
+			level: "sector",
+			children: [],
+		};
+	});
 };
 
 const levelMap = {
-  1: "program",
-  2: "program",
-  3: "sub_program",
-  4: "output",
-  5: "project",
+	1: "program",
+	2: "program",
+	3: "sub_program",
+	4: "output",
+	5: "project",
 };
 
 const formatProgramRow = (program) => {
-  const level = levelMap[program.pri_object_type_id] || "unknown";
-  return {
-    ...program,
-    p_id: program.id,
-    id: `${level}-${program.id}`,
-    name: program.name,
-    sci_name_or: program.pri_name_or,
-    sci_name_am: program.pri_name_am,
-    sci_name_en: program.name,
-    level,
-    children: (program.children || [])
-      .filter((child) => child.pri_object_type_id !== 5)
-      .map((child) => formatProgramRow(child)),
-  };
+	const level = levelMap[program.pri_object_type_id] || "unknown";
+	return {
+		...program,
+		p_id: program.id,
+		id: `${level}-${program.id}`,
+		name: program.name,
+		sci_name_or: program.pri_name_or,
+		sci_name_am: program.pri_name_am,
+		sci_name_en: program.name,
+		level,
+		children: (program.children || [])
+			.filter((child) => child.pri_object_type_id !== 5)
+			.map((child) => formatProgramRow(child)),
+	};
 };
 
 const updateNodeChildren = (treeData, parentId, level, newChildren) => {
-  if (!newChildren) return treeData;
-  return treeData.map((row) => {
-    if (row.id === parentId && row.level === level) {
-      const existingChildrenMap = new Map(
-        row.children.map((child) => [child.id, child]),
-      );
-      const newChildrenIds = new Set(newChildren.map((child) => child.id));
-      const updatedChildren = newChildren.map((newChild) => {
-        if (existingChildrenMap.has(newChild.id)) {
-          return {
-            ...existingChildrenMap.get(newChild.id),
-            ...newChild,
-          };
-        }
-        return newChild;
-      });
-      for (const [id, child] of existingChildrenMap) {
-        if (!newChildrenIds.has(id)) {
-          continue;
-        }
-        if (!newChildren.some((newChild) => newChild.id === id)) {
-          updatedChildren.push(child);
-        }
-      }
+	if (!newChildren) return treeData;
+	return treeData.map((row) => {
+		if (row.id === parentId && row.level === level) {
+			const existingChildrenMap = new Map(
+				row.children.map((child) => [child.id, child])
+			);
+			const newChildrenIds = new Set(newChildren.map((child) => child.id));
+			const updatedChildren = newChildren.map((newChild) => {
+				if (existingChildrenMap.has(newChild.id)) {
+					return {
+						...existingChildrenMap.get(newChild.id),
+						...newChild,
+					};
+				}
+				return newChild;
+			});
+			for (const [id, child] of existingChildrenMap) {
+				if (!newChildrenIds.has(id)) {
+					continue;
+				}
+				if (!newChildren.some((newChild) => newChild.id === id)) {
+					updatedChildren.push(child);
+				}
+			}
 
-      return {
-        ...row,
-        children: updatedChildren,
-      };
-    }
+			return {
+				...row,
+				children: updatedChildren,
+			};
+		}
 
-    if (row.children) {
-      row.children = updateNodeChildren(
-        row.children,
-        parentId,
-        level,
-        newChildren,
-      );
-    }
+		if (row.children) {
+			row.children = updateNodeChildren(
+				row.children,
+				parentId,
+				level,
+				newChildren
+			);
+		}
 
-    return row;
-  });
+		return row;
+	});
 };
 
 const Programs = () => {
-  document.title = "Programs";
-  const [treeData, setTreeData] = useState([]);
-  const [selectedRow, setSelectedRow] = useState(null);
-  const [deleteModal, setDeleteModal] = useState(false);
-  const [formModal, setFormModal] = useState(false);
-  const [modalAction, setModalAction] = useState(null); // "add" or "edit"
+	document.title = "Programs";
+	const [treeData, setTreeData] = useState([]);
+	const [selectedRow, setSelectedRow] = useState(null);
+	const [deleteModal, setDeleteModal] = useState(false);
+	const [formModal, setFormModal] = useState(false);
+	const [modalAction, setModalAction] = useState(null); // "add" or "edit"
 
-  const [programParams, setProgramParams] = useState({});
-  const [activeSectorId, setActiveSectorId] = useState(null);
+	const [programParams, setProgramParams] = useState({});
+	const [activeSectorId, setActiveSectorId] = useState(null);
 
-  const toggleFormModal = (action = null) => {
-    setModalAction(action);
-    setFormModal((prev) => !prev);
-  };
-  const toggleDeleteModal = () => setDeleteModal(!deleteModal);
+	const toggleFormModal = (action = null) => {
+		setModalAction(action);
+		setFormModal((prev) => !prev);
+	};
+	const toggleDeleteModal = () => setDeleteModal(!deleteModal);
 
-  const { data, isLoading, isError, error, refetch } =
-    useFetchSectorInformations({}, true);
+	const { data, isLoading, isError, error, refetch } =
+		useFetchSectorInformations({}, true);
 
-  const isValidParam =
-    Object.keys(programParams).length > 0 &&
-    Object.values(programParams).every(
-      (value) => value !== null && value !== undefined,
-    );
-  const {
-    data: programs,
-    isLoading: isProgramLoading,
-    isFetching,
-    refetch: refetchPrograms,
-  } = useFetchProgramTree(programParams, isValidParam);
+	const isValidParam =
+		Object.keys(programParams).length > 0 &&
+		Object.values(programParams).every(
+			(value) => value !== null && value !== undefined
+		);
+	const {
+		data: programs,
+		isLoading: isProgramLoading,
+		isFetching,
+		refetch: refetchPrograms,
+	} = useFetchProgramTree(programParams, isValidParam);
 
-  // handleSectorClick
-  const handleSectorClick = (row) => {
-    const { sci_id, id, level } = row.original;
-    setSelectedRow(row.original);
-    setActiveSectorId(sci_id);
-    setProgramParams({ pri_sector_id: sci_id });
-    row.toggleExpanded();
-  };
+	// handleSectorClick
+	const handleSectorClick = (row) => {
+		const { sci_id, id, level } = row.original;
+		setSelectedRow(row.original);
+		setActiveSectorId(sci_id);
+		setProgramParams({ pri_sector_id: sci_id });
+		row.toggleExpanded();
+	};
 
-  useEffect(() => {
-    if (data?.data) {
-      const newData = transformData(data.data);
-      setTreeData(newData);
-    }
-  }, [data]);
+	useEffect(() => {
+		if (data?.data) {
+			const newData = transformData(data.data);
+			setTreeData(newData);
+		}
+	}, [data]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data: programData } = await refetchPrograms();
-        const formattedPrograms = programData?.data?.map((p) =>
-          formatProgramRow(p),
-        );
-        const updatedTreeData = updateNodeChildren(
-          treeData,
-          selectedRow?.id,
-          selectedRow?.level,
-          formattedPrograms,
-        );
-        setTreeData(updatedTreeData);
-      } catch (error) {
-        console.error("Error during sector refetch:", error);
-      }
-    };
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const { data: programData } = await refetchPrograms();
+				const formattedPrograms = programData?.data?.map((p) =>
+					formatProgramRow(p)
+				);
+				const updatedTreeData = updateNodeChildren(
+					treeData,
+					selectedRow?.id,
+					selectedRow?.level,
+					formattedPrograms
+				);
+				setTreeData(updatedTreeData);
+			} catch (error) {
+				console.error("Error during sector refetch:", error);
+			}
+		};
 
-    if (isValidParam) {
-      fetchData();
-    }
-  }, [programParams]);
+		if (isValidParam) {
+			fetchData();
+		}
+	}, [programParams]);
 
-  useEffect(() => {
-    if (!programs?.data || !activeSectorId) {
-      return;
-    }
-    const formatted = programs.data.map(formatProgramRow);
-    setTreeData((prev) =>
-      updateNodeChildren(prev, `sector-${activeSectorId}`, "sector", formatted),
-    );
-  }, [programs?.data, activeSectorId]);
+	useEffect(() => {
+		if (!programs?.data || !activeSectorId) {
+			return;
+		}
+		const formatted = programs.data.map(formatProgramRow);
+		setTreeData((prev) =>
+			updateNodeChildren(prev, `sector-${activeSectorId}`, "sector", formatted)
+		);
+	}, [programs?.data, activeSectorId]);
 
-  const columns = React.useMemo(
+	const columns = React.useMemo(
 		() => [
 			{
 				accessorKey: "sci_name_or",
@@ -302,46 +302,45 @@ const Programs = () => {
 		[handleSectorClick, isFetching, selectedRow?.id, isProgramLoading]
 	);
 
-  if (isError) return <FetchErrorHandler error={error} refetch={refetch} />;
+	if (isError) return <FetchErrorHandler error={error} refetch={refetch} />;
+	return (
+		<>
+			<FormModal
+				show={formModal}
+				toggle={() => toggleFormModal(null)}
+				action={modalAction}
+				selectedRow={selectedRow}
+				data={treeData}
+				deleteModal={deleteModal}
+				toggleDelete={toggleDeleteModal}
+			/>
 
-  return (
-    <>
-      <FormModal
-        show={formModal}
-        toggle={() => toggleFormModal(null)}
-        action={modalAction}
-        selectedRow={selectedRow}
-        data={treeData}
-        deleteModal={deleteModal}
-        toggleDelete={toggleDeleteModal}
-      />
-
-      <div className="page-content">
-        <div className="container-fluid">
-          <Breadcrumbs />
-          {isLoading ? (
-            <Spinners />
-          ) : (
-            <Card>
-              <TreeTableContainer
-                data={treeData || []}
-                setData={setTreeData}
-                columns={columns}
-              />
-            </Card>
-          )}
-        </div>
-      </div>
-    </>
-  );
+			<div className="page-content">
+				<div className="container-fluid">
+					<Breadcrumbs />
+					{isLoading ? (
+						<Spinners />
+					) : (
+						<Card>
+							<TreeTableContainer
+								data={treeData || []}
+								setData={setTreeData}
+								columns={columns}
+							/>
+						</Card>
+					)}
+				</div>
+			</div>
+		</>
+	);
 };
 
 export default Programs;
 
 function RowActions({ row, toggleForm, toggleDelete, setSelectedRow }) {
-  const safeId = `action-${row.id}`;
+	const safeId = `action-${row.id}`;
 
-  return (
+	return (
 		<div className="d-flex align-items-center justify-content-start gap-1">
 			{row.original.level !== "output" && (
 				<>
@@ -392,7 +391,7 @@ function RowActions({ row, toggleForm, toggleDelete, setSelectedRow }) {
 					</UncontrolledTooltip>
 				</>
 			)}
-			{/* 
+
 			{row.original.level !== "sector" && (
 				<>
 					<Button
@@ -416,7 +415,7 @@ function RowActions({ row, toggleForm, toggleDelete, setSelectedRow }) {
 						Delete
 					</UncontrolledTooltip>
 				</>
-			)} */}
+			)}
 		</div>
 	);
 }

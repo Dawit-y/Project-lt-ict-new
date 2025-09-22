@@ -504,7 +504,7 @@ const BudgetRequestModel = (props) => {
 		);
 	}, [projectStatusData, lang]);
 
-	const RequestCatagoryMap = useMemo(() => {
+	const requestCatagoryMap = useMemo(() => {
 		return createMultiLangKeyValueMap(
 			bgCategoryOptionsData?.data || [],
 			"rqc_id",
@@ -621,16 +621,10 @@ const BudgetRequestModel = (props) => {
 		const baseColumns = [
 			{
 				header: "",
-				accessorKey: "bdr_budget_year_id",
+				accessorKey: "bdy_name",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{budgetYearMap[cellProps.row.original.bdr_budget_year_id] || ""}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => getValue() ?? "",
 			},
 			{
 				header: "",
@@ -640,7 +634,7 @@ const BudgetRequestModel = (props) => {
 				cell: (cellProps) => {
 					return (
 						<span>
-							{RequestCatagoryMap[
+							{requestCatagoryMap[
 								cellProps.row.original.bdr_request_category_id
 							] || ""}
 						</span>
@@ -868,7 +862,15 @@ const BudgetRequestModel = (props) => {
 			});
 		}
 		return baseColumns;
-	}, [handleBudgetRequestClick, toggleViewModal, onClickDelete, data]);
+	}, [
+		handleBudgetRequestClick,
+		toggleViewModal,
+		onClickDelete,
+		data,
+		budgetYearMap,
+		requestCatagoryMap,
+		projectStatusMap,
+	]);
 
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -876,13 +878,13 @@ const BudgetRequestModel = (props) => {
 	return (
 		<React.Fragment>
 			<LazyLoader>
-				{modal1 && (
-					<BudgetRequestModal
-						isOpen={modal1}
-						toggle={toggleViewModal}
-						transaction={transaction}
-					/>
-				)}
+				<BudgetRequestModal
+					isOpen={modal1}
+					toggle={toggleViewModal}
+					transaction={transaction}
+					requestCatagoryMap={requestCatagoryMap}
+					projectStatusMap={projectStatusMap}
+				/>
 				{fileModal && (
 					<AttachFileModal
 						isOpen={fileModal}
@@ -1009,7 +1011,7 @@ const BudgetRequestModel = (props) => {
 										validation={validation}
 										isRequired
 										className="col-md-4 mb-3"
-										optionMap={RequestCatagoryMap}
+										optionMap={requestCatagoryMap}
 										isLoading={isBcLoading}
 										isError={isBcError}
 									/>

@@ -23,7 +23,16 @@ import BrAmountApproverModal from "./BrAmountApproverModal";
 import { createMultiLangKeyValueMap } from "../../../../utils/commonMethods";
 import { statusColorMap } from ".";
 
-export default function BudgetBreakdown({ request: requestData, isActive }) {
+export const calculateProgressPercent = (value, total) => {
+	if (!value || !total || parseFloat(total) === 0) return 0;
+	return (parseFloat(value) / parseFloat(total)) * 100;
+};
+
+export default function BudgetBreakdown({
+	request: requestData,
+	projectData,
+	isActive,
+}) {
 	const { t, i18n } = useTranslation();
 	const [brAmountModal, setBrAmountModal] = useState(false);
 	const toggleBrAmountModal = () => setBrAmountModal(!brAmountModal);
@@ -78,13 +87,19 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 		);
 	}, [requestCategories, i18n.language]);
 
-	const physicalProgress =
-		(requestData?.bdr_physical_baseline / requestData?.bdr_physical_planned) *
+	const measuredFigure = projectData?.prj_measured_figure; // 1000 100
+	const measurementUnit = projectData?.prj_measurement_unit; // km  %
+	const totalActualBudget = projectData?.prj_total_actual_budget;
+
+	const physicalBaselineInPercent =
+		(parseFloat(requestData?.bdr_physical_baseline) /
+			parseFloat(measuredFigure)) *
 		100;
-	const financialProgress =
+
+	const financialBaselineInpercent =
 		requestData?.bdr_financial_baseline > 0
-			? (requestData?.bdr_financial_baseline /
-					requestData?.bdr_requested_amount) *
+			? (parseFloat(requestData?.bdr_financial_baseline) /
+					parseFloat(totalActualBudget)) *
 				100
 			: 0;
 
@@ -195,19 +210,18 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 							<CardBody className="py-4 d-flex flex-column justify-content-between">
 								<div>
 									<div className="h3 text-info mb-1">
-										{requestData?.bdr_physical_baseline}%
+										{`${requestData?.bdr_physical_baseline}${measurementUnit}`}
 									</div>
 									<small className="text-muted">{t("physical_baseline")}</small>
 								</div>
 								<div className="mt-2">
 									<Progress
-										value={requestData?.bdr_physical_baseline}
+										value={physicalBaselineInPercent}
 										color="info"
 										className="mb-1"
 									/>
 									<small className="text-muted">
-										{t("vs")} {requestData?.bdr_physical_planned}%{" "}
-										{t("planned")}
+										{physicalBaselineInPercent}%{"of Measured Figure"}
 									</small>
 								</div>
 							</CardBody>
@@ -227,12 +241,13 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 								</div>
 								<div className="mt-2">
 									<Progress
-										value={financialProgress}
+										value={financialBaselineInpercent}
 										color="warning"
 										className="mb-1"
 									/>
 									<small className="text-muted">
-										{financialProgress.toFixed(1)}% {t("of_requested")}
+										{financialBaselineInpercent.toFixed(1)}%{" "}
+										{t("of Total Actual Budget")}
 									</small>
 								</div>
 							</CardBody>
@@ -303,13 +318,27 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 									<tbody>
 										<tr>
 											<td className="fw-bold text-muted">
-												{t("created_time")}:
+												{t("bdr_source_government_approved")}:
 											</td>
-											<td>
-												{new Date(
-													requestData?.bdr_create_time
-												)?.toLocaleString()}
+											<td>{requestData?.bdr_source_government_approved}</td>
+										</tr>
+										<tr>
+											<td className="fw-bold text-muted">
+												{t("bdr_source_support_approved")}:
 											</td>
+											<td>{requestData?.bdr_source_support_approved}</td>
+										</tr>
+										<tr>
+											<td className="fw-bold text-muted">
+												{t("bdr_source_credit_approved")}:
+											</td>
+											<td>{requestData?.bdr_source_credit_approved}</td>
+										</tr>
+										<tr>
+											<td className="fw-bold text-muted">
+												{t("bdr_source_other_approved")}:
+											</td>
+											<td>{requestData?.bdr_source_other_approved}</td>
 										</tr>
 										<tr>
 											<td className="fw-bold text-muted">
@@ -343,52 +372,51 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 							>
 								<h6 className="text-muted mb-3">{t("physical_progress")}</h6>
 								<div className="d-flex flex-column justify-content-evenly flex-grow-1">
-									<div className="mb-4">
-										<div className="d-flex justify-content-between mb-1">
-											<small>{t("baseline")}</small>
-											<small>{requestData?.bdr_physical_baseline}%</small>
+									{[
+										{
+											label: t("baseline"),
+											value: requestData?.bdr_physical_baseline,
+										},
+										{
+											label: t("planned"),
+											value: requestData?.bdr_physical_planned,
+										},
+										{
+											label: t("approved"),
+											value: requestData?.bdr_physical_approved,
+										},
+										{
+											label: t("recommended"),
+											value: requestData?.bdr_physical_recommended,
+										},
+									].map((item, idx) => (
+										<div key={idx} className="mb-4">
+											<div className="d-flex justify-content-between mb-1">
+												<small>{item.label}</small>
+												{/* Show raw value with unit */}
+												<small>
+													{item.value} {projectData?.prj_measurement_unit}
+												</small>
+											</div>
+											<Progress
+												value={calculateProgressPercent(
+													item.value,
+													projectData?.prj_measured_figure
+												)}
+												color={
+													idx === 0
+														? "info"
+														: idx === 1
+															? "primary"
+															: idx === 2
+																? "success"
+																: "warning"
+												}
+											/>
 										</div>
-										<Progress
-											value={requestData?.bdr_physical_baseline}
-											color="info"
-										/>
-									</div>
-
-									<div className="mb-4">
-										<div className="d-flex justify-content-between mb-1">
-											<small>{t("planned")}</small>
-											<small>{requestData?.bdr_physical_planned}%</small>
-										</div>
-										<Progress
-											value={requestData?.bdr_physical_planned}
-											color="primary"
-										/>
-									</div>
-
-									<div className="mb-4">
-										<div className="d-flex justify-content-between mb-1">
-											<small>{t("approved")}</small>
-											<small>{requestData?.bdr_physical_approved}%</small>
-										</div>
-										<Progress
-											value={requestData?.bdr_physical_approved}
-											color="success"
-										/>
-									</div>
-
-									<div>
-										<div className="d-flex justify-content-between mb-1">
-											<small>{t("recommended")}</small>
-											<small>{requestData?.bdr_physical_recommended}%</small>
-										</div>
-										<Progress
-											value={requestData?.bdr_physical_recommended}
-											color="warning"
-										/>
-									</div>
+									))}
 								</div>
 							</Col>
-
 							{/* Financial Progress */}
 							<Col md={6} className="d-flex flex-column h-100">
 								<h6 className="text-muted mb-3">{t("financial_progress")}</h6>
@@ -398,7 +426,7 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 											options={chartOptions}
 											series={chartSeries}
 											type="bar"
-											height="100%"
+											height="220"
 										/>
 									</CardBody>
 								</Card>
@@ -406,7 +434,6 @@ export default function BudgetBreakdown({ request: requestData, isActive }) {
 						</Row>
 					</CardBody>
 				</Card>
-
 				{/* Summary Cards */}
 				<Row className="g-3">
 					<Col md={2}>

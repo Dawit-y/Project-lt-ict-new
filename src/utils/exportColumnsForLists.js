@@ -531,3 +531,36 @@ export const csoExportColumns = [
 		format: (val) => (val === 1 ? "Approved" : "Requested"),
 	},
 ];
+
+export const programExportColumns = [
+	{
+		key: "pri_id",
+		label: "pri_id",
+		format: (val) => val || "-",
+	},
+	{
+		key: "pri_name_or",
+		label: "pri_name_or",
+		format: (val) => val || "-",
+	},
+	{
+		key: "pri_name_or",
+		label: "pri_name_or",
+		format: (val) => val || "-",
+	},
+	{
+		key: "pri_name_am",
+		label: "pri_name_am",
+		format: (val) => val || "-",
+	},
+	{
+		key: "pri_name_en",
+		label: "pri_name_en",
+		format: (val) => val || "-",
+	},
+	{
+		key: "pri_program_code",
+		label: "pri_program_code",
+		format: (val) => val || "-",
+	},
+];

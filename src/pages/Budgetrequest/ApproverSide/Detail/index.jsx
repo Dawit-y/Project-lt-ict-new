@@ -227,6 +227,7 @@ export default function BudgetApprovalPage() {
 									<TabPane tabId="budget">
 										<BudgetBreakdown
 											request={data?.data ?? {}}
+											projectData={project?.data ?? {}}
 											isActive={!isLoading}
 										/>
 									</TabPane>

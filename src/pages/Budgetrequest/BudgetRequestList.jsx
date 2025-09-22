@@ -26,7 +26,7 @@ import TreeForLists from "../../components/Common/TreeForLists2";
 import AttachFileModal from "../../components/Common/AttachFileModal";
 import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal";
 import { PAGE_ID } from "../../constants/constantFile";
-import BudgetRequestModal from "./BudgetRequestModal";
+import BudgetRequestModal from "./BudgetRequestListModal";
 import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
 import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
 import { budgetRequestExportColumns } from "../../utils/exportColumnsForLists";

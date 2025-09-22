@@ -2007,5 +2007,9 @@
 	"previous_years_performance": "Previous Years Performance",
 	"funding_sources_requested": "Funding Sources (Requested)",
 	"performance_indicators": "Performance Indicators",
-	"request_for_current_year": "Request For Current Year"
+	"request_for_current_year": "Request For Current Year",
+	"bdr_source_government_approved": "Government Approved",
+	"bdr_source_support_approved": "Support Approved",
+	"bdr_source_credit_approved": "Credit Approved",
+	"bdr_source_other_approved": "Other Approved"
 }
