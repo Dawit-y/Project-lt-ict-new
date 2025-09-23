@@ -128,11 +128,14 @@ export default function BudgetApprovalPage() {
 								<CardBody className="d-flex justify-content-between align-items-center">
 									<div className="d-flex align-items-center gap-3">
 										<div className="d-flex align-items-center gap-2">
-											<FaDollarSign className="text-success" />
+											<span>ETB</span>
 											<span className="fw-semibold">
-												{parseFloat(
-													data?.data.bdr_requested_amount
-												).toLocaleString()}
+												{data?.data?.bdr_requested_amount != null &&
+												!isNaN(parseFloat(data.data.bdr_requested_amount))
+													? parseFloat(
+															data.data.bdr_requested_amount
+														).toLocaleString()
+													: "-"}
 											</span>
 										</div>
 										<div className="vr" />

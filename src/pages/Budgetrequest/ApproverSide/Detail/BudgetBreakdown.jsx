@@ -24,8 +24,25 @@ import { createMultiLangKeyValueMap } from "../../../../utils/commonMethods";
 import { statusColorMap } from ".";
 
 export const calculateProgressPercent = (value, total) => {
-	if (!value || !total || parseFloat(total) === 0) return 0;
+	if (value == null || total == null) return null;
+	if (isNaN(parseFloat(value)) || isNaN(parseFloat(total))) return null;
+	if (parseFloat(total) === 0) return null;
 	return (parseFloat(value) / parseFloat(total)) * 100;
+};
+
+export const formatMoney = (value, withSymbol = true) => {
+	if (value == null || isNaN(parseFloat(value))) return "—";
+	const formatted = parseFloat(value).toLocaleString();
+	return withSymbol ? `ETB ${formatted}` : formatted;
+};
+
+export const formatNumber = (value, unit = "") => {
+	if (value == null || isNaN(parseFloat(value))) return "—";
+	return `${parseFloat(value).toLocaleString()}${unit ? unit : ""}`;
+};
+
+export const getSafeValue = (value, fallback = "—") => {
+	return value != null ? value : fallback;
 };
 
 export default function BudgetBreakdown({
@@ -87,21 +104,19 @@ export default function BudgetBreakdown({
 		);
 	}, [requestCategories, i18n.language]);
 
-	const measuredFigure = projectData?.prj_measured_figure; // 1000 100
-	const measurementUnit = projectData?.prj_measurement_unit; // km  %
+	const measuredFigure = projectData?.prj_measured_figure;
+	const measurementUnit = projectData?.prj_measurement_unit;
 	const totalActualBudget = projectData?.prj_total_actual_budget;
 
-	const physicalBaselineInPercent =
-		(parseFloat(requestData?.bdr_physical_baseline) /
-			parseFloat(measuredFigure)) *
-		100;
+	const physicalBaselineInPercent = calculateProgressPercent(
+		requestData?.bdr_physical_baseline,
+		measuredFigure
+	);
 
-	const financialBaselineInpercent =
-		requestData?.bdr_financial_baseline > 0
-			? (parseFloat(requestData?.bdr_financial_baseline) /
-					parseFloat(totalActualBudget)) *
-				100
-			: 0;
+	const financialBaselineInPercent = calculateProgressPercent(
+		requestData?.bdr_financial_baseline,
+		totalActualBudget
+	);
 
 	const chartOptions = {
 		chart: {
@@ -119,7 +134,7 @@ export default function BudgetBreakdown({
 		dataLabels: {
 			enabled: true,
 			formatter: function (val) {
-				return `$${val.toLocaleString()}`;
+				return formatMoney(val, false);
 			},
 			offsetX: 10,
 			style: {
@@ -136,7 +151,7 @@ export default function BudgetBreakdown({
 			],
 			labels: {
 				formatter: function (val) {
-					return `$${val.toLocaleString()}`;
+					return formatMoney(val, false);
 				},
 			},
 		},
@@ -144,7 +159,7 @@ export default function BudgetBreakdown({
 		tooltip: {
 			y: {
 				formatter: function (val) {
-					return `$${val.toLocaleString()}`;
+					return formatMoney(val, false);
 				},
 			},
 		},
@@ -162,6 +177,37 @@ export default function BudgetBreakdown({
 		},
 	];
 
+	// Calculate summary values with safe fallbacks
+	const summaryValues = useMemo(() => {
+		const amountData = amounts?.data || [];
+		return {
+			totalRequested: amountData.reduce(
+				(sum, item) => sum + (item.bra_requested_amount || 0),
+				0
+			),
+			currentYearExpense: amountData.reduce(
+				(sum, item) => sum + (item.bra_current_year_expense || 0),
+				0
+			),
+			governmentSource: amountData.reduce(
+				(sum, item) => sum + (item.bra_source_government_requested || 0),
+				0
+			),
+			internalSource: amountData.reduce(
+				(sum, item) => sum + (item.bra_source_internal_requested || 0),
+				0
+			),
+			supportSource: amountData.reduce(
+				(sum, item) => sum + (item.bra_source_support_requested || 0),
+				0
+			),
+			creditSource: amountData.reduce(
+				(sum, item) => sum + (item.bra_source_credit_requested || 0),
+				0
+			),
+		};
+	}, [amounts]);
+
 	return (
 		<>
 			<BrAmountApproverModal
@@ -177,7 +223,7 @@ export default function BudgetBreakdown({
 							<CardBody className="py-4 d-flex flex-column justify-content-between">
 								<div>
 									<div className="h3 text-primary mb-1">
-										${requestData?.bdr_requested_amount?.toLocaleString()}
+										{formatMoney(requestData?.bdr_requested_amount)}
 									</div>
 									<small className="text-muted">
 										{t("total_requested_amount")}
@@ -185,7 +231,7 @@ export default function BudgetBreakdown({
 								</div>
 								<div className="mt-2">
 									<Badge color="primary" outline>
-										{t("budget_year")} {requestData?.budget_year}
+										{t("budget_year")} {getSafeValue(requestData?.budget_year)}
 									</Badge>
 								</div>
 							</CardBody>
@@ -197,7 +243,7 @@ export default function BudgetBreakdown({
 							<CardBody className="py-4 d-flex flex-column justify-content-center">
 								<div>
 									<div className="h3 text-success mb-1">
-										${requestData?.bdr_released_amount?.toLocaleString() ?? 0}
+										{formatMoney(requestData?.bdr_released_amount)}
 									</div>
 									<small className="text-muted">{t("released_amount")}</small>
 								</div>
@@ -210,18 +256,24 @@ export default function BudgetBreakdown({
 							<CardBody className="py-4 d-flex flex-column justify-content-between">
 								<div>
 									<div className="h3 text-info mb-1">
-										{`${requestData?.bdr_physical_baseline}${measurementUnit}`}
+										{formatNumber(
+											requestData?.bdr_physical_baseline,
+											measurementUnit
+										)}
 									</div>
 									<small className="text-muted">{t("physical_baseline")}</small>
 								</div>
 								<div className="mt-2">
 									<Progress
-										value={physicalBaselineInPercent}
+										value={physicalBaselineInPercent ?? 0}
 										color="info"
 										className="mb-1"
 									/>
 									<small className="text-muted">
-										{physicalBaselineInPercent}%{"of Measured Figure"}
+										{physicalBaselineInPercent != null
+											? `${physicalBaselineInPercent.toFixed(1)}%`
+											: "—"}{" "}
+										{t("of Measured Figure")}
 									</small>
 								</div>
 							</CardBody>
@@ -233,7 +285,7 @@ export default function BudgetBreakdown({
 							<CardBody className="py-4 d-flex flex-column justify-content-between">
 								<div>
 									<div className="h3 text-warning mb-1">
-										${requestData?.bdr_financial_baseline?.toLocaleString()}
+										{formatMoney(requestData?.bdr_financial_baseline)}
 									</div>
 									<small className="text-muted">
 										{t("financial_baseline")}
@@ -241,12 +293,14 @@ export default function BudgetBreakdown({
 								</div>
 								<div className="mt-2">
 									<Progress
-										value={financialBaselineInpercent}
+										value={financialBaselineInPercent ?? 0}
 										color="warning"
 										className="mb-1"
 									/>
 									<small className="text-muted">
-										{financialBaselineInpercent.toFixed(1)}%{" "}
+										{financialBaselineInPercent != null
+											? `${financialBaselineInPercent.toFixed(1)}%`
+											: "—"}{" "}
 										{t("of Total Actual Budget")}
 									</small>
 								</div>
@@ -273,18 +327,19 @@ export default function BudgetBreakdown({
 											<td className="fw-bold text-muted">
 												{t("request_type")}:
 											</td>
-											<td>{requestData?.request_type}</td>
+											<td>{getSafeValue(requestData?.request_type)}</td>
 										</tr>
 										<tr>
 											<td className="fw-bold text-muted">{t("status")}:</td>
 											<td>
 												<Badge
 													color={
-														statusColorMap[requestData?.bdr_request_status]
+														statusColorMap[requestData?.bdr_request_status] ||
+														"secondary"
 													}
 												>
 													<FaCheckCircle className="me-1" />
-													{requestData?.status_name}
+													{getSafeValue(requestData?.status_name, t("unknown"))}
 												</Badge>
 											</td>
 										</tr>
@@ -292,14 +347,22 @@ export default function BudgetBreakdown({
 											<td className="fw-bold text-muted">
 												{t("requested_date")}:
 											</td>
-											<td>{requestData?.bdr_requested_date_gc}</td>
+											<td>
+												{getSafeValue(
+													requestData?.bdr_requested_date_gc,
+													t("not_available")
+												)}
+											</td>
 										</tr>
 										<tr>
 											<td className="fw-bold text-muted">
 												{t("released_date")}:
 											</td>
 											<td>
-												{requestData?.bdr_released_date_gc || t("not_released")}
+												{getSafeValue(
+													requestData?.bdr_released_date_gc,
+													t("not_released")
+												)}
 											</td>
 										</tr>
 										<tr>
@@ -307,7 +370,10 @@ export default function BudgetBreakdown({
 												{t("request_category")}:
 											</td>
 											<td>
-												{bgCategoryMap[requestData?.bdr_request_category_id]}
+												{getSafeValue(
+													bgCategoryMap[requestData?.bdr_request_category_id],
+													t("not_specified")
+												)}
 											</td>
 										</tr>
 									</tbody>
@@ -320,32 +386,55 @@ export default function BudgetBreakdown({
 											<td className="fw-bold text-muted">
 												{t("bdr_source_government_approved")}:
 											</td>
-											<td>{requestData?.bdr_source_government_approved}</td>
+											<td>
+												{formatMoney(
+													requestData?.bdr_source_government_approved,
+													false
+												)}
+											</td>
 										</tr>
 										<tr>
 											<td className="fw-bold text-muted">
 												{t("bdr_source_support_approved")}:
 											</td>
-											<td>{requestData?.bdr_source_support_approved}</td>
+											<td>
+												{formatMoney(
+													requestData?.bdr_source_support_approved,
+													false
+												)}
+											</td>
 										</tr>
 										<tr>
 											<td className="fw-bold text-muted">
 												{t("bdr_source_credit_approved")}:
 											</td>
-											<td>{requestData?.bdr_source_credit_approved}</td>
+											<td>
+												{formatMoney(
+													requestData?.bdr_source_credit_approved,
+													false
+												)}
+											</td>
 										</tr>
 										<tr>
 											<td className="fw-bold text-muted">
 												{t("bdr_source_other_approved")}:
 											</td>
-											<td>{requestData?.bdr_source_other_approved}</td>
+											<td>
+												{formatMoney(
+													requestData?.bdr_source_other_approved,
+													false
+												)}
+											</td>
 										</tr>
 										<tr>
 											<td className="fw-bold text-muted">
 												{t("action_remark")}:
 											</td>
 											<td>
-												{requestData?.bdr_action_remark || t("no_remarks")}
+												{getSafeValue(
+													requestData?.bdr_action_remark,
+													t("no_remarks")
+												)}
 											</td>
 										</tr>
 									</tbody>
@@ -393,16 +482,17 @@ export default function BudgetBreakdown({
 										<div key={idx} className="mb-4">
 											<div className="d-flex justify-content-between mb-1">
 												<small>{item.label}</small>
-												{/* Show raw value with unit */}
 												<small>
-													{item.value} {projectData?.prj_measurement_unit}
+													{formatNumber(item.value, measurementUnit)}
 												</small>
 											</div>
 											<Progress
-												value={calculateProgressPercent(
-													item.value,
-													projectData?.prj_measured_figure
-												)}
+												value={
+													calculateProgressPercent(
+														item.value,
+														measuredFigure
+													) ?? 0
+												}
 												color={
 													idx === 0
 														? "info"
@@ -434,19 +524,14 @@ export default function BudgetBreakdown({
 						</Row>
 					</CardBody>
 				</Card>
+
 				{/* Summary Cards */}
 				<Row className="g-3">
 					<Col md={2}>
 						<Card className="text-center">
 							<CardBody className="py-4">
 								<div className="h4 text-primary mb-1">
-									$
-									{amounts?.data
-										?.reduce(
-											(sum, item) => sum + (item.bra_requested_amount || 0),
-											0
-										)
-										?.toLocaleString()}
+									{formatMoney(summaryValues.totalRequested)}
 								</div>
 								<small className="text-muted">{t("total_requested")}</small>
 							</CardBody>
@@ -456,13 +541,7 @@ export default function BudgetBreakdown({
 						<Card className="text-center">
 							<CardBody className="py-4">
 								<div className="h4 text-success mb-1">
-									$
-									{amounts?.data
-										?.reduce(
-											(sum, item) => sum + (item.bra_current_year_expense || 0),
-											0
-										)
-										?.toLocaleString()}
+									{formatMoney(summaryValues.currentYearExpense)}
 								</div>
 								<small className="text-muted">
 									{t("current_year_expense")}
@@ -474,14 +553,7 @@ export default function BudgetBreakdown({
 						<Card className="text-center">
 							<CardBody className="py-4">
 								<div className="h4 text-warning mb-1">
-									$
-									{amounts?.data
-										?.reduce(
-											(sum, item) =>
-												sum + (item.bra_source_government_requested || 0),
-											0
-										)
-										?.toLocaleString()}
+									{formatMoney(summaryValues.governmentSource)}
 								</div>
 								<small className="text-muted">{t("government_source")}</small>
 							</CardBody>
@@ -491,14 +563,7 @@ export default function BudgetBreakdown({
 						<Card className="text-center">
 							<CardBody className="py-4">
 								<div className="h4 text-info mb-1">
-									$
-									{amounts?.data
-										?.reduce(
-											(sum, item) =>
-												sum + (item.bra_source_internal_requested || 0),
-											0
-										)
-										?.toLocaleString()}
+									{formatMoney(summaryValues.internalSource)}
 								</div>
 								<small className="text-muted">{t("internal_source")}</small>
 							</CardBody>
@@ -508,14 +573,7 @@ export default function BudgetBreakdown({
 						<Card className="text-center">
 							<CardBody className="py-4">
 								<div className="h4 text-secondary mb-1">
-									$
-									{amounts?.data
-										?.reduce(
-											(sum, item) =>
-												sum + (item.bra_source_support_requested || 0),
-											0
-										)
-										?.toLocaleString()}
+									{formatMoney(summaryValues.supportSource)}
 								</div>
 								<small className="text-muted">{t("support_source")}</small>
 							</CardBody>
@@ -525,14 +583,7 @@ export default function BudgetBreakdown({
 						<Card className="text-center">
 							<CardBody className="py-4">
 								<div className="h4 text-dark mb-1">
-									$
-									{amounts?.data
-										?.reduce(
-											(sum, item) =>
-												sum + (item.bra_source_credit_requested || 0),
-											0
-										)
-										?.toLocaleString()}
+									{formatMoney(summaryValues.creditSource)}
 								</div>
 								<small className="text-muted">{t("credit_source")}</small>
 							</CardBody>
