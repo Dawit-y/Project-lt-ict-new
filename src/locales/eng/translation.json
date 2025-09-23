@@ -2011,5 +2011,21 @@
 	"bdr_source_government_approved": "Government Approved",
 	"bdr_source_support_approved": "Support Approved",
 	"bdr_source_credit_approved": "Credit Approved",
-	"bdr_source_other_approved": "Other Approved"
+	"bdr_source_other_approved": "Other Approved",
+	"budget_sources_approval": "Budget Sources Approval",
+	"approve_budget_sources_subtitle": "Approve requested budget amounts by source",
+	"approve_sources": "Approve Sources",
+	"source": "Source",
+	"approve_budget_sources": "Approve Budget Sources",
+	"amount_cannot_be_negative": "Amount cannot be negative",
+	"approved_amount_cannot_exceed_requested": "Approved amount cannot exceed requested amount",
+	"bdr_source_government": "Government",
+	"bdr_source_support": "Support",
+	"bdr_source_credit": "Credit",
+	"bdr_source_other": "Other",
+	"not_available": "Not Available",
+	"no_date": "No Date",
+	"baseline_upto_now": "Baseline upto Now",
+	"bdr_previous_year": "Previous Year Baseline",
+	"bdr_before_previous_year": "Before Previous Year Baseline"
 }

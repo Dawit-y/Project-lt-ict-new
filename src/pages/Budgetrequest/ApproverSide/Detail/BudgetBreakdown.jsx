@@ -10,7 +10,7 @@ import {
 	Table,
 	Progress,
 } from "reactstrap";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle, FaCheck } from "react-icons/fa";
 import Chart from "react-apexcharts";
 import { useFetchBudgetRequestAmounts } from "../../../../queries/budgetrequestamount_query";
 import { useFetchBudgetRequestTasks } from "../../../../queries/budgetrequesttask_query";
@@ -22,6 +22,7 @@ import { useTranslation } from "react-i18next";
 import BrAmountApproverModal from "./BrAmountApproverModal";
 import { createMultiLangKeyValueMap } from "../../../../utils/commonMethods";
 import { statusColorMap } from ".";
+import BudgetSourceApprovalModal from "./BudgetSourceApprovalModal";
 
 export const calculateProgressPercent = (value, total) => {
 	if (value == null || total == null) return null;
@@ -31,7 +32,7 @@ export const calculateProgressPercent = (value, total) => {
 };
 
 export const formatMoney = (value, withSymbol = true) => {
-	if (value == null || isNaN(parseFloat(value))) return "—";
+	if (value == null || isNaN(parseFloat(value))) return "-";
 	const formatted = parseFloat(value).toLocaleString();
 	return withSymbol ? `ETB ${formatted}` : formatted;
 };
@@ -52,7 +53,9 @@ export default function BudgetBreakdown({
 }) {
 	const { t, i18n } = useTranslation();
 	const [brAmountModal, setBrAmountModal] = useState(false);
+	const [approvalModal, setApprovalModal] = useState(false);
 	const toggleBrAmountModal = () => setBrAmountModal(!brAmountModal);
+	const toggleApprovalModal = () => setApprovalModal(!approvalModal);
 	const [braAmount, setBraAmount] = useState(null);
 
 	const handleBudgetRequestAmountClick = useCallback(
@@ -144,7 +147,9 @@ export default function BudgetBreakdown({
 		},
 		xaxis: {
 			categories: [
-				t("baseline"),
+				t("baseline_upto_now"),
+				t("bdr_previous_year"),
+				t("bdr_before_previous_year"),
 				t("total_requested"),
 				t("released_amount"),
 				t("recommended"),
@@ -170,6 +175,8 @@ export default function BudgetBreakdown({
 			name: t("amount"),
 			data: [
 				requestData?.bdr_financial_baseline || 0,
+				requestData?.bdr_previous_year_financial || 0,
+				requestData?.bdr_before_previous_year_financial || 0,
 				requestData?.bdr_requested_amount || 0,
 				requestData?.bdr_released_amount || 0,
 				requestData?.bdr_financial_recommended || 0,
@@ -215,6 +222,11 @@ export default function BudgetBreakdown({
 				toggle={toggleBrAmountModal}
 				budgetRequestAmount={braAmount}
 			/>
+			<BudgetSourceApprovalModal
+				isOpen={approvalModal}
+				toggle={toggleApprovalModal}
+				requestData={requestData}
+			/>
 			<div className="d-flex flex-column gap-4">
 				{/* Enhanced Summary Cards with Real Data */}
 				<Row className="g-3 align-items-stretch">
@@ -230,9 +242,25 @@ export default function BudgetBreakdown({
 									</small>
 								</div>
 								<div className="mt-2">
-									<Badge color="primary" outline>
-										{t("budget_year")} {getSafeValue(requestData?.budget_year)}
-									</Badge>
+									<Progress
+										value={calculateProgressPercent(
+											requestData?.bdr_requested_amount,
+											totalActualBudget
+										)}
+										color="primary"
+										className="mb-1"
+									/>
+									<small className="text-muted">
+										{totalActualBudget
+											? `${(
+													calculateProgressPercent(
+														requestData?.bdr_requested_amount,
+														totalActualBudget
+													) || 0
+												).toFixed(1)}%`
+											: "—"}{" "}
+										{t("of Total Actual Budget")}
+									</small>
 								</div>
 							</CardBody>
 						</Card>
@@ -240,12 +268,33 @@ export default function BudgetBreakdown({
 
 					<Col md={3}>
 						<Card className="text-center border-success h-100">
-							<CardBody className="py-4 d-flex flex-column justify-content-center">
+							<CardBody className="py-4 d-flex flex-column justify-content-between">
 								<div>
 									<div className="h3 text-success mb-1">
 										{formatMoney(requestData?.bdr_released_amount)}
 									</div>
 									<small className="text-muted">{t("released_amount")}</small>
+								</div>
+								<div className="mt-2">
+									<Progress
+										value={calculateProgressPercent(
+											requestData?.bdr_released_amount,
+											requestData?.bdr_requested_amount
+										)}
+										color="success"
+										className="mb-1"
+									/>
+									<small className="text-muted">
+										{totalActualBudget
+											? `${(
+													calculateProgressPercent(
+														requestData?.bdr_released_amount,
+														requestData?.bdr_requested_amount
+													) || 0
+												).toFixed(1)}%`
+											: "—"}{" "}
+										{t("of Requested Amount")}
+									</small>
 								</div>
 							</CardBody>
 						</Card>
@@ -345,34 +394,23 @@ export default function BudgetBreakdown({
 										</tr>
 										<tr>
 											<td className="fw-bold text-muted">
-												{t("requested_date")}:
-											</td>
-											<td>
-												{getSafeValue(
-													requestData?.bdr_requested_date_gc,
-													t("not_available")
-												)}
-											</td>
-										</tr>
-										<tr>
-											<td className="fw-bold text-muted">
-												{t("released_date")}:
-											</td>
-											<td>
-												{getSafeValue(
-													requestData?.bdr_released_date_gc,
-													t("not_released")
-												)}
-											</td>
-										</tr>
-										<tr>
-											<td className="fw-bold text-muted">
 												{t("request_category")}:
 											</td>
 											<td>
 												{getSafeValue(
 													bgCategoryMap[requestData?.bdr_request_category_id],
 													t("not_specified")
+												)}
+											</td>
+										</tr>
+										<tr>
+											<td className="fw-bold text-muted">
+												{t("bdr_additional_days")}:
+											</td>
+											<td>
+												{getSafeValue(
+													bgCategoryMap[requestData?.bdr_additional_days],
+													0
 												)}
 											</td>
 										</tr>
@@ -384,45 +422,23 @@ export default function BudgetBreakdown({
 									<tbody>
 										<tr>
 											<td className="fw-bold text-muted">
-												{t("bdr_source_government_approved")}:
+												{t("requested_date")}:
 											</td>
 											<td>
-												{formatMoney(
-													requestData?.bdr_source_government_approved,
-													false
+												{getSafeValue(
+													requestData?.bdr_requested_date_gc,
+													t("no_date")
 												)}
 											</td>
 										</tr>
 										<tr>
 											<td className="fw-bold text-muted">
-												{t("bdr_source_support_approved")}:
+												{t("released_date")}:
 											</td>
 											<td>
-												{formatMoney(
-													requestData?.bdr_source_support_approved,
-													false
-												)}
-											</td>
-										</tr>
-										<tr>
-											<td className="fw-bold text-muted">
-												{t("bdr_source_credit_approved")}:
-											</td>
-											<td>
-												{formatMoney(
-													requestData?.bdr_source_credit_approved,
-													false
-												)}
-											</td>
-										</tr>
-										<tr>
-											<td className="fw-bold text-muted">
-												{t("bdr_source_other_approved")}:
-											</td>
-											<td>
-												{formatMoney(
-													requestData?.bdr_source_other_approved,
-													false
+												{getSafeValue(
+													requestData?.bdr_released_date_gc,
+													t("no_date")
 												)}
 											</td>
 										</tr>
@@ -435,6 +451,138 @@ export default function BudgetBreakdown({
 													requestData?.bdr_action_remark,
 													t("no_remarks")
 												)}
+											</td>
+										</tr>
+									</tbody>
+								</Table>
+							</Col>
+						</Row>
+					</CardBody>
+				</Card>
+
+				{/* Budget Sources Approval Card */}
+				<Card>
+					<CardHeader className="bg-light">
+						<div className="d-flex justify-content-between align-items-center">
+							<div>
+								<h5 className="mb-1">{t("budget_sources_approval")}</h5>
+								<small className="text-muted">
+									{t("approve_budget_sources_subtitle")}
+								</small>
+							</div>
+							<Button color="success" size="sm" onClick={toggleApprovalModal}>
+								<FaCheck className="me-1" />
+								{t("approve_sources")}
+							</Button>
+						</div>
+					</CardHeader>
+					<CardBody>
+						<Row>
+							<Col md={6}>
+								<Table borderless className="mb-0">
+									<thead>
+										<tr>
+											<th className="fw-bold text-muted">{t("source")}</th>
+											<th className="fw-bold text-muted text-end">
+												{t("requested")}
+											</th>
+											<th className="fw-bold text-muted text-end">
+												{t("approved")}
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td className="fw-bold text-muted">
+												{t("bdr_source_government")}:
+											</td>
+											<td className="text-end">
+												{formatMoney(
+													requestData?.bdr_source_government_requested,
+													true
+												)}
+											</td>
+											<td className="text-end">
+												<Badge color="success">
+													{formatMoney(
+														requestData?.bdr_source_government_approved,
+														true
+													)}
+												</Badge>
+											</td>
+										</tr>
+										<tr>
+											<td className="fw-bold text-muted">
+												{t("bdr_source_support")}:
+											</td>
+											<td className="text-end">
+												{formatMoney(
+													requestData?.bdr_source_support_requested,
+													true
+												)}
+											</td>
+											<td className="text-end">
+												<Badge color="success">
+													{formatMoney(
+														requestData?.bdr_source_support_approved,
+														true
+													)}
+												</Badge>
+											</td>
+										</tr>
+									</tbody>
+								</Table>
+							</Col>
+							<Col md={6}>
+								<Table borderless className="mb-0">
+									<thead>
+										<tr>
+											<th className="fw-bold text-muted">{t("source")}</th>
+											<th className="fw-bold text-muted text-end">
+												{t("requested")}
+											</th>
+											<th className="fw-bold text-muted text-end">
+												{t("approved")}
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td className="fw-bold text-muted">
+												{t("bdr_source_credit")}:
+											</td>
+											<td className="text-end">
+												{formatMoney(
+													requestData?.bdr_source_credit_requested,
+													false
+												)}
+											</td>
+											<td className="text-end">
+												<Badge color="success">
+													{formatMoney(
+														requestData?.bdr_source_credit_approved,
+														false
+													)}
+												</Badge>
+											</td>
+										</tr>
+										<tr>
+											<td className="fw-bold text-muted">
+												{t("bdr_source_other")}:
+											</td>
+											<td className="text-end">
+												{formatMoney(
+													requestData?.bdr_source_other_requested,
+													false
+												)}
+											</td>
+											<td className="text-end">
+												<Badge color="success">
+													{formatMoney(
+														requestData?.bdr_source_other_approved,
+														false
+													)}
+												</Badge>
 											</td>
 										</tr>
 									</tbody>
@@ -463,8 +611,16 @@ export default function BudgetBreakdown({
 								<div className="d-flex flex-column justify-content-evenly flex-grow-1">
 									{[
 										{
-											label: t("baseline"),
+											label: t("baseline_upto_now"),
 											value: requestData?.bdr_physical_baseline,
+										},
+										{
+											label: t("bdr_previous_year"),
+											value: requestData?.bdr_previous_year_physical,
+										},
+										{
+											label: t("bdr_before_previous_year"),
+											value: requestData?.bdr_before_previous_year_physical,
 										},
 										{
 											label: t("planned"),
@@ -516,7 +672,7 @@ export default function BudgetBreakdown({
 											options={chartOptions}
 											series={chartSeries}
 											type="bar"
-											height="220"
+											height="260"
 										/>
 									</CardBody>
 								</Card>
