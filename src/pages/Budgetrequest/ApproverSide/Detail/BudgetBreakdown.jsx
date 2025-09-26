@@ -285,7 +285,7 @@ export default function BudgetBreakdown({
 										className="mb-1"
 									/>
 									<small className="text-muted">
-										{totalActualBudget
+										{requestData?.bdr_requested_amount
 											? `${(
 													calculateProgressPercent(
 														requestData?.bdr_released_amount,

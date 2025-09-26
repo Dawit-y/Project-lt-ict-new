@@ -509,13 +509,9 @@ const FinancialProjectsTable = ({
 
           <div className="d-flex align-items-center">
             <ExportToExcel
-              data={exportData}
-              tableId="financial-projects-table"
-              filename="FinancialProjectsTable"
-              buttonText={t("Export to Excel")}
-              buttonClassName="btn btn-soft-primary mb-2 me-2"
+              tableData={exportData}
+              tableName="FinancialProjectsTable"
             />
-
             <Dropdown
               isOpen={dropdownOpen}
               toggle={toggleDropdown}

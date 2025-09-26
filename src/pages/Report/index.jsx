@@ -114,6 +114,11 @@ const Report = () => {
     "psc_name",
   );
 
+  useEffect(() => {
+		setSearchResults([]);
+		setShowSearchResult(false);
+	}, [selectedEndpoint]);
+
   const endpointConfigs = {
     project_stat: {
       locationParams: {
@@ -506,6 +511,7 @@ const Report = () => {
               </Col>
               <Col xs={10} sm={10} md={10} lg={10} xl={10}>
                 <AdvancedSearch
+                  key={selectedEndpoint}
                   searchHook={useSearchReport}
                   textSearchKeys={textSearchKeys}
                   dateSearchKeys={dateSearchKeys}
@@ -707,4 +713,5 @@ const Report = () => {
     </div>
   );
 };
+
 export default Report;
