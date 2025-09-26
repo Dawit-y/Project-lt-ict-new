@@ -141,7 +141,7 @@ const ProjectPaymentList = () => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return truncateText(params.data.prj_name, 30) || "-";
+          return truncateText(params.data.prj_name, 100) || "-";
         },
       },
       {

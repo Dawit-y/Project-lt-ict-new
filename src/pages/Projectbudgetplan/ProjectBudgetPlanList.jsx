@@ -97,7 +97,7 @@ const ProjectBudgetPlanList = () => {
         minWidth: 200,
         width: 150,
         cellRenderer: (params) => {
-          return truncateText(params.data.prj_name, 35) || "-";
+          return truncateText(params.data.prj_name, 100) || "-";
         },
       },
       {

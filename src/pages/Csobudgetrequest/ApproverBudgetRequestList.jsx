@@ -197,7 +197,7 @@ const ApproverBudgetRequestList = () => {
         flex: 1,
         minWidth: 220,
         cellRenderer: (params) => {
-          return truncateText(params.data.prj_name, 30) || "-";
+          return truncateText(params.data.prj_name, 100) || "-";
         },
       },
       {

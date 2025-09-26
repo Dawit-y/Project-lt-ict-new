@@ -150,7 +150,7 @@ const ProcurementInformationList = () => {
         field: "prj_name",
         sortable: true,
         filter: true,
-        cellRenderer: (params) => truncateText(params.data.prj_name, 30),
+        cellRenderer: (params) => truncateText(params.data.prj_name, 100),
       },
       {
         headerName: t("prj_code"),

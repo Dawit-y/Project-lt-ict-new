@@ -90,7 +90,7 @@ const ProjectStakeholderList = () => {
         minWidth: 200,
         width: 150,
         cellRenderer: (params) => {
-          return truncateText(params.data.prj_name, 30) || "-";
+          return truncateText(params.data.prj_name, 100) || "-";
         },
       },
       {

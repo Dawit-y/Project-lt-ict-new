@@ -167,7 +167,7 @@ const BudgetRequestListModel = () => {
         filter: true,
         flex: 2,
         cellRenderer: (params) => {
-          return truncateText(params.data.prj_name, 30) || "-";
+          return truncateText(params.data.prj_name, 100) || "-";
         },
       },
       {

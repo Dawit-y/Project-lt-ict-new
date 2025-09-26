@@ -184,7 +184,7 @@ const BudgetRequestListModel = () => {
 				minWidth: 200,
 				pinned: "left",
 				cellRenderer: (params) => {
-					return truncateText(params.data.prj_name, 30) || "-";
+					return truncateText(params.data.prj_name, 100) || "-";
 				},
 			},
 			{

@@ -33,11 +33,6 @@ import { useFetchContractorTypes } from "../../queries/contractortype_query";
 import { createSelectOptions } from "../../utils/commonMethods";
 import { useTranslation } from "react-i18next";
 
-const truncateText = (text, maxLength) => {
-	if (typeof text !== "string") return text;
-	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
-};
-
 const Report = () => {
 	const { t } = useTranslation();
 

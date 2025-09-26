@@ -7,11 +7,11 @@ import PrintTable from "./PrintTable";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import {
-  Spinner,
-  UncontrolledTooltip,
-  UncontrolledDropdown,
-  DropdownMenu,
-  DropdownToggle,
+	Spinner,
+	UncontrolledTooltip,
+	UncontrolledDropdown,
+	DropdownMenu,
+	DropdownToggle,
 } from "reactstrap";
 import { FaFileExport } from "react-icons/fa";
 
@@ -20,49 +20,49 @@ import { createSelector } from "reselect";
 import { useTranslation } from "react-i18next";
 
 const LoadingOverlay = () => {
-  return <Spinner color="primary" />;
+	return <Spinner color="primary" />;
 };
 
 const AgGridContainer = ({
-  rowData,
-  columnDefs,
-  isLoading = false,
-  isPagination = true,
-  paginationPageSize = 10,
-  isGlobalFilter = true,
-  onAddClick,
-  placeholder = "Filter...",
-  addButtonText = "Add",
-  isAddButton = false,
-  rowHeight = 32,
-  rowSelection,
-  onSelectionChanged,
-  onGridReady,
-  isExcelExport = false,
-  isPdfExport = false,
-  isPrint = true,
-  excludeKey = [],
-  tableName = "",
-  includeKey = [],
-  exportColumns = [],
-  exportSearchParams = {},
-  buttonChildren = null,
-  onButtonClick = () => {},
-  disabled,
+	rowData,
+	columnDefs,
+	isLoading = false,
+	isPagination = true,
+	paginationPageSize = 10,
+	isGlobalFilter = true,
+	onAddClick,
+	placeholder = "Filter...",
+	addButtonText = "Add",
+	isAddButton = false,
+	rowHeight = 32,
+	rowSelection,
+	onSelectionChanged,
+	onGridReady,
+	isExcelExport = false,
+	isPdfExport = false,
+	isPrint = true,
+	excludeKey = [],
+	tableName = "",
+	includeKey = [],
+	exportColumns = [],
+	exportSearchParams = {},
+	buttonChildren = null,
+	onButtonClick = () => {},
+	disabled,
 }) => {
-  const gridRef = useRef(null);
-  const [quickFilterText, setQuickFilterText] = useState("");
-  const { t } = useTranslation();
+	const gridRef = useRef(null);
+	const [quickFilterText, setQuickFilterText] = useState("");
+	const { t } = useTranslation();
 
-  const selectLayoutProperties = createSelector(
-    (state) => state.Layout,
-    (layout) => ({
-      layoutModeType: layout.layoutModeType,
-    }),
-  );
-  const { layoutModeType } = useSelector(selectLayoutProperties);
+	const selectLayoutProperties = createSelector(
+		(state) => state.Layout,
+		(layout) => ({
+			layoutModeType: layout.layoutModeType,
+		})
+	);
+	const { layoutModeType } = useSelector(selectLayoutProperties);
 
-  return (
+	return (
 		<div
 			className={
 				layoutModeType === "dark" ? "ag-theme-alpine-dark" : "ag-theme-alpine"
@@ -149,7 +149,7 @@ const AgGridContainer = ({
 					loadingOverlayComponent={LoadingOverlay}
 					overlayNoRowsTemplate={t("no_rows_to_show")}
 					pagination={isPagination}
-					paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+					paginationPageSizeSelector={[10, 30, 50, 100, 200]}
 					paginationPageSize={paginationPageSize}
 					quickFilterText={quickFilterText}
 					rowHeight={rowHeight}
