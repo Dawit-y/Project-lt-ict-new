@@ -111,7 +111,7 @@ const TreeForLists = ({
 			<div
 				style={{
 					position: "relative",
-					flex: isCollapsed ? "0 0 60px" : "0 0 25%",
+					flex: isCollapsed ? "0 0 60px" : `0 0 ${widthInPercent}%`,
 					minWidth: isCollapsed ? "60px" : "250px",
 					transition: "all 0.3s ease",
 				}}
