@@ -68,7 +68,7 @@ export const financialReportOneExportColumns = [
 	{
 		key: "project_category",
 		label: "Category",
-		width: 40,
+		width: 50,
 	},
 	{
 		key: "prj_code",
@@ -80,7 +80,7 @@ export const financialReportOneExportColumns = [
 		label: "Location Information",
 		columns: [
 			{
-				key: "prj_specific_site",
+				key: "prj_location_description",
 				label: "Specific Site",
 			},
 			{
@@ -211,10 +211,17 @@ export const financialReportOneExportColumns = [
 				format: (val) => (val ? parseFloat(val).toLocaleString() : "0"),
 			},
 			{
-				key: " bdr_source_other_approved ",
+				key: "bdr_source_other_approved",
 				label: "Other",
 				type: "number",
 				format: (val) => (val ? parseFloat(val).toLocaleString() : "0"),
+			},
+			{
+				key: "budget_sources_total",
+				label: "Total",
+				type: "number",
+				format: (val) => (val ? parseFloat(val).toLocaleString() : "0"),
+				width: 30,
 			},
 		],
 	},
